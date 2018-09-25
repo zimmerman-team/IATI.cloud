@@ -29,7 +29,6 @@ jobs:
           command: |
             sudo apt-get install libgdal-dev
             sudo apt-get install gdal-bin
-            pip install gdal
 
       # Download and cache dependencies
       - restore_cache:
