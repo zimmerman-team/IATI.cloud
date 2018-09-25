@@ -75,4 +75,4 @@ jobs:
 
       - run:
           name: Run pep8 code style checks
-          command: flake8 OIPA/
+          command: flake8 OIPA
