@@ -6,9 +6,9 @@
 version: 2
 jobs:
   build:
-    branches:
-      only:
-        - feature/circleci
+    #branches:
+      #only:
+        #- feature/circleci
 
     docker:
       # specify the version you desire here
