@@ -159,8 +159,11 @@ class Activity(models.Model):
     default_flow_type = models.ForeignKey(
         FlowType, null=True, blank=True, default=None,
         on_delete=models.CASCADE)
+
+    # XXX: this is for IATI versions until 2.03. See: #763:
     default_aid_type = models.ForeignKey(
         AidType, null=True, blank=True, default=None, on_delete=models.CASCADE)
+
     default_finance_type = models.ForeignKey(
         FinanceType, null=True, blank=True,
         default=None, on_delete=models.CASCADE)
@@ -257,6 +260,18 @@ class Activity(models.Model):
         ).exclude(
             id=self.id
         ).distinct()
+
+
+class ActivityDefaultAidType(models.Model):
+    activity = models.ForeignKey(
+        Activity,
+        on_delete=models.CASCADE,
+        related_name='default_aid_types'
+    )
+    aid_type = models.ForeignKey(AidType, on_delete=models.CASCADE)
+
+    def __string__(self, ):
+        return "%s - %s" % (self.activity.id, self.aid_type.code)
 
 
 class AbstractActivityAggregation(models.Model):
@@ -882,20 +897,24 @@ class DocumentLink(models.Model):
         null=True,
         on_delete=models.CASCADE
     )
-    # XXX: could also point to a separate 'Basline' model that should come up
-    # from ResultIndicator model:
+    # FIXME: this relationship has to point to (currently, non existing)
+    # ResultIndicatorPeriodBaseline model. See: #761
     result_indicator_baseline = models.ForeignKey(
         'ResultIndicator',
         related_name='baseline_document_links',
         null=True,
         on_delete=models.CASCADE
     )
+    # FIXME: this relationship has to point to ResultIndicatorPeriodTarget.
+    # See: #747
     period_target = models.ForeignKey(
         'ResultIndicator',
         related_name='period_target_document_links',
         null=True,
         on_delete=models.CASCADE
     )
+    # FIXME: this relationship has to point to ResultIndicatorPeriodActual.
+    # See: #756
     period_actual = models.ForeignKey(
         'ResultIndicator',
         related_name='period_actual_document_links',
@@ -953,6 +972,15 @@ class DocumentLinkTitle(models.Model):
 
     def get_activity(self):
         return self.document_link.activity
+
+
+class DocumentLinkDescription(models.Model):
+    document_link = models.OneToOneField(
+        DocumentLink, on_delete=models.CASCADE)
+    narratives = GenericRelation(
+        Narrative,
+        content_type_field='related_content_type',
+        object_id_field='related_object_id')
 
 
 class DocumentSearch(models.Model):
@@ -1118,6 +1146,8 @@ class ResultIndicatorBaselineComment(models.Model):
         return self.result_indicator.result.activity
 
 
+# FIXME: new ResultIndicatorPeriodBaseline model has to be implemented.
+# See: #747 / #756 / #761
 class ResultIndicatorPeriod(models.Model):
     result_indicator = models.ForeignKey(
         ResultIndicator, on_delete=models.CASCADE)

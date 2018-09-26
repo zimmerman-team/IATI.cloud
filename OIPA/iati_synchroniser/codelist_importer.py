@@ -10,8 +10,8 @@ from lxml import etree
 
 from geodata.models import Country, Region
 from iati_codelists.models import (
-    FileFormat, FinanceTypeCategory, OrganisationIdentifier,
-    OrganisationRegistrationAgency, Sector
+    AidType, AidTypeVocabulary, FileFormat, FinanceTypeCategory,
+    OrganisationIdentifier, OrganisationRegistrationAgency, Sector
 )
 from iati_synchroniser.dac_sector_importer import DacSectorImporter
 from iati_synchroniser.models import Codelist
@@ -150,6 +150,11 @@ class CodeListImporter():
 
         elif tag == "AidType-category":
             model_name = 'AidTypeCategory'
+
+        elif tag == "AidType":
+            # Currently, only officially supported vocabularies (accessable via
+            # AITI API) are supported:
+            item = AidType(vocabulary=AidTypeVocabulary.objects.get(code=1))
 
         elif tag == "CRSAddOtherFlags":
             model_name = 'OtherFlags'

@@ -52,11 +52,14 @@ class Transaction(models.Model):
     flow_type = models.ForeignKey(
         FlowType, null=True, blank=True,
         default=None, on_delete=models.CASCADE)
+
+    # XXX: this is for IATI versions until 2.03. See: #762:
+    aid_type = models.ForeignKey(
+        AidType, null=True, blank=True, default=None, on_delete=models.CASCADE)
+
     finance_type = models.ForeignKey(
         FinanceType, null=True, blank=True,
         default=None, on_delete=models.CASCADE)
-    aid_type = models.ForeignKey(
-        AidType, null=True, blank=True, default=None, on_delete=models.CASCADE)
     tied_status = models.ForeignKey(
         TiedStatus, null=True, blank=True,
         default=None, on_delete=models.CASCADE)
@@ -71,6 +74,14 @@ class Transaction(models.Model):
 
     def get_publisher(self):
         return self.activity.publisher
+
+
+class TransactionAidType(models.Model):
+    transaction = models.ForeignKey(Transaction, on_delete=models.CASCADE)
+    aid_type = models.ForeignKey(AidType, on_delete=models.CASCADE)
+
+    def __string__(self, ):
+        return "%s - %s" % (self.transaction.id, self.aid_type.code)
 
 
 class TransactionProvider(models.Model):
