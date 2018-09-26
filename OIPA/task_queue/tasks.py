@@ -82,6 +82,15 @@ def add_new_sources_from_registry_and_parse_all():
     queue.enqueue(get_new_sources_from_iati_api)
     queue.enqueue(parse_all_existing_sources)
 
+@job
+def perform_initial_tasks():
+    queue = django_rq.get_queue("default")
+    queue.enqueue(update_iati_codelists)
+    queue.enqueue(update_country_data)
+    queue.enqueue(get_new_sources_from_iati_api)
+
+
+
 
 @job
 def force_parse_all_existing_sources():
