@@ -91,8 +91,6 @@ def perform_initial_tasks():
     queue.enqueue(get_new_sources_from_iati_api)
 
 
-
-
 @job
 def force_parse_all_existing_sources():
     """
