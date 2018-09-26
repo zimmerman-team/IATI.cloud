@@ -1,4 +1,5 @@
 import json
+import os
 
 from django.test import TestCase
 from mock import MagicMock
@@ -27,6 +28,10 @@ class DatasetSyncerTestCase(TestCase):
         iati_factory.OrganisationTypeFactory.create(
             code='22', name='Multilateral')
 
+        self.BASE_DIR = os.path.dirname(
+            os.path.dirname(os.path.realpath(__file__))
+        )
+
     def test_get_val_in_list_of_dicts(self):
         """
         test if returns correct key's data
@@ -45,10 +50,10 @@ class DatasetSyncerTestCase(TestCase):
 
         """
 
-        with open('iati_synchroniser/fixtures/test_publisher.json') as fixture:
+        with open(self.BASE_DIR + '/fixtures/test_publisher.json') as fixture:
             publisher = json.load(fixture).get('result')[0]
 
-        with open('iati_synchroniser/fixtures/test_dataset.json') as fixture:
+        with open(self.BASE_DIR + '/fixtures/test_dataset.json') as fixture:
             dataset = json.load(fixture)['result']['results'][0]
 
         self.datasetSyncer.get_data = MagicMock(side_effect=[
@@ -68,7 +73,7 @@ class DatasetSyncerTestCase(TestCase):
         check if dataset is saved as expected
         """
 
-        with open('iati_synchroniser/fixtures/test_publisher.json') as fixture:
+        with open(self.BASE_DIR + '/fixtures/test_publisher.json') as fixture:
             data = json.load(fixture).get('result')[0]
             self.datasetSyncer.update_or_create_publisher(data)
 
@@ -89,7 +94,7 @@ class DatasetSyncerTestCase(TestCase):
 
         publisher.save()
 
-        with open('iati_synchroniser/fixtures/test_dataset.json') as fixture:
+        with open(self.BASE_DIR + '/fixtures/test_dataset.json') as fixture:
             data = json.load(fixture)['result']['results'][0]
             self.datasetSyncer.update_or_create_dataset(data)
 
