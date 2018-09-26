@@ -99,9 +99,10 @@ class TestOrganisationFileEndpoints(TestCase):
         file_format.save()
 
         # Organisation Document Link
+        organisation_document_link_url = 'https://www.test.com'
         organisation_document_link = OrganisationDocumentLink(
             organisation=organisation,
-            url='https://www.test.com',
+            url=organisation_document_link_url,
             file_format=file_format,
             language=language,
             iso_date=datetime.datetime.strptime('2018-01-01', '%Y-%m-%d'))
@@ -135,6 +136,8 @@ class TestOrganisationFileEndpoints(TestCase):
 
         # Get response from client
         response = client.get(path=url)
+        first_organisation_document_link = response.data.get('results')[0]
 
-        self.assertEqual(
-            organisation_document_link.url, 'https://www.test.com')
+        # The first result of the organisation document list should be the same with above URL 'https://www.test.com'
+        self.assertEqual(response.data.get(
+            first_organisation_document_link.get('url'), organisation_document_link_url))
