@@ -3,8 +3,7 @@ from django.utils.http import urlunquote
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import authentication, status
 from rest_framework.generics import (
-    ListCreateAPIView, RetrieveUpdateDestroyAPIView,
-    ListAPIView
+    ListAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
 )
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -713,5 +712,3 @@ class OrganisationFileOrganisationDocumentLinkList(ListAPIView):
             ).organisationdocumentlink_set.all()
         except Organisation.DoesNotExist:
             return None
-
-
