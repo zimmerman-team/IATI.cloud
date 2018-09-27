@@ -76,7 +76,9 @@ Python already has clear <a href="https://www.python.org/dev/peps/pep-0008/" tar
 
 ## Running the tests
 -------
-Pytest-django is used to run tests. This will be installed automatically when the project is set up. To run tests, ```cd``` to ```OIPA/``` directory (you have to be in the same directory where ```manage.py``` is) and run ```pytest``` to run the tests. Please refer to <a href="https://pytest-django.readthedocs.io/en/latest/#" target="_blank">Pytest-django documentations</a> for details.
+Pytest-django is used to run tests. This will be installed automatically when the project is set up.
+
+To run tests, from the top level directory of the project, run ```pytest OIPA/```. If you are in the same directory where ```manage.py``` is, only running ```pytest``` will be sufficient. Refer to <a href="https://pytest-django.readthedocs.io/en/latest/#" target="_blank">Pytest-django documentations</a> for details.
 
 
 ## Who makes use of OIPA?

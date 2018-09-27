@@ -104,7 +104,9 @@
     <collaboration-type code="3"/>
     <default-flow-type code="10"/>
     <default-finance-type code="110"/>
-    <default-aid-type code="B01"/>
+    <!--This is currently not supported (custom AidType vocabularies), so an error log (DatasetNote)-->
+    <!--will be created:-->
+    <default-aid-type code="B01" vocabulary="2"/>
     <default-tied-status code="5"/>
     <budget>
       <period-start iso-date="2014-01-01"/>
@@ -132,6 +134,9 @@
         <narrative>ICTJ</narrative>
       </receiver-org>
       <aid-type code="A01" vocabulary="1"/>
+      <!--This is currently not supported (custom AidType vocabularies), so an error log (DatasetNote)-->
+      <!--will be created:-->
+      <aid-type code="B01" vocabulary="2"/>
     </transaction>
     <transaction>
       <transaction-type code="3"/>
@@ -159,6 +164,9 @@
       <title>
         <narrative xml:lang="en">Activity web page for IATI activity NL-1-PPR-24706</narrative>
       </title>
+      <description>
+        <narrative> Description of the content of the project report or guidance on where to access the relevant information in this report </narrative>
+      </description>
       <category code="A12"/>
       <language code="en"/>
     </document-link>
