@@ -8,6 +8,7 @@ __pycache__
 .vscode
 *.pyc
 *.swp
+**/*.sql
 docker-compose*
 local_settings.py
 OIPA/docstore/*
