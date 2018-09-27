@@ -129,7 +129,7 @@ class TestOrganisationFileEndpoints(TestCase):
         # API client
         client = APIClient()
 
-        # URL endpoijnt organisation dopcument links
+        # URL endpoint organisation dopcument links
         url = reverse(
             'organisations:organisation-file-organisation-document-link-list',
             kwargs={'organisation_identifier': organisation_identifier})
@@ -138,6 +138,6 @@ class TestOrganisationFileEndpoints(TestCase):
         response = client.get(path=url)
         first_organisation_document_link = response.data.get('results')[0]
 
-        # The first result of the organisation document list should be the same with above URL 'https://www.test.com'
-        self.assertEqual(response.data.get(
-            first_organisation_document_link.get('url'), organisation_document_link_url))
+        # The first result of the organisation document link list should be the same
+        # with above URL 'https://www.test.com'
+        self.assertEqual(first_organisation_document_link.get('url'), organisation_document_link_url)
