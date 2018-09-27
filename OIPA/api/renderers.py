@@ -218,7 +218,7 @@ class XlsRenderer(BaseRenderer):
 
     def _write_this(self, data, col_name='', row_numb=1):
 
-        divider = '.' if not col_name == '' else ''
+        divider = '.' if col_name != '' else ''
         if type(data) is ReturnList or type(data) is list:
             for i, item in enumerate(data):
                 column_name = col_name + divider + str(i)
@@ -255,4 +255,4 @@ class XlsRenderer(BaseRenderer):
 
             self.ws.set_column(self.column_number, self.column_number, width)
             # Everytime we add a value we increase the column number
-            self.column_number = self.column_number + 1
+            self.column_number += 1
