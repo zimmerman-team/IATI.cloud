@@ -2,10 +2,10 @@
 set -e
 
 # run migrations
-/app/src/OIPA/manage.py migrate --noinput
+/usr/bin/python3.6 /app/src/OIPA/manage.py migrate --noinput
 
 # generate static files
-/app/src/OIPA/manage.py collectstatic --noinput
+/usr/bin/python3.6 /app/src/OIPA/manage.py collectstatic --noinput
 
 # run Django as a wsgi process
 /app/src/bin/wait-for-postgres.sh -- /bin/uwsgi \
@@ -22,3 +22,4 @@ set -e
     --gid=1000 \
     --vacuum \
     --harakiri=120 \
+    #--home=/venv
