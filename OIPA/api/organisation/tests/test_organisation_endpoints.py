@@ -138,6 +138,8 @@ class TestOrganisationFileEndpoints(TestCase):
         response = client.get(path=url)
         first_organisation_document_link = response.data.get('results')[0]
 
-        # The first result of the organisation document link list should be the same
-        # with above URL 'https://www.test.com'
-        self.assertEqual(first_organisation_document_link.get('url'), organisation_document_link_url)
+        # The first result of the organisation document link list
+        # should be the same with above URL 'https://www.test.com'
+        self.assertEqual(
+            first_organisation_document_link.get('url'),
+            organisation_document_link_url)
