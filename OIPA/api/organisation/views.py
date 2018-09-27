@@ -3,7 +3,7 @@ from django.utils.http import urlunquote
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import authentication, status
 from rest_framework.generics import (
-    ListCreateAPIView, RetrieveUpdateDestroyAPIView
+    ListAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
 )
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -685,3 +685,30 @@ class OrganisationDocumentLinkRecipientCountryDetail(
     def get_object(self):
         pk = self.kwargs.get('recipient_country_id')
         return DocumentLinkRecipientCountry.objects.get(pk=pk)
+
+
+class OrganisationFileOrganisationDocumentLinkList(ListAPIView):
+    """
+    This endpoint is related to Organisation File for public request
+
+    ## URI Format
+
+    ```
+    /api/organisations/organisation-file/{organisation_identifier}
+    /organisation-document-link-list/
+    ```
+
+    ### URI Parameters
+
+    - `organisation_identifier`: IATI Organisation Identifier
+    """
+    serializer_class = serializers.OrganisationDocumentLinkSerializer
+
+    def get_queryset(self):
+        organisation_identifier = self.kwargs.get('organisation_identifier')
+        try:
+            return Organisation.objects.get(
+                organisation_identifier=organisation_identifier
+            ).organisationdocumentlink_set.all()
+        except Organisation.DoesNotExist:
+            return None
