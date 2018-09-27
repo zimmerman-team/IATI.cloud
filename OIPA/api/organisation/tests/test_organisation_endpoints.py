@@ -1,16 +1,17 @@
 import datetime
 
+from django.contrib.contenttypes.models import ContentType
 from django.test import TestCase
 from django.urls import reverse
-from django.contrib.contenttypes.models import ContentType
-
 from rest_framework.test import APIClient
 
-from iati_codelists.models import Version, Language, FileFormat, \
-    DocumentCategory, DocumentCategoryCategory
-from iati_organisation.models import Organisation, OrganisationName, \
-    OrganisationNarrative, OrganisationDocumentLink, \
-    OrganisationDocumentLinkCategory
+from iati_codelists.models import (
+    DocumentCategory, DocumentCategoryCategory, FileFormat, Language, Version
+)
+from iati_organisation.models import (
+    Organisation, OrganisationDocumentLink, OrganisationDocumentLinkCategory,
+    OrganisationName, OrganisationNarrative
+)
 
 
 class TestOrganisationEndpoints(TestCase):
