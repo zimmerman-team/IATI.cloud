@@ -35,7 +35,8 @@ RUN apt-get -y install python-dev python-virtualenv postgresql-client \
     libpq-dev \
     python-psycopg2 \
     uwsgi \
-    uwsgi-plugin-python
+    uwsgi-plugin-python \
+    python3-pip
 
 RUN mkdir /app
 RUN virtualenv /venv
@@ -44,7 +45,7 @@ RUN pip install -U pip setuptools
 
 # Install Python dependencies
 ADD OIPA/requirements.txt /app/requirements.txt
-RUN pip install -r /app/requirements.txt
+RUN pip3 install -r /app/requirements.txt
 
 ENV PYTHONUNBUFFERED 1
 EXPOSE 8000
