@@ -5,7 +5,7 @@
 [![Requirements Status](https://requires.io/github/zimmerman-zimmerman/OIPA/requirements.svg?branch=develop)](https://requires.io/github/zimmerman-zimmerman/OIPA/requirements/?branch=develop)
 [![Documentation Status](https://readthedocs.org/projects/oipa-docs/badge/?version=latest)](http://docs.oipa.nl/en/latest/?badge=latest)
 [![License: AGPLv3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://github.com/zimmerman-zimmerman/OIPA/blob/master/LICENSE.MD)
-![GitHub issues](https://img.shields.io/github/issues-raw/badges/shields.svg ](https://github.com/zimmerman-zimmerman/OIPA/issues)
+[![GitHub issues](https://img.shields.io/github/issues-raw/badges/shields.svg)](https://github.com/zimmerman-zimmerman/OIPA/issue)
 
 
 
