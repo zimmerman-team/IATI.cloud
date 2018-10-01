@@ -4,17 +4,17 @@
 from __future__ import unicode_literals
 
 import csv
+import io
 from collections import OrderedDict
 
+import xlsxwriter
 from django.conf import settings
 from django.http import HttpResponse
 from django.utils import six
-import xlsxwriter
-import io
 from lxml import etree
 from lxml.builder import E
 from rest_framework.renderers import BaseRenderer
-from rest_framework.utils.serializer_helpers import ReturnList, ReturnDict
+from rest_framework.utils.serializer_helpers import ReturnDict, ReturnList
 from rest_framework_csv.renderers import CSVRenderer
 
 # TODO: Make this more generic - 2016-01-21
@@ -153,11 +153,14 @@ class XlsRenderer(BaseRenderer):
         self.header_style = None
         self.cell_style = None
         self.column_width = 0
-        # We have the column number here, because it's a much easier and tidier way
-        # To have it as a class variable, because of the way the columns need to be formed
+        # We have the column number here,
+        # because it's a much easier and tidier way
+        # To have it as a class variable,
+        # because of the way the columns need to be formed
         # and because of recursiveness
         self.column_number = 0
-        # Cause each column might have different widths, and we need to store each columns widths
+        # Cause each column might have different widths,
+        # and we need to store each columns widths
         # In an array to make checks if a longer values has not entered
         self.col_widths = []
 
@@ -203,13 +206,15 @@ class XlsRenderer(BaseRenderer):
         return response
 
     def _write_to_excel(self, data):
-        if type(data) is ReturnList or type(data) is list or type(data) is OrderedDict:
+        if type(data) is ReturnList or type(data) is list \
+                or type(data) is OrderedDict:
             # So if the initial data, is a list, that means that
             # We can create a seperate row for each item
             for i, item in enumerate(data):
                 # + 1 cause first row is reserved for the header
                 row_numb = i + 1
-                # Need to reset the column_number each time a new row is being written
+                # Need to reset the column_number
+                # each time a new row is being written
                 self.column_number = 0
                 self._write_this(item, '', row_numb)
         elif type(data) is ReturnDict or type(data) is dict:
@@ -223,7 +228,8 @@ class XlsRenderer(BaseRenderer):
             for i, item in enumerate(data):
                 column_name = col_name + divider + str(i)
                 self._write_this(item, column_name, row_numb)
-        elif type(data) is ReturnDict or type(data) is dict or type(data) is OrderedDict:
+        elif type(data) is ReturnDict or type(data) is dict \
+                or type(data) is OrderedDict:
             for key, value in data.items():
                 column_name = col_name + divider + key
                 self._write_this(value, column_name, row_numb)
@@ -231,21 +237,29 @@ class XlsRenderer(BaseRenderer):
             # If it goes in here that means that it is an actual value
             # with a column name, so we right the actual thing here
             if row_numb > 1:
-                # And if the row number is more then one, that means that we don't need
+                # And if the row number is more
+                # then one, that means that we don't need
                 # to add the header anymore
                 # And tis the cell, data is the value of the actual item
-                self.ws.write(row_numb, self.column_number, data, self.cell_style)
+                self.ws.write(row_numb, self.column_number,
+                              data, self.cell_style)
             else:
                 # Here we write the header, in the first row(row == 0)
-                # col_name is the properly formed col_name after recursively going
+                # col_name is the properly formed col_name
+                # after recursively going
                 # through each item thats why we don't modify it
-                self.ws.write(0, self.column_number, col_name, self.header_style)
+                self.ws.write(0, self.column_number, col_name,
+                              self.header_style)
                 # And tis the cell, data is the value of the actual item
-                self.ws.write(row_numb, self.column_number, data, self.cell_style)
+                self.ws.write(row_numb, self.column_number,
+                              data, self.cell_style)
 
-            # We set the column width according to the length of the data/value or the header if its longer
-            width = len(str(data)) if len(str(data)) > len(col_name) else len(col_name)
-            # And we check here if the previously set width for the is bigger than this
+            # We set the column width according to the
+            # length of the data/value or the header if its longer
+            width = len(str(data)) if len(str(data)) > len(col_name) \
+                else len(col_name)
+            # And we check here if the previously set
+            # width for the is bigger than this
             try:
                 if width > self.col_widths[self.column_number]:
                     self.col_widths[self.column_number] = width
