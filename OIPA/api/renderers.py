@@ -142,8 +142,10 @@ class OrganisationXMLRenderer(XMLRenderer):
 
 # All of this was done in the same way that the csv is formed
 # Which was okay for them peeps
+
+# XXX: file name is always 'download' and it should probably be set per-view
 class XlsRenderer(BaseRenderer):
-    media_type = 'application/xls'
+    media_type = 'application/vnd.ms-excel'
     results_field = 'results'
     format = 'xls'
 
@@ -195,15 +197,8 @@ class XlsRenderer(BaseRenderer):
         # Rewind the buffer.
         output.seek(0)
 
-        # Set up the Http response.
-        filename = 'Data.xls'
-        response = HttpResponse(
-            output,
-            content_type='application/xls'
-        )
-        response['Content-Disposition'] = 'attachment; filename=%s' % filename
+        return output
 
-        return response
 
     def _write_to_excel(self, data):
         if type(data) is ReturnList or type(data) is list \
