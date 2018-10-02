@@ -9,7 +9,6 @@ from collections import OrderedDict
 
 import xlsxwriter
 from django.conf import settings
-from django.http import HttpResponse
 from django.utils import six
 from lxml import etree
 from lxml.builder import E
@@ -198,7 +197,6 @@ class XlsRenderer(BaseRenderer):
         output.seek(0)
 
         return output
-
 
     def _write_to_excel(self, data):
         if type(data) is ReturnList or type(data) is list \
