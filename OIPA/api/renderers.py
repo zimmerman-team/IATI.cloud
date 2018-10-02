@@ -143,6 +143,7 @@ class OrganisationXMLRenderer(XMLRenderer):
 # Which was okay for them peeps
 
 # XXX: file name is always 'download' and it should probably be set per-view
+# TODO: test
 class XlsRenderer(BaseRenderer):
     media_type = 'application/vnd.ms-excel'
     results_field = 'results'
