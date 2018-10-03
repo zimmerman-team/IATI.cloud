@@ -88,9 +88,9 @@ class ActivityParticipatingOrganisationTestCase(TestCase):
         # 2. Create ParticipatingOrganisation object:
         test_organisation = iati_factory \
             .ParticipatingOrganisationFactory.create(
-            ref="Gd-COH-123-participating-org",
-            activity=self.activity,
-        )
+                ref="Gd-COH-123-participating-org",
+                    activity=self.activity,
+             )
 
         self.parser_203.register_model('Organisation', test_organisation)
 
@@ -1045,7 +1045,8 @@ class AidTypeTestCase(TestCase):
         # CASE 1:
         # 'Code' attr is missing:
         try:
-            self.parser_203.iati_activities__iati_activity__transaction__aid_type(
+            self.parser_203.\
+                iati_activities__iati_activity__transaction__aid_type(
                 # NOQA: E501
                 aid_type_XML_element)
             self.assertFail()
@@ -1066,7 +1067,8 @@ class AidTypeTestCase(TestCase):
         )
 
         try:
-            self.parser_203.iati_activities__iati_activity__transaction__aid_type(
+            self.parser_203.\
+                iati_activities__iati_activity__transaction__aid_type(
                 # NOQA: E501
                 aid_type_XML_element)
             self.assertFail()
@@ -1153,12 +1155,16 @@ class ActivityResultDocumentListTestCase(TestCase):
         self.parser_203.register_model('Result', self.result)
 
     def test_activity_result_document_list(self):
+
         # Case 1:
         #  'url is missing'
+
         result_document_list_attr = {
             # url = 'missing'
+
             "format": 'something'
-            #'format_code' will be got in the function
+
+            # 'format_code' will be got in the function
 
         }
         result_document_list_XML_element = E(
@@ -1167,20 +1173,22 @@ class ActivityResultDocumentListTestCase(TestCase):
         )
 
         try:
-            self.parser_203.iati_activities__iati_activity__result__document_link(
-                result_document_list_XML_element)
+            self.parser_203.\
+                iati_activities__iati_activity__result__document_link(
+                    result_document_list_XML_element)
             self.assertFail()
         except RequiredFieldError as inst:
             self.assertEqual(inst.field, 'url')
-            self.assertEqual(inst.message,'required attribute missing')
+            self.assertEqual(inst.message, 'required attribute missing')
 
-        #Case 2:
-        #'file_format' is missing
+        # Case 2:
+        # 'file_format' is missing
 
         result_document_list_attr = {
             "url": 'www.google.com'
-            #"format":
-            #'format_code' will be got in the function
+
+            # "format":
+            # 'format_code' will be got in the function
 
         }
         result_document_list_XML_element = E(
@@ -1188,21 +1196,22 @@ class ActivityResultDocumentListTestCase(TestCase):
             **result_document_list_attr
         )
         try:
-            self.parser_203.iati_activities__iati_activity__result__document_link(
-                result_document_list_XML_element
+            self.parser_203.\
+                iati_activities__iati_activity__result__document_link(
+                    result_document_list_XML_element
             )
             self.assertFail()
         except RequiredFieldError as inst:
             self.assertEqual(inst.field, 'format')
             self.assertEqual(inst.message, 'required attribute missing')
 
-        #Case 3;
-        #'file_format_code' is missing
+        # Case 3;
+        # 'file_format_code' is missing
 
         result_document_list_attr = {
             "url": 'www.google.com',
-            "format":'something',
-            #'format_code will be got in the function
+            "format": 'something',
+            # 'format_code will be got in the function
 
         }
         result_document_list_XML_element = E(
@@ -1219,15 +1228,15 @@ class ActivityResultDocumentListTestCase(TestCase):
             self.assertEqual(inst.message, 'not found on the accompanying '
                                            'code list')
 
-        #Case 4;
+        # Case 4;
         # all is good
 
-        #dummy document-link object
-        dummy_file_format = codelist_factory.FileFormatFactory(code =
-                                                             'application/pdf')
+        # dummy document-link object
+        dummy_file_format = codelist_factory.\
+            FileFormatFactory(code='application/pdf')
 
-        dummy_document_link = iati_factory.DocumentLinkFactory(url =
-                                                               'http://aasamannepal.org.np/')
+        dummy_document_link = iati_factory.\
+            DocumentLinkFactory(url='http://aasamannepal.org.np/')
         self.parser_203.codelist_cache = {}
 
         result_document_list_attr = {
@@ -1240,14 +1249,14 @@ class ActivityResultDocumentListTestCase(TestCase):
             **result_document_list_attr
         )
 
-        self.parser_203\
+        self.parser_203 \
             .iati_activities__iati_activity__result__document_link(
-                result_document_list_XML_element
-            )
+            result_document_list_XML_element
+        )
 
         document_link = self.parser_203.get_model('DocumentLink')
 
-        #checking if everything is saved
+        # checking if everything is saved
 
         self.assertEqual(document_link.url, dummy_document_link.url)
         self.assertEqual(document_link.file_format,
