@@ -1199,7 +1199,7 @@ class ActivityResultDocumentListTestCase(TestCase):
             self.parser_203.\
                 iati_activities__iati_activity__result__document_link(
                     result_document_list_XML_element
-            )
+                )
             self.assertFail()
         except RequiredFieldError as inst:
             self.assertEqual(inst.field, 'format')
@@ -1219,9 +1219,10 @@ class ActivityResultDocumentListTestCase(TestCase):
             **result_document_list_attr
         )
         try:
-            self.parser_203.iati_activities__iati_activity__result__document_link(
-                result_document_list_XML_element
-            )
+            self.parser_203.\
+                iati_activities__iati_activity__result__document_link(
+                    result_document_list_XML_element
+                )
             self.assertFail()
         except FieldValidationError as inst:
             self.assertEqual(inst.field, 'format')
@@ -1251,8 +1252,8 @@ class ActivityResultDocumentListTestCase(TestCase):
 
         self.parser_203 \
             .iati_activities__iati_activity__result__document_link(
-            result_document_list_XML_element
-        )
+                result_document_list_XML_element
+            )
 
         document_link = self.parser_203.get_model('DocumentLink')
 
