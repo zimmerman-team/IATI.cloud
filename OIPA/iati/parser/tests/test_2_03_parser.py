@@ -50,7 +50,7 @@ class ActivityParticipatingOrganisationTestCase(TestCase):
 
         self.parser_203.default_lang = "en"
 
-        assert(isinstance(self.parser_203, Parser_203))
+        assert (isinstance(self.parser_203, Parser_203))
 
         # Version
         current_version = VersionFactory(code='2.03')
@@ -86,11 +86,11 @@ class ActivityParticipatingOrganisationTestCase(TestCase):
         )
 
         # 2. Create ParticipatingOrganisation object:
-        test_organisation = iati_factory\
+        test_organisation = iati_factory \
             .ParticipatingOrganisationFactory.create(
-                ref="Gd-COH-123-participating-org",
-                activity=self.activity,
-            )
+            ref="Gd-COH-123-participating-org",
+            activity=self.activity,
+        )
 
         self.parser_203.register_model('Organisation', test_organisation)
 
@@ -172,7 +172,7 @@ class ActivityTagTestCase(TestCase):
 
         self.parser_203.default_lang = "en"
 
-        assert(isinstance(self.parser_203, Parser_203))
+        assert (isinstance(self.parser_203, Parser_203))
 
         # Version
         current_version = VersionFactory(code='2.03')
@@ -367,7 +367,7 @@ class RecipientCountryTestCase(TestCase):
 
         self.parser_203.default_lang = "en"
 
-        assert(isinstance(self.parser_203, Parser_203))
+        assert (isinstance(self.parser_203, Parser_203))
 
         # Version
         current_version = VersionFactory(code='2.03')
@@ -528,7 +528,7 @@ class RecipientRegionTestCase(TestCase):
 
         self.parser_203.default_lang = "en"
 
-        assert(isinstance(self.parser_203, Parser_203))
+        assert (isinstance(self.parser_203, Parser_203))
 
         # Version
         current_version = VersionFactory(code='2.03')
@@ -763,7 +763,7 @@ class ActivitySectorTestCase(TestCase):
 
         self.parser_203.default_lang = "en"
 
-        assert(isinstance(self.parser_203, Parser_203))
+        assert (isinstance(self.parser_203, Parser_203))
 
         # Version
         current_version = VersionFactory(code='2.03')
@@ -1005,7 +1005,7 @@ class AidTypeTestCase(TestCase):
 
         self.parser_203.default_lang = "en"
 
-        assert(isinstance(self.parser_203, Parser_203))
+        assert (isinstance(self.parser_203, Parser_203))
 
         # Version
         current_version = VersionFactory(code='2.03')
@@ -1045,7 +1045,8 @@ class AidTypeTestCase(TestCase):
         # CASE 1:
         # 'Code' attr is missing:
         try:
-            self.parser_203.iati_activities__iati_activity__transaction__aid_type(  # NOQA: E501
+            self.parser_203.iati_activities__iati_activity__transaction__aid_type(
+                # NOQA: E501
                 aid_type_XML_element)
             self.assertFail()
         except RequiredFieldError as inst:
@@ -1065,7 +1066,8 @@ class AidTypeTestCase(TestCase):
         )
 
         try:
-            self.parser_203.iati_activities__iati_activity__transaction__aid_type(  # NOQA: E501
+            self.parser_203.iati_activities__iati_activity__transaction__aid_type(
+                # NOQA: E501
                 aid_type_XML_element)
             self.assertFail()
         except FieldValidationError as inst:
@@ -1099,7 +1101,8 @@ class AidTypeTestCase(TestCase):
             **aid_type_attributes
         )
 
-        self.parser_203.iati_activities__iati_activity__transaction__aid_type(  # NOQA: E501
+        self.parser_203.iati_activities__iati_activity__transaction__aid_type(
+            # NOQA: E501
             aid_type_XML_element)
 
         transaction = self.parser_203.get_model('Transaction')
@@ -1112,3 +1115,140 @@ class AidTypeTestCase(TestCase):
         self.assertEqual(
             transaction_aid_type.aid_type, aid_type
         )
+
+
+class ActivityResultDocumentListTestCase(TestCase):
+
+    def setUp(self):
+        # 'Main' XML file for instantiating parser:
+        xml_file_attrs = {
+            "generated-datetime": datetime.datetime.now().isoformat(),
+            "version": '2.03',
+        }
+        self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
+
+        dummy_source = synchroniser_factory.DatasetFactory.create(
+            name="dataset-2"
+        )
+
+        self.parser_203 = ParseManager(
+            dataset=dummy_source,
+            root=self.iati_203_XML_file,
+        ).get_parser()
+
+        self.parser_203.default_lang = "en"
+
+        assert (isinstance(self.parser_203, Parser_203))
+
+        # Version
+        current_version = VersionFactory(code='2.03')
+
+        # Related objects:
+        self.activity = iati_factory.ActivityFactory.create(
+            iati_standard_version=current_version
+        )
+        self.result = iati_factory.ResultFactory.create()
+
+        self.parser_203.register_model('Activity', self.activity)
+        self.parser_203.register_model('Result', self.result)
+
+    def test_activity_result_document_list(self):
+        # Case 1:
+        #  'url is missing'
+        result_document_list_attr = {
+            # url = 'missing'
+            "format": 'something'
+            #'format_code' will be got in the function
+
+        }
+        result_document_list_XML_element = E(
+            'document_link',
+            **result_document_list_attr
+        )
+
+        try:
+            self.parser_203.iati_activities__iati_activity__result__document_link(
+                result_document_list_XML_element)
+            self.assertFail()
+        except RequiredFieldError as inst:
+            self.assertEqual(inst.field, 'url')
+            self.assertEqual(inst.message,'required attribute missing')
+
+        #Case 2:
+        #'file_format' is missing
+
+        result_document_list_attr = {
+            "url": 'www.google.com'
+            #"format":
+            #'format_code' will be got in the function
+
+        }
+        result_document_list_XML_element = E(
+            'document-link',
+            **result_document_list_attr
+        )
+        try:
+            self.parser_203.iati_activities__iati_activity__result__document_link(
+                result_document_list_XML_element
+            )
+            self.assertFail()
+        except RequiredFieldError as inst:
+            self.assertEqual(inst.field, 'format')
+            self.assertEqual(inst.message, 'required attribute missing')
+
+        #Case 3;
+        #'file_format_code' is missing
+
+        result_document_list_attr = {
+            "url": 'www.google.com',
+            "format":'something',
+            #'format_code will be got in the function
+
+        }
+        result_document_list_XML_element = E(
+            'document-link',
+            **result_document_list_attr
+        )
+        try:
+            self.parser_203.iati_activities__iati_activity__result__document_link(
+                result_document_list_XML_element
+            )
+            self.assertFail()
+        except FieldValidationError as inst:
+            self.assertEqual(inst.field, 'format')
+            self.assertEqual(inst.message, 'not found on the accompanying '
+                                           'code list')
+
+        #Case 4;
+        # all is good
+
+        #dummy document-link object
+        dummy_file_format = codelist_factory.FileFormatFactory(code =
+                                                             'application/pdf')
+
+        dummy_document_link = iati_factory.DocumentLinkFactory(url =
+                                                               'http://aasamannepal.org.np/')
+        self.parser_203.codelist_cache = {}
+
+        result_document_list_attr = {
+            "url": dummy_document_link.url,
+            "format": dummy_file_format.code
+
+        }
+        result_document_list_XML_element = E(
+            'document-link',
+            **result_document_list_attr
+        )
+
+        self.parser_203\
+            .iati_activities__iati_activity__result__document_link(
+                result_document_list_XML_element
+            )
+
+        document_link = self.parser_203.get_model('DocumentLink')
+
+        #checking if everything is saved
+
+        self.assertEqual(document_link.url, dummy_document_link.url)
+        self.assertEqual(document_link.file_format,
+                         dummy_document_link.file_format)
