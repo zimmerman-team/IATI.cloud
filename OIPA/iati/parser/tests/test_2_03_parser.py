@@ -1154,12 +1154,12 @@ class ActivityResultDocumentListTestCase(TestCase):
         self.parser_203.register_model('Activity', self.activity)
         self.parser_203.register_model('Result', self.result)
 
-    def test_activity_result_document_list(self):
+    def test_activity_result_document_link(self):
 
         # Case 1:
         #  'url is missing'
 
-        result_document_list_attr = {
+        result_document_link_attr = {
             # url = 'missing'
 
             "format": 'something'
@@ -1167,15 +1167,15 @@ class ActivityResultDocumentListTestCase(TestCase):
             # 'format_code' will be got in the function
 
         }
-        result_document_list_XML_element = E(
+        result_document_link_XML_element = E(
             'document_link',
-            **result_document_list_attr
+            **result_document_link_attr
         )
 
         try:
             self.parser_203.\
                 iati_activities__iati_activity__result__document_link(
-                    result_document_list_XML_element)
+                    result_document_link_XML_element)
             self.assertFail()
         except RequiredFieldError as inst:
             self.assertEqual(inst.field, 'url')
@@ -1184,21 +1184,21 @@ class ActivityResultDocumentListTestCase(TestCase):
         # Case 2:
         # 'file_format' is missing
 
-        result_document_list_attr = {
+        result_document_link_attr = {
             "url": 'www.google.com'
 
             # "format":
             # 'format_code' will be got in the function
 
         }
-        result_document_list_XML_element = E(
+        result_document_link_XML_element = E(
             'document-link',
-            **result_document_list_attr
+            **result_document_link_attr
         )
         try:
             self.parser_203.\
                 iati_activities__iati_activity__result__document_link(
-                    result_document_list_XML_element
+                    result_document_link_XML_element
                 )
             self.assertFail()
         except RequiredFieldError as inst:
@@ -1208,20 +1208,20 @@ class ActivityResultDocumentListTestCase(TestCase):
         # Case 3;
         # 'file_format_code' is missing
 
-        result_document_list_attr = {
+        result_document_link_attr = {
             "url": 'www.google.com',
             "format": 'something',
             # 'format_code will be got in the function
 
         }
-        result_document_list_XML_element = E(
+        result_document_link_XML_element = E(
             'document-link',
-            **result_document_list_attr
+            **result_document_link_attr
         )
         try:
             self.parser_203.\
                 iati_activities__iati_activity__result__document_link(
-                    result_document_list_XML_element
+                    result_document_link_XML_element
                 )
             self.assertFail()
         except FieldValidationError as inst:
@@ -1238,21 +1238,22 @@ class ActivityResultDocumentListTestCase(TestCase):
 
         dummy_document_link = iati_factory.\
             DocumentLinkFactory(url='http://aasamannepal.org.np/')
+
         self.parser_203.codelist_cache = {}
 
-        result_document_list_attr = {
+        result_document_link_attr = {
             "url": dummy_document_link.url,
             "format": dummy_file_format.code
 
         }
-        result_document_list_XML_element = E(
+        result_document_link_XML_element = E(
             'document-link',
-            **result_document_list_attr
+            **result_document_link_attr
         )
 
         self.parser_203 \
             .iati_activities__iati_activity__result__document_link(
-                result_document_list_XML_element
+                result_document_link_XML_element
             )
 
         document_link = self.parser_203.get_model('DocumentLink')
