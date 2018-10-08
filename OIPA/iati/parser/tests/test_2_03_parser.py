@@ -1263,3 +1263,5 @@ class ActivityResultDocumentListTestCase(TestCase):
         self.assertEqual(document_link.url, dummy_document_link.url)
         self.assertEqual(document_link.file_format,
                          dummy_document_link.file_format)
+        self.assertEqual(document_link.activity, self.activity)
+        self.assertEqual(document_link.result, self.result)
