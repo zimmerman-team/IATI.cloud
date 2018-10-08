@@ -3099,7 +3099,6 @@ class Parse(IatiParser):
 
         return element
 
-    # TODO: test
     def iati_activities__iati_activity__result__document_link(self, element):
         '''New (optional) <document-link> element for <result> element in 2.03
         '''
@@ -3136,6 +3135,7 @@ class Parse(IatiParser):
         # It is impossible to assign related object (ForeignKey) before it's
         # saved, so:
         # XXX: not sure how efficient this is.
+
         if result.pk is None:
             result.save()
 
@@ -3144,7 +3144,6 @@ class Parse(IatiParser):
         document_link.url = url
         document_link.file_format = file_format
         document_link.result = result
-
         self.register_model('DocumentLink', document_link)
 
         return element
