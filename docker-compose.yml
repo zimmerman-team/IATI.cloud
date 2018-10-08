@@ -8,5 +8,5 @@ services:
   oipa:
     build: .
 
-  oipa-supervisor:
-    build: .
+  #oipa-supervisor:
+    #build: .
