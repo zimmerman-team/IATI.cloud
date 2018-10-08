@@ -50,7 +50,7 @@ class ActivityParticipatingOrganisationTestCase(TestCase):
 
         self.parser_203.default_lang = "en"
 
-        assert(isinstance(self.parser_203, Parser_203))
+        assert (isinstance(self.parser_203, Parser_203))
 
         # Version
         current_version = VersionFactory(code='2.03')
@@ -86,10 +86,10 @@ class ActivityParticipatingOrganisationTestCase(TestCase):
         )
 
         # 2. Create ParticipatingOrganisation object:
-        test_organisation = iati_factory\
+        test_organisation = iati_factory \
             .ParticipatingOrganisationFactory.create(
                 ref="Gd-COH-123-participating-org",
-                activity=self.activity,
+                    activity=self.activity,
             )
 
         self.parser_203.register_model('Organisation', test_organisation)
@@ -172,7 +172,7 @@ class ActivityTagTestCase(TestCase):
 
         self.parser_203.default_lang = "en"
 
-        assert(isinstance(self.parser_203, Parser_203))
+        assert (isinstance(self.parser_203, Parser_203))
 
         # Version
         current_version = VersionFactory(code='2.03')
@@ -367,7 +367,7 @@ class RecipientCountryTestCase(TestCase):
 
         self.parser_203.default_lang = "en"
 
-        assert(isinstance(self.parser_203, Parser_203))
+        assert (isinstance(self.parser_203, Parser_203))
 
         # Version
         current_version = VersionFactory(code='2.03')
@@ -528,7 +528,7 @@ class RecipientRegionTestCase(TestCase):
 
         self.parser_203.default_lang = "en"
 
-        assert(isinstance(self.parser_203, Parser_203))
+        assert (isinstance(self.parser_203, Parser_203))
 
         # Version
         current_version = VersionFactory(code='2.03')
@@ -763,7 +763,7 @@ class ActivitySectorTestCase(TestCase):
 
         self.parser_203.default_lang = "en"
 
-        assert(isinstance(self.parser_203, Parser_203))
+        assert (isinstance(self.parser_203, Parser_203))
 
         # Version
         current_version = VersionFactory(code='2.03')
@@ -1005,7 +1005,7 @@ class AidTypeTestCase(TestCase):
 
         self.parser_203.default_lang = "en"
 
-        assert(isinstance(self.parser_203, Parser_203))
+        assert (isinstance(self.parser_203, Parser_203))
 
         # Version
         current_version = VersionFactory(code='2.03')
@@ -1045,7 +1045,9 @@ class AidTypeTestCase(TestCase):
         # CASE 1:
         # 'Code' attr is missing:
         try:
-            self.parser_203.iati_activities__iati_activity__transaction__aid_type(  # NOQA: E501
+            self.parser_203.\
+                iati_activities__iati_activity__transaction__aid_type(
+                # NOQA: E501
                 aid_type_XML_element)
             self.assertFail()
         except RequiredFieldError as inst:
@@ -1065,7 +1067,9 @@ class AidTypeTestCase(TestCase):
         )
 
         try:
-            self.parser_203.iati_activities__iati_activity__transaction__aid_type(  # NOQA: E501
+            self.parser_203.\
+                iati_activities__iati_activity__transaction__aid_type(
+                # NOQA: E501
                 aid_type_XML_element)
             self.assertFail()
         except FieldValidationError as inst:
@@ -1099,7 +1103,8 @@ class AidTypeTestCase(TestCase):
             **aid_type_attributes
         )
 
-        self.parser_203.iati_activities__iati_activity__transaction__aid_type(  # NOQA: E501
+        self.parser_203.iati_activities__iati_activity__transaction__aid_type(
+            # NOQA: E501
             aid_type_XML_element)
 
         transaction = self.parser_203.get_model('Transaction')
@@ -1112,6 +1117,7 @@ class AidTypeTestCase(TestCase):
         self.assertEqual(
             transaction_aid_type.aid_type, aid_type
         )
+
 
 class ResultDocumentLinkTitleTestCase(TestCase):
 
@@ -1143,16 +1149,14 @@ class ResultDocumentLinkTitleTestCase(TestCase):
         self.activity = iati_factory.ActivityFactory.create(
             iati_standard_version=current_version
         )
-        self.document_link = iati_factory.DocumentLinkFactory.\
-            create(url = 'http://someuri.com')
+        self.document_link = iati_factory.DocumentLinkFactory. \
+            create(url='http://someuri.com')
 
         self.parser_203.register_model('Activity', self.activity)
-        self.parser_203.register_model('DocumentLink',self.document_link)
-
+        self.parser_203.register_model('DocumentLink', self.document_link)
 
     def test_result_document_link_title(self):
-
-        self.parser_203\
+        self.parser_203 \
             .iati_activities__iati_activity__result__document_link__title(None)
         document_link_title = self.parser_203.get_model(
             'DocumentLinkTitle')
