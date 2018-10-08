@@ -1156,8 +1156,27 @@ class ResultDocumentLinkTitleTestCase(TestCase):
         self.parser_203.register_model('DocumentLink', self.document_link)
 
     def test_result_document_link_title(self):
+
+        dummy_file_format = codelist_factory. \
+            FileFormatFactory(code='application/pdf')
+
+        dummy_document_link = iati_factory. \
+            DocumentLinkFactory(url='http://aasamannepal.org.np/')
+
+        self.parser_203.codelist_cache = {}
+
+        result_document_link_attr = {
+            "url": dummy_document_link.url,
+            "format": dummy_file_format.code
+
+        }
+        result_document_link_XML_element = E(
+            'document-link',
+            **result_document_link_attr
+        )
         self.parser_203 \
-            .iati_activities__iati_activity__result__document_link__title(None)
+            .iati_activities__iati_activity__result__document_link__title(
+                result_document_link_XML_element)
         document_link_title = self.parser_203.get_model(
             'DocumentLinkTitle')
 
