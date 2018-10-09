@@ -4,6 +4,7 @@
 
 import datetime
 from decimal import Decimal
+
 import dateutil.parser
 # Runs each test in a transaction and flushes database
 from django.test import TestCase
@@ -1267,72 +1268,7 @@ class ActivityResultDocumentListTestCase(TestCase):
         self.assertEqual(document_link.result, self.result)
 
 
-class ResultDocumentLinkTitleTestCase(TestCase):
-
-    def setUp(self):
-        # 'Main' XML file for instantiating parser:
-        xml_file_attrs = {
-            "generated-datetime": datetime.datetime.now().isoformat(),
-            "version": '2.03',
-        }
-        self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
-
-        dummy_source = synchroniser_factory.DatasetFactory.create(
-            name="dataset-2"
-        )
-
-        self.parser_203 = ParseManager(
-            dataset=dummy_source,
-            root=self.iati_203_XML_file,
-        ).get_parser()
-
-        self.parser_203.default_lang = "en"
-
-        assert (isinstance(self.parser_203, Parser_203))
-
-        # Version
-        current_version = VersionFactory(code='2.03')
-
-        # Related objects:
-        self.activity = iati_factory.ActivityFactory.create(
-            iati_standard_version=current_version
-        )
-        self.document_link = iati_factory.DocumentLinkFactory. \
-            create(url='http://someuri.com')
-
-        self.parser_203.register_model('Activity', self.activity)
-        self.parser_203.register_model('DocumentLink', self.document_link)
-
-    def test_result_document_link_title(self):
-
-        dummy_file_format = codelist_factory. \
-            FileFormatFactory(code='application/pdf')
-
-        dummy_document_link = iati_factory. \
-            DocumentLinkFactory(url='http://aasamannepal.org.np/')
-
-        self.parser_203.codelist_cache = {}
-
-        result_document_link_attr = {
-            "url": dummy_document_link.url,
-            "format": dummy_file_format.code
-
-        }
-        result_document_link_XML_element = E(
-            'document-link',
-            **result_document_link_attr
-        )
-        self.parser_203 \
-            .iati_activities__iati_activity__result__document_link__title(
-                result_document_link_XML_element)
-        document_link_title = self.parser_203.get_model(
-            'DocumentLinkTitle')
-
-        self.assertEqual(self.document_link,
-                         document_link_title.document_link)
-
-
-class ResultDocumentLinkTitleTestCase(TestCase):
+class ActivityResultDocumentLinkTitleTestCase(TestCase):
 
     def setUp(self):
         # 'Main' XML file for instantiating parser:
