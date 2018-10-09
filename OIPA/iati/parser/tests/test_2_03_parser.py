@@ -1121,6 +1121,10 @@ class AidTypeTestCase(TestCase):
 
 
 class ActivityResultDocumentLinkTestCase(TestCase):
+    '''
+        2.03: Added new (optional) <document-link> element for <result>
+        element
+    '''
 
     def setUp(self):
         # 'Main' XML file for instantiating parser:
@@ -1156,6 +1160,13 @@ class ActivityResultDocumentLinkTestCase(TestCase):
         self.parser_203.register_model('Result', self.result)
 
     def test_activity_result_document_link(self):
+        """
+        - Tests if '<result_document_link>' xml element is parsed and saved
+          correctly with proper attributes.
+        - Doesn't test if object is actually saved in the database (the final
+          stage), because 'save_all_models()' parser's function is (probably)
+          tested separately
+        """
 
         # Case 1:
         #  'url is missing'
@@ -1269,6 +1280,10 @@ class ActivityResultDocumentLinkTestCase(TestCase):
 
 
 class ActivityResultDocumentLinkTitleTestCase(TestCase):
+    '''
+        2.03: Added new (optional) <document-link> element for <result>
+        element
+    '''
 
     def setUp(self):
         # 'Main' XML file for instantiating parser:
@@ -1305,6 +1320,10 @@ class ActivityResultDocumentLinkTitleTestCase(TestCase):
         self.parser_203.register_model('DocumentLink', self.document_link)
 
     def test_activity_result_document_link_title(self):
+        '''
+            Test if title attribute in <document_link> xlm element is correctly
+            saved.
+        '''
 
         dummy_file_format = codelist_factory. \
             FileFormatFactory(code='application/pdf')
@@ -1334,6 +1353,10 @@ class ActivityResultDocumentLinkTitleTestCase(TestCase):
 
 
 class ActivityResultDocumentLinkDocumentDateTestCase(TestCase):
+    '''
+        2.03: Added new (optional) <document-link> element for <result>
+        element
+    '''
 
     def setUp(self):
         # 'Main' XML file for instantiating parser:
@@ -1370,6 +1393,12 @@ class ActivityResultDocumentLinkDocumentDateTestCase(TestCase):
         self.parser_203.register_model('DocumentLink', self.document_link)
 
     def test_activity_result_document_link_document_date(self):
+        '''
+            Test if iso-date attribute in <document_link> xlm element is
+            correctly
+            saved.
+        '''
+
         # case 1: 'iso-date' is missing
 
         result_document_link_attr = {
