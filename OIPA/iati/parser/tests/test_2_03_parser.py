@@ -1368,7 +1368,7 @@ class ResultDocumentLinkTitleTestCase(TestCase):
         self.parser_203.register_model('Activity', self.activity)
         self.parser_203.register_model('DocumentLink', self.document_link)
 
-    def test_result_document_link_title(self):
+    def test_activity_result_document_link_title(self):
 
         dummy_file_format = codelist_factory. \
             FileFormatFactory(code='application/pdf')
@@ -1397,7 +1397,7 @@ class ResultDocumentLinkTitleTestCase(TestCase):
                          document_link_title.document_link)
 
 
-class ResultDocumentLinkDocumentDateTestCase(TestCase):
+class ActivityResultDocumentLinkDocumentDateTestCase(TestCase):
 
     def setUp(self):
         # 'Main' XML file for instantiating parser:
@@ -1433,7 +1433,7 @@ class ResultDocumentLinkDocumentDateTestCase(TestCase):
         self.parser_203.register_model('Activity', self.activity)
         self.parser_203.register_model('DocumentLink', self.document_link)
 
-    def test_result_document_link_document_date(self):
+    def test_activity_result_document_link_document_date(self):
         # case 1: 'iso-date' is missing
 
         result_document_link_attr = {
