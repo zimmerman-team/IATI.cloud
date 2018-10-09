@@ -1120,7 +1120,7 @@ class AidTypeTestCase(TestCase):
         )
 
 
-class ActivityResultDocumentListTestCase(TestCase):
+class ActivityResultDocumentLinkTestCase(TestCase):
 
     def setUp(self):
         # 'Main' XML file for instantiating parser:
