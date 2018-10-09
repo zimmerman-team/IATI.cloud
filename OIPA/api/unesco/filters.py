@@ -72,6 +72,10 @@ class TransactionBalanceFilter(TogetherFilterSet):
         lookup_expr='gte',
         field_name='activity__planned_end')
 
+    activity_scope = CommaSeparatedCharFilter(
+        lookup_expr='in',
+        field_name='activity__scope__code')
+
     class Meta:
         model = TransactionBalance
         fields = '__all__'
