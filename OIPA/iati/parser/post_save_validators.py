@@ -281,3 +281,27 @@ def use_result_reference_or_indicator_reference(self, activity):
             -1,
             '-',
             activity.iati_identifier)
+
+
+# TODO: test:
+def one_aid_type_for_each_vocabulary(self, activity):
+    '''On a Activity transaction level, multiple AidTypes can be reported, but
+    different vocabularies have to be used
+    '''
+
+    for transaction in activity.transaction_set.all():
+        vocabularies = transaction.transactionaidtype_set.values_list(
+            'aid_type__vocabulary__code', flat=True
+        )
+
+        if len(vocabularies) != len(set(vocabularies)):
+
+            self.append_error(
+                "FieldValidationError",
+                "iati-activities/iati-activity/transaction/aid-type",
+                "-",
+                ("AidTypes within Transaction level must use different "
+                 "vocabularies"),
+                -1,
+                '-',
+                activity.iati_identifier)

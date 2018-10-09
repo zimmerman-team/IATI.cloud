@@ -45,18 +45,18 @@ class ResultAggregations(AggregationView):
 
     allowed_aggregations = (
         Aggregation(
-            query_param='target',
-            field='target',
+            query_param='targets',
+            field='targets',
             annotate=Sum(Func(
-                F('resultindicator__resultindicatorperiod__target'),
+                F('resultindicator__resultindicatorperiod__targets__value'),
                 function='CAST',
                 template='%(function)s(%(expressions)s as double precision)')),
         ),
         Aggregation(
-            query_param='actual',
-            field='actual',
+            query_param='actuals',
+            field='actuals',
             annotate=Sum(Func(
-                F('resultindicator__resultindicatorperiod__actual'),
+                F('resultindicator__resultindicatorperiod__actuals__value'),
                 function='CAST',
                 template='%(function)s(%(expressions)s as double precision)')),
         ),

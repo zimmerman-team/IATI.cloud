@@ -59,8 +59,7 @@ from iati.models import (
     HumanitarianScope, LegacyData, Location, Organisation, OrganisationType,
     OtherIdentifier, PlannedDisbursement, PolicySignificance, RelatedActivity,
     Result, ResultIndicator, ResultIndicatorPeriod,
-    ResultIndicatorPeriodActualDimension, ResultIndicatorPeriodActualLocation,
-    ResultIndicatorPeriodTargetDimension, ResultIndicatorPeriodTargetLocation,
+    ResultIndicatorPeriodActualDimension, ResultIndicatorPeriodTargetDimension,
     ResultIndicatorReference, Sector
 )
 from iati.transaction.models import Transaction
@@ -433,6 +432,7 @@ class ActivityMarkReadyToPublish(APIView, FilterPublisherMixin):
 
 
 class ActivityDetail(CacheResponseMixin, DynamicDetailView):
+
     """
     Returns detailed information about Activity.
 
@@ -1299,19 +1299,6 @@ class ResultIndicatorPeriodActualLocationList(ListCreateAPIView):
             return None
 
 
-class ResultIndicatorPeriodActualLocationDetail(RetrieveUpdateDestroyAPIView):
-    serializer_class = \
-        ResultIndicatorPeriodActualLocationSerializer
-
-    authentication_classes = (authentication.TokenAuthentication,)
-    permission_classes = (PublisherPermissions, )
-
-    def get_object(self):
-        pk = self.kwargs.get('actual_location_id')
-        return \
-            ResultIndicatorPeriodActualLocation.objects.get(pk=pk)
-
-
 class ResultIndicatorPeriodTargetLocationList(ListCreateAPIView):
     serializer_class = \
         ResultIndicatorPeriodTargetLocationSerializer
@@ -1326,19 +1313,6 @@ class ResultIndicatorPeriodTargetLocationList(ListCreateAPIView):
                 pk=pk).result_indicator_period_target_locations.all()
         except Activity.DoesNotExist:
             return None
-
-
-class ResultIndicatorPeriodTargetLocationDetail(RetrieveUpdateDestroyAPIView):
-    serializer_class = \
-        ResultIndicatorPeriodTargetLocationSerializer
-
-    authentication_classes = (authentication.TokenAuthentication,)
-    permission_classes = (PublisherPermissions, )
-
-    def get_object(self):
-        pk = self.kwargs.get('target_location_id')
-        return \
-            ResultIndicatorPeriodTargetLocation.objects.get(pk=pk)
 
 
 class ResultIndicatorPeriodActualDimensionList(ListCreateAPIView):

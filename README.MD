@@ -22,15 +22,23 @@ Documentation on installing, running and using OIPA can be found at <a href="htt
 ## Quick start
 -------
 
-1. Install [Vagrant](https://www.vagrantup.com/)
-2. Goto your OIPA folder
-3. Run ```vagrant up```
-4. Find your way into the machine: ```vagrant ssh```
-5. Start the server: ```./manage.py runserver 0.0.0.0:8000``` (should you get an error, set different ports in your OIPA vagrantfile)
-6. Start the process control centre (supervisor): ```./manage.py supervisor```
-7. Open your browser at <a href="http://localhost:8000" target="_blank">localhost:8000</a> (or the port set in your OIPA vagrantfile)
-8. Follow instructions for sign-in: http://docs.oipa.nl/en/latest/admin_interface/
-9. Finally, follow the instructions from here: http://docs.oipa.nl/en/latest/where_to_start/
+1. Go to your OIPA folder.
+2. Run ```virtualenv <name> -p python3``` to install virtual environment in python3.
+3. Run ```source env/bin/activate``` to activate the virtual environment.
+4. Install required libraries using ```pip install -r requirements.txt```
+5. Create a PostgreSQL database.
+6. Set up the database specifications in the file ```OIPA/.env``` as follows:
+   * OIPA_DB_NAME= ```<your database name>```
+   * OIPA_DB_USER= ```<user name>```
+   * OIPA_DB_PASSWORD= ```<password>```
+7. Run ```python manage.py migrate``` to migrate tables to the newly created database.
+8. Start the server: ```python manage.py runserver localhost:8000```
+9. Create a superuser: `python manage.py createsuperuser`
+10. Start the process control centre (supervisor): ```python manage.py supervisor```
+11. Open your browser at <a href="http://localhost:8000" target="_blank">localhost:8000</a>
+12. Follow instructions for sign-in: http://docs.oipa.nl/en/latest/admin_interface/
+13. Finally, follow the instructions from here: http://docs.oipa.nl/en/latest/where_to_start/
+
 Happy Hunting!
 
 For more detailed information, see the [install documentation](http://docs.oipa.nl/en/latest/installing/)
@@ -68,9 +76,9 @@ Python already has clear <a href="https://www.python.org/dev/peps/pep-0008/" tar
 
 ## Running the tests
 -------
-To run the tests, log into the vagrant machine and run:
+Pytest-django is used to run tests. This will be installed automatically when the project is set up.
 
-```./manage.py test --nomigrations --settings=OIPA.test_settings```
+To run tests, from the top level directory of the project, run ```pytest OIPA/```. If you are in the same directory where ```manage.py``` is, only running ```pytest``` will be sufficient. Refer to <a href="https://pytest-django.readthedocs.io/en/latest/#" target="_blank">Pytest-django documentations</a> for details.
 
 
 ## Who makes use of OIPA?

@@ -185,9 +185,11 @@ INSTALLED_APPS = [
     'rest_auth',
     'rest_auth.registration',
     'django_filters',
-
-    'unesco',
     'django_crontab',
+    'markdownify',
+
+    # Unesco project specific code:
+    'unesco',
 ]
 
 ADMIN_REORDER = (
@@ -219,6 +221,7 @@ REST_FRAMEWORK = {
         'rest_framework.renderers.BrowsableAPIRenderer',
         'rest_framework.renderers.JSONRenderer',
         'api.renderers.PaginatedCSVRenderer',
+        'api.renderers.XlsRenderer',
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.BasicAuthentication',

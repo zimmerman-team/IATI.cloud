@@ -3,6 +3,7 @@
 """
 from unittest import skip
 
+import pytest
 from django.core import management
 from django.test import TestCase as DjangoTestCase
 from lxml.builder import E
@@ -13,13 +14,16 @@ from iati.models import Activity
 from iati.parser.IATI_2_01 import Parse as Parser_201
 from iati.parser.iati_parser import IatiParser
 
-
 # TODO: use factories instead of these fixtures
-def setUpModule():
-    fixtures = ['test_vocabulary', 'test_codelists.json', ]
 
-    for fixture in fixtures:
-        management.call_command("loaddata", fixture)
+
+@pytest.fixture(scope='session')
+def django_db_setup(django_db_setup, django_db_blocker):
+    with django_db_blocker.unblock():
+        fixtures = ['test_vocabulary', 'test_codelists.json', ]
+
+        for fixture in fixtures:
+            management.call_command("loaddata", fixture)
 
 
 def tearDownModule():

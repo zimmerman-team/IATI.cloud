@@ -357,6 +357,9 @@ class IatiParser(object):
         else:
             self.model_store[key] = [model]
 
+        # The position of the current model on the model store
+        return len(self.model_store[key]) - 1
+
     def get_model(self, key, index=-1):
         if isinstance(key, Model):
             key = key.__class__.__name__
@@ -383,9 +386,10 @@ class IatiParser(object):
         Currently a workaround for foreign key assignment before save
         """
         if model.__class__.__name__ in ("OrganisationNarrative", "Narrative"):
-            # This is set in parser's (currently: IATI_2_03.py)
-            # 'add_narrative()' method:
+            # This is set in parser (IATI_2_02.py, IATI_2_03.py,
+            # organisation_2_02 etc.) files:
             model.related_object = getattr(model, '_related_object')
+
         for field in model._meta.fields:
             if isinstance(field, (ForeignKey, OneToOneField)):
                 setattr(model, field.name, getattr(model, field.name))

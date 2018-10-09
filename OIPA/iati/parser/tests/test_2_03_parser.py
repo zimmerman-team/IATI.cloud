@@ -50,7 +50,7 @@ class ActivityParticipatingOrganisationTestCase(TestCase):
 
         self.parser_203.default_lang = "en"
 
-        assert(isinstance(self.parser_203, Parser_203))
+        assert (isinstance(self.parser_203, Parser_203))
 
         # Version
         current_version = VersionFactory(code='2.03')
@@ -86,11 +86,11 @@ class ActivityParticipatingOrganisationTestCase(TestCase):
         )
 
         # 2. Create ParticipatingOrganisation object:
-        test_organisation = iati_factory\
+        test_organisation = iati_factory \
             .ParticipatingOrganisationFactory.create(
                 ref="Gd-COH-123-participating-org",
-                activity=self.activity,
-            )
+                    activity=self.activity,
+             )
 
         self.parser_203.register_model('Organisation', test_organisation)
 
@@ -139,12 +139,12 @@ class ActivityParticipatingOrganisationTestCase(TestCase):
 
         # Check if CRSChannelCode object is assigned to the participating org
         # (model is not yet saved at this point):
-        self.assertEquals(
+        self.assertEqual(
             participating_organisation.crs_channel_code, crs_object_instance
         )
 
         # Saving models is not tested here:
-        self.assertEquals(participating_organisation.pk, None)
+        self.assertEqual(participating_organisation.pk, None)
 
 
 class ActivityTagTestCase(TestCase):
@@ -172,7 +172,7 @@ class ActivityTagTestCase(TestCase):
 
         self.parser_203.default_lang = "en"
 
-        assert(isinstance(self.parser_203, Parser_203))
+        assert (isinstance(self.parser_203, Parser_203))
 
         # Version
         current_version = VersionFactory(code='2.03')
@@ -323,22 +323,22 @@ class ActivityTagTestCase(TestCase):
 
         # Check if CRSChannelCode object is assigned to the participating org
         # (model is not yet saved at this point):
-        self.assertEquals(
+        self.assertEqual(
             activity_tag.activity, self.activity
         )
-        self.assertEquals(
+        self.assertEqual(
             activity_tag.code, activity_tag_attributes['code']
         )
-        self.assertEquals(
+        self.assertEqual(
             activity_tag.vocabulary, fresh_tag_vicabulary
         )
-        self.assertEquals(
+        self.assertEqual(
             activity_tag.vocabulary_uri,
             activity_tag_attributes['vocabulary-uri']
         )
 
         # Saving models is not tested here:
-        self.assertEquals(activity_tag.pk, None)
+        self.assertEqual(activity_tag.pk, None)
 
 
 class RecipientCountryTestCase(TestCase):
@@ -367,7 +367,7 @@ class RecipientCountryTestCase(TestCase):
 
         self.parser_203.default_lang = "en"
 
-        assert(isinstance(self.parser_203, Parser_203))
+        assert (isinstance(self.parser_203, Parser_203))
 
         # Version
         current_version = VersionFactory(code='2.03')
@@ -487,19 +487,19 @@ class RecipientCountryTestCase(TestCase):
 
         # check if everything's saved:
 
-        self.assertEquals(
+        self.assertEqual(
             recipient_country.country, country
         )
-        self.assertEquals(
+        self.assertEqual(
             recipient_country.activity, self.activity
         )
-        self.assertEquals(
+        self.assertEqual(
             recipient_country.percentage,
             Decimal(recipient_country_attributes['percentage'])
         )
 
         # Saving models is not tested here:
-        self.assertEquals(recipient_country.pk, None)
+        self.assertEqual(recipient_country.pk, None)
 
 
 class RecipientRegionTestCase(TestCase):
@@ -528,7 +528,7 @@ class RecipientRegionTestCase(TestCase):
 
         self.parser_203.default_lang = "en"
 
-        assert(isinstance(self.parser_203, Parser_203))
+        assert (isinstance(self.parser_203, Parser_203))
 
         # Version
         current_version = VersionFactory(code='2.03')
@@ -619,7 +619,8 @@ class RecipientRegionTestCase(TestCase):
             self.assertEqual(inst.model, 'recipient-region')
             self.assertEqual(inst.field, 'code')
             self.assertEqual(
-                inst.message, 'not found on the accompanying code list'
+                inst.message,
+                "not found on the accompanying code list"
             )
 
         # CASE 4:
@@ -712,28 +713,28 @@ class RecipientRegionTestCase(TestCase):
         recipient_region = self.parser_203.get_model(
             'ActivityRecipientRegion')
 
-        self.assertEquals(
+        self.assertEqual(
             recipient_region.region, region
         )
 
-        self.assertEquals(
+        self.assertEqual(
             recipient_region.activity, self.activity
         )
 
-        self.assertEquals(
+        self.assertEqual(
             recipient_region.percentage,
             Decimal(recipient_region_attributes['percentage'])
         )
 
-        self.assertEquals(
+        self.assertEqual(
             recipient_region.vocabulary_uri,
             recipient_region_attributes['vocabulary-uri']
         )
 
-        self.assertEquals(recipient_region.vocabulary, vocabulary)
+        self.assertEqual(recipient_region.vocabulary, vocabulary)
 
         # Saving models is not tested here:
-        self.assertEquals(recipient_region.pk, None)
+        self.assertEqual(recipient_region.pk, None)
 
 
 class ActivitySectorTestCase(TestCase):
@@ -762,7 +763,7 @@ class ActivitySectorTestCase(TestCase):
 
         self.parser_203.default_lang = "en"
 
-        assert(isinstance(self.parser_203, Parser_203))
+        assert (isinstance(self.parser_203, Parser_203))
 
         # Version
         current_version = VersionFactory(code='2.03')
@@ -824,7 +825,8 @@ class ActivitySectorTestCase(TestCase):
             self.assertEqual(inst.model, 'sector')
             self.assertEqual(inst.field, 'vocabulary')
             self.assertEqual(
-                inst.message, 'not found on the accompanying code list'
+                inst.message,
+                "not found on the accompanying code list"
             )
 
         # CASE 3:
@@ -857,7 +859,8 @@ class ActivitySectorTestCase(TestCase):
             self.assertEqual(inst.model, 'sector')
             self.assertEqual(inst.field, 'code')
             self.assertEqual(
-                inst.message, 'not found on the accompanying code list'
+                inst.message,
+                "not found on the accompanying code list"
             )
 
         # CASE 4:
@@ -951,28 +954,28 @@ class ActivitySectorTestCase(TestCase):
         activity_sector = self.parser_203.get_model(
             'ActivitySector')
 
-        self.assertEquals(
+        self.assertEqual(
             activity_sector.sector, sector
         )
 
-        self.assertEquals(
+        self.assertEqual(
             activity_sector.activity, self.activity
         )
 
-        self.assertEquals(
+        self.assertEqual(
             activity_sector.percentage,
             Decimal(sector_attributes['percentage'])
         )
 
-        self.assertEquals(
+        self.assertEqual(
             activity_sector.vocabulary_uri,
             sector_attributes['vocabulary-uri']
         )
 
-        self.assertEquals(activity_sector.vocabulary, vocabulary)
+        self.assertEqual(activity_sector.vocabulary, vocabulary)
 
         # Saving models is not tested here:
-        self.assertEquals(activity_sector.pk, None)
+        self.assertEqual(activity_sector.pk, None)
 
 
 class AidTypeTestCase(TestCase):
@@ -981,6 +984,8 @@ class AidTypeTestCase(TestCase):
     """
 
     def setUp(self):
+
+        AidTypeVocabularyFactory(name='OECD DAC')
 
         # 'Main' XML file for instantiating parser:
         xml_file_attrs = {
@@ -1000,7 +1005,7 @@ class AidTypeTestCase(TestCase):
 
         self.parser_203.default_lang = "en"
 
-        assert(isinstance(self.parser_203, Parser_203))
+        assert (isinstance(self.parser_203, Parser_203))
 
         # Version
         current_version = VersionFactory(code='2.03')
@@ -1012,14 +1017,14 @@ class AidTypeTestCase(TestCase):
         )
 
         self.transaction = TransactionFactory(
-            aid_type=None,
             activity=self.activity
         )
 
         self.parser_203.register_model('Transaction', self.transaction)
         self.parser_203.register_model('Activity', self.activity)
 
-    def test_aid_type(self):
+    # TODO: update test with multiple TransactionAidTypes:
+    def test_transaction_aid_type(self):
         """
         - Tests if '<aid-type>' xml element is parsed and saved
           correctly with proper attributes and narratives
@@ -1040,11 +1045,13 @@ class AidTypeTestCase(TestCase):
         # CASE 1:
         # 'Code' attr is missing:
         try:
-            self.parser_203.iati_activities__iati_activity__transaction__aid_type(  # NOQA: E501
+            self.parser_203.\
+                iati_activities__iati_activity__transaction__aid_type(
+                # NOQA: E501
                 aid_type_XML_element)
             self.assertFail()
         except RequiredFieldError as inst:
-            self.assertEqual(inst.model, 'transaction/aid-type')
+            self.assertEqual(inst.model, 'iati-activity/transaction/aid-type')
             self.assertEqual(inst.field, 'code')
             self.assertEqual(inst.message, 'required attribute missing')
 
@@ -1060,7 +1067,9 @@ class AidTypeTestCase(TestCase):
         )
 
         try:
-            self.parser_203.iati_activities__iati_activity__transaction__aid_type(  # NOQA: E501
+            self.parser_203.\
+                iati_activities__iati_activity__transaction__aid_type(
+                # NOQA: E501
                 aid_type_XML_element)
             self.assertFail()
         except FieldValidationError as inst:
@@ -1068,43 +1077,18 @@ class AidTypeTestCase(TestCase):
             self.assertEqual(inst.field, 'code')
             self.assertEqual(
                 inst.message,
-                'not found on the accompanying code list'
+                "not found on the accompanying code list. Note, that custom "
+                "AidType Vocabularies currently are not supported"
             )
 
-        # CASE 3:
-        # Vocabulary not found:
-
-        # let's create an AidType element (so the parser doesn't complain):
-        aid_type = codelist_factory.AidTypeFactory(code='99')
-
-        self.parser_203.codelist_cache = {}
-
-        aid_type_attributes = {
-            "code": aid_type.code,
-            'vocabulary': '1',
-        }
-
-        aid_type_XML_element = E(
-            'aid-type',
-            **aid_type_attributes
-        )
-
-        try:
-            self.parser_203.iati_activities__iati_activity__transaction__aid_type(  # NOQA: E501
-                aid_type_XML_element)
-            self.assertFail()
-        except FieldValidationError as inst:
-            self.assertEqual(inst.model, 'iati-activity/transaction/aid-type')
-            self.assertEqual(inst.field, 'vocabulary')
-            self.assertEqual(
-                inst.message,
-                'not found on the accompanying code list'
-            )
-
-        # CASE 4: All is good
-        # let's create an AidTypeVocabulary element (so the parser doesn't
-        # complain):
+        # CASE 3: All is good
+        # let's create an AidTypeVocabulary and AidType elements (so the
+        # parser doesn't complain):
         aid_type_vocabulary = AidTypeVocabularyFactory(code='3')
+        aid_type = codelist_factory.AidTypeFactory(
+            code='3',
+            vocabulary=aid_type_vocabulary
+        )
 
         # Clear codelist cache (from memory):
         self.parser_203.codelist_cache = {}
@@ -1119,15 +1103,347 @@ class AidTypeTestCase(TestCase):
             **aid_type_attributes
         )
 
-        self.parser_203.iati_activities__iati_activity__transaction__aid_type(  # NOQA: E501
+        self.parser_203.iati_activities__iati_activity__transaction__aid_type(
+            # NOQA: E501
             aid_type_XML_element)
 
         transaction = self.parser_203.get_model('Transaction')
-        aid_type = self.parser_203.get_model('AidType')
 
-        self.assertEquals(
-            transaction.aid_type, aid_type
+        transaction_aid_type = self.parser_203.get_model('TransactionAidType')
+
+        self.assertEqual(
+            transaction_aid_type.transaction, transaction
         )
-        self.assertEquals(
-            aid_type.vocabulary, aid_type_vocabulary
+        self.assertEqual(
+            transaction_aid_type.aid_type, aid_type
+        )
+
+
+class ActivityResultDocumentListTestCase(TestCase):
+
+    def setUp(self):
+        # 'Main' XML file for instantiating parser:
+        xml_file_attrs = {
+            "generated-datetime": datetime.datetime.now().isoformat(),
+            "version": '2.03',
+        }
+        self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
+
+        dummy_source = synchroniser_factory.DatasetFactory.create(
+            name="dataset-2"
+        )
+
+        self.parser_203 = ParseManager(
+            dataset=dummy_source,
+            root=self.iati_203_XML_file,
+        ).get_parser()
+
+        self.parser_203.default_lang = "en"
+
+        assert (isinstance(self.parser_203, Parser_203))
+
+        # Version
+        current_version = VersionFactory(code='2.03')
+
+        # Related objects:
+        self.activity = iati_factory.ActivityFactory.create(
+            iati_standard_version=current_version
+        )
+        self.result = iati_factory.ResultFactory.create()
+
+        self.parser_203.register_model('Activity', self.activity)
+        self.parser_203.register_model('Result', self.result)
+
+    def test_activity_result_document_link(self):
+
+        # Case 1:
+        #  'url is missing'
+
+        result_document_link_attr = {
+            # url = 'missing'
+
+            "format": 'something'
+
+            # 'format_code' will be got in the function
+
+        }
+        result_document_link_XML_element = E(
+            'document_link',
+            **result_document_link_attr
+        )
+
+        try:
+            self.parser_203.\
+                iati_activities__iati_activity__result__document_link(
+                    result_document_link_XML_element)
+            self.assertFail()
+        except RequiredFieldError as inst:
+            self.assertEqual(inst.field, 'url')
+            self.assertEqual(inst.message, 'required attribute missing')
+
+        # Case 2:
+        # 'file_format' is missing
+
+        result_document_link_attr = {
+            "url": 'www.google.com'
+
+            # "format":
+            # 'format_code' will be got in the function
+
+        }
+        result_document_link_XML_element = E(
+            'document-link',
+            **result_document_link_attr
+        )
+        try:
+            self.parser_203.\
+                iati_activities__iati_activity__result__document_link(
+                    result_document_link_XML_element
+                )
+            self.assertFail()
+        except RequiredFieldError as inst:
+            self.assertEqual(inst.field, 'format')
+            self.assertEqual(inst.message, 'required attribute missing')
+
+        # Case 3;
+        # 'file_format_code' is missing
+
+        result_document_link_attr = {
+            "url": 'www.google.com',
+            "format": 'something',
+            # 'format_code will be got in the function
+
+        }
+        result_document_link_XML_element = E(
+            'document-link',
+            **result_document_link_attr
+        )
+        try:
+            self.parser_203.\
+                iati_activities__iati_activity__result__document_link(
+                    result_document_link_XML_element
+                )
+            self.assertFail()
+        except FieldValidationError as inst:
+            self.assertEqual(inst.field, 'format')
+            self.assertEqual(inst.message, 'not found on the accompanying '
+                                           'code list')
+
+        # Case 4;
+        # all is good
+
+        # dummy document-link object
+        dummy_file_format = codelist_factory.\
+            FileFormatFactory(code='application/pdf')
+
+        dummy_document_link = iati_factory.\
+            DocumentLinkFactory(url='http://aasamannepal.org.np/')
+
+        self.parser_203.codelist_cache = {}
+
+        result_document_link_attr = {
+            "url": dummy_document_link.url,
+            "format": dummy_file_format.code
+
+        }
+        result_document_link_XML_element = E(
+            'document-link',
+            **result_document_link_attr
+        )
+
+        self.parser_203 \
+            .iati_activities__iati_activity__result__document_link(
+                result_document_link_XML_element
+            )
+
+        document_link = self.parser_203.get_model('DocumentLink')
+
+        # checking if everything is saved
+
+        self.assertEqual(document_link.url, dummy_document_link.url)
+        self.assertEqual(document_link.file_format,
+                         dummy_document_link.file_format)
+        self.assertEqual(document_link.activity, self.activity)
+        self.assertEqual(document_link.result, self.result)
+
+
+class ResultDocumentLinkTitleTestCase(TestCase):
+
+    def setUp(self):
+        # 'Main' XML file for instantiating parser:
+        xml_file_attrs = {
+            "generated-datetime": datetime.datetime.now().isoformat(),
+            "version": '2.03',
+        }
+        self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
+
+        dummy_source = synchroniser_factory.DatasetFactory.create(
+            name="dataset-2"
+        )
+
+        self.parser_203 = ParseManager(
+            dataset=dummy_source,
+            root=self.iati_203_XML_file,
+        ).get_parser()
+
+        self.parser_203.default_lang = "en"
+
+        assert (isinstance(self.parser_203, Parser_203))
+
+        # Version
+        current_version = VersionFactory(code='2.03')
+
+        # Related objects:
+        self.activity = iati_factory.ActivityFactory.create(
+            iati_standard_version=current_version
+        )
+        self.document_link = iati_factory.DocumentLinkFactory. \
+            create(url='http://someuri.com')
+
+        self.parser_203.register_model('Activity', self.activity)
+        self.parser_203.register_model('DocumentLink', self.document_link)
+
+    def test_result_document_link_title(self):
+
+        dummy_file_format = codelist_factory. \
+            FileFormatFactory(code='application/pdf')
+
+        dummy_document_link = iati_factory. \
+            DocumentLinkFactory(url='http://aasamannepal.org.np/')
+
+        self.parser_203.codelist_cache = {}
+
+        result_document_link_attr = {
+            "url": dummy_document_link.url,
+            "format": dummy_file_format.code
+
+        }
+        result_document_link_XML_element = E(
+            'document-link',
+            **result_document_link_attr
+        )
+        self.parser_203 \
+            .iati_activities__iati_activity__result__document_link__title(
+                result_document_link_XML_element)
+        document_link_title = self.parser_203.get_model(
+            'DocumentLinkTitle')
+
+        self.assertEqual(self.document_link,
+                         document_link_title.document_link)
+
+
+class ResultDocumentLinkTitleTestCase(TestCase):
+
+    def setUp(self):
+        # 'Main' XML file for instantiating parser:
+        xml_file_attrs = {
+            "generated-datetime": datetime.datetime.now().isoformat(),
+            "version": '2.03',
+        }
+        self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
+
+        dummy_source = synchroniser_factory.DatasetFactory.create(
+            name="dataset-2"
+        )
+
+        self.parser_203 = ParseManager(
+            dataset=dummy_source,
+            root=self.iati_203_XML_file,
+        ).get_parser()
+
+        self.parser_203.default_lang = "en"
+
+        assert (isinstance(self.parser_203, Parser_203))
+
+        # Version
+        current_version = VersionFactory(code='2.03')
+
+        # Related objects:
+        self.activity = iati_factory.ActivityFactory.create(
+            iati_standard_version=current_version
+        )
+        self.document_link = iati_factory.DocumentLinkFactory. \
+            create(url='http://someuri.com')
+
+        self.parser_203.register_model('Activity', self.activity)
+        self.parser_203.register_model('DocumentLink', self.document_link)
+
+    def test_result_document_link_title(self):
+
+        dummy_file_format = codelist_factory. \
+            FileFormatFactory(code='application/pdf')
+
+        dummy_document_link = iati_factory. \
+            DocumentLinkFactory(url='http://aasamannepal.org.np/')
+
+        self.parser_203.codelist_cache = {}
+
+        result_document_link_attr = {
+            "url": dummy_document_link.url,
+            "format": dummy_file_format.code
+
+        }
+        result_document_link_XML_element = E(
+            'document-link',
+            **result_document_link_attr
+        )
+        self.parser_203 \
+            .iati_activities__iati_activity__result__document_link__title(
+                result_document_link_XML_element)
+        document_link_title = self.parser_203.get_model(
+            'DocumentLinkTitle')
+
+        self.assertEqual(self.document_link,
+                         document_link_title.document_link)
+
+class ResultDocumentLinkDocumentDateTestCase(TestCase):
+
+    def setUp(self):
+        # 'Main' XML file for instantiating parser:
+        xml_file_attrs = {
+            "generated-datetime": datetime.datetime.now().isoformat(),
+            "version": '2.03',
+        }
+        self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
+
+        dummy_source = synchroniser_factory.DatasetFactory.create(
+            name="dataset-2"
+        )
+
+        self.parser_203 = ParseManager(
+            dataset=dummy_source,
+            root=self.iati_203_XML_file,
+        ).get_parser()
+
+        self.parser_203.default_lang = "en"
+
+        assert (isinstance(self.parser_203, Parser_203))
+
+        # Version
+        current_version = VersionFactory(code='2.03')
+
+        # Related objects:
+        self.activity = iati_factory.ActivityFactory.create(
+            iati_standard_version=current_version
+        )
+        self.document_link = iati_factory.DocumentLinkFactory. \
+            create(url='http://someuri.com')
+
+        self.parser_203.register_model('Activity', self.activity)
+        self.parser_203.register_model('DocumentLink', self.document_link)
+
+    def test_result_document_link_document_date(selfs):
+        result_document_link_attr = {
+            "url": 'www.google.com',
+            "format": 'something',
+            # 'format_code will be got in the function
+
+        }
+        result_document_link_XML_element = E(
+            'document-link',
+            **result_document_link_attr
+        )
+        selfs.parser_203\
+            .iati_activities__iati_activity__result__document_link__document_date(
+            result_document_link_XML_element
         )

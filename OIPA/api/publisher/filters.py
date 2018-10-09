@@ -21,7 +21,7 @@ class PublisherFilter(FilterSet):
     q = SearchQueryFilter()
     no_datasets = BooleanFilter(
         lookup_expr='isnull',
-        name='dataset',
+        field_name='dataset',
         distinct=True
     )
 
