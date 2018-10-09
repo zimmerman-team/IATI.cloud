@@ -32,28 +32,42 @@ class ResultAggregationTestCase(TestCase):
 
         date_now = datetime.datetime.now()
 
-        iati_factory.ResultIndicatorPeriodFactory.create(
+        rip = iati_factory.ResultIndicatorPeriodFactory.create(
             result_indicator=first_result_indicator,
             period_start=date_now,
             period_end=date_now,
-            target="10",
-            actual=None
+        )
+        iati_factory.ResultIndicatorPeriodTargetFactory.create(
+            result_indicator_period=rip,
+            value="10",
         )
 
         iati_factory.ResultIndicatorPeriodFactory.create(
             result_indicator=first_result_indicator,
             period_start=date_now,
             period_end=date_now,
-            target="100",
-            actual="30"
+        )
+        iati_factory.ResultIndicatorPeriodTargetFactory.create(
+            result_indicator_period=rip,
+            value="100",
+        )
+        iati_factory.ResultIndicatorPeriodActualFactory.create(
+            result_indicator_period=rip,
+            value="30",
         )
 
         iati_factory.ResultIndicatorPeriodFactory.create(
             result_indicator=second_result_indicator,
             period_start=date_now,
             period_end=date_now,
-            target="20",
-            actual="10"
+        )
+        iati_factory.ResultIndicatorPeriodTargetFactory.create(
+            result_indicator_period=rip,
+            value="20",
+        )
+        iati_factory.ResultIndicatorPeriodActualFactory.create(
+            result_indicator_period=rip,
+            value="10",
         )
 
         self.api_client = APIClient()
@@ -79,9 +93,9 @@ class ResultAggregationTestCase(TestCase):
         """
         results = self.get_results(
             group_by='result_indicator_title',
-            aggregations='actual,target',
+            aggregations='actuals,targets',
             order_by='result_indicator_title')
         self.assertTrue(len(results) == 1)
         # self.assertEqual(results[0]['result_indicator_title'], 'a')
-        self.assertEqual(results[0]['target'], Decimal(130))
-        self.assertEqual(results[0]['actual'], Decimal(40))
+        self.assertEqual(results[0]['targets'], Decimal(130))
+        self.assertEqual(results[0]['actuals'], Decimal(40))

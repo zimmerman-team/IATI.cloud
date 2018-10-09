@@ -32,7 +32,7 @@ class TestOrganisationAdminGroupAPI(APITestCase):
             ),
         )
 
-        self.assertEquals(res.data, [
+        self.assertEqual(res.data, [
             OrderedDict([('username', u'test1'), ('email', u'')]),
             OrderedDict([('username', u'test2'), ('email', u'')]),
         ])
@@ -61,7 +61,7 @@ class TestOrganisationAdminGroupAPI(APITestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 403)
+        self.assertEqual(res.status_code, 403)
 
     def test_add_user_to_admin_group_success(self):
         """
@@ -86,8 +86,8 @@ class TestOrganisationAdminGroupAPI(APITestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 200)
-        self.assertEquals(len(OrganisationAdminGroup.objects.get(
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(len(OrganisationAdminGroup.objects.get(
             pk=admin_group.id).organisationuser_set.all()), 2)
 
     def test_remove_user_from_admin_group_fail(self):
@@ -111,7 +111,7 @@ class TestOrganisationAdminGroupAPI(APITestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 403)
+        self.assertEqual(res.status_code, 403)
 
     def test_remove_user_from_admin_group_success(self):
         """
@@ -134,7 +134,7 @@ class TestOrganisationAdminGroupAPI(APITestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 200)
+        self.assertEqual(res.status_code, 200)
 
     def test_user_cant_remove_owner(self):
         """
@@ -158,4 +158,4 @@ class TestOrganisationAdminGroupAPI(APITestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 401)
+        self.assertEqual(res.status_code, 401)

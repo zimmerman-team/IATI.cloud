@@ -14,6 +14,7 @@ from iati.parser.IATI_2_02 import Parse as IATI_202_Parser
 from iati.parser.IATI_2_03 import Parse as IATI_203_Parser
 from iati_organisation.parser.organisation_1_05 import Parse as Org_1_05_Parser
 from iati_organisation.parser.organisation_2_01 import Parse as Org_2_01_Parser
+from iati_organisation.parser.organisation_2_02 import Parse as Org_2_02_Parser
 
 
 class ParserDisabledError(Exception):
@@ -140,13 +141,12 @@ class ParseManager():
         # organisation file
         elif dataset.filetype == 2:
             if iati_version == '2.03':
-                # FIXME: IATI organisation parser is 2.01!:
-                parser = Org_2_01_Parser(root)
+                # FIXME: IATI organisation parser is 2.02!:
+                parser = Org_2_02_Parser(root)
                 parser.VERSION = iati_version
 
             elif iati_version == '2.02':
-                # FIXME: IATI organisation parser is 2.01!:
-                parser = Org_2_01_Parser(root)
+                parser = Org_2_02_Parser(root)
                 parser.VERSION = iati_version
 
             elif iati_version == '2.01':

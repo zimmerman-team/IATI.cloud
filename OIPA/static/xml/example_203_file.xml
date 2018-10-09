@@ -82,7 +82,9 @@
     <collaboration-type code="3"/>
     <default-flow-type code="10"/>
     <default-finance-type code="110"/>
-    <default-aid-type code="B01"/>
+    <!--This is currently not supported (custom AidType vocabularies), so an error log (DatasetNote)-->
+    <!--will be created:-->
+    <default-aid-type code="B01" vocabulary="2"/>
     <default-tied-status code="5"/>
     <budget>
       <period-start iso-date="2014-01-01"/>
@@ -110,6 +112,9 @@
         <narrative>ICTJ</narrative>
       </receiver-org>
       <aid-type code="A01" vocabulary="1"/>
+      <!--This is currently not supported (custom AidType vocabularies), so an error log (DatasetNote)-->
+      <!--will be created:-->
+      <aid-type code="B01" vocabulary="2"/>
     </transaction>
     <transaction>
       <transaction-type code="3"/>
@@ -137,6 +142,9 @@
       <title>
         <narrative xml:lang="en">Activity web page for IATI activity NL-1-PPR-24706</narrative>
       </title>
+      <description>
+        <narrative> Description of the content of the project report or guidance on where to access the relevant information in this report </narrative>
+      </description>
       <category code="A12"/>
       <language code="en"/>
     </document-link>
@@ -223,11 +231,15 @@
           </baseline>
           <!--result-baseline ends-->
 
-          <!--result(indicator)-period starts-->
+          <!--Result indicator period starts-->
           <period>
             <period-start iso-date="2013-01-01" />
             <period-end iso-date="2013-03-31" />
+
+            <!--Result Indicator Period TARGETS:-->
+            <!--Target with quantative value:-->
             <target value="10">
+              <location ref="AF-KAN" />
               <dimension name="sex" value="female" />
               <dimension name="age" value="adult" />
               <comment>
@@ -245,9 +257,18 @@
                 <language code="en" />
                 <document-date iso-date="2014-02-05" />
               </document-link>
-
             </target>
+            <!--Target without quantative value:-->
+            <target>
+              <comment>
+                <narrative>fully feasible to integrate hygiene promotion into vaccination programme under normal programme delivery circumstances.</narrative>
+              </comment>
+            </target>
+
+            <!--Result Indicator Period ACTUALS:-->
+            <!--Actual with quantative value:-->
             <actual value="11">
+              <location ref="AF-KAN" />
               <dimension name="sex" value="female" />
               <dimension name="age" value="adult" />
               <comment>
@@ -265,8 +286,15 @@
                 <document-date iso-date="2014-02-05" />
               </document-link>
             </actual>
+            <!--Actual without quantative value:-->
+            <actual>
+              <comment>
+                <narrative>hygiene promotion into vaccination programme under normal programme delivery circumstances was integrated!</narrative>
+              </comment>
+            </actual>
+
           </period>
-          <!--result-period ends-->
+          <!--Result Indicator Period ends-->
         </indicator>
       </result>
 

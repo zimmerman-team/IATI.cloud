@@ -5,6 +5,7 @@
 import copy
 import datetime
 
+import pytest
 from django.core import management
 from django.test import TestCase as DjangoTestCase
 from lxml.builder import E
@@ -38,6 +39,7 @@ def copy_xml_tree(tree):
     return copy.deepcopy(tree)
 
 
+@pytest.fixture(scope='session')
 def setUpModule():
     fixtures = ['test_vocabulary', 'test_codelists.json', 'test_geodata.json']
 
@@ -1054,8 +1056,11 @@ class OrganisationTestCase(ParserSetupTestCase):
         self\
             .parser_202.iati_organisations__iati_organisation__document_link__language(  # NOQA: E501
                 element)
-        model = self.parser_202.get_model('OrganisationDocumentLink')
-        """ :type : org_models.OrganisationDocumentLink """
+        model = self.parser_202.get_model(
+            'OrganisationDocumentLinkLanguage',
+            self.parser_202.document_link_language_current_index)
+
+        """ :type : org_models.OrganisationDocumentLinkLanguage """
         self.assertEqual(
             model.language,
             self.parser_202.get_or_none(

@@ -2189,7 +2189,7 @@ def activity_result_indicator_reference(
 
 def activity_result_indicator_period(
         result_indicator,
-        target,
+        targets,
         actual,
         period_start_raw,
         period_end_raw,
@@ -2256,12 +2256,12 @@ def activity_result_indicator_period(
                     apiField="period_end",
                 ))
 
-    if not target:
+    if not targets:
         errors.append(
             RequiredFieldError(
-                "result-indicator-period-target",
+                "result-indicator-period-targets",
                 "value",
-                apiField="target.value",
+                apiField="targets.value",
             ))
     if not actual:
         errors.append(
@@ -2298,7 +2298,7 @@ def activity_result_indicator_period(
         "errors": errors,
         "validated_data": {
             "result_indicator": result_indicator,
-            "target": target,
+            "targets": targets,
             "actual": actual,
             "period_start": period_start,
             "period_end": period_end,
@@ -2312,14 +2312,16 @@ def activity_result_indicator_period(
     }
 
 
-def activity_result_indicator_period_location(
-    result_indicator_period,
-    ref,
-):
+def activity_result_indicator_period_location(result_indicator_period_target,
+                                              ref):
     warnings = []
     errors = []
 
-    activity = result_indicator_period.result_indicator.result.activity
+    activity = result_indicator_period_target\
+        .result_indicator_period\
+        .result_indicator\
+        .result\
+        .activity
 
     location = get_or_none(models.Location, activity=activity, ref=ref)
 
@@ -2343,7 +2345,9 @@ def activity_result_indicator_period_location(
         "warnings": warnings,
         "errors": errors,
         "validated_data": {
-            "result_indicator_period": result_indicator_period,
+            "result_indicator_period_target": result_indicator_period_target.id,  # NOQA: E501
+            "result_indicator_period": result_indicator_period_target
+                                       .result_indicator_period,
             "ref": ref,
             "location": location,
         },

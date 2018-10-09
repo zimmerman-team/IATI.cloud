@@ -438,7 +438,7 @@ class ActivitySaveTestCase(TestCase):
         """
 
         # TODO: this should be 16 - 2017-03-27
-        with self.assertNumQueries(60):
+        with self.assertNumQueries(92):
             queryset = Activity.objects.all().prefetch_results()
             serializer = ActivitySerializer(
                 queryset,

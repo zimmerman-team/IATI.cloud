@@ -408,41 +408,41 @@ class ActivityQuerySet(SearchQuerySet):
             .select_related('language'))
 
         indicator_period_target_location_prefetch = Prefetch(
-            'resultindicatorperiodtargetlocation_set',
+            'targets__resultindicatorperiodtargetlocation_set',
             queryset=ResultIndicatorPeriodTargetLocation.objects.all()
             .select_related('location'))
 
         indicator_period_actual_location_prefetch = Prefetch(
-            'resultindicatorperiodactuallocation_set',
+            'actuals__resultindicatorperiodactuallocation_set',
             queryset=ResultIndicatorPeriodActualLocation.objects.all()
             .select_related('location'))
 
         indicator_period_target_dimension_prefetch = Prefetch(
-            'resultindicatorperiodtargetdimension_set',
+            'targets__resultindicatorperiodtargetdimension_set',
             queryset=ResultIndicatorPeriodTargetDimension.objects.all()
         )
 
         indicator_period_actual_dimension_prefetch = Prefetch(
-            'resultindicatorperiodactualdimension_set',
+            'actuals__resultindicatorperiodactualdimension_set',
             queryset=ResultIndicatorPeriodActualDimension.objects.all()
         )
 
         indicator_period_target_comment_prefetch = Prefetch(
-            'resultindicatorperiodtargetcomment__narratives',
+            'targets__resultindicatorperiodtargetcomment_set__narratives',
             queryset=Narrative.objects.all()
             .select_related('language'))
 
         indicator_period_actual_comment_prefetch = Prefetch(
-            'resultindicatorperiodactualcomment__narratives',
+            'actuals__resultindicatorperiodactualcomment_set__narratives',
             queryset=Narrative.objects.all()
             .select_related('language'))
 
         indicator_period_prefetch = Prefetch(
             'resultindicatorperiod_set',
             queryset=ResultIndicatorPeriod.objects.all()
-            .select_related(
-                'resultindicatorperiodtargetcomment',
-                'resultindicatorperiodactualcomment'
+            .prefetch_related(
+                'targets__resultindicatorperiodtargetcomment_set',
+                'actuals__resultindicatorperiodactualcomment_set',
             )
             .prefetch_related(
                 indicator_period_target_location_prefetch,

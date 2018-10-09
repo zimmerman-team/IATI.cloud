@@ -6,14 +6,14 @@ from api.generics.filters import TogetherFilterSet
 from iati.models import Activity
 
 
-class TestFilter(TogetherFilterSet):
+class FirstFilter(TogetherFilterSet):
     budget_period_start = DateFilter(
         lookup_expr='gte',
-        name='budget__period_start',)
+        field_name='budget__period_start',)
 
     budget_period_end = DateFilter(
         lookup_expr='lte',
-        name='budget__period_end')
+        field_name='budget__period_end')
 
     class Meta:
         model = Activity
@@ -21,14 +21,14 @@ class TestFilter(TogetherFilterSet):
         fields = '__all__'
 
 
-class TestWithoutFilter(TogetherFilterSet):
+class SecondFilter(TogetherFilterSet):
     budget_period_start = DateFilter(
         lookup_expr='gte',
-        name='budget__period_start',)
+        field_name='budget__period_start',)
 
     budget_period_end = DateFilter(
         lookup_expr='lte',
-        name='budget__period_end')
+        field_name='budget__period_end')
 
     class Meta:
         model = Activity
@@ -50,7 +50,7 @@ class TogetherFilterSetTestCase(TestCase):
 
         queryset = Activity.objects.all()
 
-        resulting_qs = TestFilter(query_params, queryset=queryset).qs
+        resulting_qs = FirstFilter(query_params, queryset=queryset).qs
 
         query = resulting_qs.query
 
@@ -65,7 +65,7 @@ class TogetherFilterSetTestCase(TestCase):
 
         queryset = Activity.objects.all()
 
-        resulting_qs = TestWithoutFilter(query_params, queryset=queryset).qs
+        resulting_qs = SecondFilter(query_params, queryset=queryset).qs
         query = resulting_qs.query
 
         # table joined twice, hence 3 aliases

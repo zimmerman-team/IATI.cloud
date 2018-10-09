@@ -14,9 +14,13 @@ from iati.factory.iati_factory import (
     ParticipatingOrganisationFactory, PlannedDisbursementFactory,
     PlannedDisbursementProviderFactory, PlannedDisbursementReceiverFactory,
     RelatedActivityFactory, ResultFactory, ResultIndicatorFactory,
+    ResultIndicatorPeriodActualCommentFactory,
     ResultIndicatorPeriodActualDimensionFactory,
+    ResultIndicatorPeriodActualFactory,
     ResultIndicatorPeriodActualLocationFactory, ResultIndicatorPeriodFactory,
+    ResultIndicatorPeriodTargetCommentFactory,
     ResultIndicatorPeriodTargetDimensionFactory,
+    ResultIndicatorPeriodTargetFactory,
     ResultIndicatorPeriodTargetLocationFactory,
     ResultIndicatorReferenceFactory, TitleFactory
 )
@@ -317,21 +321,35 @@ def _create_test_activity(
         resultindicatorbaselinecomment_narrative_1)
     result_indicator_period = ResultIndicatorPeriodFactory.create(
         result_indicator=result_indicator)
+
+    result_indicator_period_target = ResultIndicatorPeriodTargetFactory(
+        result_indicator_period=result_indicator_period
+    )
+    ResultIndicatorPeriodTargetCommentFactory(
+        result_indicator_period_target_id=result_indicator_period_target.id
+    )
     ResultIndicatorPeriodTargetLocationFactory.create(
-        result_indicator_period=result_indicator_period)
+        result_indicator_period_target=result_indicator_period_target)
     ResultIndicatorPeriodTargetDimensionFactory.create(
-        result_indicator_period=result_indicator_period)
+        result_indicator_period_target=result_indicator_period_target)
     _create_test_narrative(
         activity,
-        result_indicator_period.resultindicatorperiodtargetcomment,
+        result_indicator_period_target.resultindicatorperiodtargetcomment_set.first(),  # NOQA: E501
         resultindicatorperiodtargetcomment_narrative_1)
+
+    result_indicator_period_actual = ResultIndicatorPeriodActualFactory(
+        result_indicator_period=result_indicator_period
+    )
+    ResultIndicatorPeriodActualCommentFactory(
+        result_indicator_period_actual_id=result_indicator_period_actual.id
+    )
     ResultIndicatorPeriodActualLocationFactory.create(
-        result_indicator_period=result_indicator_period)
+        result_indicator_period_actual=result_indicator_period_actual)
     ResultIndicatorPeriodActualDimensionFactory.create(
-        result_indicator_period=result_indicator_period)
+        result_indicator_period_actual=result_indicator_period_actual)
     _create_test_narrative(
         activity,
-        result_indicator_period.resultindicatorperiodactualcomment,
+        result_indicator_period_actual.resultindicatorperiodactualcomment_set.first(),  # NOQA: E501
         resultindicatorperiodactualcomment_narrative_1)
 
     fss = FssFactory.create(activity=activity)

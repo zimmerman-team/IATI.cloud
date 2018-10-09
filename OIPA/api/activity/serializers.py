@@ -34,11 +34,10 @@ from iati.models import (
     PlannedDisbursementProvider, PlannedDisbursementReceiver, RelatedActivity,
     Result, ResultDescription, ResultIndicator, ResultIndicatorBaselineComment,
     ResultIndicatorDescription, ResultIndicatorPeriod,
-    ResultIndicatorPeriodActualComment, ResultIndicatorPeriodActualDimension,
-    ResultIndicatorPeriodActualLocation, ResultIndicatorPeriodTargetComment,
-    ResultIndicatorPeriodTargetDimension, ResultIndicatorPeriodTargetLocation,
-    ResultIndicatorReference, ResultIndicatorTitle, ResultTitle, ResultType,
-    Title
+    ResultIndicatorPeriodActualDimension, ResultIndicatorPeriodActualLocation,
+    ResultIndicatorPeriodTarget, ResultIndicatorPeriodTargetDimension,
+    ResultIndicatorPeriodTargetLocation, ResultIndicatorReference,
+    ResultIndicatorTitle, ResultTitle, ResultType, Title
 )
 from iati.parser import validators
 from iati_organisation import models as organisation_models
@@ -1565,72 +1564,64 @@ class ResultIndicatorPeriodActualLocationSerializer(ModelSerializerNoValidation)
         )
 
     def validate(self, data):
-        result_indicator_period = get_or_raise(
-            ResultIndicatorPeriod, data, 'result_indicator_period')
 
-        validated = validators.activity_result_indicator_period_location(
-            result_indicator_period,
-            data.get('ref'),
-        )
-
-        return handle_errors(validated)
+        # See: #747
+        raise NotImplementedError("This action is not implemented")
 
     def create(self, validated_data):
-        result_indicator_period = validated_data.get(
-            'result_indicator_period'
-        )
 
-        instance = ResultIndicatorPeriodActualLocation.objects.create(
-            **validated_data)
-
-        result_indicator_period.result_indicator.result.activity.modified = True  # NOQA: E501
-        result_indicator_period.result_indicator.result.activity.save()
-
-        return instance
+        # See: #747
+        raise NotImplementedError("This action is not implemented")
 
     def update(self, instance, validated_data):
-        result_indicator_period = validated_data.get('result_indicator_period')
 
-        update_instance = ResultIndicatorPeriodActualLocation(
-            **validated_data
-        )
-        update_instance.id = instance.id
-        update_instance.save()
-
-        result_indicator_period.result_indicator.result.activity.modified = True  # NOQA: E501
-        result_indicator_period.result_indicator.result.activity.save()
-
-        return update_instance
+        # See: #747
+        raise NotImplementedError("This action is not implemented")
 
 
 class ResultIndicatorPeriodTargetLocationSerializer(ModelSerializerNoValidation):  # NOQA: E501
     ref = serializers.CharField()
-    result_indicator_period = serializers.CharField(write_only=True)
+    result_indicator_period_target = serializers.CharField(write_only=True)
+    result_indicator_period = serializers.CharField(
+        write_only=True,
+        source='result_indicator_period_target__result_indicator_period'
+    )
 
     class Meta:
         model = ResultIndicatorPeriodTargetLocation
         fields = (
             'id',
+            'result_indicator_period_target',
             'result_indicator_period',
             'ref',
         )
 
     def validate(self, data):
-        result_indicator_period = get_or_raise(
-            ResultIndicatorPeriod, data, 'result_indicator_period')
+        result_indicator_period_target = get_or_raise(
+            ResultIndicatorPeriodTarget,
+            data,
+            'result_indicator_period_target'
+        )
 
         validated = validators.activity_result_indicator_period_location(
-            result_indicator_period,
+            result_indicator_period_target,
             data.get('ref'),
         )
 
         return handle_errors(validated)
 
     def create(self, validated_data):
-        result_indicator_period = validated_data.get('result_indicator_period')
+        result_indicator_period_target_id = validated_data.get(
+            'result_indicator_period_target'
+        )
+        result_indicator_period = validated_data.get(
+            'result_indicator_period'
+        )
 
         instance = ResultIndicatorPeriodTargetLocation.objects.create(
-            **validated_data
+            result_indicator_period_target_id=result_indicator_period_target_id,  # NOQA: E501
+            ref=validated_data['ref'],
+            location=validated_data['location']
         )
 
         result_indicator_period.result_indicator.result.activity.modified = True  # NOQA: E501
@@ -1639,12 +1630,17 @@ class ResultIndicatorPeriodTargetLocationSerializer(ModelSerializerNoValidation)
         return instance
 
     def update(self, instance, validated_data):
+        result_indicator_period_target_id = validated_data.get(
+            'result_indicator_period_target'
+        )
         result_indicator_period = validated_data.get(
             'result_indicator_period'
         )
 
         update_instance = ResultIndicatorPeriodTargetLocation(
-            **validated_data
+            result_indicator_period_target_id=result_indicator_period_target_id,  # NOQA: E501
+            ref=validated_data['ref'],
+            location=validated_data['location']
         )
         update_instance.id = instance.id
         update_instance.save()
@@ -1761,12 +1757,13 @@ class ResultIndicatorPeriodTargetDimensionSerializer(ModelSerializerNoValidation
 
 class ResultIndicatorPeriodTargetSerializer(SerializerNoValidation):
     value = serializers.DecimalField(
-        source='target',
         max_digits=25,
         decimal_places=10
     )
     comment = NarrativeContainerSerializer(
-        source="resultindicatorperiodtargetcomment"
+        many=True,
+        source="resultindicatorperiodtargetcomment_set",
+        read_only=True
     )
     locations = ResultIndicatorPeriodTargetLocationSerializer(
         many=True,
@@ -1782,7 +1779,6 @@ class ResultIndicatorPeriodTargetSerializer(SerializerNoValidation):
 
 class ResultIndicatorPeriodActualSerializer(SerializerNoValidation):
     value = serializers.DecimalField(
-        source='actual',
         max_digits=25,
         decimal_places=10)
 
@@ -1800,8 +1796,8 @@ class ResultIndicatorPeriodActualSerializer(SerializerNoValidation):
 
 
 class ResultIndicatorPeriodSerializer(ModelSerializerNoValidation):
-    target = ResultIndicatorPeriodTargetSerializer(source="*")
-    actual = ResultIndicatorPeriodActualSerializer(source="*")
+    targets = ResultIndicatorPeriodTargetSerializer(many=True)
+    actuals = ResultIndicatorPeriodActualSerializer(many=True)
 
     period_start = serializers.CharField(required=False)
     period_end = serializers.CharField(required=False)
@@ -1815,81 +1811,24 @@ class ResultIndicatorPeriodSerializer(ModelSerializerNoValidation):
             'id',
             'period_start',
             'period_end',
-            'target',
-            'actual',
+            'targets',
+            'actuals',
         )
 
     def validate(self, data):
-        result_indicator = get_or_raise(
-            ResultIndicator, data, 'result_indicator')
 
-        validated = validators.activity_result_indicator_period(
-            result_indicator,
-            data.get('target'),
-            data.get('actual'),
-            data.get('period_start'),
-            data.get('period_end'),
-            data.get('resultindicatorperiodtargetcomment',
-                     {}).get('narratives'),
-            data.get('resultindicatorperiodactualcomment',
-                     {}).get('narratives'),
-        )
-
-        return handle_errors(validated)
+        # See: #747
+        raise NotImplementedError("This action is not implemented")
 
     def create(self, validated_data):
-        result_indicator = validated_data.get('result_indicator')
-        target_comment_narratives_data = validated_data.pop(
-            'target_comment_narratives', [])
-        actual_comment_narratives_data = validated_data.pop(
-            'actual_comment_narratives', [])
 
-        instance = ResultIndicatorPeriod.objects.create(
-            **validated_data)
-
-        target_comment_narratives = ResultIndicatorPeriodTargetComment.objects.create(  # NOQA: E501
-            result_indicator_period=instance)
-        actual_comment_narratives = ResultIndicatorPeriodActualComment.objects.create(  # NOQA: E501
-            result_indicator_period=instance)
-
-        save_narratives(
-            target_comment_narratives,
-            target_comment_narratives_data,
-            result_indicator.result.activity)
-        save_narratives(
-            actual_comment_narratives,
-            actual_comment_narratives_data,
-            result_indicator.result.activity)
-
-        result_indicator.result.activity.modified = True
-        result_indicator.result.activity.save()
-
-        return instance
+        # See: #747
+        raise NotImplementedError("This action is not implemented")
 
     def update(self, instance, validated_data):
-        result_indicator = validated_data.get('result_indicator')
-        target_comment_narratives_data = validated_data.pop(
-            'target_comment_narratives', [])
-        actual_comment_narratives_data = validated_data.pop(
-            'actual_comment_narratives', [])
 
-        update_instance = ResultIndicatorPeriod(**validated_data)
-        update_instance.id = instance.id
-        update_instance.save()
-
-        save_narratives(
-            update_instance.resultindicatorperiodtargetcomment,
-            target_comment_narratives_data,
-            result_indicator.result.activity)
-        save_narratives(
-            update_instance.resultindicatorperiodactualcomment,
-            actual_comment_narratives_data,
-            result_indicator.result.activity)
-
-        result_indicator.result.activity.modified = True
-        result_indicator.result.activity.save()
-
-        return update_instance
+        # See: #747
+        raise NotImplementedError("This action is not implemented")
 
 
 class ResultIndicatorBaselineSerializer(SerializerNoValidation):

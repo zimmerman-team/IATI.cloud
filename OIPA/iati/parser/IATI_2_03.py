@@ -1713,31 +1713,61 @@ class Parse(IatiParser):
 
         return element
 
+    # TODO: update test:
     def iati_activities__iati_activity__default_aid_type(self, element):
         """attributes:
         code:A01
 
         tag:default-aid-type"""
         code = element.attrib.get('code')
-        default_aid_type = self.get_or_none(codelist_models.AidType, code=code)
+        vocabulary_code = element.attrib.get('vocabulary')
 
         if not code:
             raise RequiredFieldError(
-                "default-aid-type",
+                "iati-activity/default-aid-type",
                 "code",
                 "required attribute missing")
 
-        if not default_aid_type:
+        # According to IATI 2.03 rules, 'vocabulary' attribute is:
+        # "A code for the vocabulary aid-type classifications. If omitted the
+        # AidType (OECD DAC) codelist is assumed. The code must be a valid
+        # value in the AidTypeVocabulary codelist."
+        if not vocabulary_code:
+            vocabulary = vocabulary_models.AidTypeVocabulary.objects.get(
+                name='OECD DAC',
+            )
+        else:
+            vocabulary = vocabulary_models.AidTypeVocabulary.objects.get(
+                code=vocabulary_code,
+            )
+
+        # XXX: Note, that at this point only official (Vocabulary type 1)
+        # vocabularies for AidType are supported:
+        aid_type = codelist_models.AidType.objects.filter(
+            code=code,
+            vocabulary=vocabulary
+        ).first()
+
+        if not aid_type:
             raise FieldValidationError(
-                "default-aid-type",
+                "iati-activity/default-aid-type",
                 "code",
-                "not found on the accompanying code list",
+                "not found on the accompanying code list. Note, that custom "
+                "AidType Vocabularies currently are not supported",
                 None,
                 None,
                 code)
 
         activity = self.get_model('Activity')
-        activity.default_aid_type = default_aid_type
+        activity_default_aid_type = models.ActivityDefaultAidType()
+
+        activity_default_aid_type.activity = activity
+        activity_default_aid_type.aid_type = aid_type
+
+        self.register_model(
+            'ActivityDefaultAidType',
+            activity_default_aid_type
+        )
 
         return element
 
@@ -2159,7 +2189,6 @@ class Parse(IatiParser):
         transaction.flow_type = self.get_model('Activity').default_flow_type
         transaction.finance_type = self.get_model(
             'Activity').default_finance_type
-        transaction.aid_type = self.get_model('Activity').default_aid_type
         transaction.tied_status = self.get_model(
             'Activity').default_tied_status
 
@@ -2623,51 +2652,53 @@ class Parse(IatiParser):
         return element
 
     def iati_activities__iati_activity__transaction__aid_type(self, element):
-        """attributes:
-        code:A01
 
-        tag:aid-type"""
         code = element.attrib.get('code')
-        aid_type = self.get_or_none(codelist_models.AidType, code=code)
         vocabulary_code = element.attrib.get('vocabulary')
 
-        if not aid_type and not code:
+        if not code:
             raise RequiredFieldError(
-                "transaction/aid-type",
+                "iati-activity/transaction/aid-type",
                 "code",
                 "required attribute missing")
-        elif not aid_type:
+
+        # According to IATI 2.03 rules, 'vocabulary' attribute is:
+        # "A code for the vocabulary aid-type classifications. If omitted the
+        # AidType (OECD DAC) codelist is assumed. The code must be a valid
+        # value in the AidTypeVocabulary codelist."
+        if not vocabulary_code:
+            vocabulary = vocabulary_models.AidTypeVocabulary.objects.get(
+                name='OECD DAC',
+            )
+        else:
+            vocabulary = vocabulary_models.AidTypeVocabulary.objects.get(
+                code=vocabulary_code,
+            )
+
+        # XXX: Note, that at this point only official (Vocabulary type 1)
+        # vocabularies for AidType are supported:
+        aid_type = codelist_models.AidType.objects.filter(
+            code=code,
+            vocabulary=vocabulary
+        ).first()
+
+        if not aid_type:
             raise FieldValidationError(
                 "transaction/aid-type",
                 "code",
-                "not found on the accompanying code list",
+                "not found on the accompanying code list. Note, that custom "
+                "AidType Vocabularies currently are not supported",
                 None,
                 None,
                 code)
 
-        if vocabulary_code:
-            vocabulary = self.get_or_none(
-                vocabulary_models.AidTypeVocabulary,
-                code=vocabulary_code
-            )
-
-            if not vocabulary:
-                raise FieldValidationError(
-                    "iati-activity/transaction/aid-type",
-                    "vocabulary",
-                    "not found on the accompanying code list",
-                    None,
-                    None,
-                    vocabulary_code)
-
         transaction = self.get_model('Transaction')
-        transaction.aid_type = aid_type
+        transaction_aid_type = transaction_models.TransactionAidType()
 
-        # Note, that AidType is a codelist so in theory it shouldn't be there.
-        # Although, as an xml element, it can have certain attributes (like
-        # vocabulary):
-        self.register_model('AidType', aid_type)
-        aid_type.vocabulary = vocabulary
+        transaction_aid_type.transaction = transaction
+        transaction_aid_type.aid_type = aid_type
+
+        self.register_model('TransactionAidType', transaction_aid_type)
 
         return element
 
@@ -2793,6 +2824,30 @@ class Parse(IatiParser):
         tag:narrative"""
         document_link_title = self.get_model('DocumentLinkTitle')
         self.add_narrative(element, document_link_title)
+        return element
+
+    # TODO: test
+    def iati_activities__iati_activity__document_link__description(
+            self, element):
+
+        document_link = self.get_model('DocumentLink')
+
+        document_link_description = models.DocumentLinkDescription()
+        document_link_description.document_link = document_link
+
+        self.register_model(
+            'DocumentLinkDescription',
+            document_link_description
+        )
+
+        return element
+
+    # TODO: test
+    def iati_activities__iati_activity__document_link__description__narrative(
+            self, element):
+        document_link_description = self.get_model('DocumentLinkDescription')
+        self.add_narrative(element, document_link_description)
+
         return element
 
     def iati_activities__iati_activity__document_link__category(self, element):
@@ -3044,7 +3099,6 @@ class Parse(IatiParser):
 
         return element
 
-    # TODO: test
     def iati_activities__iati_activity__result__document_link(self, element):
         '''New (optional) <document-link> element for <result> element in 2.03
         '''
@@ -3081,6 +3135,7 @@ class Parse(IatiParser):
         # It is impossible to assign related object (ForeignKey) before it's
         # saved, so:
         # XXX: not sure how efficient this is.
+
         if result.pk is None:
             result.save()
 
@@ -3089,12 +3144,10 @@ class Parse(IatiParser):
         document_link.url = url
         document_link.file_format = file_format
         document_link.result = result
-
         self.register_model('DocumentLink', document_link)
 
         return element
 
-    # TODO: test
     def iati_activities__iati_activity__result__document_link__title(
             self, element):
         '''New (optional) <document-link> element for <result> element in 2.03
@@ -3116,6 +3169,30 @@ class Parse(IatiParser):
         '''
         document_link_title = self.get_model('DocumentLinkTitle')
         self.add_narrative(element, document_link_title)
+        return element
+
+    # TODO: test
+    def iati_activities__iati_activity__result__document_link__description(
+            self, element):
+
+        document_link = self.get_model('DocumentLink')
+
+        document_link_description = models.DocumentLinkDescription()
+        document_link_description.document_link = document_link
+
+        self.register_model(
+            'DocumentLinkDescription',
+            document_link_description
+        )
+
+        return element
+
+    # TODO: test
+    def iati_activities__iati_activity__result__document_link__description__narrative(  # NOQA: E501
+            self, element):
+        document_link_description = self.get_model('DocumentLinkDescription')
+        self.add_narrative(element, document_link_description)
+
         return element
 
     # TODO: test
@@ -3367,6 +3444,8 @@ class Parse(IatiParser):
         activity = self.get_model('Activity')
         result_indicator = self.get_model('ResultIndicator')
 
+        # TODO: assign Result here as well?
+
         # It is impossible to assign related object (ForeignKey) before it's
         # saved, so:
         # XXX: not sure how efficient this is.
@@ -3441,6 +3520,35 @@ class Parse(IatiParser):
         return element
 
     # TODO: test
+    def iati_activities__iati_activity__result__indicator__document_link__description(  # NOQA: E501
+            self, element):
+        '''New (optional) <document-link> element for <indicator> element
+           inside <result> element in 2.03
+        '''
+
+        document_link = self.get_model('DocumentLink')
+
+        document_link_description = models.DocumentLinkDescription()
+        document_link_description.document_link = document_link
+
+        self.register_model(
+            'DocumentLinkDescription', document_link_description
+        )
+
+        return element
+
+    # TODO: test
+    def iati_activities__iati_activity__result__indicator__document_link__description__narrative(  # NOQA: E501
+            self, element):
+        '''New (optional) <document-link> element for <indicator> element
+           inside <result> element in 2.03
+        '''
+        document_link_description = self.get_model('DocumentLinkDescription')
+        self.add_narrative(element, document_link_description)
+
+        return element
+
+    # TODO: test
     def iati_activities__iati_activity__result__indicator__document_link__category(self, element):  # NOQA: E501
         '''New (optional) <document-link> element for <indicator> element
            inside <result> element in 2.03
@@ -3507,7 +3615,7 @@ class Parse(IatiParser):
         self.register_model('DocumentLinkLanguage', document_link_language)
         return element
 
-    # tag:baseline"""
+    # TODO: update test:
     def iati_activities__iati_activity__result__indicator__baseline(
             self, element):
         year = element.attrib.get('year')
@@ -3516,7 +3624,7 @@ class Parse(IatiParser):
         try:
             value = Decimal(value)
         except Exception as e:
-            value = None
+            value = ''
 
         try:
             year = int(year)
@@ -3532,17 +3640,14 @@ class Parse(IatiParser):
                 "required attribute missing (should be of type "
                 "xsd:positiveInteger with format (yyyy))")
 
-        if value:
-            result_indicator = self.pop_model('ResultIndicator')
-            result_indicator.baseline_year = year
-            result_indicator.baseline_value = value
+        result_indicator = self.pop_model('ResultIndicator')
+        result_indicator.baseline_year = year
+        result_indicator.baseline_value = value  # can be empty string
 
-            self.register_model('ResultIndicator', result_indicator)
+        self.register_model('ResultIndicator', result_indicator)
 
         return element
-    # """attributes:
 
-    # tag:comment"""
     def iati_activities__iati_activity__result__indicator__baseline__comment(
             self, element):
         result_indicator = self.get_model('ResultIndicator')
@@ -3685,6 +3790,8 @@ class Parse(IatiParser):
         activity = self.get_model('Activity')
         result_indicator = self.get_model('ResultIndicator')
 
+        # TODO: assign result, result_indicator_baseline here too?
+
         document_link = models.DocumentLink()
         document_link.activity = activity
         document_link.url = url
@@ -3748,6 +3855,33 @@ class Parse(IatiParser):
         '''
         document_link_title = self.get_model('DocumentLinkTitle')
         self.add_narrative(element, document_link_title)
+        return element
+
+    # TODO: test
+    def iati_activities__iati_activity__result__indicator__baseline__document_link__description(  # NOQA: E501
+            self, element):
+        '''New (optional) <document-link> element for <baseline> element
+           inside <result>'s <indicator> element in 2.03
+        '''
+
+        document_link = self.get_model('DocumentLink')
+
+        document_link_description = models.DocumentLinkDescription()
+        document_link_description.document_link = document_link
+
+        self.register_model(
+            'DocumentLinkDescription',
+            document_link_description
+        )
+
+    # TODO: test:
+    def iati_activities__iati_activity__result__indicator__baseline__document_link__description__narrative(  # NOQA: E501
+            self, element):
+        '''New (optional) <document-link> element for <baseline> element
+           inside <result>'s <indicator> element in 2.03
+        '''
+        document_link_description = self.get_model('DocumentLinkDescription')
+        self.add_narrative(element, document_link_description)
         return element
 
     # TODO: test:
@@ -3878,10 +4012,9 @@ class Parse(IatiParser):
                 None,
                 element.attrib.get('iso-date'))
 
-        result_indicator_period = self.pop_model('ResultIndicatorPeriod')
+        result_indicator_period = self.get_model('ResultIndicatorPeriod')
         result_indicator_period.period_start = iso_date
 
-        self.register_model('ResultIndicatorPeriod', result_indicator_period)
         return element
 
     # tag:period-end"""
@@ -3907,36 +4040,34 @@ class Parse(IatiParser):
                 None,
                 element.attrib.get('iso-date'))
 
-        result_indicator_period = self.pop_model('ResultIndicatorPeriod')
+        result_indicator_period = self.get_model('ResultIndicatorPeriod')
         result_indicator_period.period_end = iso_date
 
-        self.register_model('ResultIndicatorPeriod', result_indicator_period)
         return element
 
+    # TODO: update test:
     def iati_activities__iati_activity__result__indicator__period__target(
             self, element):
+
+        # Current IATI 2.03 rules say, that:
+        # 1 - the @value must be omitted for qualitative measures
+        # 2 - The @value must be included for non-qualitative measures
+        # 3 - The @value must be a valid number for all non-qualitative
+        # measures
         value = element.attrib.get('value')
-        # TODO, 'guess number'
 
-        try:
-            value = Decimal(value)
-        except Exception as e:
-            value = None
+        result_indicator_period = self.get_model('ResultIndicatorPeriod')
 
-        if value is None:
-            raise RequiredFieldError(
-                "result/indicator/period/period/target",
-                "value",
-                "required attribute missing or it's not possible to convert "
-                "it to Decimal (this error might be incorrect, "
-                "xsd:decimal is used to check instead of xsd:string)")
+        result_indicator_period_target = models.ResultIndicatorPeriodTarget()
+        result_indicator_period_target.result_indicator_period = result_indicator_period  # NOQA: E501
+        result_indicator_period_target.value = value or ''  # can be None
 
-        result_indicator_period = self.pop_model('ResultIndicatorPeriod')
-        result_indicator_period.target = value
+        self.register_model(
+            'ResultIndicatorPeriodTarget', result_indicator_period_target)
 
-        self.register_model('ResultIndicatorPeriod', result_indicator_period)
         return element
 
+    # TODO: update test:
     def iati_activities__iati_activity__result__indicator__period__target__location(self, element):  # NOQA: E501
 
         ref = element.attrib.get('ref')
@@ -3963,9 +4094,10 @@ class Parse(IatiParser):
                 None,
                 ref)
 
-        period = self.get_model('ResultIndicatorPeriod')
+        period_target = self.get_model('ResultIndicatorPeriodTarget')
+
         target_location = models.ResultIndicatorPeriodTargetLocation()
-        target_location.result_indicator_period = period
+        target_location.result_indicator_period_target = period_target
         target_location.ref = ref
         target_location.location = location[0]
 
@@ -3973,6 +4105,7 @@ class Parse(IatiParser):
             'ResultIndicatorPeriodTargetLocation', target_location)
         return element
 
+    # TODO: update test:
     def iati_activities__iati_activity__result__indicator__period__target__dimension(  # NOQA: E501
             self, element):
 
@@ -3991,10 +4124,10 @@ class Parse(IatiParser):
                 "value",
                 "required attribute missing")
 
-        period = self.get_model('ResultIndicatorPeriod')
+        period_target = self.get_model('ResultIndicatorPeriodTarget')
 
         target_dimension = models.ResultIndicatorPeriodTargetDimension()
-        target_dimension.result_indicator_period = period
+        target_dimension.result_indicator_period_target = period_target
         target_dimension.name = name
         target_dimension.value = value
 
@@ -4002,19 +4135,20 @@ class Parse(IatiParser):
             'ResultIndicatorPeriodTargetDimension', target_dimension)
         return element
 
+    # TODO: update test:
     def iati_activities__iati_activity__result__indicator__period__target__comment(self, element):  # NOQA: E501
-        result_indicator_period = self.get_model('ResultIndicatorPeriod')
+        result_indicator_period_target = self.get_model(
+            'ResultIndicatorPeriodTarget'
+        )
         result_indicator_period_target_comment = models\
             .ResultIndicatorPeriodTargetComment()
         result_indicator_period_target_comment\
-            .result_indicator_period = result_indicator_period
+            .result_indicator_period_target = result_indicator_period_target
 
         self.register_model(
             'ResultIndicatorPeriodTargetComment',
             result_indicator_period_target_comment)
         return element
-
-    # """attributes:
 
     # tag:narrative"""
     def iati_activities__iati_activity__result__indicator__period__target__comment__narrative(  # NOQA: E501
@@ -4093,6 +4227,35 @@ class Parse(IatiParser):
         '''
         document_link_title = self.get_model('DocumentLinkTitle')
         self.add_narrative(element, document_link_title)
+        return element
+
+    # TODO: test
+    def iati_activities__iati_activity__result__indicator__period__target__document_link__description(  # NOQA: E501
+            self, element):
+        '''New (optional) <document-link> element for <target> element
+           inside <result> <indicator>'s <period> element in 2.03
+        '''
+
+        document_link = self.get_model('DocumentLink')
+
+        document_link_description = models.DocumentLinkDescription()
+        document_link_description.document_link = document_link
+
+        self.register_model(
+            'DocumentLinkDescription',
+            document_link_description
+        )
+
+        return element
+
+    # TODO: test
+    def iati_activities__iati_activity__result__indicator__period__target__document_link__description__narrative(  # NOQA: E501
+            self, element):
+        '''New (optional) <document-link> element for <target> element
+           inside <result> <indicator>'s <period> element in 2.03
+        '''
+        document_link_description = self.get_model('DocumentLinkDescription')
+        self.add_narrative(element, document_link_description)
         return element
 
     # TODO: test
@@ -4195,26 +4358,29 @@ class Parse(IatiParser):
         self.register_model('DocumentLink', document_link)
         return element
 
-    # tag:actual"""
+    # TODO: update test:
     def iati_activities__iati_activity__result__indicator__period__actual(
             self, element):
+
+        # Current IATI 2.03 rules say, that:
+        # 1 - the @value must be omitted for qualitative measures
+        # 2 - The @value must be included for non-qualitative measures
+        # 3 - The @value must be a valid number for all non-qualitative
+        # measures
         value = element.attrib.get('value')
 
-        try:
-            value = Decimal(value)
-        except Exception as e:
-            value = None
+        result_indicator_period = self.get_model('ResultIndicatorPeriod')
 
-        if value:
-            result_indicator_period = self.pop_model('ResultIndicatorPeriod')
-            result_indicator_period.actual = value
+        result_indicator_period_actual = models.ResultIndicatorPeriodActual()
+        result_indicator_period_actual.result_indicator_period = result_indicator_period  # NOQA: E501
+        result_indicator_period_actual.value = value or ''  # can be None
 
-            self.register_model(
-                'ResultIndicatorPeriod', result_indicator_period
-            )
+        self.register_model(
+            'ResultIndicatorPeriodActual', result_indicator_period_actual)
 
         return element
 
+    # TODO: update test:
     def iati_activities__iati_activity__result__indicator__period__actual__location(self, element):  # NOQA: E501
 
         ref = element.attrib.get('ref')
@@ -4226,7 +4392,10 @@ class Parse(IatiParser):
                 "required attribute missing")
 
         locations = self.get_model_list('Location')
-        location = list(filter(lambda x: x.ref == ref, locations))
+        location = []
+
+        if locations:
+            location = list(filter(lambda x: x.ref == ref, locations))
 
         if not len(location):
             raise FieldValidationError(
@@ -4238,10 +4407,10 @@ class Parse(IatiParser):
                 None,
                 ref)
 
-        period = self.get_model('ResultIndicatorPeriod')
+        period_actual = self.get_model('ResultIndicatorPeriodActual')
 
         actual_location = models.ResultIndicatorPeriodActualLocation()
-        actual_location.result_indicator_period = period
+        actual_location.result_indicator_period_actual = period_actual
         actual_location.ref = ref
         actual_location.location = location[0]
 
@@ -4249,6 +4418,7 @@ class Parse(IatiParser):
             'ResultIndicatorPeriodActualLocation', actual_location)
         return element
 
+    # TODO: update test:
     def iati_activities__iati_activity__result__indicator__period__actual__dimension(  # NOQA: E501
             self, element):
 
@@ -4267,10 +4437,10 @@ class Parse(IatiParser):
                 "value",
                 "required attribute missing")
 
-        period = self.get_model('ResultIndicatorPeriod')
+        period_actual = self.get_model('ResultIndicatorPeriodActual')
 
         actual_dimension = models.ResultIndicatorPeriodActualDimension()
-        actual_dimension.result_indicator_period = period
+        actual_dimension.result_indicator_period_actual = period_actual
         actual_dimension.name = name
         actual_dimension.value = value
 
@@ -4278,13 +4448,16 @@ class Parse(IatiParser):
             'ResultIndicatorPeriodActualDimension', actual_dimension)
         return element
 
+    # TODO: update test:
     def iati_activities__iati_activity__result__indicator__period__actual__comment(self, element):  # NOQA: E501
-        result_indicator_period = self.get_model('ResultIndicatorPeriod')
+        result_indicator_period_actual = self.get_model(
+            'ResultIndicatorPeriodActual'
+        )
 
         result_indicator_period_actual_comment = models\
             .ResultIndicatorPeriodActualComment()
         result_indicator_period_actual_comment\
-            .result_indicator_period = result_indicator_period
+            .result_indicator_period_actual = result_indicator_period_actual
 
         self.register_model(
             'ResultIndicatorPeriodActualComment',
@@ -4370,6 +4543,37 @@ class Parse(IatiParser):
 
         document_link_title = self.get_model('DocumentLinkTitle')
         self.add_narrative(element, document_link_title)
+        return element
+
+    # TODO: test
+    def iati_activities__iati_activity__result__indicator__period__actual__document_link__description(  # NOQA: E501
+            self, element):
+        '''New (optional) <document-link> element for <actual> element
+           inside <result> <indicator>'s <period> element in 2.03
+        '''
+
+        document_link = self.get_model('DocumentLink')
+
+        document_link_description = models.DocumentLinkDescription()
+        document_link_description.document_link = document_link
+
+        self.register_model(
+            'DocumentLinkDescription',
+            document_link_description
+        )
+
+        return element
+
+    # TODO: test
+    def iati_activities__iati_activity__result__indicator__period__actual__document_link__description__narrative(  # NOQA: E501
+            self, element):
+        '''New (optional) <document-link> element for <actual> element
+           inside <result> <indicator>'s <period> element in 2.03
+        '''
+
+        document_link_description = self.get_model('DocumentLinkDescription')
+        self.add_narrative(element, document_link_description)
+
         return element
 
     # TODO: test
@@ -4610,6 +4814,9 @@ class Parse(IatiParser):
             post_save_validators.use_sector_or_transaction_sector(self, a)
             post_save_validators.use_direct_geo_or_transaction_geo(self, a)
             post_save_validators.use_result_reference_or_indicator_reference(
+                self, a
+            )
+            post_save_validators.one_aid_type_for_each_vocabulary(
                 self, a
             )
 

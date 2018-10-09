@@ -64,7 +64,7 @@ class OrganisationSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
         instance = iati_models.Organisation.objects.get(pk=res.json()['id'])
 
@@ -115,7 +115,7 @@ class OrganisationSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
         instance = iati_models.Organisation.objects.get(pk=res.json()['id'])
 
@@ -140,7 +140,7 @@ class OrganisationSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
             iati_models.Organisation.objects.get(pk=organisation.id)
@@ -191,7 +191,7 @@ class OrganisationTotalBudgetSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
         instance = org_models.TotalBudget.objects.get(pk=res.json()['id'])
 
@@ -239,7 +239,7 @@ class OrganisationTotalBudgetSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
         instance = org_models.TotalBudget.objects.get(pk=res.json()['id'])
 
@@ -264,7 +264,7 @@ class OrganisationTotalBudgetSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
             org_models.TotalBudget.objects.get(pk=total_budget.id)
@@ -318,7 +318,7 @@ class OrganisationTotalBudgetLineSaveTestCase(TestCase):
             data,
             format='json')
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
         instance = org_models.TotalBudgetLine.objects.get(pk=res.json()['id'])
 
@@ -364,7 +364,7 @@ class OrganisationTotalBudgetLineSaveTestCase(TestCase):
             data,
             format='json')
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
         instance = org_models.TotalBudgetLine.objects.get(pk=res.json()['id'])
 
@@ -387,7 +387,7 @@ class OrganisationTotalBudgetLineSaveTestCase(TestCase):
                 total_budget_line.id),
             format='json')
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
             org_models.TotalBudgetLine.objects.get(
@@ -444,7 +444,7 @@ class OrganisationRecipientOrgBudgetSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
         instance = org_models.RecipientOrgBudget.objects.get(pk=res.json()[
                                                              'id'])
@@ -502,7 +502,7 @@ class OrganisationRecipientOrgBudgetSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
         instance = org_models.RecipientOrgBudget.objects.get(pk=res.json()[
                                                              'id'])
@@ -534,7 +534,7 @@ class OrganisationRecipientOrgBudgetSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
             org_models.RecipientOrgBudget.objects.get(
@@ -590,7 +590,7 @@ class OrganisationRecipientOrgBudgetLineSaveTestCase(TestCase):
             data,
             format='json')
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
         instance = org_models.RecipientOrgBudgetLine.objects.get(pk=res.json()[
                                                                  'id'])
@@ -639,7 +639,7 @@ class OrganisationRecipientOrgBudgetLineSaveTestCase(TestCase):
             data,
             format='json')
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
         instance = org_models.RecipientOrgBudgetLine.objects.get(pk=res.json()[
                                                                  'id'])
@@ -663,7 +663,7 @@ class OrganisationRecipientOrgBudgetLineSaveTestCase(TestCase):
                 recipient_org_budget_line.id),
             format='json')
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
             org_models.RecipientOrgBudgetLine.objects.get(
@@ -720,7 +720,7 @@ class OrganisationRecipientCountryBudgetSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
         instance = org_models.RecipientCountryBudget.objects.get(pk=res.json()[
                                                                  'id'])
@@ -775,7 +775,7 @@ class OrganisationRecipientCountryBudgetSaveTestCase(TestCase):
             data,
             format='json')
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
         instance = org_models.RecipientCountryBudget.objects.get(pk=res.json()[
                                                                  'id'])
@@ -804,7 +804,7 @@ class OrganisationRecipientCountryBudgetSaveTestCase(TestCase):
                 recipient_country_budget.id),
             format='json')
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
             org_models.RecipientCountryBudget.objects.get(
@@ -860,7 +860,7 @@ class OrganisationRecipientCountryBudgetLineSaveTestCase(TestCase):
             data,
             format='json')
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
         instance = org_models.RecipientCountryBudgetLine.objects.get(
             pk=res.json()['id']
@@ -912,7 +912,7 @@ class OrganisationRecipientCountryBudgetLineSaveTestCase(TestCase):
             data,
             format='json')
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
         instance = org_models.RecipientCountryBudgetLine.objects.get(
             pk=res.json()['id']
@@ -938,7 +938,7 @@ class OrganisationRecipientCountryBudgetLineSaveTestCase(TestCase):
                 recipient_country_budget_line.id),
             format='json')
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
             org_models.RecipientCountryBudgetLine.objects.get(
@@ -995,7 +995,7 @@ class OrganisationRecipientRegionBudgetSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
         instance = org_models.RecipientRegionBudget.objects.get(pk=res.json()[
                                                                 'id'])
@@ -1050,7 +1050,7 @@ class OrganisationRecipientRegionBudgetSaveTestCase(TestCase):
             data,
             format='json')
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
         instance = org_models.RecipientRegionBudget.objects.get(pk=res.json()[
                                                                 'id'])
@@ -1079,7 +1079,7 @@ class OrganisationRecipientRegionBudgetSaveTestCase(TestCase):
                 recipient_region_budget.id),
             format='json')
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
             org_models.RecipientRegionBudget.objects.get(
@@ -1135,7 +1135,7 @@ class OrganisationRecipientRegionBudgetLineSaveTestCase(TestCase):
             data,
             format='json')
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
         instance = org_models.RecipientRegionBudgetLine.objects.get(
             pk=res.json()['id']
@@ -1185,7 +1185,7 @@ class OrganisationRecipientRegionBudgetLineSaveTestCase(TestCase):
             data,
             format='json')
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
         instance = org_models.RecipientRegionBudgetLine.objects.get(
             pk=res.json()['id']
@@ -1211,7 +1211,7 @@ class OrganisationRecipientRegionBudgetLineSaveTestCase(TestCase):
                 recipient_region_budget_line.id),
             format='json')
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
             org_models.RecipientRegionBudgetLine.objects.get(
@@ -1258,7 +1258,7 @@ class OrganisationTotalExpenditureSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
         instance = org_models.TotalExpenditure.objects.get(pk=res.json()['id'])
 
@@ -1299,7 +1299,7 @@ class OrganisationTotalExpenditureSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
         instance = org_models.TotalExpenditure.objects.get(pk=res.json()['id'])
 
@@ -1324,7 +1324,7 @@ class OrganisationTotalExpenditureSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
             org_models.TotalExpenditure.objects.get(
@@ -1380,7 +1380,7 @@ class OrganisationTotalExpenditureLineSaveTestCase(TestCase):
             data,
             format='json')
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
         instance = org_models.TotalExpenditureLine.objects.get(pk=res.json()[
                                                                'id'])
@@ -1427,7 +1427,7 @@ class OrganisationTotalExpenditureLineSaveTestCase(TestCase):
             data,
             format='json')
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
         instance = org_models.TotalExpenditureLine.objects.get(pk=res.json()[
                                                                'id'])
@@ -1451,7 +1451,7 @@ class OrganisationTotalExpenditureLineSaveTestCase(TestCase):
                 total_expenditure_line.id),
             format='json')
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
             org_models.TotalExpenditureLine.objects.get(
@@ -1505,7 +1505,7 @@ class DocumentLinkSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
         instance = org_models.OrganisationDocumentLink.objects.get(
             pk=res.json()['id']
@@ -1560,7 +1560,7 @@ class DocumentLinkSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
         instance = org_models.OrganisationDocumentLink.objects.get(
             pk=res.json()['id']
@@ -1590,7 +1590,7 @@ class DocumentLinkSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
             org_models.OrganisationDocumentLink.objects.get(
@@ -1631,7 +1631,7 @@ class DocumentLinkCategorySaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
         instance = org_models.OrganisationDocumentLinkCategory.objects.get(
             pk=res.json()['id']
@@ -1663,7 +1663,7 @@ class DocumentLinkCategorySaveTestCase(TestCase):
             data,
             format='json')
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
         instance = org_models.OrganisationDocumentLinkCategory.objects.get(
             pk=res.json()['id']
@@ -1684,7 +1684,7 @@ class DocumentLinkCategorySaveTestCase(TestCase):
                 document_link_category.id),
             format='json')
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
             org_models.OrganisationDocumentLinkCategory.objects.get(
@@ -1725,7 +1725,7 @@ class DocumentLinkLanguageSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
         instance = org_models.OrganisationDocumentLinkLanguage.objects.get(
             pk=res.json()['id']
@@ -1756,7 +1756,7 @@ class DocumentLinkLanguageSaveTestCase(TestCase):
             data,
             format='json')
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
         instance = org_models.OrganisationDocumentLinkLanguage.objects.get(
             pk=res.json()['id']
@@ -1777,7 +1777,7 @@ class DocumentLinkLanguageSaveTestCase(TestCase):
                 document_link_language.id),
             format='json')
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
             org_models.OrganisationDocumentLinkLanguage.objects.get(
@@ -1818,7 +1818,7 @@ class DocumentLinkRecipientCountrySaveTestCase(TestCase):
             data,
             format='json')
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
         instance = org_models.DocumentLinkRecipientCountry.objects.get(
             pk=res.json()['id']
@@ -1850,7 +1850,7 @@ class DocumentLinkRecipientCountrySaveTestCase(TestCase):
             data,
             format='json')
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
         instance = org_models.DocumentLinkRecipientCountry.objects.get(
             pk=res.json()['id']
@@ -1872,7 +1872,7 @@ class DocumentLinkRecipientCountrySaveTestCase(TestCase):
                 document_link_recipient_country.id),
             format='json')
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
             org_models.DocumentLinkRecipientCountry.objects.get(
