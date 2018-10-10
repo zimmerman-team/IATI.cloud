@@ -1643,6 +1643,10 @@ class ActivityResultIndicatorDocumentLinkDocumentDateTestCase(TestCase):
         )
 
     def test_activity_result_indicator_document_link_document_date(self):
+        """
+        Test if iso-date attribute in <document_link> XML element is correctly
+        saved.
+        """
 
         # Case 1: 'ido-date' attribute is missing:
 
