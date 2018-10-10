@@ -146,6 +146,7 @@ class IatiParser(object):
         attr = re.sub(",", "COMMA", attr)
         return attr
 
+
     def validate_date(self, unvalidated_date):
 
         if unvalidated_date:
