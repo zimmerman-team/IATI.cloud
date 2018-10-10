@@ -1462,7 +1462,7 @@ class ActivityResultDocumentLinkDocumentDateTestCase(TestCase):
         # all is good
         document_date_attr = {
 
-            "iso-date": '2011-05-06'  # this is correct iso-date
+            "iso-date": '2011-05-06'  # this is acceptable  iso-date
 
         }
         document_date_XML_element = E(
