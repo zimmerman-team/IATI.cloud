@@ -1122,8 +1122,8 @@ class AidTypeTestCase(TestCase):
 
 class ActivityResultDocumentLinkTestCase(TestCase):
     '''
-        2.03: Added new (optional) <document-link> element for <result>
-        element
+    2.03: Added new (optional) <document-link> element for <result>
+    element
     '''
 
     def setUp(self):
@@ -1281,8 +1281,8 @@ class ActivityResultDocumentLinkTestCase(TestCase):
 
 class ActivityResultDocumentLinkTitleTestCase(TestCase):
     '''
-        2.03: Added new (optional) <document-link> element for <result>
-        element
+    2.03: Added new (optional) <document-link> element for <result>
+    element
     '''
 
     def setUp(self):
@@ -1321,8 +1321,8 @@ class ActivityResultDocumentLinkTitleTestCase(TestCase):
 
     def test_activity_result_document_link_title(self):
         '''
-            Test if title attribute in <document_link> xlm element is correctly
-            saved.
+        Test if title attribute in <document_link> XML element is correctly
+        saved.
         '''
 
         dummy_file_format = codelist_factory. \
@@ -1354,8 +1354,8 @@ class ActivityResultDocumentLinkTitleTestCase(TestCase):
 
 class ActivityResultDocumentLinkDocumentDateTestCase(TestCase):
     '''
-        2.03: Added new (optional) <document-link> element for <result>
-        element
+    2.03: Added new (optional) <document-link> element for <result>
+    element
     '''
 
     def setUp(self):
@@ -1394,9 +1394,8 @@ class ActivityResultDocumentLinkDocumentDateTestCase(TestCase):
 
     def test_activity_result_document_link_document_date(self):
         '''
-            Test if iso-date attribute in <document_link> xlm element is
-            correctly
-            saved.
+        Test if iso-date attribute in <document_link> XML element is
+        correctly saved.
         '''
 
         # case 1: 'iso-date' is missing
