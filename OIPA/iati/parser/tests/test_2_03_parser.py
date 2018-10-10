@@ -1721,3 +1721,75 @@ class ActivityResultIndicatorDocumentLinkDocumentDateTestCase(TestCase):
             result_indicator_document_link.iso_date,
             datetime.datetime(2018, 10, 10, 0, 0)
         )
+
+
+class ActivityResultIndicatorDocumentLinkTitleTestCase(TestCase):
+    '''
+    2.03: Added new (optional) <document-link> element for <indicator>
+    element inside <result> element
+    '''
+
+
+    def setUp(self):
+        # 'Main' XML file for instantiating parser:
+        xml_file_attrs = {
+            "generated-datetime": datetime.datetime.now().isoformat(),
+            "version": '2.03',
+        }
+        self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
+
+        dummy_source = synchroniser_factory.DatasetFactory.create(
+            name="dataset-2"
+        )
+
+        self.parser_203 = ParseManager(
+            dataset=dummy_source,
+            root=self.iati_203_XML_file,
+        ).get_parser()
+
+        # Version
+        current_version = VersionFactory(code='2.03')
+
+        # Related objects:
+        self.activity = iati_factory.ActivityFactory.create(
+            iati_standard_version=current_version
+        )
+        self.document_link = iati_factory.DocumentLinkFactory. \
+            create(url='http://someuri.com')
+
+        self.parser_203.register_model('DocumentLink', self.document_link)
+
+
+    def test_activity_result_indicator_document_link_title(self):
+        '''
+        Test if title attribute in <indicator_document_link> XML element is correctly
+        saved.
+        '''
+
+        dummy_file_format = codelist_factory. \
+            FileFormatFactory(code='application/pdf')
+
+        dummy_indicator_document_link = iati_factory. \
+            DocumentLinkFactory(url='http://aasamannepal.org.np/')
+
+        self.parser_203.codelist_cache = {}
+
+        result_document_link_attr = {
+            "url": dummy_indicator_document_link.url,
+            "format": dummy_file_format.code
+
+        }
+        result_indicator_document_link_XML_element = E(
+            'document-link',
+            **result_document_link_attr
+        )
+        self.parser_203 \
+            .iati_activities__iati_activity__result__indicator__document_link__title(
+            # NOQA: E501
+            result_indicator_document_link_XML_element)
+
+        document_link_title = self.parser_203.get_model(
+            'DocumentLinkTitle')
+
+        self.assertEqual(self.document_link,
+                         document_link_title.document_link)
