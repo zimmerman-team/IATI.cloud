@@ -1060,6 +1060,8 @@ class ResultDescription(models.Model):
 
 class ResultIndicator(models.Model):
     result = models.ForeignKey(Result, on_delete=models.CASCADE)
+    # FIXME: new ResultIndicatorBaseline model has to be implemented, as
+    # 'baseline' is a separate XML element in IATI 2.03:
     baseline_year = models.IntegerField(null=True, blank=True, default=None)
     baseline_value = models.CharField(
         null=True, blank=True, default=None, max_length=100)
@@ -1134,6 +1136,8 @@ class ResultIndicatorDescription(models.Model):
         return self.result_indicator.result.activity
 
 
+# FIXME: new ResultIndicatorBaseline model has to be implemented, as 'baseline'
+# is a separate XML element in IATI 2.03:
 class ResultIndicatorBaselineComment(models.Model):
     result_indicator = models.OneToOneField(
         ResultIndicator, on_delete=models.CASCADE)
@@ -1245,6 +1249,8 @@ class ResultIndicatorPeriodActualDimension(models.Model):
         return self.result_indicator_period.result_indicator.result.activity
 
 
+# FIXME: new ResultIndicatorBaseline model has to be implemented, as 'baseline'
+# is a separate XML element in IATI 2.03:
 class ResultIndicatorBaselineDimension(models.Model):
     result_indicator = models.ForeignKey(
         ResultIndicator, on_delete=models.CASCADE)
