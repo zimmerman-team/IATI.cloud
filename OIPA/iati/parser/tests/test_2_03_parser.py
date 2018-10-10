@@ -1466,7 +1466,7 @@ class ActivityResultDocumentLinkDocumentDateTestCase(TestCase):
 
         }
         document_date_XML_element = E(
-            'document-link',
+            'document-date',
             **document_date_attr
         )
         self.parser_203\
