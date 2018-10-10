@@ -1125,7 +1125,6 @@ class ActivityResultDocumentLinkTestCase(TestCase):
     2.03: Added new (optional) <document-link> element for <result>
     element
     '''
-
     def setUp(self):
         # 'Main' XML file for instantiating parser:
         xml_file_attrs = {
@@ -1134,18 +1133,12 @@ class ActivityResultDocumentLinkTestCase(TestCase):
         }
         self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
 
-        dummy_source = synchroniser_factory.DatasetFactory.create(
-            name="dataset-2"
-        )
+        dummy_source = synchroniser_factory.DatasetFactory.create()
 
         self.parser_203 = ParseManager(
             dataset=dummy_source,
             root=self.iati_203_XML_file,
         ).get_parser()
-
-        self.parser_203.default_lang = "en"
-
-        assert (isinstance(self.parser_203, Parser_203))
 
         # Version
         current_version = VersionFactory(code='2.03')
@@ -1302,10 +1295,6 @@ class ActivityResultDocumentLinkTitleTestCase(TestCase):
             root=self.iati_203_XML_file,
         ).get_parser()
 
-        self.parser_203.default_lang = "en"
-
-        assert (isinstance(self.parser_203, Parser_203))
-
         # Version
         current_version = VersionFactory(code='2.03')
 
@@ -1316,7 +1305,6 @@ class ActivityResultDocumentLinkTitleTestCase(TestCase):
         self.document_link = iati_factory.DocumentLinkFactory. \
             create(url='http://someuri.com')
 
-        self.parser_203.register_model('Activity', self.activity)
         self.parser_203.register_model('DocumentLink', self.document_link)
 
     def test_activity_result_document_link_title(self):
@@ -1458,9 +1446,278 @@ class ActivityResultDocumentLinkDocumentDateTestCase(TestCase):
             .iati_activities__iati_activity__result__document_link__document_date(  # NOQA: E501
             document_date_XML_element
         )
+
         # Let's test date is saved
 
         date = dateutil.parser.parse('2011-05-06', ignoretz=True)
 
         document_link = self.parser_203.get_model('DocumentLink')
         self.assertEqual(date, document_link.iso_date)
+
+
+class ActivityResultIndicatorDocumentLinkTestCase(TestCase):
+
+    """
+    2.03: The optional document-link element was added.
+    """
+
+    def setUp(self):
+        # 'Main' XML file for instantiating parser:
+        xml_file_attrs = {
+            "generated-datetime": datetime.datetime.now().isoformat(),
+            "version": '2.03',
+        }
+        self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
+
+        dummy_source = synchroniser_factory.DatasetFactory.create(
+            name="dataset-2"
+        )
+
+        self.parser_203 = ParseManager(
+            dataset=dummy_source,
+            root=self.iati_203_XML_file,
+        ).get_parser()
+
+        self.parser_203.default_lang = "en"
+
+        assert (isinstance(self.parser_203, Parser_203))
+
+        # Related objects:
+        self.result_indicator = iati_factory.ResultIndicatorFactory.create()
+        self.activity = self.result_indicator.result.activity
+        self.result = self.result_indicator.result
+
+        self.parser_203.register_model('Activity', self.activity)
+        self.parser_203.register_model('Result', self.result)
+        self.parser_203.register_model(
+            'ResultIndicator', self.result_indicator
+        )
+
+    def test_activity_result_indicator_document_link(self):
+
+        # Case 1:
+        #  'url is missing'
+
+        result_indicator_document_link_attr = {
+            # url = 'missing'
+
+            "format": 'something'
+
+            # 'format_code' will be got in the function
+
+        }
+        result_indicator_document_link_XML_element = E(
+            'document_link',
+            **result_indicator_document_link_attr
+        )
+
+        try:
+            self.parser_203.\
+                iati_activities__iati_activity__result__indicator__document_link(  # NOQA: E501
+                    result_indicator_document_link_XML_element)
+            self.assertFail()
+        except RequiredFieldError as inst:
+            self.assertEqual(inst.field, 'url')
+            self.assertEqual(inst.message, 'required attribute missing')
+
+        # Case 2:
+        # 'file_format' is missing
+
+        result_indicator_document_link_attr = {
+            "url": 'www.google.com'
+
+            # "format":
+            # 'format_code' will be got in the function
+
+        }
+        result_indicator_document_link_XML_element = E(
+            'document-link',
+            **result_indicator_document_link_attr
+        )
+        try:
+            self.parser_203.\
+                iati_activities__iati_activity__result__indicator__document_link(  # NOQA: E501
+                    result_indicator_document_link_XML_element
+                )
+            self.assertFail()
+        except RequiredFieldError as inst:
+            self.assertEqual(inst.field, 'format')
+            self.assertEqual(inst.message, 'required attribute missing')
+
+        # Case 3;
+        # 'file_format_code' is missing
+
+        result_indicator_document_link_attr = {
+            "url": 'www.google.com',
+            "format": 'something',
+            # 'format_code will be got in the function
+
+        }
+        result_indicator_document_link_XML_element = E(
+            'document-link',
+            **result_indicator_document_link_attr
+        )
+        try:
+            self.parser_203.\
+                iati_activities__iati_activity__result__indicator__document_link(  # NOQA: E501
+                    result_indicator_document_link_XML_element
+                )
+            self.assertFail()
+        except FieldValidationError as inst:
+            self.assertEqual(inst.field, 'format')
+            self.assertEqual(inst.message, 'not found on the accompanying '
+                                           'code list')
+
+        # Case 4;
+        # all is good
+
+        # dummy document-link object
+        dummy_file_format = codelist_factory.\
+            FileFormatFactory(code='application/pdf')
+
+        dummy_document_link = iati_factory.\
+            DocumentLinkFactory(url='http://aasamannepal.org.np/')
+
+        self.parser_203.codelist_cache = {}
+
+        result_indicator_document_link_attr = {
+            "url": dummy_document_link.url,
+            "format": dummy_file_format.code
+
+        }
+        result_indicator_document_link_XML_element = E(
+            'document-link',
+            **result_indicator_document_link_attr
+        )
+
+        self.parser_203 \
+            .iati_activities__iati_activity__result__indicator__document_link(
+                result_indicator_document_link_XML_element
+            )
+
+        result_indicator_document_link = self.parser_203.get_model(
+            'DocumentLink'
+        )
+
+        # checking if everything is saved
+
+        self.assertEqual(
+            result_indicator_document_link.url,
+            dummy_document_link.url
+        )
+        self.assertEqual(
+            result_indicator_document_link.file_format,
+            dummy_document_link.file_format
+        )
+        self.assertEqual(
+            result_indicator_document_link.activity,
+            self.activity
+        )
+        self.assertEqual(
+            result_indicator_document_link.result_indicator,
+            self.result_indicator
+        )
+
+
+class ActivityResultIndicatorDocumentLinkDocumentDateTestCase(TestCase):
+
+    """
+    2.03: The optional document-date element of a document-link in a indicator
+    in a result element was added.
+    """
+
+    def setUp(self):
+        # 'Main' XML file for instantiating parser:
+        xml_file_attrs = {
+            "generated-datetime": datetime.datetime.now().isoformat(),
+            "version": '2.03',
+        }
+        self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
+
+        dummy_source = synchroniser_factory.DatasetFactory.create()
+
+        self.parser_203 = ParseManager(
+            dataset=dummy_source,
+            root=self.iati_203_XML_file,
+        ).get_parser()
+
+        # Related objects:
+        self.document_link = iati_factory.DocumentLinkFactory.create()
+
+        self.parser_203.register_model(
+            'DocumentLink', self.document_link
+        )
+
+    def test_activity_result_indicator_document_link_document_date(self):
+        """
+        Test if iso-date attribute in <document_link> XML element is correctly
+        saved.
+        """
+
+        # Case 1: 'ido-date' attribute is missing:
+
+        document_date_attr = {
+            # 'iso-date': '2018-10-10',
+        }
+
+        document_date_XML_element = E(
+            'document-date',
+            **document_date_attr
+        )
+
+        try:
+            self.parser_203.\
+                iati_activities__iati_activity__result__indicator__document_link__document_date(  # NOQA: E501
+                    document_date_XML_element)
+            self.assertFail()
+        except RequiredFieldError as inst:
+            self.assertEqual(inst.field, 'iso-date')
+            self.assertEqual(inst.message, 'required attribute missing')
+
+        # Case 2:
+        # ISO date is invalid:
+
+        document_date_attr = {
+            'iso-date': '2018-10-ab',
+        }
+        document_date_XML_element = E(
+            'document-date',
+            **document_date_attr
+        )
+
+        try:
+            self.parser_203.\
+                iati_activities__iati_activity__result__indicator__document_link__document_date(  # NOQA: E501
+                    document_date_XML_element)
+            self.assertFail()
+        except RequiredFieldError as inst:
+            self.assertEqual(inst.field, 'iso-date')
+            self.assertEqual(
+                inst.message,
+                'Unspecified or invalid. Date should be of type xml:date.'
+            )
+
+        # Case 3:
+        # all is good:
+
+        document_date_attr = {
+            'iso-date': '2018-10-10',
+        }
+        document_date_XML_element = E(
+            'document-date',
+            **document_date_attr
+        )
+
+        self.parser_203.\
+            iati_activities__iati_activity__result__indicator__document_link__document_date(  # NOQA: E501
+                document_date_XML_element
+            )
+
+        result_indicator_document_link = self.parser_203.get_model(
+            'DocumentLink'
+        )
+
+        self.assertEqual(
+            result_indicator_document_link.iso_date,
+            datetime.datetime(2018, 10, 10, 0, 0)
+        )

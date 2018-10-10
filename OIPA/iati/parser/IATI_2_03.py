@@ -3407,7 +3407,6 @@ class Parse(IatiParser):
 
         return element
 
-    # TODO: test
     def iati_activities__iati_activity__result__indicator__document_link(
             self, element):
         '''New (optional) <document-link> element for <indicator> element
@@ -3461,7 +3460,6 @@ class Parse(IatiParser):
 
         return element
 
-    # TODO: test:
     def iati_activities__iati_activity__result__indicator__document_link__document_date(  # NOQA: E501
             self, element):
         '''New (optional) <document-link> element for <indicator> element
