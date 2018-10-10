@@ -1729,7 +1729,6 @@ class ActivityResultIndicatorDocumentLinkTitleTestCase(TestCase):
     element inside <result> element
     '''
 
-
     def setUp(self):
         # 'Main' XML file for instantiating parser:
         xml_file_attrs = {
@@ -1747,23 +1746,16 @@ class ActivityResultIndicatorDocumentLinkTitleTestCase(TestCase):
             root=self.iati_203_XML_file,
         ).get_parser()
 
-        # Version
-        current_version = VersionFactory(code='2.03')
-
         # Related objects:
-        self.activity = iati_factory.ActivityFactory.create(
-            iati_standard_version=current_version
-        )
         self.document_link = iati_factory.DocumentLinkFactory. \
             create(url='http://someuri.com')
 
         self.parser_203.register_model('DocumentLink', self.document_link)
 
-
     def test_activity_result_indicator_document_link_title(self):
         '''
-        Test if title attribute in <indicator_document_link> XML element is correctly
-        saved.
+        Test if title attribute in <document_link> XML element for
+        <indicator> element is correctly saved.
         '''
 
         dummy_file_format = codelist_factory. \
@@ -1784,8 +1776,7 @@ class ActivityResultIndicatorDocumentLinkTitleTestCase(TestCase):
             **result_document_link_attr
         )
         self.parser_203 \
-            .iati_activities__iati_activity__result__indicator__document_link__title(
-            # NOQA: E501
+            .iati_activities__iati_activity__result__indicator__document_link__title(  # NOQA: E501
             result_indicator_document_link_XML_element)
 
         document_link_title = self.parser_203.get_model(
