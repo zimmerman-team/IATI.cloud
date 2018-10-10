@@ -1635,21 +1635,9 @@ class ActivityResultIndicatorDocumentLinkDocumentDateTestCase(TestCase):
             root=self.iati_203_XML_file,
         ).get_parser()
 
-        self.parser_203.default_lang = "en"
-
-        assert (isinstance(self.parser_203, Parser_203))
-
         # Related objects:
         self.document_link = iati_factory.DocumentLinkFactory.create()
-        self.result_indicator = self.document_link.result_indicator
-        self.activity = self.result_indicator.result.activity
-        self.result = self.result_indicator.result
 
-        self.parser_203.register_model('Activity', self.activity)
-        self.parser_203.register_model('Result', self.result)
-        self.parser_203.register_model(
-            'ResultIndicator', self.result_indicator
-        )
         self.parser_203.register_model(
             'DocumentLink', self.document_link
         )
@@ -1694,7 +1682,10 @@ class ActivityResultIndicatorDocumentLinkDocumentDateTestCase(TestCase):
             self.assertFail()
         except RequiredFieldError as inst:
             self.assertEqual(inst.field, 'iso-date')
-            self.assertEqual(inst.message, 'Unspecified or invalid. Date should be of type xml:date.')
+            self.assertEqual(
+                inst.message,
+                'Unspecified or invalid. Date should be of type xml:date.'
+            )
 
         # Case 3:
         # all is good:
