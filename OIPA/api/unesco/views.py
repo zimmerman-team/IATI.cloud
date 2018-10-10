@@ -1,11 +1,14 @@
 from django.db.models import Sum
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import viewsets
 
 from api.generics.filters import SearchFilter
 from api.aggregation.views import Aggregation, AggregationView, GroupBy
 
 from unesco.models import TransactionBalance
-from .filters import TransactionBalanceFilter
+from api.unesco.filters import TransactionBalanceFilter
+from iati.models import Sector, ActivitySector, Budget
+from api.unesco.serializers import SectorBudgetsSerializer
 
 
 class TransactionBalanceAggregation(AggregationView):
@@ -93,3 +96,25 @@ class TransactionBalanceAggregation(AggregationView):
             renamed_fields="activity_iati_identifier",
         ),
     )
+
+
+class SectorBudgets(viewsets.ModelViewSet):
+    queryset = Sector.objects.all()
+    serializer_class = SectorBudgetsSerializer
+    budgets = None
+
+    def get_queryset(self):
+        activity_ids = ActivitySector.objects.filter(
+            sector__code=self.request.query_params.get('sector')).values_list(
+            'activity', flat=True).distinct()
+
+        self.budgets = list(Budget.objects.filter(
+            activity__id__in=activity_ids).values('activity__sector').annotate(
+            total_budget=Sum('value')))
+
+        sector_ids = ActivitySector.objects.filter(
+            sector__code=self.request.query_params.get('sector')).values_list(
+            'activity__sector', flat=True).distinct()
+
+        return Sector.objects.filter(code__in=sector_ids)
+
