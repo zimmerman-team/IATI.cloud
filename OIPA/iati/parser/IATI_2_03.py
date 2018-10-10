@@ -3262,7 +3262,6 @@ class Parse(IatiParser):
         self.register_model('DocumentLinkLanguage', document_link_language)
         return element
 
-    # TODO: test:
     def iati_activities__iati_activity__result__document_link__document_date(
             self, element):
         '''New (optional) <document-link> element for <result> element in 2.03

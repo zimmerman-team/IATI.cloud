@@ -1401,22 +1401,20 @@ class ActivityResultDocumentLinkDocumentDateTestCase(TestCase):
 
         # case 1: 'iso-date' is missing
 
-        result_document_link_attr = {
-            "url": 'www.google.com',
-            "format": 'something',
-            # 'format_code will be got in the function
+        document_date_attr = {
+            # "iso-date": '25116600000'
 
         }
-        result_document_link_XML_element = E(
-            'document-link',
-            **result_document_link_attr
+        document_date_XML_element = E(
+            'document-date',
+            **document_date_attr
         )
 
         try:
             self.date = self.parser_203 \
                  .iati_activities__iati_activity__result__document_link__document_date(  # NOQA: E501
 
-                result_document_link_XML_element
+                document_date_XML_element
 
             )
         except RequiredFieldError as inst:
@@ -1424,20 +1422,19 @@ class ActivityResultDocumentLinkDocumentDateTestCase(TestCase):
             self.assertEqual(inst.message, 'required attribute missing')
 
         # case 2 : 'iso-date' is not valid
-        result_document_link_attr = {
-            "url": 'www.google.com',
-            "format": 'something',
+        document_date_attr = {
+
             "iso-date": '25116600000'
 
         }
-        result_document_link_XML_element = E(
-            'document-link',
-            **result_document_link_attr
+        document_date_XML_element = E(
+            'document-date',
+            **document_date_attr
         )
 
         try:
             self.parser_203.iati_activities__iati_activity__result__document_link__document_date(  # NOQA: E501
-                result_document_link_XML_element
+                document_date_XML_element
             )
         except RequiredFieldError as inst:
             self.assertEqual(inst.field, 'iso-date')
@@ -1445,42 +1442,40 @@ class ActivityResultDocumentLinkDocumentDateTestCase(TestCase):
                                            'should be of type xml:date.')
 
         # case 3: 'iso-date' is not in correct range
-        result_document_link_attr = {
-            "url": 'www.google.com',
-            "format": 'something',
+        document_date_attr = {
+
             "iso-date": '18200915'
 
         }
-        result_document_link_XML_element = E(
-            'document-link',
-            **result_document_link_attr
+        document_date_XML_element = E(
+            'document-date',
+            **document_date_attr
         )
         try:
             self.parser_203.iati_activities__iati_activity__result__document_link__document_date(  # NOQA: E501
-                result_document_link_XML_element
+                document_date_XML_element
             )
         except FieldValidationError as inst:
             self.assertEqual(inst.field, 'iso-date')
             self.assertEqual(inst.message, 'iso-date not of type xsd:date')
 
         # all is good
-        result_document_link_attr = {
-            "url": 'www.google.com',
-            "format": 'something',
-            "iso-date": '20110506'  # this is correct iso-date
+        document_date_attr = {
+
+            "iso-date": '2011-05-06'  # this is correct iso-date
 
         }
-        result_document_link_XML_element = E(
+        document_date_XML_element = E(
             'document-link',
-            **result_document_link_attr
+            **document_date_attr
         )
         self.parser_203\
             .iati_activities__iati_activity__result__document_link__document_date(  # NOQA: E501
-            result_document_link_XML_element
+            document_date_XML_element
         )
         # Let's test date is saved
 
-        date = dateutil.parser.parse('20110506', ignoretz=True)
+        date = dateutil.parser.parse('2011-05-06', ignoretz=True)
 
         document_link = self.parser_203.get_model('DocumentLink')
         self.assertEqual(date, document_link.iso_date)
