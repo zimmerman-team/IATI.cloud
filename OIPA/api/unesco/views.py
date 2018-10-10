@@ -7,8 +7,8 @@ from api.aggregation.views import Aggregation, AggregationView, GroupBy
 
 from unesco.models import TransactionBalance
 from api.unesco.filters import TransactionBalanceFilter
-from iati.models import Sector, Activity, ActivitySector, Budget
-from api.unesco.serializers import SectorBudgetAggregationSerializer
+from iati.models import Sector, ActivitySector, Budget
+from api.unesco.serializers import SectorBudgetsSerializer
 
 
 class TransactionBalanceAggregation(AggregationView):
@@ -98,9 +98,9 @@ class TransactionBalanceAggregation(AggregationView):
     )
 
 
-class SectorBudgetAggregations(viewsets.ModelViewSet):
+class SectorBudgets(viewsets.ModelViewSet):
     queryset = Sector.objects.all()
-    serializer_class = SectorBudgetAggregationSerializer
+    serializer_class = SectorBudgetsSerializer
     budgets = None
 
     def get_queryset(self):

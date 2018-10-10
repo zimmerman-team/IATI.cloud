@@ -17,7 +17,7 @@ class TransactionBalanceSerializer(DynamicFieldsModelSerializer):
         )
 
 
-class SectorBudgetAggregationSerializer(serializers.ModelSerializer):
+class SectorBudgetsSerializer(serializers.ModelSerializer):
     total_budget = serializers.SerializerMethodField()
 
     class Meta:

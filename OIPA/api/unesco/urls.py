@@ -2,7 +2,7 @@ from django.conf.urls import url
 
 from api.unesco.views import (
     TransactionBalanceAggregation,
-    SectorBudgetAggregations
+    SectorBudgets
 )
 
 app_name = 'api'
@@ -11,6 +11,6 @@ urlpatterns = [
         TransactionBalanceAggregation.as_view(),
         name='transaction-balance-aggregations'),
     url(r'^sector-budgets',
-        SectorBudgetAggregations.as_view({'get': 'list'}),
+        SectorBudgets.as_view({'get': 'list'}),
         name='sector-budgets'),
 ]
