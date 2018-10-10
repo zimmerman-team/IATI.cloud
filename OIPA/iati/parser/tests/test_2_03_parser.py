@@ -1133,18 +1133,12 @@ class ActivityResultDocumentLinkTestCase(TestCase):
         }
         self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
 
-        dummy_source = synchroniser_factory.DatasetFactory.create(
-            name="dataset-2"
-        )
+        dummy_source = synchroniser_factory.DatasetFactory.create()
 
         self.parser_203 = ParseManager(
             dataset=dummy_source,
             root=self.iati_203_XML_file,
         ).get_parser()
-
-        self.parser_203.default_lang = "en"
-
-        assert (isinstance(self.parser_203, Parser_203))
 
         # Version
         current_version = VersionFactory(code='2.03')
@@ -1301,10 +1295,6 @@ class ActivityResultDocumentLinkTitleTestCase(TestCase):
             root=self.iati_203_XML_file,
         ).get_parser()
 
-        self.parser_203.default_lang = "en"
-
-        assert (isinstance(self.parser_203, Parser_203))
-
         # Version
         current_version = VersionFactory(code='2.03')
 
@@ -1315,7 +1305,6 @@ class ActivityResultDocumentLinkTitleTestCase(TestCase):
         self.document_link = iati_factory.DocumentLinkFactory. \
             create(url='http://someuri.com')
 
-        self.parser_203.register_model('Activity', self.activity)
         self.parser_203.register_model('DocumentLink', self.document_link)
 
     def test_activity_result_document_link_title(self):
