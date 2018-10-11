@@ -345,7 +345,7 @@ REST_FRAMEWORK_EXTENSIONS = {
 
 CRONJOBS = [
     (
-        '0 12 * * *',
+        '0 1 * * *',
         'unesco.cron.calculated_all_transaction_balance_for_all_activities'
     ),
 ]
