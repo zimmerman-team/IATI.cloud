@@ -1725,8 +1725,8 @@ class ActivityResultIndicatorDocumentLinkDocumentDateTestCase(TestCase):
 
 class ActivityResultDocumentLinkCategoryTestCase(TestCase):
     """
-    2.03: The optional category element of a document-link in a result
-    element was added.
+    2.03: Added  (optional) <category> element of a <document-link> in a
+    <result> element.
     """
 
     def setUp(self):
@@ -1798,7 +1798,7 @@ class ActivityResultDocumentLinkCategoryTestCase(TestCase):
         document_link_category = codelist_factory.DocumentCategoryFactory(
             code='A04'
         )
-        document_category_attr = {
+        document_link_category_attr = {
             'code': document_link_category.code
 
         }
