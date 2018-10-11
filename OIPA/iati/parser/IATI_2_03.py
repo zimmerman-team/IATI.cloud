@@ -3194,7 +3194,6 @@ class Parse(IatiParser):
 
         return element
 
-    # TODO: test
     def iati_activities__iati_activity__result__document_link__category(
             self, element):
         '''New (optional) <document-link> element for <result> element in 2.03
