@@ -3542,7 +3542,6 @@ class Parse(IatiParser):
 
         return element
 
-
     def iati_activities__iati_activity__result__indicator__document_link__category(self, element):  # NOQA: E501
         '''New (optional) <document-link> element for <indicator> element
            inside <result> element in 2.03
