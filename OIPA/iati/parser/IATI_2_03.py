@@ -3210,7 +3210,8 @@ class Parse(IatiParser):
 
         if not category:
             self.error = FieldValidationError("document-link/category", "code",
-                                              "not found on the accompanying code list",
+                                              "not found on the accompanying "
+                                              "code list",
                                               None, None, code)
             raise self.error
 
