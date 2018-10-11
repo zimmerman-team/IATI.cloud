@@ -5,13 +5,14 @@ from rest_framework import viewsets
 from api.generics.filters import SearchFilter
 from api.aggregation.views import Aggregation, AggregationView, GroupBy
 
-from unesco.models import TransactionBalance
+from unesco.models import TransactionBalance, SectorBudgetBalance
 from api.unesco.filters import TransactionBalanceFilter
-from iati.models import Sector, ActivitySector, Budget
+from iati.models import Sector, ActivitySector
 from api.unesco.serializers import SectorBudgetsSerializer
 
 
 class TransactionBalanceAggregation(AggregationView):
+    # TODO: make a test
     """
        Returns a list aggregations of the transaction balance of each activity for UNESCO specific.
 
@@ -99,22 +100,29 @@ class TransactionBalanceAggregation(AggregationView):
 
 
 class SectorBudgets(viewsets.ModelViewSet):
+    # TODO: Make a test
     queryset = Sector.objects.all()
     serializer_class = SectorBudgetsSerializer
     budgets = None
 
     def get_queryset(self):
+        # Get all activity which have related to the current sector
         activity_ids = ActivitySector.objects.filter(
+            activity__reporting_organisations__organisation__organisation_identifier=self.request.query_params.get('reporting_organisation_identifier'),   # NOQA: E501
             sector__code=self.request.query_params.get('sector')).values_list(
             'activity', flat=True).distinct()
 
-        self.budgets = list(Budget.objects.filter(
-            activity__id__in=activity_ids).values('activity__sector').annotate(
-            total_budget=Sum('value')))
+        # Get all budget with filter of list activity id,
+        # the result filter will be including other sector also
+        # which has related to the list activity id
+        self.budgets = list(SectorBudgetBalance.objects.filter(
+            transaction_balance__activity__id__in=activity_ids
+        ).values('sector').annotate(total_budget=Sum('total_budget')))
 
+        # Get all sector will be showing in the endpoint
         sector_ids = ActivitySector.objects.filter(
+            activity__reporting_organisations__organisation__organisation_identifier=self.request.query_params.get('reporting_organisation_identifier'),  # NOQA: E501
             sector__code=self.request.query_params.get('sector')).values_list(
             'activity__sector', flat=True).distinct()
 
         return Sector.objects.filter(code__in=sector_ids)
-

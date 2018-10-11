@@ -18,6 +18,7 @@ class TransactionBalanceSerializer(DynamicFieldsModelSerializer):
 
 
 class SectorBudgetsSerializer(serializers.ModelSerializer):
+    # TODO: Make test
     total_budget = serializers.SerializerMethodField()
 
     class Meta:
@@ -27,7 +28,7 @@ class SectorBudgetsSerializer(serializers.ModelSerializer):
     def get_total_budget(self, obj):
         result = list(
             filter(
-                lambda x: x['activity__sector'] == obj.code,
+                lambda x: x['sector'] == obj.code,
                 self.context.get('view').budgets
             )
         )
