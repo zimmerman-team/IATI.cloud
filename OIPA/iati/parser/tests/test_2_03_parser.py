@@ -1753,6 +1753,11 @@ class ActivityResultDocumentLinkCategoryTestCase(TestCase):
 
     def test_activity_result_document_link_document_category(self):
 
+        """
+        Test if <document_link> attribute in <documen_link_category> XML
+        element is correctly saved.
+        """
+
         # case 1: when code is missing
 
         document_link_category_attr = {
