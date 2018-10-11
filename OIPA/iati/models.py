@@ -898,7 +898,7 @@ class DocumentLink(models.Model):
         on_delete=models.CASCADE
     )
     # FIXME: this relationship has to point to (currently, non existing)
-    # ResultIndicatorPeriodBaseline model. See: #761
+    # ResultIndicatorBaseline model. See: #761
     result_indicator_baseline = models.ForeignKey(
         'ResultIndicator',
         related_name='baseline_document_links',
@@ -1060,8 +1060,8 @@ class ResultDescription(models.Model):
 
 class ResultIndicator(models.Model):
     result = models.ForeignKey(Result, on_delete=models.CASCADE)
-    # FIXME: new ResultIndicatorBaseline model has to be implemented, as
-    # 'baseline' is a separate XML element in IATI 2.03:
+    # FIXME: this relationship has to point to (currently, non existing)
+    # ResultIndicatorBaseline model. See: #761
     baseline_year = models.IntegerField(null=True, blank=True, default=None)
     baseline_value = models.CharField(
         null=True, blank=True, default=None, max_length=100)
@@ -1136,8 +1136,8 @@ class ResultIndicatorDescription(models.Model):
         return self.result_indicator.result.activity
 
 
-# FIXME: new ResultIndicatorBaseline model has to be implemented, as 'baseline'
-# is a separate XML element in IATI 2.03:
+# FIXME: this relationship has to point to (currently, non existing)
+# ResultIndicatorBaseline model. See: #761
 class ResultIndicatorBaselineComment(models.Model):
     result_indicator = models.OneToOneField(
         ResultIndicator, on_delete=models.CASCADE)
@@ -1150,8 +1150,6 @@ class ResultIndicatorBaselineComment(models.Model):
         return self.result_indicator.result.activity
 
 
-# FIXME: new ResultIndicatorPeriodBaseline model has to be implemented.
-# See: #747 / #756 / #761
 class ResultIndicatorPeriod(models.Model):
     result_indicator = models.ForeignKey(
         ResultIndicator, on_delete=models.CASCADE)
@@ -1249,8 +1247,8 @@ class ResultIndicatorPeriodActualDimension(models.Model):
         return self.result_indicator_period.result_indicator.result.activity
 
 
-# FIXME: new ResultIndicatorBaseline model has to be implemented, as 'baseline'
-# is a separate XML element in IATI 2.03:
+# FIXME: this relationship has to point to (currently, non existing)
+# ResultIndicatorBaseline model. See: #761
 class ResultIndicatorBaselineDimension(models.Model):
     result_indicator = models.ForeignKey(
         ResultIndicator, on_delete=models.CASCADE)
@@ -1551,6 +1549,8 @@ class Condition(models.Model):
 
 class Location(models.Model):
     activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
+    # FIXME: this relationship has to point to (currently, non existing)
+    # ResultIndicatorBaseline model. See: #761
     result_indicator_baseline = models.ForeignKey(
         ResultIndicator,
         null=True,
