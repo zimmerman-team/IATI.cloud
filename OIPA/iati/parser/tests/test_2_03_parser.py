@@ -1800,11 +1800,11 @@ class ActivityResultDocumentLinkCategoryTestCase(TestCase):
         # case:  when all is good
 
         # Let's create dummy document_category
-        document_link_category = codelist_factory.DocumentCategoryFactory(
+        document_category = codelist_factory.DocumentCategoryFactory(
             code='A04'
         )
         document_link_category_attr = {
-            'code': document_link_category.code
+            'code': document_category.code
 
         }
 
@@ -1826,6 +1826,7 @@ class ActivityResultDocumentLinkCategoryTestCase(TestCase):
 
         self.assertEqual(document_link_category.document_link, self.
                          document_link)
+        self.assertEqual(document_link_category.category, document_category)
 
 
 class ActivityResultIndicatorDocumentLinkTitleTestCase(TestCase):
