@@ -1785,6 +1785,7 @@ class ActivityResultIndicatorDocumentLinkTitleTestCase(TestCase):
         self.assertEqual(self.document_link,
                          document_link_title.document_link)
 
+
 class ActivityResultIndicatorDocumentLinkCategoryTestCase(TestCase):
     """
     2.03: Added  (optional) <category> element of a <document-link> in a
@@ -1864,8 +1865,8 @@ class ActivityResultIndicatorDocumentLinkCategoryTestCase(TestCase):
         # Let's create dummy document_category
         indicator_document_category = \
             codelist_factory.DocumentCategoryFactory(
-            code='A04'
-        )
+                code='A04'
+            )
         indicator_document_link_category_attr = {
             'code': indicator_document_category.code
 
@@ -1887,9 +1888,7 @@ class ActivityResultIndicatorDocumentLinkCategoryTestCase(TestCase):
         indicator_document_link_category = self.parser_203.get_model(
             'DocumentLinkCategory')
 
-
         self.assertEqual(indicator_document_link_category.document_link, self.
                          document_link)
         self.assertEqual(indicator_document_link_category.category,
                          indicator_document_category)
-
