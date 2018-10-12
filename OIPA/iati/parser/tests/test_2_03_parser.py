@@ -1024,7 +1024,6 @@ class AidTypeTestCase(TestCase):
         self.parser_203.register_model('Transaction', self.transaction)
         self.parser_203.register_model('Activity', self.activity)
 
-    # TODO: update test with multiple TransactionAidTypes:
     def test_transaction_aid_type(self):
         """
         - Tests if '<aid-type>' xml element is parsed and saved
