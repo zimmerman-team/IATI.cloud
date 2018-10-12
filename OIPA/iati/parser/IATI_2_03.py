@@ -3192,7 +3192,6 @@ class Parse(IatiParser):
 
         return element
 
-    # TODO: test
     def iati_activities__iati_activity__result__document_link__category(
             self, element):
         '''New (optional) <document-link> element for <result> element in 2.03
@@ -3211,10 +3210,11 @@ class Parse(IatiParser):
             raise FieldValidationError(
                 "document-link/category",
                 "code",
-                "not found on the accompanying code list",
+                "not found on the accompanying codelist",
                 None,
                 None,
-                code)
+                code
+            )
 
         document_link = self.get_model('DocumentLink')
 
