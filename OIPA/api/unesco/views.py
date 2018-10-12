@@ -2,13 +2,12 @@ from django.db.models import Sum
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
 
-from api.generics.filters import SearchFilter
 from api.aggregation.views import Aggregation, AggregationView, GroupBy
-
-from unesco.models import TransactionBalance, SectorBudgetBalance
+from api.generics.filters import SearchFilter
 from api.unesco.filters import TransactionBalanceFilter
-from iati.models import Sector, ActivitySector
 from api.unesco.serializers import SectorBudgetsSerializer
+from iati.models import ActivitySector, Sector
+from unesco.models import SectorBudgetBalance, TransactionBalance
 
 
 class TransactionBalanceAggregation(AggregationView):
@@ -56,7 +55,7 @@ class TransactionBalanceAggregation(AggregationView):
        - `cumulative_budget`
        - `cumulative_expenditure`
 
-    """
+    """  # NOQA: E501
 
     queryset = TransactionBalance.objects.all()
     filter_backends = (SearchFilter, DjangoFilterBackend, )

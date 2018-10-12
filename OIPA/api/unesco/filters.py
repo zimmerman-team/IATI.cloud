@@ -1,11 +1,8 @@
-from django_filters import (
-    NumberFilter,
-    DateFilter
-)
+from django_filters import DateFilter, NumberFilter
+
 from api.generics.filters import (
-    CommaSeparatedCharFilter,
-    TogetherFilterSet,
-    StartsWithInCommaSeparatedCharFilter,
+    CommaSeparatedCharFilter, StartsWithInCommaSeparatedCharFilter,
+    TogetherFilterSet
 )
 from unesco.models import TransactionBalance
 

@@ -42,7 +42,7 @@ def welcome(request, format=None):
     * Codelists: [`/api/publishers`](/api/codelists)
 
     * Chains: [`/api/chains`](/api/chains)
-    
+
     * UNESCO specific [`/api/unesco/ransaction-balance-aggregations`](/api/unesco/ransaction-balance-aggregations)
 
     """  # NOQA: E501

@@ -19,6 +19,7 @@ from api.generics.utils import get_or_none, get_or_raise, handle_errors
 from api.publisher.serializers import PublisherSerializer
 from api.region.serializers import BasicRegionSerializer
 from api.sector.serializers import SectorSerializer
+from api.unesco.serializers import TransactionBalanceSerializer
 from iati.models import (
     Activity, ActivityDate, ActivityParticipatingOrganisation,
     ActivityPolicyMarker, ActivityRecipientCountry, ActivityRecipientRegion,
@@ -41,7 +42,6 @@ from iati.models import (
 )
 from iati.parser import validators
 from iati_organisation import models as organisation_models
-from api.unesco.serializers import TransactionBalanceSerializer
 
 
 def save_narratives(instance, data, activity_instance):

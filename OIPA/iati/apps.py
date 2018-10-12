@@ -8,4 +8,4 @@ class IatiConfig(AppConfig):
     verbose_name = 'IATI'
 
     def ready(self):
-        import iati.transaction.signals
+        import iati.transaction.signals  # NOQA: F401

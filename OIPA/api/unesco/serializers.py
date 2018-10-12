@@ -1,8 +1,8 @@
 from rest_framework import serializers
 
 from api.generics.serializers import DynamicFieldsModelSerializer
-from unesco.models import TransactionBalance
 from iati.models import Sector
+from unesco.models import TransactionBalance
 
 
 class TransactionBalanceSerializer(DynamicFieldsModelSerializer):

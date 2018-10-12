@@ -1,6 +1,7 @@
 from datetime import datetime
+
 from iati.models import Activity
-from unesco.models import TransactionBalance, SectorBudgetBalance
+from unesco.models import SectorBudgetBalance, TransactionBalance
 
 
 def calculated_sector_budget_balance_for_one_activity(transaction_balance):
