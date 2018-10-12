@@ -1818,7 +1818,7 @@ class ActivityResultIndicatorDocumentLinkCategoryTestCase(TestCase):
 
         """
         Test if <indicator_document_link> attribute in
-        <documen_link_category> XML element is correctly saved.
+        <document_link_category> XML element is correctly saved.
         """
 
         # case 1: when code is missing
