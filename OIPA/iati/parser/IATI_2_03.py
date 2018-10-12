@@ -3207,11 +3207,14 @@ class Parse(IatiParser):
                 "required attribute missing")
 
         if not category:
-            self.error = FieldValidationError("document-link/category", "code",
-                                              "not found on the accompanying "
-                                              "code list",
-                                              None, None, code)
-            raise self.error
+            raise FieldValidationError(
+                "document-link/category",
+                "code",
+                "not found on the accompanying codelist",
+                None,
+                None,
+                code
+            )
 
         document_link = self.get_model('DocumentLink')
 

@@ -1411,7 +1411,7 @@ class ActivityResultDocumentLinkCategoryTestCase(TestCase):
         except FieldValidationError as inst:
             self.assertEqual(inst.field, 'code')
             self.assertEqual(inst.message, 'not found on the accompanying '
-                                           'code list')
+                                           'codelist')
 
         # case:  when all is good
 
