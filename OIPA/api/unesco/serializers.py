@@ -18,7 +18,7 @@ class TransactionBalanceSerializer(DynamicFieldsModelSerializer):
 
 
 class SectorBudgetsSerializer(serializers.ModelSerializer):
-    # TODO: Make test
+    # TODO: test
     total_budget = serializers.SerializerMethodField()
 
     class Meta:

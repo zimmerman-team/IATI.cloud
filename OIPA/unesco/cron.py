@@ -103,7 +103,7 @@ def calculated_transaction_balance_for_one_activity(activity):
 
 
 def calculated_all_transaction_balance_for_all_activities():
-    # TODO: Make a test
+    # TODO: test
     activities = Activity.objects.all()
     for activity in activities:
         calculated_transaction_balance_for_one_activity(activity=activity)

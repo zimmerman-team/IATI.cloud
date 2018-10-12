@@ -12,7 +12,7 @@ from api.unesco.serializers import SectorBudgetsSerializer
 
 
 class TransactionBalanceAggregation(AggregationView):
-    # TODO: make a test
+    # TODO: test
     """
        Returns a list aggregations of the transaction balance of each activity for UNESCO specific.
 
@@ -100,7 +100,7 @@ class TransactionBalanceAggregation(AggregationView):
 
 
 class SectorBudgets(viewsets.ModelViewSet):
-    # TODO: Make a test
+    # TODO: test
     queryset = Sector.objects.all()
     serializer_class = SectorBudgetsSerializer
     budgets = None

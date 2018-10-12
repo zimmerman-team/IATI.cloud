@@ -5,7 +5,7 @@ from iati.models import Activity, Currency, Sector
 
 
 class TransactionBalance(models.Model):
-    # TODO: make a test
+    # TODO: test
     activity = models.OneToOneField(Activity, on_delete=models.CASCADE)
     updated_at = models.DateTimeField(auto_now=True)
     currency = models.ForeignKey(Currency, on_delete=models.CASCADE)
@@ -24,7 +24,7 @@ class TransactionBalance(models.Model):
 
 
 class SectorBudgetBalance(models.Model):
-    # TODO: make a test
+    # TODO: test
     updated_at = models.DateTimeField(auto_now=True)
     transaction_balance = models.ForeignKey(
         TransactionBalance, on_delete=models.CASCADE)
