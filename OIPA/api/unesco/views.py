@@ -1,14 +1,17 @@
 from django.db.models import Sum
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import viewsets
 
-from api.generics.filters import SearchFilter
 from api.aggregation.views import Aggregation, AggregationView, GroupBy
-
-from unesco.models import TransactionBalance
-from .filters import TransactionBalanceFilter
+from api.generics.filters import SearchFilter
+from api.unesco.filters import TransactionBalanceFilter
+from api.unesco.serializers import SectorBudgetsSerializer
+from iati.models import ActivitySector, Sector
+from unesco.models import SectorBudgetBalance, TransactionBalance
 
 
 class TransactionBalanceAggregation(AggregationView):
+    # TODO: test
     """
        Returns a list aggregations of the transaction balance of each activity for UNESCO specific.
 
@@ -52,7 +55,7 @@ class TransactionBalanceAggregation(AggregationView):
        - `cumulative_budget`
        - `cumulative_expenditure`
 
-    """
+    """  # NOQA: E501
 
     queryset = TransactionBalance.objects.all()
     filter_backends = (SearchFilter, DjangoFilterBackend, )
@@ -93,3 +96,32 @@ class TransactionBalanceAggregation(AggregationView):
             renamed_fields="activity_iati_identifier",
         ),
     )
+
+
+class SectorBudgets(viewsets.ModelViewSet):
+    # TODO: test
+    queryset = Sector.objects.all()
+    serializer_class = SectorBudgetsSerializer
+    budgets = None
+
+    def get_queryset(self):
+        # Get all activity which have related to the current sector
+        activity_ids = ActivitySector.objects.filter(
+            activity__reporting_organisations__organisation__organisation_identifier=self.request.query_params.get('reporting_organisation_identifier'),   # NOQA: E501
+            sector__code=self.request.query_params.get('sector')).values_list(
+            'activity', flat=True).distinct()
+
+        # Get all budget with filter of list activity id,
+        # the result filter will be including other sector also
+        # which has related to the list activity id
+        self.budgets = list(SectorBudgetBalance.objects.filter(
+            transaction_balance__activity__id__in=activity_ids
+        ).values('sector').annotate(total_budget=Sum('total_budget')))
+
+        # Get all sector will be showing in the endpoint
+        sector_ids = ActivitySector.objects.filter(
+            activity__reporting_organisations__organisation__organisation_identifier=self.request.query_params.get('reporting_organisation_identifier'),  # NOQA: E501
+            sector__code=self.request.query_params.get('sector')).values_list(
+            'activity__sector', flat=True).distinct()
+
+        return Sector.objects.filter(code__in=sector_ids)

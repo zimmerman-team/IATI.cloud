@@ -297,7 +297,7 @@ class ActivityList(CacheResponseMixin, DynamicListView):
     - `transactionbalance_total_budget_lte` (*optional*): Less then or equal transaction balance of the total budget.
     - `transactionbalance_total_expenditure_gte` (*optional*): Greater then or equal transaction balance of the total expenditure.
     - `transactionbalance_total_expenditure_lte` (*optional*): Less then or equal transaction balance of the total expenditure.
-    
+
     ## Text search
 
     API request may include `q` parameter. This parameter controls text search

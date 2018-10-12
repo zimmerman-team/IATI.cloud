@@ -286,6 +286,9 @@ class DocumentLinkFactory(NoDatabaseFactory):
     activity = SubFactory(ActivityFactory)
     url = 'http://someuri.com'
     file_format = SubFactory(FileFormatFactory)
+    result_indicator = SubFactory(
+        'iati.factory.iati_factory.ResultIndicatorFactory'
+    )
 
     documentlinktitle = RelatedFactory(
         DocumentLinkTitleFactory, 'document_link')
