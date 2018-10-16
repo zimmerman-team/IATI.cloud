@@ -2085,7 +2085,6 @@ class ActivityResultDocumentLinkLanguageTestCase(TestCase):
         )
         self.parser_203\
             .iati_activities__iati_activity__result__document_link__language(
-            # NOQA: E501
             document_language_XML_element
         )
 
