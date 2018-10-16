@@ -2038,7 +2038,7 @@ class ActivityResultDocumentLinkLanguageTestCase(TestCase):
 
         }
         document_language_XML_element = E(
-            'document-date',
+            'document-language',
             **document_language_attr
         )
 
