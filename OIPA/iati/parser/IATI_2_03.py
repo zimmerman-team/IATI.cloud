@@ -4457,7 +4457,7 @@ class Parse(IatiParser):
 
         return element
 
-#TODO : test posponed due to a possible bug (line 4502) on 16/10/2018
+    # TODO : This testing is posponed on 16/102018 due to a possible bug on line 4501
     def iati_activities__iati_activity__result__indicator__period__actual__document_link(  # NOQA: E501
             self, element):
         '''New (optional) <document-link> element for <actual> element
@@ -4492,8 +4492,6 @@ class Parse(IatiParser):
 
         activity = self.get_model('Activity')
         result_indicator = self.get_model('ResultIndicator')
-
-
 
         document_link = models.DocumentLink()
         document_link.activity = activity
