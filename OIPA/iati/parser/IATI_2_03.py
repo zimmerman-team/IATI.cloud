@@ -3287,12 +3287,12 @@ class Parse(IatiParser):
         self.register_model('DocumentLink', document_link)
         return element
 
+    # TODO: test:
     def iati_activities__iati_activity__result__indicator(self, element):
         measure_code = element.attrib.get('measure')
         measure = self.get_or_none(
             codelist_models.IndicatorMeasure, code=measure_code)
         ascending = element.attrib.get('ascending', '1')
-        # TODO: update test:
         aggregation_status = element.attrib.get('aggregation-status')
 
         if not measure_code:
@@ -3604,7 +3604,7 @@ class Parse(IatiParser):
         self.register_model('DocumentLinkLanguage', document_link_language)
         return element
 
-    # TODO: update test:
+    # TODO: test:
     def iati_activities__iati_activity__result__indicator__baseline(
             self, element):
         year = element.attrib.get('year')
@@ -4032,7 +4032,7 @@ class Parse(IatiParser):
 
         return element
 
-    # TODO: update test:
+    # TODO: test:
     def iati_activities__iati_activity__result__indicator__period__target(
             self, element):
 
@@ -4054,7 +4054,7 @@ class Parse(IatiParser):
 
         return element
 
-    # TODO: update test:
+    # TODO: test:
     def iati_activities__iati_activity__result__indicator__period__target__location(self, element):  # NOQA: E501
 
         ref = element.attrib.get('ref')
@@ -4092,7 +4092,7 @@ class Parse(IatiParser):
             'ResultIndicatorPeriodTargetLocation', target_location)
         return element
 
-    # TODO: update test:
+    # TODO: test:
     def iati_activities__iati_activity__result__indicator__period__target__dimension(  # NOQA: E501
             self, element):
 
@@ -4122,7 +4122,7 @@ class Parse(IatiParser):
             'ResultIndicatorPeriodTargetDimension', target_dimension)
         return element
 
-    # TODO: update test:
+    # TODO: test:
     def iati_activities__iati_activity__result__indicator__period__target__comment(self, element):  # NOQA: E501
         result_indicator_period_target = self.get_model(
             'ResultIndicatorPeriodTarget'
@@ -4457,7 +4457,6 @@ class Parse(IatiParser):
 
         return element
 
-    # TODO : This testing is posponed on 16/102018 due to a possible bug on line 4501
     def iati_activities__iati_activity__result__indicator__period__actual__document_link(  # NOQA: E501
             self, element):
         '''New (optional) <document-link> element for <actual> element
