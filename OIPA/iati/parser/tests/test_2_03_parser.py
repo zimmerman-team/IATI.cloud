@@ -2112,12 +2112,12 @@ class ActivityResultReferenceTestCase(TestCase):
         self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
 
         dummy_source = synchroniser_factory.DatasetFactory.create(
-            name="dataset-2"
+              name="dataset-2"
         )
 
         self.parser_203 = ParseManager(
-            dataset=dummy_source,
-            root=self.iati_203_XML_file,
+             dataset=dummy_source,
+             root=self.iati_203_XML_file,
         ).get_parser()
 
         # Related objects:
@@ -2129,7 +2129,7 @@ class ActivityResultReferenceTestCase(TestCase):
 
     def test_activity_result_reference(self):
         """
-        Test if <result, code, vocabulary_uri> attributes in <reference> XML
+        Test if result, code, vocabulary_uri attributes in <reference> XML
         element is correctly saved.
         """
 
@@ -2165,7 +2165,7 @@ class ActivityResultReferenceTestCase(TestCase):
 
         }
         result_reference_XML_element = E(
-            'document-link',
+            'result-reference',
             **result_reference_attr
         )
         try:
@@ -2187,7 +2187,7 @@ class ActivityResultReferenceTestCase(TestCase):
 
         }
         result_reference_XML_element = E(
-            'document-link',
+            'result-reference',
             **result_reference_attr
         )
         try:
@@ -2211,7 +2211,7 @@ class ActivityResultReferenceTestCase(TestCase):
 
         }
         result_reference_XML_element = E(
-            'document-link',
+            'result-reference',
             **result_reference_attr
         )
         self.parser_203 \
