@@ -3571,7 +3571,6 @@ class Parse(IatiParser):
         self.register_model('DocumentLinkCategory', document_link_category)
         return element
 
-    # TODO: test
     def iati_activities__iati_activity__result__indicator__document_link__language(self, element):  # NOQA: E501
         '''New (optional) <document-link> element for <indicator> element
            inside <result> element in 2.03
