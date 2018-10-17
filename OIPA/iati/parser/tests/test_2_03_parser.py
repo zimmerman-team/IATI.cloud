@@ -2224,6 +2224,17 @@ class ActivityResultIndicatorPeriodTargetTestCase(TestCase):
 
         self.result_indicator_period.refresh_from_db()
 
+        # check ForeignKey assignments:
+        result_indicator_period_target = self.parser_203.get_model(
+            'ResultIndicatorPeriodTarget')
+
+        self.assertEqual(
+            result_indicator_period_target.result_indicator_period,
+            self.result_indicator_period
+        )
+
+        # check 'value' attributes:
+
         # it's 4 because during the test we asigned 1) '', 2) 11, 3) 20 & 21:
         self.assertEqual(self.result_indicator_period.targets.count(), 4)
 
