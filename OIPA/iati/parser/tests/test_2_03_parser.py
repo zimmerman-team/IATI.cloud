@@ -21,8 +21,8 @@ from iati_codelists.factory import codelist_factory
 from iati_codelists.factory.codelist_factory import VersionFactory
 from iati_synchroniser.factory import synchroniser_factory
 from iati_vocabulary.factory.vocabulary_factory import (
-    AidTypeVocabularyFactory, RegionVocabularyFactory, SectorVocabularyFactory,
-    TagVocabularyFactory, ResultVocabularyFactory
+    AidTypeVocabularyFactory, RegionVocabularyFactory, ResultVocabularyFactory,
+    SectorVocabularyFactory, TagVocabularyFactory
 )
 
 
