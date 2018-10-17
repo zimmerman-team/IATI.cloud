@@ -2155,8 +2155,8 @@ class ActivityResultReferenceTestCase(TestCase):
             self.assertEqual(inst.message,
                              'required attribute missing')
 
-        # case 2: where 'vocabulary' cannot be found because
-        # dummy 'ResultVocabulary object was not created.
+        # case 2: where 'vocabulary' cannot be found because of non-existent
+        #  vocabulary_code '100'
 
         result_reference_attr = {
             "vocabulary": '100',
@@ -2224,5 +2224,7 @@ class ActivityResultReferenceTestCase(TestCase):
 
         # check everything is correctly stored
         self.assertEqual(self.result, result_reference.result)
-        self.assertEqual('01', result_reference.code)
-        self.assertEqual('www.example.com', result_reference.vocabulary_uri)
+        self.assertEqual(result_reference_attr.get('code'),
+                         result_reference.code)
+        self.assertEqual(result_reference_attr.get('vocabulary-uri'),
+                         result_reference.vocabulary_uri)
