@@ -2142,7 +2142,7 @@ class ActivityResultReferenceTestCase(TestCase):
 
         }
         result_reference_XML_element = E(
-            'document-link',
+            'result-reference',
             **result_reference_attr
         )
         try:
