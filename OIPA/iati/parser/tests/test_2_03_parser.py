@@ -2095,3 +2095,152 @@ class ActivityResultIndicatorDocumentLinkCategoryTestCase(TestCase):
                          document_link)
         self.assertEqual(indicator_document_link_category.category,
                          indicator_document_category)
+
+
+class ActivityResultIndicatorPeriodTargetTestCase(TestCase):
+
+    """
+    2.03: this element can now be reported multiple times
+    """
+
+    def setUp(self):
+        # 'Main' XML file for instantiating parser:
+        xml_file_attrs = {
+            "generated-datetime": datetime.datetime.now().isoformat(),
+            "version": '2.03',
+        }
+        self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
+
+        dummy_source = synchroniser_factory.DatasetFactory.create()
+
+        self.parser_203 = ParseManager(
+            dataset=dummy_source,
+            root=self.iati_203_XML_file,
+        ).get_parser()
+
+        # Related objects:
+        self.result_indicator_period = iati_factory.\
+            ResultIndicatorPeriodFactory()
+        self.result_indicator = self.result_indicator_period.result_indicator
+        self.activity = self.result_indicator.result.activity
+        self.result = self.result_indicator.result
+
+        self.parser_203.register_model('Activity', self.activity)
+        self.parser_203.register_model('Result', self.result)
+        self.parser_203.register_model(
+            'ResultIndicator', self.result_indicator
+        )
+        self.parser_203.register_model(
+            'ResultIndicatorPeriod', self.result_indicator_period
+        )
+
+    def test_activity_result_indicator_period_target(self):
+
+        """
+        test if <target> element within period, in context of an indicator in
+        a result element is parsed and saved correctly
+        """
+
+        # 1) test if value is not provided:
+        result_indicator_period_target_attrs = {
+            # 'value': '11'
+        }
+
+        result_indicator_period_target_XML_element = E(
+            'target',
+            **result_indicator_period_target_attrs
+        )
+
+        self.parser_203\
+            .iati_activities__iati_activity__result__indicator__period__target(  # NOQA: E501
+                result_indicator_period_target_XML_element
+            )
+
+        result_indicator_period_target = self.parser_203.get_model(
+            'ResultIndicatorPeriodTarget')
+
+        self.assertEqual(
+            result_indicator_period_target.value,
+            ''
+        )
+
+        # 2) test if value is provided:
+        result_indicator_period_target_attrs = {
+            'value': '11'
+        }
+
+        result_indicator_period_target_XML_element = E(
+            'target',
+            **result_indicator_period_target_attrs
+        )
+
+        self.parser_203\
+            .iati_activities__iati_activity__result__indicator__period__target(  # NOQA: E501
+                result_indicator_period_target_XML_element
+            )
+
+        result_indicator_period_target = self.parser_203.get_model(
+            'ResultIndicatorPeriodTarget')
+
+        self.assertEqual(
+            result_indicator_period_target.value,
+            result_indicator_period_target_attrs['value']
+        )
+
+        # 3) test multiple target elements:
+
+        # FIRST ResultIndicatorPeriodTarget:
+        result_indicator_period_target_attrs = {
+            'value': '20'
+        }
+
+        result_indicator_period_target_XML_element = E(
+            'target',
+            **result_indicator_period_target_attrs
+        )
+
+        self.parser_203\
+            .iati_activities__iati_activity__result__indicator__period__target(  # NOQA: E501
+                result_indicator_period_target_XML_element
+            )
+
+        # SECOND ResultIndicatorPeriodTarget:
+        result_indicator_period_target_attrs2 = {
+            'value': '21'
+        }
+
+        result_indicator_period_target_XML_element2 = E(
+            'target',
+            **result_indicator_period_target_attrs2
+        )
+
+        self.parser_203\
+            .iati_activities__iati_activity__result__indicator__period__target(  # NOQA: E501
+                result_indicator_period_target_XML_element2
+            )
+
+        # all unassigned FK relationships are assigned here:
+        self.parser_203.save_all_models()
+
+        self.result_indicator_period.refresh_from_db()
+
+        # check ForeignKey assignments:
+        result_indicator_period_target = self.parser_203.get_model(
+            'ResultIndicatorPeriodTarget')
+
+        self.assertEqual(
+            result_indicator_period_target.result_indicator_period,
+            self.result_indicator_period
+        )
+
+        # check 'value' attributes:
+
+        # it's 4 because during the test we asigned 1) '', 2) 11, 3) 20 & 21:
+        self.assertEqual(self.result_indicator_period.targets.count(), 4)
+
+        self.assertListEqual(
+            ['', '11', '20', '21'],
+            list(self.result_indicator_period.targets.values_list(
+                'value', flat=True
+            ))
+        )
