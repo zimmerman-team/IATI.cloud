@@ -1713,7 +1713,6 @@ class Parse(IatiParser):
 
         return element
 
-    # TODO: test:
     def iati_activities__iati_activity__default_aid_type(self, element):
         """attributes:
         code:A01
