@@ -3169,7 +3169,6 @@ class Parse(IatiParser):
         self.add_narrative(element, document_link_title)
         return element
 
-    # TODO: test
     def iati_activities__iati_activity__result__document_link__description(
             self, element):
 
