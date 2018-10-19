@@ -2244,3 +2244,61 @@ class ActivityResultIndicatorPeriodTargetTestCase(TestCase):
                 'value', flat=True
             ))
         )
+
+
+class ActivityResultIndicatorPeriodTargetDocumentLinkDescriptionTestCase(
+    TestCase
+):
+
+    """
+    2.03: The optional <description> element of a <document-link> element was
+    added.
+    """
+
+    def setUp(self):
+        # 'Main' XML file for instantiating parser:
+        xml_file_attrs = {
+            "generated-datetime": datetime.datetime.now().isoformat(),
+            "version": '2.03',
+        }
+        self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
+
+        dummy_source = synchroniser_factory.DatasetFactory.create()
+
+        self.parser_203 = ParseManager(
+            dataset=dummy_source,
+            root=self.iati_203_XML_file,
+        ).get_parser()
+
+        self.document_link = iati_factory.DocumentLinkFactory. \
+            create(url='http://someuri.com')
+
+        self.parser_203.register_model('DocumentLink', self.document_link)
+
+    def test_activity_result_indicatior_period_target_document_link_description(  # NOQA: E501
+        self
+    ):
+        '''test if <description> element for Activity Result Indicator Period
+        Target's <document-link> element is parsed and saved correctly
+        '''
+
+        document_link_description_attrs = {}
+
+        result_document_link_XML_element = E(
+            'description',
+            **document_link_description_attrs
+        )
+
+        self.parser_203.\
+            iati_activities__iati_activity__result__indicator__period__target__document_link__description(  # NOQA: E501
+                result_document_link_XML_element
+            )
+
+        document_link_description = self.parser_203.get_model(
+            'DocumentLinkDescription'
+        )
+
+        self.assertEqual(
+            document_link_description.document_link,
+            self.document_link
+        )
