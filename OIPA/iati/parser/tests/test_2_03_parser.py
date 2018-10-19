@@ -1119,6 +1119,66 @@ class AidTypeTestCase(TestCase):
         )
 
 
+class ActivityDocumentLinkDescriptionTestCase(TestCase):
+    '''
+    2.03: The optional description element of a document-link element was
+    added.
+    '''
+
+    def setUp(self):
+        # 'Main' XML file for instantiating parser:
+        xml_file_attrs = {
+            "generated-datetime": datetime.datetime.now().isoformat(),
+            "version": '2.03',
+        }
+        self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
+
+        dummy_source = synchroniser_factory.DatasetFactory.create()
+
+        self.parser_203 = ParseManager(
+            dataset=dummy_source,
+            root=self.iati_203_XML_file,
+        ).get_parser()
+
+        # Version
+        current_version = VersionFactory(code='2.03')
+
+        # Related objects:
+        self.activity = iati_factory.ActivityFactory.create(
+            iati_standard_version=current_version
+        )
+        self.document_link = iati_factory.DocumentLinkFactory. \
+            create(url='http://someuri.com')
+
+        self.parser_203.register_model('DocumentLink', self.document_link)
+
+    def test_activity_document_link_description(self):
+        '''test if <description> element for Activity's <document-limk> element
+        is parsed and saved correctly
+        '''
+
+        document_link_description_attrs = {}
+
+        result_document_link_XML_element = E(
+            'description',
+            **document_link_description_attrs
+        )
+
+        self.parser_203.\
+            iati_activities__iati_activity__document_link__description(
+                result_document_link_XML_element
+            )
+
+        document_link_description = self.parser_203.get_model(
+            'DocumentLinkDescription'
+        )
+
+        self.assertEqual(
+            document_link_description.document_link,
+            self.document_link
+        )
+
+
 class ActivityResultDocumentLinkTestCase(TestCase):
     '''
     2.03: Added new (optional) <document-link> element for <result>
