@@ -40,9 +40,7 @@ class ActivityParticipatingOrganisationTestCase(TestCase):
         }
         self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
 
-        dummy_source = synchroniser_factory.DatasetFactory.create(
-            name="dataset-2"
-        )
+        dummy_source = synchroniser_factory.DatasetFactory.create()
 
         self.parser_203 = ParseManager(
             dataset=dummy_source,
@@ -162,9 +160,7 @@ class ActivityTagTestCase(TestCase):
         }
         self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
 
-        dummy_source = synchroniser_factory.DatasetFactory.create(
-            name="dataset-2"
-        )
+        dummy_source = synchroniser_factory.DatasetFactory.create()
 
         self.parser_203 = ParseManager(
             dataset=dummy_source,
@@ -357,9 +353,7 @@ class RecipientCountryTestCase(TestCase):
         }
         self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
 
-        dummy_source = synchroniser_factory.DatasetFactory.create(
-            name="dataset-2"
-        )
+        dummy_source = synchroniser_factory.DatasetFactory.create()
 
         self.parser_203 = ParseManager(
             dataset=dummy_source,
@@ -518,9 +512,7 @@ class RecipientRegionTestCase(TestCase):
         }
         self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
 
-        dummy_source = synchroniser_factory.DatasetFactory.create(
-            name="dataset-2"
-        )
+        dummy_source = synchroniser_factory.DatasetFactory.create()
 
         self.parser_203 = ParseManager(
             dataset=dummy_source,
@@ -753,9 +745,7 @@ class ActivitySectorTestCase(TestCase):
         }
         self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
 
-        dummy_source = synchroniser_factory.DatasetFactory.create(
-            name="dataset-2"
-        )
+        dummy_source = synchroniser_factory.DatasetFactory.create()
 
         self.parser_203 = ParseManager(
             dataset=dummy_source,
@@ -995,9 +985,7 @@ class AidTypeTestCase(TestCase):
         }
         self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
 
-        dummy_source = synchroniser_factory.DatasetFactory.create(
-            name="dataset-2"
-        )
+        dummy_source = synchroniser_factory.DatasetFactory.create()
 
         self.parser_203 = ParseManager(
             dataset=dummy_source,
@@ -1285,9 +1273,7 @@ class ActivityResultDocumentLinkTitleTestCase(TestCase):
         }
         self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
 
-        dummy_source = synchroniser_factory.DatasetFactory.create(
-            name="dataset-2"
-        )
+        dummy_source = synchroniser_factory.DatasetFactory.create()
 
         self.parser_203 = ParseManager(
             dataset=dummy_source,
@@ -1672,9 +1658,7 @@ class ActivityResultIndicatorDocumentLinkTestCase(TestCase):
         }
         self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
 
-        dummy_source = synchroniser_factory.DatasetFactory.create(
-            name="dataset-2"
-        )
+        dummy_source = synchroniser_factory.DatasetFactory.create()
 
         self.parser_203 = ParseManager(
             dataset=dummy_source,
@@ -1940,9 +1924,7 @@ class ActivityResultIndicatorDocumentLinkTitleTestCase(TestCase):
         }
         self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
 
-        dummy_source = synchroniser_factory.DatasetFactory.create(
-            name="dataset-2"
-        )
+        dummy_source = synchroniser_factory.DatasetFactory.create()
 
         self.parser_203 = ParseManager(
             dataset=dummy_source,
@@ -2111,9 +2093,7 @@ class ActivityResultReferenceTestCase(TestCase):
         }
         self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
 
-        dummy_source = synchroniser_factory.DatasetFactory.create(
-              name="dataset-2"
-        )
+        dummy_source = synchroniser_factory.DatasetFactory.create()
 
         self.parser_203 = ParseManager(
              dataset=dummy_source,
@@ -2135,20 +2115,20 @@ class ActivityResultReferenceTestCase(TestCase):
 
         # case 1: where 'vocabulary' is missing
 
-        result_reference_attr = {
+        reference_attr = {
             # "vocabulary": result_vocabulary.code,
             "code": '01',
             "vocabulary-uri": 'www.example.com'
 
         }
-        result_reference_XML_element = E(
+        reference_XML_element = E(
             'result-reference',
-            **result_reference_attr
+            **reference_attr
         )
         try:
             self.parser_203 \
             .iati_activities__iati_activity__result__reference(  # NOQA: E501
-            result_reference_XML_element
+            reference_XML_element
             )
         except RequiredFieldError as inst:
             self.assertEqual(inst.field, 'vocabulary')
@@ -2158,20 +2138,20 @@ class ActivityResultReferenceTestCase(TestCase):
         # case 2: where 'vocabulary' cannot be found because of non-existent
         #  vocabulary_code '100'
 
-        result_reference_attr = {
+        reference_attr = {
             "vocabulary": '100',
             "code": '01',
             "vocabulary-uri": 'www.example.com'
 
         }
-        result_reference_XML_element = E(
-            'result-reference',
-            **result_reference_attr
+        reference_XML_element = E(
+            'reference',
+            **reference_attr
         )
         try:
             self.parser_203 \
                 .iati_activities__iati_activity__result__reference(
-                    result_reference_XML_element
+                    reference_XML_element
                 )
         except FieldValidationError as inst:
             self.assertEqual(inst.field, 'vocabulary')
@@ -2180,20 +2160,20 @@ class ActivityResultReferenceTestCase(TestCase):
 
         # case 3: where 'code' is missing
 
-        result_reference_attr = {
+        reference_attr = {
             "vocabulary": self.result_vocabulary.code,
             # "code": '01',
             "vocabulary-uri": 'www.example.com'
 
         }
-        result_reference_XML_element = E(
+        reference_XML_element = E(
             'result-reference',
-            **result_reference_attr
+            **reference_attr
         )
         try:
             self.parser_203 \
                 .iati_activities__iati_activity__result__reference(
-                     result_reference_XML_element
+                     reference_XML_element
                 )
         except RequiredFieldError as inst:
             self.assertEqual(inst.field, 'code')
@@ -2204,27 +2184,27 @@ class ActivityResultReferenceTestCase(TestCase):
         # because 'vocabulary_uri' is optional.
 
         # case 5: all is good
-        result_reference_attr = {
+        reference_attr = {
             "vocabulary": self.result_vocabulary.code,
             "code": '01',
             "vocabulary-uri": 'www.example.com'
 
         }
-        result_reference_XML_element = E(
-            'result-reference',
-            **result_reference_attr
+        reference_XML_element = E(
+            'reference',
+            **reference_attr
         )
         self.parser_203 \
             .iati_activities__iati_activity__result__reference(  # NOQA: E501
-                result_reference_XML_element
+                reference_XML_element
             )
 
         # get 'ResultReference to check if its attributes are correctly stored
-        result_reference = self.parser_203.get_model('ResultReference')
+        reference = self.parser_203.get_model('ResultReference')
 
         # check everything is correctly stored
-        self.assertEqual(self.result, result_reference.result)
-        self.assertEqual(result_reference_attr.get('code'),
-                         result_reference.code)
-        self.assertEqual(result_reference_attr.get('vocabulary-uri'),
-                         result_reference.vocabulary_uri)
+        self.assertEqual(self.result, reference.result)
+        self.assertEqual(reference_attr.get('code'),
+                         reference.code)
+        self.assertEqual(reference_attr.get('vocabulary-uri'),
+                         reference.vocabulary_uri)
