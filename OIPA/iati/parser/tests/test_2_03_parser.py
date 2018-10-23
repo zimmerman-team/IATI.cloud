@@ -2097,13 +2097,12 @@ class ActivityResultIndicatorDocumentLinkCategoryTestCase(TestCase):
                          indicator_document_category)
 
 
-
 class ActivityResultIndicatorDocumentLinkLanguageTestCase(TestCase):
     '''
-    2.03: Added new (optional) <document-link> element for <result-indicator>
+    2.03: Added new (optional) <document-link> element for <indicator>
     element
     '''
-      def setUp(self):
+    def setUp(self):
         # 'Main' XML file for instantiating parser:
         xml_file_attrs = {
             "generated-datetime": datetime.datetime.now().isoformat(),
@@ -2116,8 +2115,8 @@ class ActivityResultIndicatorDocumentLinkLanguageTestCase(TestCase):
         self.parser_203 = ParseManager(
             dataset=dummy_source,
             root=self.iati_203_XML_file,
-        ).get_parser()  
-      self.document_link = iati_factory.DocumentLinkFactory. \
+        ).get_parser()
+        self.document_link = iati_factory.DocumentLinkFactory. \
             create(url='http://someuri.com')
 
         self.parser_203.register_model('DocumentLink',
@@ -2125,26 +2124,26 @@ class ActivityResultIndicatorDocumentLinkLanguageTestCase(TestCase):
 
     def test_activity_result_indicator_document_link_language(self):
         '''
-        Test if language attribute in <document_link_language> XML element is
+        Test if <language> element in <document_link> XML element is
         correctly saved.
         '''
 
         # case 1: 'code' is missing
 
-        indicator_document_link_language_attr = {
+        language_attr = {
             # "code": 'en'
 
         }
-        indicator_document_link_language_XML_element = E(
-            'document-link-language',
-            **indicator_document_link_language_attr
+        language_XML_element = E(
+            'language',
+            **language_attr
         )
 
         try:
             self.date = self.parser_203 \
                  .iati_activities__iati_activity__result__indicator__document_link__language(  # NOQA: E501
 
-                indicator_document_link_language_XML_element
+                language_XML_element
 
             )
         except RequiredFieldError as inst:
@@ -2152,18 +2151,18 @@ class ActivityResultIndicatorDocumentLinkLanguageTestCase(TestCase):
             self.assertEqual(inst.message, 'required attribute missing')
 
         # case 2: 'language' is not found
-        indicator_document_link_language_attr = {
+        language_attr = {
 
             "code": 'ab'
 
         }
-        indicator_document_link_language_XML_element = E(
+        language_XML_element = E(
             'document-link-language',
-            **indicator_document_link_language_attr
+            **language_attr
         )
         try:
             self.parser_203.iati_activities__iati_activity__result__indicator__document_link__language(  # NOQA: E501
-                indicator_document_link_language_XML_element
+                language_XML_element
             )
         except FieldValidationError as inst:
             self.assertEqual(inst.field, 'code')
@@ -2172,36 +2171,34 @@ class ActivityResultIndicatorDocumentLinkLanguageTestCase(TestCase):
 
         # all is good
         language = codelist_factory.LanguageFactory()  # dummy language object
-        indicator_document_link_language_attr = {
+        language_attr = {
 
             "code": language.code
 
         }
-        indicator_document_link_language_XML_element = E(
+        language_XML_element = E(
             'document-link-language',
-            **indicator_document_link_language_attr
+            **language_attr
         )
         self.parser_203\
             .iati_activities__iati_activity__result__indicator__document_link__language(  # NOQA: E501
-                indicator_document_link_language_XML_element
+                language_XML_element
             )
 
         # Let's test language is saved
 
-        document_link = self.parser_203.get_model('DocumentLink')
-        indicator_document_link_language = self.parser_203.get_model(
+        document_link_language = self.parser_203.get_model(
             'DocumentLinkLanguage')
-        self.assertEqual(document_link,
-                         indicator_document_link_language.document_link)
-        self.assertEqual(language, indicator_document_link_language.language)
-        
-  
-  class ActivityResultIndicatorPeriodTargetTestCase(TestCase):
+        self.assertEqual(self.document_link,
+                         document_link_language.document_link)
+        self.assertEqual(language, document_link_language.language)
+
+
+class ActivityResultIndicatorPeriodTargetTestCase(TestCase):
 
     """
     2.03: this element can now be reported multiple times
     """
-
 
     def setUp(self):
         # 'Main' XML file for instantiating parser:
@@ -2217,7 +2214,7 @@ class ActivityResultIndicatorDocumentLinkLanguageTestCase(TestCase):
             dataset=dummy_source,
             root=self.iati_203_XML_file,
         ).get_parser()
-  # Related objects:
+        # Related objects:
         self.result_indicator_period = iati_factory.\
             ResultIndicatorPeriodFactory()
         self.result_indicator = self.result_indicator_period.result_indicator
