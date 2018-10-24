@@ -26,6 +26,7 @@ sudo apt-get install -y binutils libproj-dev gdal-bin libgeos-3.5.0 libgeos-dev
 sudo apt-get install -y redis-server
 
 # pip dependencies
+sudo pip install setuptools
 sudo pip install ipython
 
 # fulltext Python library for extracting text from various file formats (for indexing).
