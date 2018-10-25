@@ -36,6 +36,8 @@ class Parse(IatiParser):
         # set on activity (if set)
 
         default_lang = self.default_lang
+        # return value with key '{http://www.w3.org/XML/1998/namespace}lang'
+        # return default_lang otherwise
         lang = element.attrib.get(
             '{http://www.w3.org/XML/1998/namespace}lang', default_lang)
         text = element.text

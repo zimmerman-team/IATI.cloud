@@ -12,7 +12,8 @@ from lxml.builder import E
 
 from iati.factory import iati_factory
 from iati.parser.exceptions import (
-    FieldValidationError, IgnoredVocabularyError, RequiredFieldError
+    FieldValidationError, IgnoredVocabularyError, ParserError,
+    RequiredFieldError
 )
 from iati.parser.IATI_2_03 import Parse as Parser_203
 from iati.parser.parse_manager import ParseManager
@@ -2244,3 +2245,124 @@ class ActivityResultIndicatorPeriodTargetTestCase(TestCase):
                 'value', flat=True
             ))
         )
+
+
+class AddNarrativeTestCase(TestCase):
+
+    """
+    2.03: add_narrative() method testing
+    """
+
+    def setUp(self):
+        # 'Main' XML file for instantiating parser:
+        xml_file_attrs = {
+            "generated-datetime": datetime.datetime.now().isoformat(),
+            "version": '2.03',
+        }
+        self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
+
+        dummy_source = synchroniser_factory.DatasetFactory.create()
+
+        self.parser_203 = ParseManager(
+            dataset=dummy_source,
+            root=self.iati_203_XML_file,
+        ).get_parser()
+
+        # related objects
+        # We need to test for two different objects which are 'Activity' and
+        # 'Organisation'
+
+        self.activity = iati_factory.ActivityDummyFactory.create()
+        self.organisation = iati_factory.OrganisationFactory.create()
+
+        self.parser_203.register_model('Activity', self.activity)
+        self.parser_203.register_model('Organisation', self.organisation)
+
+    def test_add_narrrative(self):
+        # Testing for parent = 'organisation'
+        # Case 1 : parent is not passed
+        narrative_attr = {
+            '{http://www.w3.org/XML/1998/namespace}lang': 'fr'
+        }
+        narrative_XML_element = E(
+            'narrative',
+            **narrative_attr
+        )
+
+        try:
+            self.parser_203.add_narrative(narrative_XML_element, None,
+                                          is_organisation_narrative=True)
+        except ParserError as inst:
+            self.assertEqual(inst.field, 'narrative')
+            self.assertEqual(inst.message, 'parent object must be passed')
+
+        # Case 2 : 'lang' cannot be found
+
+        narrative_attr = {
+            '{http://www.w3.org/XML/1998/namespace}lang': 'fr'
+        }
+        narrative_XML_element = E(
+            'narrative',
+            **narrative_attr
+        )
+
+        try:
+            self.parser_203.add_narrative(narrative_XML_element,
+                                          self.organisation,
+                                          is_organisation_narrative=True)
+        except RequiredFieldError as inst:
+            self.assertEqual(inst.field, 'xml:lang')
+            self.assertEqual(inst.message, 'must specify xml:lang on '
+                                           'iati-activity or xml:lang on the '
+                                           'element itself')
+
+        # Case 3 : 'text' is missing
+
+        language = codelist_factory.LanguageFactory(code='en')
+        narrative_attr = {
+            '{http://www.w3.org/XML/1998/namespace}lang': language.code
+        }
+        narrative_XML_element = E(
+            'narrative',
+            **narrative_attr
+        )
+
+        try:
+            self.parser_203.add_narrative(narrative_XML_element,
+                                          self.organisation,
+                                          is_organisation_narrative=True)
+        except RequiredFieldError as inst:
+            self.assertEqual(inst.field, 'text')
+            self.assertEqual(inst.message, 'empty narrative')
+
+        # All is ok
+
+        narrative_XML_element.text = 'Hello world!!'
+
+        self.parser_203.add_narrative(narrative_XML_element, self.organisation,
+                                      is_organisation_narrative=True)
+
+        # check all required things are saved
+
+        register_name = self.organisation.__class__.__name__ + "Narrative"
+        narrative = self.parser_203.get_model(register_name)
+
+        self.assertEqual(narrative.organisation, self.organisation)
+        self.assertEqual(narrative.language, language)
+        self.assertEqual(narrative.content, narrative_XML_element.text)
+
+        # Testing for 'parent' =  Activity
+        # we only have to test if ActivityNarrative is correctly saved.
+
+        narrative_XML_element.text = 'Hello world!!'
+
+        self.parser_203.add_narrative(narrative_XML_element, self.activity)  # NOQA: E501
+
+        # check all required things are saved
+
+        register_name = self.activity.__class__.__name__ + "Narrative"
+        narrative = self.parser_203.get_model(register_name)
+
+        self.assertEqual(narrative.activity, self.activity)
+        self.assertEqual(narrative.language, language)
+        self.assertEqual(narrative.content, narrative_XML_element.text)
