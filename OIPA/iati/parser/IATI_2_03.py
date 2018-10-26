@@ -4520,7 +4520,6 @@ class Parse(IatiParser):
         self.add_narrative(element, document_link_title)
         return element
 
-    # TODO: test
     def iati_activities__iati_activity__result__indicator__period__actual__document_link__description(  # NOQA: E501
             self, element):
         '''New (optional) <document-link> element for <actual> element
