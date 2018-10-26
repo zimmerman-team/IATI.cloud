@@ -1738,7 +1738,6 @@ class ActivityResultDocumentLinkDescriptionTestCase(TestCase):
             dataset=dummy_source,
             root=self.iati_203_XML_file,
         ).get_parser()
-
         self.document_link = iati_factory.DocumentLinkFactory. \
             create(url='http://someuri.com')
 
@@ -1769,6 +1768,126 @@ class ActivityResultDocumentLinkDescriptionTestCase(TestCase):
             document_link_description.document_link,
             self.document_link
         )
+
+
+class ActivityResultIndicatorTestCase(TestCase):
+
+    """
+    2.03: The optional attribute 'aggregation-status' was added
+    """
+
+    def setUp(self):
+        # 'Main' XML file for instantiating parser:
+        xml_file_attrs = {
+            "generated-datetime": datetime.datetime.now().isoformat(),
+            "version": '2.03',
+        }
+        self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
+
+        dummy_source = synchroniser_factory.DatasetFactory.create()
+
+        self.parser_203 = ParseManager(
+            dataset=dummy_source,
+            root=self.iati_203_XML_file,
+        ).get_parser()
+
+        # Related objects:
+        self.result = iati_factory.ResultFactory.create()
+        self.activity = self.result.activity
+
+        self.parser_203.register_model('Activity', self.activity)
+        self.parser_203.register_model('Result', self.result)
+
+    def test_activity_result_indicator(self):
+        """test if <indicator> element inside <result> element is parsed
+        properly
+        """
+
+        # 1) measure attribute is missing:
+        result_indicator_attrs = {
+            # "measure": "1",
+            "ascending": "1",
+            "aggregation-status": "1",
+
+        }
+
+        result_indicator_XML_element = E(
+            'indicator',
+            **result_indicator_attrs
+        )
+
+        try:
+            self.parser_203.\
+                iati_activities__iati_activity__result__indicator(
+                    result_indicator_XML_element
+                )
+            self.assertFail()
+        except RequiredFieldError as inst:
+            self.assertEqual(inst.field, 'measure')
+            self.assertEqual(inst.message, 'required attribute missing')
+
+        # 2) IndicatorMeasure codelist is missing:
+
+        result_indicator_attrs = {
+            "measure": "1",
+            "ascending": "1",
+            "aggregation-status": "1",
+
+        }
+
+        result_indicator_XML_element = E(
+            'indicator',
+            **result_indicator_attrs
+        )
+
+        try:
+            self.parser_203.\
+                iati_activities__iati_activity__result__indicator(
+                    result_indicator_XML_element
+                )
+            self.assertFail()
+        except RequiredFieldError as inst:
+            self.assertEqual(inst.field, 'measure')
+            self.assertEqual(
+                inst.message,
+                'not found on the accompanying code list'
+            )
+
+        # 3) everything's OK:
+        # let's create an IndicatorMeasure codelist object:
+
+        self.parser_203.codelist_cache = {}
+
+        result_indicator_attrs = {
+            "measure": "1",
+            "ascending": "1",
+            "aggregation-status": "1",
+
+        }
+
+        indicator_measure = iati_factory.IndicatorMeasureFactory.create(
+            code=result_indicator_attrs.get("measure")
+        )
+
+        result_indicator_XML_element = E(
+            'indicator',
+            **result_indicator_attrs
+        )
+
+        self.parser_203.\
+            iati_activities__iati_activity__result__indicator(
+                result_indicator_XML_element
+            )
+
+        result_indicator = self.parser_203.get_model('ResultIndicator')
+
+        self.assertEqual(result_indicator.result, self.result)
+        self.assertEqual(
+            result_indicator.measure,
+            indicator_measure
+        )
+        self.assertEqual(result_indicator.ascending, True)
+        self.assertEqual(result_indicator.aggregation_status, True)
 
 
 class ActivityResultIndicatorDocumentLinkTestCase(TestCase):

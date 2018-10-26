@@ -3285,8 +3285,10 @@ class Parse(IatiParser):
         self.register_model('DocumentLink', document_link)
         return element
 
-    # TODO: test:
     def iati_activities__iati_activity__result__indicator(self, element):
+        '''The optional attribute 'aggregation-status' was added
+        '''
+
         measure_code = element.attrib.get('measure')
         measure = self.get_or_none(
             codelist_models.IndicatorMeasure, code=measure_code)
