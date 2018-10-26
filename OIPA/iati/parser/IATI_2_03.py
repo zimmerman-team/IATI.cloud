@@ -1713,7 +1713,6 @@ class Parse(IatiParser):
 
         return element
 
-    # TODO: test:
     def iati_activities__iati_activity__default_aid_type(self, element):
         """attributes:
         code:A01
@@ -1737,9 +1736,20 @@ class Parse(IatiParser):
                 name='OECD DAC',
             )
         else:
-            vocabulary = vocabulary_models.AidTypeVocabulary.objects.get(
+            vocabulary = vocabulary_models.AidTypeVocabulary.objects.filter(
                 code=vocabulary_code,
-            )
+            ).first()
+
+            if not vocabulary:
+                raise FieldValidationError(
+                    "iati-activity/default-aid-type",
+                    "code",
+                    "not found on the accompanying AidTypeVocabulary code "
+                    "list. Note, that custom AidType Vocabularies currently "
+                    "are not supported",
+                    None,
+                    None,
+                    code)
 
         # XXX: Note, that at this point only official (Vocabulary type 1)
         # vocabularies for AidType are supported:
@@ -1752,8 +1762,8 @@ class Parse(IatiParser):
             raise FieldValidationError(
                 "iati-activity/default-aid-type",
                 "code",
-                "not found on the accompanying code list. Note, that custom "
-                "AidType Vocabularies currently are not supported",
+                "not found on the accompanying AidType code list. Note, that "
+                "custom AidType Vocabularies currently are not supported",
                 None,
                 None,
                 code)

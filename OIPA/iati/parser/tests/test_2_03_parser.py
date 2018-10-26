@@ -1119,12 +1119,12 @@ class AidTypeTestCase(TestCase):
         )
 
 
-class ActivityDocumentLinkDescriptionTestCase(TestCase):
-    '''
-    2.03: The optional description element of a document-link element was
-    added.
-    '''
-
+class ActivityDefaultAidTypeTestCase(TestCase):
+    """
+    2.03: 'The default-aid-type' element can be reported multiple times within
+    an iati-activity element. The 'code' attribute definition was updated.
+    The 'vocabulary' attribute was added.
+    """
     def setUp(self):
         # 'Main' XML file for instantiating parser:
         xml_file_attrs = {
@@ -1147,6 +1147,192 @@ class ActivityDocumentLinkDescriptionTestCase(TestCase):
         self.activity = iati_factory.ActivityFactory.create(
             iati_standard_version=current_version
         )
+        self.parser_203.register_model('Activity', self.activity)
+
+    def test_activity_default_aid_type(self):
+
+        # 1) code attribute is missing:
+        activity_default_aid_type_attrs = {
+            # 'code': 'A01',
+            'vocabulary': '1',
+        }
+
+        activity_default_aid_type_XML_element = E(
+            'default-aid-type',
+            **activity_default_aid_type_attrs
+        )
+
+        try:
+            self.parser_203.\
+                iati_activities__iati_activity__default_aid_type(
+                    activity_default_aid_type_XML_element
+                )
+            self.assertFail()
+        except RequiredFieldError as inst:
+            self.assertEqual(inst.field, 'code')
+            self.assertEqual(inst.message, 'required attribute missing')
+
+        # let's create DEFAULT AidTypeVocabulary:
+
+        default_aid_type_vocabulary = AidTypeVocabularyFactory(
+            code='1',
+            name='OECD DAC',
+        )
+
+        # 2) case with custom (currently not supported) AidTypeVocabulary
+        # codelist:
+        activity_default_aid_type_attrs = {
+            'code': 'A01',
+            'vocabulary': '4',  # this is custom vocabulary
+        }
+
+        activity_default_aid_type_XML_element = E(
+            'default-aid-type',
+            **activity_default_aid_type_attrs
+        )
+
+        try:
+            self.parser_203.\
+                iati_activities__iati_activity__default_aid_type(
+                    activity_default_aid_type_XML_element
+                )
+            self.assertFail()
+        except FieldValidationError as inst:
+            self.assertEqual(inst.field, 'code')
+            self.assertEqual(
+                inst.message,
+                'not found on the accompanying AidTypeVocabulary code list. '
+                'Note, that custom AidType Vocabularies currently are not '
+                'supported'
+            )
+
+        # 3) case with invalid code from default AidTypeVocabulary:
+        activity_default_aid_type_attrs = {
+            'code': '2',  # this is invalid code
+            'vocabulary': '1',
+        }
+
+        activity_default_aid_type_XML_element = E(
+            'default-aid-type',
+            **activity_default_aid_type_attrs
+        )
+
+        try:
+            self.parser_203.\
+                iati_activities__iati_activity__default_aid_type(
+                    activity_default_aid_type_XML_element
+                )
+            self.assertFail()
+        except FieldValidationError as inst:
+            self.assertEqual(inst.field, 'code')
+            self.assertEqual(
+                inst.message,
+                'not found on the accompanying AidType code list. '
+                'Note, that custom AidType Vocabularies currently are not '
+                'supported'
+            )
+
+        # 4) all is good:
+        # create default AidType codelist entry:
+        first_default_aid_type = codelist_factory.AidTypeFactory(
+            vocabulary=default_aid_type_vocabulary,
+            code='H02'
+        )
+
+        activity_default_aid_type_attrs = {
+            'code': 'H02',
+            'vocabulary': '1',
+        }
+
+        activity_default_aid_type_XML_element = E(
+            'default-aid-type',
+            **activity_default_aid_type_attrs
+        )
+
+        self.parser_203.\
+            iati_activities__iati_activity__default_aid_type(
+                activity_default_aid_type_XML_element
+            )
+
+        activity_default_aid_type = self.parser_203.get_model(
+            'ActivityDefaultAidType'
+        )
+
+        self.assertEqual(activity_default_aid_type.activity, self.activity)
+        self.assertEqual(
+            activity_default_aid_type.aid_type,
+            first_default_aid_type
+        )
+
+        # 5) multiple default_aid_types for activity:
+
+        # create 2nd default AidType codelist entry:
+        second_default_aid_type = codelist_factory.AidTypeFactory(
+            vocabulary=default_aid_type_vocabulary,
+            code='H03'
+        )
+
+        activity_default_aid_type_attrs = {
+            'code': 'H03',
+            'vocabulary': '1',
+        }
+
+        activity_default_aid_type_XML_element = E(
+            'default-aid-type',
+            **activity_default_aid_type_attrs
+        )
+
+        self.parser_203.\
+            iati_activities__iati_activity__default_aid_type(
+                activity_default_aid_type_XML_element
+            )
+
+        self.activity.refresh_from_db()
+
+        # all unassigned FK relationships are assigned here:
+        self.parser_203.save_all_models()
+
+        # Test if multiple default_aid_types are assigned for Activity:
+        self.assertEqual(self.activity.default_aid_types.count(), 2)
+
+        self.assertEqual(
+            self.activity.default_aid_types.first().aid_type,
+            first_default_aid_type,
+        )
+        self.assertEqual(
+            self.activity.default_aid_types.last().aid_type,
+            second_default_aid_type
+        )
+
+
+class ActivityDocumentLinkDescriptionTestCase(TestCase):
+    '''
+    2.03: The optional description element of a document-link element was
+    added.
+    '''
+    def setUp(self):
+        # 'Main' XML file for instantiating parser:
+        xml_file_attrs = {
+            "generated-datetime": datetime.datetime.now().isoformat(),
+            "version": '2.03',
+        }
+        self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
+
+        dummy_source = synchroniser_factory.DatasetFactory.create()
+
+        self.parser_203 = ParseManager(
+            dataset=dummy_source,
+            root=self.iati_203_XML_file,
+        ).get_parser()
+
+        # Version
+        current_version = VersionFactory(code='2.03')
+
+        # Related objects:
+        self.activity = iati_factory.ActivityFactory.create(
+            iati_standard_version=current_version
+        )
+
         self.document_link = iati_factory.DocumentLinkFactory. \
             create(url='http://someuri.com')
 
@@ -1176,6 +1362,7 @@ class ActivityDocumentLinkDescriptionTestCase(TestCase):
         self.assertEqual(
             document_link_description.document_link,
             self.document_link
+
         )
 
 
