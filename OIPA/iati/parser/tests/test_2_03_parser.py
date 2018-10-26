@@ -2522,7 +2522,7 @@ class AddNarrativeTestCase(TestCase):
 
         narrative_XML_element.text = 'Hello world!!'
 
-        self.parser_203.add_narrative(narrative_XML_element, self.activity)  # NOQA: E501
+        self.parser_203.add_narrative(narrative_XML_element, self.activity)
 
         # check all required things are saved
 
