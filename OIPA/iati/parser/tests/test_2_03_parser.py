@@ -1305,6 +1305,67 @@ class ActivityDefaultAidTypeTestCase(TestCase):
         )
 
 
+class ActivityDocumentLinkDescriptionTestCase(TestCase):
+    '''
+    2.03: The optional description element of a document-link element was
+    added.
+    '''
+    def setUp(self):
+        # 'Main' XML file for instantiating parser:
+        xml_file_attrs = {
+            "generated-datetime": datetime.datetime.now().isoformat(),
+            "version": '2.03',
+        }
+        self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
+
+        dummy_source = synchroniser_factory.DatasetFactory.create()
+
+        self.parser_203 = ParseManager(
+            dataset=dummy_source,
+            root=self.iati_203_XML_file,
+        ).get_parser()
+
+        # Version
+        current_version = VersionFactory(code='2.03')
+
+        # Related objects:
+        self.activity = iati_factory.ActivityFactory.create(
+            iati_standard_version=current_version
+        )
+
+        self.document_link = iati_factory.DocumentLinkFactory. \
+            create(url='http://someuri.com')
+
+        self.parser_203.register_model('DocumentLink', self.document_link)
+
+    def test_activity_document_link_description(self):
+        '''test if <description> element for Activity's <document-limk> element
+        is parsed and saved correctly
+        '''
+
+        document_link_description_attrs = {}
+
+        result_document_link_XML_element = E(
+            'description',
+            **document_link_description_attrs
+        )
+
+        self.parser_203.\
+            iati_activities__iati_activity__document_link__description(
+                result_document_link_XML_element
+            )
+
+        document_link_description = self.parser_203.get_model(
+            'DocumentLinkDescription'
+        )
+
+        self.assertEqual(
+            document_link_description.document_link,
+            self.document_link
+
+        )
+
+
 class ActivityResultDocumentLinkTestCase(TestCase):
     '''
     2.03: Added new (optional) <document-link> element for <result>
@@ -1844,6 +1905,178 @@ class ActivityResultDocumentLinkLanguageTestCase(TestCase):
         self.assertEqual(language, document_link_language.language)
 
 
+class ActivityResultDocumentLinkDescriptionTestCase(TestCase):
+    '''
+    2.03: The optional <description> element of a <document-link> element was
+    added.
+    '''
+
+    def setUp(self):
+        # 'Main' XML file for instantiating parser:
+        xml_file_attrs = {
+            "generated-datetime": datetime.datetime.now().isoformat(),
+            "version": '2.03',
+        }
+        self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
+
+        dummy_source = synchroniser_factory.DatasetFactory.create()
+
+        self.parser_203 = ParseManager(
+            dataset=dummy_source,
+            root=self.iati_203_XML_file,
+        ).get_parser()
+        self.document_link = iati_factory.DocumentLinkFactory. \
+            create(url='http://someuri.com')
+
+        self.parser_203.register_model('DocumentLink', self.document_link)
+
+    def test_activity_result_document_link_description(self):
+        '''test if <description> element for Result's <document-link> element
+        is parsed and saved correctly
+        '''
+
+        document_link_description_attrs = {}
+
+        result_document_link_XML_element = E(
+            'description',
+            **document_link_description_attrs
+        )
+
+        self.parser_203.\
+            iati_activities__iati_activity__result__document_link__description(
+                result_document_link_XML_element
+            )
+
+        document_link_description = self.parser_203.get_model(
+            'DocumentLinkDescription'
+        )
+
+        self.assertEqual(
+            document_link_description.document_link,
+            self.document_link
+        )
+
+
+class ActivityResultIndicatorTestCase(TestCase):
+
+    """
+    2.03: The optional attribute 'aggregation-status' was added
+    """
+
+    def setUp(self):
+        # 'Main' XML file for instantiating parser:
+        xml_file_attrs = {
+            "generated-datetime": datetime.datetime.now().isoformat(),
+            "version": '2.03',
+        }
+        self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
+
+        dummy_source = synchroniser_factory.DatasetFactory.create()
+
+        self.parser_203 = ParseManager(
+            dataset=dummy_source,
+            root=self.iati_203_XML_file,
+        ).get_parser()
+
+        # Related objects:
+        self.result = iati_factory.ResultFactory.create()
+        self.activity = self.result.activity
+
+        self.parser_203.register_model('Activity', self.activity)
+        self.parser_203.register_model('Result', self.result)
+
+    def test_activity_result_indicator(self):
+        """test if <indicator> element inside <result> element is parsed
+        properly
+        """
+
+        # 1) measure attribute is missing:
+        result_indicator_attrs = {
+            # "measure": "1",
+            "ascending": "1",
+            "aggregation-status": "1",
+
+        }
+
+        result_indicator_XML_element = E(
+            'indicator',
+            **result_indicator_attrs
+        )
+
+        try:
+            self.parser_203.\
+                iati_activities__iati_activity__result__indicator(
+                    result_indicator_XML_element
+                )
+            self.assertFail()
+        except RequiredFieldError as inst:
+            self.assertEqual(inst.field, 'measure')
+            self.assertEqual(inst.message, 'required attribute missing')
+
+        # 2) IndicatorMeasure codelist is missing:
+
+        result_indicator_attrs = {
+            "measure": "1",
+            "ascending": "1",
+            "aggregation-status": "1",
+
+        }
+
+        result_indicator_XML_element = E(
+            'indicator',
+            **result_indicator_attrs
+        )
+
+        try:
+            self.parser_203.\
+                iati_activities__iati_activity__result__indicator(
+                    result_indicator_XML_element
+                )
+            self.assertFail()
+        except RequiredFieldError as inst:
+            self.assertEqual(inst.field, 'measure')
+            self.assertEqual(
+                inst.message,
+                'not found on the accompanying code list'
+            )
+
+        # 3) everything's OK:
+        # let's create an IndicatorMeasure codelist object:
+
+        self.parser_203.codelist_cache = {}
+
+        result_indicator_attrs = {
+            "measure": "1",
+            "ascending": "1",
+            "aggregation-status": "1",
+
+        }
+
+        indicator_measure = iati_factory.IndicatorMeasureFactory.create(
+            code=result_indicator_attrs.get("measure")
+        )
+
+        result_indicator_XML_element = E(
+            'indicator',
+            **result_indicator_attrs
+        )
+
+        self.parser_203.\
+            iati_activities__iati_activity__result__indicator(
+                result_indicator_XML_element
+            )
+
+        result_indicator = self.parser_203.get_model('ResultIndicator')
+
+        self.assertEqual(result_indicator.result, self.result)
+        self.assertEqual(
+            result_indicator.measure,
+            indicator_measure
+        )
+        self.assertEqual(result_indicator.ascending, True)
+        self.assertEqual(result_indicator.aggregation_status, True)
+
+
 class ActivityResultIndicatorDocumentLinkTestCase(TestCase):
 
     """
@@ -2283,6 +2516,59 @@ class ActivityResultIndicatorDocumentLinkCategoryTestCase(TestCase):
                          indicator_document_category)
 
 
+class ActivityResultIndicatorDocumentLinkDescriptionTestCase(TestCase):
+    '''
+    2.03: The optional <description> element of a <document-link> element was
+    added.
+    '''
+
+    def setUp(self):
+        # 'Main' XML file for instantiating parser:
+        xml_file_attrs = {
+            "generated-datetime": datetime.datetime.now().isoformat(),
+            "version": '2.03',
+        }
+        self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
+
+        dummy_source = synchroniser_factory.DatasetFactory.create()
+
+        self.parser_203 = ParseManager(
+            dataset=dummy_source,
+            root=self.iati_203_XML_file,
+        ).get_parser()
+
+        self.document_link = iati_factory.DocumentLinkFactory. \
+            create(url='http://someuri.com')
+
+        self.parser_203.register_model('DocumentLink', self.document_link)
+
+    def test_activity_result_indicator_document_link_description(self):
+        '''test if <description> element for Result Indicator's <document-link>
+        element is parsed and saved correctly
+        '''
+
+        document_link_description_attrs = {}
+
+        result_document_link_XML_element = E(
+            'description',
+            **document_link_description_attrs
+        )
+
+        self.parser_203.\
+            iati_activities__iati_activity__result__indicator__document_link__description(  # NOQA: E501
+                result_document_link_XML_element
+            )
+
+        document_link_description = self.parser_203.get_model(
+            'DocumentLinkDescription'
+        )
+
+        self.assertEqual(
+            document_link_description.document_link,
+            self.document_link
+        )
+
+
 class ActivityResultIndicatorPeriodTargetTestCase(TestCase):
 
     """
@@ -2429,4 +2715,269 @@ class ActivityResultIndicatorPeriodTargetTestCase(TestCase):
             list(self.result_indicator_period.targets.values_list(
                 'value', flat=True
             ))
+        )
+
+
+class ActivityResultIndicatorPeriodTargetDocumentLinkDescriptionTestCase(
+    TestCase
+):
+
+    """
+    2.03: The optional <description> element of a <document-link> element was
+    added.
+    """
+
+    def setUp(self):
+        # 'Main' XML file for instantiating parser:
+        xml_file_attrs = {
+            "generated-datetime": datetime.datetime.now().isoformat(),
+            "version": '2.03',
+        }
+        self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
+
+        dummy_source = synchroniser_factory.DatasetFactory.create()
+
+        self.parser_203 = ParseManager(
+            dataset=dummy_source,
+            root=self.iati_203_XML_file,
+        ).get_parser()
+
+        self.document_link = iati_factory.DocumentLinkFactory. \
+            create(url='http://someuri.com')
+
+        self.parser_203.register_model('DocumentLink', self.document_link)
+
+    def test_activity_result_indicatior_period_target_document_link_description(  # NOQA: E501
+        self
+    ):
+        '''test if <description> element for Activity Result Indicator Period
+        Target's <document-link> element is parsed and saved correctly
+        '''
+
+        document_link_description_attrs = {}
+
+        result_document_link_XML_element = E(
+            'description',
+            **document_link_description_attrs
+        )
+
+        self.parser_203.\
+            iati_activities__iati_activity__result__indicator__period__target__document_link__description(  # NOQA: E501
+                result_document_link_XML_element
+            )
+
+        document_link_description = self.parser_203.get_model(
+            'DocumentLinkDescription'
+        )
+
+        self.assertEqual(
+            document_link_description.document_link,
+            self.document_link
+        )
+
+
+class ActivityResultIndicatorPeriodActualTestCase(TestCase):
+
+    """
+    2.03: this element can now be reported multiple times
+    """
+
+    def setUp(self):
+        # 'Main' XML file for instantiating parser:
+        xml_file_attrs = {
+            "generated-datetime": datetime.datetime.now().isoformat(),
+            "version": '2.03',
+        }
+        self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
+
+        dummy_source = synchroniser_factory.DatasetFactory.create()
+
+        self.parser_203 = ParseManager(
+            dataset=dummy_source,
+            root=self.iati_203_XML_file,
+        ).get_parser()
+
+        # Related objects:
+        self.result_indicator_period = iati_factory.\
+            ResultIndicatorPeriodFactory()
+        self.result_indicator = self.result_indicator_period.result_indicator
+        self.activity = self.result_indicator.result.activity
+        self.result = self.result_indicator.result
+
+        self.parser_203.register_model('Activity', self.activity)
+        self.parser_203.register_model('Result', self.result)
+        self.parser_203.register_model(
+            'ResultIndicator', self.result_indicator
+        )
+        self.parser_203.register_model(
+            'ResultIndicatorPeriod', self.result_indicator_period
+        )
+
+    def test_activity_result_indicator_period_actual(self):
+
+        """
+        test if <actual> element within period, in context of an indicator in
+        a result element is parsed and saved correctly
+        """
+
+        # 1) test if value is not provided:
+        result_indicator_period_actual_attrs = {
+            # 'value': '11'
+        }
+
+        result_indicator_period_actual_XML_element = E(
+            'actual',
+            **result_indicator_period_actual_attrs
+        )
+
+        self.parser_203\
+            .iati_activities__iati_activity__result__indicator__period__actual(  # NOQA: E501
+                result_indicator_period_actual_XML_element
+            )
+
+        result_indicator_period_actual = self.parser_203.get_model(
+            'ResultIndicatorPeriodActual')
+
+        self.assertEqual(
+            result_indicator_period_actual.value,
+            ''
+        )
+
+        # 2) test if value is provided:
+        result_indicator_period_actual_attrs = {
+            'value': '11'
+        }
+
+        result_indicator_period_actual_XML_element = E(
+            'actual',
+            **result_indicator_period_actual_attrs
+        )
+
+        self.parser_203\
+            .iati_activities__iati_activity__result__indicator__period__actual(  # NOQA: E501
+                result_indicator_period_actual_XML_element
+            )
+
+        result_indicator_period_actual = self.parser_203.get_model(
+            'ResultIndicatorPeriodActual')
+
+        self.assertEqual(
+            result_indicator_period_actual.value,
+            result_indicator_period_actual_attrs['value']
+        )
+
+        # 3) test multiple actual elements:
+
+        # FIRST ResultIndicatorPeriodActual:
+        result_indicator_period_actual_attrs = {
+            'value': '20'
+        }
+
+        result_indicator_period_actual_XML_element = E(
+            'actual',
+            **result_indicator_period_actual_attrs
+        )
+
+        self.parser_203\
+            .iati_activities__iati_activity__result__indicator__period__actual(  # NOQA: E501
+                result_indicator_period_actual_XML_element
+            )
+
+        # SECOND ResultIndicatorPeriodActual:
+        result_indicator_period_actual_attrs2 = {
+            'value': '21'
+        }
+
+        result_indicator_period_actual_XML_element2 = E(
+            'actual',
+            **result_indicator_period_actual_attrs2
+        )
+
+        self.parser_203\
+            .iati_activities__iati_activity__result__indicator__period__actual(  # NOQA: E501
+                result_indicator_period_actual_XML_element2
+            )
+
+        # all unassigned FK relationships are assigned here:
+        self.parser_203.save_all_models()
+
+        self.result_indicator_period.refresh_from_db()
+
+        # check ForeignKey assignments:
+        result_indicator_period_actual = self.parser_203.get_model(
+            'ResultIndicatorPeriodActual')
+
+        self.assertEqual(
+            result_indicator_period_actual.result_indicator_period,
+            self.result_indicator_period
+        )
+
+        # check 'value' attributes:
+
+        # it's 4 because during the test we asigned 1) '', 2) 11, 3) 20 & 21:
+        self.assertEqual(self.result_indicator_period.actuals.count(), 4)
+
+        self.assertListEqual(
+            ['', '11', '20', '21'],
+            list(self.result_indicator_period.actuals.values_list(
+                'value', flat=True
+            ))
+        )
+
+
+class ActivityResultIndicatorPeriodActualDocumentLinkDescriptionTestCase(
+    TestCase
+):
+
+    """
+    2.03: The optional <description> element of a <document-link> element was
+    added.
+    """
+
+    def setUp(self):
+        # 'Main' XML file for instantiating parser:
+        xml_file_attrs = {
+            "generated-datetime": datetime.datetime.now().isoformat(),
+            "version": '2.03',
+        }
+        self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
+
+        dummy_source = synchroniser_factory.DatasetFactory.create()
+
+        self.parser_203 = ParseManager(
+            dataset=dummy_source,
+            root=self.iati_203_XML_file,
+        ).get_parser()
+
+        self.document_link = iati_factory.DocumentLinkFactory. \
+            create(url='http://someuri.com')
+
+        self.parser_203.register_model('DocumentLink', self.document_link)
+
+    def test_activity_result_indicatior_period_actual_document_link_description(  # NOQA: E501
+        self
+    ):
+        '''test if <description> element for Activity Result Indicator Period
+        Actual's <document-link> element is parsed and saved correctly
+        '''
+
+        document_link_description_attrs = {}
+
+        result_document_link_XML_element = E(
+            'description',
+            **document_link_description_attrs
+        )
+
+        self.parser_203.\
+            iati_activities__iati_activity__result__indicator__period__actual__document_link__description(  # NOQA: E501
+                result_document_link_XML_element
+            )
+
+        document_link_description = self.parser_203.get_model(
+            'DocumentLinkDescription'
+        )
+
+        self.assertEqual(
+            document_link_description.document_link,
+            self.document_link
         )

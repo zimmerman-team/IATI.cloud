@@ -2836,7 +2836,6 @@ class Parse(IatiParser):
         self.add_narrative(element, document_link_title)
         return element
 
-    # TODO: test
     def iati_activities__iati_activity__document_link__description(
             self, element):
 
@@ -3179,7 +3178,6 @@ class Parse(IatiParser):
         self.add_narrative(element, document_link_title)
         return element
 
-    # TODO: test
     def iati_activities__iati_activity__result__document_link__description(
             self, element):
 
@@ -3297,8 +3295,10 @@ class Parse(IatiParser):
         self.register_model('DocumentLink', document_link)
         return element
 
-    # TODO: test:
     def iati_activities__iati_activity__result__indicator(self, element):
+        '''The optional attribute 'aggregation-status' was added
+        '''
+
         measure_code = element.attrib.get('measure')
         measure = self.get_or_none(
             codelist_models.IndicatorMeasure, code=measure_code)
@@ -3520,7 +3520,6 @@ class Parse(IatiParser):
         self.add_narrative(element, document_link_title)
         return element
 
-    # TODO: test
     def iati_activities__iati_activity__result__indicator__document_link__description(  # NOQA: E501
             self, element):
         '''New (optional) <document-link> element for <indicator> element
@@ -4222,7 +4221,6 @@ class Parse(IatiParser):
         self.add_narrative(element, document_link_title)
         return element
 
-    # TODO: test
     def iati_activities__iati_activity__result__indicator__period__target__document_link__description(  # NOQA: E501
             self, element):
         '''New (optional) <document-link> element for <target> element
@@ -4350,7 +4348,6 @@ class Parse(IatiParser):
         self.register_model('DocumentLink', document_link)
         return element
 
-    # TODO: test:
     def iati_activities__iati_activity__result__indicator__period__actual(
             self, element):
 
@@ -4534,7 +4531,6 @@ class Parse(IatiParser):
         self.add_narrative(element, document_link_title)
         return element
 
-    # TODO: test
     def iati_activities__iati_activity__result__indicator__period__actual__document_link__description(  # NOQA: E501
             self, element):
         '''New (optional) <document-link> element for <actual> element
