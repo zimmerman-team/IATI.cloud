@@ -159,6 +159,7 @@ class AddNarrativeTestCase(TestCase):
         self.assertEqual(narrative.activity, self.activity)
         self.assertEqual(narrative.language, language)
         self.assertEqual(narrative.content, narrative_XML_element.text)
+        self.assertEqual(narrative._related_object, self.title)
 
 
 class ActivityParticipatingOrganisationTestCase(TestCase):
