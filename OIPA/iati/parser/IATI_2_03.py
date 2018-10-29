@@ -3695,7 +3695,7 @@ class Parse(IatiParser):
                 ref)
 
         activity = self.get_model('Activity')
-        result_indicator = self.get_model('ResultIndicator')
+        result_indicator_baseline = self.get_model('ResultIndicatorBaseline')
 
         activity_locations = activity.location_set.all()
 
@@ -3711,9 +3711,16 @@ class Parse(IatiParser):
                 None,
                 ref)
 
-        result_indicator.baseline_locations.add(
-            referenced_location, bulk=False
-        )
+        referenced_location.\
+            result_indicator_baseline = result_indicator_baseline
+
+        # It is impossible to assign related object (ForeignKey) before it's
+        # saved, so:
+        # XXX: not sure how efficient this is.
+        if result_indicator_baseline.pk is None:
+            result_indicator_baseline.save()
+
+        self.register_model('Location', referenced_location)
 
         return element
 
