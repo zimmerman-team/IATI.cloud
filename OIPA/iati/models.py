@@ -1555,14 +1555,11 @@ class Condition(models.Model):
 
 class Location(models.Model):
     activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
-    # FIXME: this relationship has to point to (currently, non existing)
-    # ResultIndicatorBaseline model. See: #761
     result_indicator_baseline = models.ForeignKey(
-        ResultIndicator,
+        ResultIndicatorBaseline,
         null=True,
         blank=True,
         on_delete=models.CASCADE,
-        related_name='baseline_locations',
     )
 
     ref = models.CharField(max_length=200, default="", null=True, blank=True)
