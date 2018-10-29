@@ -3616,33 +3616,40 @@ class Parse(IatiParser):
     # TODO: test:
     def iati_activities__iati_activity__result__indicator__baseline(
             self, element):
+
+        iso_date = element.attrib.get('iso-date', None)
         year = element.attrib.get('year')
+        # Current IATI 2.03 rules say, that:
+        # 1 - the @value must be omitted for qualitative measures
+        # 2 - The @value must be included for non-qualitative measures
+        # 3 - The @value must be a valid number for all non-qualitative
+        # measures
         value = element.attrib.get('value')
 
         try:
-            value = Decimal(value)
-        except Exception as e:
-            value = ''
-
-        try:
             year = int(year)
-            if not (year > 1900 and year < 2200):
-                year = None
         except Exception as e:
             year = None
 
-        if not year:
+        if not year or not (year > 1900 and year < 2200):
             raise RequiredFieldError(
                 "result/indicator/baseline",
                 "year",
                 "required attribute missing (should be of type "
                 "xsd:positiveInteger with format (yyyy))")
 
-        result_indicator = self.pop_model('ResultIndicator')
-        result_indicator.baseline_year = year
-        result_indicator.baseline_value = value  # can be empty string
+        result_indicator = self.get_model('ResultIndicator')
+        result_indicator_baseline = models.ResultIndicatorBaseline()
 
-        self.register_model('ResultIndicator', result_indicator)
+        result_indicator_baseline.result_indicator = result_indicator
+        result_indicator_baseline.iso_date = iso_date
+        result_indicator_baseline.year = year
+        result_indicator_baseline.value = value or ''  # can be None
+
+        self.register_model(
+            'ResultIndicatorBaseline',
+            result_indicator_baseline
+        )
 
         return element
 
