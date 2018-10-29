@@ -2438,11 +2438,19 @@ class AddNarrativeTestCase(TestCase):
         # We need to test for two different objects which are 'Activity' and
         # 'Organisation'
 
-        self.activity = iati_factory.ActivityDummyFactory.create()
+        self.title = iati_factory.TitleFactory.create()
+        # we want to use actual elements that have narravtive attribute
         self.organisation = iati_factory.OrganisationFactory.create()
+        self.activity = iati_factory.ActivityDummyFactory.create()
+        self.organisation_reporting_organisation = iati_factory.\
+            OrganisationReportingOrganisationFactory.create()
 
-        self.parser_203.register_model('Activity', self.activity)
+        self.parser_203.register_model('Title', self.title)
         self.parser_203.register_model('Organisation', self.organisation)
+        self.parser_203.register_model('Activity', self.activity)
+        self.parser_203.register_model('OrganisationReportingOrganisation',
+                                       self.
+                                       organisation_reporting_organisation)
 
     def test_add_narrrative(self):
         # Testing for parent = 'organisation'
@@ -2474,7 +2482,8 @@ class AddNarrativeTestCase(TestCase):
 
         try:
             self.parser_203.add_narrative(narrative_XML_element,
-                                          self.organisation,
+                                          self.
+                                          organisation_reporting_organisation,
                                           is_organisation_narrative=True)
         except RequiredFieldError as inst:
             self.assertEqual(inst.field, 'xml:lang')
@@ -2495,7 +2504,8 @@ class AddNarrativeTestCase(TestCase):
 
         try:
             self.parser_203.add_narrative(narrative_XML_element,
-                                          self.organisation,
+                                          self.
+                                          organisation_reporting_organisation,
                                           is_organisation_narrative=True)
         except RequiredFieldError as inst:
             self.assertEqual(inst.field, 'text')
@@ -2505,28 +2515,31 @@ class AddNarrativeTestCase(TestCase):
 
         narrative_XML_element.text = 'Hello world!!'
 
-        self.parser_203.add_narrative(narrative_XML_element, self.organisation,
+        self.parser_203.add_narrative(narrative_XML_element, self.
+                                      organisation_reporting_organisation,
                                       is_organisation_narrative=True)
 
         # check all required things are saved
 
-        register_name = self.organisation.__class__.__name__ + "Narrative"
+        register_name = self.organisation_reporting_organisation.__class__.__name__ + "Narrative"  # NOQA E501
         narrative = self.parser_203.get_model(register_name)
 
         self.assertEqual(narrative.organisation, self.organisation)
         self.assertEqual(narrative.language, language)
         self.assertEqual(narrative.content, narrative_XML_element.text)
+        self.assertEqual(narrative._related_object, self.
+                         organisation_reporting_organisation)
 
-        # Testing for 'parent' =  Activity
-        # we only have to test if ActivityNarrative is correctly saved.
+        # Testing for 'parent' =  Title
+        # we only have to test if TitleNarrative is correctly saved.
 
         narrative_XML_element.text = 'Hello world!!'
 
-        self.parser_203.add_narrative(narrative_XML_element, self.activity)
+        self.parser_203.add_narrative(narrative_XML_element, self.title)
 
         # check all required things are saved
 
-        register_name = self.activity.__class__.__name__ + "Narrative"
+        register_name = self.title.__class__.__name__ + "Narrative"
         narrative = self.parser_203.get_model(register_name)
 
         self.assertEqual(narrative.activity, self.activity)
