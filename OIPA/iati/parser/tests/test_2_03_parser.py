@@ -2653,6 +2653,103 @@ class ActivityResultIndicatorDocumentLinkCategoryTestCase(TestCase):
                          indicator_document_category)
 
 
+class ActivityResultIndicatorDocumentLinkLanguageTestCase(TestCase):
+    '''
+    2.03: Added new (optional) <document-link> element for <indicator>
+    element
+    '''
+    def setUp(self):
+        # 'Main' XML file for instantiating parser:
+        xml_file_attrs = {
+            "generated-datetime": datetime.datetime.now().isoformat(),
+            "version": '2.03',
+        }
+        self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
+
+        dummy_source = synchroniser_factory.DatasetFactory.create()
+
+        self.parser_203 = ParseManager(
+            dataset=dummy_source,
+            root=self.iati_203_XML_file,
+        ).get_parser()
+        self.document_link = iati_factory.DocumentLinkFactory. \
+            create(url='http://someuri.com')
+
+        self.parser_203.register_model('DocumentLink',
+                                       self.document_link)
+
+    def test_activity_result_indicator_document_link_language(self):
+        '''
+        Test if <language> element in <document_link> XML element is
+        correctly saved.
+        '''
+
+        # case 1: 'code' is missing
+
+        language_attr = {
+            # "code": 'en'
+
+        }
+        language_XML_element = E(
+            'language',
+            **language_attr
+        )
+
+        try:
+            self.date = self.parser_203 \
+                 .iati_activities__iati_activity__result__indicator__document_link__language(  # NOQA: E501
+
+                language_XML_element
+
+            )
+        except RequiredFieldError as inst:
+            self.assertEqual(inst.field, 'code')
+            self.assertEqual(inst.message, 'required attribute missing')
+
+        # case 2: 'language' is not found
+        language_attr = {
+
+            "code": 'ab'
+
+        }
+        language_XML_element = E(
+            'language',
+            **language_attr
+        )
+        try:
+            self.parser_203.iati_activities__iati_activity__result__indicator__document_link__language(  # NOQA: E501
+                language_XML_element
+            )
+        except FieldValidationError as inst:
+            self.assertEqual(inst.field, 'code')
+            self.assertEqual(inst.message,
+                             'not found on the accompanying code list')
+
+        # all is good
+        language = codelist_factory.LanguageFactory()  # dummy language object
+        language_attr = {
+
+            "code": language.code
+
+        }
+        language_XML_element = E(
+            'language',
+            **language_attr
+        )
+        self.parser_203\
+            .iati_activities__iati_activity__result__indicator__document_link__language(  # NOQA: E501
+                language_XML_element
+            )
+
+        # Let's test language is saved
+
+        document_link_language = self.parser_203.get_model(
+            'DocumentLinkLanguage')
+        self.assertEqual(self.document_link,
+                         document_link_language.document_link)
+        self.assertEqual(language, document_link_language.language)
+
+
 class ActivityResultIndicatorDocumentLinkDescriptionTestCase(TestCase):
     '''
     2.03: The optional <description> element of a <document-link> element was
@@ -2673,8 +2770,7 @@ class ActivityResultIndicatorDocumentLinkDescriptionTestCase(TestCase):
             dataset=dummy_source,
             root=self.iati_203_XML_file,
         ).get_parser()
-
-        self.document_link = iati_factory.DocumentLinkFactory. \
+        self.document_link = iati_factory.DocumentLinkFactory.\
             create(url='http://someuri.com')
 
         self.parser_203.register_model('DocumentLink', self.document_link)
@@ -2726,7 +2822,6 @@ class ActivityResultIndicatorPeriodTargetTestCase(TestCase):
             dataset=dummy_source,
             root=self.iati_203_XML_file,
         ).get_parser()
-
         # Related objects:
         self.result_indicator_period = iati_factory.\
             ResultIndicatorPeriodFactory()
