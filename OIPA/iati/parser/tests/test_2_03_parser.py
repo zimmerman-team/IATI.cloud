@@ -12,7 +12,8 @@ from lxml.builder import E
 
 from iati.factory import iati_factory
 from iati.parser.exceptions import (
-    FieldValidationError, IgnoredVocabularyError, RequiredFieldError
+    FieldValidationError, IgnoredVocabularyError, ParserError,
+    RequiredFieldError
 )
 from iati.parser.IATI_2_03 import Parse as Parser_203
 from iati.parser.parse_manager import ParseManager
@@ -21,9 +22,145 @@ from iati_codelists.factory import codelist_factory
 from iati_codelists.factory.codelist_factory import VersionFactory
 from iati_synchroniser.factory import synchroniser_factory
 from iati_vocabulary.factory.vocabulary_factory import (
-    AidTypeVocabularyFactory, RegionVocabularyFactory, SectorVocabularyFactory,
-    TagVocabularyFactory
+    AidTypeVocabularyFactory, RegionVocabularyFactory, ResultVocabularyFactory,
+    SectorVocabularyFactory, TagVocabularyFactory
 )
+
+
+class AddNarrativeTestCase(TestCase):
+
+    """
+    2.03: add_narrative() method testing
+    """
+
+    def setUp(self):
+        # 'Main' XML file for instantiating parser:
+        xml_file_attrs = {
+            "generated-datetime": datetime.datetime.now().isoformat(),
+            "version": '2.03',
+        }
+        self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
+
+        dummy_source = synchroniser_factory.DatasetFactory.create()
+
+        self.parser_203 = ParseManager(
+            dataset=dummy_source,
+            root=self.iati_203_XML_file,
+        ).get_parser()
+
+        # related objects
+        # We need to test for two different objects which are 'Activity' and
+        # 'Organisation'
+
+        self.title = iati_factory.TitleFactory.create()
+        # we want to use actual elements that have narravtive attribute
+        self.organisation = iati_factory.OrganisationFactory.create()
+        self.activity = iati_factory.ActivityDummyFactory.create()
+        self.organisation_reporting_organisation = iati_factory.\
+            OrganisationReportingOrganisationFactory.create()
+
+        self.parser_203.register_model('Title', self.title)
+        self.parser_203.register_model('Organisation', self.organisation)
+        self.parser_203.register_model('Activity', self.activity)
+        self.parser_203.register_model('OrganisationReportingOrganisation',
+                                       self.
+                                       organisation_reporting_organisation)
+
+    def test_add_narrrative(self):
+        # Testing for parent = 'organisation_reporting_organisation'
+        # Case 1 : parent is not passed
+        narrative_attr = {
+            '{http://www.w3.org/XML/1998/namespace}lang': 'fr'
+        }
+        narrative_XML_element = E(
+            'narrative',
+            **narrative_attr
+        )
+
+        try:
+            self.parser_203.add_narrative(narrative_XML_element, None,
+                                          is_organisation_narrative=True)
+        except ParserError as inst:
+            self.assertEqual(inst.field, 'narrative')
+            self.assertEqual(inst.message, 'parent object must be passed')
+
+        # Case 2 : 'lang' cannot be found
+
+        narrative_attr = {
+            '{http://www.w3.org/XML/1998/namespace}lang': 'fr'
+        }
+        narrative_XML_element = E(
+            'narrative',
+            **narrative_attr
+        )
+
+        try:
+            self.parser_203.add_narrative(narrative_XML_element,
+                                          self.
+                                          organisation_reporting_organisation,
+                                          is_organisation_narrative=True)
+        except RequiredFieldError as inst:
+            self.assertEqual(inst.field, 'xml:lang')
+            self.assertEqual(inst.message, 'must specify xml:lang on '
+                                           'iati-activity or xml:lang on the '
+                                           'element itself')
+
+        # Case 3 : 'text' is missing
+
+        language = codelist_factory.LanguageFactory(code='en')
+        narrative_attr = {
+            '{http://www.w3.org/XML/1998/namespace}lang': language.code
+        }
+        narrative_XML_element = E(
+            'narrative',
+            **narrative_attr
+        )
+
+        try:
+            self.parser_203.add_narrative(narrative_XML_element,
+                                          self.
+                                          organisation_reporting_organisation,
+                                          is_organisation_narrative=True)
+        except RequiredFieldError as inst:
+            self.assertEqual(inst.field, 'text')
+            self.assertEqual(inst.message, 'empty narrative')
+
+        # All is ok
+
+        narrative_XML_element.text = 'Hello world!!'
+
+        self.parser_203.add_narrative(narrative_XML_element, self.
+                                      organisation_reporting_organisation,
+                                      is_organisation_narrative=True)
+
+        # check all required things are saved
+
+        register_name = self.organisation_reporting_organisation.\
+            __class__.__name__ + "Narrative"
+        narrative = self.parser_203.get_model(register_name)
+
+        self.assertEqual(narrative.organisation, self.organisation)
+        self.assertEqual(narrative.language, language)
+        self.assertEqual(narrative.content, narrative_XML_element.text)
+        self.assertEqual(narrative._related_object, self.
+                         organisation_reporting_organisation)
+
+        # Testing for 'parent' =  Title
+        # we only have to test if TitleNarrative is correctly saved.
+
+        narrative_XML_element.text = 'Hello world!!'
+
+        self.parser_203.add_narrative(narrative_XML_element, self.title)
+
+        # check all required things are saved
+
+        register_name = self.title.__class__.__name__ + "Narrative"
+        narrative = self.parser_203.get_model(register_name)
+
+        self.assertEqual(narrative.activity, self.activity)
+        self.assertEqual(narrative.language, language)
+        self.assertEqual(narrative.content, narrative_XML_element.text)
+        self.assertEqual(narrative._related_object, self.title)
 
 
 class ActivityParticipatingOrganisationTestCase(TestCase):
@@ -40,9 +177,7 @@ class ActivityParticipatingOrganisationTestCase(TestCase):
         }
         self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
 
-        dummy_source = synchroniser_factory.DatasetFactory.create(
-            name="dataset-2"
-        )
+        dummy_source = synchroniser_factory.DatasetFactory.create()
 
         self.parser_203 = ParseManager(
             dataset=dummy_source,
@@ -162,9 +297,7 @@ class ActivityTagTestCase(TestCase):
         }
         self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
 
-        dummy_source = synchroniser_factory.DatasetFactory.create(
-            name="dataset-2"
-        )
+        dummy_source = synchroniser_factory.DatasetFactory.create()
 
         self.parser_203 = ParseManager(
             dataset=dummy_source,
@@ -357,9 +490,7 @@ class RecipientCountryTestCase(TestCase):
         }
         self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
 
-        dummy_source = synchroniser_factory.DatasetFactory.create(
-            name="dataset-2"
-        )
+        dummy_source = synchroniser_factory.DatasetFactory.create()
 
         self.parser_203 = ParseManager(
             dataset=dummy_source,
@@ -518,9 +649,7 @@ class RecipientRegionTestCase(TestCase):
         }
         self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
 
-        dummy_source = synchroniser_factory.DatasetFactory.create(
-            name="dataset-2"
-        )
+        dummy_source = synchroniser_factory.DatasetFactory.create()
 
         self.parser_203 = ParseManager(
             dataset=dummy_source,
@@ -753,9 +882,7 @@ class ActivitySectorTestCase(TestCase):
         }
         self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
 
-        dummy_source = synchroniser_factory.DatasetFactory.create(
-            name="dataset-2"
-        )
+        dummy_source = synchroniser_factory.DatasetFactory.create()
 
         self.parser_203 = ParseManager(
             dataset=dummy_source,
@@ -995,9 +1122,7 @@ class AidTypeTestCase(TestCase):
         }
         self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
 
-        dummy_source = synchroniser_factory.DatasetFactory.create(
-            name="dataset-2"
-        )
+        dummy_source = synchroniser_factory.DatasetFactory.create()
 
         self.parser_203 = ParseManager(
             dataset=dummy_source,
@@ -1532,9 +1657,7 @@ class ActivityResultDocumentLinkTitleTestCase(TestCase):
         }
         self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
 
-        dummy_source = synchroniser_factory.DatasetFactory.create(
-            name="dataset-2"
-        )
+        dummy_source = synchroniser_factory.DatasetFactory.create()
 
         self.parser_203 = ParseManager(
             dataset=dummy_source,
@@ -2359,9 +2482,7 @@ class ActivityResultIndicatorDocumentLinkTitleTestCase(TestCase):
         }
         self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
 
-        dummy_source = synchroniser_factory.DatasetFactory.create(
-            name="dataset-2"
-        )
+        dummy_source = synchroniser_factory.DatasetFactory.create()
 
         self.parser_203 = ParseManager(
             dataset=dummy_source,
@@ -2516,6 +2637,104 @@ class ActivityResultIndicatorDocumentLinkCategoryTestCase(TestCase):
                          indicator_document_category)
 
 
+class ActivityResultIndicatorDocumentLinkLanguageTestCase(TestCase):
+    '''
+    2.03: Added new (optional) <document-link> element for <indicator>
+    element
+    '''
+
+    def setUp(self):
+        # 'Main' XML file for instantiating parser:
+        xml_file_attrs = {
+            "generated-datetime": datetime.datetime.now().isoformat(),
+            "version": '2.03',
+        }
+        self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
+
+        dummy_source = synchroniser_factory.DatasetFactory.create()
+
+        self.parser_203 = ParseManager(
+            dataset=dummy_source,
+            root=self.iati_203_XML_file,
+        ).get_parser()
+        self.document_link = iati_factory.DocumentLinkFactory. \
+            create(url='http://someuri.com')
+
+        self.parser_203.register_model('DocumentLink',
+                                       self.document_link)
+
+    def test_activity_result_indicator_document_link_language(self):
+        '''
+        Test if <language> element in <document_link> XML element is
+        correctly saved.
+        '''
+
+        # case 1: 'code' is missing
+
+        language_attr = {
+            # "code": 'en'
+
+        }
+        language_XML_element = E(
+            'language',
+            **language_attr
+        )
+
+        try:
+            self.date = self.parser_203 \
+                 .iati_activities__iati_activity__result__indicator__document_link__language(  # NOQA: E501
+
+                language_XML_element
+
+            )
+        except RequiredFieldError as inst:
+            self.assertEqual(inst.field, 'code')
+            self.assertEqual(inst.message, 'required attribute missing')
+
+        # case 2: 'language' is not found
+        language_attr = {
+
+            "code": 'ab'
+
+        }
+        language_XML_element = E(
+            'language',
+            **language_attr
+        )
+        try:
+            self.parser_203.iati_activities__iati_activity__result__indicator__document_link__language(  # NOQA: E501
+                language_XML_element
+            )
+        except FieldValidationError as inst:
+            self.assertEqual(inst.field, 'code')
+            self.assertEqual(inst.message,
+                             'not found on the accompanying code list')
+
+        # all is good
+        language = codelist_factory.LanguageFactory()  # dummy language object
+        language_attr = {
+
+            "code": language.code
+
+        }
+        language_XML_element = E(
+            'language',
+            **language_attr
+        )
+        self.parser_203\
+            .iati_activities__iati_activity__result__indicator__document_link__language(  # NOQA: E501
+                language_XML_element
+            )
+
+        # Let's test language is saved
+
+        document_link_language = self.parser_203.get_model(
+            'DocumentLinkLanguage')
+        self.assertEqual(self.document_link,
+                         document_link_language.document_link)
+        self.assertEqual(language, document_link_language.language)
+
+
 class ActivityResultIndicatorDocumentLinkDescriptionTestCase(TestCase):
     '''
     2.03: The optional <description> element of a <document-link> element was
@@ -2536,8 +2755,7 @@ class ActivityResultIndicatorDocumentLinkDescriptionTestCase(TestCase):
             dataset=dummy_source,
             root=self.iati_203_XML_file,
         ).get_parser()
-
-        self.document_link = iati_factory.DocumentLinkFactory. \
+        self.document_link = iati_factory.DocumentLinkFactory.\
             create(url='http://someuri.com')
 
         self.parser_203.register_model('DocumentLink', self.document_link)
@@ -2589,7 +2807,6 @@ class ActivityResultIndicatorPeriodTargetTestCase(TestCase):
             dataset=dummy_source,
             root=self.iati_203_XML_file,
         ).get_parser()
-
         # Related objects:
         self.result_indicator_period = iati_factory.\
             ResultIndicatorPeriodFactory()
@@ -2981,3 +3198,135 @@ class ActivityResultIndicatorPeriodActualDocumentLinkDescriptionTestCase(
             document_link_description.document_link,
             self.document_link
         )
+
+
+class ActivityResultReferenceTestCase(TestCase):
+
+    '''
+    2.03: Added new (optional) <reference> element for <result>
+    element.
+    '''
+
+    def setUp(self):
+        # 'Main' XML file for instantiating parser:
+        xml_file_attrs = {
+            "generated-datetime": datetime.datetime.now().isoformat(),
+            "version": '2.03',
+        }
+        self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
+
+        dummy_source = synchroniser_factory.DatasetFactory.create()
+
+        self.parser_203 = ParseManager(
+             dataset=dummy_source,
+             root=self.iati_203_XML_file,
+        ).get_parser()
+
+        # Related objects:
+        # create dummy object
+        self.result_vocabulary = ResultVocabularyFactory(code='99')
+        self.result = iati_factory.ResultFactory.create()
+
+        self.parser_203.register_model('Result', self.result)
+
+    def test_activity_result_reference(self):
+        """
+        Test if result, code, vocabulary_uri attributes in <reference> XML
+        element is correctly saved.
+        """
+
+        # case 1: where 'vocabulary' is missing
+
+        reference_attr = {
+            # "vocabulary": result_vocabulary.code,
+            "code": '01',
+            "vocabulary-uri": 'www.example.com'
+
+        }
+        reference_XML_element = E(
+            'reference',
+            **reference_attr
+        )
+        try:
+            self.parser_203 \
+            .iati_activities__iati_activity__result__reference(  # NOQA: E501
+            reference_XML_element
+            )
+        except RequiredFieldError as inst:
+            self.assertEqual(inst.field, 'vocabulary')
+            self.assertEqual(inst.message,
+                             'required attribute missing')
+
+        # case 2: where 'vocabulary' cannot be found because of non-existent
+        #  vocabulary_code '100'
+
+        reference_attr = {
+            "vocabulary": '100',
+            "code": '01',
+            "vocabulary-uri": 'www.example.com'
+
+        }
+        reference_XML_element = E(
+            'reference',
+            **reference_attr
+        )
+        try:
+            self.parser_203 \
+                .iati_activities__iati_activity__result__reference(
+                    reference_XML_element
+                )
+        except FieldValidationError as inst:
+            self.assertEqual(inst.field, 'vocabulary')
+            self.assertEqual(inst.message,
+                             'not found on the accompanying code list')
+
+        # case 3: where 'code' is missing
+
+        reference_attr = {
+            "vocabulary": self.result_vocabulary.code,
+            # "code": '01',
+            "vocabulary-uri": 'www.example.com'
+
+        }
+        reference_XML_element = E(
+            'reference',
+            **reference_attr
+        )
+        try:
+            self.parser_203 \
+                .iati_activities__iati_activity__result__reference(
+                     reference_XML_element
+                )
+        except RequiredFieldError as inst:
+            self.assertEqual(inst.field, 'code')
+            self.assertEqual(inst.message,
+                             'Unspecified or invalid.')
+
+        # case 4: where 'vocabulary_uri' is missing. This case is not tested
+        # because 'vocabulary_uri' is optional.
+
+        # case 5: all is good
+        reference_attr = {
+            "vocabulary": self.result_vocabulary.code,
+            "code": '01',
+            "vocabulary-uri": 'www.example.com'
+
+        }
+        reference_XML_element = E(
+            'reference',
+            **reference_attr
+        )
+        self.parser_203 \
+            .iati_activities__iati_activity__result__reference(  # NOQA: E501
+                reference_XML_element
+            )
+
+        # get 'ResultReference to check if its attributes are correctly stored
+        reference = self.parser_203.get_model('ResultReference')
+
+        # check everything is correctly stored
+        self.assertEqual(self.result, reference.result)
+        self.assertEqual(reference_attr.get('code'),
+                         reference.code)
+        self.assertEqual(reference_attr.get('vocabulary-uri'),
+                         reference.vocabulary_uri)

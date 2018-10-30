@@ -36,6 +36,8 @@ class Parse(IatiParser):
         # set on activity (if set)
 
         default_lang = self.default_lang
+        # return value with key '{http://www.w3.org/XML/1998/namespace}lang'
+        # return default_lang otherwise
         lang = element.attrib.get(
             '{http://www.w3.org/XML/1998/namespace}lang', default_lang)
         text = element.text
@@ -2836,6 +2838,7 @@ class Parse(IatiParser):
         self.add_narrative(element, document_link_title)
         return element
 
+    # TODO: test
     def iati_activities__iati_activity__document_link__description(
             self, element):
 
@@ -3178,6 +3181,7 @@ class Parse(IatiParser):
         self.add_narrative(element, document_link_title)
         return element
 
+    # TODO: test
     def iati_activities__iati_activity__result__document_link__description(
             self, element):
 
@@ -3520,6 +3524,7 @@ class Parse(IatiParser):
         self.add_narrative(element, document_link_title)
         return element
 
+    # TODO: test
     def iati_activities__iati_activity__result__indicator__document_link__description(  # NOQA: E501
             self, element):
         '''New (optional) <document-link> element for <indicator> element
@@ -3580,7 +3585,6 @@ class Parse(IatiParser):
         self.register_model('DocumentLinkCategory', document_link_category)
         return element
 
-    # TODO: test
     def iati_activities__iati_activity__result__indicator__document_link__language(self, element):  # NOQA: E501
         '''New (optional) <document-link> element for <indicator> element
            inside <result> element in 2.03
@@ -4362,6 +4366,7 @@ class Parse(IatiParser):
         self.register_model('DocumentLink', document_link)
         return element
 
+    # TODO: test:
     def iati_activities__iati_activity__result__indicator__period__actual(
             self, element):
 
@@ -4473,7 +4478,9 @@ class Parse(IatiParser):
 
         return element
 
-    # TODO: test
+    # TODO : This testing is posponed on 16/10/2018 due to a possible bug.
+    # See: #794
+
     def iati_activities__iati_activity__result__indicator__period__actual__document_link(  # NOQA: E501
             self, element):
         '''New (optional) <document-link> element for <actual> element
