@@ -1713,7 +1713,6 @@ class Parse(IatiParser):
 
         return element
 
-    # TODO: test:
     def iati_activities__iati_activity__default_aid_type(self, element):
         """attributes:
         code:A01
@@ -1737,9 +1736,20 @@ class Parse(IatiParser):
                 name='OECD DAC',
             )
         else:
-            vocabulary = vocabulary_models.AidTypeVocabulary.objects.get(
+            vocabulary = vocabulary_models.AidTypeVocabulary.objects.filter(
                 code=vocabulary_code,
-            )
+            ).first()
+
+            if not vocabulary:
+                raise FieldValidationError(
+                    "iati-activity/default-aid-type",
+                    "code",
+                    "not found on the accompanying AidTypeVocabulary code "
+                    "list. Note, that custom AidType Vocabularies currently "
+                    "are not supported",
+                    None,
+                    None,
+                    code)
 
         # XXX: Note, that at this point only official (Vocabulary type 1)
         # vocabularies for AidType are supported:
@@ -1752,8 +1762,8 @@ class Parse(IatiParser):
             raise FieldValidationError(
                 "iati-activity/default-aid-type",
                 "code",
-                "not found on the accompanying code list. Note, that custom "
-                "AidType Vocabularies currently are not supported",
+                "not found on the accompanying AidType code list. Note, that "
+                "custom AidType Vocabularies currently are not supported",
                 None,
                 None,
                 code)
@@ -2826,7 +2836,6 @@ class Parse(IatiParser):
         self.add_narrative(element, document_link_title)
         return element
 
-    # TODO: test
     def iati_activities__iati_activity__document_link__description(
             self, element):
 
@@ -3169,7 +3178,6 @@ class Parse(IatiParser):
         self.add_narrative(element, document_link_title)
         return element
 
-    # TODO: test
     def iati_activities__iati_activity__result__document_link__description(
             self, element):
 
@@ -3287,8 +3295,10 @@ class Parse(IatiParser):
         self.register_model('DocumentLink', document_link)
         return element
 
-    # TODO: test:
     def iati_activities__iati_activity__result__indicator(self, element):
+        '''The optional attribute 'aggregation-status' was added
+        '''
+
         measure_code = element.attrib.get('measure')
         measure = self.get_or_none(
             codelist_models.IndicatorMeasure, code=measure_code)
@@ -3510,7 +3520,6 @@ class Parse(IatiParser):
         self.add_narrative(element, document_link_title)
         return element
 
-    # TODO: test
     def iati_activities__iati_activity__result__indicator__document_link__description(  # NOQA: E501
             self, element):
         '''New (optional) <document-link> element for <indicator> element
@@ -4032,7 +4041,6 @@ class Parse(IatiParser):
 
         return element
 
-    # TODO: test:
     def iati_activities__iati_activity__result__indicator__period__target(
             self, element):
 
@@ -4054,7 +4062,6 @@ class Parse(IatiParser):
 
         return element
 
-    # TODO: test:
     def iati_activities__iati_activity__result__indicator__period__target__location(self, element):  # NOQA: E501
 
         ref = element.attrib.get('ref')
@@ -4092,7 +4099,6 @@ class Parse(IatiParser):
             'ResultIndicatorPeriodTargetLocation', target_location)
         return element
 
-    # TODO: test:
     def iati_activities__iati_activity__result__indicator__period__target__dimension(  # NOQA: E501
             self, element):
 
@@ -4122,7 +4128,6 @@ class Parse(IatiParser):
             'ResultIndicatorPeriodTargetDimension', target_dimension)
         return element
 
-    # TODO: test:
     def iati_activities__iati_activity__result__indicator__period__target__comment(self, element):  # NOQA: E501
         result_indicator_period_target = self.get_model(
             'ResultIndicatorPeriodTarget'
@@ -4146,6 +4151,7 @@ class Parse(IatiParser):
 
         return element
 
+    # TODO: test
     def iati_activities__iati_activity__result__indicator__period__target__document_link(  # NOQA: E501
             self, element):
         '''New (optional) <document-link> element for <target> element
@@ -4215,7 +4221,6 @@ class Parse(IatiParser):
         self.add_narrative(element, document_link_title)
         return element
 
-    # TODO: test
     def iati_activities__iati_activity__result__indicator__period__target__document_link__description(  # NOQA: E501
             self, element):
         '''New (optional) <document-link> element for <target> element
@@ -4343,7 +4348,6 @@ class Parse(IatiParser):
         self.register_model('DocumentLink', document_link)
         return element
 
-    # TODO: test:
     def iati_activities__iati_activity__result__indicator__period__actual(
             self, element):
 
@@ -4403,7 +4407,6 @@ class Parse(IatiParser):
             'ResultIndicatorPeriodActualLocation', actual_location)
         return element
 
-    # TODO: test:
     def iati_activities__iati_activity__result__indicator__period__actual__dimension(  # NOQA: E501
             self, element):
 
@@ -4433,7 +4436,6 @@ class Parse(IatiParser):
             'ResultIndicatorPeriodActualDimension', actual_dimension)
         return element
 
-    # TODO: test:
     def iati_activities__iati_activity__result__indicator__period__actual__comment(self, element):  # NOQA: E501
         result_indicator_period_actual = self.get_model(
             'ResultIndicatorPeriodActual'
@@ -4456,6 +4458,7 @@ class Parse(IatiParser):
         self.add_narrative(element, period_actual_comment)
 
         return element
+
 
     # TODO : This testing is posponed on 16/10/2018 due to a possible bug.
     # See: #794
@@ -4531,7 +4534,6 @@ class Parse(IatiParser):
         self.add_narrative(element, document_link_title)
         return element
 
-    # TODO: test
     def iati_activities__iati_activity__result__indicator__period__actual__document_link__description(  # NOQA: E501
             self, element):
         '''New (optional) <document-link> element for <actual> element
