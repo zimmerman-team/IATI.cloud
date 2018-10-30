@@ -2637,138 +2637,6 @@ class ActivityResultIndicatorDocumentLinkCategoryTestCase(TestCase):
                          indicator_document_category)
 
 
-class ActivityResultReferenceTestCase(TestCase):
-
-    '''
-    2.03: Added new (optional) <reference> element for <result>
-    element.
-    '''
-
-    def setUp(self):
-        # 'Main' XML file for instantiating parser:
-        xml_file_attrs = {
-            "generated-datetime": datetime.datetime.now().isoformat(),
-            "version": '2.03',
-        }
-        self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
-
-        dummy_source = synchroniser_factory.DatasetFactory.create()
-
-        self.parser_203 = ParseManager(
-             dataset=dummy_source,
-             root=self.iati_203_XML_file,
-        ).get_parser()
-
-        # Related objects:
-        # create dummy object
-        self.result_vocabulary = ResultVocabularyFactory(code='99')
-        self.result = iati_factory.ResultFactory.create()
-
-        self.parser_203.register_model('Result', self.result)
-
-    def test_activity_result_reference(self):
-        """
-        Test if result, code, vocabulary_uri attributes in <reference> XML
-        element is correctly saved.
-        """
-
-        # case 1: where 'vocabulary' is missing
-
-        reference_attr = {
-            # "vocabulary": result_vocabulary.code,
-            "code": '01',
-            "vocabulary-uri": 'www.example.com'
-
-        }
-        reference_XML_element = E(
-            'reference',
-            **reference_attr
-        )
-        try:
-            self.parser_203 \
-            .iati_activities__iati_activity__result__reference(  # NOQA: E501
-            reference_XML_element
-            )
-        except RequiredFieldError as inst:
-            self.assertEqual(inst.field, 'vocabulary')
-            self.assertEqual(inst.message,
-                             'required attribute missing')
-
-        # case 2: where 'vocabulary' cannot be found because of non-existent
-        #  vocabulary_code '100'
-
-        reference_attr = {
-            "vocabulary": '100',
-            "code": '01',
-            "vocabulary-uri": 'www.example.com'
-
-        }
-        reference_XML_element = E(
-            'reference',
-            **reference_attr
-        )
-        try:
-            self.parser_203 \
-                .iati_activities__iati_activity__result__reference(
-                    reference_XML_element
-                )
-        except FieldValidationError as inst:
-            self.assertEqual(inst.field, 'vocabulary')
-            self.assertEqual(inst.message,
-                             'not found on the accompanying code list')
-
-        # case 3: where 'code' is missing
-
-        reference_attr = {
-            "vocabulary": self.result_vocabulary.code,
-            # "code": '01',
-            "vocabulary-uri": 'www.example.com'
-
-        }
-        reference_XML_element = E(
-            'reference',
-            **reference_attr
-        )
-        try:
-            self.parser_203 \
-                .iati_activities__iati_activity__result__reference(
-                     reference_XML_element
-                )
-        except RequiredFieldError as inst:
-            self.assertEqual(inst.field, 'code')
-            self.assertEqual(inst.message,
-                             'Unspecified or invalid.')
-
-        # case 4: where 'vocabulary_uri' is missing. This case is not tested
-        # because 'vocabulary_uri' is optional.
-
-        # case 5: all is good
-        reference_attr = {
-            "vocabulary": self.result_vocabulary.code,
-            "code": '01',
-            "vocabulary-uri": 'www.example.com'
-
-        }
-        reference_XML_element = E(
-            'reference',
-            **reference_attr
-        )
-        self.parser_203 \
-            .iati_activities__iati_activity__result__reference(  # NOQA: E501
-                reference_XML_element
-            )
-
-        # get 'ResultReference to check if its attributes are correctly stored
-        reference = self.parser_203.get_model('ResultReference')
-
-        # check everything is correctly stored
-        self.assertEqual(self.result, reference.result)
-        self.assertEqual(reference_attr.get('code'),
-                         reference.code)
-        self.assertEqual(reference_attr.get('vocabulary-uri'),
-                         reference.vocabulary_uri)
-
-
 class ActivityResultIndicatorDocumentLinkLanguageTestCase(TestCase):
     '''
     2.03: Added new (optional) <document-link> element for <indicator>
@@ -3330,3 +3198,135 @@ class ActivityResultIndicatorPeriodActualDocumentLinkDescriptionTestCase(
             document_link_description.document_link,
             self.document_link
         )
+
+
+class ActivityResultReferenceTestCase(TestCase):
+
+    '''
+    2.03: Added new (optional) <reference> element for <result>
+    element.
+    '''
+
+    def setUp(self):
+        # 'Main' XML file for instantiating parser:
+        xml_file_attrs = {
+            "generated-datetime": datetime.datetime.now().isoformat(),
+            "version": '2.03',
+        }
+        self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
+
+        dummy_source = synchroniser_factory.DatasetFactory.create()
+
+        self.parser_203 = ParseManager(
+             dataset=dummy_source,
+             root=self.iati_203_XML_file,
+        ).get_parser()
+
+        # Related objects:
+        # create dummy object
+        self.result_vocabulary = ResultVocabularyFactory(code='99')
+        self.result = iati_factory.ResultFactory.create()
+
+        self.parser_203.register_model('Result', self.result)
+
+    def test_activity_result_reference(self):
+        """
+        Test if result, code, vocabulary_uri attributes in <reference> XML
+        element is correctly saved.
+        """
+
+        # case 1: where 'vocabulary' is missing
+
+        reference_attr = {
+            # "vocabulary": result_vocabulary.code,
+            "code": '01',
+            "vocabulary-uri": 'www.example.com'
+
+        }
+        reference_XML_element = E(
+            'reference',
+            **reference_attr
+        )
+        try:
+            self.parser_203 \
+            .iati_activities__iati_activity__result__reference(  # NOQA: E501
+            reference_XML_element
+            )
+        except RequiredFieldError as inst:
+            self.assertEqual(inst.field, 'vocabulary')
+            self.assertEqual(inst.message,
+                             'required attribute missing')
+
+        # case 2: where 'vocabulary' cannot be found because of non-existent
+        #  vocabulary_code '100'
+
+        reference_attr = {
+            "vocabulary": '100',
+            "code": '01',
+            "vocabulary-uri": 'www.example.com'
+
+        }
+        reference_XML_element = E(
+            'reference',
+            **reference_attr
+        )
+        try:
+            self.parser_203 \
+                .iati_activities__iati_activity__result__reference(
+                    reference_XML_element
+                )
+        except FieldValidationError as inst:
+            self.assertEqual(inst.field, 'vocabulary')
+            self.assertEqual(inst.message,
+                             'not found on the accompanying code list')
+
+        # case 3: where 'code' is missing
+
+        reference_attr = {
+            "vocabulary": self.result_vocabulary.code,
+            # "code": '01',
+            "vocabulary-uri": 'www.example.com'
+
+        }
+        reference_XML_element = E(
+            'reference',
+            **reference_attr
+        )
+        try:
+            self.parser_203 \
+                .iati_activities__iati_activity__result__reference(
+                     reference_XML_element
+                )
+        except RequiredFieldError as inst:
+            self.assertEqual(inst.field, 'code')
+            self.assertEqual(inst.message,
+                             'Unspecified or invalid.')
+
+        # case 4: where 'vocabulary_uri' is missing. This case is not tested
+        # because 'vocabulary_uri' is optional.
+
+        # case 5: all is good
+        reference_attr = {
+            "vocabulary": self.result_vocabulary.code,
+            "code": '01',
+            "vocabulary-uri": 'www.example.com'
+
+        }
+        reference_XML_element = E(
+            'reference',
+            **reference_attr
+        )
+        self.parser_203 \
+            .iati_activities__iati_activity__result__reference(  # NOQA: E501
+                reference_XML_element
+            )
+
+        # get 'ResultReference to check if its attributes are correctly stored
+        reference = self.parser_203.get_model('ResultReference')
+
+        # check everything is correctly stored
+        self.assertEqual(self.result, reference.result)
+        self.assertEqual(reference_attr.get('code'),
+                         reference.code)
+        self.assertEqual(reference_attr.get('vocabulary-uri'),
+                         reference.vocabulary_uri)
