@@ -2516,7 +2516,6 @@ class ActivityResultIndicatorDocumentLinkCategoryTestCase(TestCase):
                          indicator_document_category)
 
 
-
 class ActivityResultIndicatorDocumentLinkLanguageTestCase(TestCase):
     '''
     2.03: Added new (optional) <document-link> element for <indicator>
@@ -2614,13 +2613,11 @@ class ActivityResultIndicatorDocumentLinkLanguageTestCase(TestCase):
         self.assertEqual(language, document_link_language.language)
 
 
-        
-  class ActivityResultIndicatorDocumentLinkDescriptionTestCase(TestCase):
+class ActivityResultIndicatorDocumentLinkDescriptionTestCase(TestCase):
     '''
     2.03: The optional <description> element of a <document-link> element was
     added.
     '''
-
 
     def setUp(self):
         # 'Main' XML file for instantiating parser:
@@ -2636,8 +2633,7 @@ class ActivityResultIndicatorDocumentLinkLanguageTestCase(TestCase):
             dataset=dummy_source,
             root=self.iati_203_XML_file,
         ).get_parser()
-        
-        self.document_link = iati_factory.DocumentLinkFactory. \
+        self.document_link = iati_factory.DocumentLinkFactory.\
             create(url='http://someuri.com')
 
         self.parser_203.register_model('DocumentLink', self.document_link)
@@ -2667,7 +2663,6 @@ class ActivityResultIndicatorDocumentLinkLanguageTestCase(TestCase):
             document_link_description.document_link,
             self.document_link
         )
-
 
 
 class ActivityResultIndicatorPeriodTargetTestCase(TestCase):
