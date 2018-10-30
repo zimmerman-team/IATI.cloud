@@ -2544,7 +2544,7 @@ class ActivityResultReferenceTestCase(TestCase):
 
         }
         reference_XML_element = E(
-            'result-reference',
+            'reference',
             **reference_attr
         )
         try:
@@ -2589,7 +2589,7 @@ class ActivityResultReferenceTestCase(TestCase):
 
         }
         reference_XML_element = E(
-            'result-reference',
+            'reference',
             **reference_attr
         )
         try:

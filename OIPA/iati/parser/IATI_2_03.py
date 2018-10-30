@@ -4459,7 +4459,6 @@ class Parse(IatiParser):
 
         return element
 
-
     # TODO : This testing is posponed on 16/10/2018 due to a possible bug.
     # See: #794
 
