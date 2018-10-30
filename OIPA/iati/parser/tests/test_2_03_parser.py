@@ -135,7 +135,8 @@ class AddNarrativeTestCase(TestCase):
 
         # check all required things are saved
 
-        register_name = self.organisation_reporting_organisation.__class__.__name__ + "Narrative"  # NOQA E501
+        register_name = self.organisation_reporting_organisation.\
+            __class__.__name__ + "Narrative"
         narrative = self.parser_203.get_model(register_name)
 
         self.assertEqual(narrative.organisation, self.organisation)
