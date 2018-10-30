@@ -4464,7 +4464,9 @@ class Parse(IatiParser):
 
         return element
 
-    # TODO: test
+    # TODO : This testing is posponed on 16/10/2018 due to a possible bug.
+    # See: #794
+
     def iati_activities__iati_activity__result__indicator__period__actual__document_link(  # NOQA: E501
             self, element):
         '''New (optional) <document-link> element for <actual> element
