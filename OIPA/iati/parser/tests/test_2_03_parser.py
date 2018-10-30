@@ -2501,11 +2501,12 @@ class ActivityResultIndicatorDocumentLinkCategoryTestCase(TestCase):
 
 
 class ActivityResultReferenceTestCase(TestCase):
+
     '''
     2.03: Added new (optional) <reference> element for <result>
     element.
-    ,,,
-             
+    '''
+
     def setUp(self):
         # 'Main' XML file for instantiating parser:
         xml_file_attrs = {
@@ -2629,6 +2630,7 @@ class ActivityResultReferenceTestCase(TestCase):
                          reference.code)
         self.assertEqual(reference_attr.get('vocabulary-uri'),
                          reference.vocabulary_uri)
+
 
 class ActivityResultIndicatorDocumentLinkDescriptionTestCase(TestCase):
     '''
@@ -3095,4 +3097,3 @@ class ActivityResultIndicatorPeriodActualDocumentLinkDescriptionTestCase(
             document_link_description.document_link,
             self.document_link
         )
-
