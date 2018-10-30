@@ -2576,7 +2576,7 @@ class ActivityResultIndicatorDocumentLinkLanguageTestCase(TestCase):
 
         }
         language_XML_element = E(
-            'document-link-language',
+            'language',
             **language_attr
         )
         try:
@@ -2596,7 +2596,7 @@ class ActivityResultIndicatorDocumentLinkLanguageTestCase(TestCase):
 
         }
         language_XML_element = E(
-            'document-link-language',
+            'language',
             **language_attr
         )
         self.parser_203\
