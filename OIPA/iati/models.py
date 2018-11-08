@@ -1142,18 +1142,18 @@ class ResultIndicatorDescription(models.Model):
         return self.result_indicator.result.activity
 
 
-# FIXME: this relationship has to point to (currently, non existing)
-# ResultIndicatorBaseline model. See: #761
 class ResultIndicatorBaselineComment(models.Model):
-    result_indicator = models.OneToOneField(
-        ResultIndicator, on_delete=models.CASCADE)
+    result_indicator_baseline = models.OneToOneField(
+        ResultIndicatorBaseline,
+        on_delete=models.CASCADE,
+    )
     narratives = GenericRelation(
         Narrative,
         content_type_field='related_content_type',
         object_id_field='related_object_id')
 
     def get_activity(self):
-        return self.result_indicator.result.activity
+        return self.result_indicator_baseline.result_indicator.result.activity
 
 
 class ResultIndicatorPeriod(models.Model):
