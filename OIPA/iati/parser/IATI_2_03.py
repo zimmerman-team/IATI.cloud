@@ -3659,13 +3659,17 @@ class Parse(IatiParser):
 
     def iati_activities__iati_activity__result__indicator__baseline__comment(
             self, element):
-        result_indicator = self.get_model('ResultIndicator')
+        result_indicator_baseline = self.get_model('ResultIndicatorBaseline')
+
         result_indicator_baseline_comment = models\
             .ResultIndicatorBaselineComment()
-        result_indicator_baseline_comment.result_indicator = result_indicator
+
+        result_indicator_baseline_comment.\
+            result_indicator_baseline = result_indicator_baseline
 
         self.register_model('ResultIndicatorBaselineComment',
                             result_indicator_baseline_comment)
+
         return element
 
     # TODO: test
@@ -3763,6 +3767,7 @@ class Parse(IatiParser):
 
         return element
 
+    # FIXME: move this:
     def iati_activities__iati_activity__result__indicator__baseline__comment__narrative(  # NOQA: E501
             self, element):
         baseline_comment = self.get_model('ResultIndicatorBaselineComment')
