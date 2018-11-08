@@ -3809,15 +3809,15 @@ class Parse(IatiParser):
                 file_format_code)
 
         activity = self.get_model('Activity')
-        result_indicator = self.get_model('ResultIndicator')
+        result_indicator_baseline = self.get_model('ResultIndicatorBaseline')
 
-        # TODO: assign result, result_indicator_baseline here too?
+        # TODO: assign result here too?
 
         document_link = models.DocumentLink()
         document_link.activity = activity
         document_link.url = url
         document_link.file_format = file_format
-        document_link.result_indicator_baseline = result_indicator
+        document_link.result_indicator_baseline = result_indicator_baseline
 
         self.register_model('DocumentLink', document_link)
 
