@@ -718,7 +718,16 @@ class ResultIndicatorDescriptionFactory(NoDatabaseFactory):
     # result_indicator = SubFactory(ResultIndicatorFactory)
 
 
+class ResultIndicatorBaselineFactory(NoDatabaseFactory):
+
+    class Meta:
+        model = iati.models.ResultIndicatorBaseline
+
+
 class ResultIndicatorBaselineCommentFactory(NoDatabaseFactory):
+    result_indicator_baseline = SubFactory(
+        ResultIndicatorBaselineFactory)
+
     class Meta:
         model = iati.models.ResultIndicatorBaselineComment
 
@@ -734,13 +743,9 @@ class ResultIndicatorFactory(NoDatabaseFactory):
         ResultIndicatorTitleFactory, 'result_indicator')
     resultindicatordescription = RelatedFactory(
         ResultIndicatorDescriptionFactory, 'result_indicator')
-    resultindicatorbaselinecomment = RelatedFactory(
-        ResultIndicatorBaselineCommentFactory, 'result_indicator')
 
     measure = SubFactory(IndicatorMeasureFactory)
     ascending = True
-    baseline_year = 2012
-    baseline_value = "10"
 
 
 class ResultIndicatorReferenceFactory(NoDatabaseFactory):

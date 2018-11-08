@@ -13,8 +13,9 @@ from iati.factory.iati_factory import (
     OrganisationNarrativeFactory, OtherIdentifierFactory,
     ParticipatingOrganisationFactory, PlannedDisbursementFactory,
     PlannedDisbursementProviderFactory, PlannedDisbursementReceiverFactory,
-    RelatedActivityFactory, ResultFactory, ResultIndicatorFactory,
-    ResultIndicatorPeriodActualCommentFactory,
+    RelatedActivityFactory, ResultFactory,
+    ResultIndicatorBaselineCommentFactory, ResultIndicatorBaselineFactory,
+    ResultIndicatorFactory, ResultIndicatorPeriodActualCommentFactory,
     ResultIndicatorPeriodActualDimensionFactory,
     ResultIndicatorPeriodActualFactory,
     ResultIndicatorPeriodActualLocationFactory, ResultIndicatorPeriodFactory,
@@ -305,6 +306,11 @@ def _create_test_activity(
     _create_test_narrative(
         activity, result.resultdescription, resultdescription_narrative_1)
     result_indicator = ResultIndicatorFactory.create(result=result)
+    rib = ResultIndicatorBaselineFactory.create(
+        year=2018,
+        result_indicator=result_indicator,
+    )
+    ResultIndicatorBaselineCommentFactory(result_indicator_baseline=rib)
     _create_test_narrative(
         activity,
         result_indicator.resultindicatortitle,
@@ -317,7 +323,7 @@ def _create_test_activity(
         result_indicator=result_indicator)
     _create_test_narrative(
         activity,
-        result_indicator.resultindicatorbaselinecomment,
+        result_indicator.resultindicatorbaseline_set.first().resultindicatorbaselinecomment,  # NOQA: E501
         resultindicatorbaselinecomment_narrative_1)
     result_indicator_period = ResultIndicatorPeriodFactory.create(
         result_indicator=result_indicator)
