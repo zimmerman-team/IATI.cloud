@@ -1253,11 +1253,11 @@ class ResultIndicatorPeriodActualDimension(models.Model):
         return self.result_indicator_period.result_indicator.result.activity
 
 
-# FIXME: this relationship has to point to (currently, non existing)
-# ResultIndicatorBaseline model. See: #761
 class ResultIndicatorBaselineDimension(models.Model):
-    result_indicator = models.ForeignKey(
-        ResultIndicator, on_delete=models.CASCADE)
+    result_indicator_baseline = models.ForeignKey(
+        ResultIndicatorBaseline,
+        on_delete=models.CASCADE,
+    )
     name = models.CharField(max_length=100)
     value = models.CharField(max_length=100)
 
@@ -1265,7 +1265,7 @@ class ResultIndicatorBaselineDimension(models.Model):
         return "%s: %s" % (self.name, self.value)
 
     def get_activity(self):
-        return self.result_indicator.result.activity
+        return self.result_indicator_baseline.result_indicator.result.activity
 
 
 class ResultIndicatorPeriodTargetComment(models.Model):
