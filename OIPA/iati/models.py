@@ -897,12 +897,11 @@ class DocumentLink(models.Model):
         null=True,
         on_delete=models.CASCADE
     )
-    # FIXME: this relationship has to point to (currently, non existing)
-    # ResultIndicatorBaseline model. See: #761, #794
     result_indicator_baseline = models.ForeignKey(
-        'ResultIndicator',
+        'ResultIndicatorBaseline',
         related_name='baseline_document_links',
         null=True,
+        blank=True,
         on_delete=models.CASCADE
     )
     # FIXME: this relationship has to point to ResultIndicatorPeriodTarget.
