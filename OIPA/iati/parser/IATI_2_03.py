@@ -3751,10 +3751,10 @@ class Parse(IatiParser):
                 "value",
                 "required attribute missing")
 
-        result_indicator = self.get_model('ResultIndicator')
+        result_indicator_baseline = self.get_model('ResultIndicatorBaseline')
 
         baseline_dimension = models.ResultIndicatorBaselineDimension()
-        baseline_dimension.result_indicator = result_indicator
+        baseline_dimension.result_indicator_baseline = result_indicator_baseline  # NOQA: E501
         baseline_dimension.name = name
         baseline_dimension.value = value
 
