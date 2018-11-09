@@ -30,12 +30,12 @@ from iati.models import (
     LocationAdministrative, LocationDescription, LocationName, Narrative,
     Organisation, OtherIdentifier, PlannedDisbursement,
     PlannedDisbursementProvider, PlannedDisbursementReceiver, RelatedActivity,
-    Result, ResultDescription, ResultIndicator, ResultIndicatorBaselineComment,
-    ResultIndicatorDescription, ResultIndicatorPeriod,
-    ResultIndicatorPeriodActualDimension, ResultIndicatorPeriodActualLocation,
-    ResultIndicatorPeriodTarget, ResultIndicatorPeriodTargetDimension,
-    ResultIndicatorPeriodTargetLocation, ResultIndicatorReference,
-    ResultIndicatorTitle, ResultTitle, ResultType, Title
+    Result, ResultDescription, ResultIndicator, ResultIndicatorDescription,
+    ResultIndicatorPeriod, ResultIndicatorPeriodActualDimension,
+    ResultIndicatorPeriodActualLocation, ResultIndicatorPeriodTarget,
+    ResultIndicatorPeriodTargetDimension, ResultIndicatorPeriodTargetLocation,
+    ResultIndicatorReference, ResultIndicatorTitle, ResultTitle, ResultType,
+    Title
 )
 from iati.parser import validators
 from iati_organisation import models as organisation_models
@@ -1829,10 +1829,16 @@ class ResultIndicatorPeriodSerializer(ModelSerializerNoValidation):
 
 
 class ResultIndicatorBaselineSerializer(SerializerNoValidation):
+    # year = serializers.CharField(
+        # source='baseline_year', required=False, allow_null=True)
+    # value = serializers.CharField(
+        # source='baseline_value', required=False, allow_null=True)
+
+    # XXX: not sure if this fixes tests:
     year = serializers.CharField(
-        source='baseline_year', required=False, allow_null=True)
+        required=False, allow_null=True)
     value = serializers.CharField(
-        source='baseline_value', required=False, allow_null=True)
+        required=False, allow_null=True)
     comment = NarrativeContainerSerializer(
         source="resultindicatorbaselinecomment")
 
@@ -1928,8 +1934,8 @@ class ResultIndicatorSerializer(ModelSerializerNoValidation):
             data.get('ascending'),
             data.get('resultindicatortitle', {}).get('narratives'),
             data.get('resultindicatordescription', {}).get('narratives'),
-            data.get('baseline_year'),
-            data.get('baseline_value'),
+            # data.get('baseline_year'),
+            # data.get('baseline_value'),
             data.get('resultindicatorbaselinecomment', {}).get('narratives'),
         )
 
@@ -1940,8 +1946,6 @@ class ResultIndicatorSerializer(ModelSerializerNoValidation):
         title_narratives_data = validated_data.pop('title_narratives', [])
         description_narratives_data = validated_data.pop(
             'description_narratives', [])
-        baseline_comment_narratives_data = validated_data.pop(
-            'baseline_comment_narratives', [])
 
         instance = ResultIndicator.objects.create(**validated_data)
 
@@ -1949,17 +1953,11 @@ class ResultIndicatorSerializer(ModelSerializerNoValidation):
             result_indicator=instance)
         result_indicator_description = ResultIndicatorDescription.objects.create(  # NOQA: E501
             result_indicator=instance)
-        result_indicator_baseline_comment = ResultIndicatorBaselineComment.objects.create(  # NOQA: E501
-            result_indicator=instance)
 
         save_narratives(result_indicator_title,
                         title_narratives_data, result.activity)
         save_narratives(result_indicator_description,
                         description_narratives_data, result.activity)
-        save_narratives(
-            result_indicator_baseline_comment,
-            baseline_comment_narratives_data,
-            result.activity)
 
         result.activity.modified = True
         result.activity.save()
@@ -1971,8 +1969,6 @@ class ResultIndicatorSerializer(ModelSerializerNoValidation):
         title_narratives_data = validated_data.pop('title_narratives', [])
         description_narratives_data = validated_data.pop(
             'description_narratives', [])
-        baseline_comment_narratives_data = validated_data.pop(
-            'baseline_comment_narratives', [])
 
         update_instance = ResultIndicator(**validated_data)
         update_instance.id = instance.id
@@ -1983,10 +1979,6 @@ class ResultIndicatorSerializer(ModelSerializerNoValidation):
         save_narratives(
             instance.resultindicatordescription,
             description_narratives_data,
-            result.activity)
-        save_narratives(
-            instance.resultindicatorbaselinecomment,
-            baseline_comment_narratives_data,
             result.activity)
 
         result.activity.modified = True

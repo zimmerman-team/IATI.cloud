@@ -2023,8 +2023,6 @@ def activity_result_indicator(
         ascending,
         title_narratives_data,
         description_narratives_data,
-        baseline_year,
-        baseline_value,
         baseline_comment_narratives_data,
         instance=None,  # only set on update
 ):
@@ -2063,22 +2061,6 @@ def activity_result_indicator(
                 "title",
                 apiField="title",
             ))
-
-    if baseline_year or baseline_value:
-        if not baseline_year:
-            errors.append(
-                RequiredFieldError(
-                    "baseline",
-                    "year",
-                    apiField="baseline.year",
-                ))
-        if not baseline_value:
-            errors.append(
-                RequiredFieldError(
-                    "baseline",
-                    "value",
-                    apiField="baseline.value",
-                ))
 
     ascending = makeBool(ascending)
 
@@ -2121,11 +2103,6 @@ def activity_result_indicator(
             "ascending": ascending,
             "title_narratives": title_narratives['validated_data'],
             "description_narratives": description_narratives['validated_data'],
-            "baseline_year": baseline_year,
-            "baseline_value": baseline_value,
-            "baseline_comment_narratives": baseline_comment_narratives[
-                'validated_data'
-            ]
         },
     }
 
