@@ -910,10 +910,8 @@ class DocumentLink(models.Model):
         null=True,
         on_delete=models.CASCADE
     )
-    # FIXME: this relationship has to point to ResultIndicatorPeriodActual.
-    # See: #794
-    period_actual = models.ForeignKey(
-        'ResultIndicator',
+    result_indicator_period_actual = models.ForeignKey(
+        'ResultIndicatorPeriodActual',
         related_name='period_actual_document_links',
         null=True,
         on_delete=models.CASCADE
