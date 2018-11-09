@@ -4007,6 +4007,11 @@ class Parse(IatiParser):
         result_indicator_period = models.ResultIndicatorPeriod()
         result_indicator_period.result_indicator = result_indicator
 
+        # It is impossible to assign related object (ForeignKey) before it's
+        # saved (later in other parser methods), so:
+        # XXX: not sure how efficient this is.
+        result_indicator_period.save()
+
         self.register_model('ResultIndicatorPeriod', result_indicator_period)
         return element
 
@@ -4208,11 +4213,19 @@ class Parse(IatiParser):
                 file_format_code)
 
         activity = self.get_model('Activity')
-        result_indicator = self.get_model('ResultIndicator')
+        result_indicator_period_target = self.get_model(
+            'ResultIndicatorPeriodTarget'
+        )
+
+        # It is impossible to assign related object (ForeignKey) before it's
+        # saved, so:
+        # XXX: not sure how efficient this is.
+        result_indicator_period_target.save()
 
         document_link = models.DocumentLink()
         document_link.activity = activity
-        document_link.period_target = result_indicator
+        document_link.\
+            result_indicator_period_target = result_indicator_period_target
         document_link.url = url
         document_link.file_format = file_format
 
@@ -4483,9 +4496,7 @@ class Parse(IatiParser):
 
         return element
 
-    # TODO : This testing is posponed on 16/10/2018 due to a possible bug.
-    # See: #794
-
+    # TODO: test
     def iati_activities__iati_activity__result__indicator__period__actual__document_link(  # NOQA: E501
             self, element):
         '''New (optional) <document-link> element for <actual> element
@@ -4519,13 +4530,22 @@ class Parse(IatiParser):
                 file_format_code)
 
         activity = self.get_model('Activity')
-        result_indicator = self.get_model('ResultIndicator')
+        result_indicator_period_actual = self.get_model(
+            'ResultIndicatorPeriodActual'
+        )
+
+        # It is impossible to assign related object (ForeignKey) before it's
+        # saved, so:
+        # XXX: not sure how efficient this is.
+        result_indicator_period_actual.save()
 
         document_link = models.DocumentLink()
         document_link.activity = activity
         document_link.url = url
         document_link.file_format = file_format
-        document_link.period_actual = result_indicator
+
+        document_link\
+            .result_indicator_period_actual = result_indicator_period_actual
 
         self.register_model('DocumentLink', document_link)
 
