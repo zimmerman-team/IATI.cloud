@@ -4007,6 +4007,11 @@ class Parse(IatiParser):
         result_indicator_period = models.ResultIndicatorPeriod()
         result_indicator_period.result_indicator = result_indicator
 
+        # It is impossible to assign related object (ForeignKey) before it's
+        # saved (later in other parser methods), so:
+        # XXX: not sure how efficient this is.
+        result_indicator_period.save()
+
         self.register_model('ResultIndicatorPeriod', result_indicator_period)
         return element
 
@@ -4208,11 +4213,19 @@ class Parse(IatiParser):
                 file_format_code)
 
         activity = self.get_model('Activity')
-        result_indicator = self.get_model('ResultIndicator')
+        result_indicator_period_target = self.get_model(
+            'ResultIndicatorPeriodTarget'
+        )
+
+        # It is impossible to assign related object (ForeignKey) before it's
+        # saved, so:
+        # XXX: not sure how efficient this is.
+        result_indicator_period_target.save()
 
         document_link = models.DocumentLink()
         document_link.activity = activity
-        document_link.period_target = result_indicator
+        document_link.\
+            result_indicator_period_target = result_indicator_period_target
         document_link.url = url
         document_link.file_format = file_format
 
