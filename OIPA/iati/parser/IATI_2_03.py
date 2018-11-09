@@ -3620,45 +3620,56 @@ class Parse(IatiParser):
     # TODO: test:
     def iati_activities__iati_activity__result__indicator__baseline(
             self, element):
+
+        iso_date = element.attrib.get('iso-date', None)
         year = element.attrib.get('year')
+        # Current IATI 2.03 rules say, that:
+        # 1 - the @value must be omitted for qualitative measures
+        # 2 - The @value must be included for non-qualitative measures
+        # 3 - The @value must be a valid number for all non-qualitative
+        # measures
         value = element.attrib.get('value')
 
         try:
-            value = Decimal(value)
-        except Exception as e:
-            value = ''
-
-        try:
             year = int(year)
-            if not (year > 1900 and year < 2200):
-                year = None
         except Exception as e:
             year = None
 
-        if not year:
+        if not year or not (year > 1900 and year < 2200):
             raise RequiredFieldError(
                 "result/indicator/baseline",
                 "year",
                 "required attribute missing (should be of type "
                 "xsd:positiveInteger with format (yyyy))")
 
-        result_indicator = self.pop_model('ResultIndicator')
-        result_indicator.baseline_year = year
-        result_indicator.baseline_value = value  # can be empty string
+        result_indicator = self.get_model('ResultIndicator')
+        result_indicator_baseline = models.ResultIndicatorBaseline()
 
-        self.register_model('ResultIndicator', result_indicator)
+        result_indicator_baseline.result_indicator = result_indicator
+        result_indicator_baseline.iso_date = iso_date
+        result_indicator_baseline.year = year
+        result_indicator_baseline.value = value or ''  # can be None
+
+        self.register_model(
+            'ResultIndicatorBaseline',
+            result_indicator_baseline
+        )
 
         return element
 
     def iati_activities__iati_activity__result__indicator__baseline__comment(
             self, element):
-        result_indicator = self.get_model('ResultIndicator')
+        result_indicator_baseline = self.get_model('ResultIndicatorBaseline')
+
         result_indicator_baseline_comment = models\
             .ResultIndicatorBaselineComment()
-        result_indicator_baseline_comment.result_indicator = result_indicator
+
+        result_indicator_baseline_comment.\
+            result_indicator_baseline = result_indicator_baseline
 
         self.register_model('ResultIndicatorBaselineComment',
                             result_indicator_baseline_comment)
+
         return element
 
     # TODO: test
@@ -3692,7 +3703,7 @@ class Parse(IatiParser):
                 ref)
 
         activity = self.get_model('Activity')
-        result_indicator = self.get_model('ResultIndicator')
+        result_indicator_baseline = self.get_model('ResultIndicatorBaseline')
 
         activity_locations = activity.location_set.all()
 
@@ -3708,9 +3719,16 @@ class Parse(IatiParser):
                 None,
                 ref)
 
-        result_indicator.baseline_locations.add(
-            referenced_location, bulk=False
-        )
+        referenced_location.\
+            result_indicator_baseline = result_indicator_baseline
+
+        # It is impossible to assign related object (ForeignKey) before it's
+        # saved, so:
+        # XXX: not sure how efficient this is.
+        if result_indicator_baseline.pk is None:
+            result_indicator_baseline.save()
+
+        self.register_model('Location', referenced_location)
 
         return element
 
@@ -3737,10 +3755,10 @@ class Parse(IatiParser):
                 "value",
                 "required attribute missing")
 
-        result_indicator = self.get_model('ResultIndicator')
+        result_indicator_baseline = self.get_model('ResultIndicatorBaseline')
 
         baseline_dimension = models.ResultIndicatorBaselineDimension()
-        baseline_dimension.result_indicator = result_indicator
+        baseline_dimension.result_indicator_baseline = result_indicator_baseline  # NOQA: E501
         baseline_dimension.name = name
         baseline_dimension.value = value
 
@@ -3749,6 +3767,7 @@ class Parse(IatiParser):
 
         return element
 
+    # FIXME: move this:
     def iati_activities__iati_activity__result__indicator__baseline__comment__narrative(  # NOQA: E501
             self, element):
         baseline_comment = self.get_model('ResultIndicatorBaselineComment')
@@ -3790,15 +3809,15 @@ class Parse(IatiParser):
                 file_format_code)
 
         activity = self.get_model('Activity')
-        result_indicator = self.get_model('ResultIndicator')
+        result_indicator_baseline = self.get_model('ResultIndicatorBaseline')
 
-        # TODO: assign result, result_indicator_baseline here too?
+        # TODO: assign result here too?
 
         document_link = models.DocumentLink()
         document_link.activity = activity
         document_link.url = url
         document_link.file_format = file_format
-        document_link.result_indicator_baseline = result_indicator
+        document_link.result_indicator_baseline = result_indicator_baseline
 
         self.register_model('DocumentLink', document_link)
 
