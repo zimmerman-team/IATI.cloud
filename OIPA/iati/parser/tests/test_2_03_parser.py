@@ -2935,6 +2935,126 @@ class ActivityResultIndicatorPeriodTargetTestCase(TestCase):
         )
 
 
+class ActivityResultIndicatorPeriodTargetDocumentLinkCategoryTestCase(
+    TestCase
+):
+
+    """
+    2.03: The optional <document-link> element was added.
+    """
+
+    def setUp(self):
+        # 'Main' XML file for instantiating parser:
+        xml_file_attrs = {
+            "generated-datetime": datetime.datetime.now().isoformat(),
+            "version": '2.03',
+        }
+        self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
+
+        dummy_source = synchroniser_factory.DatasetFactory.create()
+
+        self.parser_203 = ParseManager(
+            dataset=dummy_source,
+            root=self.iati_203_XML_file,
+        ).get_parser()
+
+        # Related objects:
+        self.document_link = iati_factory.DocumentLinkFactory.create()
+
+        self.parser_203.register_model(
+            'DocumentLink', self.document_link
+        )
+
+    def test_activity_result_indicatior_period_target_document_link_category(  # NOQA: E501
+        self
+    ):
+        '''test if <document-link>'s <category> element in a target in a period
+        in an indicator in a result element is parsed and saved correctly
+        '''
+
+        # case 1: when code is missing
+
+        result_indicator_period_target_document_link_category_attr = {
+            # 'code': 'A04'
+
+        }
+
+        result_indicator_period_target_document_link_category_XML_element = E(
+            'category',
+            **result_indicator_period_target_document_link_category_attr
+        )
+        try:
+            self\
+            .parser_203\
+            .iati_activities__iati_activity__result__indicator__period__target__document_link__category(  # NOQA: E501
+                result_indicator_period_target_document_link_category_XML_element  # NOQA: E501
+            )
+        except RequiredFieldError as inst:
+            self.assertEqual(inst.field, 'code')
+            self.assertEqual(inst.message,
+                             'required attribute missing')
+
+        # case 2: when category cannot be retrieved using the given code
+        result_indicator_period_target_document_link_category_attr = {
+            'code': 'A04'
+
+        }
+
+        result_indicator_period_target_document_link_category_XML_element = E(
+            'indicator-document-category',
+            **result_indicator_period_target_document_link_category_attr
+        )
+        try:
+            self\
+            .parser_203\
+            .iati_activities__iati_activity__result__indicator__period__target__document_link__category(  # NOQA: E501
+                result_indicator_period_target_document_link_category_XML_element  # NOQA: E501
+            )
+        except FieldValidationError as inst:
+            self.assertEqual(inst.field, 'code')
+            self.assertEqual(inst.message, 'not found on the accompanying '
+                                           'code list')
+
+        # case:  when all is good
+
+        # Let's create dummy document_category
+        indicator_document_category = \
+            codelist_factory.DocumentCategoryFactory(
+                code='A04'
+            )
+        result_indicator_period_target_document_link_category_attr = {
+            'code': indicator_document_category.code
+
+        }
+
+        result_indicator_period_target_document_link_category_XML_element = E(
+            'category',
+            **result_indicator_period_target_document_link_category_attr
+        )
+
+        self.parser_203.codelist_cache = {}
+
+        self.parser_203\
+            .iati_activities__iati_activity__result__indicator__period__target__document_link__category(  # NOQA: E501
+                    result_indicator_period_target_document_link_category_XML_element  # NOQA: E501
+            )
+
+        # get DocumentLinkCategory
+        result_indicator_period_target_document_link_category = self.\
+            parser_203.get_model(
+                'DocumentLinkCategory'
+            )
+
+        self.assertEqual(
+            result_indicator_period_target_document_link_category.document_link,  # NOQA E501
+            self.document_link
+        )
+        self.assertEqual(
+            result_indicator_period_target_document_link_category.category,
+            indicator_document_category
+        )
+
+
 class ActivityResultIndicatorPeriodTargetDocumentLinkDescriptionTestCase(
     TestCase
 ):
