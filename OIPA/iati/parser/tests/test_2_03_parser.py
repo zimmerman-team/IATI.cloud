@@ -1544,7 +1544,7 @@ class ActivityResultDocumentLinkTestCase(TestCase):
 
         }
         result_document_link_XML_element = E(
-            'document_link',
+            'document-link',
             **result_document_link_attr
         )
 
@@ -1991,7 +1991,7 @@ class ActivityResultDocumentLinkLanguageTestCase(TestCase):
 
         }
         document_language_XML_element = E(
-            'document-language',
+            'language',
             **document_language_attr
         )
         try:
@@ -2011,7 +2011,7 @@ class ActivityResultDocumentLinkLanguageTestCase(TestCase):
 
         }
         document_language_XML_element = E(
-            'document-language',
+            'language',
             **document_language_attr
         )
         self.parser_203\
@@ -2252,7 +2252,7 @@ class ActivityResultIndicatorDocumentLinkTestCase(TestCase):
 
         }
         result_indicator_document_link_XML_element = E(
-            'document_link',
+            'document-link',
             **result_indicator_document_link_attr
         )
 
