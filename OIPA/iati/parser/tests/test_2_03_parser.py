@@ -1752,7 +1752,7 @@ class ActivityResultDocumentLinkCategoryTestCase(TestCase):
         }
 
         document_link_category_XML_element = E(
-            'document-link-category',
+            'category',
             **document_link_category_attr
         )
         try:
@@ -1795,7 +1795,7 @@ class ActivityResultDocumentLinkCategoryTestCase(TestCase):
         }
 
         document_link_category_XML_element = E(
-            'document-link-category',
+            'category',
             **document_link_category_attr
         )
 
@@ -2572,7 +2572,7 @@ class ActivityResultIndicatorDocumentLinkCategoryTestCase(TestCase):
         }
 
         indicator_document_link_category_XML_element = E(
-            'indicator-document-link-category',
+            'category',
             **indicator_document_link_category_attr
         )
         try:
@@ -2616,7 +2616,7 @@ class ActivityResultIndicatorDocumentLinkCategoryTestCase(TestCase):
         }
 
         indicator_document_link_category_XML_element = E(
-            'indicator-document-link-category',
+            'category',
             **indicator_document_link_category_attr
         )
 
