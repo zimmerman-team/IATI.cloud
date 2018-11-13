@@ -3636,21 +3636,23 @@ class ActivityResultIndicatorPeriodActualDocumentLinkTestCase(TestCase):
             iati_activities__iati_activity__result__indicator__period__actual__document_link(  # NOQA: E501
             result_indicator_period_actual_document_link_XML_element
         )
-        document_link = self.parser_203.get_model(
-            'DocumentLink'
-        )
+        result_indicator_period_actual_document_link = self.\
+            parser_203.get_model('DocumentLink')
+
         # Check if everything is correctly saved
-        self.assertEqual(document_link.activity,
+        self.assertEqual(result_indicator_period_actual_document_link.activity,
                          self.activity)
 
-        self.assertEqual(document_link.url,
+        self.assertEqual(result_indicator_period_actual_document_link.url,
                          result_indicator_period_actual_document_link_attr.
                          get('url'))
 
-        self.assertEqual(document_link.file_format,
+        self.assertEqual(result_indicator_period_actual_document_link.
+                         file_format,
                          dummy_file_format)
 
-        self.assertEqual(document_link.result_indicator_period_actual,
+        self.assertEqual(result_indicator_period_actual_document_link.
+                         result_indicator_period_actual,
                          self.result_indicator_period_actual)
 
 
