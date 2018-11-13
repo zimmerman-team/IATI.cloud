@@ -720,6 +720,8 @@ class ResultIndicatorDescriptionFactory(NoDatabaseFactory):
 
 class ResultIndicatorBaselineFactory(NoDatabaseFactory):
 
+    year = 2018
+
     class Meta:
         model = iati.models.ResultIndicatorBaseline
 
