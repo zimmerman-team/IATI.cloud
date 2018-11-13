@@ -2787,6 +2787,145 @@ class ActivityResultIndicatorDocumentLinkDescriptionTestCase(TestCase):
         )
 
 
+class ActivityResultIndicatorBaselineTestCase(TestCase):
+    """
+    2.03: The occurance rules of the baseline element were amended so that it
+    can be reported multiple times.
+    """
+
+    def setUp(self):
+        # 'Main' XML file for instantiating parser:
+        xml_file_attrs = {
+            "generated-datetime": datetime.datetime.now().isoformat(),
+            "version": '2.03',
+        }
+        self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
+
+        dummy_source = synchroniser_factory.DatasetFactory.create()
+
+        self.parser_203 = ParseManager(
+            dataset=dummy_source,
+            root=self.iati_203_XML_file,
+        ).get_parser()
+
+        # Related objects:
+        self.result_indicator = iati_factory.ResultIndicatorFactory()
+
+        self.result_indicator_baseline = iati_factory.\
+            ResultIndicatorBaselineFactory(
+                result_indicator=self.result_indicator
+            )
+
+        self.parser_203.register_model(
+            'ResultIndicatorBaseline', self.result_indicator_baseline
+        )
+        self.parser_203.register_model(
+            'ResultIndicator', self.result_indicator
+        )
+
+    def test_activity_result_indicator_baseline(self):
+
+        """
+        test if <baseline> element in context of an indicator in a result
+        element is parsed and saved correctly
+        """
+
+        # 1. year value is not provided:
+
+        result_indicator_baseline_attrs = {
+            'iso-date': '2018-11-13',
+            # 'year': '2018',
+            'value': '10',
+        }
+
+        result_indicator_baseline_XML_element = E(
+            'baseline',
+            **result_indicator_baseline_attrs
+        )
+
+        try:
+            self.parser_203\
+                .iati_activities__iati_activity__result__indicator__baseline(
+                    result_indicator_baseline_XML_element
+                )
+            self.assertFail()
+        except RequiredFieldError as inst:
+            self.assertEqual(
+                inst.message, 'required attribute missing (should be of type '
+                              'xsd:positiveInteger with format (yyyy))'
+            )
+
+        # 2. year value is wrong:
+
+        result_indicator_baseline_attrs = {
+            'iso-date': '2018-11-13',
+            'year': '1899',
+            'value': '10',
+        }
+
+        result_indicator_baseline_XML_element = E(
+            'baseline',
+            **result_indicator_baseline_attrs
+        )
+
+        try:
+            self.parser_203\
+                .iati_activities__iati_activity__result__indicator__baseline(
+                    result_indicator_baseline_XML_element
+                )
+            self.assertFail()
+        except RequiredFieldError as inst:
+            self.assertEqual(
+                inst.message, 'required attribute missing (should be of type '
+                              'xsd:positiveInteger with format (yyyy))'
+            )
+
+        # 3. all is good:
+        result_indicator_baseline_attrs = {
+            'iso-date': '2018-11-13',
+            'year': '2018',
+            'value': '10',
+        }
+
+        result_indicator_baseline_XML_element = E(
+            'baseline',
+            **result_indicator_baseline_attrs
+        )
+
+        self.parser_203\
+            .iati_activities__iati_activity__result__indicator__baseline(
+                result_indicator_baseline_XML_element
+            )
+
+        result_indicator_baseline = self.parser_203.get_model(
+            'ResultIndicatorBaseline'
+        )
+
+        # Year
+        self.assertEqual(
+            result_indicator_baseline.year,
+            int(result_indicator_baseline_attrs['year']),
+        )
+
+        # Value
+        self.assertEqual(
+            result_indicator_baseline.value,
+            result_indicator_baseline_attrs['value'],
+        )
+
+        # ISO date
+        self.assertEqual(
+            result_indicator_baseline.iso_date,
+            result_indicator_baseline_attrs['iso-date'],
+        )
+
+        # Result Indicator
+        self.assertEqual(
+            result_indicator_baseline.result_indicator,
+            self.result_indicator,
+        )
+
+
 class ActivityResultIndicatorPeriodTargetTestCase(TestCase):
 
     """

@@ -3617,7 +3617,6 @@ class Parse(IatiParser):
         self.register_model('DocumentLinkLanguage', document_link_language)
         return element
 
-    # TODO: test:
     def iati_activities__iati_activity__result__indicator__baseline(
             self, element):
 
