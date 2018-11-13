@@ -3689,7 +3689,7 @@ class ActivityResultIndicatorPeriodActualDocumentLinkDescriptionTestCase(
 
         self.parser_203.register_model('DocumentLink', self.document_link)
 
-    def test_activity_result_indicatior_period_actual_document_link_description(  # NOQA: E501
+    def test_activity_result_indicator_period_actual_document_link_description(  # NOQA: E501
         self
     ):
         '''test if <description> element for Activity Result Indicator Period
@@ -3720,7 +3720,7 @@ class ActivityResultIndicatorPeriodActualDocumentLinkDescriptionTestCase(
 
 class AcitivityResultIndicatorPeriodActualDocumentLinkTitleTestCase(TestCase):
     """
-    2.03: The optional <title> attribute of a <document-link> element was
+    2.03: The optional  <document-link> element was
     added.
 
     """
@@ -3747,8 +3747,8 @@ class AcitivityResultIndicatorPeriodActualDocumentLinkTitleTestCase(TestCase):
 
     def test_activity_result_indicator_period_actual_document_link_title(self):
         """
-        Test if <decument_link> attribute of a <document_link_title> element
-        is correctly parsed and saved.
+        test if <title> element for Activity Result Indicator Period
+        Actual's <document-link> element is parsed and saved correctly
 
         """
         dummy_file_format = codelist_factory. \
