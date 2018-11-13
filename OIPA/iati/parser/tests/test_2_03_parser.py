@@ -3391,14 +3391,16 @@ class ActivityResultIndicatorPeriodActualDocumentLinkTestCase(TestCase):
         assert (isinstance(self.parser_203, Parser_203))
 
         # Related objects
-        self.result_indicator_period_actual = iati_factory.ResultIndicatorPeriodActualFactory.create()
+        self.result_indicator_period_actual = iati_factory.\
+            ResultIndicatorPeriodActualFactory.create()
+
         self.result_indicator = self.result_indicator_period_actual.\
             result_indicator_period.result_indicator
+
         self.activity = self.result_indicator.result.activity
-        self.result = self.result_indicator.result
 
         self.parser_203.register_model('Activity', self.activity)
-        self.parser_203.register_model('Result', self.result)
+
         self.parser_203.register_model(
             'ResultIndicatorPeriodActual', self.result_indicator_period_actual
         )
@@ -3473,13 +3475,11 @@ class ActivityResultIndicatorPeriodActualDocumentLinkTestCase(TestCase):
         # create dummy objects
         dummy_file_format = codelist_factory.\
             FileFormatFactory(code='application/pdf')
-        dummy_document_link = iati_factory.\
-            DocumentLinkFactory(url='http://aasamannepal.org.np/')
 
         self.parser_203.codelist_cache = {}
 
         result_indicator_period_actual_document_link_attr = {
-            "url": dummy_document_link.url,
+            "url": 'http://aasamannepal.org.np/',
             "format": dummy_file_format.code
         }
 
@@ -3497,10 +3497,14 @@ class ActivityResultIndicatorPeriodActualDocumentLinkTestCase(TestCase):
         # Check if everything is correctly saved
         self.assertEqual(document_link.activity,
                          self.activity)
+
         self.assertEqual(document_link.url,
-                         dummy_document_link.url)
+                         result_indicator_period_actual_document_link_attr.
+                         get('url'))
+
         self.assertEqual(document_link.file_format,
                          dummy_file_format)
+
         self.assertEqual(document_link.result_indicator_period_actual,
                          self.result_indicator_period_actual)
 
