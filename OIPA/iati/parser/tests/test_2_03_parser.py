@@ -3674,9 +3674,7 @@ class ActivityResultIndicatorPeriodActualDocumentLinkTestCase(TestCase):
         }
         self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
 
-        dummy_source = synchroniser_factory.DatasetFactory.create(
-            name="dataset-2"
-        )
+        dummy_source = synchroniser_factory.DatasetFactory.create()
 
         self.parser_203 = ParseManager(
             dataset=dummy_source,
@@ -3704,8 +3702,8 @@ class ActivityResultIndicatorPeriodActualDocumentLinkTestCase(TestCase):
 
     def test_activity_result_indicator_period_actual_document_link(self):
         """
-        test if result_indicator_period_actual, url, activity,file_format
-        attributes of <document-link>  element are parsed and saved correctly.
+        tests if 'url' and 'format' attributes of <document-link> element and
+        all related objects are parsed and saved correctly
 
         """
 
@@ -3713,7 +3711,7 @@ class ActivityResultIndicatorPeriodActualDocumentLinkTestCase(TestCase):
         result_indicator_period_actual_document_link_attr = {
             # url = 'something'
             "format": 'something'
-            # "format_code" will be got in the function
+            # "file_format" will be got in the function
         }
         result_indicator_period_actual_document_link_XML_element = E(
             'document-link',
@@ -3735,7 +3733,7 @@ class ActivityResultIndicatorPeriodActualDocumentLinkTestCase(TestCase):
         result_indicator_period_actual_document_link_attr = {
             "url": 'www.google.com'
             # "format": 'something'
-            # "format_code" will be got in the function
+            # "file_format" will be got in the function
         }
         result_indicator_period_actual_document_link_XML_element = E(
             'document-link',
@@ -3750,13 +3748,13 @@ class ActivityResultIndicatorPeriodActualDocumentLinkTestCase(TestCase):
             self.assertEqual(inst.field, 'format')
             self.assertEqual(inst.message, 'required attribute missing')
 
-        # Case 3: when 'format_code' cannot be got from given 'format'
+        # Case 3: when 'file_format' cannot be got from given 'format'
 
         result_indicator_period_actual_document_link_attr = {
             "url": 'www.google.com',
             "format": 'something',
-            # "format_code" will be got in the function but in this case no
-            # format_code can be retrieved using given 'format'
+            # "file_format" will be got in the function but in this case no
+            # file_format can be retrieved using given 'format'
         }
         result_indicator_period_actual_document_link_XML_element = E(
             'document-link',
