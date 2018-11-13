@@ -3502,6 +3502,7 @@ class ActivityResultIndicatorPeriodActualTestCase(TestCase):
             ))
         )
 
+
 class ActivityResultIndicatorPeriodActualDocumentLinkTestCase(TestCase):
 
     """
@@ -3545,6 +3546,11 @@ class ActivityResultIndicatorPeriodActualDocumentLinkTestCase(TestCase):
         )
 
     def test_activity_result_indicator_period_actual_document_link(self):
+        """
+        test if result_indicator_period_actual, url, activity,file_format
+        attributes of <document-link>  element are parsed and saved correctly.
+
+        """
 
         # Case 1: when 'url' is missing.
         result_indicator_period_actual_document_link_attr = {
@@ -3560,7 +3566,7 @@ class ActivityResultIndicatorPeriodActualDocumentLinkTestCase(TestCase):
         # testing if correct error message is returned
         try:
             self.parser_203. \
-                iati_activities__iati_activity__result__indicator__period__actual__document_link(
+                iati_activities__iati_activity__result__indicator__period__actual__document_link(  # NOQA: E501
                 result_indicator_period_actual_document_link_XML_element
             )
         except RequiredFieldError as inst:
@@ -3580,7 +3586,7 @@ class ActivityResultIndicatorPeriodActualDocumentLinkTestCase(TestCase):
         )
         try:
             self.parser_203.\
-                iati_activities__iati_activity__result__indicator__period__actual__document_link(
+                iati_activities__iati_activity__result__indicator__period__actual__document_link(  # NOQA: E501
                 result_indicator_period_actual_document_link_XML_element
             )
         except RequiredFieldError as inst:
@@ -3601,11 +3607,11 @@ class ActivityResultIndicatorPeriodActualDocumentLinkTestCase(TestCase):
         )
         try:
             self.parser_203.\
-                iati_activities__iati_activity__result__indicator__period__actual__document_link(
+                iati_activities__iati_activity__result__indicator__period__actual__document_link(  # NOQA: E501
                 result_indicator_period_actual_document_link_XML_element
             )
         except FieldValidationError as inst:
-            self.assertEqual(inst.field,'format')
+            self.assertEqual(inst.field, 'format')
             self.assertEqual(inst.message, 'not found on the accompanying '
                              'code list')
 
@@ -3627,7 +3633,7 @@ class ActivityResultIndicatorPeriodActualDocumentLinkTestCase(TestCase):
             **result_indicator_period_actual_document_link_attr
         )
         self.parser_203.\
-            iati_activities__iati_activity__result__indicator__period__actual__document_link(
+            iati_activities__iati_activity__result__indicator__period__actual__document_link(  # NOQA: E501
             result_indicator_period_actual_document_link_XML_element
         )
         document_link = self.parser_203.get_model(
@@ -3646,11 +3652,6 @@ class ActivityResultIndicatorPeriodActualDocumentLinkTestCase(TestCase):
 
         self.assertEqual(document_link.result_indicator_period_actual,
                          self.result_indicator_period_actual)
-
-
-
-
-
 
 
 class ActivityResultIndicatorPeriodActualDocumentLinkDescriptionTestCase(
