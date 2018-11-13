@@ -3689,9 +3689,7 @@ class ActivityResultIndicatorPeriodActualDocumentLinkDescriptionTestCase(
 
         self.parser_203.register_model('DocumentLink', self.document_link)
 
-    def test_activity_result_indicator_period_actual_document_link_description(  # NOQA: E501
-        self
-    ):
+    def test_activity_result_indicator_period_actual_document_link_description(self):  # NOQA: E501
         '''test if <description> element for Activity Result Indicator Period
         Actual's <document-link> element is parsed and saved correctly
         '''
