@@ -3363,6 +3363,152 @@ class ActivityResultIndicatorPeriodActualTestCase(TestCase):
             ))
         )
 
+class ActivityResultIndicatorPeriodActualDocumentLinkTestCase(TestCase):
+
+    """
+    2.03: The optional document-link element was added.
+    """
+
+    def setUp(self):
+        # 'Main' XML file for instantiating parser:
+        xml_file_attrs = {
+            "generated-datetime": datetime.datetime.now().isoformat(),
+            "version": '2.03',
+        }
+        self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
+
+        dummy_source = synchroniser_factory.DatasetFactory.create(
+            name="dataset-2"
+        )
+
+        self.parser_203 = ParseManager(
+            dataset=dummy_source,
+            root=self.iati_203_XML_file,
+        ).get_parser()
+
+        self.parser_203.default_lang = "en"
+
+        assert (isinstance(self.parser_203, Parser_203))
+
+        # Related objects
+        self.result_indicator_period_actual = iati_factory.ResultIndicatorPeriodActualFactory.create()
+        self.result_indicator = self.result_indicator_period_actual.\
+            result_indicator_period.result_indicator
+        self.activity = self.result_indicator.result.activity
+        self.result = self.result_indicator.result
+
+        self.parser_203.register_model('Activity', self.activity)
+        self.parser_203.register_model('Result', self.result)
+        self.parser_203.register_model(
+            'ResultIndicatorPeriodActual', self.result_indicator_period_actual
+        )
+
+    def test_activity_result_indicator_period_actual_document_link(self):
+
+        # Case 1: when 'url' is missing.
+        result_indicator_period_actual_document_link_attr = {
+            # url = 'something'
+            "format": 'something'
+            # "format_code" will be got in the function
+        }
+        result_indicator_period_actual_document_link_XML_element = E(
+            'document-link',
+            **result_indicator_period_actual_document_link_attr
+        )
+
+        # testing if correct error message is returned
+        try:
+            self.parser_203. \
+                iati_activities__iati_activity__result__indicator__period__actual__document_link(
+                result_indicator_period_actual_document_link_XML_element
+            )
+        except RequiredFieldError as inst:
+            self.assertEqual(inst.field, 'url')
+            self.assertEqual(inst.message, 'required attribute missing')
+
+        # Case 2: when 'file_format' is missing
+
+        result_indicator_period_actual_document_link_attr = {
+            "url": 'www.google.com'
+            # "format": 'something'
+            # "format_code" will be got in the function
+        }
+        result_indicator_period_actual_document_link_XML_element = E(
+            'document-link',
+            **result_indicator_period_actual_document_link_attr
+        )
+        try:
+            self.parser_203.\
+                iati_activities__iati_activity__result__indicator__period__actual__document_link(
+                result_indicator_period_actual_document_link_XML_element
+            )
+        except RequiredFieldError as inst:
+            self.assertEqual(inst.field, 'format')
+            self.assertEqual(inst.message, 'required attribute missing')
+
+        # Case 3: when 'format_code' cannot be got from given 'format'
+
+        result_indicator_period_actual_document_link_attr = {
+            "url": 'www.google.com',
+            "format": 'something',
+            # "format_code" will be got in the function but in this case no
+            # format_code can be retrieved using given 'format'
+        }
+        result_indicator_period_actual_document_link_XML_element = E(
+            'document-link',
+            **result_indicator_period_actual_document_link_attr
+        )
+        try:
+            self.parser_203.\
+                iati_activities__iati_activity__result__indicator__period__actual__document_link(
+                result_indicator_period_actual_document_link_XML_element
+            )
+        except FieldValidationError as inst:
+            self.assertEqual(inst.field,'format')
+            self.assertEqual(inst.message, 'not found on the accompanying '
+                             'code list')
+
+        # Case 4: when all is good
+
+        # create dummy objects
+        dummy_file_format = codelist_factory.\
+            FileFormatFactory(code='application/pdf')
+        dummy_document_link = iati_factory.\
+            DocumentLinkFactory(url='http://aasamannepal.org.np/')
+
+        self.parser_203.codelist_cache = {}
+
+        result_indicator_period_actual_document_link_attr = {
+            "url": dummy_document_link.url,
+            "format": dummy_file_format.code
+        }
+
+        result_indicator_period_actual_document_link_XML_element = E(
+            'document-link',
+            **result_indicator_period_actual_document_link_attr
+        )
+        self.parser_203.\
+            iati_activities__iati_activity__result__indicator__period__actual__document_link(
+            result_indicator_period_actual_document_link_XML_element
+        )
+        document_link = self.parser_203.get_model(
+            'DocumentLink'
+        )
+        # Check if everything is correctly saved
+        self.assertEqual(document_link.activity,
+                         self.activity)
+        self.assertEqual(document_link.url,
+                         dummy_document_link.url)
+        self.assertEqual(document_link.file_format,
+                         dummy_file_format)
+        self.assertEqual(document_link.result_indicator_period_actual,
+                         self.result_indicator_period_actual)
+
+
+
+
+
+
 
 class ActivityResultIndicatorPeriodActualDocumentLinkDescriptionTestCase(
     TestCase
