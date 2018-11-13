@@ -2949,7 +2949,6 @@ class ActivityResultIndicatorBaselineLocationTestCase(TestCase):
 
         self.result_indicator_baseline = iati_factory.\
             ResultIndicatorBaselineFactory(
-                year=2018,  # FIXME: Remove this after base branch merge
                 result_indicator=self.result_indicator,
             )
 
