@@ -1,0 +1,18 @@
+[
+  {
+    "code": "001",
+    "name": "World",
+    "sub": [
+      {
+        "code": "009",
+        "name": "Oceania",
+        "sub": [
+          {
+            "code": "053",
+            "name": "Australia and New Zealand"
+          }
+        ]
+      }
+    ]
+  }
+]

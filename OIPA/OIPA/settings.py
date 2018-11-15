@@ -358,6 +358,19 @@ IATI_STAGING_PATH = os.environ['IATI_STAGING_PATH'] if 'IATI_STAGING_PATH' in os
 IATI_STAGING_ID = os.environ['IATI_STAGING_ID'] if 'IATI_STAGING_ID' in os.environ else "IOM_staging_file"
 IATI_STAGING_FILE_URL = os.environ['IATI_STAGING_FILE_URL'] if 'IATI_STAGING_FILE_URL' in os.environ else "http://127.0.0.1:8000/api/datasets/staging_collection.xml"
 
+# DATA PLUGINS is the data which has not related to the IATI data.
+# For example M49 Regions code, put it in the local_settings.py,
+# like the following:
+# import os
+# BASE_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+# DATA_PLUGINS = {
+#     'codelist': {
+#        'm48_region_file': '{base_dir}/plugins/data/{filename}'.format(
+#             base_dir=BASE_DIR, filename='regions.json')
+#     }
+# }
+DATA_PLUGINS = {}
+
 try:
     from local_settings import *  # noqa: F401, F403
 except ImportError:

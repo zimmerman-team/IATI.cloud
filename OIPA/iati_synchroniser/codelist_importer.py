@@ -14,6 +14,7 @@ from iati_synchroniser.models import Codelist
 from iati_synchroniser.dac_sector_importer import DacSectorImporter
 from iati_synchroniser.sdg_sector_importer import SdgSectorImporter
 from iati_synchroniser.iom_sector_importer import IOMSectorImporter
+from iati_synchroniser.m49_regions_importer import M49RegionsImporter
 
 
 logger = logging.getLogger(__name__)
@@ -257,3 +258,6 @@ class CodeListImporter():
 
         isi = IOMSectorImporter()
         isi.update()
+
+        # Add M49 Regions if available
+        M49RegionsImporter()
