@@ -1,3 +1,4 @@
 env
 plugins
 local_settings.py
+.pytest_cache/
