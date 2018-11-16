@@ -3731,7 +3731,6 @@ class Parse(IatiParser):
 
         return element
 
-    # TODO: test
     def iati_activities__iati_activity__result__indicator__baseline__dimension(  # NOQA: E501
             self, element):
         '''A new, optional element in v. 2.03:
