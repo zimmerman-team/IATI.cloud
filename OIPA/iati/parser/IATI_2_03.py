@@ -3744,7 +3744,7 @@ class Parse(IatiParser):
 
         if not name:
             raise RequiredFieldError(
-                "iati-activity/result/indicator/baseline/dimension"
+                "iati-activity/result/indicator/baseline/dimension",
                 "name",
                 "required attribute missing")
 
