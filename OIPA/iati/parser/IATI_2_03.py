@@ -3902,7 +3902,6 @@ class Parse(IatiParser):
         self.add_narrative(element, document_link_description)
         return element
 
-    # TODO: test:
     def iati_activities__iati_activity__result__indicator__baseline__document_link__category(  # NOQA: E501
             self, element):
         '''New (optional) <document-link> element for <baseline> element

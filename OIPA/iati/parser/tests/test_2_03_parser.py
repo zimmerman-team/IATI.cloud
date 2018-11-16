@@ -1741,6 +1741,7 @@ class ActivityResultDocumentLinkCategoryTestCase(TestCase):
         )
 
     def test_activity_result_document_link_document_category(self):
+        # FIXME: fix all these docstrings:
         """
         Test if <document_link> attribute in <documen_link_category> XML
         element is correctly saved.
@@ -2924,6 +2925,110 @@ class ActivityResultIndicatorBaselineTestCase(TestCase):
             result_indicator_baseline.result_indicator,
             self.result_indicator,
         )
+
+
+class ActivityResultIndicatorBaselineDocumentLinkCategoryTestCase(TestCase):
+
+    """
+    2.03: The optional <document-link> element was added.
+    """
+
+    def setUp(self):
+        # 'Main' XML file for instantiating parser:
+        xml_file_attrs = {
+            "generated-datetime": datetime.datetime.now().isoformat(),
+            "version": '2.03',
+        }
+        self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
+
+        dummy_source = synchroniser_factory.DatasetFactory.create()
+
+        self.parser_203 = ParseManager(
+            dataset=dummy_source,
+            root=self.iati_203_XML_file,
+        ).get_parser()
+        # Related objects:
+        self.document_link = iati_factory.DocumentLinkFactory.create()
+
+        self.parser_203.register_model(
+            'DocumentLink', self.document_link
+        )
+
+    def test_activity_result_indicator_baseline_document_link_category(self):
+        """
+        Test if <category> element of a document-link elment in a baseline in
+        a indicator in a result element is correctly parsed and saved
+        """
+
+        # case 1: when code is missing
+
+        document_link_category_attr = {
+            # 'code': 'A04'
+
+        }
+
+        document_link_category_XML_element = E(
+            'category',
+            **document_link_category_attr
+        )
+        try:
+            self.parser_203.iati_activities__iati_activity__result__indicator__baseline__document_link__category(  # NOQA: E501
+                document_link_category_XML_element
+            )
+        except RequiredFieldError as inst:
+            self.assertEqual(inst.field, 'code')
+            self.assertEqual(inst.message,
+                             'required attribute missing')
+
+        # case 2: when category cannot be retrieved using the given code
+        document_link_category_attr = {
+            'code': 'A04'
+
+        }
+
+        document_link_category_XML_element = E(
+            'category',
+            **document_link_category_attr
+        )
+        try:
+            self.parser_203.iati_activities__iati_activity__result__indicator__baseline__document_link__category(  # NOQA: E501
+                document_link_category_XML_element
+            )
+        except FieldValidationError as inst:
+            self.assertEqual(inst.field, 'code')
+            self.assertEqual(inst.message, 'not found on the accompanying '
+                                           'code list')
+
+        # case:  when all is good
+
+        # Let's create dummy document_category
+        document_category = codelist_factory.DocumentCategoryFactory(
+            code='A04'
+        )
+        document_link_category_attr = {
+            'code': document_category.code
+
+        }
+
+        document_link_category_XML_element = E(
+            'category',
+            **document_link_category_attr
+        )
+
+        self.parser_203.codelist_cache = {}
+
+        self.parser_203\
+                .iati_activities__iati_activity__result__indicator__baseline__document_link__category(  # NOQA: E501
+                document_link_category_XML_element
+            )
+        # get DocumentLinkCategory
+
+        document_link_category = self.parser_203.get_model(
+            'DocumentLinkCategory')
+
+        self.assertEqual(document_link_category.document_link, self.
+                         document_link)
+        self.assertEqual(document_link_category.category, document_category)
 
 
 class ActivityResultIndicatorPeriodTargetTestCase(TestCase):
