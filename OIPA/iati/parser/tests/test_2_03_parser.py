@@ -3716,6 +3716,106 @@ class ActivityResultIndicatorPeriodActualDocumentLinkDescriptionTestCase(
         )
 
 
+class AcitivityResultIndicatorPeriodActualDocumentLinkLanguageTestCase(
+        TestCase):
+    '''
+    2.03: Added new (optional) <document-link> element
+    '''
+
+    def setUp(self):
+        # 'Main' XML file for instantiating parser:
+        xml_file_attrs = {
+            "generated-datetime": datetime.datetime.now().isoformat(),
+            "version": '2.03',
+        }
+        self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
+
+        dummy_source = synchroniser_factory.DatasetFactory.create()
+
+        self.parser_203 = ParseManager(
+            dataset=dummy_source,
+            root=self.iati_203_XML_file,
+        ).get_parser()
+
+        self.document_link = iati_factory.DocumentLinkFactory. \
+            create(url='http://someuri.com')
+
+        self.parser_203.register_model('DocumentLink', self.document_link)
+
+    def test_activity_result_indicator_period_actual_document_link_language(
+            self):
+        '''
+        Test if <language> element of a document-link in a actual in a period
+        in a indicator in a result element is correctly parsed and saved
+        '''
+
+        # case 1: 'code' is missing
+
+        document_link_language_attr = {
+            # "code": 'en'
+
+        }
+        document_link_language_XML_element = E(
+            'document-date',
+            **document_link_language_attr
+        )
+
+        try:
+            self.date = self.parser_203 \
+                 .iati_activities__iati_activity__result__indicator__period__actual__document_link__language(  # NOQA: E501
+
+                document_link_language_XML_element
+
+            )
+        except RequiredFieldError as inst:
+            self.assertEqual(inst.field, 'code')
+            self.assertEqual(inst.message, 'required attribute missing')
+
+        # case 2: 'language' is not found
+        document_link_language_attr = {
+
+            "code": 'ab'
+
+        }
+        document_link_language_XML_element = E(
+            'language',
+            **document_link_language_attr
+        )
+        try:
+            self.parser_203. \
+                iati_activities__iati_activity__result__indicator__period__actual__document_link__language(  # NOQA: E501
+                    document_link_language_XML_element
+                )
+        except FieldValidationError as inst:
+            self.assertEqual(inst.field, 'code')
+            self.assertEqual(inst.message,
+                             'not found on the accompanying code list')
+
+        # all is good
+        language = codelist_factory.LanguageFactory()  # dummy language object
+        document_link_language_attr = {
+
+            "code": language.code
+
+        }
+        document_link_language_XML_element = E(
+            'language',
+            **document_link_language_attr
+        )
+        self.parser_203\
+            .iati_activities__iati_activity__result__indicator__period__actual__document_link__language(  # NOQA: E501
+                document_link_language_XML_element
+            )
+
+        # Let's test language is saved
+
+        document_link = self.parser_203.get_model('DocumentLink')
+        document_link_language = self.parser_203.get_model(
+            'DocumentLinkLanguage')
+        self.assertEqual(document_link, document_link_language.document_link)
+        self.assertEqual(language, document_link_language.language)
+
+
 class AcitivityResultIndicatorPeriodActualDocumentLinkTitleTestCase(TestCase):
     """
     2.03: The optional  <document-link> element was
