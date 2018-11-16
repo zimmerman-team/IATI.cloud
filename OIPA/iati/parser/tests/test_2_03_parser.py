@@ -3689,9 +3689,7 @@ class ActivityResultIndicatorPeriodActualDocumentLinkDescriptionTestCase(
 
         self.parser_203.register_model('DocumentLink', self.document_link)
 
-    def test_activity_result_indicatior_period_actual_document_link_description(  # NOQA: E501
-        self
-    ):
+    def test_activity_result_indicator_period_actual_document_link_description(self):  # NOQA: E501
         '''test if <description> element for Activity Result Indicator Period
         Actual's <document-link> element is parsed and saved correctly
         '''
@@ -3716,6 +3714,67 @@ class ActivityResultIndicatorPeriodActualDocumentLinkDescriptionTestCase(
             document_link_description.document_link,
             self.document_link
         )
+
+
+class AcitivityResultIndicatorPeriodActualDocumentLinkTitleTestCase(TestCase):
+    """
+    2.03: The optional  <document-link> element was
+    added.
+
+    """
+    def setUp(self):
+        # 'Main' XML file for instantiating parser:
+        xml_file_attrs = {
+            "generated-datetime": datetime.datetime.now().isoformat(),
+            "version": '2.03',
+        }
+        self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
+
+        dummy_source = synchroniser_factory.DatasetFactory.create()
+
+        self.parser_203 = ParseManager(
+            dataset=dummy_source,
+            root=self.iati_203_XML_file,
+        ).get_parser()
+
+        # Related objects:
+        self.document_link = iati_factory.DocumentLinkFactory. \
+            create(url='http://someuri.com')
+
+        self.parser_203.register_model('DocumentLink', self.document_link)
+
+    def test_activity_result_indicator_period_actual_document_link_title(self):
+        """
+        test if <title> element for Activity Result Indicator Period
+        Actual's <document-link> element is parsed and saved correctly
+
+        """
+        dummy_file_format = codelist_factory. \
+            FileFormatFactory(code='application/pdf')
+
+        dummy_indicator_period_actual_document_link = iati_factory. \
+            DocumentLinkFactory(url='http://aasamannepal.org.np/')
+
+        self.parser_203.codelist_cache = {}
+
+        indicator_period_actual_document_link_attr = {
+            "url": dummy_indicator_period_actual_document_link.url,
+            "format": dummy_file_format.code
+
+        }
+        indicator_period_actual_document_link_XML_element = E(
+            'document-link',
+            **indicator_period_actual_document_link_attr
+        )
+        self.parser_203 \
+            .iati_activities__iati_activity__result__indicator__period__actual__document_link__title(  # NOQA: E501
+            indicator_period_actual_document_link_XML_element)
+
+        document_link_title = self.parser_203.get_model(
+            'DocumentLinkTitle')
+
+        self.assertEqual(self.document_link,
+                         document_link_title.document_link)
 
 
 class ActivityResultReferenceTestCase(TestCase):
