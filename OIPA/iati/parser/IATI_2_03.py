@@ -3019,7 +3019,13 @@ class Parse(IatiParser):
         result.type = result_type
         result.aggregation_status = self.makeBool(aggregation_status)
 
+        # It is impossible to assign related object (ForeignKey) before it's
+        # saved (later in other parser methods), so:
+        # XXX: not sure how efficient this is.
+        result.save()
+
         self.register_model('Result', result)
+
         return element
 
     # TODO: test:
@@ -3994,6 +4000,12 @@ class Parse(IatiParser):
             pass
 
         result_indicator = self.get_model('ResultIndicator')
+
+        # It is impossible to assign related object (ForeignKey) before it's
+        # saved, so:
+        # XXX: not sure how efficient this is.
+        if result_indicator.pk is None:
+            result_indicator.save()
 
         # start with actual functionality for period:
 
