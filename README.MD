@@ -24,8 +24,12 @@ Documentation on installing, running and using OIPA can be found at <a href="htt
 
 1. Go to your OIPA folder.
 2. Run ```virtualenv <name> -p python3``` to install virtual environment in python3.
+Please make sure your python version is 3.6.x.
 3. Run ```source env/bin/activate``` to activate the virtual environment.
 4. Install required libraries using ```pip install -r requirements.txt```
+5. Install ```Postgres``` and ```PostGIS```. Please refer to 
+<a href="https://postgis.net/install/" target="_blank">this website</a> for 
+installation.
 5. Create a PostgreSQL database.
 6. Set up the database specifications in the file ```OIPA/.env``` as follows:
    * OIPA_DB_NAME= ```<your database name>```
