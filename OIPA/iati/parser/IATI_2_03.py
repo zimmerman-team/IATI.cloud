@@ -3019,7 +3019,13 @@ class Parse(IatiParser):
         result.type = result_type
         result.aggregation_status = self.makeBool(aggregation_status)
 
+        # It is impossible to assign related object (ForeignKey) before it's
+        # saved (later in other parser methods), so:
+        # XXX: not sure how efficient this is.
+        result.save()
+
         self.register_model('Result', result)
+
         return element
 
     # TODO: test:
@@ -3731,7 +3737,6 @@ class Parse(IatiParser):
 
         return element
 
-    # TODO: test
     def iati_activities__iati_activity__result__indicator__baseline__dimension(  # NOQA: E501
             self, element):
         '''A new, optional element in v. 2.03:
@@ -3744,7 +3749,7 @@ class Parse(IatiParser):
 
         if not name:
             raise RequiredFieldError(
-                "iati-activity/result/indicator/baseline/dimension"
+                "iati-activity/result/indicator/baseline/dimension",
                 "name",
                 "required attribute missing")
 
@@ -3774,7 +3779,6 @@ class Parse(IatiParser):
 
         return element
 
-    # TODO: test
     def iati_activities__iati_activity__result__indicator__baseline__document_link(  # NOQA: E501
             self, element):
         '''New (optional) <document-link> element for <baseline> element
@@ -3822,7 +3826,6 @@ class Parse(IatiParser):
 
         return element
 
-    # TODO: test:
     def iati_activities__iati_activity__result__indicator__baseline__document_link__document_date(  # NOQA: E501
             self, element):
         '''New (optional) <document-link> element for <baseline> element
@@ -3876,7 +3879,6 @@ class Parse(IatiParser):
         self.add_narrative(element, document_link_title)
         return element
 
-    # TODO: test
     def iati_activities__iati_activity__result__indicator__baseline__document_link__description(  # NOQA: E501
             self, element):
         '''New (optional) <document-link> element for <baseline> element
@@ -3902,7 +3904,6 @@ class Parse(IatiParser):
         self.add_narrative(element, document_link_description)
         return element
 
-    # TODO: test:
     def iati_activities__iati_activity__result__indicator__baseline__document_link__category(  # NOQA: E501
             self, element):
         '''New (optional) <document-link> element for <baseline> element
@@ -3937,7 +3938,6 @@ class Parse(IatiParser):
         self.register_model('DocumentLinkCategory', document_link_category)
         return element
 
-    # TODO: test:
     def iati_activities__iati_activity__result__indicator__baseline__document_link__language(  # NOQA: E501
             self, element):
         '''New (optional) <document-link> element for <baseline> element
@@ -4000,6 +4000,12 @@ class Parse(IatiParser):
             pass
 
         result_indicator = self.get_model('ResultIndicator')
+
+        # It is impossible to assign related object (ForeignKey) before it's
+        # saved, so:
+        # XXX: not sure how efficient this is.
+        if result_indicator.pk is None:
+            result_indicator.save()
 
         # start with actual functionality for period:
 
@@ -4230,7 +4236,6 @@ class Parse(IatiParser):
         self.register_model('DocumentLink', document_link)
         return element
 
-    # TODO: test
     def iati_activities__iati_activity__result__indicator__period__target__document_link__title(  # NOQA: E501
             self, element):
         '''New (optional) <document-link> element for <target> element
@@ -4601,7 +4606,6 @@ class Parse(IatiParser):
 
         return element
 
-    # TODO: test
     def iati_activities__iati_activity__result__indicator__period__actual__document_link__category(  # NOQA: E501
             self, element):
         '''New (optional) <document-link> element for <actual> element
@@ -4637,7 +4641,6 @@ class Parse(IatiParser):
         self.register_model('DocumentLinkCategory', document_link_category)
         return element
 
-    # TODO: test
     def iati_activities__iati_activity__result__indicator__period__actual__document_link__language(  # NOQA: E501
             self, element):
         '''New (optional) <document-link> element for <actual> element
