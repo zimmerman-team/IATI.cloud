@@ -719,6 +719,9 @@ class ResultIndicatorDescriptionFactory(NoDatabaseFactory):
 
 
 class ResultIndicatorBaselineFactory(NoDatabaseFactory):
+    result_indicator = SubFactory(
+        'iati.factory.iati_factory.ResultIndicatorFactory'
+    )
 
     year = 2018
 
