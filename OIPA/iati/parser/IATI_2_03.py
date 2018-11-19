@@ -4229,7 +4229,6 @@ class Parse(IatiParser):
         self.register_model('DocumentLink', document_link)
         return element
 
-    # TODO: test
     def iati_activities__iati_activity__result__indicator__period__target__document_link__title(  # NOQA: E501
             self, element):
         '''New (optional) <document-link> element for <target> element
