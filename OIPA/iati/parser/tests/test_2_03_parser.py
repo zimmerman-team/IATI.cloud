@@ -3461,6 +3461,114 @@ class ActivityResultIndicatorBaselineDocumentLinkCategoryTestCase(TestCase):
         self.assertEqual(document_link_category.category, document_category)
 
 
+class ActivityResultIndicatorBaselineDimensionTestCase(TestCase):
+    """
+    2.03: The optional dimension element was added.
+    """
+
+    def setUp(self):
+        # 'Main' XML file for instantiating parser:
+        xml_file_attrs = {
+            "generated-datetime": datetime.datetime.now().isoformat(),
+            "version": '2.03',
+        }
+        self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
+
+        dummy_source = synchroniser_factory.DatasetFactory.create()
+
+        self.parser_203 = ParseManager(
+            dataset=dummy_source,
+            root=self.iati_203_XML_file,
+        ).get_parser()
+        # Related objects:
+        self.result_indicator_baseline = iati_factory.\
+            ResultIndicatorBaselineFactory()
+
+        self.parser_203.register_model(
+            'ResultIndicatorBaseline', self.result_indicator_baseline
+        )
+
+    def test_activity_result_indicator_baseline_dimension(self):
+        """
+        Tests if <dimension> element in context of a baseline element (as part
+        of a parent result/indicator element) is parsed and saved correctly
+        """
+
+        # case 1: 'name' attribute is missing:
+        result_indicator_baseline_dimension_attrs = {
+            # 'name': 'sex'
+        }
+
+        result_indicator_baseline_dimension_XML_element = E(
+            'dimension',
+            **result_indicator_baseline_dimension_attrs
+        )
+
+        try:
+            self.parser_203\
+                .iati_activities__iati_activity__result__indicator__baseline__dimension(  # NOQA: E501
+                    result_indicator_baseline_dimension_XML_element
+                )
+        except RequiredFieldError as inst:
+            self.assertEqual(inst.field, 'name')
+            self.assertEqual(inst.message, 'required attribute missing')
+
+        # case 2: 'value' attribute is missing:
+        result_indicator_baseline_dimension_attrs = {
+            'name': 'sex',
+            # 'value': 'female'
+        }
+
+        result_indicator_baseline_dimension_XML_element = E(
+            'dimension',
+            **result_indicator_baseline_dimension_attrs
+        )
+
+        try:
+            self.parser_203\
+                .iati_activities__iati_activity__result__indicator__baseline__dimension(  # NOQA: E501
+                    result_indicator_baseline_dimension_XML_element
+                )
+        except RequiredFieldError as inst:
+            self.assertEqual(inst.field, 'value')
+            self.assertEqual(inst.message, 'required attribute missing')
+
+        # case 3: all is good:
+        result_indicator_baseline_dimension_attrs = {
+            'name': 'sex',
+            'value': 'female'
+        }
+
+        result_indicator_baseline_dimension_XML_element = E(
+            'dimension',
+            **result_indicator_baseline_dimension_attrs
+        )
+
+        self.parser_203\
+            .iati_activities__iati_activity__result__indicator__baseline__dimension(  # NOQA: E501
+                result_indicator_baseline_dimension_XML_element
+            )
+
+        result_indicator_baseline_dimension = self.parser_203.get_model(
+            'ResultIndicatorBaselineDimension'
+        )
+
+        self.assertEqual(
+            result_indicator_baseline_dimension.result_indicator_baseline,
+            self.result_indicator_baseline
+        )
+
+        self.assertEqual(
+            result_indicator_baseline_dimension.name,
+            result_indicator_baseline_dimension_attrs['name']
+        )
+
+        self.assertEqual(
+            result_indicator_baseline_dimension.value,
+            result_indicator_baseline_dimension_attrs['value']
+        )
+
+
 class ActivityResultIndicatorPeriodTargetTestCase(TestCase):
 
     """
