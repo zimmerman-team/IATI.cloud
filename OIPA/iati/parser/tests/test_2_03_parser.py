@@ -3777,8 +3777,7 @@ class AcitivityResultIndicatorPeriodActualDocumentLinkTitleTestCase(TestCase):
                          document_link_title.document_link)
 
 
-class ActivityResultIndicatorPeriodActualDocumentLinkDocumentDateTestCase(
-    TestCase):
+class ActivityResultIndicatorPeriodActualDocumentLinkDocumentDateTestCase(TestCase):  # NOQA: E501
     '''
     2.03: Added new (optional) <document-link> element for <actual> element
     inside <result> <indicator>'s <period> element
