@@ -3018,7 +3018,7 @@ class ActivityResultIndicatorBaselineLocationTestCase(TestCase):
                 "Referenced location doesn't exist"
             )
 
-        # 3. Referrenced location isn't refferenced on an activity level:
+        # 3. Referenced location isn't referenced on an activity level:
         result_indicator_baseline_location_attrs = {
             'ref': 'KH-PNH',
         }
