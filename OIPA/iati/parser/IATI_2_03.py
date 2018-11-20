@@ -4400,7 +4400,6 @@ class Parse(IatiParser):
 
         return element
 
-    # TODO: test:
     def iati_activities__iati_activity__result__indicator__period__actual__location(self, element):  # NOQA: E501
 
         ref = element.attrib.get('ref')
