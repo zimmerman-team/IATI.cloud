@@ -1540,11 +1540,8 @@ class ActivityResultDocumentLinkTestCase(TestCase):
 
         result_document_link_attr = {
             # url = 'missing'
-
             "format": 'something'
-
-            # 'format_code' will be got in the function
-
+            # 'format_code' will be retrieved in the function
         }
         result_document_link_XML_element = E(
             'document-link',
@@ -1565,10 +1562,8 @@ class ActivityResultDocumentLinkTestCase(TestCase):
 
         result_document_link_attr = {
             "url": 'www.google.com'
-
             # "format":
-            # 'format_code' will be got in the function
-
+            # 'format_code' will be retrieved in the function
         }
         result_document_link_XML_element = E(
             'document-link',
@@ -1590,8 +1585,7 @@ class ActivityResultDocumentLinkTestCase(TestCase):
         result_document_link_attr = {
             "url": 'www.google.com',
             "format": 'something',
-            # 'format_code will be got in the function
-
+            # 'format_code will be retrieved in the function
         }
         result_document_link_XML_element = E(
             'document-link',
@@ -2247,11 +2241,8 @@ class ActivityResultIndicatorDocumentLinkTestCase(TestCase):
 
         result_indicator_document_link_attr = {
             # url = 'missing'
-
             "format": 'something'
-
-            # 'format_code' will be got in the function
-
+            # 'format_code' will be retrieved in the function
         }
         result_indicator_document_link_XML_element = E(
             'document-link',
@@ -2274,8 +2265,7 @@ class ActivityResultIndicatorDocumentLinkTestCase(TestCase):
             "url": 'www.google.com'
 
             # "format":
-            # 'format_code' will be got in the function
-
+            # 'format_code' will be retrieved in the function
         }
         result_indicator_document_link_XML_element = E(
             'document-link',
@@ -2297,8 +2287,7 @@ class ActivityResultIndicatorDocumentLinkTestCase(TestCase):
         result_indicator_document_link_attr = {
             "url": 'www.google.com',
             "format": 'something',
-            # 'format_code will be got in the function
-
+            # 'format_code will be retrieved in the function
         }
         result_indicator_document_link_XML_element = E(
             'document-link',
@@ -3121,8 +3110,7 @@ class ActivityResultIndicatorPeriodTargetDocumentLinkTestCase(TestCase):
         result_indicator_period_target_document_link_attr = {
             # url = 'missing'
             "format": 'something'
-            # 'format' will be got in the function
-
+            # 'format' will be retrieved in the function
         }
         result_indicator_period_target_document_link_XML_element = E(
             'document_link',
@@ -3143,10 +3131,8 @@ class ActivityResultIndicatorPeriodTargetDocumentLinkTestCase(TestCase):
 
         result_indicator_period_target_document_link_attr = {
             "url": 'www.google.com'
-
             # "format":
-            # 'format_code' will be got in the function
-
+            # 'format_code' will be retrieved in the function
         }
         result_indicator_period_target_document_link_XML_element = E(
             'document-link',
@@ -3168,8 +3154,7 @@ class ActivityResultIndicatorPeriodTargetDocumentLinkTestCase(TestCase):
         result_indicator_period_target_document_link_attr = {
             "url": 'www.google.com',
             "format": 'something',
-            # 'format_code will be got in the function
-
+            # 'format_code will be retrieved in the function
         }
         result_indicator_period_target_document_link_XML_element = E(
             'document-link',
@@ -3711,7 +3696,7 @@ class ActivityResultIndicatorPeriodActualDocumentLinkTestCase(TestCase):
         result_indicator_period_actual_document_link_attr = {
             # url = 'something'
             "format": 'something'
-            # "file_format" will be got in the function
+            # "file_format" will be retrieved in the function
         }
         result_indicator_period_actual_document_link_XML_element = E(
             'document-link',
@@ -3733,7 +3718,7 @@ class ActivityResultIndicatorPeriodActualDocumentLinkTestCase(TestCase):
         result_indicator_period_actual_document_link_attr = {
             "url": 'www.google.com'
             # "format": 'something'
-            # "file_format" will be got in the function
+            # "file_format" will be retrieved in the function
         }
         result_indicator_period_actual_document_link_XML_element = E(
             'document-link',
@@ -3753,8 +3738,8 @@ class ActivityResultIndicatorPeriodActualDocumentLinkTestCase(TestCase):
         result_indicator_period_actual_document_link_attr = {
             "url": 'www.google.com',
             "format": 'something',
-            # "file_format" will be got in the function but in this case no
-            # file_format can be retrieved using given 'format'
+            # "file_format" should be retrieved in the function but in this
+            # case no file_format can be retrieved using given 'format'
         }
         result_indicator_period_actual_document_link_XML_element = E(
             'document-link',
