@@ -4725,7 +4725,7 @@ class ActivityResultIndicatorPeriodActualDocumentLinkDocumentDateTestCase(TestCa
 
     def test_activity_result_indicator_period_actual_document_link_document_date(self):  # NOQA: E501
         '''
-        Test if iso-date attribute in <document_link> XML element is
+        Test if iso-date attribute in <document-link> XML element is
         correctly saved.
         '''
 
@@ -4804,7 +4804,7 @@ class ActivityResultIndicatorPeriodActualDocumentLinkDocumentDateTestCase(TestCa
             document_date_XML_element
         )
 
-        # Let's test date is saved
+        # Let's test if the date is saved
 
         date = dateutil.parser.parse('2011-05-06', ignoretz=True)
 
