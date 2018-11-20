@@ -2928,6 +2928,138 @@ class ActivityResultIndicatorBaselineTestCase(TestCase):
         )
 
 
+class ActivityResultIndicatorBaselineLocationTestCase(TestCase):
+    '''2.03: The optional location element was added.
+    '''
+
+    def setUp(self):
+        # 'Main' XML file for instantiating parser:
+        xml_file_attrs = {
+            "generated-datetime": datetime.datetime.now().isoformat(),
+            "version": '2.03',
+        }
+        self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
+
+        dummy_source = synchroniser_factory.DatasetFactory.create()
+
+        self.parser_203 = ParseManager(
+            dataset=dummy_source,
+            root=self.iati_203_XML_file,
+        ).get_parser()
+
+        self.result_indicator = iati_factory.ResultIndicatorFactory()
+
+        self.result_indicator_baseline = iati_factory.\
+            ResultIndicatorBaselineFactory(
+                result_indicator=self.result_indicator,
+            )
+
+        self.activity = self.result_indicator_baseline.result_indicator\
+            .result.activity
+
+        self.location = iati_factory.LocationFactory(ref='KH-PNH')
+
+        self.parser_203.register_model('Activity', self.activity)
+
+        self.parser_203.register_model(
+            'ResultIndicatorBaseline',
+            self.result_indicator_baseline
+        )
+        self.parser_203.register_model('Location', self.location)
+
+    def test_activity_result_indicator_baseline_location(self):
+
+        """
+        Test if <location> element in context of a baseline element (as part
+        of a parent result/indicator element) is parsed and saved correctly
+        """
+
+        # 1. 'ref' attribute is not provided:
+        result_indicator_baseline_location_attrs = {
+            # 'ref': 'AF-KAN',
+        }
+
+        result_indicator_baseline_location_XML_element = E(
+            'location',
+            **result_indicator_baseline_location_attrs
+        )
+
+        try:
+            self.parser_203\
+                .iati_activities__iati_activity__result__indicator__baseline__location(  # NOQA: E501
+                    result_indicator_baseline_location_XML_element
+                )
+        except RequiredFieldError as inst:
+            self.assertEqual(inst.field, 'ref')
+            self.assertEqual(inst.message,
+                             "This attribute has to be a cross-reference to "
+                             "the internal reference assigned to a defined "
+                             "location: iati-activity/location/@ref, so "
+                             "leaving it blank makes no sense")
+
+        # 2. Referenced location doesn't exist:
+        result_indicator_baseline_location_attrs = {
+            'ref': 'AF-KAN',  # it's not 'KH-PNH'
+        }
+
+        result_indicator_baseline_location_XML_element = E(
+            'location',
+            **result_indicator_baseline_location_attrs
+        )
+
+        try:
+            self.parser_203\
+                .iati_activities__iati_activity__result__indicator__baseline__location(  # NOQA: E501
+                    result_indicator_baseline_location_XML_element
+                )
+        except FieldValidationError as inst:
+            self.assertEqual(inst.field, 'ref')
+
+            self.assertEqual(
+                inst.message,
+                "Referenced location doesn't exist"
+            )
+
+        # 3. Referenced location isn't referenced on an activity level:
+        result_indicator_baseline_location_attrs = {
+            'ref': 'KH-PNH',
+        }
+
+        result_indicator_baseline_location_XML_element = E(
+            'location',
+            **result_indicator_baseline_location_attrs
+        )
+
+        try:
+            self.parser_203\
+                .iati_activities__iati_activity__result__indicator__baseline__location(  # NOQA: E501
+                    result_indicator_baseline_location_XML_element
+                )
+        except FieldValidationError as inst:
+            self.assertEqual(inst.field, 'ref')
+
+            self.assertEqual(
+                inst.message,
+                "Referenced location has to be referenced on an Activity level"
+            )
+
+        # 4. all is good:
+
+        self.activity.location_set.add(self.location)
+
+        self.parser_203\
+            .iati_activities__iati_activity__result__indicator__baseline__location(  # NOQA: E501
+                result_indicator_baseline_location_XML_element
+            )
+
+        referenced_location = self.parser_203.get_model('Location')
+
+        self.assertEqual(
+            referenced_location.result_indicator_baseline,
+            self.result_indicator_baseline,
+        )
+
+
 class ActivityResultIndicatorBaselineDocumentLinkTestCase(TestCase):
     """
     2.03: The optional <document-link> element was added.
