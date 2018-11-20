@@ -4342,6 +4342,118 @@ class ActivityResultIndicatorPeriodTargetDocumentLinkLanguageTestCase(
         self.assertEqual(language, document_link_language.language)
 
 
+class ActivityResultIndicatorPeriodTargetDocumentLinkDocumentDateTestCase(
+    TestCase
+):
+    '''
+    2.03: Added new, optional <document-date> element of a document-link in a
+    target in a period in an indicator in a result element
+    '''
+
+    def setUp(self):
+
+        # 'Main' XML file for instantiating parser:
+        xml_file_attrs = {
+            "generated-datetime": datetime.datetime.now().isoformat(),
+            "version": '2.03',
+        }
+        self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
+
+        dummy_source = synchroniser_factory.DatasetFactory.create()
+
+        self.parser_203 = ParseManager(
+            dataset=dummy_source,
+            root=self.iati_203_XML_file,
+        ).get_parser()
+
+        self.document_link = iati_factory.DocumentLinkFactory. \
+            create(url='http://someuri.com')
+
+        self.parser_203.register_model('DocumentLink', self.document_link)
+
+    def test_result_indicator_period_target_document_link_document_date(
+            self):
+        '''
+        Test if iso-date attribute in <document-link> XML element is
+        correctly parsed and saved.
+        '''
+        # case 1: 'iso-date' is missing
+
+        document_date_attr = {
+            # "iso-date": '25116600000'
+
+        }
+        document_date_XML_element = E(
+            'document-date',
+            **document_date_attr
+        )
+
+        try:
+            self.date = self.parser_203 \
+                 .iati_activities__iati_activity__result__indicator__period__target__document_link__document_date(  # NOQA: E501
+
+                document_date_XML_element
+
+            )
+        except RequiredFieldError as inst:
+            self.assertEqual(inst.field, 'iso-date')
+            self.assertEqual(inst.message, 'required attribute missing')
+
+        # case 2 : 'iso-date' is not valid
+        document_date_attr = {
+            "iso-date": '25116600000'
+        }
+        document_date_XML_element = E(
+            'document-date',
+            **document_date_attr
+        )
+
+        try:
+            self.parser_203.iati_activities__iati_activity__result__indicator__period__target__document_link__document_date(  # NOQA: E501
+                document_date_XML_element
+            )
+        except RequiredFieldError as inst:
+            self.assertEqual(inst.field, 'iso-date')
+            self.assertEqual(inst.message, 'Unspecified or invalid. Date '
+                                           'should be of type xml:date.')
+
+        # case 3: 'iso-date' is not in correct range
+        document_date_attr = {
+            "iso-date": '18200915'
+        }
+        document_date_XML_element = E(
+            'document-date',
+            **document_date_attr
+        )
+        try:
+            self.parser_203.iati_activities__iati_activity__result__indicator__period__target__document_link__document_date(  # NOQA: E501
+                document_date_XML_element
+            )
+        except FieldValidationError as inst:
+            self.assertEqual(inst.field, 'iso-date')
+            self.assertEqual(inst.message, 'iso-date not of type xsd:date')
+
+        # all is good
+        document_date_attr = {
+            "iso-date": '2011-05-06'  # this is acceptable  iso-date
+        }
+        document_date_XML_element = E(
+            'document-date',
+            **document_date_attr
+        )
+        self.parser_203\
+            .iati_activities__iati_activity__result__indicator__period__target__document_link__document_date(  # NOQA: E501
+            document_date_XML_element
+        )
+
+        # Let's test if the date is saved
+
+        date = dateutil.parser.parse('2011-05-06', ignoretz=True)
+
+        document_link = self.parser_203.get_model('DocumentLink')
+        self.assertEqual(date, document_link.iso_date)
+
+
 class ActivityResultIndicatorPeriodActualTestCase(TestCase):
 
     """
