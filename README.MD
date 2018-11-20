@@ -1,7 +1,13 @@
 ## OIPA
 --------
+<!---
+These are temporary disabled:
+
 [![Build Status](https://travis-ci.org/zimmerman-zimmerman/OIPA.svg?branch=develop)](https://travis-ci.org/zimmerman-zimmerman/OIPA)
 [![Coverage Status](https://coveralls.io/repos/zimmerman-zimmerman/OIPA/badge.svg?branch=develop&service=github)](https://coveralls.io/github/zimmerman-zimmerman/OIPA?branch=develop)
+
+-->
+
 [![Requirements Status](https://requires.io/github/zimmerman-zimmerman/OIPA/requirements.svg?branch=develop)](https://requires.io/github/zimmerman-zimmerman/OIPA/requirements/?branch=develop)
 [![Documentation Status](https://readthedocs.org/projects/oipa-docs/badge/?version=latest)](http://docs.oipa.nl/en/latest/?badge=latest)
 [![Gitter](https://img.shields.io/gitter/room/nwjs/nw.js.svg?maxAge=2592000)](https://gitter.im/zimmerman-zimmerman/OIPA)
@@ -19,8 +25,8 @@ IATI is a global aid transparency standard and it makes information about aid sp
 | Python                 | 3.6.5     |
 | PostgreSQL             | 9.6       |
 | Redis                  | 4.0.x     |
-| PostGIS                | See <a href="https://docs.djangoproject.com/en/2.0/ref/contrib/gis/install/postgis/">Installing PostGIS</a> |
-| SpaciaLite (for tests) | See <a href="https://docs.djangoproject.com/en/2.0/ref/contrib/gis/install/spatialite/">Installing SpatiaLite</a> |
+| PostGIS                | See: <a href="https://docs.djangoproject.com/en/2.0/ref/contrib/gis/install/postgis/">installing PostGIS</a> |
+| SpaciaLite (for tests) | See: <a href="https://docs.djangoproject.com/en/2.0/ref/contrib/gis/install/spatialite/">installing SpatiaLite</a> |
 
 
 ## Quick start
