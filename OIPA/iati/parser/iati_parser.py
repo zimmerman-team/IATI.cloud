@@ -173,11 +173,12 @@ class IatiParser(object):
                 '{http://www.w3.org/XML/1998/namespace}lang',
                 self.default_lang)
             if lang == 'en':
-                # FIXME: this is hardcoded!
-                primary_name = element.text[:255]
+                primary_name = element.text
         else:
             primary_name = element.text
-        return primary_name
+
+        # FIXME: this is hardcoded!
+        return primary_name[:255]
 
     def load_and_parse(self, root):
         self.parse_activities(root)
