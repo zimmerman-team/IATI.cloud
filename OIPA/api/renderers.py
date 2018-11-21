@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 
 import csv
 import io
+import ast
 from collections import OrderedDict
 
 import xlsxwriter
@@ -147,6 +148,7 @@ class OrganisationXMLRenderer(XMLRenderer):
 class XlsRenderer(BaseRenderer):
     media_type = 'application/vnd.ms-excel'
     results_field = 'results'
+    render_style = 'xls'
     format = 'xls'
 
     def __init__(self):
@@ -166,9 +168,11 @@ class XlsRenderer(BaseRenderer):
         # In an array to make checks if a longer values has not entered
         self.col_widths = []
 
-    def render(self, data, *args, **kwargs):
+    def render(self, data, media_type=None, renderer_context=None, *args, **kwargs):
 
-        actual_kwargs = args[1].get('kwargs', {})
+        actual_kwargs = renderer_context['args'][1].get('kwargs', {})
+
+        lol = ast.literal_eval(renderer_context['request'].query_params['export_fields'])
 
         # this is a list view
         if 'pk' not in actual_kwargs:
