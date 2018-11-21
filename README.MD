@@ -5,12 +5,12 @@ These are temporary disabled:
 
 [![Build Status](https://travis-ci.org/zimmerman-zimmerman/OIPA.svg?branch=develop)](https://travis-ci.org/zimmerman-zimmerman/OIPA)
 [![Coverage Status](https://coveralls.io/repos/zimmerman-zimmerman/OIPA/badge.svg?branch=develop&service=github)](https://coveralls.io/github/zimmerman-zimmerman/OIPA?branch=develop)
+[![Gitter](https://img.shields.io/gitter/room/nwjs/nw.js.svg?maxAge=2592000)](https://gitter.im/zimmerman-zimmerman/OIPA)
 
 -->
 
 [![Requirements Status](https://requires.io/github/zimmerman-zimmerman/OIPA/requirements.svg?branch=develop)](https://requires.io/github/zimmerman-zimmerman/OIPA/requirements/?branch=develop)
 [![Documentation Status](https://readthedocs.org/projects/oipa-docs/badge/?version=latest)](http://docs.oipa.nl/en/latest/?badge=latest)
-[![Gitter](https://img.shields.io/gitter/room/nwjs/nw.js.svg?maxAge=2592000)](https://gitter.im/zimmerman-zimmerman/OIPA)
 [![License: AGPLv3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://github.com/zimmerman-zimmerman/OIPA/blob/master/LICENSE.MD)
 
 
