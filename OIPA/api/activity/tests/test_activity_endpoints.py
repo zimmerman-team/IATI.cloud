@@ -49,11 +49,11 @@ class TestActivityEndpoints(APITestCase):
         )
 
         response = self.c.get(endpoint_url)
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
         resp_data = json.loads(response.content)
-        self.assertEquals(resp_data['count'], 1)
-        self.assertEquals(
+        self.assertEqual(resp_data['count'], 1)
+        self.assertEqual(
             resp_data['results'][0]['iati_identifier'],
             reporting_organisation.activity.iati_identifier
         )
@@ -91,17 +91,17 @@ class TestActivityEndpoints(APITestCase):
         )
 
         response = self.c.get(endpoint_url)
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
         resp_data = json.loads(response.content)
-        self.assertEquals(resp_data['count'], 2)
+        self.assertEqual(resp_data['count'], 2)
 
-        self.assertEquals(
+        self.assertEqual(
             resp_data['results'][0]['iati_identifier'],
             first_reporting_organisation.activity.iati_identifier
         )
 
-        self.assertEquals(
+        self.assertEqual(
             resp_data['results'][1]['iati_identifier'],
             second_reporting_organisation.activity.iati_identifier
         )

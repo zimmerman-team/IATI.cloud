@@ -563,8 +563,8 @@ class TransactionAggregationFilter(TransactionFilter):
 
     total_budget_lte = NumberFilter(
         lookup_expr='lte',
-        name='activity__activity_aggregation__budget_value')
+        field_name='activity__activity_aggregation__budget_value')
 
     total_budget_gte = NumberFilter(
         lookup_expr='gte',
-        name='activity__activity_aggregation__budget_value')
+        field_name='activity__activity_aggregation__budget_value')
