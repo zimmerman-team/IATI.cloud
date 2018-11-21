@@ -1,13 +1,13 @@
-from rest_framework.serializers import HyperlinkedIdentityField
-from iati_synchroniser.models import Publisher
-from iati_synchroniser.models import Dataset
-from api.generics.serializers import DynamicFieldsModelSerializer
-from api.dataset.serializers import DatasetSerializer
-from rest_framework.serializers import SerializerMethodField
-
-from django.core.urlresolvers import reverse
-from iati.models import Activity
 from django.db.models import Sum
+from django.urls import reverse
+from rest_framework.serializers import (
+    HyperlinkedIdentityField, SerializerMethodField
+)
+
+from api.dataset.serializers import DatasetSerializer
+from api.generics.serializers import DynamicFieldsModelSerializer
+from iati.models import Activity
+from iati_synchroniser.models import Dataset, Publisher
 
 
 class PublisherSerializer(DynamicFieldsModelSerializer):
@@ -56,17 +56,11 @@ class PublisherSerializer(DynamicFieldsModelSerializer):
 
     def get_activity_count(self, obj):
         return Activity.objects.filter(
-            reporting_organisations__normalized_ref=obj.publisher_iati_id).count()
+            reporting_organisations__normalized_ref=obj.publisher_iati_id
+        ).count()
 
     def get_note_count(self, obj):
-        sum_queryset = Dataset.objects.filter(publisher=obj.id).aggregate(Sum('note_count'))
+        sum_queryset = Dataset.objects.filter(
+            publisher=obj.id
+        ).aggregate(Sum('note_count'))
         return sum_queryset.get('note_count__sum')
-
-
-# class AdminGroupUser(DynamicFieldsModelSerializer):
-
-#     class Meta:
-#         model = User
-#         fields = ('name', )
-
-#     def create(self, validated_data):

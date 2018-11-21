@@ -1,18 +1,16 @@
 # Django settings for OIPA project.
 
 import os
-from os import environ as env
 import sys
 from ast import literal_eval
+from os import environ as env
 
-from django.core.urlresolvers import reverse_lazy
 from tzlocal import get_localzone
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 DEBUG = literal_eval(env.get('OIPA_DEBUG', 'True'))
 FTS_ENABLED = literal_eval(env.get('OIPA_FTS_ENABLED', 'True'))
 
-LOGIN_URL = reverse_lazy('two_factor:login')
 LOGIN_REDIRECT_URL = '/admin/'
 LOGOUT_URL = '/logout'
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 3000
@@ -21,13 +19,15 @@ SECRET_KEY = env.get('OIPA_SECRET_KEY', 'PXwlMOpfNJTgIdQeH5zk39jKfUMZPOUK')
 
 DATABASES = {
     'default': {
-        'ENGINE': env.get('OIPA_DB_ENGINE', 'django.contrib.gis.db.backends.postgis'),
-        'HOST': env.get('OIPA_DB_HOST', 'localhost'),
-        'PORT': env.get('OIPA_DB_PORT', '5432'),
-        'NAME': env.get('OIPA_DB_NAME', 'oipa'),
-        'USER': env.get('OIPA_DB_USER', 'oipa'),
-        'PASSWORD': env.get('OIPA_DB_PASSWORD', 'oipa'),
-        'CONN_MAX_AGE': int(env.get('OIPA_DB_CONN_MAX_AGE', 500))
+        'ENGINE': env.get(
+            'OIPA_DB_ENGINE', 'django.contrib.gis.db.backends.postgis'
+        ),
+        'HOST': os.getenv('OIPA_DB_HOST', 'localhost'),
+        'PORT': os.getenv('OIPA_DB_PORT', 5432),
+        'NAME': os.getenv('OIPA_DB_NAME', 'oipa'),
+        'USER': os.getenv('OIPA_DB_USER', 'oipa'),
+        'PASSWORD': os.getenv('OIPA_DB_PASSWORD', 'oipa'),
+        'CONN_MAX_AGE': int(os.getenv('OIPA_DB_CONN_MAX_AGE', 500))
     },
 }
 
@@ -131,15 +131,13 @@ STATICFILES_FINDERS = (
     #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
-MIDDLEWARE_CLASSES = [
+MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django_otp.middleware.OTPMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'admin_reorder.middleware.ModelAdminReorder',
@@ -177,23 +175,17 @@ INSTALLED_APPS = [
     'djsupervisor',
     'rest_framework',
     'rest_framework_csv',
-    'django_otp',
-    'django_otp.plugins.otp_static',
-    'django_otp.plugins.otp_totp',
-    'otp_yubikey',
-    'two_factor',
     'django_extensions',
     'iati_vocabulary.apps.IatiVocabularyConfig',
     'iati_codelists.apps.IatiCodelistsConfig',
     'test_without_migrations',
-    'djorm_pgfulltext',
     'admin_reorder',
     'rest_framework.authtoken',
     'iati.permissions',
     'rest_auth',
     'rest_auth.registration',
     'django_filters',
-    'nested_admin',
+    'markdownify'
 ]
 
 ADMIN_REORDER = (
@@ -205,9 +197,6 @@ ADMIN_REORDER = (
     'geodata',
     'currency_convert',
     'auth',
-    # 'otp_static',
-    # 'otp_totp',
-    # 'otp_yubikey',
     'sites'
 )
 
@@ -228,6 +217,7 @@ REST_FRAMEWORK = {
         'rest_framework.renderers.BrowsableAPIRenderer',
         'rest_framework.renderers.JSONRenderer',
         'api.renderers.PaginatedCSVRenderer',
+        'api.renderers.XlsRenderer',
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.BasicAuthentication',
@@ -295,54 +285,52 @@ API_CACHE_SECONDS = int(env.get('OIPA_API_CACHE_SECONDS', 0))
 
 CACHES = {
     'default': {
-        'BACKEND': env.get('OIPA_CACHES_DEFAULT_BACKEND', 'redis_cache.RedisCache'),
+        'BACKEND': env.get(
+            'OIPA_CACHES_DEFAULT_BACKEND', 'redis_cache.RedisCache'
+        ),
         'LOCATION': env.get('OIPA_CACHES_DEFAULT_LOCATION', 'localhost:6379'),
     },
     'api': {
-        'BACKEND': env.get('OIPA_CACHES_DEFAULT_BACKEND', 'redis_cache.RedisCache'),
+        'BACKEND': env.get(
+            'OIPA_CACHES_DEFAULT_BACKEND', 'redis_cache.RedisCache'
+        ),
         'LOCATION': env.get('OIPA_CACHES_DEFAULT_LOCATION', 'localhost:6379'),
     }
 }
 
-OIPA_LOG_LEVEL = env.get('OIPA_LOG_LEVEL', 'INFO')
+OIPA_LOG_LEVEL = env.get('OIPA_LOG_LEVEL', 'ERROR')
 
+# These settings are overriden in development_settings and
+# produduction_settings modules:
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
-    'formatters': {
-        'verbose': {
-            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
-        },
-        'simple': {
-            'format': '%(levelname)s %(message)s'
-        },
-    },
-    'filters': {
-        'require_debug_true': {
-            '()': 'django.utils.log.RequireDebugTrue',
-        },
-    },
     'handlers': {
+        # Useful for local development:
         'console': {
-            'level': OIPA_LOG_LEVEL,
-            'filters': ['require_debug_true'],
             'class': 'logging.StreamHandler',
-            'formatter': 'verbose'
-        }
+        },
     },
     'loggers': {
+        # All other errors:
         '': {
             'handlers': ['console'],
-            'propagate': True,
-            'level': OIPA_LOG_LEVEL
+            'level': OIPA_LOG_LEVEL,
+            'propagate': False,
         },
-
+        # IATI Parser related errors:
+        'iati.parser': {
+            'handlers': ['console'],
+            'level': OIPA_LOG_LEVEL,
+            'propagate': False,
+        },
+        # Django-related errors:
         'django': {
             'handlers': ['console'],
-            'propagate': True,
-            'level': OIPA_LOG_LEVEL
-        }
-    }
+            'level': OIPA_LOG_LEVEL,
+            'propagate': False,
+        },
+    },
 }
 
 REST_FRAMEWORK_EXTENSIONS = {
@@ -351,9 +339,10 @@ REST_FRAMEWORK_EXTENSIONS = {
     'DEFAULT_CACHE_RESPONSE_TIMEOUT': 1 * 60 * 60 * 24 * 7,  # 1 week
 }
 
-# DATA PLUGINS is the data which has not related to the IATI data.
-# For example M49 Regions code, put it in the local_settings.py,
-# like the following:
+# DATA PLUGINS is a dict with data which is not related to the IATI data.
+# For example, for M49 Regions import, add such code block it in the
+# local_settings.py:
+
 # import os
 # BASE_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 # DATA_PLUGINS = {

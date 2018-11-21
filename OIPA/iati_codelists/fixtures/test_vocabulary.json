@@ -1,1 +1,200 @@
-[{"model": "iati_vocabulary.geographicvocabulary", "pk": "A1", "fields": {"name": "Global Admininistrative Unit Layers", "description": "", "url": " "}}, {"model": "iati_vocabulary.geographicvocabulary", "pk": "A2", "fields": {"name": "UN Second Administrative Level Boundary Project", "description": "Note: the unsalb.org website is no longer accessible, and public access to the boundaries resources has been removed http://www.ungiwg.org/content/united-nations-international-and-administrative-boundaries-resources", "url": " "}}, {"model": "iati_vocabulary.geographicvocabulary", "pk": "A3", "fields": {"name": "Global Administrative Areas", "description": "", "url": " "}}, {"model": "iati_vocabulary.geographicvocabulary", "pk": "A4", "fields": {"name": "ISO Country (3166-1 alpha-2)", "description": "", "url": " "}}, {"model": "iati_vocabulary.geographicvocabulary", "pk": "G1", "fields": {"name": "Geonames", "description": "", "url": " "}}, {"model": "iati_vocabulary.geographicvocabulary", "pk": "G2", "fields": {"name": "OpenStreetMap", "description": "Note: the code should be formed by prefixing the relevant OpenStreetMap ID with node/ way/ or relation/ as appropriate, e.g. node/1234567", "url": " "}}, {"model": "iati_vocabulary.policymarkervocabulary", "pk": "1", "fields": {"name": "OECD DAC CRS", "description": "The policy marker is an OECD DAC CRS policy marker, Reported in columns 20-23, 28-31 and 54 of CRS++ reporting format."}}, {"model": "iati_vocabulary.policymarkervocabulary", "pk": "99", "fields": {"name": "Reporting Organisation", "description": "The policy marker is one that is defined and tracked by the reporting organisation"}}, {"model": "iati_vocabulary.sectorvocabulary", "pk": "1", "fields": {"name": "OECD DAC CRS Purpose Codes (5 digit)", "description": "The sector reported corresponds to an OECD DAC CRS 5-digit purpose code", "url": " "}}, {"model": "iati_vocabulary.sectorvocabulary", "pk": "2", "fields": {"name": "OECD DAC CRS Purpose Codes (3 digit)", "description": "The sector reported corresponds to an OECD DAC CRS 3-digit purpose code", "url": " "}}, {"model": "iati_vocabulary.sectorvocabulary", "pk": "3", "fields": {"name": "Classification of the Functions of Government (UN)", "description": "The sector reported corresponds to the UN Classification of the Functions of Government (CoFoG)", "url": " "}}, {"model": "iati_vocabulary.sectorvocabulary", "pk": "4", "fields": {"name": "Statistical classification of economic activities in the European Community", "description": "The sector reported corresponds to the statistical classifications of economic activities in the European Community", "url": " "}}, {"model": "iati_vocabulary.sectorvocabulary", "pk": "5", "fields": {"name": "National Taxonomy for Exempt Entities (USA)", "description": "The sector reported corresponds to the National Taxonomy for Exempt Entities (NTEE) - USA", "url": " "}}, {"model": "iati_vocabulary.sectorvocabulary", "pk": "6", "fields": {"name": "AidData", "description": "The sector reported corresponds to AidData classifications", "url": " "}}, {"model": "iati_vocabulary.sectorvocabulary", "pk": "98", "fields": {"name": "Reporting Organisation 2", "description": "The sector reported corresponds to a sector vocabulary maintained by the reporting organisation for this activity (if they are referencing more than one)", "url": " "}}, {"model": "iati_vocabulary.sectorvocabulary", "pk": "99", "fields": {"name": "Reporting Organisation", "description": "The sector reported corresponds to a sector vocabulary maintained by the reporting organisation for this activity", "url": " "}}, {"model": "iati_vocabulary.budgetidentifiervocabulary", "pk": "1", "fields": {"name": "IATI", "description": "The budget identifier reported uses IATI budget identifier categories"}}, {"model": "iati_vocabulary.budgetidentifiervocabulary", "pk": "2", "fields": {"name": "Country Chart of Accounts", "description": "The budget identifier reported corresponds to the recipient country chart of accounts"}}, {"model": "iati_vocabulary.budgetidentifiervocabulary", "pk": "3", "fields": {"name": "Other Country System", "description": "The budget identifier reported corresponds to a recipient country system other than the chart of accounts"}}, {"model": "iati_vocabulary.budgetidentifiervocabulary", "pk": "4", "fields": {"name": "Reporting Organisation", "description": "The budget identifier reported corresponds to categories that are specific to the reporting organisation"}}, {"model": "iati_vocabulary.budgetidentifiervocabulary", "pk": "5", "fields": {"name": "Other", "description": "The budget identifier reported uses a different vocabulary, not specified in the codelist "}}, {"model": "iati_vocabulary.regionvocabulary", "pk": "1", "fields": {"name": "OECD DAC", "description": "Supra-national regions according to OECD DAC CRS recipient codes"}}, {"model": "iati_vocabulary.regionvocabulary", "pk": "2", "fields": {"name": "UN", "description": "Supra-national regions maintained by UN Statistics Division"}}]
+[
+    {
+        "model": "iati_vocabulary.geographicvocabulary",
+        "pk": "A1",
+        "fields": {
+            "name": "Global Admininistrative Unit Layers",
+            "description": "",
+            "url": " "
+        }
+    },
+    {
+        "model": "iati_vocabulary.geographicvocabulary",
+        "pk": "A2",
+        "fields": {
+            "name": "UN Second Administrative Level Boundary Project",
+            "description": "Note: the unsalb.org website is no longer accessible, and public access to the boundaries resources has been removed http://www.ungiwg.org/content/united-nations-international-and-administrative-boundaries-resources",
+            "url": " "
+        }
+    },
+    {
+        "model": "iati_vocabulary.geographicvocabulary",
+        "pk": "A3",
+        "fields": {
+            "name": "Global Administrative Areas",
+            "description": "",
+            "url": " "
+        }
+    },
+    {
+        "model": "iati_vocabulary.geographicvocabulary",
+        "pk": "A4",
+        "fields": {
+            "name": "ISO Country (3166-1 alpha-2)",
+            "description": "",
+            "url": " "
+        }
+    },
+    {
+        "model": "iati_vocabulary.geographicvocabulary",
+        "pk": "G1",
+        "fields": {
+            "name": "Geonames",
+            "description": "",
+            "url": " "
+        }
+    },
+    {
+        "model": "iati_vocabulary.geographicvocabulary",
+        "pk": "G2",
+        "fields": {
+            "name": "OpenStreetMap",
+            "description": "Note: the code should be formed by prefixing the relevant OpenStreetMap ID with node/ way/ or relation/ as appropriate, e.g. node/1234567",
+            "url": " "
+        }
+    },
+    {
+        "model": "iati_vocabulary.policymarkervocabulary",
+        "pk": "1",
+        "fields": {
+            "name": "OECD DAC CRS",
+            "description": "The policy marker is an OECD DAC CRS policy marker, Reported in columns 20-23, 28-31 and 54 of CRS++ reporting format."
+        }
+    },
+    {
+        "model": "iati_vocabulary.policymarkervocabulary",
+        "pk": "99",
+        "fields": {
+            "name": "Reporting Organisation",
+            "description": "The policy marker is one that is defined and tracked by the reporting organisation"
+        }
+    },
+    {
+        "model": "iati_vocabulary.sectorvocabulary",
+        "pk": "1",
+        "fields": {
+            "name": "OECD DAC CRS Purpose Codes (5 digit)",
+            "description": "The sector reported corresponds to an OECD DAC CRS 5-digit purpose code",
+            "url": " "
+        }
+    },
+    {
+        "model": "iati_vocabulary.sectorvocabulary",
+        "pk": "2",
+        "fields": {
+            "name": "OECD DAC CRS Purpose Codes (3 digit)",
+            "description": "The sector reported corresponds to an OECD DAC CRS 3-digit purpose code",
+            "url": " "
+        }
+    },
+    {
+        "model": "iati_vocabulary.sectorvocabulary",
+        "pk": "3",
+        "fields": {
+            "name": "Classification of the Functions of Government (UN)",
+            "description": "The sector reported corresponds to the UN Classification of the Functions of Government (CoFoG)",
+            "url": " "
+        }
+    },
+    {
+        "model": "iati_vocabulary.sectorvocabulary",
+        "pk": "4",
+        "fields": {
+            "name": "Statistical classification of economic activities in the European Community",
+            "description": "The sector reported corresponds to the statistical classifications of economic activities in the European Community",
+            "url": " "
+        }
+    },
+    {
+        "model": "iati_vocabulary.sectorvocabulary",
+        "pk": "5",
+        "fields": {
+            "name": "National Taxonomy for Exempt Entities (USA)",
+            "description": "The sector reported corresponds to the National Taxonomy for Exempt Entities (NTEE) - USA",
+            "url": " "
+        }
+    },
+    {
+        "model": "iati_vocabulary.sectorvocabulary",
+        "pk": "6",
+        "fields": {
+            "name": "AidData",
+            "description": "The sector reported corresponds to AidData classifications",
+            "url": " "
+        }
+    },
+    {
+        "model": "iati_vocabulary.sectorvocabulary",
+        "pk": "98",
+        "fields": {
+            "name": "Reporting Organisation 2",
+            "description": "The sector reported corresponds to a sector vocabulary maintained by the reporting organisation for this activity (if they are referencing more than one)",
+            "url": " "
+        }
+    },
+    {
+        "model": "iati_vocabulary.sectorvocabulary",
+        "pk": "99",
+        "fields": {
+            "name": "Reporting Organisation",
+            "description": "The sector reported corresponds to a sector vocabulary maintained by the reporting organisation for this activity",
+            "url": " "
+        }
+    },
+    {
+        "model": "iati_vocabulary.budgetidentifiervocabulary",
+        "pk": "1",
+        "fields": {
+            "name": "IATI",
+            "description": "The budget identifier reported uses IATI budget identifier categories"
+        }
+    },
+    {
+        "model": "iati_vocabulary.budgetidentifiervocabulary",
+        "pk": "2",
+        "fields": {
+            "name": "Country Chart of Accounts",
+            "description": "The budget identifier reported corresponds to the recipient country chart of accounts"
+        }
+    },
+    {
+        "model": "iati_vocabulary.budgetidentifiervocabulary",
+        "pk": "3",
+        "fields": {
+            "name": "Other Country System",
+            "description": "The budget identifier reported corresponds to a recipient country system other than the chart of accounts"
+        }
+    },
+    {
+        "model": "iati_vocabulary.budgetidentifiervocabulary",
+        "pk": "4",
+        "fields": {
+            "name": "Reporting Organisation",
+            "description": "The budget identifier reported corresponds to categories that are specific to the reporting organisation"
+        }
+    },
+    {
+        "model": "iati_vocabulary.budgetidentifiervocabulary",
+        "pk": "5",
+        "fields": {
+            "name": "Other",
+            "description": "The budget identifier reported uses a different vocabulary, not specified in the codelist "
+        }
+    },
+    {
+        "model": "iati_vocabulary.regionvocabulary",
+        "pk": "1",
+        "fields": {
+            "name": "OECD DAC",
+            "description": "Supra-national regions according to OECD DAC CRS recipient codes"
+        }
+    },
+    {
+        "model": "iati_vocabulary.regionvocabulary",
+        "pk": "2",
+        "fields": {
+            "name": "UN",
+            "description": "Supra-national regions maintained by UN Statistics Division"
+        }
+    }
+]

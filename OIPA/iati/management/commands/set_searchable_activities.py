@@ -1,26 +1,33 @@
-from django.core.management.base import BaseCommand
-from iati.transaction.models import Transaction
-from iati.models import Activity
 from django.conf import settings
+from django.core.management.base import BaseCommand
+
+from iati.models import Activity
+from iati.transaction.models import Transaction
 
 
 class Command(BaseCommand):
 
     def update_searchable_activities(self):
         """
-            Set all activities to searchable if the reporting org is in the settings.ROOT_ORGANISATIONS list
+        Set all activities to searchable if the reporting org is in the
+        settings.ROOT_ORGANISATIONS list
         """
         # set all activities as non searchable
         Activity.objects.filter(
-            is_searchable=True).exclude(
-            reporting_organisations__ref__in=settings.ROOT_ORGANISATIONS).update(
-            is_searchable=False)
+            is_searchable=True
+        ).exclude(
+            reporting_organisations__ref__in=settings.ROOT_ORGANISATIONS
+        ).update(
+            is_searchable=False
+        )
 
         # set all root activities as searchable
         Activity.objects.filter(
             is_searchable=False,
-            reporting_organisations__ref__in=settings.ROOT_ORGANISATIONS).update(
-            is_searchable=True)
+            reporting_organisations__ref__in=settings.ROOT_ORGANISATIONS
+        ).update(
+            is_searchable=True
+        )
 
         # loop through root activities and set children as searchable
         activities = Activity.objects.filter(

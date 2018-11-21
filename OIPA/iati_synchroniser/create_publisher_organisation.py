@@ -1,8 +1,8 @@
-from iati_codelists.models import Version, OrganisationType, Language
-from iati_organisation.models import Organisation
-from iati_organisation.models import OrganisationName
-from iati_organisation.models import OrganisationReportingOrganisation
-from iati_organisation.models import OrganisationNarrative
+from iati_codelists.models import Language, OrganisationType, Version
+from iati_organisation.models import (
+    Organisation, OrganisationName, OrganisationNarrative,
+    OrganisationReportingOrganisation
+)
 
 
 def create_publisher_organisation(publisher, publisher_organization_type):
@@ -10,7 +10,8 @@ def create_publisher_organisation(publisher, publisher_organization_type):
     language = Language.objects.get(code='en')
 
     try:
-        org_type = OrganisationType.objects.get(code=publisher_organization_type)
+        org_type = OrganisationType.objects.get(
+            code=publisher_organization_type)
     except OrganisationType.DoesNotExist:
         org_type = None
 

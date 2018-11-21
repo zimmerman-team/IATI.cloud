@@ -1,8 +1,10 @@
+from decimal import Decimal
+
+from factory import SubFactory
 from factory.django import DjangoModelFactory
+
 from currency_convert.models import MonthlyAverage
 from iati_codelists.factory.codelist_factory import CurrencyFactory
-from factory import SubFactory
-from decimal import Decimal
 
 
 class MonthlyAverageFactory(DjangoModelFactory):

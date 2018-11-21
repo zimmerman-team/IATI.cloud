@@ -1,9 +1,8 @@
 from django.core.urlresolvers import reverse
+from django.test import RequestFactory, TestCase
 
-from django.test import TestCase
-from django.test import RequestFactory
-from iati_synchroniser.factory.synchroniser_factory import PublisherFactory
 from api.publisher.serializers import PublisherSerializer
+from iati_synchroniser.factory.synchroniser_factory import PublisherFactory
 
 
 class TestPublisherSerializers(TestCase):
@@ -16,13 +15,17 @@ class TestPublisherSerializers(TestCase):
             context={'request': self.request_dummy}
         )
 
-        assert serializer.data['publisher_iati_id'] == publisher.publisher_iati_id,\
+        assert serializer.data[
+                'publisher_iati_id'
+            ] == publisher.publisher_iati_id,\
             """
-            'publisher.type' should be serialized to a field called 'type'
+            'publisher.type' should be serialized to a field called
+            'type'
             """
         assert serializer.data['display_name'] == publisher.display_name,\
             """
-            'publisher.source_url' should be serialized to a field called 'source_url'
+            'publisher.source_url' should be serialized to a field called
+            'source_url'
             """
         assert serializer.data['name'] == publisher.name,\
             """
@@ -30,11 +33,13 @@ class TestPublisherSerializers(TestCase):
             """
         assert serializer.data['datasets'] == [],\
             """
-            'publisher.datasets' should be serialized to a field called 'datasets'
+            'publisher.datasets' should be serialized to a field called
+            'datasets'
             """
         assert serializer.data['activity_count'] == 0,\
             """
-            'publisher.activity_count' should be serialized to a field called 'activity_count'
+            'publisher.activity_count' should be serialized to a field called
+            'activity_count'
             """
 
         required_fields = (

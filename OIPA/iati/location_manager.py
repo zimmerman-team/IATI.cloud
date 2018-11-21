@@ -8,15 +8,6 @@ class LocationQuerySet(models.QuerySet):
         self = self.order_by().only('id')
         return super(LocationQuerySet, self).count()
 
-    # def prefetch_location_reach(self):
-    #     return self.select_related('location_reach')
-
-    # def prefetch_exactness(self):
-    #     return self.select_related('exactness')
-
-    # def prefetch_location_class(self):
-    #     return self.select_related('location_class')
-
     def prefetch_feature_designation(self):
         return self.select_related('feature_designation__category')
 
@@ -69,8 +60,8 @@ class LocationQuerySet(models.QuerySet):
                 .prefetch_related(narrative_prefetch)),)
 
     def prefetch_activity(self):
-        from iati.models import Activity, Narrative
-        narrative_prefetch = Prefetch(
+        from iati.models import Narrative
+        Prefetch(
             'narratives',
             queryset=Narrative.objects.select_related('language'))
 

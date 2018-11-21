@@ -1,25 +1,25 @@
+import datetime
+from functools import reduce
+
+import django_rq
+import requests
 from django.conf.urls import url
 from django.contrib import admin
-from models import *
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
+from django.test.client import RequestFactory
+from django.urls import reverse
 from django.utils.html import format_html
-from django.core.urlresolvers import reverse
-import django_rq
+from lxml import etree
+from lxml.builder import E
+
+from api.export.views import IATIActivityList
+from iati_synchroniser.models import Codelist, Dataset, Publisher
 from task_queue.tasks import force_parse_source_by_url
-from functools import reduce
 
 
 class CodeListAdmin(admin.ModelAdmin):
     list_display = ['name', 'description', 'count', 'fields', 'date_updated']
-
-
-import requests
-import datetime
-from api.export.views import IATIActivityList
-from django.test.client import RequestFactory
-from lxml import etree
-from lxml.builder import E
 
 
 # TODO: Make this a celery task - 2016-01-21
@@ -30,8 +30,10 @@ def export_xml_by_source(request, dataset_id):
         return
 
     base_url = request.build_absolute_uri(
-        reverse('export:activity-export')) + "?dataset={dataset_id}&format=xml&page_size=100&page={page}".format(
-        dataset_id=dataset_id, page="{page}")
+            reverse('export:activity-export')
+        ) + "?dataset={dataset_id}&format=xml&page_size=100&page={page}".format(  # NOQA: E501
+            dataset_id=dataset_id, page="{page}"
+        )
 
     def get_result(xml, page_num):
         print('making request, page: ' + str(page_num))
@@ -47,7 +49,8 @@ def export_xml_by_source(request, dataset_id):
             return xml
 
         link = requests.utils.parse_header_links(link_header)
-        has_next = reduce(lambda acc, x: acc or (x['rel'] == 'next'), link, False)
+        has_next = reduce(lambda acc, x: acc or (
+            x['rel'] == 'next'), link, False)
 
         if has_next:
             return get_result(xml, page_num + 1)
@@ -57,9 +60,11 @@ def export_xml_by_source(request, dataset_id):
     xml = E('iati-activities', version="2.02")
 
     final_xml = get_result(xml, 1)
-    final_xml.attrib['generated-datetime'] = datetime.datetime.now().isoformat()
+    final_xml.attrib[
+        'generated-datetime'
+    ] = datetime.datetime.now().isoformat()
 
-    from django.core.files.base import File, ContentFile
+    from django.core.files.base import File
     from django.conf import settings
     import uuid
 
@@ -75,7 +80,8 @@ def export_xml_by_source(request, dataset_id):
 
 class DatasetAdmin(admin.ModelAdmin):
     actions = ['really_delete_selected']
-    search_fields = ['id', 'name', 'title', 'publisher__name', 'publisher__publisher_iati_id']
+    search_fields = ['id', 'name', 'title',
+                     'publisher__name', 'publisher__publisher_iati_id']
     list_display = [
         'id',
         'iati_id',
@@ -94,25 +100,31 @@ class DatasetAdmin(admin.ModelAdmin):
 
     def show_source_url(self, obj):
         return format_html(
-            '<a target="_blank" href="{url}">Open file in new window</a>', url=obj.source_url)
+            '<a target="_blank" href="{url}">Open file in new window</a>',
+            url=obj.source_url
+        )
     show_source_url.allow_tags = True
     show_source_url.short_description = "URL"
 
     def export_btn(self, obj):
         return format_html(
-            '<a data-id="{id}" class="admin-btn export-btn" target="_blank">Export</a>', id=obj.id)
+            '<a data-id="{id}" class="admin-btn export-btn" target="_blank">Export</a>',  # NOQA: E501
+            id=obj.id
+        )
     export_btn.short_description = 'Export XML'
     export_btn.allow_tags = True
 
     def get_parse_status(self, obj):
         return format_html(
-            '<a data-id="{id}" class="admin-btn parse-btn">Add to parser queue</a>', id=obj.id)
+            '<a data-id="{id}" class="admin-btn parse-btn">Add to parser queue</a>',  # NOQA: E501
+            id=obj.id
+        )
     get_parse_status.allow_tags = True
     get_parse_status.short_description = "Parse"
 
     def get_parse_activity(self, obj):
         return format_html(
-            "<input type='text' name='activity-id' placeholder='activity id'><a data-id='{id}' class='admin-btn parse-activity-btn'>Parse Activity</a>",
+                "<input type='text' name='activity-id' placeholder='activity id'><a data-id='{id}' class='admin-btn parse-activity-btn'>Parse Activity</a>",  # NOQA: E501
             id=obj.id)
     get_parse_activity.allow_tags = True
     get_parse_activity.short_description = "Parse Activity"
@@ -145,13 +157,16 @@ class DatasetAdmin(admin.ModelAdmin):
             force = True
         obj = get_object_or_404(Dataset, pk=xml_id)
         obj.process(force_reparse=force)
-        return HttpResponse('<html><body>Success</body></html>', content_type='text/html')
+        return HttpResponse(
+            '<html><body>Success</body></html>', content_type='text/html')
 
     def add_to_parse_queue(self, request):
         xml_id = request.GET.get('xml_id')
         obj = get_object_or_404(Dataset, pk=xml_id)
         queue = django_rq.get_queue("parser")
-        queue.enqueue(force_parse_source_by_url, args=(obj.source_url, True), timeout=7200)
+        queue.enqueue(force_parse_source_by_url, args=(
+            obj.source_url, True), timeout=7200)
+
         return HttpResponse('Success')
 
     def parse_activity_view(self, request, activity_id):
@@ -162,7 +177,7 @@ class DatasetAdmin(admin.ModelAdmin):
 
     def export_xml(self, request, id):
         xml_response = export_xml_by_source(request, id)
-        print xml_response
+        # print xml_response
         return HttpResponse(xml_response, content_type='application/xml')
 
     def get_actions(self, request):
@@ -179,7 +194,8 @@ class DatasetAdmin(admin.ModelAdmin):
         else:
             message_bit = "%s IATI data sources were" % queryset.count()
         self.message_user(request, "%s successfully deleted." % message_bit)
-    really_delete_selected.short_description = "Delete selected IATI data sources"
+    really_delete_selected\
+        .short_description = "Delete selected IATI data sources"
 
 
 class DatasetInline(admin.TabularInline):

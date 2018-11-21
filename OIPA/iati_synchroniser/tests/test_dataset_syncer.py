@@ -1,14 +1,12 @@
 import json
-from django.test import TestCase
-from iati_synchroniser.dataset_syncer import DatasetSyncer
-from iati_synchroniser.models import Dataset
-from iati_synchroniser.models import Publisher
-from iati_synchroniser.factory import synchroniser_factory
-from django.core import management
+import os
 
+from django.test import TestCase
 from mock import MagicMock
-import unittest
+
 from iati.factory import iati_factory
+from iati_synchroniser.dataset_syncer import DatasetSyncer
+from iati_synchroniser.models import Dataset, Publisher
 
 
 class DatasetSyncerTestCase(TestCase):
@@ -17,11 +15,22 @@ class DatasetSyncerTestCase(TestCase):
     """
 
     def setUp(self):
-        management.call_command('flush', interactive=False, verbosity=0)
+        # XXX: previously, django's 'flush' management command was called to
+        # flush the database, but it breaks tests ('no table blah blah exists')
+        # and etc., so let's just manually remove objects which were created
+        # during previous fixtures.
+        # TODO: get rid of fixtures and use factory-boy everywhere.
+        Publisher.objects.all().delete()
+
         self.datasetSyncer = DatasetSyncer()
         iati_factory.LanguageFactory.create(code='en', name='English')
         iati_factory.VersionFactory.create(code='2.02', name='2.02')
-        iati_factory.OrganisationTypeFactory.create(code='22', name='Multilateral')
+        iati_factory.OrganisationTypeFactory.create(
+            code='22', name='Multilateral')
+
+        self.BASE_DIR = os.path.dirname(
+            os.path.dirname(os.path.realpath(__file__))
+        )
 
     def test_get_val_in_list_of_dicts(self):
         """
@@ -31,20 +40,20 @@ class DatasetSyncerTestCase(TestCase):
             {"key": "filetype", "value": "organisation"},
             {"key": "version", "value": "2.02"},
         ]
-        keyval = self.datasetSyncer.get_val_in_list_of_dicts("filetype", input_list)
+        keyval = self.datasetSyncer.get_val_in_list_of_dicts(
+            "filetype", input_list)
 
         self.assertEqual(keyval, input_list[0])
 
-    # @unittest.skip("Not implemented")
     def test_synchronize_with_iati_api(self):
         """
 
         """
 
-        with open('iati_synchroniser/fixtures/test_publisher.json') as fixture:
+        with open(self.BASE_DIR + '/fixtures/test_publisher.json') as fixture:
             publisher = json.load(fixture).get('result')[0]
 
-        with open('iati_synchroniser/fixtures/test_dataset.json') as fixture:
+        with open(self.BASE_DIR + '/fixtures/test_dataset.json') as fixture:
             dataset = json.load(fixture)['result']['results'][0]
 
         self.datasetSyncer.get_data = MagicMock(side_effect=[
@@ -64,11 +73,11 @@ class DatasetSyncerTestCase(TestCase):
         check if dataset is saved as expected
         """
 
-        with open('iati_synchroniser/fixtures/test_publisher.json') as fixture:
+        with open(self.BASE_DIR + '/fixtures/test_publisher.json') as fixture:
             data = json.load(fixture).get('result')[0]
             self.datasetSyncer.update_or_create_publisher(data)
 
-        publisher = Publisher.objects.all()[0]
+        publisher = Publisher.objects.last()
         self.assertEqual("NP-SWC-27693", publisher.publisher_iati_id)
         self.assertEqual("Aasaman Nepal", publisher.display_name)
         self.assertEqual("aasaman", publisher.name)
@@ -85,14 +94,17 @@ class DatasetSyncerTestCase(TestCase):
 
         publisher.save()
 
-        with open('iati_synchroniser/fixtures/test_dataset.json') as fixture:
+        with open(self.BASE_DIR + '/fixtures/test_dataset.json') as fixture:
             data = json.load(fixture)['result']['results'][0]
             self.datasetSyncer.update_or_create_dataset(data)
 
         dataset = Dataset.objects.all()[0]
-        self.assertEqual("43aa0616-58a4-4d16-b0a9-1181e3871827", dataset.iati_id)
+        self.assertEqual(
+            "43aa0616-58a4-4d16-b0a9-1181e3871827", dataset.iati_id)
         self.assertEqual("cic-sl", dataset.name)
-        self.assertEqual("088States Ex-Yugoslavia unspecified2013", dataset.title)
+        self.assertEqual(
+            "088States Ex-Yugoslavia unspecified2013", dataset.title)
         self.assertEqual(publisher, dataset.publisher)
-        self.assertEqual("http://aidstream.org/files/xml/cic-sl.xml", dataset.source_url)
+        self.assertEqual(
+            "http://aidstream.org/files/xml/cic-sl.xml", dataset.source_url)
         self.assertEqual(1, dataset.filetype)

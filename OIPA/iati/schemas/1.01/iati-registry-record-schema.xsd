@@ -171,7 +171,7 @@
           <xsd:documentation xml:lang="en">
             A code specifying whether the information in this record has been verified.
 
-            See http://iatistandard.org/codelists/verification_status
+            See http://reference.iatistandard.org/codelists/verification_status
           </xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
@@ -181,7 +181,7 @@
             A MIME type describing the content of the file,
             e.g. "application/x-iati+xml" for an IATI XML file.
 
-            See http://iatistandard.org/codelists/file_format for a partial list
+            See http://reference.iatistandard.org/codelists/file_format for a partial list
           </xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>

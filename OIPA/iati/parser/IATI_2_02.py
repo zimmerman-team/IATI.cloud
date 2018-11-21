@@ -1,25 +1,23 @@
 from datetime import datetime
+from decimal import Decimal
 
+from django.conf import settings
 from django.contrib.gis.geos import GEOSGeometry, Point
 
-from iati_parser import IatiParser
+from currency_convert import convert
+from geodata.models import Country, Region
 from iati import models
+from iati.parser import post_save, post_save_validators
+from iati.parser.exceptions import (
+    FieldValidationError, IgnoredVocabularyError, NoUpdateRequired,
+    ParserError, RequiredFieldError
+)
+from iati.parser.higher_order_parser import provider_org, receiver_org
+from iati.parser.iati_parser import IatiParser
 from iati.transaction import models as transaction_models
 from iati_codelists import models as codelist_models
-from iati_vocabulary import models as vocabulary_models
 from iati_organisation import models as organisation_models
-from geodata.models import Country, Region
-from iati.parser import post_save
-from iati.parser import post_save_validators
-from currency_convert import convert
-
-from iati.parser.higher_order_parser import provider_org, receiver_org
-from django.conf import settings
-from decimal import Decimal
-from iati.parser.exceptions import *
-# from iati.parser.higher_order_parser import compose, code
-
-import iati.parser.validators
+from iati_vocabulary import models as vocabulary_models
 
 
 class Parse(IatiParser):
@@ -32,7 +30,8 @@ class Parse(IatiParser):
         # set on activity (if set)
 
         default_lang = self.default_lang
-        lang = element.attrib.get('{http://www.w3.org/XML/1998/namespace}lang', default_lang)
+        lang = element.attrib.get(
+            '{http://www.w3.org/XML/1998/namespace}lang', default_lang)
         text = element.text
 
         if lang:
@@ -52,7 +51,8 @@ class Parse(IatiParser):
             raise RequiredFieldError(
                 register_name,
                 "xml:lang",
-                "must specify xml:lang on iati-activity or xml:lang on the element itself")
+                "must specify xml:lang on iati-activity or xml:lang on the \
+                element itself")
         if not text:
             raise RequiredFieldError(
                 register_name,
@@ -68,7 +68,11 @@ class Parse(IatiParser):
 
         narrative.language = language
         narrative.content = element.text
-        narrative.related_object = parent
+        # This (instead of narrative.related_object) is required, otherwise
+        # related object doesn't get passed to the model_store (memory) and
+        # 'update_related()' fails.
+        # It should probably be passed to the __init__() ?
+        setattr(narrative, '_related_object', parent)
 
         self.register_model(register_name, narrative)
 
@@ -93,7 +97,8 @@ class Parse(IatiParser):
         activity_id = iati_identifier[0]
         normalized_activity_id = self._normalize(activity_id)
         # default is here to make it default to settings 'DEFAULT_LANG' on no
-        # language set (validation error we want to be flexible with per instance)
+        # language set (validation error we want to be flexible with per
+        # instance)
         default_lang_code = element.attrib.get(
             '{http://www.w3.org/XML/1998/namespace}lang',
             settings.DEFAULT_LANG)
@@ -107,7 +112,8 @@ class Parse(IatiParser):
 
         hierarchy = element.attrib.get('hierarchy')
         humanitarian = element.attrib.get('humanitarian')
-        last_updated_datetime = self.validate_date(element.attrib.get('last-updated-datetime'))
+        last_updated_datetime = self.validate_date(
+            element.attrib.get('last-updated-datetime'))
         linked_data_uri = element.attrib.get('linked-data-uri')
         default_currency = self.get_or_none(
             models.Currency, code=element.attrib.get('default-currency'))
@@ -118,24 +124,30 @@ class Parse(IatiParser):
                 "text",
                 "required element empty")
 
-        old_activity = self.get_or_none(models.Activity, iati_identifier=activity_id)
+        old_activity = self.get_or_none(
+            models.Activity, iati_identifier=activity_id)
 
         if old_activity and (old_activity.dataset.name != self.dataset.name):
             self.append_error(
                 'FieldValidationError',
                 "iati-identifier",
                 "ref",
-                "An activity with the same iati-identifier was found in another dataset",
+                "An activity with the same iati-identifier was found in \
+                another dataset",
                 element.sourceline,
                 "found in dataset: '{}'".format(old_activity.dataset.name),
                 activity_id)
 
-        if old_activity and not self.force_reparse and not old_activity.modified:
-            # update last_updated_model to prevent the activity from being deleted
-            # because its not updated (and thereby assumed not found in the dataset)
+        if (old_activity
+                and not self.force_reparse and not old_activity.modified):
+            # update last_updated_model to prevent the activity from being
+            # deleted because its not updated (and thereby assumed not found
+            # in the dataset)
             old_activity.save()
 
-            if last_updated_datetime and last_updated_datetime == old_activity.last_updated_datetime:
+            if last_updated_datetime\
+                and last_updated_datetime\
+                    == old_activity.last_updated_datetime:
                 raise NoUpdateRequired('activity', 'already up to date')
 
             if last_updated_datetime and (last_updated_datetime <
@@ -149,24 +161,28 @@ class Parse(IatiParser):
                     activity_id,
                     activity_id)
 
-            if not last_updated_datetime and old_activity.last_updated_datetime:
+            if not last_updated_datetime and old_activity\
+                    .last_updated_datetime:
                 raise FieldValidationError(
                     "iati-activity",
                     "last-updated-datetime",
-                    "last-updated-time is not present, but is present on existing activity",
+                    "last-updated-time is not present, but is present on \
+                            existing activity",
                     None,
                     element.sourceline,
                     activity_id,
                     activity_id)
 
             # TODO: test activity is deleted along with related models
-            # update on TODO above; only iati_title, TransactionReceiver, TransactionProvider are not deleted atm - 2015-10-01
+            # update on TODO above; only iati_title, TransactionReceiver,
+            # TransactionProvider are not deleted atm - 2015-10-01
             # TODO: do this after activity is parsed along with other saves?
 
         if old_activity:
             old_activity.delete()
 
-        # TODO: assert title is in xml, for proper OneToOne relation (only on 2.02)
+        # TODO: assert title is in xml, for proper OneToOne relation
+        # (only on 2.02)
 
         activity = models.Activity()
         activity.iati_identifier = activity_id
@@ -189,8 +205,9 @@ class Parse(IatiParser):
         # for later reference
         self.default_lang = default_lang_code
 
-        # for this validation-only branch we only save activities and organisations
-        # all other elements are not written to the db
+        # For this validation-only branch we only save activities and
+        # organisations
+        # All other elements are not written to the db
         activity.save()
 
         self.register_model('Activity', activity)
@@ -231,7 +248,8 @@ class Parse(IatiParser):
                 "required attribute missing")
 
         if ref:
-            self.check_registration_agency_validity("reporting-org/ref", element, ref)
+            self.check_registration_agency_validity(
+                "reporting-org/ref", element, ref)
 
         normalized_ref = self._normalize(ref)
         org_type = self.get_or_none(
@@ -239,7 +257,8 @@ class Parse(IatiParser):
             code=element.attrib.get('type'))
         secondary_reporter = element.attrib.get('secondary-reporter', '0')
 
-        organisation = self.get_or_none(models.Organisation, organisation_identifier=ref)
+        organisation = self.get_or_none(
+            models.Organisation, organisation_identifier=ref)
 
         # create an organisation
         if not organisation:
@@ -289,7 +308,8 @@ class Parse(IatiParser):
         reporting_organisation.type = org_type
         reporting_organisation.activity = activity
         reporting_organisation.organisation = organisation
-        reporting_organisation.secondary_reporter = self.makeBool(secondary_reporter)
+        reporting_organisation.secondary_reporter = self.makeBool(
+            secondary_reporter)
 
         narratives = element.findall('narrative')
         if len(narratives) > 0:
@@ -298,11 +318,13 @@ class Parse(IatiParser):
 
         activity.secondary_reporter = self.makeBool(secondary_reporter)
 
-        self.register_model('ActivityReportingOrganisation', reporting_organisation)
+        self.register_model('ActivityReportingOrganisation',
+                            reporting_organisation)
 
         return element
 
-    def iati_activities__iati_activity__reporting_org__narrative(self, element):
+    def iati_activities__iati_activity__reporting_org__narrative(
+            self, element):
         """attributes:
 
         tag:narrative
@@ -322,11 +344,14 @@ class Parse(IatiParser):
         ref = element.attrib.get('ref', '')
         activity_id = element.attrib.get('activity-id', None)
 
-        org_activity = self.get_or_none(models.Activity, iati_identifier=activity_id)
-        role = self.get_or_none(codelist_models.OrganisationRole, code=element.attrib.get('role'))
+        org_activity = self.get_or_none(
+            models.Activity, iati_identifier=activity_id)
+        role = self.get_or_none(
+            codelist_models.OrganisationRole, code=element.attrib.get('role'))
 
         normalized_ref = self._normalize(ref)
-        organisation = self.get_or_none(models.Organisation, organisation_identifier=ref)
+        organisation = self.get_or_none(
+            models.Organisation, organisation_identifier=ref)
         org_type = self.get_or_none(
             codelist_models.OrganisationType,
             code=element.attrib.get('type'))
@@ -337,29 +362,9 @@ class Parse(IatiParser):
                 "role",
                 "required attribute missing")
 
-        # soft validation errors
-        # if not ref:
-            # self.append_error('FieldValidationError', "participating-org", "ref", "ref must be specified", element.sourceline)
         if ref:
-            self.check_registration_agency_validity("participating-org", element, ref)
-
-        # if ref and not organisation:
-        #     self.append_error(
-        #         'FieldValidationError',
-        #         "participating-org",
-        #         "ref",
-        #         "Must be an existing IATI organisation",
-        #         element.sourceline,
-        #         ref)
-
-        # if activity_id and not org_activity:
-        #     self.append_error(
-        #         'FieldValidationError',
-        #         "participating-org",
-        #         "activity-id",
-        #         "Must be an existing IATI identifier",
-        #         element.sourceline,
-        #         activity_id)
+            self.check_registration_agency_validity(
+                "participating-org", element, ref)
 
         activity = self.get_model('Activity')
         participating_organisation = models.ActivityParticipatingOrganisation()
@@ -372,11 +377,13 @@ class Parse(IatiParser):
         participating_organisation.org_activity_id = activity_id
         participating_organisation.org_activity_obj = org_activity
 
-        self.register_model('ActivityParticipatingOrganisation', participating_organisation)
+        self.register_model(
+            'ActivityParticipatingOrganisation', participating_organisation)
 
         return element
 
-    def iati_activities__iati_activity__participating_org__narrative(self, element):
+    def iati_activities__iati_activity__participating_org__narrative(
+            self, element):
         """attributes:
 
         tag:narrative"""
@@ -479,7 +486,8 @@ class Parse(IatiParser):
         self.register_model('OtherIdentifier', other_identifier)
         return element
 
-    def iati_activities__iati_activity__other_identifier__owner_org(self, element):
+    def iati_activities__iati_activity__other_identifier__owner_org(
+            self, element):
         """attributes:
         ref:AA-AAA-123456789
 
@@ -492,23 +500,13 @@ class Parse(IatiParser):
                 "ref",
                 "required attribute missing")
 
-        owner_ref_org = self.get_or_none(models.Organisation, organisation_identifier=ref)
-
-        # if not owner_ref_org:
-        #     self.append_error(
-        #         'FieldValidationError',
-        #         "owner_org",
-        #         "ref",
-        #         "Must be an existing IATI organisation",
-        #         element.sourceline,
-        #         ref)
-
         other_identifier = self.get_model('OtherIdentifier')
         other_identifier.owner_ref = ref
 
         return element
 
-    def iati_activities__iati_activity__other_identifier__owner_org__narrative(self, element):
+    def iati_activities__iati_activity__other_identifier__owner_org__narrative(
+            self, element):
         """attributes:
 
         tag:narrative"""
@@ -523,7 +521,8 @@ class Parse(IatiParser):
         tag:activity-status"""
 
         code = element.attrib.get('code')
-        activity_status = self.get_or_none(codelist_models.ActivityStatus, code=code)
+        activity_status = self.get_or_none(
+            codelist_models.ActivityStatus, code=code)
 
         if not code:
             raise RequiredFieldError(
@@ -579,7 +578,8 @@ class Parse(IatiParser):
                 "type",
                 "required attribute missing")
 
-        type_code = self.get_or_none(codelist_models.ActivityDateType, code=type_code)
+        type_code = self.get_or_none(
+            codelist_models.ActivityDateType, code=type_code)
 
         if not type_code:
             raise FieldValidationError(
@@ -595,7 +595,8 @@ class Parse(IatiParser):
                 raise FieldValidationError(
                     "activity-date",
                     "iso-date",
-                    "All instances of the ActivityDateType code 2 & 4 (actual dates) are not expected to be in the future",
+                    "All instances of the ActivityDateType code 2 & 4 (actual \
+                            dates) are not expected to be in the future",
                     None,
                     None,
                     str(iso_date))
@@ -607,7 +608,8 @@ class Parse(IatiParser):
         activity_date.type = type_code
         activity_date.activity = activity
 
-        # to make ordering possible, activity dates are duplicated onto the Activity model
+        # to make ordering possible, activity dates are duplicated onto the
+        # Activity model
         mapping = {
             '1': 'planned_start',
             '2': 'actual_start',
@@ -621,7 +623,8 @@ class Parse(IatiParser):
         self.register_model('ActivityDate', activity_date)
         return element
 
-    def iati_activities__iati_activity__activity_date__narrative(self, element):
+    def iati_activities__iati_activity__activity_date__narrative(
+            self, element):
         """attributes:
 
         tag:narrative"""
@@ -635,7 +638,8 @@ class Parse(IatiParser):
         type:1
 
         tag:contact-info"""
-        type_code = self.get_or_none(codelist_models.ContactType, code=element.attrib.get('type'))
+        type_code = self.get_or_none(
+            codelist_models.ContactType, code=element.attrib.get('type'))
 
         activity = self.get_model('Activity')
         contact_info = models.ContactInfo()
@@ -645,17 +649,20 @@ class Parse(IatiParser):
 
         return element
 
-    def iati_activities__iati_activity__contact_info__organisation(self, element):
+    def iati_activities__iati_activity__contact_info__organisation(
+            self, element):
         """attributes:
 
         tag:organisation"""
         contact_info = self.get_model('ContactInfo')
         contact_info_organisation = models.ContactInfoOrganisation()
         contact_info_organisation.contact_info = contact_info
-        self.register_model('ContactInfoOrganisation', contact_info_organisation)
+        self.register_model('ContactInfoOrganisation',
+                            contact_info_organisation)
         return element
 
-    def iati_activities__iati_activity__contact_info__organisation__narrative(self, element):
+    def iati_activities__iati_activity__contact_info__organisation__narrative(
+            self, element):
         """attributes:
 
         tag:narrative"""
@@ -663,7 +670,8 @@ class Parse(IatiParser):
         self.add_narrative(element, contact_info_organisation)
         return element
 
-    def iati_activities__iati_activity__contact_info__department(self, element):
+    def iati_activities__iati_activity__contact_info__department(
+            self, element):
         """attributes:
 
         tag:department"""
@@ -675,7 +683,8 @@ class Parse(IatiParser):
 
         return element
 
-    def iati_activities__iati_activity__contact_info__department__narrative(self, element):
+    def iati_activities__iati_activity__contact_info__department__narrative(
+            self, element):
         """attributes:
 
         tag:narrative"""
@@ -683,7 +692,8 @@ class Parse(IatiParser):
         self.add_narrative(element, contact_info_department)
         return element
 
-    def iati_activities__iati_activity__contact_info__person_name(self, element):
+    def iati_activities__iati_activity__contact_info__person_name(
+            self, element):
         """attributes:
 
         tag:person-name"""
@@ -694,7 +704,8 @@ class Parse(IatiParser):
 
         return element
 
-    def iati_activities__iati_activity__contact_info__person_name__narrative(self, element):
+    def iati_activities__iati_activity__contact_info__person_name__narrative(
+            self, element):
         """attributes:
 
         tag:narrative"""
@@ -712,7 +723,8 @@ class Parse(IatiParser):
         self.register_model('ContactInfoJobTitle', contact_info_job_title)
         return element
 
-    def iati_activities__iati_activity__contact_info__job_title__narrative(self, element):
+    def iati_activities__iati_activity__contact_info__job_title__narrative(
+            self, element):
         """attributes:
 
         tag:narrative"""
@@ -720,7 +732,8 @@ class Parse(IatiParser):
         self.add_narrative(element, contact_info_job_title)
         return element
 
-    def iati_activities__iati_activity__contact_info__telephone(self, element):
+    def iati_activities__iati_activity__contact_info__telephone(
+            self, element):
         """attributes:
 
         tag:telephone"""
@@ -771,22 +784,25 @@ class Parse(IatiParser):
 
         return element
 
-    def iati_activities__iati_activity__contact_info__mailing_address(self, element):
+    def iati_activities__iati_activity__contact_info__mailing_address(
+            self, element):
         """attributes:
 
         tag:mailing-address"""
         contact_info = self.get_model('ContactInfo')
         contact_info_mailing_address = models.ContactInfoMailingAddress()
         contact_info_mailing_address.contact_info = contact_info
-        self.register_model('ContactInfoMailingAddress', contact_info_mailing_address)
+        self.register_model('ContactInfoMailingAddress',
+                            contact_info_mailing_address)
 
         return element
 
-    def iati_activities__iati_activity__contact_info__mailing_address__narrative(self, element):
+    def iati_activities__iati_activity__contact_info__mailing_address__narrative(self, element):  # NOQA: E501
         """attributes:
 
         tag:narrative"""
-        contact_info_mailing_address = self.get_model('ContactInfoMailingAddress')
+        contact_info_mailing_address = self.get_model(
+            'ContactInfoMailingAddress')
         self.add_narrative(element, contact_info_mailing_address)
         return element
 
@@ -796,7 +812,8 @@ class Parse(IatiParser):
 
         tag:activity-scope"""
         code = element.attrib.get('code')
-        activity_scope = self.get_or_none(codelist_models.ActivityScope, code=code)
+        activity_scope = self.get_or_none(
+            codelist_models.ActivityScope, code=code)
 
         if not code:
             raise RequiredFieldError(
@@ -849,7 +866,8 @@ class Parse(IatiParser):
         activity_recipient_country.activity = activity
         activity_recipient_country.percentage = percentage
 
-        self.register_model('ActivityRecipientCountry', activity_recipient_country)
+        self.register_model('ActivityRecipientCountry',
+                            activity_recipient_country)
 
         return element
 
@@ -905,7 +923,8 @@ class Parse(IatiParser):
         activity_recipient_region.percentage = percentage
         activity_recipient_region.vocabulary = vocabulary
         activity_recipient_region.vocabulary_uri = vocabulary_uri
-        self.register_model('ActivityRecipientRegion', activity_recipient_region)
+        self.register_model('ActivityRecipientRegion',
+                            activity_recipient_region)
 
         return element
 
@@ -920,18 +939,19 @@ class Parse(IatiParser):
         location = models.Location()
         location.activity = activity
         location.ref = ref
-        # location.adm_code = 'no admin code'
 
         self.register_model('Location', location)
         return element
 
-    def iati_activities__iati_activity__location__location_reach(self, element):
+    def iati_activities__iati_activity__location__location_reach(
+            self, element):
         """attributes:
         code:1
 
         tag:location-reach"""
         code = element.attrib.get('code')
-        location_reach = self.get_or_none(codelist_models.GeographicLocationReach, code=code)
+        location_reach = self.get_or_none(
+            codelist_models.GeographicLocationReach, code=code)
 
         if not code:
             raise RequiredFieldError(
@@ -958,7 +978,8 @@ class Parse(IatiParser):
         tag:location-id"""
         code = element.attrib.get('code')
         vocabulary_code = element.attrib.get('vocabulary')
-        vocabulary = self.get_or_none(codelist_models.GeographicVocabulary, code=vocabulary_code)
+        vocabulary = self.get_or_none(
+            vocabulary_models.GeographicVocabulary, code=vocabulary_code)
 
         if not code:
             raise RequiredFieldError(
@@ -996,7 +1017,8 @@ class Parse(IatiParser):
         self.register_model('LocationName', location_name)
         return element
 
-    def iati_activities__iati_activity__location__name__narrative(self, element):
+    def iati_activities__iati_activity__location__name__narrative(
+            self, element):
         """attributes:
 
         tag:narrative"""
@@ -1015,7 +1037,8 @@ class Parse(IatiParser):
         self.register_model('LocationDescription', location_description)
         return element
 
-    def iati_activities__iati_activity__location__description__narrative(self, element):
+    def iati_activities__iati_activity__location__description__narrative(
+            self, element):
         """attributes:
 
         tag:narrative"""
@@ -1023,7 +1046,8 @@ class Parse(IatiParser):
         self.add_narrative(element, location_description)
         return element
 
-    def iati_activities__iati_activity__location__activity_description(self, element):
+    def iati_activities__iati_activity__location__activity_description(
+            self, element):
         """attributes:
 
         tag:activity-description"""
@@ -1031,18 +1055,21 @@ class Parse(IatiParser):
         location_activity_description = models.LocationActivityDescription()
         location_activity_description.location = location
 
-        self.register_model('LocationActivityDescription', location_activity_description)
+        self.register_model('LocationActivityDescription',
+                            location_activity_description)
         return element
 
-    def iati_activities__iati_activity__location__activity_description__narrative(self, element):
+    def iati_activities__iati_activity__location__activity_description__narrative(self, element):  # NOQA: E501
         """attributes:
 
         tag:narrative"""
-        location_activity_description = self.get_model('LocationActivityDescription')
+        location_activity_description = self.get_model(
+            'LocationActivityDescription')
         self.add_narrative(element, location_activity_description)
         return element
 
-    def iati_activities__iati_activity__location__administrative(self, element):
+    def iati_activities__iati_activity__location__administrative(
+            self, element):
         """attributes:
         vocabulary:G1
         level:1
@@ -1053,7 +1080,8 @@ class Parse(IatiParser):
         # TODO: default level?
         code = element.attrib.get('code')
         vocabulary_code = element.attrib.get('vocabulary')
-        vocabulary = self.get_or_none(codelist_models.GeographicVocabulary, code=vocabulary_code)
+        vocabulary = self.get_or_none(
+            vocabulary_models.GeographicVocabulary, code=vocabulary_code)
         level = element.attrib.get('level')
 
         if not code:
@@ -1097,7 +1125,8 @@ class Parse(IatiParser):
         srs_name = element.attrib.get('srsName')
 
         # TODO: make this field required?
-        # if not srs_name: raise RequiredFieldError("srsName", "location_point: srsName is required")
+        # if not srs_name: raise RequiredFieldError("srsName",
+        # "location_point: srsName is required")
         if not srs_name:
             srs_name = "http://www.opengis.net/def/crs/EPSG/0/4326"
 
@@ -1122,8 +1151,10 @@ class Parse(IatiParser):
 
         try:
             latlong = text.strip().split(' ')
-            # geos point = long lat, iati point lat long, hence the latlong[1], latlong[0]
-            point = GEOSGeometry(Point(float(latlong[1]), float(latlong[0])), srid=4326)
+            # geos point = long lat, iati point lat long, hence the
+            # latlong[1], latlong[0]
+            point = GEOSGeometry(
+                Point(float(latlong[1]), float(latlong[0])), srid=4326)
         except Exception as e:
             raise FieldValidationError(
                 "location/point",
@@ -1144,7 +1175,8 @@ class Parse(IatiParser):
 
         tag:exactness"""
         code = element.attrib.get('code')
-        exactness = self.get_or_none(codelist_models.GeographicExactness, code=code)
+        exactness = self.get_or_none(
+            codelist_models.GeographicExactness, code=code)
 
         if not code:
             raise RequiredFieldError(
@@ -1166,13 +1198,15 @@ class Parse(IatiParser):
 
         return element
 
-    def iati_activities__iati_activity__location__location_class(self, element):
+    def iati_activities__iati_activity__location__location_class(
+            self, element):
         """attributes:
         code:2
 
         tag:location-class"""
         code = element.attrib.get('code')
-        location_class = self.get_or_none(codelist_models.GeographicLocationClass, code=code)
+        location_class = self.get_or_none(
+            codelist_models.GeographicLocationClass, code=code)
 
         if not code:
             raise RequiredFieldError(
@@ -1194,13 +1228,15 @@ class Parse(IatiParser):
 
         return element
 
-    def iati_activities__iati_activity__location__feature_designation(self, element):
+    def iati_activities__iati_activity__location__feature_designation(
+            self, element):
         """attributes:
         code:ADMF
 
         tag:feature-designation"""
         code = element.attrib.get('code')
-        feature_designation = self.get_or_none(codelist_models.LocationType, code=code)
+        feature_designation = self.get_or_none(
+            codelist_models.LocationType, code=code)
 
         if not code:
             raise RequiredFieldError(
@@ -1287,7 +1323,8 @@ class Parse(IatiParser):
 
         tag:country-budget-items"""
         code = element.attrib.get('vocabulary')
-        vocabulary = self.get_or_none(vocabulary_models.BudgetIdentifierVocabulary, code=code)
+        vocabulary = self.get_or_none(
+            vocabulary_models.BudgetIdentifierVocabulary, code=code)
 
         if not code:
             raise RequiredFieldError(
@@ -1312,7 +1349,8 @@ class Parse(IatiParser):
         self.register_model('CountryBudgetItem', country_budget_item)
         return element
 
-    def iati_activities__iati_activity__country_budget_items__budget_item(self, element):
+    def iati_activities__iati_activity__country_budget_items__budget_item(
+            self, element):
         """attributes:
         code:1.1.1
         percentage:50
@@ -1320,7 +1358,8 @@ class Parse(IatiParser):
         tag:budget-item"""
         # TODO: Add custom vocabularies
         code = element.attrib.get('code')
-        budget_identifier = self.get_or_none(codelist_models.BudgetIdentifier, code=code)
+        budget_identifier = self.get_or_none(
+            codelist_models.BudgetIdentifier, code=code)
         percentage = element.attrib.get('percentage')
 
         if not code:
@@ -1347,7 +1386,7 @@ class Parse(IatiParser):
         self.register_model('BudgetItem', budget_item)
         return element
 
-    def iati_activities__iati_activity__country_budget_items__budget_item__description(
+    def iati_activities__iati_activity__country_budget_items__budget_item__description(  # NOQA: E501
             self, element):
         """attributes:
 
@@ -1359,8 +1398,7 @@ class Parse(IatiParser):
         self.register_model('BudgetItemDescription', budget_item_description)
         return element
 
-    def iati_activities__iati_activity__country_budget_items__budget_item__description__narrative(
-            self, element):
+    def iati_activities__iati_activity__country_budget_items__budget_item__description__narrative(self, element):  # NOQA: E501
         """attributes:
 
         tag:narrative"""
@@ -1372,7 +1410,8 @@ class Parse(IatiParser):
 
         activity = self.get_model('Activity')
         scope_type_code = element.attrib.get('type')
-        scope_type = self.get_or_none(codelist_models.HumanitarianScopeType, code=scope_type_code)
+        scope_type = self.get_or_none(
+            codelist_models.HumanitarianScopeType, code=scope_type_code)
         vocabulary_code = element.attrib.get('vocabulary')
         vocabulary = self.get_or_none(
             vocabulary_models.HumanitarianScopeVocabulary,
@@ -1426,7 +1465,8 @@ class Parse(IatiParser):
 
         return element
 
-    def iati_activities__iati_activity__humanitarian_scope__narrative(self, element):
+    def iati_activities__iati_activity__humanitarian_scope__narrative(
+            self, element):
         """attributes:
 
         tag:narrative"""
@@ -1445,7 +1485,8 @@ class Parse(IatiParser):
         tag:policy-marker"""
         # TODO: custom vocabulary (other than 1)
         code = element.attrib.get('code')
-        policy_marker_code = self.get_or_none(codelist_models.PolicyMarker, code=code)
+        policy_marker_code = self.get_or_none(
+            codelist_models.PolicyMarker, code=code)
         vocabulary = self.get_or_none(
             vocabulary_models.PolicyMarkerVocabulary,
             code=element.attrib.get(
@@ -1502,7 +1543,8 @@ class Parse(IatiParser):
         self.register_model('ActivityPolicyMarker', activity_policy_marker)
         return element
 
-    def iati_activities__iati_activity__policy_marker__narrative(self, element):
+    def iati_activities__iati_activity__policy_marker__narrative(
+            self, element):
         """attributes:
 
         tag:narrative"""
@@ -1516,7 +1558,8 @@ class Parse(IatiParser):
 
         tag:collaboration-type"""
         code = element.attrib.get('code')
-        collaboration_type = self.get_or_none(codelist_models.CollaborationType, code=code)
+        collaboration_type = self.get_or_none(
+            codelist_models.CollaborationType, code=code)
 
         if not code:
             raise RequiredFieldError(
@@ -1544,7 +1587,8 @@ class Parse(IatiParser):
 
         tag:default-flow-type"""
         code = element.attrib.get('code')
-        default_flow_type = self.get_or_none(codelist_models.FlowType, code=code)
+        default_flow_type = self.get_or_none(
+            codelist_models.FlowType, code=code)
 
         if not code:
             raise RequiredFieldError(
@@ -1572,7 +1616,8 @@ class Parse(IatiParser):
 
         tag:default-finance-type"""
         code = element.attrib.get('code')
-        default_finance_type = self.get_or_none(codelist_models.FinanceType, code=code)
+        default_finance_type = self.get_or_none(
+            codelist_models.FinanceType, code=code)
 
         if not code:
             raise RequiredFieldError(
@@ -1628,7 +1673,8 @@ class Parse(IatiParser):
 
         tag:default-tied-status"""
         code = element.attrib.get('code')
-        default_tied_status = self.get_or_none(codelist_models.TiedStatus, code=code)
+        default_tied_status = self.get_or_none(
+            codelist_models.TiedStatus, code=code)
 
         if not code:
             raise RequiredFieldError(
@@ -1655,12 +1701,16 @@ class Parse(IatiParser):
         type:1
 
         tag:budget"""
-        # If the @type attribute is omitted, then BudgetType code 1 (Original) is assumed
+        # If the @type attribute is omitted, then BudgetType code 1 (Original)
+        # is assumed
         budget_type_code = element.attrib.get('type', '1')
-        budget_type = self.get_or_none(codelist_models.BudgetType, code=budget_type_code)
-        # If the @status attribute is omitted, then BudgetStatus code 1 (Indicative) is assumed
+        budget_type = self.get_or_none(
+            codelist_models.BudgetType, code=budget_type_code)
+        # If the @status attribute is omitted, then BudgetStatus code 1
+        # (Indicative) is assumed
         status_code = element.attrib.get('status', '1')
-        status = self.get_or_none(codelist_models.BudgetStatus, code=status_code)
+        status = self.get_or_none(
+            codelist_models.BudgetStatus, code=status_code)
         activity = self.get_model('Activity')
 
         if not budget_type_code:
@@ -1765,7 +1815,8 @@ class Parse(IatiParser):
         value-date:2014-01-01
 
         tag:value"""
-        currency = self.get_or_none(models.Currency, code=element.attrib.get('currency'))
+        currency = self.get_or_none(
+            models.Currency, code=element.attrib.get('currency'))
         value = element.text
         decimal_value = self.guess_number('budget', value)
 
@@ -1823,9 +1874,11 @@ class Parse(IatiParser):
         type:1
 
         tag:planned-disbursement"""
-        budget_type = self.get_or_none(codelist_models.BudgetType, code=element.attrib.get('type'))
+        budget_type = self.get_or_none(
+            codelist_models.BudgetType, code=element.attrib.get('type'))
 
-        # if not budget_type: raise RequiredFieldError("type", "planned-disbursement: type is required")
+        # if not budget_type: raise RequiredFieldError("type",
+        # "planned-disbursement: type is required")
 
         activity = self.get_model('Activity')
         planned_disbursement = models.PlannedDisbursement()
@@ -1836,7 +1889,8 @@ class Parse(IatiParser):
 
         return element
 
-    def iati_activities__iati_activity__planned_disbursement__period_start(self, element):
+    def iati_activities__iati_activity__planned_disbursement__period_start(
+            self, element):
         """attributes:
         iso-date:2014-01-01
 
@@ -1865,7 +1919,8 @@ class Parse(IatiParser):
 
         return element
 
-    def iati_activities__iati_activity__planned_disbursement__period_end(self, element):
+    def iati_activities__iati_activity__planned_disbursement__period_end(
+            self, element):
         """attributes:
         iso-date:2014-12-31
 
@@ -1894,14 +1949,16 @@ class Parse(IatiParser):
 
         return element
 
-    def iati_activities__iati_activity__planned_disbursement__value(self, element):
+    def iati_activities__iati_activity__planned_disbursement__value(
+            self, element):
         """attributes:
         currency:EUR
         value-date:2014-01-01
 
         tag:value"""
 
-        currency = self.get_or_none(models.Currency, code=element.attrib.get('currency'))
+        currency = self.get_or_none(
+            models.Currency, code=element.attrib.get('currency'))
         value = element.text
         decimal_value = self.guess_number('planned-disbursement', value)
 
@@ -1930,7 +1987,8 @@ class Parse(IatiParser):
                 None,
                 element.attrib.get('value-date'))
 
-        currency = self._get_currency_or_raise('planned-disbursement/value', currency)
+        currency = self._get_currency_or_raise(
+            'planned-disbursement/value', currency)
 
         planned_disbursement = self.get_model('PlannedDisbursement')
         planned_disbursement.value_string = value
@@ -1940,7 +1998,8 @@ class Parse(IatiParser):
 
         return element
 
-    def iati_activities__iati_activity__planned_disbursement__provider_org(self, element):
+    def iati_activities__iati_activity__planned_disbursement__provider_org(
+            self, element):
         """attributes:
         provider-activity-id:BB-BBB-123456789-1234AA
         ref:BB-BBB-123456789
@@ -1954,7 +2013,7 @@ class Parse(IatiParser):
             'planned_disbursement',
         )(element)
 
-    def iati_activities__iati_activity__planned_disbursement__provider_org__narrative(
+    def iati_activities__iati_activity__planned_disbursement__provider_org__narrative(  # NOQA: E501
             self, element):
         """attributes:
 
@@ -1964,7 +2023,8 @@ class Parse(IatiParser):
         model.primary_name = self.get_primary_name(element, model.primary_name)
         return element
 
-    def iati_activities__iati_activity__planned_disbursement__receiver_org(self, element):
+    def iati_activities__iati_activity__planned_disbursement__receiver_org(
+            self, element):
         """attributes:
         receiver-activity-id:BB-BBB-123456789-1234AA
         ref:BB-BBB-123456789
@@ -1978,7 +2038,7 @@ class Parse(IatiParser):
             'planned_disbursement',
         )(element)
 
-    def iati_activities__iati_activity__planned_disbursement__receiver_org__narrative(
+    def iati_activities__iati_activity__planned_disbursement__receiver_org__narrative(  # NOQA: E501
             self, element):
         """attributes:
 
@@ -2023,14 +2083,17 @@ class Parse(IatiParser):
         transaction.ref = ref
         transaction.humanitarian = self.makeBoolNone(humanitarian)
         transaction.flow_type = self.get_model('Activity').default_flow_type
-        transaction.finance_type = self.get_model('Activity').default_finance_type
+        transaction.finance_type = self.get_model(
+            'Activity').default_finance_type
         transaction.aid_type = self.get_model('Activity').default_aid_type
-        transaction.tied_status = self.get_model('Activity').default_tied_status
+        transaction.tied_status = self.get_model(
+            'Activity').default_tied_status
 
         self.register_model('Transaction', transaction)
         return element
 
-    def iati_activities__iati_activity__transaction__transaction_type(self, element):
+    def iati_activities__iati_activity__transaction__transaction_type(
+            self, element):
         """attributes:
         code:1
 
@@ -2040,8 +2103,10 @@ class Parse(IatiParser):
             code=element.attrib.get('code'))
 
         if not transaction_type:
-            # TODO; pop transaction model to prevent trying to save / 'loss on save'?
-            # That might save next sub elemens of the transaction to the previous transaction?
+            # TODO; pop transaction model to prevent trying to save /
+            # 'loss on save'?
+            # That might save next sub elemens of the transaction to the
+            # previous transaction?
             raise RequiredFieldError(
                 "transaction/transaction-type",
                 "code",
@@ -2052,7 +2117,8 @@ class Parse(IatiParser):
 
         return element
 
-    def iati_activities__iati_activity__transaction__transaction_date(self, element):
+    def iati_activities__iati_activity__transaction__transaction_date(
+            self, element):
         """attributes:
         iso-date:2012.02-01
 
@@ -2096,7 +2162,8 @@ class Parse(IatiParser):
         value-date:2012.02-01
 
         tag:value"""
-        currency = self.get_or_none(models.Currency, code=element.attrib.get('currency'))
+        currency = self.get_or_none(
+            models.Currency, code=element.attrib.get('currency'))
         value = element.text
         decimal_value = self.guess_number('transaction', value)
 
@@ -2135,21 +2202,28 @@ class Parse(IatiParser):
 
         if settings.CONVERT_CURRENCIES:
             transaction.xdr_value = convert.currency_from_to(
-                transaction.currency_id, 'XDR', transaction.value_date, transaction.value)
+                transaction.currency_id, 'XDR', transaction.value_date,
+                transaction.value)
             transaction.usd_value = convert.currency_from_to(
-                transaction.currency_id, 'USD', transaction.value_date, transaction.value)
+                transaction.currency_id, 'USD', transaction.value_date,
+                transaction.value)
             transaction.eur_value = convert.currency_from_to(
-                transaction.currency_id, 'EUR', transaction.value_date, transaction.value)
+                transaction.currency_id, 'EUR', transaction.value_date,
+                transaction.value)
             transaction.gbp_value = convert.currency_from_to(
-                transaction.currency_id, 'GBP', transaction.value_date, transaction.value)
+                transaction.currency_id, 'GBP', transaction.value_date,
+                transaction.value)
             transaction.jpy_value = convert.currency_from_to(
-                transaction.currency_id, 'JPY', transaction.value_date, transaction.value)
+                transaction.currency_id, 'JPY', transaction.value_date,
+                transaction.value)
             transaction.cad_value = convert.currency_from_to(
-                transaction.currency_id, 'CAD', transaction.value_date, transaction.value)
+                transaction.currency_id, 'CAD', transaction.value_date,
+                transaction.value)
 
         return element
 
-    def iati_activities__iati_activity__transaction__description(self, element):
+    def iati_activities__iati_activity__transaction__description(
+            self, element):
         """attributes:
 
         tag:description"""
@@ -2162,7 +2236,8 @@ class Parse(IatiParser):
 
         return element
 
-    def iati_activities__iati_activity__transaction__description__narrative(self, element):
+    def iati_activities__iati_activity__transaction__description__narrative(
+            self, element):
         """attributes:
 
         tag:narrative"""
@@ -2170,7 +2245,8 @@ class Parse(IatiParser):
         self.add_narrative(element, transaction_description)
         return element
 
-    def iati_activities__iati_activity__transaction__provider_org(self, element):
+    def iati_activities__iati_activity__transaction__provider_org(
+            self, element):
         """attributes:
         provider-activity-id:BB-BBB-123456789-1234AA
         ref:BB-BBB-123456789
@@ -2184,7 +2260,8 @@ class Parse(IatiParser):
             'transaction',
         )(element)
 
-    def iati_activities__iati_activity__transaction__provider_org__narrative(self, element):
+    def iati_activities__iati_activity__transaction__provider_org__narrative(
+            self, element):
         """attributes:
 
         tag:narrative"""
@@ -2198,7 +2275,8 @@ class Parse(IatiParser):
 
         return element
 
-    def iati_activities__iati_activity__transaction__receiver_org(self, element):
+    def iati_activities__iati_activity__transaction__receiver_org(
+            self, element):
         """attributes:
         receiver-activity-id:AA-AAA-123456789-1234
         ref:AA-AAA-123456789
@@ -2213,7 +2291,8 @@ class Parse(IatiParser):
             'transaction',
         )(element)
 
-    def iati_activities__iati_activity__transaction__receiver_org__narrative(self, element):
+    def iati_activities__iati_activity__transaction__receiver_org__narrative(
+            self, element):
         """attributes:
 
         tag:narrative"""
@@ -2227,13 +2306,15 @@ class Parse(IatiParser):
 
         return element
 
-    def iati_activities__iati_activity__transaction__disbursement_channel(self, element):
+    def iati_activities__iati_activity__transaction__disbursement_channel(
+            self, element):
         """attributes:
         code:1
 
         tag:disbursement-channel"""
         code = element.attrib.get('code')
-        disbursement_channel = self.get_or_none(codelist_models.DisbursementChannel, code=code)
+        disbursement_channel = self.get_or_none(
+            codelist_models.DisbursementChannel, code=code)
 
         if not code:
             raise RequiredFieldError(
@@ -2259,7 +2340,8 @@ class Parse(IatiParser):
 
         tag:sector"""
         code = element.attrib.get('code')
-        sector = self.get_or_none(models.Sector, code=element.attrib.get('code'))
+        sector = self.get_or_none(
+            models.Sector, code=element.attrib.get('code'))
         # TODO: make defaults more transparant, here: 'OECD-DAC default'
         vocabulary = self.get_or_none(
             vocabulary_models.SectorVocabulary,
@@ -2310,7 +2392,8 @@ class Parse(IatiParser):
         self.register_model('TransactionSector', transaction_sector)
         return element
 
-    def iati_activities__iati_activity__transaction__recipient_country(self, element):
+    def iati_activities__iati_activity__transaction__recipient_country(
+            self, element):
         """attributes:
         code:AF
 
@@ -2344,7 +2427,8 @@ class Parse(IatiParser):
         self.register_model('TransactionRecipientCountry', transaction_country)
         return element
 
-    def iati_activities__iati_activity__transaction__recipient_region(self, element):
+    def iati_activities__iati_activity__transaction__recipient_region(
+            self, element):
         """attributes:
         code:456
         vocabulary:1
@@ -2387,7 +2471,8 @@ class Parse(IatiParser):
                 "code is unspecified or invalid")
 
         transaction = self.get_model('Transaction')
-        transaction_recipient_region = transaction_models.TransactionRecipientRegion()
+        transaction_recipient_region = transaction_models\
+            .TransactionRecipientRegion()
         transaction_recipient_region.transaction = transaction
         transaction_recipient_region.reported_transaction = transaction
         transaction_recipient_region.region = region
@@ -2396,7 +2481,8 @@ class Parse(IatiParser):
         transaction_recipient_region.percentage = 100
         transaction_recipient_region.reported_on_transaction = True
 
-        self.register_model('TransactionRecipientRegion', transaction_recipient_region)
+        self.register_model('TransactionRecipientRegion',
+                            transaction_recipient_region)
         return element
 
     def iati_activities__iati_activity__transaction__flow_type(self, element):
@@ -2425,7 +2511,8 @@ class Parse(IatiParser):
         transaction.flow_type = flow_type
         return element
 
-    def iati_activities__iati_activity__transaction__finance_type(self, element):
+    def iati_activities__iati_activity__transaction__finance_type(
+            self, element):
         """attributes:
         code:110
 
@@ -2479,7 +2566,8 @@ class Parse(IatiParser):
 
         return element
 
-    def iati_activities__iati_activity__transaction__tied_status(self, element):
+    def iati_activities__iati_activity__transaction__tied_status(
+            self, element):
         """attributes:
         code:3
 
@@ -2514,7 +2602,8 @@ class Parse(IatiParser):
         url = element.attrib.get('url')
 
         file_format_code = element.attrib.get('format')
-        file_format = self.get_or_none(codelist_models.FileFormat, code=file_format_code)
+        file_format = self.get_or_none(
+            codelist_models.FileFormat, code=file_format_code)
 
         if not url:
             raise RequiredFieldError(
@@ -2546,7 +2635,8 @@ class Parse(IatiParser):
         self.register_model('DocumentLink', document_link)
         return element
 
-    def iati_activities__iati_activity__document_link__document_date(self, element):
+    def iati_activities__iati_activity__document_link__document_date(
+            self, element):
         """attributes:
         format:application/vnd.oasis.opendocument.text
         url:http:www.example.org/docs/report_en.odt
@@ -2589,7 +2679,8 @@ class Parse(IatiParser):
 
         return element
 
-    def iati_activities__iati_activity__document_link__title__narrative(self, element):
+    def iati_activities__iati_activity__document_link__title__narrative(
+            self, element):
         """attributes:
 
         tag:narrative"""
@@ -2603,7 +2694,8 @@ class Parse(IatiParser):
 
         tag:category"""
         code = element.attrib.get('code')
-        category = self.get_or_none(codelist_models.DocumentCategory, code=code)
+        category = self.get_or_none(
+            codelist_models.DocumentCategory, code=code)
 
         if not code:
             raise RequiredFieldError(
@@ -2695,27 +2787,14 @@ class Parse(IatiParser):
         related_activity = models.RelatedActivity()
         # TODO: remove this field?
         related_activity.current_activity = activity
-        related_activity.ref_activity = self.get_or_none(models.Activity, iati_identifier=ref)
+        related_activity.ref_activity = self.get_or_none(
+            models.Activity, iati_identifier=ref)
         related_activity.ref = ref
         related_activity.type = related_activity_type
-
-        # if not related_activity.ref_activity:
-        #     self.append_error(
-        #         'FieldValidationError',
-        #         "related-activity",
-        #         "ref",
-        #         "Must be an existing IATI activity",
-        #         element.sourceline,
-        #         ref)
 
         # update existing related activity foreign keys, happens post save
         self.register_model('RelatedActivity', related_activity)
         return element
-
-    # """attributes:
-    # name:Project Status
-    # value:7
-    # iati-equivalent:activity-status
 
     # tag:legacy-data"""
     def iati_activities__iati_activity__legacy_data(self, element):
@@ -2730,44 +2809,11 @@ class Parse(IatiParser):
 
         return element
 
-    # """attributes:
-    # attached:1
-
-    # tag:conditions"""
-    # def iati_activities__iati_activity__conditions(self, element):
-    #     activity = self.get_model('Activity')
-    #     activity.has_conditions = self.makeBool(element.attrib.get('attached'))
-
-    #     return element
-
-    # """attributes:
-    # type:1
-
-    # tag:condition"""
-    # def iati_activities__iati_activity__conditions__condition(self, element):
-    #     model = self.get_func_parent_model()
-    #     condition = models.Condition()
-    #     condition.activity = model
-    #     condition.type = self.cached_db_call(models.ConditionType,element.attrib.get('type'))
-    #     self.set_func_model(condition)
-    #     return element
-
-    # """attributes:
-
-    # tag:narrative"""
-    # def iati_activities__iati_activity__conditions__condition__narrative(self, element):
-    #     activity_date = self.get_model('ActivityDate')
-    #     self.add_narrative(element, activity_date)
-    #     return element
-
-    # """attributes:
-    # type:1
-    # aggregation-status:1
-
     # tag:result"""
     def iati_activities__iati_activity__result(self, element):
         result_type_code = element.attrib.get('type')
-        result_type = self.get_or_none(codelist_models.ResultType, code=result_type_code)
+        result_type = self.get_or_none(
+            codelist_models.ResultType, code=result_type_code)
         aggregation_status = element.attrib.get('aggregation-status')
 
         if not result_type_code:
@@ -2805,7 +2851,8 @@ class Parse(IatiParser):
         self.register_model('ResultTitle', result_title)
         return element
 
-    def iati_activities__iati_activity__result__title__narrative(self, element):
+    def iati_activities__iati_activity__result__title__narrative(
+            self, element):
         # this points to Title
         title = self.get_model('ResultTitle')
         self.add_narrative(element, title)
@@ -2826,7 +2873,8 @@ class Parse(IatiParser):
     # """attributes:
 
     # tag:narrative"""
-    def iati_activities__iati_activity__result__description__narrative(self, element):
+    def iati_activities__iati_activity__result__description__narrative(
+            self, element):
         # this points to Description
         description = self.get_model('ResultDescription')
         self.add_narrative(element, description)
@@ -2835,7 +2883,8 @@ class Parse(IatiParser):
 
     def iati_activities__iati_activity__result__indicator(self, element):
         measure_code = element.attrib.get('measure')
-        measure = self.get_or_none(codelist_models.IndicatorMeasure, code=measure_code)
+        measure = self.get_or_none(
+            codelist_models.IndicatorMeasure, code=measure_code)
         ascending = element.attrib.get('ascending', '1')
 
         if not measure_code:
@@ -2858,9 +2907,11 @@ class Parse(IatiParser):
         self.register_model('ResultIndicator', result_indicator)
         return element
 
-    def iati_activities__iati_activity__result__indicator__reference(self, element):
+    def iati_activities__iati_activity__result__indicator__reference(
+            self, element):
         vocabulary_code = element.attrib.get('vocabulary')
-        vocabulary = self.get_or_none(vocabulary_models.IndicatorVocabulary, code=vocabulary_code)
+        vocabulary = self.get_or_none(
+            vocabulary_models.IndicatorVocabulary, code=vocabulary_code)
         code = element.attrib.get('code')
         indicator_uri = element.attrib.get('indicator-uri')
 
@@ -2892,10 +2943,12 @@ class Parse(IatiParser):
         result_indicator_reference.vocabulary = vocabulary
         result_indicator_reference.indicator_uri = indicator_uri
 
-        self.register_model('ResultIndicatorReference', result_indicator_reference)
+        self.register_model('ResultIndicatorReference',
+                            result_indicator_reference)
         return element
 
-    def iati_activities__iati_activity__result__indicator__title(self, element):
+    def iati_activities__iati_activity__result__indicator__title(
+            self, element):
         result_indicator = self.get_model('ResultIndicator')
         result_indicator_title = models.ResultIndicatorTitle()
         result_indicator_title.result_indicator = result_indicator
@@ -2906,7 +2959,8 @@ class Parse(IatiParser):
     # """attributes:
 
     # tag:narrative"""
-    def iati_activities__iati_activity__result__indicator__title__narrative(self, element):
+    def iati_activities__iati_activity__result__indicator__title__narrative(
+            self, element):
         title = self.get_model('ResultIndicatorTitle')
         self.add_narrative(element, title)
         title.primary_name = self.get_primary_name(element, title.primary_name)
@@ -2916,29 +2970,28 @@ class Parse(IatiParser):
     # """attributes:
 
     # tag:description"""
-    def iati_activities__iati_activity__result__indicator__description(self, element):
+    def iati_activities__iati_activity__result__indicator__description(
+            self, element):
         result_indicator = self.get_model('ResultIndicator')
         result_indicator_description = models.ResultIndicatorDescription()
         result_indicator_description.result_indicator = result_indicator
 
-        self.register_model('ResultIndicatorDescription', result_indicator_description)
+        self.register_model('ResultIndicatorDescription',
+                            result_indicator_description)
         return element
 
     # """attributes:
 
     # tag:narrative"""
-    def iati_activities__iati_activity__result__indicator__description__narrative(self, element):
+    def iati_activities__iati_activity__result__indicator__description__narrative(self, element):  # NOQA: E501
         description = self.get_model('ResultIndicatorDescription')
         self.add_narrative(element, description)
 
         return element
 
-    # """attributes:
-    # year:2012
-    # value:10
-
     # tag:baseline"""
-    def iati_activities__iati_activity__result__indicator__baseline(self, element):
+    def iati_activities__iati_activity__result__indicator__baseline(
+            self, element):
         year = element.attrib.get('year')
         value = element.attrib.get('value')
 
@@ -2958,13 +3011,15 @@ class Parse(IatiParser):
             raise RequiredFieldError(
                 "result/indicator/baseline",
                 "year",
-                "required attribute missing (should be of type xsd:positiveInteger with format (yyyy))")
+                "required attribute missing (should be of type \
+                        xsd:positiveInteger with format (yyyy))")
 
         if value is None:
             raise RequiredFieldError(
                 "result/indicator/baseline",
                 "value",
-                "required attribute missing (note; xsd:decimal is used to check instead of xsd:string)")
+                "required attribute missing (note; xsd:decimal is used to \
+                        check instead of xsd:string)")
 
         result_indicator = self.pop_model('ResultIndicator')
         result_indicator.baseline_year = year
@@ -2976,18 +3031,21 @@ class Parse(IatiParser):
     # """attributes:
 
     # tag:comment"""
-    def iati_activities__iati_activity__result__indicator__baseline__comment(self, element):
+    def iati_activities__iati_activity__result__indicator__baseline__comment(
+            self, element):
         result_indicator = self.get_model('ResultIndicator')
-        result_indicator_baseline_comment = models.ResultIndicatorBaselineComment()
+        result_indicator_baseline_comment = models\
+            .ResultIndicatorBaselineComment()
         result_indicator_baseline_comment.result_indicator = result_indicator
 
-        self.register_model('ResultIndicatorBaselineComment', result_indicator_baseline_comment)
+        self.register_model('ResultIndicatorBaselineComment',
+                            result_indicator_baseline_comment)
         return element
 
     # """attributes:
 
     # tag:narrative"""
-    def iati_activities__iati_activity__result__indicator__baseline__comment__narrative(
+    def iati_activities__iati_activity__result__indicator__baseline__comment__narrative(  # NOQA: E501
             self, element):
         baseline_comment = self.get_model('ResultIndicatorBaselineComment')
         self.add_narrative(element, baseline_comment)
@@ -2997,7 +3055,8 @@ class Parse(IatiParser):
     # """attributes:
 
     # tag:period"""
-    def iati_activities__iati_activity__result__indicator__period(self, element):
+    def iati_activities__iati_activity__result__indicator__period(
+            self, element):
 
         # do validation on "Period-start must be before period-end"
         try:
@@ -3008,7 +3067,8 @@ class Parse(IatiParser):
                 start_date_iso = self.validate_date(start_date)
                 end_date_iso = self.validate_date(end_date)
 
-                if start_date_iso and end_date_iso and (start_date_iso > end_date_iso):
+                if start_date_iso\
+                        and end_date_iso and (start_date_iso > end_date_iso):
 
                     raise FieldValidationError(
                         "result/indicator/period/period-start",
@@ -3016,7 +3076,8 @@ class Parse(IatiParser):
                         "Period-start must be before period-end",
                         None,
                         None,
-                        "start date: {} , end_date: {}".format(start_date, end_date))
+                        "start date: {} , end_date: {}".format(
+                            start_date, end_date))
 
         except AttributeError:
             # period start/end dont exist
@@ -3031,11 +3092,8 @@ class Parse(IatiParser):
         self.register_model('ResultIndicatorPeriod', result_indicator_period)
         return element
 
-    # """attributes:
-    # iso-date:2013-01-01
-
     # tag:period-start"""
-    def iati_activities__iati_activity__result__indicator__period__period_start(self, element):
+    def iati_activities__iati_activity__result__indicator__period__period_start(self, element):  # NOQA: E501
         iso_date = element.attrib.get('iso-date')
 
         if not iso_date:
@@ -3061,11 +3119,9 @@ class Parse(IatiParser):
         self.register_model('ResultIndicatorPeriod', result_indicator_period)
         return element
 
-    # """attributes:
-    # iso-date:2013-03-31
-
     # tag:period-end"""
-    def iati_activities__iati_activity__result__indicator__period__period_end(self, element):
+    def iati_activities__iati_activity__result__indicator__period__period_end(
+            self, element):
 
         iso_date = element.attrib.get('iso-date')
 
@@ -3092,7 +3148,8 @@ class Parse(IatiParser):
         self.register_model('ResultIndicatorPeriod', result_indicator_period)
         return element
 
-    def iati_activities__iati_activity__result__indicator__period__target(self, element):
+    def iati_activities__iati_activity__result__indicator__period__target(
+            self, element):
         value = element.attrib.get('value')
         # TODO, 'guess number'
 
@@ -3105,7 +3162,8 @@ class Parse(IatiParser):
             raise RequiredFieldError(
                 "result/indicator/period/period/target",
                 "value",
-                "required attribute missing (this error might be incorrect, xsd:decimal is used to check instead of xsd:string)")
+                "required attribute missing (this error might be incorrect, \
+                        xsd:decimal is used to check instead of xsd:string)")
 
         result_indicator_period = self.pop_model('ResultIndicatorPeriod')
         result_indicator_period.target = value
@@ -3113,7 +3171,7 @@ class Parse(IatiParser):
         self.register_model('ResultIndicatorPeriod', result_indicator_period)
         return element
 
-    def iati_activities__iati_activity__result__indicator__period__target__location(self, element):
+    def iati_activities__iati_activity__result__indicator__period__target__location(self, element):  # NOQA: E501
 
         ref = element.attrib.get('ref')
 
@@ -3127,13 +3185,14 @@ class Parse(IatiParser):
         location = []
 
         if locations:
-            location = filter(lambda x: x.ref == ref, locations)
+            location = list(filter(lambda x: x.ref == ref, locations))
 
         if not len(location):
             raise FieldValidationError(
                 "result/indicator/period/period/target/location",
                 "ref",
-                "referenced location does not exist in a location element of this activity",
+                "referenced location does not exist in a location element of \
+                        this activity",
                 None,
                 None,
                 ref)
@@ -3144,10 +3203,11 @@ class Parse(IatiParser):
         target_location.ref = ref
         target_location.location = location[0]
 
-        self.register_model('ResultIndicatorPeriodTargetLocation', target_location)
+        self.register_model(
+            'ResultIndicatorPeriodTargetLocation', target_location)
         return element
 
-    def iati_activities__iati_activity__result__indicator__period__target__dimension(
+    def iati_activities__iati_activity__result__indicator__period__target__dimension(  # NOQA: E501
             self, element):
 
         name = element.attrib.get('name')
@@ -3172,13 +3232,16 @@ class Parse(IatiParser):
         target_dimension.name = name
         target_dimension.value = value
 
-        self.register_model('ResultIndicatorPeriodTargetDimension', target_dimension)
+        self.register_model(
+            'ResultIndicatorPeriodTargetDimension', target_dimension)
         return element
 
-    def iati_activities__iati_activity__result__indicator__period__target__comment(self, element):
+    def iati_activities__iati_activity__result__indicator__period__target__comment(self, element):  # NOQA: E501
         result_indicator_period = self.get_model('ResultIndicatorPeriod')
-        result_indicator_period_target_comment = models.ResultIndicatorPeriodTargetComment()
-        result_indicator_period_target_comment.result_indicator_period = result_indicator_period
+        result_indicator_period_target_comment = models\
+            .ResultIndicatorPeriodTargetComment()
+        result_indicator_period_target_comment\
+            .result_indicator_period = result_indicator_period
 
         self.register_model(
             'ResultIndicatorPeriodTargetComment',
@@ -3188,9 +3251,10 @@ class Parse(IatiParser):
     # """attributes:
 
     # tag:narrative"""
-    def iati_activities__iati_activity__result__indicator__period__target__comment__narrative(
+    def iati_activities__iati_activity__result__indicator__period__target__comment__narrative(  # NOQA: E501
             self, element):
-        period_target_comment = self.get_model('ResultIndicatorPeriodTargetComment')
+        period_target_comment = self.get_model(
+            'ResultIndicatorPeriodTargetComment')
         self.add_narrative(element, period_target_comment)
 
         return element
@@ -3199,7 +3263,8 @@ class Parse(IatiParser):
     # value:11
 
     # tag:actual"""
-    def iati_activities__iati_activity__result__indicator__period__actual(self, element):
+    def iati_activities__iati_activity__result__indicator__period__actual(
+            self, element):
         value = element.attrib.get('value')
 
         try:
@@ -3211,7 +3276,8 @@ class Parse(IatiParser):
             raise RequiredFieldError(
                 "result/indicator/period/actual",
                 "value",
-                "required attribute missing (this error might be incorrect, xsd:decimal is used to check instead of xsd:string)")
+                "required attribute missing (this error might be incorrect, \
+                        xsd:decimal is used to check instead of xsd:string)")
 
         result_indicator_period = self.pop_model('ResultIndicatorPeriod')
         result_indicator_period.actual = value
@@ -3219,7 +3285,7 @@ class Parse(IatiParser):
         self.register_model('ResultIndicatorPeriod', result_indicator_period)
         return element
 
-    def iati_activities__iati_activity__result__indicator__period__actual__location(self, element):
+    def iati_activities__iati_activity__result__indicator__period__actual__location(self, element):  # NOQA: E501
 
         ref = element.attrib.get('ref')
 
@@ -3230,13 +3296,14 @@ class Parse(IatiParser):
                 "required attribute missing")
 
         locations = self.get_model_list('Location')
-        location = filter(lambda x: x.ref == ref, locations)
+        location = list(filter(lambda x: x.ref == ref, locations))
 
         if not len(location):
             raise FieldValidationError(
                 "result/indicator/period/actual/location",
                 "ref",
-                "referenced location does not exist in a location element of this activity",
+                "referenced location does not exist in a location element of \
+                        this activity",
                 None,
                 None,
                 ref)
@@ -3248,10 +3315,11 @@ class Parse(IatiParser):
         actual_location.ref = ref
         actual_location.location = location[0]
 
-        self.register_model('ResultIndicatorPeriodActualLocation', actual_location)
+        self.register_model(
+            'ResultIndicatorPeriodActualLocation', actual_location)
         return element
 
-    def iati_activities__iati_activity__result__indicator__period__actual__dimension(
+    def iati_activities__iati_activity__result__indicator__period__actual__dimension(  # NOQA: E501
             self, element):
 
         name = element.attrib.get('name')
@@ -3276,176 +3344,45 @@ class Parse(IatiParser):
         actual_dimension.name = name
         actual_dimension.value = value
 
-        self.register_model('ResultIndicatorPeriodActualDimension', actual_dimension)
+        self.register_model(
+            'ResultIndicatorPeriodActualDimension', actual_dimension)
         return element
 
-    def iati_activities__iati_activity__result__indicator__period__actual__comment(self, element):
+    def iati_activities__iati_activity__result__indicator__period__actual__comment(self, element):  # NOQA: E501
         result_indicator_period = self.get_model('ResultIndicatorPeriod')
-        result_indicator_period_actual_comment = models.ResultIndicatorPeriodActualComment()
-        result_indicator_period_actual_comment.result_indicator_period = result_indicator_period
+        result_indicator_period_actual_comment = models\
+            .ResultIndicatorPeriodActualComment()
+        result_indicator_period_actual_comment\
+            .result_indicator_period = result_indicator_period
 
         self.register_model(
             'ResultIndicatorPeriodActualComment',
             result_indicator_period_actual_comment)
         return element
 
-    def iati_activities__iati_activity__result__indicator__period__actual__comment__narrative(
+    def iati_activities__iati_activity__result__indicator__period__actual__comment__narrative(  # NOQA: E501
             self, element):
-        period_actual_comment = self.get_model('ResultIndicatorPeriodActualComment')
+        period_actual_comment = self.get_model(
+            'ResultIndicatorPeriodActualComment')
         self.add_narrative(element, period_actual_comment)
 
         return element
 
-    # def iati_activities__iati_activity__crs_add(self, element):
-    #     return activity_field(models.CrsAdd(), self.get_model('Activity'))(element)
-    #
-    # def iati_activities__iati_activity__crs_add__other_flags(self, element):
-    #
-    #     # TODO: compose model, pass element to each method - 2016-06-03
-    #     return compose(
-    #         self.register_model,
-    #         parent(self.get_model('CrsAdd'), 'crs_add')
-    #     )(models.CrsAddOtherFlags(), element)
-
-    # """attributes:
-    # rate-1:4
-    # rate-2:3
-
-    # tag:loan-terms"""
-    # def iati_activities__iati_activity__crs_add__loan_terms(self, element):
-    #     return compose(
-    #         self.register_model,
-    #         percentage_field('rate-1'),
-    #         percentage_field('rate-2'),
-    #     )(self.get_model('CrsAddLoanTerms'), element)
-    #
-    #
-    # def iati_activities__iati_activity__crs_add__loan_terms__repayment_type(self, element):
-    #     return compose(
-    #         self.register_model,
-    #         code(codelist_models.LoanRepaymentType),
-    #     )(self.pop_model('CrsAddLoanTerms'), element)
-    #
-    #
-    # def iati_activities__iati_activity__crs_add__loan_terms__repayment_plan(self, element):
-    #     return compose(
-    #         self.register_model,
-    #         code(codelist_models.LoanRepaymentPeriod),
-    #     )(self.pop_model('CrsAddLoanTerms'), element)
-    #
-    # def iati_activities__iati_activity__crs_add__loan_terms__commitment_date(self, element):
-    #     return compose(
-    #         self.register_model,
-    #         iso_date(codelist_models.LoanRepaymentPeriod),
-    #     )(self.pop_model('CrsAddLoanTerms'), element)
-
-    # """attributes:
-    # iso-date:2014-01-01
-
-    # tag:repayment-first-date"""
-    # def iati_activities__iati_activity__crs_add__loan_terms__repayment_first_date(self, element):
-    #     model = self.get_func_parent_model()
-    #     model.repayment_first_date = self.validate_date(element.attrib.get('iso-date'))
-
-    # """attributes:
-    # iso-date:2020-12-31
-
-    # tag:repayment-final-date"""
-    # def iati_activities__iati_activity__crs_add__loan_terms__repayment_final_date(self, element):
-    #     model = self.get_func_parent_model()
-    #     model.repayment_final_date = self.validate_date(element.attrib.get('iso-date'))
-    #     return element
-
-    # """attributes:
-    # year:2014
-    # currency:GBP
-    # value-date:2013-05-24
-
-    # tag:loan-status"""
-    # def iati_activities__iati_activity__crs_add__loan_status(self, element):
-    #     model = self.get_func_parent_model()
-    #     crs_loan_status = models.CrsAddLoanStatus()
-    #     crs_loan_status.crs_add = model
-    #     crs_loan_status.year = element.attrib.get('year')
-    #     crs_loan_status.currency = self.cached_db_call(models.Currency,element.attrib.get('currency'))
-    #     crs_loan_status.value_date =  self.validate_date(element.attrib.get('value-date'))
-    #     self.set_func_model(crs_loan_status)
-    #     return element
-
-    # """attributes:
-
-    # tag:interest-received"""
-    # def iati_activities__iati_activity__crs_add__loan_status__interest_received(self, element):
-    #     model = self.get_func_parent_model()
-    #     model.interest_received = element.text
-    #     return element
-
-    # """attributes:
-
-    # tag:principal-outstanding"""
-    # def iati_activities__iati_activity__crs_add__loan_status__principal_outstanding(self, element):
-    #     model = self.get_func_parent_model()
-    #     model.principal_outstanding = element.text
-    #     return element
-
-    # """attributes:
-
-    # tag:principal-arrears"""
-    # def iati_activities__iati_activity__crs_add__loan_status__principal_arrears(self, element):
-    #     model = self.get_func_parent_model()
-    #     model.principal_arrears = element.text
-    #     return element
-
-    # """attributes:
-
-    # tag:interest-arrears"""
-    # def iati_activities__iati_activity__crs_add__loan_status__interest_arrears(self, element):
-    #     model = self.get_func_parent_model()
-    #     model.interest_arrears = element.text
-    #     return element
-
-    # """attributes:
-    # extraction-date:2014-05-06
-    # priority:1
-    # phaseout-year:2016
-
-    # tag:fss"""
-    # def iati_activities__iati_activity__fss(self, element):
-    #     model = self.get_func_parent_model()
-    #     fss = models.Fss()
-    #     fss.activity = model
-    #     fss.year = element.attrib.get('phaseout-year')
-    #     fss.extraction_date = self.validate_date(element.attrib.get('extraction-date'))
-    #     self.set_func_model(fss)
-    #     return element
-
-    # """attributes:
-    # year:2014
-    # value-date:2013-07-03
-    # currency:GBP
-
-    # tag:forecast"""
-    # def iati_activities__iati_activity__fss__forecast(self, element):
-    #     model = self.get_func_parent_model()
-    #     fss_forecast = models.FssForecast()
-    #     fss_forecast.fss = model
-    #     fss_forecast.year = element.attrib.get('year')
-    #     fss_forecast.value_date = self.validate_date(element.attrib.get('value-date'))
-    #     fss_forecast.currency = self.cached_db_call(models.Currency, element.attrib.get('currency'))
-    #     return element
-
     def post_save_models(self):
-        """Perform all actions that need to happen after a single activity's been parsed."""
+        """Perform all actions that need to happen after a single activity's
+        been parsed."""
         activity = self.get_model('Activity')
 
         # the model was not saved
         if not activity or not activity.pk:
             return False
 
-        participating_organisations = self.get_model_list('ActivityParticipatingOrganisation')
+        participating_organisations = self.get_model_list(
+            'ActivityParticipatingOrganisation')
 
         post_save.set_related_activities(activity)
-        post_save.set_participating_organisation_activity_id(participating_organisations)
+        post_save.set_participating_organisation_activity_id(
+            participating_organisations)
         post_save.set_transaction_provider_receiver_activity(activity)
         post_save.set_derived_activity_dates(activity)
         post_save.set_activity_aggregations(activity)
@@ -3455,7 +3392,8 @@ class Parse(IatiParser):
         post_save.set_sector_budget(activity)
 
     def post_save_file(self, dataset):
-        """Perform all actions that need to happen after a single IATI datasets has been parsed.
+        """Perform all actions that need to happen after a single IATI
+        datasets has been parsed.
 
         Keyword arguments:
         dataset -- the Dataset object
@@ -3469,8 +3407,10 @@ class Parse(IatiParser):
         dataset -- the Dataset object
 
         Used variables:
-        activity.last_updated_model -- the datetime at which this activity was last saved
-        self.parse_start_datetime -- the datetime at which parsing this dataset started
+        activity.last_updated_model -- the datetime at which this activity
+        was last saved
+        self.parse_start_datetime -- the datetime at which parsing this
+        dataset started
         """
         models.Activity.objects.filter(
             dataset=dataset,

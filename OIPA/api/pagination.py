@@ -8,18 +8,18 @@ from rest_framework.response import Response
 
 
 class CustomPagination(pagination.PageNumberPagination):
-    page_size = 10
-    max_page_size = 400  # TODO: change this to 100, makes more sense against ddos and such - 2016-01-20
+    page_size = 10  # default
+    max_page_size = 2000
     page_size_query_param = 'page_size'
 
 
 class CustomTransactionPagination(CustomPagination):
-    max_page_size = 800
+    max_page_size = 2000
 
 
 class IatiXMLPagination(pagination.PageNumberPagination):
-    page_size = 10
-    max_page_size = 100
+    page_size = 10  # default
+    max_page_size = 2000
     page_size_query_param = 'page_size'
 
     def get_paginated_response(self, data):

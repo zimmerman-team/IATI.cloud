@@ -1,15 +1,12 @@
 import re
-from iati import models
-from iati.transaction import models as transaction_models
-from iati_codelists import models as codelist_models
-from iati_vocabulary import models as vocabulary_models
-from iati_organisation import models as organisation_models
-import dateutil.parser
 from datetime import datetime
-from decimal import Decimal
-from iati_synchroniser.models import Publisher
 
-from iati.parser.exceptions import *
+import dateutil.parser
+
+from iati import models
+from iati.parser.exceptions import FieldValidationError, RequiredFieldError
+from iati_codelists import models as codelist_models
+from iati_organisation import models as organisation_models
 
 
 def get_or_raise(model, validated_data, attr, default=None):
@@ -23,8 +20,6 @@ def get_or_raise(model, validated_data, attr, default=None):
         )
 
     return model.objects.get(pk=pk)
-    # except model.DoesNotExist:
-    #     return default
 
 
 def get_or_none(model, *args, **kwargs):
@@ -100,8 +95,10 @@ def narrative(i, activity_id, default_lang, lang, text, apiField=""):
             RequiredFieldError(
                 "narrative",
                 "xml:lang",
-                "must specify xml:lang on iati-activity or xml:lang on the element itself",
-                apiField="{}narratives[{}].language".format(apiField + "." if apiField else "", i),
+                "must specify xml:lang on iati-activity or xml:lang on the \
+                    element itself",
+                apiField="{}narratives[{}].language".format(
+                    apiField + "." if apiField else "", i),
             ))
 
     if not text:
@@ -110,7 +107,8 @@ def narrative(i, activity_id, default_lang, lang, text, apiField=""):
                 'narrative',
                 "text",
                 "empty narrative",
-                apiField="{}narratives[{}].text".format(apiField + "." if apiField else "", i),
+                apiField="{}narratives[{}].text".format(
+                    apiField + "." if apiField else "", i),
             ))
 
     return {
@@ -164,7 +162,8 @@ def organisation(
     errors = []
 
     default_currency = get_or_none(models.Currency, pk=default_currency)
-    iati_standard_version = get_or_none(models.Version, pk=iati_standard_version)
+    iati_standard_version = get_or_none(
+        models.Version, pk=iati_standard_version)
     default_lang = get_or_none(models.Language, pk=default_lang)
 
     if not default_lang:
@@ -184,12 +183,6 @@ def organisation(
             ))
 
     name_narratives = name.get('narratives', [])
-    # if not len(name_narratives):
-    #     errors.append(
-    #         RequiredFieldError(
-    #             "organisation",
-    #             "name__narratives",
-    #             ))
 
     name_narratives = narratives_validate(
         name_narratives, default_lang, None, warnings, errors, "name")
@@ -320,7 +313,8 @@ def organisation_total_budget(
             RequiredFieldError(
                 "total-budget",
                 "currency",
-                "currency not specified and no default specified on organisation",
+                "currency not specified and no default specified on \
+                    organisation",
                 apiField="currency.code",
             ))
 
@@ -389,7 +383,8 @@ def organisation_total_budget_line(
             RequiredFieldError(
                 "total-budget/budget-line",
                 "currency",
-                "currency not specified and no default specified on organisation",
+                "currency not specified and no default specified on \
+                    organisation",
                 apiField="currency.code",
             ))
 
@@ -432,7 +427,8 @@ def organisation_recipient_org_budget(
 
     status = get_or_none(models.BudgetStatus, code=status_code)
     currency = get_or_none(models.Currency, code=currency_code)
-    recipient_org = get_or_none(organisation_models.Organisation, pk=recipient_org_identifier)
+    recipient_org = get_or_none(
+        organisation_models.Organisation, pk=recipient_org_identifier)
 
     if not status_code:
         errors.append(
@@ -463,7 +459,9 @@ def organisation_recipient_org_budget(
     #         FieldValidationError(
     #             "recipient-org-budget",
     #             "recipient_org",
-    #             "codelist entry not found for {}".format(recipient_org_identifier),
+    #             "codelist entry not found for {}".format(
+    #                 recipient_org_identifier
+    #             ),
     #             apiField="recipient_org.code",
     #             ))
 
@@ -543,7 +541,8 @@ def organisation_recipient_org_budget(
             RequiredFieldError(
                 "recipient-org-budget",
                 "currency",
-                "currency not specified and no default specified on organisation",
+                "currency not specified and no default specified on \
+                    organisation",
                 apiField="currency.code",
             ))
 
@@ -614,7 +613,8 @@ def organisation_recipient_org_budget_line(
             RequiredFieldError(
                 "total-budget/budget-line",
                 "currency",
-                "currency not specified and no default specified on organisation",
+                "currency not specified and no default specified on \
+                    organisation",
                 apiField="currency.code",
             ))
 
@@ -767,7 +767,8 @@ def organisation_recipient_country_budget(
             RequiredFieldError(
                 "recipient-org-budget",
                 "currency",
-                "currency not specified and no default specified on organisation",
+                "currency not specified and no default specified on \
+                    organisation",
                 apiField="currency.code",
             ))
 
@@ -832,12 +833,14 @@ def organisation_recipient_country_budget_line(
                 ))
             value_date = None
 
-    if not currency and not recipient_country_budget.organisation.default_currency:
+    if (not currency
+            and not recipient_country_budget.organisation.default_currency):
         errors.append(
             RequiredFieldError(
                 "total-budget/budget-line",
                 "currency",
-                "currency not specified and no default specified on organisation",
+                "currency not specified and no default specified on \
+                    organisation",
                 apiField="currency.code",
             ))
 
@@ -990,7 +993,8 @@ def organisation_recipient_region_budget(
             RequiredFieldError(
                 "recipient-org-budget",
                 "currency",
-                "currency not specified and no default specified on organisation",
+                "currency not specified and no default specified on \
+                    organisation",
                 apiField="currency.code",
             ))
 
@@ -1055,12 +1059,14 @@ def organisation_recipient_region_budget_line(
                 ))
             value_date = None
 
-    if not currency and not recipient_region_budget.organisation.default_currency:
+    if not currency and not recipient_region_budget\
+            .organisation.default_currency:
         errors.append(
             RequiredFieldError(
                 "total-budget/budget-line",
                 "currency",
-                "currency not specified and no default specified on organisation",
+                "currency not specified and no default specified on \
+                    organisation",
                 apiField="currency.code",
             ))
 
@@ -1177,7 +1183,8 @@ def organisation_total_expenditure(
             RequiredFieldError(
                 "recipient-org-budget",
                 "currency",
-                "currency not specified and no default specified on organisation",
+                "currency not specified and no default specified on \
+                    organisation",
                 apiField="currency.code",
             ))
 
@@ -1245,7 +1252,8 @@ def organisation_total_expenditure_line(
             RequiredFieldError(
                 "total-budget/budget-line",
                 "currency",
-                "currency not specified and no default specified on organisation",
+                "currency not specified and no default specified on \
+                    organisation",
                 apiField="currency.code",
             ))
 
@@ -1425,7 +1433,8 @@ def document_link_recipient_country(
     warnings = []
     errors = []
 
-    recipient_country = get_or_none(models.Country, code=recipient_country_code)
+    recipient_country = get_or_none(
+        models.Country, code=recipient_country_code)
 
     if not recipient_country_code:
         errors.append(
@@ -1439,7 +1448,8 @@ def document_link_recipient_country(
             FieldValidationError(
                 "organisation/document-link/recipient_country",
                 "code",
-                "recipient_country not found for code {}".format(recipient_country_code),
+                "recipient_country not found for code {}".format(
+                    recipient_country_code),
                 apiField="recipient_country.code",
             ))
 

@@ -1,24 +1,19 @@
-import datetime
-import md5
-
-
 from django.contrib.auth.models import User
-from iati.permissions.models import OrganisationAdminGroup, OrganisationGroup
-from iati.permissions.models import OrganisationUser
-
+from factory import RelatedFactory, SubFactory
 from factory.django import DjangoModelFactory
-import factory
-from factory import SubFactory, RelatedFactory
 
+from iati.permissions.models import (
+    OrganisationAdminGroup, OrganisationGroup, OrganisationUser
+)
 from iati_synchroniser.factory import synchroniser_factory
 
 
 class OrganisationUserFactory(DjangoModelFactory):
-    user = SubFactory('iati.permissions.factories.UserFactory', organisationuser=None)
+    user = SubFactory('iati.permissions.factories.UserFactory',
+                      organisationuser=None)
 
     class Meta:
         model = OrganisationUser  # Equivalent to ``model = myapp.models.User``
-        # django_get_or_create = ('user.username',)
 
 
 class UserFactory(DjangoModelFactory):

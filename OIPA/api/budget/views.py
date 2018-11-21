@@ -1,29 +1,20 @@
+from django.db.models import Count, F, Sum
 from django_filters.rest_framework import DjangoFilterBackend
 
-from api.budget import filters
-from api.generics.filters import SearchFilter
-
-from api.aggregation.views import AggregationView, Aggregation, GroupBy
-
-from django.db.models import Count, Sum, F
-
-from geodata.models import Country
-from geodata.models import Region
-from iati.models import Budget
-from iati.models import Sector
-from iati.models import ActivityStatus
-from iati.models import CollaborationType
-from iati.models import DocumentCategory
-from iati.models import ActivityParticipatingOrganisation
-from iati.models import OrganisationType
-from iati.models import Organisation
-
 from api.activity.serializers import CodelistSerializer
+from api.aggregation.views import Aggregation, AggregationView, GroupBy
+from api.budget import filters
 from api.country.serializers import CountrySerializer
+from api.generics.filters import SearchFilter
+from api.organisation.serializers import OrganisationSerializer
 from api.region.serializers import RegionSerializer
 from api.sector.serializers import SectorSerializer
-from api.organisation.serializers import OrganisationSerializer
-
+from geodata.models import Country, Region
+from iati.models import (
+    ActivityParticipatingOrganisation, ActivityStatus, Budget,
+    CollaborationType, DocumentCategory, Organisation, OrganisationType,
+    Sector
+)
 
 # These are the accepted currencies
 currencies = [
@@ -38,7 +29,7 @@ currencies = [
 
 def annotate_currency(query_params, groupings):
     """
-    Choose the right currency field, 
+    Choose the right currency field,
     and aggregate differently based on group_by
     """
     currency = query_params.get('convert_to')
@@ -187,7 +178,7 @@ class BudgetAggregations(AggregationView):
             queryset=Organisation.objects.all(),
             serializer=OrganisationSerializer,
             serializer_main_field='id',
-            name_search_field=
+            name_search_field=  # NOQA: E251
             "activity__reporting_organisations__organisation__primary_name",
             renamed_name_search_field="reporting_organisation_name"
         ),
@@ -196,8 +187,7 @@ class BudgetAggregations(AggregationView):
             fields="activity__participating_organisations__primary_name",
             renamed_fields="participating_organisation",
             queryset=ActivityParticipatingOrganisation.objects.all(),
-            # serializer=OrganisationSerializer,
-            name_search_field=
+            name_search_field=  # NOQA: E251
             "activity__participating_organisations__primary_name",
             renamed_name_search_field="participating_organisation_name"
         ),
@@ -207,7 +197,7 @@ class BudgetAggregations(AggregationView):
             renamed_fields="participating_organisation_type",
             queryset=OrganisationType.objects.all(),
             serializer=CodelistSerializer,
-            name_search_field=
+            name_search_field=  # NOQA: E251
             "activity__participating_organisations__type__name",
             renamed_name_search_field="participating_organisations_type_name"
         ),

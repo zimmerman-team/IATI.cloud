@@ -1,8 +1,8 @@
-from rest_framework.generics import ListAPIView
-from rest_framework.generics import RetrieveAPIView
-from geodata.models import City
-from api.city import serializers
+from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework_extensions.cache.mixins import CacheResponseMixin
+
+from api.city import serializers
+from geodata.models import City
 
 
 class CityList(CacheResponseMixin, ListAPIView):

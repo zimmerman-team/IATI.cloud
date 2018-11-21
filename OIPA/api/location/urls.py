@@ -1,7 +1,8 @@
 from django.conf.urls import url
+
 import api.location.views
 
-
+app_name = 'api'
 urlpatterns = [
     url(r'^$',
         api.location.views.LocationList.as_view(),

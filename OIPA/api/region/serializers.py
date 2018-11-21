@@ -1,8 +1,9 @@
 from rest_framework import serializers
+
 import geodata
 import iati.models
-from api.generics.serializers import DynamicFieldsModelSerializer
 from api.fields import GeometryField
+from api.generics.serializers import DynamicFieldsModelSerializer
 
 
 class RegionVocabularySerializer(serializers.ModelSerializer):
@@ -14,7 +15,8 @@ class RegionVocabularySerializer(serializers.ModelSerializer):
 
 
 class BasicRegionSerializer(DynamicFieldsModelSerializer):
-    url = serializers.HyperlinkedIdentityField(view_name='regions:region-detail')
+    url = serializers.HyperlinkedIdentityField(
+        view_name='regions:region-detail')
     code = serializers.CharField()
     region_vocabulary = RegionVocabularySerializer()
 
@@ -29,7 +31,8 @@ class BasicRegionSerializer(DynamicFieldsModelSerializer):
 
 
 class RegionSerializer(DynamicFieldsModelSerializer):
-    url = serializers.HyperlinkedIdentityField(view_name='regions:region-detail')
+    url = serializers.HyperlinkedIdentityField(
+        view_name='regions:region-detail')
     child_regions = BasicRegionSerializer(
         many=True, source='region_set', fields=('url', 'code', 'name'))
     parental_region = BasicRegionSerializer(fields=('url', 'code', 'name'))

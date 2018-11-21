@@ -1,9 +1,9 @@
-
 from django.core.management.base import BaseCommand
-from django.conf import settings
 
+from iati.activity_search_indexes import (
+    reindex_activity, reindex_activity_by_source, reindex_all_activities
+)
 from iati.models import Activity
-from iati.activity_search_indexes import reindex_all_activities, reindex_activity, reindex_activity_by_source
 
 
 class Command(BaseCommand):
@@ -22,11 +22,13 @@ class Command(BaseCommand):
                             action='store',
                             dest='source',
                             default=None,
-                            help='Reindex only activities with this dataset_id')
+                            help='Reindex only activities with this dataset_id'
+                            )
 
     def handle(self, *args, **options):
         if options['activity']:
-            activity = Activity.objects.get(iati_identifier=options['activity'])
+            activity = Activity.objects.get(
+                iati_identifier=options['activity'])
             reindex_activity(activity)
         elif options['source']:
             reindex_activity_by_source(options['source'])

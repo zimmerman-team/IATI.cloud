@@ -1,13 +1,12 @@
-from decimal import Decimal
-from unittest import skip
-
 from django.test import TestCase
 
-from iati_organisation.parser.organisation_2_01 import Parse as Org_Parser_201
-from iati_organisation.parser import post_save
-from iati.factory.iati_factory import ActivityFactory, OrganisationFactory, ReportingOrganisationFactory
-from iati_codelists.factory.codelist_factory import VersionFactory
+from iati.factory.iati_factory import (
+    ActivityFactory, OrganisationFactory, ReportingOrganisationFactory
+)
 from iati.models import ActivityReportingOrganisation
+from iati_codelists.factory.codelist_factory import VersionFactory
+from iati_organisation.parser import post_save
+from iati_organisation.parser.organisation_2_01 import Parse as Org_Parser_201
 
 
 class PostSaveOrganisationTestCase(TestCase):
@@ -24,22 +23,25 @@ class PostSaveOrganisationTestCase(TestCase):
 
     def test_set_activity_reporting_organisation(self):
         """
-        test update ActivityParticipatingOrganisation.organisation references to this organisation
+        test update ActivityParticipatingOrganisation.organisation references
+        to this organisation
         """
 
-        # create ActivityReportingOrganisation with ref this org, organisation=None
+        # create ActivityReportingOrganisation with ref this org,
+        # organisation=None
 
         activity = ActivityFactory.create(
             iati_identifier='IATI-0001',
             iati_standard_version=self.version)
 
-        activity_reporting_organisation = ReportingOrganisationFactory.create(
+        ReportingOrganisationFactory.create(
             activity=activity,
             ref="org1",
             organisation=None
         )
 
-        # check if references are set after calling set_activity_reporting_organisation
+        # check if references are set after calling
+        # set_activity_reporting_organisation
         post_save.set_activity_reporting_organisation(self.organisation)
 
         aro = ActivityReportingOrganisation.objects.all()[0]

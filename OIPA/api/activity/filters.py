@@ -1,28 +1,27 @@
-from django.db.models.fields import FieldDoesNotExist
-from django.db.models.fields.related import ForeignObjectRel
-from django.db.models.fields.related import OneToOneRel
-
-from django_filters import FilterSet
-from django_filters import NumberFilter
-from django_filters import DateFilter
-from django_filters import DateTimeFilter
-from django_filters import BooleanFilter
-from django_filters import TypedChoiceFilter
-from django_filters import CharFilter
-
 from distutils.util import strtobool
 
-from api.generics.filters import CommaSeparatedCharFilter
-from api.generics.filters import CommaSeparatedStickyCharFilter
-from api.generics.filters import TogetherFilterSet
-from api.generics.filters import ToManyFilter
-from api.generics.filters import ToManyNotInFilter
-
+from django.db.models import Q
+from django.db.models.fields import FieldDoesNotExist
+from django.db.models.fields.related import ForeignObjectRel, OneToOneRel
+from django_filters import (
+    BooleanFilter, CharFilter, DateFilter, DateTimeFilter, FilterSet,
+    NumberFilter, TypedChoiceFilter
+)
 from rest_framework import filters
-from django.db.models import Q, F
 
-from iati.models import *
-from iati.transaction.models import *
+from api.generics.filters import (
+    CommaSeparatedCharFilter, CommaSeparatedStickyCharFilter,
+    StartsWithInCommaSeparatedCharFilter, TogetherFilterSet, ToManyFilter,
+    ToManyNotInFilter
+)
+from iati.models import (
+    Activity, ActivityParticipatingOrganisation, ActivityPolicyMarker,
+    ActivityRecipientCountry, ActivityRecipientRegion,
+    ActivityReportingOrganisation, ActivitySector, Budget, DocumentLink,
+    HumanitarianScope, OtherIdentifier, RelatedActivity, Result,
+    ResultIndicatorPeriod, ResultIndicatorTitle
+)
+from iati.transaction.models import Transaction
 from iati_synchroniser.models import Dataset, Publisher
 
 
@@ -173,7 +172,7 @@ class ActivityFilter(TogetherFilterSet):
     related_activity_transaction_receiver_organisation_name = ToManyFilter(
         qs=RelatedActivity,
         lookup_expr='in',
-        name='ref_activity__transaction__receiver_organisation__narratives__content',
+        name='ref_activity__transaction__receiver_organisation__narratives__content',  # NOQA: E501
         fk='current_activity',
     )
 
@@ -261,6 +260,11 @@ class ActivityFilter(TogetherFilterSet):
         fk='activity',
     )
 
+    sector_startswith_in = StartsWithInCommaSeparatedCharFilter(
+        lookup_expr='startswith',
+        name='sector__code',
+    )
+
     policy_marker = ToManyFilter(
         qs=ActivityPolicyMarker,
         lookup_expr='in',
@@ -328,6 +332,13 @@ class ActivityFilter(TogetherFilterSet):
         lookup_expr='year',
         name='period_end',
         fk='result_indicator__result__activity')
+
+    other_identifier = ToManyFilter(
+        qs=OtherIdentifier,
+        lookup_expr='in',
+        name='identifier',
+        fk='activity',
+    )
 
     #
     # Publisher meta filters
@@ -437,7 +448,7 @@ class ActivityFilter(TogetherFilterSet):
     transaction_provider_activity_reporting_org = ToManyFilter(
         qs=Transaction,
         lookup_expr='in',
-        name='provider_organisation__provider_activity__reporting_organisations__ref',
+        name='provider_organisation__provider_activity__reporting_organisations__ref',  # NOQA: E501
         fk='activity',
     )
 
@@ -632,8 +643,10 @@ class RelatedOrderingFilter(filters.OrderingFilter):
                 return self.is_valid_field(field.model, components[1])
 
             # foreign key
-            if field.rel and len(components) == 2:
-                return self.is_valid_field(field.rel.to, components[1])
+            if field.remote_field and len(components) == 2:
+                return self.is_valid_field(
+                    field.remote_field.model, components[1]
+                )
             return True
         except FieldDoesNotExist:
             return False
@@ -644,11 +657,11 @@ class RelatedOrderingFilter(filters.OrderingFilter):
             'title': 'title__narratives__content',
             'recipient_country': 'recipient_country__name',
             'activity_budget_value': 'activity_aggregation__budget_value',
-            'activity_incoming_funds_value': 'activity_aggregation__incoming_funds_value',
-            'activity_commitment_value': 'activity_aggregation__commitment_value',
-            'activity_disbursement_value': 'activity_aggregation__disbursement_value',
-            'activity_expenditure_value': 'activity_aggregation__expenditure_value',
-            'activity_plus_child_budget_value': 'activity_plus_child_aggregation__budget_value',
+            'activity_incoming_funds_value': 'activity_aggregation__incoming_funds_value',  # NOQA: E501
+            'activity_commitment_value': 'activity_aggregation__commitment_value',  # NOQA: E501
+            'activity_disbursement_value': 'activity_aggregation__disbursement_value',  # NOQA: E501
+            'activity_expenditure_value': 'activity_aggregation__expenditure_value',  # NOQA: E501
+            'activity_plus_child_budget_value': 'activity_plus_child_aggregation__budget_value',  # NOQA: E501
             'planned_start_date': 'planned_start',
             'actual_start_date': 'actual_start',
             'planned_end_date': 'planned_end',

@@ -1,11 +1,13 @@
+from django.db.models import F, Q
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
-from django.db.models import Q, F
-from api.aggregation.aggregation import aggregate
-from rest_framework_extensions.key_constructor.constructors \
-    import DefaultKeyConstructor
-from rest_framework_extensions.key_constructor.bits import QueryParamsKeyBit
 from rest_framework_extensions.cache.decorators import cache_response
+from rest_framework_extensions.key_constructor.bits import QueryParamsKeyBit
+from rest_framework_extensions.key_constructor.constructors import (
+    DefaultKeyConstructor
+)
+
+from api.aggregation.aggregation import aggregate
 
 
 class QueryParamsKeyConstructor(DefaultKeyConstructor):
@@ -42,28 +44,33 @@ class AggregationView(GenericAPIView):
 
         params = request.query_params
 
-        aggregations = filter(None, params.get('aggregations', "").split(','))
-        groupings = filter(None, params.get('group_by', "").split(','))
-        orderings = filter(None, params.get('order_by', "").split(','))
+        aggregations = params.get('aggregations', None)
+        groupings = params.get('group_by', None)
+        orderings = params.get('order_by', None)
 
-        if not len(groupings):
+        if not groupings:
             return Response({
                 'error_message':
                     "Invalid value for mandatory field 'group_by'"})
-        elif not len(aggregations):
+        elif not aggregations:
             return Response({
                 'error_message':
                     "Invalid value for mandatory field 'aggregations'"})
 
-        selected_groupings = filter(
+        aggregations = aggregations.split(',')
+        groupings = groupings.split(',')
+        if orderings:
+            orderings = orderings.split(',')
+
+        selected_groupings = list(filter(
             lambda x: x.query_param in groupings,
             self.allowed_groupings
-        )
+        ))
 
-        selected_aggregations = filter(
+        selected_aggregations = list(filter(
             lambda x: x.query_param in aggregations,
             self.allowed_aggregations
-        )
+        ))
 
         selected_orderings = orderings
 
@@ -211,7 +218,7 @@ class GroupBy():
         ])
         ]), l)
 
-        return result
+        return list(result)
 
 
 class Aggregation():
@@ -256,7 +263,7 @@ class Aggregation():
 # TODO: seems unnescessary - 2016-04-11
 class Order:
     def __init__(self, query_param=None, fields=None):
-        if not (query_param or field):
+        if not (query_param):
             raise ValueError("not all required params were passed")
 
         self.query_param = query_param

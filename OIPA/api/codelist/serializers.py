@@ -1,12 +1,13 @@
+from django.urls import reverse
 from rest_framework import serializers
-from iati.models import Narrative, DocumentCategory
+
+from api.generics.serializers import (
+    DynamicFieldsModelSerializer, ModelSerializerNoValidation,
+    SerializerNoValidation
+)
+from iati.models import DocumentCategory, Narrative
 from iati_organisation.models import OrganisationNarrative
 from iati_synchroniser.models import Codelist
-from api.generics.serializers import DynamicFieldsSerializer, DynamicFieldsModelSerializer
-from django.core.urlresolvers import reverse
-
-from api.generics.serializers import ModelSerializerNoValidation
-from api.generics.serializers import SerializerNoValidation
 
 
 class VocabularySerializer(SerializerNoValidation):

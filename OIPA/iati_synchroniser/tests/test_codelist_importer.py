@@ -1,14 +1,14 @@
-from django.test import TestCase
 import unittest
+
+from django.test import TestCase
+from lxml.etree import Element
 from mock import MagicMock
 
-from lxml.etree import Element
-
-from iati.models import AidType
-from iati.models import AidTypeCategory
-from iati.models import Country
-from iati_synchroniser.codelist_importer import CodeListImporter
+from geodata.models import Country
 from iati.factory import iati_factory
+from iati_codelists.factory.codelist_factory import AidTypeCategoryFactory
+from iati_codelists.models import AidType, AidTypeCategory
+from iati_synchroniser.codelist_importer import CodeListImporter
 
 
 class CodelistImporterTestCase(TestCase):
@@ -16,6 +16,16 @@ class CodelistImporterTestCase(TestCase):
     """
         Test code list importer functionality
     """
+
+    def setUp(self):
+        # XXX: previously, django's 'flush' management command was called to
+        # flush the database, but it breaks tests ('no table blah blah exists')
+        # and etc., so let's just manually remove objects which were created
+        # during previous fixtures.
+        # TODO: get rid of fixtures and use factory-boy everywhere.
+        Country.objects.all().delete()
+        AidType.objects.all().delete()
+        AidTypeCategory.objects.all().delete()
 
     def test_add_aid_type_category_item(self):
         """
@@ -27,7 +37,7 @@ class CodelistImporterTestCase(TestCase):
         description_text = 'For contributions under this category...'
 
         # use factory to create AidTypeCategory, check if set on model
-        aidTypeCategory = iati_factory.AidTypeCategoryFactory.create(
+        aidTypeCategory = AidTypeCategoryFactory.create(
             code=code_text, name=name_text, description=description_text)
 
         element = Element('AidType-category')
@@ -57,7 +67,7 @@ class CodelistImporterTestCase(TestCase):
         """
 
         # category should already be in the db
-        aidTypeCategory = iati_factory.AidTypeCategoryFactory.create(code='A')
+        aidTypeCategory = AidTypeCategoryFactory.create(code='A')
 
         element = Element('aidType')
         code = Element('code')
@@ -118,7 +128,7 @@ class CodelistImporterTestCase(TestCase):
 
         # case; should not be added
         with self.assertRaises(AttributeError):
-            non_existing_field = aid_type_item.non_existing_field_for_this_model
+            aid_type_item.non_existing_field_for_this_model
 
         # and the function should still return the item
         self.assertEqual(aid_type_item, aid_type_item2)
@@ -139,7 +149,19 @@ class CodelistImporterTestCase(TestCase):
 
         importer.synchronise_with_codelists()
 
-        self.assertEqual(11, importer.get_codelist_data.call_count)
-        self.assertEqual(len(importer.iati_versions), importer.loop_through_codelists.call_count)
-        importer.get_codelist_data.assert_called_with(name='DocumentCategory-category')
-        importer.loop_through_codelists.assert_called_with('2.02')
+        self.assertEqual(
+            len(importer.CODELIST_ITEMS_TO_PARSE),
+            importer.get_codelist_data.call_count
+        )
+        self.assertEqual(len(importer.iati_versions),
+                         importer.loop_through_codelists.call_count)
+
+        last_synced_codelist = importer.CODELIST_ITEMS_TO_PARSE[
+            len(importer.CODELIST_ITEMS_TO_PARSE) - 1
+        ]
+
+        importer.get_codelist_data.assert_called_with(
+            name=last_synced_codelist
+        )
+
+        importer.loop_through_codelists.assert_called_with('2.03')

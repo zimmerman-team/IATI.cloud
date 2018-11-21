@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:ir="http://iatiregistry.org/ns/record#"
+            targetNamespace="http://iatiregistry.org/ns/record#"
+            version="2.03">
+
+  <xsd:annotation>
+    <xsd:documentation xml:lang="en">
+      International Aid Transparency Initiative: Registry Record Extension Schema
+
+      Release 2.03, Unreleased
+
+      This W3C XML schema is an extension to the IATI standards to add
+      information specific to the IATI registry. Like all IATI
+      extensions, this schema is in a separate namespace to
+      distinguish it from IATI standards-based markup.
+
+      The root ir:registry-record element (assuming "ir" is the prefix
+      bound to the "http://iatiregistry.org/ns/record#" namespace) may
+      be inserted anywhere in an IATI document, but will normally
+      appear as a child of iati-activities, iati-activity, or
+      iati-organization.
+    </xsd:documentation>
+  </xsd:annotation>
+
+  <xsd:import namespace="http://www.w3.org/XML/1998/namespace"
+              schemaLocation="xml.xsd"/>
+
+  <xsd:element name="registry-record">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        Root of an IATI registry record.  Note that this element and
+        its children not in the default namespace, to distinguish them
+        from the core IATI standard markup.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:any namespace="##other" processContents="lax"/>
+      </xsd:choice>
+      <xsd:attribute ref="xml:lang" use="optional">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            The language of any human-readable text in this element
+            (such as the value of the @title attribute).
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute name="file-id" type="xsd:string" use="required">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            A unique identifier for this file of IATI information.
+            Note that this identifier applies to the file, not to the
+            individual activities or organizations described in it.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute name="source-url" type="xsd:anyURI" use="required">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            The source URL for this file: the most up-to-date version
+            of the file will always be available for download at that
+            location.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute name="publisher-id" type="xsd:string" use="required">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            The IATI identifier for the publishing organization
+            (required, since any organization using the IATI registry
+            will have an IATI identifier).  This information is
+            identical to iati-activity/reporting-org/@ref.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute name="publisher-role" type="xsd:string" use="required">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            The role of the publisher in the activity (if any).  This
+            information is identical to the value of
+            iati-activity/participating-org/@role for the reporting
+            organization.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute name="contact-email" type="xsd:string" use="optional">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            An email address that the registry can use for queries
+            about the information.  This information is identical to
+            the value of iati-activity/contact-info/email
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute name="donor-id" type="xsd:string" use="optional">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            The identifier for the donor whose information is reported
+            in this file.  If information for multiple donors is
+            included (as is often the case with non-governmental aid
+            projects), then this should contain the identifier for the
+            donor making the largest known contribution.  This
+            information is identical to the value of
+            participating-org/@ref with @role="donor"
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute name="donor-type" type="xsd:string" use="optional">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            The type code for the donor listed in the @donor-id attribute.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute name="donor-country" type="xsd:string" use="optional">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            The ISO 3166-2 alpha2 code for the donor listed in the
+            @donor-id attribute.  This attribute may not be
+            appropriate for international agencies and NGOs, but
+            should always be specified for national donors.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute name="title" type="xsd:string" use="required">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            The title of the document.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute name="activity-period" type="xsd:string" use="optional">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            The period of time covered by the information in this
+            file, specified using ISO 8601 format.  For example, the
+            period between the year 2010 and the year 2011 would be
+            specified as "2010/2011".  The period between April 1,
+            2010 and March 31, 2011 would be specified as
+            "2010-04-01/2011-03-31".
+
+            This information is identical to the combined values of
+            the iati-activity/activity-date @period-start and
+            @period-end attributes.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute name="last-updated-datetime" type="xsd:dateTime" use="required">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            The most recent date and time that any of the data for
+            this organisation or activity changed.  This date is
+            identical to the value of the
+            iati-activity/@last-updated-datetime and
+            iati-organisation/@last-updated-datetime attributes.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute name="generated-datetime" type="xsd:dateTime" use="required">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            The date and time that this file was generated, in ISO
+            8601 format.  This value is identical to the value of the
+            iati-activities/@generated-datetime attribute.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute name="verification-status" type="xsd:string" use="required">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            A code specifying whether the information in this record has been verified.
+
+            See http://iatistandard.org/codelists/verification_status
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute name="format" type="xsd:string" use="required">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            A MIME type describing the content of the file,
+            e.g. "application/x-iati+xml" for an IATI XML file.
+
+            See http://iatistandard.org/codelists/file_format for a partial list
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute name="license" type="xsd:string" use="required">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            A text name of a license (e.g. "Creative Commons").  May
+            be replaced with a code list in the future.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:anyAttribute processContents="lax" namespace="##other"/>
+    </xsd:complexType>
+  </xsd:element>
+
+</xsd:schema>

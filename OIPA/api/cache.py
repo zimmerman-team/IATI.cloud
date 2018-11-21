@@ -1,6 +1,7 @@
-from rest_framework_extensions.key_constructor.constructors \
-    import DefaultKeyConstructor
 from rest_framework_extensions.key_constructor.bits import QueryParamsKeyBit
+from rest_framework_extensions.key_constructor.constructors import (
+    DefaultKeyConstructor
+)
 
 
 class QueryParamsKeyConstructor(DefaultKeyConstructor):
@@ -14,4 +15,3 @@ class QueryParamsKeyConstructor(DefaultKeyConstructor):
         list_cache_key_func = QueryParamsKeyConstructor()
     """
     all_query_params = QueryParamsKeyBit()
-

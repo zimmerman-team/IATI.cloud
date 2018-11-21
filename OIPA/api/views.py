@@ -1,9 +1,7 @@
+from django.db import OperationalError, connections
 from rest_framework.decorators import api_view
-from rest_framework.reverse import reverse
 from rest_framework.response import Response
-
-from django.db import connections
-from django.db import OperationalError
+from rest_framework.reverse import reverse
 
 
 @api_view(('GET',))
@@ -11,7 +9,8 @@ def welcome(request, format=None):
     """
     ## REST API
 
-    The REST API provides programmatic access to read (and soon also write) IATI data.
+    The REST API provides programmatic access to read (and soon also write)
+    IATI data.
     The REST API responses are available in JSON.
 
     ## Available endpoints
@@ -44,7 +43,7 @@ def welcome(request, format=None):
 
     * Chains: [`/api/chains`](/api/chains)
 
-    """
+    """  # NOQA: E501
     return Response({
         'endpoints': {
             'cities': reverse(
@@ -116,7 +115,7 @@ def health_check(request, format=None):
 
     conn = connections['default']
     try:
-        c = conn.cursor()
+        conn.cursor()
     except OperationalError:
         okay = False
 

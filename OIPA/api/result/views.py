@@ -1,14 +1,15 @@
-from api.result.filters import ResultFilter
-from api.aggregation.views import AggregationView, Aggregation, GroupBy
-from django.db.models import Sum, Func, F, Count
-from iati.models import Result
+from django.db.models import Count, F, Func, Sum
 from django_filters.rest_framework import DjangoFilterBackend
+
+from api.aggregation.views import Aggregation, AggregationView, GroupBy
 from api.generics.filters import SearchFilter
+from api.result.filters import ResultFilter
+from iati.models import Result
 
 
 class ResultAggregations(AggregationView):
     """
-    Returns aggregations based on the item grouped by, 
+    Returns aggregations based on the item grouped by,
     and the selected aggregation.
 
     ## Group by options
@@ -44,18 +45,18 @@ class ResultAggregations(AggregationView):
 
     allowed_aggregations = (
         Aggregation(
-            query_param='target',
-            field='target',
+            query_param='targets',
+            field='targets',
             annotate=Sum(Func(
-                F('resultindicator__resultindicatorperiod__target'),
+                F('resultindicator__resultindicatorperiod__targets__value'),
                 function='CAST',
                 template='%(function)s(%(expressions)s as double precision)')),
         ),
         Aggregation(
-            query_param='actual',
-            field='actual',
+            query_param='actuals',
+            field='actuals',
             annotate=Sum(Func(
-                F('resultindicator__resultindicatorperiod__actual'),
+                F('resultindicator__resultindicatorperiod__actuals__value'),
                 function='CAST',
                 template='%(function)s(%(expressions)s as double precision)')),
         ),

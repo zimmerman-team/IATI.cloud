@@ -4,27 +4,18 @@
 
 import copy
 import datetime
+
+import pytest
 from django.core import management
-
-# Runs each test in a transaction and flushes database
 from django.test import TestCase as DjangoTestCase
-from django.test import TestCase
-
-from lxml import etree
 from lxml.builder import E
 
-from iati.parser.parse_manager import ParseManager
-
-from iati_synchroniser.models import Dataset, Publisher
-import iati.models as iati_models
 import iati_codelists.models as codelist_models
-import iati_organisation.models as org_models
 from geodata.models import Country
 from iati.factory import iati_factory
-
-from iati_synchroniser.factory import synchroniser_factory
-
+from iati.parser.parse_manager import ParseManager
 from iati_organisation.parser.organisation_2_02 import Parse as OrgParse_202
+from iati_synchroniser.factory import synchroniser_factory
 
 
 def build_xml(version, organisation_identifier):
@@ -48,6 +39,7 @@ def copy_xml_tree(tree):
     return copy.deepcopy(tree)
 
 
+@pytest.fixture(scope='session')
 def setUpModule():
     fixtures = ['test_vocabulary', 'test_codelists.json', 'test_geodata.json']
 
@@ -56,7 +48,7 @@ def setUpModule():
 
 
 def tearDownModule():
-    management.call_command('flush', interactive=False, verbosity=0)
+    pass
 
 
 class ParserSetupTestCase(DjangoTestCase):
@@ -68,8 +60,10 @@ class ParserSetupTestCase(DjangoTestCase):
         self.alt_iati_identifier = "NL-KVK-51018586-0667"
 
         self.iati_202 = build_xml("2.02", self.iati_identifier)
-        dummy_source = synchroniser_factory.DatasetFactory.create(name="dataset-6", filetype=2)
-        self.parser_202 = ParseManager(dummy_source, self.iati_202).get_parser()
+        dummy_source = synchroniser_factory.DatasetFactory.create(
+            name="dataset-6", filetype=2)
+        self.parser_202 = ParseManager(
+            dummy_source, self.iati_202).get_parser()
 
         assert(isinstance(self.parser_202, OrgParse_202))
 
@@ -101,10 +95,14 @@ class OrganisationTestCase(ParserSetupTestCase):
         }
 
         iati_organisation = E("iati-organisation", **self.attrs)
-        iati_organisation.append(E("organisation-identifier", self.iati_identifier))
+        iati_organisation.append(
+            E("organisation-identifier", self.iati_identifier))
 
         self.iati_202.append(iati_organisation)
-        self.iati_202.attrib['{http://www.w3.org/XML/1998/namespace}lang'] = "en"  # ISO 639-1:2002
+        # ISO 639-1:2002
+        self.iati_202.attrib[
+            '{http://www.w3.org/XML/1998/namespace}lang'
+        ] = "en"
 
         self.organisation = iati_factory.OrganisationFactory.create()
         self.parser_202.default_lang = self.organisation.default_lang
@@ -139,14 +137,12 @@ class OrganisationTestCase(ParserSetupTestCase):
 
         element = E('name', attribs)
         self.parser_202.iati_organisations__iati_organisation__name(element)
-        org = self.parser_202.get_model('Organisation')
         """:type : org_models.Organisation """
-        attribs = {
-
-        }
+        attribs = {}
         element = E('narrative', 'test narrative name', attribs)
 
-        self.parser_202.iati_organisations__iati_organisation__name__narrative(element)
+        self.parser_202.iati_organisations__iati_organisation__name__narrative(
+            element)
         model = self.parser_202.get_model('OrganisationNameNarrative')
         self.assertEqual('test narrative name', model.content)
 
@@ -160,14 +156,15 @@ class OrganisationTestCase(ParserSetupTestCase):
 
         element = E('reporting-org', attribs)
 
-        self.parser_202.iati_organisations__iati_organisation__reporting_org(element)
+        self.parser_202.iati_organisations__iati_organisation__reporting_org(
+            element)
         model = self.parser_202.get_model('OrganisationReportingOrganisation')
 
         self.assertEqual(model.reporting_org_identifier, 'AA-AAA-123456789')
         self.assertEqual(model.org_type_id, '40')
         self.assertEqual(model.secondary_reporter, False)
 
-    def test_iati_organisations__iati_organisation__reporting_org__narrative(self):
+    def test_iati_organisations__iati_organisation__reporting_org__narrative(self):  # NOQA: E501
         self.test_iati_organisations__iati_organisation__reporting_org()
 
         attribs = {
@@ -175,53 +172,63 @@ class OrganisationTestCase(ParserSetupTestCase):
         }
         element = E('narrative', 'test narrative text', attribs)
 
-        self.parser_202.iati_organisations__iati_organisation__reporting_org__narrative(element)
-        model = self.parser_202.get_model('OrganisationReportingOrganisationNarrative')
+        self.parser_202.iati_organisations__iati_organisation__reporting_org__narrative(  # NOQA: E501
+            element)
+        model = self.parser_202.get_model(
+            'OrganisationReportingOrganisationNarrative')
         self.assertEqual('test narrative text', model.content)
 
-    def test_iati_organisations__iati_organisation__total_budget(self):
-        self.test_iati_organisations__iati_organisation()
-        attr = {
-            'status': '1'
-        }
-        element = E('total-budget', attr)
+    # def test_iati_organisations__iati_organisation__total_budget(self):
+        # self.test_iati_organisations__iati_organisation()
+        # attr = {
+        # 'status': '1'
+        # }
+        # element = E('total-budget', attr)
 
-        self.parser_202.iati_organisations__iati_organisation__total_budget(element)
-        model = self.parser_202.get_model('TotalBudget')
-        self.assertEqual(model.status.code, attr['status'])
+        # self.parser_202.iati_organisations__iati_organisation__total_budget(
+        # element)
+        # model = self.parser_202.get_model('TotalBudget')
+        # self.assertEqual(model.status.code, attr['status'])
 
     def test_iati_organisations__iati_organisation__total_budget(self):
         self.test_iati_organisations__iati_organisation()
         attr = {}
         element = E('total-budget', attr)
 
-        self.parser_202.iati_organisations__iati_organisation__total_budget(element)
+        self.parser_202.iati_organisations__iati_organisation__total_budget(
+            element)
         model = self.parser_202.get_model('TotalBudget')
         self.assertEqual(model.status.code, '1')
 
-    def test_iati_organisations__iati_organisation__total_budget__period_start(self):
+    def test_iati_organisations__iati_organisation__total_budget__period_start(
+            self):
         self.test_iati_organisations__iati_organisation__total_budget()
         attribs = {
             'iso-date': '2014-01-01',
 
         }
         element = E('period-start', attribs)
-        self.parser_202.iati_organisations__iati_organisation__total_budget__period_start(element)
+        self.parser_202.iati_organisations__iati_organisation__total_budget__period_start(  # NOQA: E501
+            element)
         model = self.parser_202.get_model('TotalBudget')
         """:type : org_models.TotalBudget """
-        self.assertEqual(model.period_start, self.parser_202.validate_date('2014-01-01'))
+        self.assertEqual(model.period_start,
+                         self.parser_202.validate_date('2014-01-01'))
 
-    def test_iati_organisations__iati_organisation__total_budget__period_end(self):
+    def test_iati_organisations__iati_organisation__total_budget__period_end(
+            self):
         self.test_iati_organisations__iati_organisation__total_budget()
         attribs = {
             'iso-date': '2014-12-31',
 
         }
         element = E('period-end', attribs)
-        self.parser_202.iati_organisations__iati_organisation__total_budget__period_end(element)
+        self.parser_202.iati_organisations__iati_organisation__total_budget__period_end(  # NOQA: E501
+            element)
         model = self.parser_202.get_model('TotalBudget')
         """:type : org_models.TotalBudget """
-        self.assertEqual(model.period_end, self.parser_202.validate_date('2014-12-31'))
+        self.assertEqual(model.period_end,
+                         self.parser_202.validate_date('2014-12-31'))
 
     def test_iati_organisations__iati_organisation__total_budget__value(self):
         """attributes:
@@ -237,7 +244,8 @@ class OrganisationTestCase(ParserSetupTestCase):
 
         }
         element = E('value', '123', attribs)
-        self.parser_202.iati_organisations__iati_organisation__total_budget__value(element)
+        self.parser_202.iati_organisations__iati_organisation__total_budget__value(  # NOQA: E501
+            element)
         model = self.parser_202.get_model('TotalBudget')
         """:type : org_models.TotalBudget """
         self.assertEqual(
@@ -245,9 +253,11 @@ class OrganisationTestCase(ParserSetupTestCase):
                 codelist_models.Currency, code=(
                     element.attrib.get('currency'))))
         self.assertEqual(model.value, '123')
-        self.assertEqual(model.value_date, self.parser_202.validate_date('2014-01-01'))
+        self.assertEqual(model.value_date,
+                         self.parser_202.validate_date('2014-01-01'))
 
-    def test_iati_organisations__iati_organisation__total_budget__budget_line(self):
+    def test_iati_organisations__iati_organisation__total_budget__budget_line(
+            self):
         """attributes:
             'ref':'1234',
 
@@ -261,7 +271,8 @@ class OrganisationTestCase(ParserSetupTestCase):
         }
         element = E('budget-line', attribs)
 
-        self.parser_202.iati_organisations__iati_organisation__total_budget__budget_line(element)
+        self.parser_202.iati_organisations__iati_organisation__total_budget__budget_line(  # NOQA: E501
+            element)
         model = self.parser_202.get_model('TotalBudgetLine')
         """ :type : org_models.BudgetLine """
         self.assertEqual(model.ref, '1234')
@@ -269,27 +280,30 @@ class OrganisationTestCase(ParserSetupTestCase):
 
         }
         element = E('narrative', 'test narrative text', attribs)
-        self.parser_202.iati_organisations__iati_organisation__total_budget__budget_line__narrative(
+        self.parser_202.iati_organisations__iati_organisation__total_budget__budget_line__narrative(  # NOQA: E501
             element)
         model = self.parser_202.get_model('TotalBudgetLineNarrative')
         self.assertEqual('test narrative text', model.content)
 
-    def test_iati_organisations__iati_organisation__total_budget__budget_line__value(self):
+    def test_iati_organisations__iati_organisation__total_budget__budget_line__value(self):  # NOQA: E501
         """attributes:
             'currency':'USD',
         'value-date':'2014-01-01',
 
         tag:value
         """
-        self.test_iati_organisations__iati_organisation__total_budget__budget_line()
+        self\
+            .test_iati_organisations__iati_organisation__total_budget__budget_line()  # NOQA: E501
         attribs = {
             'currency': 'USD',
             'value-date': '2014-01-01',
 
         }
         element = E('value', '1234', attribs)
-        self.parser_202.iati_organisations__iati_organisation__total_budget__budget_line__value(
-            element)
+        self\
+            .parser_202.iati_organisations__iati_organisation__total_budget__budget_line__value(  # NOQA: E501
+                element
+            )
         model = self.parser_202.get_model('TotalBudgetLine')
         """ :type : org_models.BudgetLine """
         self.assertEqual(
@@ -311,11 +325,12 @@ class OrganisationTestCase(ParserSetupTestCase):
             'status': '1'
         }
         element = E('recipient-org-budget', attr)
-        self.parser_202.iati_organisations__iati_organisation__recipient_org_budget(element)
+        self.parser_202.iati_organisations__iati_organisation__recipient_org_budget(  # NOQA: E501
+            element)
         model = self.parser_202.get_model('RecipientOrgBudget')
         self.assertEqual(model.status.code, attr['status'])
 
-    def test_iati_organisations__iati_organisation__recipient_org_budget__recipient_org(self):
+    def test_iati_organisations__iati_organisation__recipient_org_budget__recipient_org(self):  # NOQA: E501
         """
         attributes:
             'ref':'AA-ABC-1234567',
@@ -329,31 +344,33 @@ class OrganisationTestCase(ParserSetupTestCase):
         }
         element = E('recipient-org', attribs)
 
-        self.parser_202.iati_organisations__iati_organisation__recipient_org_budget__recipient_org(
+        self.parser_202.iati_organisations__iati_organisation__recipient_org_budget__recipient_org(  # NOQA: E501
             element)
         model = self.parser_202.get_model('RecipientOrgBudget')
         """ :type : org_models.RecipientOrgBudget """
         self.assertEqual(model.recipient_org_identifier, 'AA-ABC-1234567')
 
-    def test_iati_organisations__iati_organisation__recipient_org_budget__recipient_org__narrative(
+    def test_iati_organisations__iati_organisation__recipient_org_budget__recipient_org__narrative(  # NOQA: E501
             self):
         """attributes:
 
         tag:narrative
         """
-        self.test_iati_organisations__iati_organisation__recipient_org_budget__recipient_org()
+        self\
+            .test_iati_organisations__iati_organisation__recipient_org_budget__recipient_org()  # NOQA: E501
 
         attribs = {
 
         }
         element = E('narrative', 'test text', attribs)
 
-        self.parser_202.iati_organisations__iati_organisation__recipient_org_budget__recipient_org__narrative(
-            element)
+        self.parser_202\
+            .iati_organisations__iati_organisation__recipient_org_budget__recipient_org__narrative(  # NOQA: E501
+                element)
         model = self.parser_202.get_model('RecipientOrgBudgetNarrative')
         self.assertEqual(model.content, 'test text')
 
-    def test_iati_organisations__iati_organisation__recipient_org_budget__period_start(self):
+    def test_iati_organisations__iati_organisation__recipient_org_budget__period_start(self):  # NOQA: E501
         """attributes:
             'iso-date':'2014-01-01',
 
@@ -365,31 +382,34 @@ class OrganisationTestCase(ParserSetupTestCase):
 
         }
         element = E('period-start', attribs)
-        self.parser_202.iati_organisations__iati_organisation__recipient_org_budget__period_start(
+        self.parser_202.iati_organisations__iati_organisation__recipient_org_budget__period_start(  # NOQA: E501
             element)
         model = self.parser_202.get_model('RecipientOrgBudget')
         """ :type : org_models.RecipientOrgBudget """
-        self.assertEqual(model.period_start, self.parser_202.validate_date('2014-01-01'))
+        self.assertEqual(model.period_start,
+                         self.parser_202.validate_date('2014-01-01'))
 
-    def test_iati_organisations__iati_organisation__recipient_org_budget__period_end(self):
+    def test_iati_organisations__iati_organisation__recipient_org_budget__period_end(self):  # NOQA: E501
         """attributes:
             'iso-date':'2014-12-31',
 
         tag:period-end
         """
-        self.test_iati_organisations__iati_organisation__recipient_org_budget()
+        self.test_iati_organisations__iati_organisation__recipient_org_budget()  # NOQA: E501
         attribs = {
             'iso-date': '2014-12-31',
 
         }
         element = E('period-end', attribs)
-        self.parser_202.iati_organisations__iati_organisation__recipient_org_budget__period_end(
-            element)
+        self.parser_202\
+            .iati_organisations__iati_organisation__recipient_org_budget__period_end(  # NOQA: E501
+                element)
         model = self.parser_202.get_model('RecipientOrgBudget')
         """ :type : org_models.RecipientOrgBudget """
-        self.assertEqual(model.period_end, self.parser_202.validate_date('2014-12-31'))
+        self.assertEqual(model.period_end,
+                         self.parser_202.validate_date('2014-12-31'))
 
-    def test_iati_organisations__iati_organisation__recipient_org_budget__value(self):
+    def test_iati_organisations__iati_organisation__recipient_org_budget__value(self):  # NOQA: E501
         """attributes:
             'currency':'USD',
         'value-date':'2014-01-01',
@@ -404,7 +424,9 @@ class OrganisationTestCase(ParserSetupTestCase):
         }
         element = E('value', '1234', attribs)
 
-        self.parser_202.iati_organisations__iati_organisation__recipient_org_budget__value(element)
+        self.parser_202\
+            .iati_organisations__iati_organisation__recipient_org_budget__value(  # NOQA: E501
+                element)
         model = self.parser_202.get_model('RecipientOrgBudget')
         """ :type : org_models.RecipientOrgBudget """
         self.assertEqual(
@@ -413,7 +435,7 @@ class OrganisationTestCase(ParserSetupTestCase):
                     element.attrib.get('currency'))))
         self.assertEqual(model.value, '1234')
 
-    def test_iati_organisations__iati_organisation__recipient_org_budget__budget_line(self):
+    def test_iati_organisations__iati_organisation__recipient_org_budget__budget_line(self):  # NOQA: E501
         """attributes:
             'ref':'1234',
 
@@ -426,20 +448,22 @@ class OrganisationTestCase(ParserSetupTestCase):
         }
         element = E('budget-line', attribs)
 
-        self.parser_202.iati_organisations__iati_organisation__recipient_org_budget__budget_line(
-            element)
+        self.parser_202\
+            .iati_organisations__iati_organisation__recipient_org_budget__budget_line(  # NOQA: E501
+                element)
         model = self.parser_202.get_model('RecipientOrgBudgetLine')
         """ :type : org_models.BudgetLine """
         self.assertEqual(model.ref, '1234')
 
-    def test_iati_organisations__iati_organisation__recipient_org_budget__budget_line__value(self):
+    def test_iati_organisations__iati_organisation__recipient_org_budget__budget_line__value(self):  # NOQA: E501
         """attributes:
             'currency':'USD',
         'value-date':'2014-01-01',
 
         tag:value
         """
-        self.test_iati_organisations__iati_organisation__recipient_org_budget__budget_line()
+        self\
+            .test_iati_organisations__iati_organisation__recipient_org_budget__budget_line()  # NOQA: E501
         attribs = {
             'currency': 'USD',
             'value-date': '2014-01-01',
@@ -447,7 +471,7 @@ class OrganisationTestCase(ParserSetupTestCase):
         }
         element = E('value', '1234', attribs)
 
-        self.parser_202.iati_organisations__iati_organisation__recipient_org_budget__budget_line__value(
+        self.parser_202.iati_organisations__iati_organisation__recipient_org_budget__budget_line__value(  # NOQA: E501
             element)
         model = self.parser_202.get_model('RecipientOrgBudgetLine')
         self.assertEqual(
@@ -456,23 +480,23 @@ class OrganisationTestCase(ParserSetupTestCase):
                     element.attrib.get('currency'))))
         self.assertEqual(model.value, '1234')
 
-    def test_iati_organisations__iati_organisation__recipient_org_budget__budget_line__narrative(
+    def test_iati_organisations__iati_organisation__recipient_org_budget__budget_line__narrative(  # NOQA: E501
             self):
         """attributes:
 
         tag:narrative
         """
-        self.test_iati_organisations__iati_organisation__recipient_org_budget__budget_line()
+        self.test_iati_organisations__iati_organisation__recipient_org_budget__budget_line()  # NOQA: E501
         attribs = {
 
         }
         element = E('narrative', 'test text', attribs)
-        self.parser_202.iati_organisations__iati_organisation__recipient_org_budget__budget_line__narrative(
+        self.parser_202.iati_organisations__iati_organisation__recipient_org_budget__budget_line__narrative(  # NOQA: E501
             element)
         model = self.parser_202.get_model('RecipientOrgBudgetLineNarrative')
         self.assertEqual('test text', model.content)
 
-    def test_iati_organisations__iati_organisation__recipient_country_budget(self):
+    def test_iati_organisations__iati_organisation__recipient_country_budget(self):  # NOQA: E501
         """attributes:
 
         tag:recipient-country-budget
@@ -482,25 +506,26 @@ class OrganisationTestCase(ParserSetupTestCase):
 
         }
         element = E('recipient-country-budget', attribs)
-        self.parser_202.iati_organisations__iati_organisation__recipient_country_budget(element)
-        model = self.parser_202.get_model('RecipientCountryBudget')
-        """ :type : RecipientCountryBudget """
+        self.parser_202\
+            .iati_organisations__iati_organisation__recipient_country_budget(
+                element)
+        self.parser_202.get_model('RecipientCountryBudget')
 
-    def test_iati_organisations__iati_organisation__recipient_country_budget__recipient_country(
+    def test_iati_organisations__iati_organisation__recipient_country_budget__recipient_country(  # NOQA: E501
             self):
         """attributes:
             'code':'AF',
 
         tag:recipient-country
         """
-        self.test_iati_organisations__iati_organisation__recipient_country_budget()
+        self.test_iati_organisations__iati_organisation__recipient_country_budget()  # NOQA: E501
         attribs = {
             'code': 'AF',
 
         }
         element = E('recipient-country', attribs)
 
-        self.parser_202.iati_organisations__iati_organisation__recipient_country_budget__recipient_country(
+        self.parser_202.iati_organisations__iati_organisation__recipient_country_budget__recipient_country(  # NOQA: E501
             element)
         model = self.parser_202.get_model('RecipientCountryBudget')
         """ :type : org_models.RecipientCountryBudget """
@@ -511,56 +536,61 @@ class OrganisationTestCase(ParserSetupTestCase):
                 code=element.attrib.get('code')))
         # assert
 
-    def test_iati_organisations__iati_organisation__recipient_country_budget__period_start(self):
+    def test_iati_organisations__iati_organisation__recipient_country_budget__period_start(self):  # NOQA: E501
         """attributes:
             'iso-date':'2014-01-01',
 
         tag:period-start
         """
-        self.test_iati_organisations__iati_organisation__recipient_country_budget()
+        self\
+            .test_iati_organisations__iati_organisation__recipient_country_budget()  # NOQA: E501
         attribs = {
             'iso-date': '2014-01-01',
 
         }
         element = E('period-start', attribs)
 
-        self.parser_202.iati_organisations__iati_organisation__recipient_country_budget__period_start(
+        self.parser_202.iati_organisations__iati_organisation__recipient_country_budget__period_start(  # NOQA: E501
             element)
         model = self.parser_202.get_model('RecipientCountryBudget')
-        self.assertEqual(model.period_start, self.parser_202.validate_date('2014-01-01'))
+        self.assertEqual(model.period_start,
+                         self.parser_202.validate_date('2014-01-01'))
 
-    def test_iati_organisations__iati_organisation__recipient_country_budget__period_end(self):
+    def test_iati_organisations__iati_organisation__recipient_country_budget__period_end(self):  # NOQA: E501
         """attributes:
             'iso-date':'2014-12-31',
 
         tag:period-end
         """
-        self.test_iati_organisations__iati_organisation__recipient_country_budget()
+        self\
+            .test_iati_organisations__iati_organisation__recipient_country_budget()  # NOQA: E501
         attribs = {
             'iso-date': '2014-12-31',
 
         }
         element = E('period-end', attribs)
-        self.parser_202.iati_organisations__iati_organisation__recipient_country_budget__period_end(
+        self.parser_202.iati_organisations__iati_organisation__recipient_country_budget__period_end(  # NOQA: E501
             element)
         model = self.parser_202.get_model('RecipientCountryBudget')
-        self.assertEqual(model.period_end, self.parser_202.validate_date('2014-12-31'))
+        self.assertEqual(model.period_end,
+                         self.parser_202.validate_date('2014-12-31'))
 
-    def test_iati_organisations__iati_organisation__recipient_country_budget__value(self):
+    def test_iati_organisations__iati_organisation__recipient_country_budget__value(self):  # NOQA: E501
         """attributes:
             'currency':'USD',
         'value-date':'2014-01-01',
 
         tag:value
         """
-        self.test_iati_organisations__iati_organisation__recipient_country_budget()
+        self\
+            .test_iati_organisations__iati_organisation__recipient_country_budget()  # NOQA: E501
         attribs = {
             'currency': 'USD',
             'value-date': '2014-01-01',
 
         }
         element = E('value', '1234', attribs)
-        self.parser_202.iati_organisations__iati_organisation__recipient_country_budget__value(
+        self.parser_202.iati_organisations__iati_organisation__recipient_country_budget__value(  # NOQA: E501
             element)
         model = self.parser_202.get_model('RecipientCountryBudget')
         self.assertEqual(
@@ -570,25 +600,25 @@ class OrganisationTestCase(ParserSetupTestCase):
         self.assertEqual(model.value, '1234')
         # assert
 
-    def test_iati_organisations__iati_organisation__recipient_country_budget__budget_line(self):
+    def test_iati_organisations__iati_organisation__recipient_country_budget__budget_line(self):  # NOQA: E501
         """attributes:
             'ref':'1234',
 
         tag:budget-line
         """
-        self.test_iati_organisations__iati_organisation__recipient_country_budget()
+        self.test_iati_organisations__iati_organisation__recipient_country_budget()  # NOQA: E501
         attribs = {
             'ref': '1234',
 
         }
         element = E('budget-line', attribs)
-        self.parser_202.iati_organisations__iati_organisation__recipient_country_budget__budget_line(
+        self.parser_202.iati_organisations__iati_organisation__recipient_country_budget__budget_line(  # NOQA: E501
             element)
         model = self.parser_202.get_model('RecipientCountryBudgetLine')
         """ :type : org_models.BudgetLine """
         self.assertEqual(model.ref, '1234')
 
-    def test_iati_organisations__iati_organisation__recipient_country_budget__budget_line__value(
+    def test_iati_organisations__iati_organisation__recipient_country_budget__budget_line__value(  # NOQA: E501
             self):
         """attributes:
             'currency':'USD',
@@ -596,7 +626,7 @@ class OrganisationTestCase(ParserSetupTestCase):
 
         tag:value
         """
-        self.test_iati_organisations__iati_organisation__recipient_country_budget__budget_line()
+        self.test_iati_organisations__iati_organisation__recipient_country_budget__budget_line()  # NOQA: E501
         attribs = {
             'currency': 'USD',
             'value-date': '2014-01-01',
@@ -604,7 +634,7 @@ class OrganisationTestCase(ParserSetupTestCase):
         }
         element = E('value', '1234', attribs)
         model = self.parser_202.get_model('Organisation')
-        self.parser_202.iati_organisations__iati_organisation__recipient_country_budget__budget_line__value(
+        self.parser_202.iati_organisations__iati_organisation__recipient_country_budget__budget_line__value(  # NOQA: E501
             element)
         model = self.parser_202.get_model('RecipientCountryBudgetLine')
         self.assertEqual(
@@ -614,23 +644,24 @@ class OrganisationTestCase(ParserSetupTestCase):
         self.assertEqual(model.value, '1234')
         # assert
 
-    def test_iati_organisations__iati_organisation__recipient_country_budget__budget_line__narrative(
+    def test_iati_organisations__iati_organisation__recipient_country_budget__budget_line__narrative(  # NOQA: E501
             self):
         """attributes:
 
         tag:narrative
         """
-        self.test_iati_organisations__iati_organisation__recipient_country_budget__budget_line()
+        self.test_iati_organisations__iati_organisation__recipient_country_budget__budget_line()  # NOQA: E501
         attribs = {
 
         }
         element = E('narrative', 'test text', attribs)
-        self.parser_202.iati_organisations__iati_organisation__recipient_country_budget__budget_line__narrative(
+        self.parser_202.iati_organisations__iati_organisation__recipient_country_budget__budget_line__narrative(  # NOQA: E501
             element)
-        model = self.parser_202.get_model('RecipientCountryBudgetLineNarrative')
+        model = self.parser_202.get_model(
+            'RecipientCountryBudgetLineNarrative')
         self.assertEqual('test text', model.content)
 
-    def test_iati_organisations__iati_organisation__recipient_region_budget(self):
+    def test_iati_organisations__iati_organisation__recipient_region_budget(self):  # NOQA: E501
         """attributes:
 
         tag:recipient-region-budget
@@ -640,18 +671,21 @@ class OrganisationTestCase(ParserSetupTestCase):
 
         }
         element = E('recipient-region-budget', attribs)
-        self.parser_202.iati_organisations__iati_organisation__recipient_region_budget(element)
-        model = self.parser_202.get_model('RecipientRegionBudget')
-        """ :type : RecipientRegionBudget """
+        self.parser_202\
+            .iati_organisations__iati_organisation__recipient_region_budget(
+                element
+            )
+        self.parser_202.get_model('RecipientRegionBudget')
 
-    def test_iati_organisations__iati_organisation__recipient_region_budget__recipient_region(
+    def test_iati_organisations__iati_organisation__recipient_region_budget__recipient_region(  # NOQA: E501
             self):
         """attributes:
             'code':'AF',
 
         tag:recipient-region
         """
-        self.test_iati_organisations__iati_organisation__recipient_region_budget()
+        self\
+            .test_iati_organisations__iati_organisation__recipient_region_budget()  # NOQA: E501
         attr = {
             'code': '998',
             'vocabulary': '1',
@@ -659,65 +693,73 @@ class OrganisationTestCase(ParserSetupTestCase):
         }
 
         element = E('recipient-region', attr)
-        self.parser_202.iati_organisations__iati_organisation__recipient_region_budget__recipient_region(
-            element)
+        self.parser_202\
+            .iati_organisations__iati_organisation__recipient_region_budget__recipient_region(  # NOQA: E501
+                element)
         model = self.parser_202.get_model('RecipientRegionBudget')
 
         self.assertEqual(model.region.code, attr['code'])
         self.assertEqual(model.vocabulary.code, attr['vocabulary'])
         self.assertEqual(model.vocabulary_uri, attr['vocabulary-uri'])
 
-    def test_iati_organisations__iati_organisation__recipient_region_budget__period_start(self):
+    def test_iati_organisations__iati_organisation__recipient_region_budget__period_start(self):  # NOQA: E501
         """attributes:
             'iso-date':'2014-01-01',
 
         tag:period-start
         """
-        self.test_iati_organisations__iati_organisation__recipient_region_budget()
+        self\
+            .test_iati_organisations__iati_organisation__recipient_region_budget()  # NOQA: E501
         attribs = {
             'iso-date': '2014-01-01',
 
         }
         element = E('period-start', attribs)
 
-        self.parser_202.iati_organisations__iati_organisation__recipient_region_budget__period_start(
-            element)
+        self.parser_202\
+            .iati_organisations__iati_organisation__recipient_region_budget__period_start(  # NOQA: E501
+                element
+            )
         model = self.parser_202.get_model('RecipientRegionBudget')
-        self.assertEqual(model.period_start, self.parser_202.validate_date('2014-01-01'))
+        self.assertEqual(model.period_start,
+                         self.parser_202.validate_date('2014-01-01'))
 
-    def test_iati_organisations__iati_organisation__recipient_region_budget__period_end(self):
+    def test_iati_organisations__iati_organisation__recipient_region_budget__period_end(self):  # NOQA: E501
         """attributes:
             'iso-date':'2014-12-31',
 
         tag:period-end
         """
-        self.test_iati_organisations__iati_organisation__recipient_region_budget()
+        self.test_iati_organisations__iati_organisation__recipient_region_budget()  # NOQA: E501
         attribs = {
             'iso-date': '2014-12-31',
 
         }
         element = E('period-end', attribs)
-        self.parser_202.iati_organisations__iati_organisation__recipient_region_budget__period_end(
+        self.parser_202.iati_organisations__iati_organisation__recipient_region_budget__period_end(  # NOQA: E501
             element)
         model = self.parser_202.get_model('RecipientRegionBudget')
-        self.assertEqual(model.period_end, self.parser_202.validate_date('2014-12-31'))
+        self.assertEqual(model.period_end,
+                         self.parser_202.validate_date('2014-12-31'))
 
-    def test_iati_organisations__iati_organisation__recipient_region_budget__value(self):
+    def test_iati_organisations__iati_organisation__recipient_region_budget__value(self):  # NOQA: E501
         """attributes:
             'currency':'USD',
         'value-date':'2014-01-01',
 
         tag:value
         """
-        self.test_iati_organisations__iati_organisation__recipient_region_budget()
+        self\
+            .test_iati_organisations__iati_organisation__recipient_region_budget()  # NOQA: E501
         attribs = {
             'currency': 'USD',
             'value-date': '2014-01-01',
 
         }
         element = E('value', '1234', attribs)
-        self.parser_202.iati_organisations__iati_organisation__recipient_region_budget__value(
-            element)
+        self\
+            .parser_202.iati_organisations__iati_organisation__recipient_region_budget__value(  # NOQA: E501
+                element)
         model = self.parser_202.get_model('RecipientRegionBudget')
         self.assertEqual(
             model.currency, self.parser_202.get_or_none(
@@ -726,25 +768,27 @@ class OrganisationTestCase(ParserSetupTestCase):
         self.assertEqual(model.value, '1234')
         # assert
 
-    def test_iati_organisations__iati_organisation__recipient_region_budget__budget_line(self):
+    def test_iati_organisations__iati_organisation__recipient_region_budget__budget_line(self):  # NOQA: E501
         """attributes:
             'ref':'1234',
 
         tag:budget-line
         """
-        self.test_iati_organisations__iati_organisation__recipient_region_budget()
+        self\
+            .test_iati_organisations__iati_organisation__recipient_region_budget()  # NOQA: E501
         attribs = {
             'ref': '1234',
 
         }
         element = E('budget-line', attribs)
-        self.parser_202.iati_organisations__iati_organisation__recipient_region_budget__budget_line(
-            element)
+        self\
+            .parser_202.iati_organisations__iati_organisation__recipient_region_budget__budget_line(  # NOQA: E501
+                element)
         model = self.parser_202.get_model('RecipientRegionBudgetLine')
         """ :type : org_models.BudgetLine """
         self.assertEqual(model.ref, '1234')
 
-    def test_iati_organisations__iati_organisation__recipient_region_budget__budget_line__value(
+    def test_iati_organisations__iati_organisation__recipient_region_budget__budget_line__value(  # NOQA: E501
             self):
         """attributes:
             'currency':'USD',
@@ -752,7 +796,8 @@ class OrganisationTestCase(ParserSetupTestCase):
 
         tag:value
         """
-        self.test_iati_organisations__iati_organisation__recipient_region_budget__budget_line()
+        self\
+            .test_iati_organisations__iati_organisation__recipient_region_budget__budget_line()  # NOQA: E501
         attribs = {
             'currency': 'USD',
             'value-date': '2014-01-01',
@@ -760,8 +805,9 @@ class OrganisationTestCase(ParserSetupTestCase):
         }
         element = E('value', '1234', attribs)
         model = self.parser_202.get_model('Organisation')
-        self.parser_202.iati_organisations__iati_organisation__recipient_region_budget__budget_line__value(
-            element)
+        self.parser_202\
+            .iati_organisations__iati_organisation__recipient_region_budget__budget_line__value(  # NOQA: E501
+                element)
         model = self.parser_202.get_model('RecipientRegionBudgetLine')
         self.assertEqual(
             model.currency, self.parser_202.get_or_none(
@@ -770,19 +816,21 @@ class OrganisationTestCase(ParserSetupTestCase):
         self.assertEqual(model.value, '1234')
         # assert
 
-    def test_iati_organisations__iati_organisation__recipient_region_budget__budget_line__narrative(
+    def test_iati_organisations__iati_organisation__recipient_region_budget__budget_line__narrative(  # NOQA: E501
             self):
         """attributes:
 
         tag:narrative
         """
-        self.test_iati_organisations__iati_organisation__recipient_region_budget__budget_line()
+        self\
+            .test_iati_organisations__iati_organisation__recipient_region_budget__budget_line()  # NOQA: E501
         attribs = {
 
         }
         element = E('narrative', 'test text', attribs)
-        self.parser_202.iati_organisations__iati_organisation__recipient_region_budget__budget_line__narrative(
-            element)
+        self\
+            .parser_202.iati_organisations__iati_organisation__recipient_region_budget__budget_line__narrative(  # NOQA: E501
+                element)
         model = self.parser_202.get_model('RecipientRegionBudgetLineNarrative')
         self.assertEqual('test text', model.content)
 
@@ -794,10 +842,12 @@ class OrganisationTestCase(ParserSetupTestCase):
         self.test_iati_organisations__iati_organisation()
         attrs = {}
         element = E('total-expenditure', attrs)
-        self.parser_202.iati_organisations__iati_organisation__total_expenditure(element)
-        model = self.parser_202.get_model('TotalExpenditure')
+        self.parser_202\
+            .iati_organisations__iati_organisation__total_expenditure(
+                element)
+        self.parser_202.get_model('TotalExpenditure')
 
-    def test_iati_organisations__iati_organisation__total_expenditure__period_start(self):
+    def test_iati_organisations__iati_organisation__total_expenditure__period_start(self):  # NOQA: E501
         """attributes:
             'iso-date':'2014-01-01',
 
@@ -809,12 +859,13 @@ class OrganisationTestCase(ParserSetupTestCase):
         }
         element = E('period-start', attrs)
 
-        self.parser_202.iati_organisations__iati_organisation__total_expenditure__period_start(
-            element)
+        self.parser_202\
+            .iati_organisations__iati_organisation__total_expenditure__period_start(  # NOQA: E501
+                element)
         model = self.parser_202.get_model('TotalExpenditure')
         self.assertEqual(str(model.period_start), attrs['iso-date'])
 
-    def test_iati_organisations__iati_organisation__total_expenditure__period_end(self):
+    def test_iati_organisations__iati_organisation__total_expenditure__period_end(self):  # NOQA: E501
         """attributes:
             'iso-date':'2014-12-31',
             tag:period-end
@@ -825,12 +876,13 @@ class OrganisationTestCase(ParserSetupTestCase):
         }
         element = E('period-end', attrs)
 
-        self.parser_202.iati_organisations__iati_organisation__total_expenditure__period_end(
-            element)
+        self.parser_202\
+            .iati_organisations__iati_organisation__total_expenditure__period_end(  # NOQA: E501
+                element)
         model = self.parser_202.get_model('TotalExpenditure')
         self.assertEqual(str(model.period_end), attrs['iso-date'])
 
-    def test_iati_organisations__iati_organisation__total_expenditure__value(self):
+    def test_iati_organisations__iati_organisation__total_expenditure__value(self):  # NOQA: E501
         """attributes:
             'currency':'USD',
             'value-date':'2014-01-01',
@@ -843,13 +895,15 @@ class OrganisationTestCase(ParserSetupTestCase):
             'value-date': datetime.datetime.now().isoformat(' '),
         }
         element = E('value', '1234', attrs)
-        self.parser_202.iati_organisations__iati_organisation__total_expenditure__value(element)
+        self.parser_202\
+            .iati_organisations__iati_organisation__total_expenditure__value(
+                element)
         model = self.parser_202.get_model('TotalExpenditure')
         self.assertEqual(model.currency.code, attrs['currency'])
         self.assertEqual(model.value, '1234')
         self.assertEqual(str(model.value_date), attrs['value-date'])
 
-    def test_iati_organisations__iati_organisation__total_expenditure__expense_line(self):
+    def test_iati_organisations__iati_organisation__total_expenditure__expense_line(self):  # NOQA: E501
         """attributes:
             'ref':'1234',
 
@@ -860,27 +914,30 @@ class OrganisationTestCase(ParserSetupTestCase):
             'ref': '1234',
         }
         element = E('expense-line', attrs)
-        self.parser_202.iati_organisations__iati_organisation__total_expenditure__expense_line(
-            element)
+        self.parser_202\
+            .iati_organisations__iati_organisation__total_expenditure__expense_line(  # NOQA: E501
+                element)
         model = self.parser_202.get_model('TotalExpenditureBudgetLine')
         self.assertEqual(model.ref, '1234')
 
-    def test_iati_organisations__iati_organisation__total_expenditure__expense_line__value(self):
+    def test_iati_organisations__iati_organisation__total_expenditure__expense_line__value(self):  # NOQA: E501
         """attributes:
             'currency':'USD',
         'value-date':'2014-01-01',
 
         tag:value
         """
-        self.test_iati_organisations__iati_organisation__total_expenditure__expense_line()
+        self\
+            .test_iati_organisations__iati_organisation__total_expenditure__expense_line()  # NOQA: E501
         attrs = {
             'currency': 'USD',
             'value-date': datetime.datetime.now().isoformat(' '),
         }
         element = E('value', '1234', attrs)
 
-        self.parser_202.iati_organisations__iati_organisation__total_expenditure__expense_line__value(
-            element)
+        self.parser_202\
+            .iati_organisations__iati_organisation__total_expenditure__expense_line__value(  # NOQA: E501
+                element)
 
         model = self.parser_202.get_model('TotalExpenditureBudgetLine')
 
@@ -888,19 +945,22 @@ class OrganisationTestCase(ParserSetupTestCase):
         self.assertEqual(model.value, '1234')
         self.assertEqual(str(model.value_date), attrs['value-date'])
 
-    def test_iati_organisations__iati_organisation__total_expenditure__expense_line__narrative(
+    def test_iati_organisations__iati_organisation__total_expenditure__expense_line__narrative(  # NOQA: E501
             self):
         """attributes:
 
         tag:narrative
         """
-        self.test_iati_organisations__iati_organisation__total_expenditure__expense_line()
+        self\
+            .test_iati_organisations__iati_organisation__total_expenditure__expense_line()  # NOQA: E501
+
         attrs = {
 
         }
         element = E('narrative', 'test text', attrs)
-        self.parser_202.iati_organisations__iati_organisation__total_expenditure__expense_line__narrative(
-            element)
+        self.parser_202\
+            .iati_organisations__iati_organisation__total_expenditure__expense_line__narrative(  # NOQA: E501
+                element)
         model = self.parser_202.get_model('TotalExpenditureLineNarrative')
         self.assertEqual(model.content, 'test text')
 
@@ -918,7 +978,8 @@ class OrganisationTestCase(ParserSetupTestCase):
 
         }
         element = E('document-link', attribs)
-        self.parser_202.iati_organisations__iati_organisation__document_link(element)
+        self.parser_202.iati_organisations__iati_organisation__document_link(
+            element)
         model = self.parser_202.get_model('OrganisationDocumentLink')
         """ :type : org_models.OrganisationDocumentLink """
         self.assertEqual(model.url, element.attrib.get('url'))
@@ -934,9 +995,11 @@ class OrganisationTestCase(ParserSetupTestCase):
 
         }
         element = E('title', attribs)
-        self.parser_202.iati_organisations__iati_organisation__document_link__title(element)
+        self.parser_202\
+            .iati_organisations__iati_organisation__document_link__title(
+                element)
 
-    def test_iati_organisations__iati_organisation__document_link__title__narrative(self):
+    def test_iati_organisations__iati_organisation__document_link__title__narrative(self):  # NOQA: E501
         """attributes:
 
         tag:narrative
@@ -946,12 +1009,14 @@ class OrganisationTestCase(ParserSetupTestCase):
 
         }
         element = E('narrative', 'test text', attribs)
-        self.parser_202.iati_organisations__iati_organisation__document_link__title__narrative(
-            element)
+        self.parser_202\
+            .iati_organisations__iati_organisation__document_link__title__narrative(  # NOQA: E501
+                element)
         model = self.parser_202.get_model('DocumentLinkTitleNarrative')
         self.assertEqual('test text', model.content)
 
-    def test_iati_organisations__iati_organisation__document_link__category(self):
+    def test_iati_organisations__iati_organisation__document_link__category(
+            self):
         """attributes:
             'code':'B01',
 
@@ -969,10 +1034,13 @@ class OrganisationTestCase(ParserSetupTestCase):
         model.organisation = model.organisation
         model.save()
 
-        self.parser_202.iati_organisations__iati_organisation__document_link__category(element)
+        self\
+            .parser_202.iati_organisations__iati_organisation__document_link__category(  # NOQA: E501
+                element)
         model = self.parser_202.get_model('OrganisationDocumentLink')
 
-    def test_iati_organisations__iati_organisation__document_link__language(self):
+    def test_iati_organisations__iati_organisation__document_link__language(
+            self):
         """attributes:
             'code':'en',
 
@@ -985,16 +1053,21 @@ class OrganisationTestCase(ParserSetupTestCase):
         }
         element = E('language', attribs)
 
-        self.parser_202.iati_organisations__iati_organisation__document_link__language(element)
-        model = self.parser_202.get_model('OrganisationDocumentLink')
-        """ :type : org_models.OrganisationDocumentLink """
+        self\
+            .parser_202.iati_organisations__iati_organisation__document_link__language(  # NOQA: E501
+                element)
+        model = self.parser_202.get_model(
+            'OrganisationDocumentLinkLanguage',
+            self.parser_202.document_link_language_current_index)
+
+        """ :type : org_models.OrganisationDocumentLinkLanguage """
         self.assertEqual(
             model.language,
             self.parser_202.get_or_none(
                 codelist_models.Language,
                 code=element.attrib.get('code')))
 
-    def test_iati_organisations__iati_organisation__document_link_document_date_202(self):
+    def test_iati_organisations__iati_organisation__document_link_document_date_202(self):  # NOQA: E501
         """
         """
         attrs = {
@@ -1005,13 +1078,14 @@ class OrganisationTestCase(ParserSetupTestCase):
 
         self.test_iati_organisations__iati_organisation__document_link()
 
-        self.parser_202.iati_organisations__iati_organisation__document_link__document_date(
-            document_date)
+        self.parser_202\
+            .iati_organisations__iati_organisation__document_link__document_date(  # NOQA: E501
+                document_date)
         document_link = self.parser_202.get_model('OrganisationDocumentLink')
 
         self.assertEqual(str(document_link.iso_date), attrs['iso-date'])
 
-    def test_iati_organisations__iati_organisation__document_link__recipient_country(self):
+    def test_iati_organisations__iati_organisation__document_link__recipient_country(self):  # NOQA: E501
         """attributes:
             'code':'AF',
 
@@ -1028,5 +1102,6 @@ class OrganisationTestCase(ParserSetupTestCase):
         }
         element = E('recipient-country', attribs)
 
-        self.parser_202.iati_organisations__iati_organisation__document_link__recipient_country(
-            element)
+        self.parser_202\
+            .iati_organisations__iati_organisation__document_link__recipient_country(  # NOQA: E501
+                element)

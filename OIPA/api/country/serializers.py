@@ -1,14 +1,16 @@
+from django.urls import reverse
 from rest_framework import serializers
+
 import geodata
+from api.fields import JSONField
 from api.generics.serializers import DynamicFieldsModelSerializer
 from api.region.serializers import RegionSerializer
-from api.fields import JSONField
-from django.core.urlresolvers import reverse
 
 
 class CountrySerializer(DynamicFieldsModelSerializer):
     class BasicCitySerializer(serializers.ModelSerializer):
-        url = serializers.HyperlinkedIdentityField(view_name='cities:city-detail')
+        url = serializers.HyperlinkedIdentityField(
+            view_name='cities:city-detail')
 
         class Meta:
             model = geodata.models.City

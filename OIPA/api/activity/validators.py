@@ -1,5 +1,3 @@
-
-
 def activity_required_fields(activity):
     if not activity.title:
         return False

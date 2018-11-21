@@ -11,18 +11,19 @@ from django.db.models.fields.related import ForeignKey, OneToOneField
 from lxml import etree
 
 from common.util import findnth_occurence_in_string, normalise_unicode_string
-from iati.parser.exceptions import *
+from iati.parser.exceptions import (
+    FieldValidationError, IgnoredVocabularyError, NoUpdateRequired,
+    ParserError, RequiredFieldError, ValidationError
+)
 from iati_codelists import models as codelist_models
 from iati_synchroniser.models import DatasetNote
-
-codelist_cache = {}
 
 log = logging.getLogger(__name__)
 
 
 class IatiParser(object):
     # default version
-    VERSION = '2.02'
+    VERSION = '2.03'
 
     def __init__(self, root):
         self.logged_functions = []
@@ -33,8 +34,14 @@ class IatiParser(object):
         self.publisher = None
         self.force_reparse = False
         self.default_lang = settings.DEFAULT_LANG
+        # A cache to store codelist items in memory (for each element when
+        # parsing).
+        # During tests, if a new model with a same name is added to the
+        # database, this has to be cleared:
+        self.codelist_cache = {}
 
-        # TODO: find a way to simply save in parser functions, and actually commit to db on exit
+        # TODO: find a way to simply save in parser functions, and actually
+        # commit to db on exit
         self.model_store = OrderedDict()
         self.root = root
 
@@ -43,7 +50,9 @@ class IatiParser(object):
         if ref and findnth_occurence_in_string(ref, '-', 1) > -1:
             index = findnth_occurence_in_string(ref, '-', 1)
             reg_agency = self.get_or_none(
-                codelist_models.OrganisationRegistrationAgency, code=ref[:index])
+                codelist_models.OrganisationRegistrationAgency,
+                code=ref[:index]
+            )
             if reg_agency:
                 reg_agency_found = True
 
@@ -52,7 +61,8 @@ class IatiParser(object):
                 'FieldValidationError',
                 element_name,
                 "ref",
-                "Must be in the format {Registration Agency} - (Registration Number}",
+                "Must be in the format {Registration Agency} - (Registration "
+                "Number}",
                 element.sourceline,
                 ref)
 
@@ -61,10 +71,10 @@ class IatiParser(object):
         if code:
             code = normalise_unicode_string(code)
             try:
-                model_cache = codelist_cache[model.__name__]
+                model_cache = self.codelist_cache[model.__name__]
             except KeyError:
                 model_cache = model.objects.in_bulk()
-                codelist_cache[model.__name__] = model_cache
+                self.codelist_cache[model.__name__] = model_cache
             return model_cache.get(code)
 
         else:
@@ -78,18 +88,20 @@ class IatiParser(object):
         """
         get default currency if not available for currency-related fields
         """
-        # TO DO; this does not invalidate the whole element (budget, transaction,
-        # planned disbursement) while it should
+        # TODO: this does not invalidate the whole element (budget,
+        # transaction, planned disbursement) while it should
         if not currency:
             currency = getattr(self.get_model('Activity'), 'default_currency')
             if not currency:
                 raise RequiredFieldError(
                     model_name,
                     "currency",
-                    "must specify default-currency on iati-activity or as currency on the element itself")
+                    "must specify default-currency on iati-activity or as "
+                    "currency on the element itself")
 
         return currency
 
+    # TODO: test this function! it's used everywhere
     def makeBool(self, text):
         if text == '1' or text == 'true':
             return True
@@ -164,7 +176,9 @@ class IatiParser(object):
                 primary_name = element.text
         else:
             primary_name = element.text
-        return primary_name
+
+        # FIXME: this is hardcoded!
+        return primary_name[:255]
 
     def load_and_parse(self, root):
         self.parse_activities(root)
@@ -195,10 +209,10 @@ class IatiParser(object):
             DatasetNote.objects.bulk_create(self.errors)
 
     def post_save_models(self):
-        print "override in children"
+        print("override in children")
 
     def post_save_file(self, dataset):
-        print "override in children"
+        print("override in children")
 
     def append_error(self, error_type, model, field, message,
                      sourceline, variable='', iati_id=None):
@@ -244,6 +258,9 @@ class IatiParser(object):
         self.errors.append(note)
 
     def parse(self, element):
+        """All of the methods from specific parser file (i. e. IATI_2_03.py)
+        get called in this method
+        """
         if element is None:
             return
         if type(element).__name__ != '_Element':
@@ -254,8 +271,10 @@ class IatiParser(object):
         x_path = self.root.getroottree().getpath(element)
         function_name = self.generate_function_name(x_path)
 
-        if hasattr(self, function_name) and callable(getattr(self, function_name)):
+        if hasattr(self, function_name)\
+                and callable(getattr(self, function_name)):
             element_method = getattr(self, function_name)
+
             try:
                 element_method(element)
             except RequiredFieldError as e:
@@ -322,7 +341,8 @@ class IatiParser(object):
 
         return function_name[2:]
 
-    # TODO: separate these functions in their own data structure - 2015-12-02
+    # TODO: separate these functions in their own data structure
+    # - 2015-12-02
     def get_model_list(self, key):
         if key in self.model_store:
             return self.model_store[key]
@@ -338,6 +358,9 @@ class IatiParser(object):
             self.model_store[key].append(model)
         else:
             self.model_store[key] = [model]
+
+        # The position of the current model on the model store
+        return len(self.model_store[key]) - 1
 
     def get_model(self, key, index=-1):
         if isinstance(key, Model):
@@ -365,23 +388,23 @@ class IatiParser(object):
         Currently a workaround for foreign key assignment before save
         """
         if model.__class__.__name__ in ("OrganisationNarrative", "Narrative"):
-            model.related_object = model._related_object_cache
+            # This is set in parser (IATI_2_02.py, IATI_2_03.py,
+            # organisation_2_02 etc.) files:
+            model.related_object = getattr(model, '_related_object')
+
         for field in model._meta.fields:
             if isinstance(field, (ForeignKey, OneToOneField)):
                 setattr(model, field.name, getattr(model, field.name))
 
     def save_all_models(self):
-        # TODO: problem: assigning unsaved model to foreign key results in error
-        # because field_id has not been set (see issue )
+        # TODO: problem: assigning unsaved model to foreign key results in
+        # error because field_id has not been set (see: https://git.io/fbphN)
         for model_list in self.model_store.items():
             for model in model_list[1]:
                 try:
                     self.update_related(model)
-                    model.save()
 
-                except ValueError as e:
-                    # TO DO; check if we need to do internal logging on these value errors
-                    log.exception(e)
+                    model.save()
 
                 except Exception as e:
                     log.exception(e)

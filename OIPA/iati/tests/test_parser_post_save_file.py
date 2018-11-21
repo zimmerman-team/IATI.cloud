@@ -1,12 +1,14 @@
-from lxml.builder import E
-from iati.models import Activity
-from iati_synchroniser.factory.synchroniser_factory import DatasetFactory
-from iati_codelists.factory.codelist_factory import VersionFactory
-from mock import MagicMock
 import datetime
-from iati.parser.IATI_2_01 import Parse as Parser_201
-from iati.factory import iati_factory
+
 from django.test import TestCase
+from lxml.builder import E
+from mock import MagicMock
+
+from iati.factory import iati_factory
+from iati.models import Activity
+from iati.parser.IATI_2_01 import Parse as Parser_201
+from iati_codelists.factory.codelist_factory import VersionFactory
+from iati_synchroniser.factory.synchroniser_factory import DatasetFactory
 
 
 class PostSaveFileTestCase(TestCase):
@@ -34,7 +36,8 @@ class PostSaveFileTestCase(TestCase):
         self.parser.dataset = self.dataset
         self.parser.delete_removed_activities = MagicMock()
         self.parser.post_save_file(self.parser.dataset)
-        self.parser.delete_removed_activities.assert_called_once_with(self.parser.dataset)
+        self.parser.delete_removed_activities.assert_called_once_with(
+            self.parser.dataset)
 
     def test_delete_removed_activities(self):
         """The parser should remove activities that are not in the source any longer

@@ -1,35 +1,23 @@
+from ckanapi import RemoteCKAN
 from django.conf import settings
-from api.publisher import serializers
-from api.permissions.serializers import OrganisationUserSerializer
-from iati_synchroniser.models import Publisher
-from api.publisher.filters import PublisherFilter
-from rest_framework.generics import RetrieveAPIView
-from api.generics.views import DynamicListView, DynamicDetailView
-
-from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
-from common.util import get_or_none
-
-from rest_framework_extensions.cache.mixins import CacheResponseMixin
-from rest_framework.views import APIView
-from rest_framework.generics import GenericAPIView
-from rest_framework.response import Response
-from rest_framework import authentication, permissions, exceptions
-from api.cache import QueryParamsKeyConstructor
-
-from api.publisher.permissions import OrganisationAdminGroupPermissions
-
-from iati_synchroniser.models import Publisher
-from iati_organisation.models import Organisation
-from iati.permissions.models import OrganisationGroup, OrganisationAdminGroup
-from django.contrib.auth.models import Group
-from iati.permissions.models import OrganisationUser
-
-
-from rest_framework import generics, filters, status, pagination
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import authentication, exceptions, filters, pagination
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework_extensions.cache.mixins import CacheResponseMixin
 
-
-from rest_framework import pagination
+from api.cache import QueryParamsKeyConstructor
+from api.generics.views import DynamicDetailView, DynamicListView
+from api.permissions.serializers import OrganisationUserSerializer
+from api.publisher import serializers
+from api.publisher.filters import PublisherFilter
+from api.publisher.permissions import OrganisationAdminGroupPermissions
+from common.util import get_or_none
+from iati.permissions.models import (
+    OrganisationAdminGroup, OrganisationGroup, OrganisationUser
+)
+from iati_organisation.models import Organisation
+from iati_synchroniser.models import Publisher
 
 
 class PublisherPagination(pagination.PageNumberPagination):
@@ -46,12 +34,14 @@ class PublisherList(CacheResponseMixin, DynamicListView):
 
     - `id` (*optional*): Publisher id to search for.
     - `publisher_iati_id` (*optional*): Publisher IATI id to search for.
-    - `display_name` (*optional*): Publisher IATI Registry display name to search for.
+    - `display_name` (*optional*): Publisher IATI Registry display name to
+       search for.
     - `name` (*optional*): Publisher IATI Registry name to search for.
 
     ## Result details
 
-    Each result item contains short information about the publisher including the URI
+    Each result item contains short information about the publisher including
+    the URI
     to publisher details.
 
     URI is constructed as follows: `/api/publishers/{publisher_iati_id}`
@@ -124,7 +114,8 @@ class OrganisationAdminGroupView(APIView):
         return Response(serializer.data)
 
     def post(self, request, publisher_id):
-        admin_group = OrganisationAdminGroup.objects.get(publisher_id=publisher_id)
+        admin_group = OrganisationAdminGroup.objects.get(
+            publisher_id=publisher_id)
 
         user_id = request.data.get('user_id', None)
         user = get_or_none(OrganisationUser, pk=user_id)
@@ -142,7 +133,8 @@ class OrganisationAdminGroupDetailView(APIView):
     permission_classes = (OrganisationAdminGroupPermissions, )
 
     def delete(self, request, publisher_id, id):
-        admin_group = OrganisationAdminGroup.objects.get(publisher_id=publisher_id)
+        admin_group = OrganisationAdminGroup.objects.get(
+            publisher_id=publisher_id)
 
         user_id = id
         user = get_or_none(OrganisationUser, pk=user_id)
@@ -167,7 +159,8 @@ class OrganisationGroupView(APIView):
     permission_classes = (OrganisationAdminGroupPermissions, )
 
     def get(self, request, publisher_id):
-        users = OrganisationGroup.objects.get(publisher_id=publisher_id).organisationuser_set.all()
+        users = OrganisationGroup.objects.get(
+            publisher_id=publisher_id).organisationuser_set.all()
 
         serializer = OrganisationUserSerializer(
             users,
@@ -214,15 +207,13 @@ class OrganisationGroupDetailView(APIView):
 
         # The user to remove is an admin
         if user.organisation_admin_groups.filter(publisher=publisher).exists():
-            # if user.groups.filter(organisationadmingroup__publisher=publisher).exists():
+            # if
+            # user.groups.filter(organisationadmingroup__publisher=publisher).exists():
             return Response(status=401)
 
         group.organisationuser_set.remove(user)
 
         return Response()
-
-
-from ckanapi import RemoteCKAN, NotAuthorized, NotFound
 
 
 class OrganisationVerifyApiKey(APIView):
@@ -243,17 +234,19 @@ class OrganisationVerifyApiKey(APIView):
         user_id = request.data.get('userId')
 
         if not api_key or not user_id:
-            raise exceptions.ParseError(detail="apiKey or userId not specified")
+            raise exceptions.ParseError(
+                detail="apiKey or userId not specified")
 
         client = RemoteCKAN(settings.CKAN_URL, apikey=api_key)
 
         try:
-            result = client.call_action('user_show', {
+            client.call_action('user_show', {
                 "id": user_id,
                 "include_datasets": True,
             })
         except BaseException:
-            raise exceptions.APIException(detail="user with id {} not found".format(user_id))
+            raise exceptions.APIException(
+                detail="user with id {} not found".format(user_id))
 
         # print('got user')
         # print(result)
@@ -264,9 +257,6 @@ class OrganisationVerifyApiKey(APIView):
             raise exceptions.APIException(
                 detail="Can't get organisation list for user".format(user_id))
 
-#         print('got orgList')
-#         print(orgList)
-
         if not len(orgList):
             raise exceptions.APIException(
                 detail="This user has no organisations yet".format(user_id))
@@ -274,10 +264,12 @@ class OrganisationVerifyApiKey(APIView):
         primary_org_id = orgList[0]['id']
 
         try:
-            primary_org = client.call_action('organization_show', {"id": primary_org_id})
+            primary_org = client.call_action(
+                'organization_show', {"id": primary_org_id})
         except BaseException:
             raise exceptions.APIException(
-                detail="Can't call organization_show for organization with id {}".format(primary_org_id))
+                detail="Can't call organization_show for organization with id\
+                        {}".format(primary_org_id))
             return Response(status=401)
 
         # print('got primary_org')
@@ -285,14 +277,21 @@ class OrganisationVerifyApiKey(APIView):
 
         if not primary_org:
             raise exceptions.APIException(
-                detail="Can't call organization_show for organization with id {}".format(primary_org_id))
+                detail="Can't call organization_show for organization with id\
+                        {}".format(primary_org_id))
 
         primary_org_iati_id = primary_org.get('publisher_iati_id')
-        publisher_org = get_or_none(Organisation, organisation_identifier=primary_org_iati_id)
+        publisher_org = get_or_none(Organisation,
+                                    organisation_identifier=primary_org_iati_id
+                                    )
 
         if not publisher_org:
             raise exceptions.APIException(
-                detail="publisher_iati_id of {} not found in Organisation standard, correct this in the IATI registry".format(primary_org_iati_id))
+                detail="publisher_iati_id of {} not found in Organisation\
+                        standard, correct this in the IATI registry".format(
+                            primary_org_iati_id
+                        )
+                    )
 
         # TODO: add organisation foreign key - 2016-10-25
         publisher = Publisher.objects.update_or_create(
@@ -314,20 +313,26 @@ class OrganisationVerifyApiKey(APIView):
         organisation_group[0].organisationuser_set.add(user)
 
         if publisher[1]:  # has been created
-            organisation_admin_group = OrganisationAdminGroup.objects.get_or_create(
-                publisher=publisher[0],
-                defaults={
-                    "owner": user,
-                    "name": "{} Organisation Admin Group".format(primary_org.get('name')),
-                }
-            )
+            organisation_admin_group = OrganisationAdminGroup.objects.\
+                    get_or_create(
+                        publisher=publisher[0],
+                        defaults={
+                            "owner": user,
+                            "name": "{} Organisation Admin Group".format(
+                                primary_org.get('name')
+                            ),
+                        }
+                    )
         else:  # already exists
-            organisation_admin_group = OrganisationAdminGroup.objects.get_or_create(
-                publisher=publisher[0],
-                defaults={
-                    "name": "{} Organisation Admin Group".format(primary_org.get('name')),
-                }
-            )
+            organisation_admin_group = OrganisationAdminGroup.objects.\
+                    get_or_create(
+                        publisher=publisher[0],
+                        defaults={
+                            "name": "{} Organisation Admin Group".format(
+                                primary_org.get('name')
+                            ),
+                        }
+                    )
         organisation_admin_group[0].organisationuser_set.add(user)
 
         user.iati_api_key = api_key
@@ -354,7 +359,8 @@ class OrganisationRemoveApiKey(APIView):
         user.organisation_admin_groups.clear()
         user.organisation_groups.clear()
 
-        org_admin = OrganisationAdminGroup.objects.filter(user__organisationuser=user).delete()
+        OrganisationAdminGroup.objects.filter(
+            user__organisationuser=user).delete()
 
         user.iati_api_key = None
         user.save()

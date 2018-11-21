@@ -1,20 +1,15 @@
-
-
-from collections import OrderedDict
-from django.core.urlresolvers import reverse
-
-from rest_framework import status
-from rest_framework.test import APITestCase
-from django.test import RequestFactory, Client
-from rest_framework.test import APIClient
-from iati_synchroniser.factory import synchroniser_factory
-from iati.permissions.factories import OrganisationAdminGroupFactory, OrganisationUserFactory
-from rest_framework.authtoken.models import Token
-
-from iati_synchroniser.models import Publisher
-from iati.permissions.models import OrganisationAdminGroup, OrganisationGroup, OrganisationUser
+from ckanapi import RemoteCKAN
+from django.test import RequestFactory
+from rest_framework.test import APIClient, APITestCase
 
 from iati.factory.iati_factory import OrganisationFactory
+from iati.permissions.factories import (
+    OrganisationAdminGroupFactory, OrganisationUserFactory
+)
+from iati.permissions.models import (
+    OrganisationAdminGroup, OrganisationGroup, OrganisationUser
+)
+from iati_synchroniser.models import Publisher
 
 
 def fake_call_action(self, arg, whatever):
@@ -48,10 +43,12 @@ def fake_call_action(self, arg, whatever):
             u'display_name': u'Zimmerman & Zimmerman',
             u'title': u'Zimmerman & Zimmerman',
             u'publisher_units': u'',
-            u'publisher_contact': u'Mr. S. Vaessen\r\nOostelijke Handelskade 12H\r\n1019 BM Amsterdam\r\nThe Netherlands',
+            u'publisher_contact': u'Mr. S. Vaessen\r\nOostelijke Handelskade \
+                    12H\r\n1019 BM Amsterdam\r\nThe Netherlands',
             u'state': u'active',
             u'publisher_field_exclusions': u'',
-            u'publisher_description': u'Developing the OIPA framework for IATI data parsing, data sanitation and visualization.',
+            u'publisher_description': u'Developing the OIPA framework for \
+                    IATI data parsing, data sanitation and visualization.',
             u'license_id': u'cc-zero',
             u'type': u'organization',
             u'publisher_thresholds': u'',
@@ -79,7 +76,6 @@ def fake_call_action(self, arg, whatever):
             u'publisher_data_quality': u''}
 
 
-from ckanapi import RemoteCKAN, NotAuthorized
 RemoteCKAN.call_action = fake_call_action
 
 
@@ -96,7 +92,7 @@ class TestVerifyApiKey(APITestCase):
 
         admin_group.organisationuser_set.add(user)
 
-        organisation = OrganisationFactory.create(organisation_identifier="NL-KVK-51018586")
+        OrganisationFactory.create(organisation_identifier="NL-KVK-51018586")
 
         self.c.force_authenticate(user.user)
 
@@ -122,9 +118,14 @@ class TestVerifyApiKey(APITestCase):
 
         # test organisation groups have been created
         org_group = OrganisationGroup.objects.get(publisher=publisher)
-        self.assertEqual(org_group.organisationuser_set.get(pk=updated_user.id), updated_user)
+        self.assertEqual(
+            org_group.organisationuser_set.get(pk=updated_user.id),
+            updated_user
+        )
 
-        org_admin_group = OrganisationAdminGroup.objects.get(publisher=publisher)
+        org_admin_group = OrganisationAdminGroup.objects.get(
+            publisher=publisher
+        )
         self.assertEqual(
             org_admin_group.organisationuser_set.get(
                 pk=updated_user.id), updated_user)

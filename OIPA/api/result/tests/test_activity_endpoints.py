@@ -1,8 +1,6 @@
-from django.core.urlresolvers import reverse
-
+from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
-from iati.factory import iati_factory
 
 
 class TestResultEndpoints(APITestCase):
@@ -14,5 +12,7 @@ class TestResultEndpoints(APITestCase):
         assert url == expect_url, msg.format(expect_url)
         response = self.client.get(
             expect_url, {
-                'group_by': 'result_indicator_title', 'aggregations': 'actual'}, format='json')
+                'group_by': 'result_indicator_title',
+                'aggregations': 'actuals'
+            }, format='json')
         self.assertTrue(status.is_success(response.status_code))

@@ -1,5 +1,5 @@
-from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models.fields.related import ManyToOneRel
+from django_filters.rest_framework import DjangoFilterBackend
 
 
 class AllDjangoFilterBackend(DjangoFilterBackend):
@@ -15,7 +15,11 @@ class AllDjangoFilterBackend(DjangoFilterBackend):
         filter_fields = getattr(view, 'filter_fields', None)
 
         if filter_class or filter_fields:
-            return super(AllDjangoFilterBackend, self).get_filter_class(self, view, queryset)
+            return super(AllDjangoFilterBackend, self).get_filter_class(
+                self,
+                view,
+                queryset
+            )
 
         class AutoFilterSet(self.default_filter_set):
             class Meta:

@@ -1,6 +1,14 @@
+import os
+
 from OIPA.production_settings import *  # noqa: F401, F403
 
-SPATIALITE_LIBRARY_PATH = '/usr/local/lib/mod_spatialite.dylib'
+# XXX: Note, that for OS X you'll probably need something different, something
+# like '/usr/local/lib/mod_spatialite.dylib' or smth.
+# See:https://docs.djangoproject.com/en/2.0/ref/contrib/gis/install/spatialite/
+SPATIALITE_LIBRARY_PATH = os.getenv(
+    'SPATIALITE_LIBRARY_PATH',
+    'mod_spatialite.so',
+)
 
 DATABASES = {
     'default': {
@@ -19,5 +27,37 @@ CACHES = {
     },
     'api': {
         'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+    },
+}
+
+# Log everything to console when testing:
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        # Useful for local development:
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        # All other errors:
+        '': {
+            'handlers': ['console'],
+            'level': OIPA_LOG_LEVEL,  # NOQA: F405
+            'propagate': False,
+        },
+        # IATI Parser related errors:
+        'iati.parser': {
+            'handlers': ['console'],
+            'level': OIPA_LOG_LEVEL,  # NOQA: F405
+            'propagate': False,
+        },
+        # Django-related errors:
+        'django': {
+            'handlers': ['console'],
+            'level': OIPA_LOG_LEVEL,  # NOQA: F405
+            'propagate': False,
+        },
     },
 }

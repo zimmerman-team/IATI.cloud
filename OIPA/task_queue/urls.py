@@ -1,5 +1,11 @@
 from django.conf.urls import url
-from task_queue.views import *
+
+from task_queue.views import (
+    add_scheduled_task, add_task, cancel_scheduled_task,
+    delete_all_tasks_from_queue, delete_task_from_queue, get_current_job,
+    get_failed_tasks, get_finished_tasks, get_queue, get_scheduled_tasks,
+    get_workers, reschedule_all_failed
+)
 
 urlpatterns = [
     # Task queue management

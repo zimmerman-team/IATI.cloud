@@ -1,7 +1,6 @@
-from django.db import models
 import datetime
-from django.utils.safestring import mark_safe
-from django.utils.translation import ugettext_lazy as _
+
+from django.db import models
 
 from iati_organisation.models import Organisation
 
@@ -42,15 +41,18 @@ class Dataset(models.Model):
     name = models.CharField(max_length=255)
     title = models.CharField(max_length=255, default="")
     filetype = models.IntegerField(choices=filetype_choices, default=1)
-    publisher = models.ForeignKey(Publisher)  # organization.id
+    publisher = models.ForeignKey(Publisher, on_delete=models.CASCADE)
     source_url = models.URLField(max_length=255)  # resource.url
     iati_version = models.CharField(max_length=10, default="2.02")
 
     # OIPA related fields
-    date_created = models.DateTimeField(default=datetime.datetime.now, editable=False)
-    date_updated = models.DateTimeField(default=datetime.datetime.now, editable=False)
+    date_created = models.DateTimeField(
+        default=datetime.datetime.now, editable=False)
+    date_updated = models.DateTimeField(
+        default=datetime.datetime.now, editable=False)
     time_to_parse = models.CharField(null=True, default=None, max_length=40)
-    last_found_in_registry = models.DateTimeField(default=None, blank=True, null=True)
+    last_found_in_registry = models.DateTimeField(
+        default=None, blank=True, null=True)
     is_parsed = models.BooleanField(null=False, default=False)
     added_manually = models.BooleanField(null=False, default=True)
     sha1 = models.CharField(max_length=40, default="", null=False, blank=True)
@@ -106,7 +108,7 @@ class Dataset(models.Model):
 
 
 class DatasetNote(models.Model):
-    dataset = models.ForeignKey(Dataset)
+    dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE)
     iati_identifier = models.CharField(max_length=255, null=False, blank=False)
     exception_type = models.CharField(max_length=100, blank=False, null=False)
     model = models.CharField(max_length=255, null=False, blank=False)
@@ -119,9 +121,15 @@ class DatasetNote(models.Model):
 class Codelist(models.Model):
     name = models.CharField(primary_key=True, max_length=100)
     description = models.TextField(max_length=1000, blank=True, null=True)
-    count = models.CharField(max_length=10, blank=True, null=True)
+    count = models.CharField(
+        max_length=10,
+        blank=True,
+        null=True,
+        help_text='Count of different codes in this codelist',
+    )
     fields = models.CharField(max_length=255, blank=True, null=True)
-    date_updated = models.DateTimeField(default=datetime.datetime.now, editable=False)
+    date_updated = models.DateTimeField(
+        default=datetime.datetime.now, editable=False)
 
     def __unicode__(self,):
         return "%s" % self.name

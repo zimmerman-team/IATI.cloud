@@ -1,8 +1,8 @@
-import ujson
 import os
 import os.path
 
-from iati_codelists.models import Sector, SectorCategory, SectorVocabulary
+import ujson
+from iati_codelists.models import Sector, SectorVocabulary
 
 
 class SdgSectorImporter():
@@ -24,7 +24,12 @@ class SdgSectorImporter():
         return data
 
     def update(self):
-        sectors = self.get_json_data("/data/sdg_target_sectors.json").get('targets')
+        sectors = self.get_json_data(
+            # These look like Unesco-specific Sectors, but despite the fact
+            # that they are not in IATI (we can not parse them), they are
+            # (will be) used globally, so we have to keep them in OIPA:
+            "/data/sdg_target_sectors.json"
+        ).get('targets')
 
         vocabulary = SectorVocabulary.objects.get(pk=8)
 
@@ -35,7 +40,7 @@ class SdgSectorImporter():
             Sector.objects.get_or_create(
                 code=code,
                 defaults={
-                    'name': description[:60] + '...',
+                    'name': description,
                     'description': description,
                     'vocabulary': vocabulary
                 }

@@ -38,6 +38,8 @@
 
                 <select name="add-task-select-default">
                     <optgroup label="Registry synchronization tasks">
+                        <option value="perform_initial_tasks">Perform
+                            initial tasks </option>
                         <option value="update_iati_codelists">Update codelists from IATI registry</option>
                         <option value="get_new_sources_from_iati_api">Add new sources from IATI registry</option>
                     </optgroup>
@@ -793,7 +795,9 @@ $(document).ready(function (){
         var taskName = $('select[name="add-task-select-default"]').val();
         var btn = $('#add-task-button-default');
         var parameters = $('input[name="add-task-default-parameters"]').val();
+        $('input[name="add-task-default-parameters"]').val('');
         var parameters2 = $('input[name="add-task-default-parameters-2"]').val();
+        $('input[name="add-task-default-parameters-2"]').val('');
         var queue =  "default";
 
         $.ajax({

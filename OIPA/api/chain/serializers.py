@@ -1,7 +1,8 @@
 from rest_framework import serializers
-from traceability import models as chain_models
+
 from api.generics.serializers import DynamicFieldsModelSerializer
 from iati.models import Activity
+from traceability import models as chain_models
 
 
 class SimpleActivitySerializer(serializers.ModelSerializer):
@@ -54,7 +55,9 @@ class ChainSerializer(DynamicFieldsModelSerializer):
         view_name='chains:chain-node-list',
     )
 
-    url = serializers.HyperlinkedIdentityField(view_name='chains:chain-detail', read_only=True)
+    url = serializers.HyperlinkedIdentityField(
+        view_name='chains:chain-detail', read_only=True
+    )
 
     class Meta:
         model = chain_models.Chain

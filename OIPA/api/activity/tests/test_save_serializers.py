@@ -1,28 +1,51 @@
-
 # TODO: no need to test codelist fields separately; instead test the whole
 # serializer in once along with the code and vocabulary fields. Or is
 # testing the fields separately preferable?
 
-from django.test import TestCase  # Runs each test in a transaction and flushes database
-from unittest import skip
 import datetime
-
-from django.test import RequestFactory, Client
-from rest_framework.test import APIClient
-from iati.factory import iati_factory
-from iati.transaction import factories as transaction_factory
-from iati_codelists.factory import codelist_factory
-from iati_vocabulary.factory import vocabulary_factory
-from api.activity import serializers
-from iati import models as iati_models
-from iati.transaction import models as transaction_models
-from django.core.exceptions import ObjectDoesNotExist
-from iati.permissions.factories import OrganisationAdminGroupFactory, OrganisationUserFactory
-from rest_framework.exceptions import ValidationError
-
 from decimal import Decimal
 
-from iati.parser.exceptions import *
+from django.core.exceptions import ObjectDoesNotExist
+# Runs each test in a transaction and flushes database
+from django.test import RequestFactory, TestCase
+from rest_framework.test import APIClient
+
+from api.activity import serializers
+from iati import models as iati_models
+from iati.factory.iati_factory import (
+    ActivityDateFactory, ActivityDateTypeFactory, ActivityFactory,
+    ActivityPolicyMarkerFactory, ActivityRecipientCountryFactory,
+    ActivityRecipientRegionFactory, ActivitySectorFactory, AidTypeFactory,
+    BudgetFactory, BudgetItemFactory, BudgetStatusFactory, BudgetTypeFactory,
+    ConditionFactory, ConditionsFactory, ContactInfoFactory,
+    ContactTypeFactory, CountryBudgetItemFactory, CountryFactory,
+    CrsAddFactory, CrsAddOtherFlagsFactory, CurrencyFactory,
+    DescriptionFactory, DescriptionTypeFactory, DocumentLinkCategoryFactory,
+    DocumentLinkFactory, DocumentLinkLanguageFactory, FinanceTypeFactory,
+    FlowTypeFactory, FssFactory, FssForecastFactory,
+    GeographicExactnessFactory, GeographicLocationClassFactory,
+    GeographicLocationReachFactory, GeographicVocabularyFactory,
+    HumanitarianScopeFactory, HumanitarianScopeTypeFactory,
+    HumanitarianScopeVocabularyFactory, IndicatorMeasureFactory,
+    LegacyDataFactory, LoanRepaymentPeriodFactory, LoanRepaymentTypeFactory,
+    LocationFactory, LocationTypeFactory, OrganisationFactory,
+    OrganisationRoleFactory, OrganisationTypeFactory, OtherIdentifierFactory,
+    ParticipatingOrganisationFactory, PlannedDisbursementFactory,
+    PolicyMarkerFactory, PolicyMarkerVocabularyFactory,
+    PolicySignificanceFactory, RegionFactory, RegionVocabularyFactory,
+    RelatedActivityFactory, ResultFactory, ResultIndicatorFactory,
+    ResultIndicatorPeriodTargetFactory, ResultIndicatorReferenceFactory,
+    ResultTypeFactory, SectorFactory, SectorVocabularyFactory,
+    TiedStatusFactory, TitleFactory
+)
+from iati.parser.exceptions import FieldValidationError
+from iati.permissions.factories import (
+    OrganisationAdminGroupFactory, OrganisationUserFactory
+)
+from iati.transaction import factories as transaction_factory
+from iati.transaction import models as transaction_models
+from iati_codelists.factory import codelist_factory
+from iati_vocabulary.factory import vocabulary_factory
 
 
 class ErrorHandlingTestCase(TestCase):
@@ -58,10 +81,20 @@ class ErrorHandlingTestCase(TestCase):
             self.assertEqual(
                 e.get_full_details(), {
                     'id': {
-                        u'message': u'required', u'code': u'invalid'}, 'description': {
+                        u'message': u'required',
+                        u'code': u'invalid'
+                    },
+                    'description': {
                         'nested': {
-                            u'message': u'required', u'code': u'invalid'}}, 'name': {
-                        u'message': u'required', u'code': u'invalid'}})
+                            u'message': u'required',
+                            u'code': u'invalid'
+                        }
+                    },
+                    'name': {
+                        u'message': u'required',
+                        u'code': u'invalid'
+                    }
+                })
 
 
 class ActivitySaveTestCase(TestCase):
@@ -97,7 +130,6 @@ class ActivitySaveTestCase(TestCase):
                 "name": 'irrelevant',
             },
             "humanitarian": "1",
-            "xml_lang": "en",
             'activity_status': {
                 "code": activity_status.code,  # should be ignored
                 "name": 'irrelevant',
@@ -142,40 +174,54 @@ class ActivitySaveTestCase(TestCase):
         }
 
         res = self.c.post(
-            "/api/publishers/{}/activities/?format=json".format(self.publisher.id),
+            "/api/publishers/{}/activities/?format=json".format(
+                self.publisher.id
+            ),
             data,
             format='json'
         )
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
         instance = iati_models.Activity.objects.get(pk=res.json()['id'])
 
         self.assertEqual(instance.iati_identifier, data['iati_identifier'])
         self.assertEqual(instance.iati_standard_version.code, "2.02")
         self.assertEqual(instance.humanitarian, bool(data['humanitarian']))
-        self.assertEqual(instance.activity_status.code, str(data['activity_status']['code']))
-        self.assertEqual(instance.scope.code, str(data['activity_scope']['code']))
-        self.assertEqual(instance.collaboration_type.code, str(data['collaboration_type']['code']))
-        self.assertEqual(instance.default_flow_type.code, str(data['default_flow_type']['code']))
+        self.assertEqual(instance.activity_status.code,
+                         str(data['activity_status']['code']))
+        self.assertEqual(instance.scope.code, str(
+            data['activity_scope']['code']))
+        self.assertEqual(instance.collaboration_type.code,
+                         str(data['collaboration_type']['code']))
+        self.assertEqual(instance.default_flow_type.code,
+                         str(data['default_flow_type']['code']))
         self.assertEqual(
             instance.default_finance_type.code, str(
                 data['default_finance_type']['code']))
-        self.assertEqual(instance.default_aid_type.code, str(data['default_aid_type']['code']))
+        self.assertEqual(instance.default_aid_type.code,
+                         str(data['default_aid_type']['code']))
         self.assertEqual(
             instance.default_tied_status.code, str(
                 data['default_tied_status']['code']))
         self.assertEqual(instance.capital_spend, data['capital_spend'])
-        self.assertEqual(instance.secondary_reporter, data['secondary_reporter'])
+        self.assertEqual(instance.secondary_reporter,
+                         data['secondary_reporter'])
 
         title = instance.title
         title_narratives = title.narratives.all()
-        self.assertEqual(title_narratives[0].content, data['title']['narratives'][0]['text'])
-        self.assertEqual(title_narratives[1].content, data['title']['narratives'][1]['text'])
+        self.assertEqual(
+            title_narratives[0].content,
+            data['title']['narratives'][0]['text']
+        )
+        self.assertEqual(
+            title_narratives[1].content,
+            data['title']['narratives'][1]['text']
+        )
 
     def test_update_activity(self):
-        activity = iati_factory.ActivityFactory.create()
-        title = iati_factory.TitleFactory.create(activity=activity)
+        activity = ActivityFactory.create()
+        title = TitleFactory.create(activity=activity)
 
         iati_version = codelist_factory.VersionFactory.create(code="2.02")
         language = codelist_factory.LanguageFactory.create()
@@ -238,49 +284,63 @@ class ActivitySaveTestCase(TestCase):
         }
 
         res = self.c.put(
-            "/api/publishers/{}/activities/{}/?format=json".format(self.publisher.id, activity.id),
+            "/api/publishers/{}/activities/{}/?format=json".format(
+                self.publisher.id, activity.id),
             data,
             format='json'
         )
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
         instance = iati_models.Activity.objects.get(pk=res.json()['id'])
 
         self.assertEqual(instance.iati_identifier, data['iati_identifier'])
         self.assertEqual(instance.iati_standard_version.code, "2.02")
         self.assertEqual(instance.humanitarian, bool(data['humanitarian']))
-        self.assertEqual(instance.activity_status.code, str(data['activity_status']['code']))
-        self.assertEqual(instance.scope.code, str(data['activity_scope']['code']))
-        self.assertEqual(instance.collaboration_type.code, str(data['collaboration_type']['code']))
-        self.assertEqual(instance.default_flow_type.code, str(data['default_flow_type']['code']))
+        self.assertEqual(instance.activity_status.code,
+                         str(data['activity_status']['code']))
+        self.assertEqual(instance.scope.code, str(
+            data['activity_scope']['code']))
+        self.assertEqual(instance.collaboration_type.code,
+                         str(data['collaboration_type']['code']))
+        self.assertEqual(instance.default_flow_type.code,
+                         str(data['default_flow_type']['code']))
         self.assertEqual(
             instance.default_finance_type.code, str(
                 data['default_finance_type']['code']))
-        self.assertEqual(instance.default_aid_type.code, str(data['default_aid_type']['code']))
+        self.assertEqual(instance.default_aid_type.code,
+                         str(data['default_aid_type']['code']))
         self.assertEqual(
             instance.default_tied_status.code, str(
                 data['default_tied_status']['code']))
         self.assertEqual(instance.capital_spend, data['capital_spend'])
-        self.assertEqual(instance.secondary_reporter, data['secondary_reporter'])
+        self.assertEqual(instance.secondary_reporter,
+                         data['secondary_reporter'])
 
         title = instance.title
         title_narratives = title.narratives.all()
-        self.assertEqual(title_narratives[0].content, data['title']['narratives'][0]['text'])
-        self.assertEqual(title_narratives[1].content, data['title']['narratives'][1]['text'])
+        self.assertEqual(
+            title_narratives[0].content,
+            data['title']['narratives'][0]['text']
+        )
+        self.assertEqual(
+            title_narratives[1].content,
+            data['title']['narratives'][1]['text']
+        )
 
     def test_delete_activity(self):
-        activity = iati_factory.ActivityFactory.create()
+        activity = ActivityFactory.create()
 
         res = self.c.delete(
-            "/api/publishers/{}/activities/{}/?format=json".format(self.publisher.id, activity.id),
+            "/api/publishers/{}/activities/{}/?format=json".format(
+                self.publisher.id, activity.id),
             format='json'
         )
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
-            instance = iati_models.Activity.objects.get(pk=activity.id)
+            iati_models.Activity.objects.get(pk=activity.id)
 
 
 class DescriptionSaveTestCase(TestCase):
@@ -299,9 +359,8 @@ class DescriptionSaveTestCase(TestCase):
 
     def test_create_description(self):
 
-        activity = iati_factory.ActivityFactory.create()
-        type = iati_factory.DescriptionTypeFactory.create()
-        # type = iati_factory.DescriptionTypeFactory.create(code=2)
+        activity = ActivityFactory.create()
+        type = DescriptionTypeFactory.create()
 
         data = {
             "activity": activity.id,
@@ -320,13 +379,13 @@ class DescriptionSaveTestCase(TestCase):
         }
 
         res = self.c.post(
-            "/api/publishers/{}/activities/{}/descriptions/?format=json".format(
-                self.publisher.id, activity.id),
+            "/api/publishers/{}/activities/{}/descriptions/?format=json".format(  # NOQA: E501
+            self.publisher.id, activity.id),
             data,
             format='json'
         )
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
         instance = iati_models.Description.objects.get(pk=res.json()['id'])
 
@@ -338,9 +397,9 @@ class DescriptionSaveTestCase(TestCase):
         self.assertEqual(narratives[1].content, data['narratives'][1]['text'])
 
     def test_update_description(self):
-        description = iati_factory.DescriptionFactory.create()
-        type = iati_factory.DescriptionTypeFactory.create()
-        type2 = iati_factory.DescriptionTypeFactory.create(code=2)
+        description = DescriptionFactory.create()
+        type = DescriptionTypeFactory.create()  # NOQA: F841
+        type2 = DescriptionTypeFactory.create(code=2)
 
         data = {
             "activity": description.activity.id,
@@ -359,13 +418,13 @@ class DescriptionSaveTestCase(TestCase):
         }
 
         res = self.c.put(
-            "/api/publishers/{}/activities/{}/descriptions/{}?format=json".format(
+            "/api/publishers/{}/activities/{}/descriptions/{}?format=json".format(  # NOQA: E501
                 self.publisher.id, description.activity.id, description.id),
             data,
             format='json'
         )
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
         instance = iati_models.Description.objects.get(pk=res.json()['id'])
 
@@ -377,18 +436,18 @@ class DescriptionSaveTestCase(TestCase):
         self.assertEqual(narratives[1].content, data['narratives'][1]['text'])
 
     def test_delete_description(self):
-        description = iati_factory.DescriptionFactory.create()
+        description = DescriptionFactory.create()
 
         res = self.c.delete(
-            "/api/publishers/{}/activities/{}/descriptions/{}?format=json".format(
+            "/api/publishers/{}/activities/{}/descriptions/{}?format=json".format(  # NOQA: E501
                 self.publisher.id, description.activity.id, description.id),
             format='json'
         )
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
-            instance = iati_models.Description.objects.get(pk=description.id)
+            iati_models.Description.objects.get(pk=description.id)
 
 
 class ParticipatingOrganisationSaveTestCase(TestCase):
@@ -407,10 +466,10 @@ class ParticipatingOrganisationSaveTestCase(TestCase):
 
     def test_create_participating_organisation(self):
 
-        activity = iati_factory.ActivityFactory.create()
-        organisation = iati_factory.OrganisationFactory.create()
-        org_type = iati_factory.OrganisationTypeFactory.create(code=9)
-        org_role = iati_factory.OrganisationRoleFactory.create(code=1)
+        activity = ActivityFactory.create()
+        organisation = OrganisationFactory.create()
+        org_type = OrganisationTypeFactory.create(code=9)
+        org_role = OrganisationRoleFactory.create(code=1)
 
         data = {
             "ref": 'GB-COH-03580586',
@@ -435,19 +494,22 @@ class ParticipatingOrganisationSaveTestCase(TestCase):
         }
 
         res = self.c.post(
-            "/api/publishers/{}/activities/{}/participating_organisations/?format=json".format(
-                self.publisher.id, activity.id),
+            "/api/publishers/{}/activities/{}/participating_organisations/?format=json".format(  # NOQA: E501
+            self.publisher.id, activity.id),
             data,
             format='json'
         )
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
-        instance = iati_models.ActivityParticipatingOrganisation.objects.get(pk=res.json()['id'])
+        instance = iati_models.ActivityParticipatingOrganisation.objects\
+            .get(pk=res.json()['id'])
 
         self.assertEqual(instance.ref, data['ref'])
         self.assertEqual(instance.activity.id, data['activity'])
-        self.assertEqual(instance.organisation.organisation_identifier, data['organisation'])
+        self.assertEqual(
+            instance.organisation.organisation_identifier, data['organisation']
+        )
         self.assertEqual(instance.type.code, str(data['type']['code']))
         self.assertEqual(instance.role.code, str(data['role']['code']))
 
@@ -456,15 +518,16 @@ class ParticipatingOrganisationSaveTestCase(TestCase):
         self.assertEqual(narratives[1].content, data['narratives'][1]['text'])
 
     def test_update_participating_organisation(self):
-        participating_org = iati_factory.ParticipatingOrganisationFactory.create()
+        participating_org = ParticipatingOrganisationFactory\
+            .create()
 
-        org_type = iati_factory.OrganisationTypeFactory.create(code=22)
-        org_role = iati_factory.OrganisationRoleFactory.create(code=22)
+        org_type = OrganisationTypeFactory.create(code=22)
+        org_role = OrganisationRoleFactory.create(code=22)
 
         data = {
             "ref": 'GB-COH-03580586',
             "activity": participating_org.activity.id,
-            "organisation": participating_org.organisation.organisation_identifier,
+            "organisation": participating_org.organisation.organisation_identifier,  # NOQA: E501
             "type": {
                 "code": org_type.code,
                 "name": 'irrelevant',
@@ -484,19 +547,26 @@ class ParticipatingOrganisationSaveTestCase(TestCase):
         }
 
         res = self.c.put(
-            "/api/publishers/{}/activities/{}/participating_organisations/{}?format=json".format(
-                self.publisher.id, participating_org.activity.id, participating_org.id),
+            "/api/publishers/{}/activities/{}/participating_organisations/{}?format=json".format(  # NOQA: E501
+                self.publisher.id,
+                participating_org.activity.id,
+                participating_org.id
+            ),
             data,
             format='json'
         )
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
-        instance = iati_models.ActivityParticipatingOrganisation.objects.get(ref=data['ref'])
+        instance = iati_models.ActivityParticipatingOrganisation.objects.get(
+            ref=data['ref'])
 
         self.assertEqual(instance.ref, data['ref'])
         self.assertEqual(instance.activity.id, data['activity'])
-        self.assertEqual(instance.organisation.organisation_identifier, data['organisation'])
+        self.assertEqual(
+            instance.organisation.organisation_identifier,
+            data['organisation']
+        )
         self.assertEqual(instance.type.code, str(data['type']['code']))
         self.assertEqual(instance.role.code, str(data['role']['code']))
 
@@ -505,18 +575,22 @@ class ParticipatingOrganisationSaveTestCase(TestCase):
         self.assertEqual(narratives[1].content, data['narratives'][1]['text'])
 
     def test_delete_participating_organisation(self):
-        participating_org = iati_factory.ParticipatingOrganisationFactory.create()
+        participating_org = ParticipatingOrganisationFactory\
+            .create()
 
         res = self.c.delete(
-            "/api/publishers/{}/activities/{}/participating_organisations/{}?format=json".format(
-                self.publisher.id, participating_org.activity.id, participating_org.id),
+            "/api/publishers/{}/activities/{}/participating_organisations/{}?format=json".format(  # NOQA: E501
+                self.publisher.id,
+                participating_org.activity.id,
+                participating_org.id
+            ),
             format='json'
         )
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
-            instance = iati_models.ActivityParticipatingOrganisation.objects.get(
+            iati_models.ActivityParticipatingOrganisation.objects.get(
                 pk=participating_org.id)
 
 
@@ -536,8 +610,8 @@ class ActivityDateSaveTestCase(TestCase):
 
     def test_create_activity_date(self):
 
-        activity = iati_factory.ActivityFactory.create()
-        type = iati_factory.ActivityDateTypeFactory.create()
+        activity = ActivityFactory.create()
+        type = ActivityDateTypeFactory.create()
 
         data = {
             "activity": activity.id,
@@ -549,13 +623,13 @@ class ActivityDateSaveTestCase(TestCase):
         }
 
         res = self.c.post(
-            "/api/publishers/{}/activities/{}/activity_dates/?format=json".format(
-                self.publisher.id, activity.id),
+            "/api/publishers/{}/activities/{}/activity_dates/?format=json".format(  # NOQA: E501
+            self.publisher.id, activity.id),
             data,
             format='json'
         )
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
         instance = iati_models.ActivityDate.objects.get(pk=res.json()['id'])
 
@@ -563,9 +637,9 @@ class ActivityDateSaveTestCase(TestCase):
         self.assertEqual(instance.type.code, data['type']['code'])
 
     def test_update_activity_date(self):
-        activity_date = iati_factory.ActivityDateFactory.create()
-        type = iati_factory.ActivityDateTypeFactory.create()
-        type2 = iati_factory.ActivityDateTypeFactory.create(code=2)
+        activity_date = ActivityDateFactory.create()
+        type = ActivityDateTypeFactory.create()  # NOQA: F841
+        type2 = ActivityDateTypeFactory.create(code=2)
 
         data = {
             "activity": activity_date.activity.id,
@@ -577,13 +651,16 @@ class ActivityDateSaveTestCase(TestCase):
         }
 
         res = self.c.put(
-            "/api/publishers/{}/activities/{}/activity_dates/{}?format=json".format(
-                self.publisher.id, activity_date.activity.id, activity_date.id),
+            "/api/publishers/{}/activities/{}/activity_dates/{}?format=json".format(  # NOQA: E501
+                self.publisher.id,
+                activity_date.activity.id,
+                activity_date.id
+            ),
             data,
             format='json'
         )
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
         instance = iati_models.ActivityDate.objects.get(pk=res.json()['id'])
 
@@ -591,18 +668,19 @@ class ActivityDateSaveTestCase(TestCase):
         self.assertEqual(instance.type.code, str(data['type']['code']))
 
     def test_delete_activity_dates(self):
-        activity_dates = iati_factory.ActivityDateFactory.create()
+        activity_dates = ActivityDateFactory.create()
 
         res = self.c.delete(
-            "/api/publishers/{}/activities/{}/activity_dates/{}?format=json".format(
-                self.publisher.id, activity_dates.activity.id, activity_dates.id),
+            "/api/publishers/{}/activities/{}/activity_dates/{}?format=json".format(  # NOQA: E501
+            self.publisher.id, activity_dates.activity.id, activity_dates.id),
             format='json'
         )
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
-            instance = iati_models.ActivityDate.objects.get(pk=activity_dates.id)
+            iati_models.ActivityDate.objects.get(
+                pk=activity_dates.id)
 
 
 class ContactInfoSaveTestCase(TestCase):
@@ -621,16 +699,8 @@ class ContactInfoSaveTestCase(TestCase):
 
     def test_create_contact_info(self):
 
-        activity = iati_factory.ActivityFactory.create()
-        contact_type = iati_factory.ContactTypeFactory.create()
-        # organisation = iati_factory.ContactInfoOrganisationFactory.create()
-        # department = iati_factory.ContactInfoDepartmentFactory.create()
-        # person_name = iati_factory.ContactInfoPersonNameFactory.create()
-        # job_title = iati_factory.ContactInfoJobTitleFactory.create()
-        # telephone = iati_factory.ContactInfoTelephoneFactory.create()
-        # email = iati_factory.ContactInfoEmailFactory.create()
-        # website = iati_factory.ContactInfoWebsiteFactory.create()
-        # mailing_address = iati_factory.ContactInfoMailingAddressFactory.create()
+        activity = ActivityFactory.create()
+        contact_type = ContactTypeFactory.create()
 
         data = {
             "activity": activity.id,
@@ -694,13 +764,13 @@ class ContactInfoSaveTestCase(TestCase):
         }
 
         res = self.c.post(
-            "/api/publishers/{}/activities/{}/contact_info/?format=json".format(
-                self.publisher.id, activity.id),
+            "/api/publishers/{}/activities/{}/contact_info/?format=json".format(  # NOQA: E501
+            self.publisher.id, activity.id),
             data,
             format='json'
         )
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
         instance = iati_models.ContactInfo.objects.get(pk=res.json()['id'])
 
@@ -748,8 +818,8 @@ class ContactInfoSaveTestCase(TestCase):
             data['mailing_address']['narratives'][1]['text'])
 
     def test_update_contact_info(self):
-        contact_info = iati_factory.ContactInfoFactory.create()
-        contact_type = iati_factory.ContactTypeFactory.create()
+        contact_info = ContactInfoFactory.create()
+        contact_type = ContactTypeFactory.create()
 
         data = {
             "activity": contact_info.activity.id,
@@ -813,13 +883,13 @@ class ContactInfoSaveTestCase(TestCase):
         }
 
         res = self.c.put(
-            "/api/publishers/{}/activities/{}/contact_info/{}?format=json".format(
+            "/api/publishers/{}/activities/{}/contact_info/{}?format=json".format(  # NOQA: E501
                 self.publisher.id, contact_info.activity.id, contact_info.id),
             data,
             format='json'
         )
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
         instance = iati_models.ContactInfo.objects.get(pk=res.json()['id'])
 
@@ -867,18 +937,21 @@ class ContactInfoSaveTestCase(TestCase):
             data['mailing_address']['narratives'][1]['text'])
 
     def test_delete_contact_info(self):
-        contact_infos = iati_factory.ContactInfoFactory.create()
+        contact_infos = ContactInfoFactory.create()
 
         res = self.c.delete(
-            "/api/publishers/{}/activities/{}/contact_info/{}?format=json".format(
-                self.publisher.id, contact_infos.activity.id, contact_infos.id),
+            "/api/publishers/{}/activities/{}/contact_info/{}?format=json".format(  # NOQA: E501
+                self.publisher.id,
+                contact_infos.activity.id,
+                contact_infos.id
+            ),
             format='json'
         )
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
-            instance = iati_models.ContactInfo.objects.get(pk=contact_infos.id)
+            iati_models.ContactInfo.objects.get(pk=contact_infos.id)
 
 
 class ActivityRecipientCountrySaveTestCase(TestCase):
@@ -897,8 +970,8 @@ class ActivityRecipientCountrySaveTestCase(TestCase):
 
     def test_create_recipient_country(self):
 
-        activity = iati_factory.ActivityFactory.create()
-        country = iati_factory.CountryFactory.create()
+        activity = ActivityFactory.create()
+        country = CountryFactory.create()
 
         data = {
             "activity": activity.id,
@@ -910,23 +983,26 @@ class ActivityRecipientCountrySaveTestCase(TestCase):
         }
 
         res = self.c.post(
-            "/api/publishers/{}/activities/{}/recipient_countries/?format=json".format(
+            "/api/publishers/{}/activities/{}/recipient_countries/?format=json".format(  # NOQA: E501
                 self.publisher.id, activity.id),
             data,
             format='json'
         )
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
-        instance = iati_models.ActivityRecipientCountry.objects.get(pk=res.json()['id'])
+        instance = iati_models.ActivityRecipientCountry.objects.get(
+            pk=res.json()['id']
+        )
 
         self.assertEqual(instance.activity.id, data['activity'])
         self.assertEqual(instance.country.code, data['country']['code'])
         self.assertEqual(instance.percentage, data['percentage'])
 
     def test_update_recipient_country(self):
-        recipient_country = iati_factory.ActivityRecipientCountryFactory.create()
-        country = iati_factory.CountryFactory.create(code='AF')
+        recipient_country = ActivityRecipientCountryFactory\
+            .create()
+        country = CountryFactory.create(code='AF')
 
         data = {
             "activity": recipient_country.activity.id,
@@ -938,33 +1014,42 @@ class ActivityRecipientCountrySaveTestCase(TestCase):
         }
 
         res = self.c.put(
-            "/api/publishers/{}/activities/{}/recipient_countries/{}?format=json".format(
-                self.publisher.id, recipient_country.activity.id, recipient_country.id),
+            "/api/publishers/{}/activities/{}/recipient_countries/{}?format=json".format(  # NOQA: E501
+                self.publisher.id,
+                recipient_country.activity.id,
+                recipient_country.id
+            ),
             data,
             format='json'
         )
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
-        instance = iati_models.ActivityRecipientCountry.objects.get(pk=res.json()['id'])
+        instance = iati_models.ActivityRecipientCountry.objects.get(
+            pk=res.json()['id']
+        )
 
         self.assertEqual(instance.activity.id, data['activity'])
         self.assertEqual(instance.country.code, str(data['country']['code']))
         self.assertEqual(instance.percentage, data['percentage'])
 
     def test_delete_recipient_country(self):
-        recipient_country = iati_factory.ActivityRecipientCountryFactory.create()
+        recipient_country = ActivityRecipientCountryFactory.create()
 
         res = self.c.delete(
-            "/api/publishers/{}/activities/{}/recipient_countries/{}?format=json".format(
-                self.publisher.id, recipient_country.activity.id, recipient_country.id),
+            "/api/publishers/{}/activities/{}/recipient_countries/{}?format=json".format(  # NOQA: E501
+                self.publisher.id,
+                recipient_country.activity.id,
+                recipient_country.id
+            ),
             format='json'
         )
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
-            instance = iati_models.ActivityRecipientCountry.objects.get(pk=recipient_country.id)
+            iati_models.ActivityRecipientCountry.objects.get(
+                pk=recipient_country.id)
 
 
 class ActivityRecipientRegionSaveTestCase(TestCase):
@@ -983,9 +1068,9 @@ class ActivityRecipientRegionSaveTestCase(TestCase):
 
     def test_create_recipient_region(self):
 
-        activity = iati_factory.ActivityFactory.create()
-        region = iati_factory.RegionFactory.create()
-        region_vocabulary = iati_factory.RegionVocabularyFactory.create()
+        activity = ActivityFactory.create()
+        region = RegionFactory.create()
+        region_vocabulary = RegionVocabularyFactory.create()
 
         data = {
             "activity": activity.id,
@@ -1002,23 +1087,27 @@ class ActivityRecipientRegionSaveTestCase(TestCase):
         }
 
         res = self.c.post(
-            "/api/publishers/{}/activities/{}/recipient_regions/?format=json".format(
-                self.publisher.id, activity.id),
-            data,
-            format='json'
+            "/api/publishers/{}/activities/{}/recipient_regions/?format=json".format(  # NOQA: E501
+            self.publisher.id,
+            activity.id
+        ),
+        data,
+        format='json'
         )
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
-        instance = iati_models.ActivityRecipientRegion.objects.get(pk=res.json()['id'])
+        instance = iati_models.ActivityRecipientRegion.objects.get(
+            pk=res.json()['id']
+        )
 
         self.assertEqual(instance.activity.id, data['activity'])
         self.assertEqual(instance.region.code, str(data['region']['code']))
         self.assertEqual(instance.percentage, data['percentage'])
 
     def test_update_recipient_region(self):
-        recipient_region = iati_factory.ActivityRecipientRegionFactory.create()
-        region = iati_factory.RegionFactory.create(code=89)
+        recipient_region = ActivityRecipientRegionFactory.create()
+        region = RegionFactory.create(code=89)
 
         data = {
             "activity": recipient_region.activity.id,
@@ -1035,33 +1124,43 @@ class ActivityRecipientRegionSaveTestCase(TestCase):
         }
 
         res = self.c.put(
-            "/api/publishers/{}/activities/{}/recipient_regions/{}?format=json".format(
-                self.publisher.id, recipient_region.activity.id, recipient_region.id),
+            "/api/publishers/{}/activities/{}/recipient_regions/{}?format=json".format(  # NOQA: E501
+                self.publisher.id,
+                recipient_region.activity.id,
+                recipient_region.id
+            ),
             data,
             format='json'
         )
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
-        instance = iati_models.ActivityRecipientRegion.objects.get(pk=res.json()['id'])
+        instance = iati_models.ActivityRecipientRegion.objects.get(
+            pk=res.json()['id']
+        )
 
         self.assertEqual(instance.activity.id, data['activity'])
         self.assertEqual(instance.region.code, str(data['region']['code']))
-        self.assertEqual(instance.vocabulary.code, str(data['vocabulary']['code']))
+        self.assertEqual(instance.vocabulary.code,
+                         str(data['vocabulary']['code']))
 
     def test_delete_recipient_region(self):
-        recipient_region = iati_factory.ActivityRecipientRegionFactory.create()
+        recipient_region = ActivityRecipientRegionFactory.create()
 
         res = self.c.delete(
-            "/api/publishers/{}/activities/{}/recipient_regions/{}?format=json".format(
-                self.publisher.id, recipient_region.activity.id, recipient_region.id),
+            "/api/publishers/{}/activities/{}/recipient_regions/{}?format=json".format(  # NOQA: E501
+                self.publisher.id,
+                recipient_region.activity.id,
+                recipient_region.id
+            ),
             format='json'
         )
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
-            instance = iati_models.ActivityRecipientRegion.objects.get(pk=recipient_region.id)
+            iati_models.ActivityRecipientRegion.objects.get(
+                pk=recipient_region.id)
 
 
 class ActivitySectorSaveTestCase(TestCase):
@@ -1080,9 +1179,9 @@ class ActivitySectorSaveTestCase(TestCase):
 
     def test_create__sector(self):
 
-        activity = iati_factory.ActivityFactory.create()
-        sector = iati_factory.SectorFactory.create()
-        sector_vocabulary = iati_factory.SectorVocabularyFactory.create()
+        activity = ActivityFactory.create()
+        sector = SectorFactory.create()
+        sector_vocabulary = SectorVocabularyFactory.create()
 
         data = {
             "activity": activity.id,
@@ -1105,7 +1204,7 @@ class ActivitySectorSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
         instance = iati_models.ActivitySector.objects.get(pk=res.json()['id'])
 
@@ -1114,8 +1213,8 @@ class ActivitySectorSaveTestCase(TestCase):
         self.assertEqual(instance.percentage, data['percentage'])
 
     def test_update__sector(self):
-        _sector = iati_factory.ActivitySectorFactory.create()
-        sector = iati_factory.SectorFactory.create(code=89)
+        _sector = ActivitySectorFactory.create()
+        sector = SectorFactory.create(code=89)
 
         data = {
             "activity": _sector.activity.id,
@@ -1138,16 +1237,17 @@ class ActivitySectorSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
         instance = iati_models.ActivitySector.objects.get(pk=res.json()['id'])
 
         self.assertEqual(instance.activity.id, data['activity'])
         self.assertEqual(instance.sector.code, str(data['sector']['code']))
-        self.assertEqual(instance.vocabulary.code, str(data['vocabulary']['code']))
+        self.assertEqual(instance.vocabulary.code,
+                         str(data['vocabulary']['code']))
 
     def test_delete__sector(self):
-        _sector = iati_factory.ActivitySectorFactory.create()
+        _sector = ActivitySectorFactory.create()
 
         res = self.c.delete(
             "/api/publishers/{}/activities/{}/sectors/{}?format=json".format(
@@ -1155,10 +1255,10 @@ class ActivitySectorSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
-            instance = iati_models.ActivitySector.objects.get(pk=_sector.id)
+            iati_models.ActivitySector.objects.get(pk=_sector.id)
 
 
 class LocationSaveTestCase(TestCase):
@@ -1177,15 +1277,14 @@ class LocationSaveTestCase(TestCase):
 
     def test_create_location(self):
 
-        activity = iati_factory.ActivityFactory.create()
-        location_reach = iati_factory.GeographicLocationReachFactory.create()
-        location_id_vocabulary = iati_factory.GeographicVocabularyFactory.create()
-        exactness = iati_factory.GeographicExactnessFactory.create()
-        location_class = iati_factory.GeographicLocationClassFactory.create()
-        feature_designation = iati_factory.LocationTypeFactory.create()
+        activity = ActivityFactory.create()
+        location_reach = GeographicLocationReachFactory.create()
+        location_id_vocabulary = GeographicVocabularyFactory.create()
+        exactness = GeographicExactnessFactory.create()
+        location_class = GeographicLocationClassFactory.create()
+        feature_designation = LocationTypeFactory.create()
 
-        type = iati_factory.LocationTypeFactory.create()
-        # type = iati_factory.LocationTypeFactory.create(code=2)
+        LocationTypeFactory.create()
 
         data = {
             "activity": activity.id,
@@ -1259,28 +1358,36 @@ class LocationSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
         instance = iati_models.Location.objects.get(pk=res.json()['id'])
 
         self.assertEqual(instance.activity.id, data['activity'])
         self.assertEqual(instance.ref, data['ref'])
-        self.assertEqual(instance.location_reach.code, data['location_reach']['code'])
-        self.assertEqual(instance.location_id_code, data['location_id']['code'])
+        self.assertEqual(instance.location_reach.code,
+                         data['location_reach']['code'])
+        self.assertEqual(instance.location_id_code,
+                         data['location_id']['code'])
         self.assertEqual(
             instance.location_id_vocabulary.code,
             data['location_id']['vocabulary']['code'])
         self.assertEqual(instance.exactness.code, data['exactness']['code'])
-        self.assertEqual(instance.location_class.code, data['location_class']['code'])
-        self.assertEqual(instance.feature_designation.code, data['feature_designation']['code'])
+        self.assertEqual(instance.location_class.code,
+                         data['location_class']['code'])
+        self.assertEqual(instance.feature_designation.code,
+                         data['feature_designation']['code'])
 
         self.assertEqual(instance.point_srs_name, data['point']['srsName'])
-        self.assertEqual(str(instance.point_pos[0]), data['point']['pos']['longitude'])
-        self.assertEqual(str(instance.point_pos[1]), data['point']['pos']['latitude'])
+        self.assertEqual(
+            str(instance.point_pos[0]), data['point']['pos']['longitude'])
+        self.assertEqual(
+            str(instance.point_pos[1]), data['point']['pos']['latitude'])
 
         name_narratives = instance.name.narratives.all()
-        self.assertEqual(name_narratives[0].content, data['name']['narratives'][0]['text'])
-        self.assertEqual(name_narratives[1].content, data['name']['narratives'][1]['text'])
+        self.assertEqual(
+            name_narratives[0].content, data['name']['narratives'][0]['text'])
+        self.assertEqual(
+            name_narratives[1].content, data['name']['narratives'][1]['text'])
 
         description_narratives = instance.description.narratives.all()
         self.assertEqual(
@@ -1290,7 +1397,8 @@ class LocationSaveTestCase(TestCase):
             description_narratives[1].content,
             data['description']['narratives'][1]['text'])
 
-        activity_description_narratives = instance.activity_description.narratives.all()
+        activity_description_narratives = instance.activity_description.\
+            narratives.all()
         self.assertEqual(
             activity_description_narratives[0].content,
             data['activity_description']['narratives'][0]['text'])
@@ -1299,16 +1407,19 @@ class LocationSaveTestCase(TestCase):
             data['activity_description']['narratives'][1]['text'])
 
     def test_update_location(self):
-        location = iati_factory.LocationFactory.create()
+        location = LocationFactory.create()
 
-        location_reach = iati_factory.GeographicLocationReachFactory.create(code='123')
-        location_id_vocabulary = iati_factory.GeographicVocabularyFactory.create(code='A4')
-        exactness = iati_factory.GeographicExactnessFactory.create(code=2)
-        location_class = iati_factory.GeographicLocationClassFactory.create(code=2)
-        feature_designation = iati_factory.LocationTypeFactory.create(code='PPLQ')
+        location_reach = GeographicLocationReachFactory.create(
+            code='123')
+        location_id_vocabulary = GeographicVocabularyFactory.create(
+            code='A4')
+        exactness = GeographicExactnessFactory.create(code=2)
+        location_class = GeographicLocationClassFactory.create(
+            code=2)
+        feature_designation = LocationTypeFactory.create(
+            code='PPLQ')
 
-        type = iati_factory.LocationTypeFactory.create()
-        # type = iati_factory.LocationTypeFactory.create(code=2)
+        LocationTypeFactory.create()
 
         data = {
             "activity": location.activity.id,
@@ -1382,28 +1493,37 @@ class LocationSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
         instance = iati_models.Location.objects.get(pk=res.json()['id'])
 
         self.assertEqual(instance.activity.id, data['activity'])
         self.assertEqual(instance.ref, data['ref'])
-        self.assertEqual(instance.location_reach.code, data['location_reach']['code'])
-        self.assertEqual(instance.location_id_code, data['location_id']['code'])
+        self.assertEqual(instance.location_reach.code,
+                         data['location_reach']['code'])
+        self.assertEqual(instance.location_id_code,
+                         data['location_id']['code'])
         self.assertEqual(
             instance.location_id_vocabulary.code,
             data['location_id']['vocabulary']['code'])
-        self.assertEqual(instance.exactness.code, str(data['exactness']['code']))
-        self.assertEqual(instance.location_class.code, data['location_class']['code'])
-        self.assertEqual(instance.feature_designation.code, data['feature_designation']['code'])
+        self.assertEqual(instance.exactness.code,
+                         str(data['exactness']['code']))
+        self.assertEqual(instance.location_class.code,
+                         data['location_class']['code'])
+        self.assertEqual(instance.feature_designation.code,
+                         data['feature_designation']['code'])
 
         self.assertEqual(instance.point_srs_name, data['point']['srsName'])
-        self.assertEqual(str(instance.point_pos[0]), data['point']['pos']['longitude'])
-        self.assertEqual(str(instance.point_pos[1]), data['point']['pos']['latitude'])
+        self.assertEqual(
+            str(instance.point_pos[0]), data['point']['pos']['longitude'])
+        self.assertEqual(
+            str(instance.point_pos[1]), data['point']['pos']['latitude'])
 
         name_narratives = instance.name.narratives.all()
-        self.assertEqual(name_narratives[0].content, data['name']['narratives'][0]['text'])
-        self.assertEqual(name_narratives[1].content, data['name']['narratives'][1]['text'])
+        self.assertEqual(
+            name_narratives[0].content, data['name']['narratives'][0]['text'])
+        self.assertEqual(
+            name_narratives[1].content, data['name']['narratives'][1]['text'])
 
         description_narratives = instance.description.narratives.all()
         self.assertEqual(
@@ -1413,7 +1533,8 @@ class LocationSaveTestCase(TestCase):
             description_narratives[1].content,
             data['description']['narratives'][1]['text'])
 
-        activity_description_narratives = instance.activity_description.narratives.all()
+        activity_description_narratives = instance.activity_description.\
+            narratives.all()
         self.assertEqual(
             activity_description_narratives[0].content,
             data['activity_description']['narratives'][0]['text'])
@@ -1422,7 +1543,7 @@ class LocationSaveTestCase(TestCase):
             data['activity_description']['narratives'][1]['text'])
 
     def test_delete_location(self):
-        location = iati_factory.LocationFactory.create()
+        location = LocationFactory.create()
 
         res = self.c.delete(
             "/api/publishers/{}/activities/{}/locations/{}?format=json".format(
@@ -1430,10 +1551,10 @@ class LocationSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
-            instance = iati_models.Location.objects.get(pk=location.id)
+            iati_models.Location.objects.get(pk=location.id)
 
 
 class HumanitarianScopeSaveTestCase(TestCase):
@@ -1452,9 +1573,9 @@ class HumanitarianScopeSaveTestCase(TestCase):
 
     def test_create_humanitarian_scope(self):
 
-        activity = iati_factory.ActivityFactory.create()
-        type = iati_factory.HumanitarianScopeTypeFactory.create()
-        vocabulary = iati_factory.HumanitarianScopeVocabularyFactory.create()
+        activity = ActivityFactory.create()
+        type = HumanitarianScopeTypeFactory.create()
+        vocabulary = HumanitarianScopeVocabularyFactory.create()
 
         data = {
             "activity": activity.id,
@@ -1471,15 +1592,16 @@ class HumanitarianScopeSaveTestCase(TestCase):
         }
 
         res = self.c.post(
-            "/api/publishers/{}/activities/{}/humanitarian_scopes/?format=json".format(
+            "/api/publishers/{}/activities/{}/humanitarian_scopes/?format=json".format(  # NOQA: E501
                 self.publisher.id, activity.id),
             data,
             format='json'
         )
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
-        instance = iati_models.HumanitarianScope.objects.get(pk=res.json()['id'])
+        instance = iati_models.HumanitarianScope.objects.get(pk=res.json()[
+                                                             'id'])
 
         self.assertEqual(instance.activity.id, data['activity'])
         self.assertEqual(instance.type.code, data['type']['code'])
@@ -1487,9 +1609,10 @@ class HumanitarianScopeSaveTestCase(TestCase):
         self.assertEqual(instance.vocabulary_uri, data['vocabulary_uri'])
 
     def test_update_humanitarian_scope(self):
-        humanitarian_scope = iati_factory.HumanitarianScopeFactory.create()
-        type = iati_factory.HumanitarianScopeTypeFactory.create(code="2")
-        vocabulary = iati_factory.HumanitarianScopeVocabularyFactory.create(code="2")
+        humanitarian_scope = HumanitarianScopeFactory.create()
+        type = HumanitarianScopeTypeFactory.create(code="2")
+        vocabulary = HumanitarianScopeVocabularyFactory.create(
+            code="2")
 
         data = {
             "activity": humanitarian_scope.activity.id,
@@ -1506,15 +1629,19 @@ class HumanitarianScopeSaveTestCase(TestCase):
         }
 
         res = self.c.put(
-            "/api/publishers/{}/activities/{}/humanitarian_scopes/{}?format=json".format(
-                self.publisher.id, humanitarian_scope.activity.id, humanitarian_scope.id),
+            "/api/publishers/{}/activities/{}/humanitarian_scopes/{}?format=json".format(  # NOQA: E501
+                self.publisher.id,
+                humanitarian_scope.activity.id,
+                humanitarian_scope.id
+            ),
             data,
             format='json'
         )
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
-        instance = iati_models.HumanitarianScope.objects.get(pk=res.json()['id'])
+        instance = iati_models.HumanitarianScope.objects.get(pk=res.json()[
+                                                             'id'])
 
         self.assertEqual(instance.activity.id, data['activity'])
         self.assertEqual(instance.type.code, data['type']['code'])
@@ -1522,18 +1649,22 @@ class HumanitarianScopeSaveTestCase(TestCase):
         self.assertEqual(instance.vocabulary_uri, data['vocabulary_uri'])
 
     def test_delete_humanitarian_scope(self):
-        humanitarian_scopes = iati_factory.HumanitarianScopeFactory.create()
+        humanitarian_scopes = HumanitarianScopeFactory.create()
 
         res = self.c.delete(
-            "/api/publishers/{}/activities/{}/humanitarian_scopes/{}?format=json".format(
-                self.publisher.id, humanitarian_scopes.activity.id, humanitarian_scopes.id),
+            "/api/publishers/{}/activities/{}/humanitarian_scopes/{}?format=json".format(  # NOQA: E501
+                self.publisher.id,
+                humanitarian_scopes.activity.id,
+                humanitarian_scopes.id
+            ),
             format='json'
         )
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
-            instance = iati_models.HumanitarianScope.objects.get(pk=humanitarian_scopes.id)
+            iati_models.HumanitarianScope.objects.get(
+                pk=humanitarian_scopes.id)
 
 
 class PolicyMarkerSaveTestCase(TestCase):
@@ -1551,10 +1682,10 @@ class PolicyMarkerSaveTestCase(TestCase):
         self.c.force_authenticate(user.user)
 
     def test_create_policy_marker(self):
-        activity = iati_factory.ActivityFactory.create()
-        vocabulary = iati_factory.PolicyMarkerVocabularyFactory.create()
-        significance = iati_factory.PolicySignificanceFactory.create()
-        policy_marker = iati_factory.PolicyMarkerFactory.create()
+        activity = ActivityFactory.create()
+        vocabulary = PolicyMarkerVocabularyFactory.create()
+        significance = PolicySignificanceFactory.create()
+        policy_marker = PolicyMarkerFactory.create()
 
         data = {
             "activity": activity.id,
@@ -1582,31 +1713,35 @@ class PolicyMarkerSaveTestCase(TestCase):
         }
 
         res = self.c.post(
-            "/api/publishers/{}/activities/{}/policy_markers/?format=json".format(
-                self.publisher.id, activity.id),
+            "/api/publishers/{}/activities/{}/policy_markers/?format=json".format(  # NOQA: E501
+                self.publisher.id, activity.id
+            ),
             data,
             format='json'
         )
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
-        instance = iati_models.ActivityPolicyMarker.objects.get(pk=res.json()['id'])
+        instance = iati_models.ActivityPolicyMarker.objects.get(pk=res.json()[
+                                                                'id'])
 
         self.assertEqual(instance.activity.id, data['activity'])
         self.assertEqual(instance.vocabulary.code, data['vocabulary']['code'])
         self.assertEqual(instance.vocabulary_uri, data['vocabulary_uri'])
-        self.assertEqual(instance.code.code, str(data['policy_marker']['code']))
-        self.assertEqual(instance.significance.code, str(data['significance']['code']))
+        self.assertEqual(instance.code.code, str(
+            data['policy_marker']['code']))
+        self.assertEqual(instance.significance.code,
+                         str(data['significance']['code']))
 
         narratives = instance.narratives.all()
         self.assertEqual(narratives[0].content, data['narratives'][0]['text'])
         self.assertEqual(narratives[1].content, data['narratives'][1]['text'])
 
     def test_update_policy_marker(self):
-        activity_policy_marker = iati_factory.ActivityPolicyMarkerFactory.create()
-        vocabulary = iati_factory.PolicyMarkerVocabularyFactory.create(code=2)
-        policy_marker = iati_factory.PolicyMarkerFactory.create(code=2)
-        significance = iati_factory.PolicySignificanceFactory.create(code=2)
+        activity_policy_marker = ActivityPolicyMarkerFactory.create()
+        vocabulary = PolicyMarkerVocabularyFactory.create(code=2)
+        policy_marker = PolicyMarkerFactory.create(code=2)
+        significance = PolicySignificanceFactory.create(code=2)
 
         data = {
             "activity": activity_policy_marker.activity.id,
@@ -1634,39 +1769,50 @@ class PolicyMarkerSaveTestCase(TestCase):
         }
 
         res = self.c.put(
-            "/api/publishers/{}/activities/{}/policy_markers/{}?format=json".format(
-                self.publisher.id, activity_policy_marker.activity.id, activity_policy_marker.id),
+            "/api/publishers/{}/activities/{}/policy_markers/{}?format=json".format(  # NOQA: E501
+                self.publisher.id,
+                activity_policy_marker.activity.id,
+                activity_policy_marker.id
+            ),
             data,
             format='json'
         )
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
-        instance = iati_models.ActivityPolicyMarker.objects.get(pk=res.json()['id'])
+        instance = iati_models.ActivityPolicyMarker.objects.get(pk=res.json()[
+                                                                'id'])
 
         self.assertEqual(instance.activity.id, data['activity'])
-        self.assertEqual(instance.vocabulary.code, str(data['vocabulary']['code']))
+        self.assertEqual(instance.vocabulary.code,
+                         str(data['vocabulary']['code']))
         self.assertEqual(instance.vocabulary_uri, data['vocabulary_uri'])
-        self.assertEqual(instance.code.code, str(data['policy_marker']['code']))
-        self.assertEqual(instance.significance.code, str(data['significance']['code']))
+        self.assertEqual(instance.code.code, str(
+            data['policy_marker']['code']))
+        self.assertEqual(instance.significance.code,
+                         str(data['significance']['code']))
 
         narratives = instance.narratives.all()
         self.assertEqual(narratives[0].content, data['narratives'][0]['text'])
         self.assertEqual(narratives[1].content, data['narratives'][1]['text'])
 
     def test_delete_policy_marker(self):
-        participating_org = iati_factory.ActivityPolicyMarkerFactory.create()
+        participating_org = ActivityPolicyMarkerFactory.create()
 
         res = self.c.delete(
-            "/api/publishers/{}/activities/{}/policy_markers/{}?format=json".format(
-                self.publisher.id, participating_org.activity.id, participating_org.id),
+            "/api/publishers/{}/activities/{}/policy_markers/{}?format=json".format(  # NOQA: E501
+                self.publisher.id,
+                participating_org.activity.id,
+                participating_org.id
+            ),
             format='json'
         )
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
-            instance = iati_models.ActivityPolicyMarker.objects.get(pk=participating_org.id)
+            iati_models.ActivityPolicyMarker.objects.get(
+                pk=participating_org.id)
 
 
 class BudgetSaveTestCase(TestCase):
@@ -1685,10 +1831,10 @@ class BudgetSaveTestCase(TestCase):
 
     def test_create_budget(self):
 
-        activity = iati_factory.ActivityFactory.create()
-        type = iati_factory.BudgetTypeFactory.create()
-        status = iati_factory.BudgetStatusFactory.create()
-        currency = iati_factory.CurrencyFactory.create()
+        activity = ActivityFactory.create()
+        type = BudgetTypeFactory.create()
+        status = BudgetStatusFactory.create()
+        currency = CurrencyFactory.create()
 
         data = {
             "activity": activity.id,
@@ -1719,24 +1865,27 @@ class BudgetSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
         instance = iati_models.Budget.objects.get(pk=res.json()['id'])
 
         self.assertEqual(instance.activity.id, data['activity'])
         self.assertEqual(instance.type.code, data['type']['code'])
         self.assertEqual(instance.status.code, data['status']['code'])
-        self.assertEqual(instance.period_start.isoformat(), data['period_start'])
+        self.assertEqual(instance.period_start.isoformat(),
+                         data['period_start'])
         self.assertEqual(instance.period_end.isoformat(), data['period_end'])
         self.assertEqual(instance.value, data['value']['value'])
-        self.assertEqual(instance.currency.code, data['value']['currency']['code'])
-        self.assertEqual(instance.value_date.isoformat(), data['value']['date'])
+        self.assertEqual(instance.currency.code,
+                         data['value']['currency']['code'])
+        self.assertEqual(instance.value_date.isoformat(),
+                         data['value']['date'])
 
     def test_update_budget(self):
-        budget = iati_factory.BudgetFactory.create()
-        type = iati_factory.BudgetTypeFactory.create(code="2")
-        status = iati_factory.BudgetStatusFactory.create(code="2")
-        currency = iati_factory.CurrencyFactory.create(code='af')
+        budget = BudgetFactory.create()
+        type = BudgetTypeFactory.create(code="2")
+        status = BudgetStatusFactory.create(code="2")
+        currency = CurrencyFactory.create(code='af')
 
         data = {
             "activity": budget.activity.id,
@@ -1767,21 +1916,24 @@ class BudgetSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
         instance = iati_models.Budget.objects.get(pk=res.json()['id'])
 
         self.assertEqual(instance.activity.id, data['activity'])
         self.assertEqual(instance.type.code, data['type']['code'])
         self.assertEqual(instance.status.code, data['status']['code'])
-        self.assertEqual(instance.period_start.isoformat(), data['period_start'])
+        self.assertEqual(instance.period_start.isoformat(),
+                         data['period_start'])
         self.assertEqual(instance.period_end.isoformat(), data['period_end'])
         self.assertEqual(instance.value, data['value']['value'])
-        self.assertEqual(instance.currency.code, data['value']['currency']['code'])
-        self.assertEqual(instance.value_date.isoformat(), data['value']['date'])
+        self.assertEqual(instance.currency.code,
+                         data['value']['currency']['code'])
+        self.assertEqual(instance.value_date.isoformat(),
+                         data['value']['date'])
 
     def test_delete_budget(self):
-        budgets = iati_factory.BudgetFactory.create()
+        budgets = BudgetFactory.create()
 
         res = self.c.delete(
             "/api/publishers/{}/activities/{}/budgets/{}?format=json".format(
@@ -1789,10 +1941,10 @@ class BudgetSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
-            instance = iati_models.Budget.objects.get(pk=budgets.id)
+            iati_models.Budget.objects.get(pk=budgets.id)
 
 
 class PlannedDisbursementSaveTestCase(TestCase):
@@ -1811,12 +1963,13 @@ class PlannedDisbursementSaveTestCase(TestCase):
 
     def test_create_planned_disbursement(self):
 
-        activity = iati_factory.ActivityFactory.create()
-        type = iati_factory.BudgetTypeFactory.create()
-        currency = iati_factory.CurrencyFactory.create()
-        organisation = iati_factory.OrganisationFactory.create()
-        organisation_type = iati_factory.OrganisationTypeFactory.create(code=9)
-        activity2 = iati_factory.ActivityFactory.create(iati_identifier="IATI-0002")
+        activity = ActivityFactory.create()
+        type = BudgetTypeFactory.create()
+        currency = CurrencyFactory.create()
+        organisation = OrganisationFactory.create()
+        organisation_type = OrganisationTypeFactory.create(code=9)
+        activity2 = ActivityFactory.create(
+            iati_identifier="IATI-0002")
 
         data = {
             "activity": activity.id,
@@ -1868,64 +2021,81 @@ class PlannedDisbursementSaveTestCase(TestCase):
         }
 
         res = self.c.post(
-            "/api/publishers/{}/activities/{}/planned_disbursements/?format=json".format(
+            "/api/publishers/{}/activities/{}/planned_disbursements/?format=json".format(  # NOQA: E501
                 self.publisher.id, activity.id),
             data,
             format='json'
         )
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
-        instance = iati_models.PlannedDisbursement.objects.get(pk=res.json()['id'])
+        instance = iati_models.PlannedDisbursement.objects.get(pk=res.json()[
+                                                               'id'])
 
         self.assertEqual(instance.activity.id, data['activity'])
         self.assertEqual(instance.type.code, data['type']['code'])
-        self.assertEqual(instance.period_start.isoformat(), data['period_start'])
+        self.assertEqual(instance.period_start.isoformat(),
+                         data['period_start'])
         self.assertEqual(instance.period_end.isoformat(), data['period_end'])
         self.assertEqual(instance.value, data['value']['value'])
-        self.assertEqual(instance.currency.code, data['value']['currency']['code'])
-        self.assertEqual(instance.value_date.isoformat(), data['value']['date'])
+        self.assertEqual(instance.currency.code,
+                         data['value']['currency']['code'])
+        self.assertEqual(instance.value_date.isoformat(),
+                         data['value']['date'])
 
         instance2 = iati_models.PlannedDisbursementProvider.objects.get(
             planned_disbursement_id=res.json()['id'])
         self.assertEqual(instance2.ref, data['provider_organisation']['ref'])
-        self.assertEqual(instance2.normalized_ref, data['provider_organisation']['ref'])
+        self.assertEqual(instance2.normalized_ref,
+                         data['provider_organisation']['ref'])
         self.assertEqual(
             instance2.organisation.organisation_identifier,
             data['provider_organisation']['ref'])
-        self.assertEqual(instance2.type.code, str(data['provider_organisation']['type']['code']))
+        self.assertEqual(instance2.type.code, str(
+            data['provider_organisation']['type']['code']))
         self.assertEqual(instance2.provider_activity.id, activity.id)
 
         narratives2 = instance2.narratives.all()
-        self.assertEqual(narratives2[0].content,
-                         data['provider_organisation']['narratives'][0]['text'])
-        self.assertEqual(narratives2[1].content,
-                         data['provider_organisation']['narratives'][1]['text'])
+        self.assertEqual(
+            narratives2[0].content,
+            data['provider_organisation']['narratives'][0]['text']
+        )
+        self.assertEqual(
+            narratives2[1].content,
+            data['provider_organisation']['narratives'][1]['text']
+        )
 
         instance3 = iati_models.PlannedDisbursementReceiver.objects.get(
             planned_disbursement_id=res.json()['id'])
         self.assertEqual(instance3.ref, data['receiver_organisation']['ref'])
-        self.assertEqual(instance3.normalized_ref, data['receiver_organisation']['ref'])
+        self.assertEqual(instance3.normalized_ref,
+                         data['receiver_organisation']['ref'])
         self.assertEqual(
             instance3.organisation.organisation_identifier,
             data['receiver_organisation']['ref'])
-        self.assertEqual(instance3.type.code, str(data['receiver_organisation']['type']['code']))
+        self.assertEqual(instance3.type.code, str(
+            data['receiver_organisation']['type']['code']))
         self.assertEqual(instance3.receiver_activity.id,
                          data['receiver_organisation']['receiver_activity'])
 
         narratives3 = instance3.narratives.all()
-        self.assertEqual(narratives3[0].content,
-                         data['receiver_organisation']['narratives'][0]['text'])
-        self.assertEqual(narratives3[1].content,
-                         data['receiver_organisation']['narratives'][1]['text'])
+        self.assertEqual(
+            narratives3[0].content,
+            data['receiver_organisation']['narratives'][0]['text']
+        )
+        self.assertEqual(
+            narratives3[1].content,
+            data['receiver_organisation']['narratives'][1]['text']
+        )
 
     def test_update_planned_disbursement(self):
-        planned_disbursement = iati_factory.PlannedDisbursementFactory.create()
-        type = iati_factory.BudgetTypeFactory.create()
-        currency = iati_factory.CurrencyFactory.create()
-        organisation = iati_factory.OrganisationFactory.create()
-        organisation_type = iati_factory.OrganisationTypeFactory.create(code=9)
-        activity2 = iati_factory.ActivityFactory.create(iati_identifier="IATI-0002")
+        planned_disbursement = PlannedDisbursementFactory.create()
+        type = BudgetTypeFactory.create()
+        currency = CurrencyFactory.create()
+        organisation = OrganisationFactory.create()
+        organisation_type = OrganisationTypeFactory.create(code=9)
+        activity2 = ActivityFactory.create(
+            iati_identifier="IATI-0002")
 
         data = {
             "activity": planned_disbursement.activity.id,
@@ -1977,70 +2147,94 @@ class PlannedDisbursementSaveTestCase(TestCase):
         }
 
         res = self.c.put(
-            "/api/publishers/{}/activities/{}/planned_disbursements/{}?format=json".format(
-                self.publisher.id, planned_disbursement.activity.id, planned_disbursement.id),
+            "/api/publishers/{}/activities/{}/planned_disbursements/{}?format=json".format(  # NOQA: E501
+                self.publisher.id,
+                planned_disbursement.activity.id,
+                planned_disbursement.id
+            ),
             data,
             format='json'
         )
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
-        instance = iati_models.PlannedDisbursement.objects.get(pk=res.json()['id'])
+        instance = iati_models.PlannedDisbursement.objects.get(pk=res.json()[
+                                                               'id'])
 
         self.assertEqual(instance.activity.id, data['activity'])
         self.assertEqual(instance.type.code, data['type']['code'])
-        self.assertEqual(instance.period_start.isoformat(), data['period_start'])
+        self.assertEqual(instance.period_start.isoformat(),
+                         data['period_start'])
         self.assertEqual(instance.period_end.isoformat(), data['period_end'])
         self.assertEqual(instance.value, data['value']['value'])
-        self.assertEqual(instance.currency.code, data['value']['currency']['code'])
-        self.assertEqual(instance.value_date.isoformat(), data['value']['date'])
+        self.assertEqual(instance.currency.code,
+                         data['value']['currency']['code'])
+        self.assertEqual(instance.value_date.isoformat(),
+                         data['value']['date'])
 
         instance2 = iati_models.PlannedDisbursementProvider.objects.get(
             planned_disbursement_id=res.json()['id'])
         self.assertEqual(instance2.ref, data['provider_organisation']['ref'])
-        self.assertEqual(instance2.normalized_ref, data['provider_organisation']['ref'])
+        self.assertEqual(instance2.normalized_ref,
+                         data['provider_organisation']['ref'])
         self.assertEqual(
             instance2.organisation.organisation_identifier,
             data['provider_organisation']['ref'])
-        self.assertEqual(instance2.type.code, str(data['provider_organisation']['type']['code']))
-        self.assertEqual(instance2.provider_activity.id, planned_disbursement.activity.id)
+        self.assertEqual(instance2.type.code, str(
+            data['provider_organisation']['type']['code']))
+        self.assertEqual(instance2.provider_activity.id,
+                         planned_disbursement.activity.id)
 
         narratives2 = instance2.narratives.all()
-        self.assertEqual(narratives2[0].content,
-                         data['provider_organisation']['narratives'][0]['text'])
-        self.assertEqual(narratives2[1].content,
-                         data['provider_organisation']['narratives'][1]['text'])
+        self.assertEqual(
+            narratives2[0].content,
+            data['provider_organisation']['narratives'][0]['text']
+        )
+        self.assertEqual(
+            narratives2[1].content,
+            data['provider_organisation']['narratives'][1]['text']
+        )
 
         instance3 = iati_models.PlannedDisbursementReceiver.objects.get(
             planned_disbursement_id=res.json()['id'])
         self.assertEqual(instance3.ref, data['receiver_organisation']['ref'])
-        self.assertEqual(instance3.normalized_ref, data['receiver_organisation']['ref'])
+        self.assertEqual(instance3.normalized_ref,
+                         data['receiver_organisation']['ref'])
         self.assertEqual(
             instance3.organisation.organisation_identifier,
             data['receiver_organisation']['ref'])
-        self.assertEqual(instance3.type.code, str(data['receiver_organisation']['type']['code']))
+        self.assertEqual(instance3.type.code, str(
+            data['receiver_organisation']['type']['code']))
         self.assertEqual(instance3.receiver_activity.id,
                          data['receiver_organisation']['receiver_activity'])
 
         narratives3 = instance3.narratives.all()
-        self.assertEqual(narratives3[0].content,
-                         data['receiver_organisation']['narratives'][0]['text'])
-        self.assertEqual(narratives3[1].content,
-                         data['receiver_organisation']['narratives'][1]['text'])
+        self.assertEqual(
+            narratives3[0].content,
+            data['receiver_organisation']['narratives'][0]['text']
+        )
+        self.assertEqual(
+            narratives3[1].content,
+            data['receiver_organisation']['narratives'][1]['text']
+        )
 
     def test_delete_planned_disbursement(self):
-        planned_disbursements = iati_factory.PlannedDisbursementFactory.create()
+        planned_disbursements = PlannedDisbursementFactory.create()
 
         res = self.c.delete(
-            "/api/publishers/{}/activities/{}/planned_disbursements/{}?format=json".format(
-                self.publisher.id, planned_disbursements.activity.id, planned_disbursements.id),
+            "/api/publishers/{}/activities/{}/planned_disbursements/{}?format=json".format(  # NOQA: E501
+                self.publisher.id,
+                planned_disbursements.activity.id,
+                planned_disbursements.id
+            ),
             format='json'
         )
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
-            instance = iati_models.PlannedDisbursement.objects.get(pk=planned_disbursements.id)
+            iati_models.PlannedDisbursement.objects.get(
+                pk=planned_disbursements.id)
 
 
 class TransactionSaveTestCase(TestCase):
@@ -2058,33 +2252,29 @@ class TransactionSaveTestCase(TestCase):
         self.c.force_authenticate(user.user)
 
     def test_create_transaction(self):
-        activity = iati_factory.ActivityFactory.create()
-        transaction_type = iati_factory.TransactionTypeFactory.create()
-        currency = iati_factory.CurrencyFactory.create()
-        organisation_type = iati_factory.OrganisationTypeFactory.create()
-        organisation = iati_factory.OrganisationFactory.create()
-        activity2 = iati_factory.ActivityFactory.create(iati_identifier="IATI-0002")
-        sector = iati_factory.SectorFactory.create()
-        sector_vocabulary = iati_factory.SectorVocabularyFactory.create()
-        # recipient_country = transaction_factory.TransactionRecipientCountryFactory.create()
-        # recipient_region = transaction_factory.TransactionRecipientRegionFactory.create()
-        country = iati_factory.CountryFactory.create()
-        region = iati_factory.RegionFactory.create()
-        region_vocabulary = iati_factory.RegionVocabularyFactory.create()
-        disbursement_channel = iati_factory.DisbursementChannelFactory.create()
-        flow_type = iati_factory.FlowTypeFactory.create()
-        finance_type = iati_factory.FinanceTypeFactory.create()
-        aid_type = iati_factory.AidTypeFactory.create()
-        tied_status = iati_factory.TiedStatusFactory.create()
+        activity = ActivityFactory.create()
+        transaction_type = transaction_factory.TransactionTypeFactory.create()
+        currency = CurrencyFactory.create()
+        organisation_type = OrganisationTypeFactory.create()
+        organisation = OrganisationFactory.create()
+        activity2 = ActivityFactory.create(
+            iati_identifier="IATI-0002")
+        sector = SectorFactory.create()
+        sector_vocabulary = SectorVocabularyFactory.create()
+        country = CountryFactory.create()
+        region = RegionFactory.create()
+        region_vocabulary = RegionVocabularyFactory.create()
+        disbursement_channel = codelist_factory.DisbursementChannelFactory\
+            .create()
+        flow_type = FlowTypeFactory.create()
+        finance_type = FinanceTypeFactory.create()
+        aid_type = AidTypeFactory.create()
+        tied_status = TiedStatusFactory.create()
 
         data = {
             "activity_id": activity.id,
             "ref": "test-ref",
             "humanitarian": 1,
-            "transaction_type": {
-                "code": transaction_type.code,
-                "name": 'irrelevant',
-            },
             "transaction_date": datetime.date.today().isoformat(),
             "value": 123456,
             "value_date": datetime.date.today().isoformat(),
@@ -2189,7 +2379,7 @@ class TransactionSaveTestCase(TestCase):
         }
 
         res = self.c.post(
-            "/api/publishers/{}/activities/{}/transactions/?format=json".format(
+            "/api/publishers/{}/activities/{}/transactions/?format=json".format(  # NOQA: E501
                 self.publisher.id, activity.id),
             data,
             format='json'
@@ -2197,28 +2387,40 @@ class TransactionSaveTestCase(TestCase):
 
         result = res.json()
 
-        self.assertEquals(res.status_code, 201, result)
+        self.assertEqual(res.status_code, 201, result)
 
         instance = transaction_models.Transaction.objects.get(pk=result['id'])
 
         self.assertEqual(instance.activity.id, data['activity_id'])
-        self.assertEqual(instance.finance_type.code, data['finance_type']['code'])
-        self.assertEqual(instance.transaction_date.isoformat(), data['transaction_date'])
+        self.assertEqual(instance.finance_type.code,
+                         data['finance_type']['code'])
+        self.assertEqual(instance.transaction_date.isoformat(),
+                         data['transaction_date'])
         self.assertEqual(instance.value, data['value'])
         self.assertEqual(instance.currency.code, data['currency']['code'])
         self.assertEqual(instance.value_date.isoformat(), data['date'])
-        self.assertEqual(instance.flow_type.code, str(data['flow_type']['code']))
-        self.assertEqual(instance.finance_type.code, str(data['finance_type']['code']))
+        self.assertEqual(instance.flow_type.code,
+                         str(data['flow_type']['code']))
+        self.assertEqual(instance.finance_type.code,
+                         str(data['finance_type']['code']))
         self.assertEqual(instance.aid_type.code, str(data['aid_type']['code']))
-        self.assertEqual(instance.tied_status.code, str(data['tied_status']['code']))
-        self.assertEqual(instance.disbursement_channel.code, data['disbursement_channel']['code'])
+        self.assertEqual(instance.tied_status.code,
+                         str(data['tied_status']['code']))
+        self.assertEqual(instance.disbursement_channel.code,
+                         data['disbursement_channel']['code'])
         self.assertEqual(instance.humanitarian, data['humanitarian'])
-        self.assertEqual(instance.transactionrecipientcountry_set.all()[
-                         0].country.code, data['recipient_country']['country']['code'])
-        self.assertEqual(instance.transactionrecipientcountry_set.all()
-                         [0].reported_transaction.pk, instance.pk)
-        self.assertEqual(instance.transactionrecipientregion_set.all()[
-                         0].region.code, data['recipient_region']['region']['code'])
+        self.assertEqual(
+            instance.transactionrecipientcountry_set.all()[0].country.code,
+            data['recipient_country']['country']['code']
+        )
+        self.assertEqual(
+            instance.transactionrecipientcountry_set.all()
+            [0].reported_transaction.pk, instance.pk
+        )
+        self.assertEqual(
+            instance.transactionrecipientregion_set.all()[0].region.code,
+            data['recipient_region']['region']['code']
+        )
         self.assertEqual(instance.transactionrecipientregion_set.all()
                          [0].reported_transaction.pk, instance.pk)
         self.assertEqual(
@@ -2227,78 +2429,96 @@ class TransactionSaveTestCase(TestCase):
         self.assertEqual(instance.transactionsector_set.all()[
                          0].reported_transaction.pk, instance.pk)
 
-        instance2 = transaction_models.TransactionProvider.objects.get(transaction_id=result['id'])
+        instance2 = transaction_models.TransactionProvider.objects.get(
+            transaction_id=result['id'])
         self.assertEqual(instance2.ref, data['provider_organisation']['ref'])
-        self.assertEqual(instance2.normalized_ref, data['provider_organisation']['ref'])
+        self.assertEqual(instance2.normalized_ref,
+                         data['provider_organisation']['ref'])
         self.assertEqual(
             instance2.organisation.organisation_identifier,
             data['provider_organisation']['ref'])
-        self.assertEqual(instance2.type.code, str(data['provider_organisation']['type']['code']))
+        self.assertEqual(instance2.type.code, str(
+            data['provider_organisation']['type']['code']))
         self.assertEqual(instance2.provider_activity.id, activity.id)
 
         narratives2 = instance2.narratives.all()
-        self.assertEqual(narratives2[0].content,
-                         data['provider_organisation']['narratives'][0]['text'])
-        self.assertEqual(narratives2[1].content,
-                         data['provider_organisation']['narratives'][1]['text'])
+        self.assertEqual(
+            narratives2[0].content,
+            data['provider_organisation']['narratives'][0]['text']
+        )
+        self.assertEqual(
+            narratives2[1].content,
+            data['provider_organisation']['narratives'][1]['text']
+        )
 
-        instance3 = transaction_models.TransactionReceiver.objects.get(transaction_id=result['id'])
+        instance3 = transaction_models.TransactionReceiver.objects.get(
+            transaction_id=result['id'])
         self.assertEqual(instance3.ref, data['receiver_organisation']['ref'])
-        self.assertEqual(instance3.normalized_ref, data['receiver_organisation']['ref'])
+        self.assertEqual(instance3.normalized_ref,
+                         data['receiver_organisation']['ref'])
         self.assertEqual(
             instance3.organisation.organisation_identifier,
             data['receiver_organisation']['ref'])
-        self.assertEqual(instance3.type.code, str(data['receiver_organisation']['type']['code']))
+        self.assertEqual(instance3.type.code, str(
+            data['receiver_organisation']['type']['code']))
         self.assertEqual(
             instance3.receiver_activity.iati_identifier,
             data['receiver_organisation']['receiver_activity_id'])
 
         narratives3 = instance3.narratives.all()
-        self.assertEqual(narratives3[0].content,
-                         data['receiver_organisation']['narratives'][0]['text'])
-        self.assertEqual(narratives3[1].content,
-                         data['receiver_organisation']['narratives'][1]['text'])
-
-        # transaction_sector = iati_models.TransactionSector.objects.filter(transaction_id=result['id'])[0]
+        self.assertEqual(
+            narratives3[0].content,
+            data['receiver_organisation']['narratives'][0]['text']
+        )
+        self.assertEqual(
+            narratives3[1].content,
+            data['receiver_organisation']['narratives'][1]['text']
+        )
 
     def test_update_transaction(self):
         transaction = transaction_factory.TransactionFactory.create()
-        transaction_provider = transaction_factory.TransactionProviderFactory.create(
-            transaction=transaction)
-        transaction_receiver = transaction_factory.TransactionReceiverFactory.create(
-            transaction=transaction)
-        transaction_recipient_country = transaction_factory.TransactionRecipientCountryFactory(
-            transaction=transaction, reported_transaction=transaction)
-        transaction_recipient_region = transaction_factory.TransactionRecipientRegionFactory.create(
-            transaction=transaction, reported_transaction=transaction)
-        transaction_sector = transaction_factory.TransactionSectorFactory.create(
-            transaction=transaction, reported_transaction=transaction)
-        transaction_type = iati_factory.TransactionTypeFactory.create(code="2")
-        currency = iati_factory.CurrencyFactory.create(code="af")
-        organisation_type = iati_factory.OrganisationTypeFactory.create()
-        organisation = iati_factory.OrganisationFactory.create()
-        activity2 = iati_factory.ActivityFactory.create(iati_identifier="IATI-0002")
-        sector = iati_factory.SectorFactory.create()
-        sector_vocabulary = iati_factory.SectorVocabularyFactory.create()
-        # recipient_country = transaction_factory.TransactionRecipientCountryFactory.create()
-        # recipient_region = transaction_factory.TransactionRecipientRegionFactory.create()
-        country = iati_factory.CountryFactory.create()
-        region = iati_factory.RegionFactory.create()
-        region_vocabulary = iati_factory.RegionVocabularyFactory.create()
-        disbursement_channel = iati_factory.DisbursementChannelFactory.create()
-        flow_type = iati_factory.FlowTypeFactory.create()
-        finance_type = iati_factory.FinanceTypeFactory.create()
-        aid_type = iati_factory.AidTypeFactory.create()
-        tied_status = iati_factory.TiedStatusFactory.create()
+        transaction_provider = transaction_factory.TransactionProviderFactory.\
+            create(transaction=transaction)
+        transaction_receiver = transaction_factory.TransactionReceiverFactory.\
+            create(transaction=transaction)
+        transaction_recipient_country = transaction_factory.\
+            TransactionRecipientCountryFactory(
+                transaction=transaction,
+                reported_transaction=transaction
+            )
+        transaction_recipient_region = transaction_factory\
+            .TransactionRecipientRegionFactory.create(
+                transaction=transaction,
+                reported_transaction=transaction
+            )
+        transaction_sector = transaction_factory\
+            .TransactionSectorFactory.create(
+                transaction=transaction,
+                reported_transaction=transaction
+            )
+        transaction_type = transaction_factory.TransactionTypeFactory.create(
+            code="2")
+        currency = CurrencyFactory.create(code="af")
+        OrganisationTypeFactory.create()
+        OrganisationFactory.create()
+        ActivityFactory.create(
+            iati_identifier="IATI-0002")
+        SectorFactory.create()
+        SectorVocabularyFactory.create()
+        CountryFactory.create()
+        RegionFactory.create()
+        RegionVocabularyFactory.create()
+        disbursement_channel = codelist_factory.DisbursementChannelFactory\
+            .create()
+        flow_type = FlowTypeFactory.create()
+        finance_type = FinanceTypeFactory.create()
+        aid_type = AidTypeFactory.create()
+        tied_status = TiedStatusFactory.create()
 
         data = {
             "activity_id": transaction.activity.id,
             "ref": "test-ref",
             "humanitarian": 1,
-            "transaction_type": {
-                "code": transaction_type.code,
-                "name": 'irrelevant',
-            },
             "transaction_date": datetime.date.today().isoformat(),
             "value": 123456,
             "value_date": datetime.date.today().isoformat(),
@@ -2332,28 +2552,14 @@ class TransactionSaveTestCase(TestCase):
                     }
                 ],
             },
-            # "provider_organisation": {
-            #     "ref": organisation.organisation_identifier,
-            #     "type": {
-            #         "code": organisation_type.code,
-            #         "name": 'irrelevant',
-            #     },
-            #     "narratives": [
-            #         {
-            #             "text": "test1"
-            #         },
-            #         {
-            #             "text": "test2"
-            #         }
-            #     ],
-            # },
             "receiver_organisation": {
                 "ref": transaction_receiver.ref,
                 "type": {
                     "code": transaction_receiver.type.code,
                     "name": 'irrelevant',
                 },
-                "receiver_activity_id": transaction_receiver.receiver_activity.id,
+                "receiver_activity_id": transaction_receiver
+                .receiver_activity.id,
                 "narratives": [
                     {
                         "text": "test1"
@@ -2418,86 +2624,114 @@ class TransactionSaveTestCase(TestCase):
         }
 
         res = self.c.put(
-            "/api/publishers/{}/activities/{}/transactions/{}?format=json".format(
+            "/api/publishers/{}/activities/{}/transactions/{}?format=json".format(  # NOQA: E501
                 self.publisher.id, transaction.activity.id, transaction.id),
             data,
             format='json'
         )
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
         result = res.json()
 
         instance = transaction_models.Transaction.objects.get(pk=result['id'])
 
         self.assertEqual(instance.activity.id, data['activity_id'])
-        self.assertEqual(instance.finance_type.code, data['finance_type']['code'])
-        self.assertEqual(instance.transaction_date.isoformat(), data['transaction_date'])
+        self.assertEqual(instance.finance_type.code,
+                         data['finance_type']['code'])
+        self.assertEqual(instance.transaction_date.isoformat(),
+                         data['transaction_date'])
         self.assertEqual(instance.value, data['value'])
         self.assertEqual(instance.currency.code, data['currency']['code'])
         self.assertEqual(instance.value_date.isoformat(), data['date'])
-        self.assertEqual(instance.flow_type.code, str(data['flow_type']['code']))
-        self.assertEqual(instance.finance_type.code, str(data['finance_type']['code']))
+        self.assertEqual(instance.flow_type.code,
+                         str(data['flow_type']['code']))
+        self.assertEqual(instance.finance_type.code,
+                         str(data['finance_type']['code']))
         self.assertEqual(instance.aid_type.code, str(data['aid_type']['code']))
-        self.assertEqual(instance.tied_status.code, str(data['tied_status']['code']))
-        self.assertEqual(instance.transaction_type.code, data['transaction_type']['code'])
-        self.assertEqual(instance.disbursement_channel.code, data['disbursement_channel']['code'])
+        self.assertEqual(instance.tied_status.code,
+                         str(data['tied_status']['code']))
+        self.assertEqual(instance.transaction_type.code,
+                         data['transaction_type']['code'])
+        self.assertEqual(instance.disbursement_channel.code,
+                         data['disbursement_channel']['code'])
         self.assertEqual(instance.humanitarian, data['humanitarian'])
-        self.assertEqual(instance.transactionrecipientcountry_set.all()[
-                         0].country.code, data['recipient_country']['country']['code'])
-        self.assertEqual(instance.transactionrecipientcountry_set.all()
-                         [0].reported_transaction.pk, instance.pk)
-        self.assertEqual(instance.transactionrecipientregion_set.all()[
-                         0].region.code, data['recipient_region']['region']['code'])
-        self.assertEqual(instance.transactionrecipientregion_set.all()
-                         [0].reported_transaction.pk, instance.pk)
+        self.assertEqual(
+            instance.transactionrecipientcountry_set.all()[0].country.code,
+            data['recipient_country']['country']['code']
+        )
+        self.assertEqual(
+            instance
+            .transactionrecipientcountry_set.all()[0]
+            .reported_transaction.pk,
+            instance.pk
+        )
+        self.assertEqual(
+            instance.transactionrecipientregion_set.all()[0].region.code,
+            data['recipient_region']['region']['code']
+        )
+        self.assertEqual(
+            instance
+            .transactionrecipientregion_set.all()[0]
+            .reported_transaction.pk,
+            instance.pk
+        )
         self.assertEqual(
             instance.transactionsector_set.all()[0].sector.code,
             data['sector']['sector']['code'])
         self.assertEqual(instance.transactionsector_set.all()[
                          0].reported_transaction.pk, instance.pk)
 
-        instance2 = transaction_models.TransactionProvider.objects.get(transaction_id=result['id'])
+        instance2 = transaction_models.TransactionProvider.objects.get(
+            transaction_id=result['id'])
         self.assertEqual(instance2.ref, data['provider_organisation']['ref'])
-        # self.assertEqual(instance2.normalized_ref, data['provider_organisation']['ref'])
-        # self.assertEqual(instance2.organisation.organisation_identifier, data['provider_organisation']['ref'])
-        self.assertEqual(instance2.type.code, str(data['provider_organisation']['type']['code']))
+        self.assertEqual(instance2.type.code, str(
+            data['provider_organisation']['type']['code']))
         self.assertEqual(instance2.provider_activity.id, instance.activity.id)
 
         narratives2 = instance2.narratives.all()
-        self.assertEqual(narratives2[0].content,
-                         data['provider_organisation']['narratives'][0]['text'])
-        self.assertEqual(narratives2[1].content,
-                         data['provider_organisation']['narratives'][1]['text'])
+        self.assertEqual(
+            narratives2[0].content,
+            data['provider_organisation']['narratives'][0]['text']
+        )
+        self.assertEqual(
+            narratives2[1].content,
+            data['provider_organisation']['narratives'][1]['text']
+        )
 
-        instance3 = transaction_models.TransactionReceiver.objects.get(transaction_id=result['id'])
+        instance3 = transaction_models.TransactionReceiver.objects.get(
+            transaction_id=result['id']
+        )
         self.assertEqual(instance3.ref, data['receiver_organisation']['ref'])
-        # self.assertEqual(instance3.normalized_ref, data['receiver_organisation']['ref'])
-        # self.assertEqual(instance3.organisation.organisation_identifier, data['receiver_organisation']['ref'])
-        self.assertEqual(instance3.type.code, str(data['receiver_organisation']['type']['code']))
+        self.assertEqual(instance3.type.code, str(
+            data['receiver_organisation']['type']['code']))
         self.assertEqual(instance3.receiver_activity.id,
                          data['receiver_organisation']['receiver_activity_id'])
 
         narratives3 = instance3.narratives.all()
-        self.assertEqual(narratives3[0].content,
-                         data['receiver_organisation']['narratives'][0]['text'])
-        self.assertEqual(narratives3[1].content,
-                         data['receiver_organisation']['narratives'][1]['text'])
-
-        # transaction_sector = iati_models.TransactionSector.objects.filter(transaction_id=result['id'])[0]
+        self.assertEqual(
+            narratives3[0].content,
+            data['receiver_organisation']['narratives'][0]['text']
+        )
+        self.assertEqual(
+            narratives3[1].content,
+            data['receiver_organisation']['narratives'][1]['text']
+        )
 
     def test_delete_transaction(self):
         transaction = transaction_factory.TransactionFactory.create()
 
         res = self.c.delete(
-            "/api/publishers/{}/activities/{}/transactions/{}?format=json".format(
-                self.publisher.id, transaction.activity.id, transaction.id),
+            "/api/publishers/{}/activities/{}/transactions/{}?format=json".format(  # NOQA: E501
+                self.publisher.id, transaction.activity.id, transaction.id
+            ),
             format='json'
         )
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
-            instance = transaction_models.Transaction.objects.get(pk=transaction.id)
+            transaction_models.Transaction.objects.get(
+                pk=transaction.id)
 
 
 class ResultSaveTestCase(TestCase):
@@ -2516,8 +2750,8 @@ class ResultSaveTestCase(TestCase):
 
     def test_create_result(self):
 
-        activity = iati_factory.ActivityFactory.create()
-        type = iati_factory.ResultTypeFactory.create()
+        activity = ActivityFactory.create()
+        type = ResultTypeFactory.create()
 
         data = {
             "activity": activity.id,
@@ -2555,26 +2789,32 @@ class ResultSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
         instance = iati_models.Result.objects.get(pk=res.json()['id'])
 
         self.assertEqual(instance.activity.id, data['activity'])
         self.assertEqual(instance.type.code, data['type']['code'])
 
-        instance2 = iati_models.ResultTitle.objects.get(result_id=res.json()['id'])
+        instance2 = iati_models.ResultTitle.objects.get(
+            result_id=res.json()['id'])
         narratives2 = instance2.narratives.all()
-        self.assertEqual(narratives2[0].content, data['title']['narratives'][0]['text'])
-        self.assertEqual(narratives2[1].content, data['title']['narratives'][1]['text'])
+        self.assertEqual(narratives2[0].content,
+                         data['title']['narratives'][0]['text'])
+        self.assertEqual(narratives2[1].content,
+                         data['title']['narratives'][1]['text'])
 
-        instance2 = iati_models.ResultDescription.objects.get(result_id=res.json()['id'])
+        instance2 = iati_models.ResultDescription.objects.get(
+            result_id=res.json()['id'])
         narratives2 = instance2.narratives.all()
-        self.assertEqual(narratives2[0].content, data['description']['narratives'][0]['text'])
-        self.assertEqual(narratives2[1].content, data['description']['narratives'][1]['text'])
+        self.assertEqual(narratives2[0].content,
+                         data['description']['narratives'][0]['text'])
+        self.assertEqual(narratives2[1].content,
+                         data['description']['narratives'][1]['text'])
 
     def test_update_result(self):
-        result = iati_factory.ResultFactory.create()
-        type = iati_factory.ResultTypeFactory.create(code="2")
+        result = ResultFactory.create()
+        type = ResultTypeFactory.create(code="2")
 
         data = {
             "activity": result.activity.id,
@@ -2612,25 +2852,31 @@ class ResultSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
         instance = iati_models.Result.objects.get(pk=res.json()['id'])
 
         self.assertEqual(instance.activity.id, data['activity'])
         self.assertEqual(instance.type.code, data['type']['code'])
 
-        instance2 = iati_models.ResultTitle.objects.get(result_id=res.json()['id'])
+        instance2 = iati_models.ResultTitle.objects.get(
+            result_id=res.json()['id'])
         narratives2 = instance2.narratives.all()
-        self.assertEqual(narratives2[0].content, data['title']['narratives'][0]['text'])
-        self.assertEqual(narratives2[1].content, data['title']['narratives'][1]['text'])
+        self.assertEqual(narratives2[0].content,
+                         data['title']['narratives'][0]['text'])
+        self.assertEqual(narratives2[1].content,
+                         data['title']['narratives'][1]['text'])
 
-        instance2 = iati_models.ResultDescription.objects.get(result_id=res.json()['id'])
+        instance2 = iati_models.ResultDescription.objects.get(
+            result_id=res.json()['id'])
         narratives2 = instance2.narratives.all()
-        self.assertEqual(narratives2[0].content, data['description']['narratives'][0]['text'])
-        self.assertEqual(narratives2[1].content, data['description']['narratives'][1]['text'])
+        self.assertEqual(narratives2[0].content,
+                         data['description']['narratives'][0]['text'])
+        self.assertEqual(narratives2[1].content,
+                         data['description']['narratives'][1]['text'])
 
     def test_delete_result(self):
-        results = iati_factory.ResultFactory.create()
+        results = ResultFactory.create()
 
         res = self.c.delete(
             "/api/publishers/{}/activities/{}/results/{}?format=json".format(
@@ -2638,10 +2884,10 @@ class ResultSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
-            instance = iati_models.Result.objects.get(pk=results.id)
+            iati_models.Result.objects.get(pk=results.id)
 
 
 class ResultIndicatorSaveTestCase(TestCase):
@@ -2660,8 +2906,8 @@ class ResultIndicatorSaveTestCase(TestCase):
 
     def test_create_result_indicator(self):
 
-        result = iati_factory.ResultFactory.create()
-        measure = iati_factory.IndicatorMeasureFactory.create()
+        result = ResultFactory.create()
+        measure = IndicatorMeasureFactory.create()
 
         data = {
             "result": result.id,
@@ -2707,37 +2953,39 @@ class ResultIndicatorSaveTestCase(TestCase):
         }
 
         res = self.c.post(
-            "/api/publishers/{}/activities/{}/results/{}/indicators/?format=json".format(
+            "/api/publishers/{}/activities/{}/results/{}/indicators/?format=json".format(  # NOQA: E501
                 self.publisher.id, result.activity.id, result.id),
             data,
             format='json'
         )
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
         instance = iati_models.ResultIndicator.objects.get(pk=res.json()['id'])
 
         self.assertEqual(instance.result.id, data['result'])
         self.assertEqual(instance.measure.code, data['measure']['code'])
         self.assertEqual(instance.ascending, data['ascending'])
-        self.assertEqual(instance.baseline_year, data['baseline']['year'])
-        self.assertEqual(instance.baseline_value, data['baseline']['value'])
 
         instance2 = iati_models.ResultIndicatorTitle.objects.get(
             result_indicator_id=res.json()['id'])
         narratives2 = instance2.narratives.all()
-        self.assertEqual(narratives2[0].content, data['title']['narratives'][0]['text'])
-        self.assertEqual(narratives2[1].content, data['title']['narratives'][1]['text'])
+        self.assertEqual(narratives2[0].content,
+                         data['title']['narratives'][0]['text'])
+        self.assertEqual(narratives2[1].content,
+                         data['title']['narratives'][1]['text'])
 
         instance2 = iati_models.ResultIndicatorDescription.objects.get(
             result_indicator_id=res.json()['id'])
         narratives2 = instance2.narratives.all()
-        self.assertEqual(narratives2[0].content, data['description']['narratives'][0]['text'])
-        self.assertEqual(narratives2[1].content, data['description']['narratives'][1]['text'])
+        self.assertEqual(narratives2[0].content,
+                         data['description']['narratives'][0]['text'])
+        self.assertEqual(narratives2[1].content,
+                         data['description']['narratives'][1]['text'])
 
     def test_update_result_indicator(self):
-        result_indicator = iati_factory.ResultIndicatorFactory.create()
-        measure = iati_factory.IndicatorMeasureFactory.create(code="2")
+        result_indicator = ResultIndicatorFactory.create()
+        measure = IndicatorMeasureFactory.create(code="2")
 
         data = {
             "result": result_indicator.result.id,
@@ -2783,7 +3031,7 @@ class ResultIndicatorSaveTestCase(TestCase):
         }
 
         res = self.c.put(
-            "/api/publishers/{}/activities/{}/results/{}/indicators/{}?format=json".format(
+            "/api/publishers/{}/activities/{}/results/{}/indicators/{}?format=json".format(  # NOQA: E501
                 self.publisher.id,
                 result_indicator.result.activity.id,
                 result_indicator.result.id,
@@ -2791,43 +3039,46 @@ class ResultIndicatorSaveTestCase(TestCase):
             data,
             format='json')
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
         instance = iati_models.ResultIndicator.objects.get(pk=res.json()['id'])
 
         self.assertEqual(instance.result.id, data['result'])
         self.assertEqual(instance.measure.code, data['measure']['code'])
         self.assertEqual(instance.ascending, data['ascending'])
-        self.assertEqual(instance.baseline_year, data['baseline']['year'])
-        self.assertEqual(instance.baseline_value, data['baseline']['value'])
 
         instance2 = iati_models.ResultIndicatorTitle.objects.get(
             result_indicator_id=res.json()['id'])
         narratives2 = instance2.narratives.all()
-        self.assertEqual(narratives2[0].content, data['title']['narratives'][0]['text'])
-        self.assertEqual(narratives2[1].content, data['title']['narratives'][1]['text'])
+        self.assertEqual(narratives2[0].content,
+                         data['title']['narratives'][0]['text'])
+        self.assertEqual(narratives2[1].content,
+                         data['title']['narratives'][1]['text'])
 
         instance2 = iati_models.ResultIndicatorDescription.objects.get(
             result_indicator_id=res.json()['id'])
         narratives2 = instance2.narratives.all()
-        self.assertEqual(narratives2[0].content, data['description']['narratives'][0]['text'])
-        self.assertEqual(narratives2[1].content, data['description']['narratives'][1]['text'])
+        self.assertEqual(narratives2[0].content,
+                         data['description']['narratives'][0]['text'])
+        self.assertEqual(narratives2[1].content,
+                         data['description']['narratives'][1]['text'])
 
     def test_delete_result_indicator(self):
-        result_indicator = iati_factory.ResultIndicatorFactory.create()
+        result_indicator = ResultIndicatorFactory.create()
 
         res = self.c.delete(
-            "/api/publishers/{}/activities/{}/results/{}/indicators/{}?format=json".format(
+            "/api/publishers/{}/activities/{}/results/{}/indicators/{}?format=json".format(  # NOQA: E501
                 self.publisher.id,
                 result_indicator.result.activity.id,
                 result_indicator.result.id,
                 result_indicator.id),
             format='json')
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
-            instance = iati_models.ResultIndicator.objects.get(pk=result_indicator.id)
+            iati_models.ResultIndicator.objects.get(
+                pk=result_indicator.id)
 
 
 class ResultIndicatorReferenceSaveTestCase(TestCase):
@@ -2845,8 +3096,9 @@ class ResultIndicatorReferenceSaveTestCase(TestCase):
         self.c.force_authenticate(user.user)
 
     def test_create_result_indicator_reference(self):
-        result_indicator = iati_factory.ResultIndicatorFactory.create()
-        indicator_vocabulary = vocabulary_factory.IndicatorVocabularyFactory.create()
+        result_indicator = ResultIndicatorFactory.create()
+        indicator_vocabulary = vocabulary_factory\
+            .IndicatorVocabularyFactory.create()
 
         data = {
             "result_indicator": result_indicator.id,
@@ -2859,7 +3111,7 @@ class ResultIndicatorReferenceSaveTestCase(TestCase):
         }
 
         res = self.c.post(
-            "/api/publishers/{}/activities/{}/results/{}/indicators/{}/references/?format=json".format(
+            "/api/publishers/{}/activities/{}/results/{}/indicators/{}/references/?format=json".format(  # NOQA: E501
                 self.publisher.id,
                 result_indicator.result.activity.id,
                 result_indicator.result.id,
@@ -2867,18 +3119,24 @@ class ResultIndicatorReferenceSaveTestCase(TestCase):
             data,
             format='json')
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
-        instance = iati_models.ResultIndicatorReference.objects.get(pk=res.json()['id'])
+        instance = iati_models.ResultIndicatorReference.objects.get(
+            pk=res.json()['id']
+        )
 
-        self.assertEqual(instance.result_indicator.id, data['result_indicator'])
+        self.assertEqual(instance.result_indicator.id,
+                         data['result_indicator'])
         self.assertEqual(instance.code, data['code'])
         self.assertEqual(instance.vocabulary.code, data['vocabulary']['code'])
         self.assertEqual(instance.indicator_uri, data['indicator_uri'])
 
     def test_update_result_indicator_reference(self):
-        result_indicator_reference = iati_factory.ResultIndicatorReferenceFactory.create()
-        indicator_vocabulary = vocabulary_factory.IndicatorVocabularyFactory.create(code="2")
+        result_indicator_reference = ResultIndicatorReferenceFactory.create()
+        indicator_vocabulary = vocabulary_factory\
+            .IndicatorVocabularyFactory.create(
+                code="2"
+            )
 
         data = {
             "result_indicator": result_indicator_reference.result_indicator.id,
@@ -2891,7 +3149,7 @@ class ResultIndicatorReferenceSaveTestCase(TestCase):
         }
 
         res = self.c.put(
-            "/api/publishers/{}/activities/{}/results/{}/indicators/{}/references/{}?format=json".format(
+            "/api/publishers/{}/activities/{}/results/{}/indicators/{}/references/{}?format=json".format(  # NOQA: E501
                 self.publisher.id,
                 result_indicator_reference.result_indicator.result.activity.id,
                 result_indicator_reference.result_indicator.result.id,
@@ -2900,13 +3158,13 @@ class ResultIndicatorReferenceSaveTestCase(TestCase):
             data,
             format='json')
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
     def test_delete_result_indicator_reference(self):
-        result_indicator_reference = iati_factory.ResultIndicatorReferenceFactory.create()
+        result_indicator_reference = ResultIndicatorReferenceFactory.create()
 
         res = self.c.delete(
-            "/api/publishers/{}/activities/{}/results/{}/indicators/{}/references/{}?format=json".format(
+            "/api/publishers/{}/activities/{}/results/{}/indicators/{}/references/{}?format=json".format(  # NOQA: E501
                 self.publisher.id,
                 result_indicator_reference.result_indicator.result.activity.id,
                 result_indicator_reference.result_indicator.result.id,
@@ -2914,281 +3172,11 @@ class ResultIndicatorReferenceSaveTestCase(TestCase):
                 result_indicator_reference.id),
             format='json')
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
-            instance = iati_models.ResultIndicatorReference.objects.get(
+            iati_models.ResultIndicatorReference.objects.get(
                 pk=result_indicator_reference.id)
-
-
-class ResultIndicatorPeriodSaveTestCase(TestCase):
-    request_dummy = RequestFactory().get('/')
-    c = APIClient()
-
-    def setUp(self):
-        admin_group = OrganisationAdminGroupFactory.create()
-        user = OrganisationUserFactory.create(user__username='test1')
-
-        admin_group.organisationuser_set.add(user)
-
-        self.publisher = admin_group.publisher
-
-        self.c.force_authenticate(user.user)
-
-    def test_create_result_indicator_period(self):
-        result_indicator = iati_factory.ResultIndicatorFactory.create()
-
-        data = {
-            "result_indicator": result_indicator.id,
-            "period_start": datetime.date.today().isoformat(),
-            "period_end": (datetime.date.today() + datetime.timedelta(days=5)).isoformat(),
-            "target": {
-                "value": 200,
-                "comment": {
-                    "narratives": [
-                        {
-                            "text": "test1"
-                        },
-                        {
-                            "text": "test2"
-                        }
-                    ],
-                }
-            },
-            "actual": {
-                "value": 100,
-                "comment": {
-                    "narratives": [
-                        {
-                            "text": "test1"
-                        },
-                        {
-                            "text": "test2"
-                        }
-                    ],
-                }
-            },
-        }
-
-        res = self.c.post(
-            "/api/publishers/{}/activities/{}/results/{}/indicators/{}/periods/?format=json".format(
-                self.publisher.id,
-                result_indicator.result.activity.id,
-                result_indicator.result.id,
-                result_indicator.id),
-            data,
-            format='json')
-
-        self.assertEquals(res.status_code, 201, res.json())
-
-        instance = iati_models.ResultIndicatorPeriod.objects.get(pk=res.json()['id'])
-
-        self.assertEqual(instance.result_indicator.id, data['result_indicator'])
-        self.assertEqual(instance.period_start.isoformat(), data['period_start'])
-        self.assertEqual(instance.period_end.isoformat(), data['period_end'])
-        self.assertEqual(instance.target, data['target']['value'])
-        self.assertEqual(instance.actual, data['actual']['value'])
-
-        instance2 = iati_models.ResultIndicatorPeriodTargetComment.objects.get(
-            result_indicator_period_id=res.json()['id'])
-        narratives2 = instance2.narratives.all()
-        self.assertEqual(narratives2[0].content, data['target']
-                         ['comment']['narratives'][0]['text'])
-        self.assertEqual(narratives2[1].content, data['target']
-                         ['comment']['narratives'][1]['text'])
-
-        instance2 = iati_models.ResultIndicatorPeriodActualComment.objects.get(
-            result_indicator_period_id=res.json()['id'])
-        narratives2 = instance2.narratives.all()
-        self.assertEqual(narratives2[0].content, data['actual']
-                         ['comment']['narratives'][0]['text'])
-        self.assertEqual(narratives2[1].content, data['actual']
-                         ['comment']['narratives'][1]['text'])
-
-    def test_update_result_indicator_period(self):
-        result_indicator_period = iati_factory.ResultIndicatorPeriodFactory.create()
-        indicator_vocabulary = vocabulary_factory.IndicatorVocabularyFactory.create(code="2")
-
-        data = {
-            "result_indicator": result_indicator_period.result_indicator.id,
-            "period_start": datetime.date.today().isoformat(),
-            "period_end": (datetime.date.today() + datetime.timedelta(days=5)).isoformat(),
-            "target": {
-                "value": 300,
-                "comment": {
-                    "narratives": [
-                        {
-                            "text": "test1"
-                        },
-                        {
-                            "text": "test2"
-                        }
-                    ],
-                }
-            },
-            "actual": {
-                "value": 200,
-                "comment": {
-                    "narratives": [
-                        {
-                            "text": "test1"
-                        },
-                        {
-                            "text": "test2"
-                        }
-                    ],
-                }
-            },
-        }
-
-        res = self.c.put(
-            "/api/publishers/{}/activities/{}/results/{}/indicators/{}/periods/{}?format=json".format(
-                self.publisher.id,
-                result_indicator_period.result_indicator.result.activity.id,
-                result_indicator_period.result_indicator.result.id,
-                result_indicator_period.result_indicator.id,
-                result_indicator_period.id),
-            data,
-            format='json')
-
-        self.assertEquals(res.status_code, 200, res.json())
-
-        instance = iati_models.ResultIndicatorPeriod.objects.get(pk=res.json()['id'])
-
-        self.assertEqual(instance.result_indicator.id, data['result_indicator'])
-        self.assertEqual(instance.period_start.isoformat(), data['period_start'])
-        self.assertEqual(instance.period_end.isoformat(), data['period_end'])
-        self.assertEqual(instance.target, data['target']['value'])
-        self.assertEqual(instance.actual, data['actual']['value'])
-
-        instance2 = iati_models.ResultIndicatorPeriodTargetComment.objects.get(
-            result_indicator_period_id=res.json()['id'])
-        narratives2 = instance2.narratives.all()
-        self.assertEqual(narratives2[0].content, data['target']
-                         ['comment']['narratives'][0]['text'])
-        self.assertEqual(narratives2[1].content, data['target']
-                         ['comment']['narratives'][1]['text'])
-
-        instance2 = iati_models.ResultIndicatorPeriodActualComment.objects.get(
-            result_indicator_period_id=res.json()['id'])
-        narratives2 = instance2.narratives.all()
-        self.assertEqual(narratives2[0].content, data['actual']
-                         ['comment']['narratives'][0]['text'])
-        self.assertEqual(narratives2[1].content, data['actual']
-                         ['comment']['narratives'][1]['text'])
-
-    def test_delete_result_indicator_period(self):
-        result_indicator_period = iati_factory.ResultIndicatorPeriodFactory.create()
-
-        res = self.c.delete(
-            "/api/publishers/{}/activities/{}/results/{}/indicators/{}/periods/{}?format=json".format(
-                self.publisher.id,
-                result_indicator_period.result_indicator.result.activity.id,
-                result_indicator_period.result_indicator.result.id,
-                result_indicator_period.result_indicator.id,
-                result_indicator_period.id),
-            format='json')
-
-        self.assertEquals(res.status_code, 204)
-
-        with self.assertRaises(ObjectDoesNotExist):
-            instance = iati_models.ResultIndicatorPeriod.objects.get(pk=result_indicator_period.id)
-
-
-class ResultIndicatorPeriodActualLocationSaveTestCase(TestCase):
-    request_dummy = RequestFactory().get('/')
-    c = APIClient()
-
-    def setUp(self):
-        admin_group = OrganisationAdminGroupFactory.create()
-        user = OrganisationUserFactory.create(user__username='test1')
-
-        admin_group.organisationuser_set.add(user)
-
-        self.publisher = admin_group.publisher
-
-        self.c.force_authenticate(user.user)
-
-    def test_create_result_indicator_period_actual_location(self):
-        result_indicator_period = iati_factory.ResultIndicatorPeriodFactory.create()
-        location = iati_factory.LocationFactory.create(
-            activity=result_indicator_period.result_indicator.result.activity)
-
-        data = {
-            "result_indicator_period": result_indicator_period.id,
-            "ref": location.ref,
-        }
-
-        res = self.c.post(
-            "/api/publishers/{}/activities/{}/results/{}/indicators/{}/periods/{}/actual/location/?format=json".format(
-                self.publisher.id,
-                result_indicator_period.result_indicator.result.activity.id,
-                result_indicator_period.result_indicator.result.id,
-                result_indicator_period.result_indicator.id,
-                result_indicator_period.id),
-            data,
-            format='json')
-
-        self.assertEquals(res.status_code, 201, res.json())
-
-        instance = iati_models.ResultIndicatorPeriodActualLocation.objects.get(pk=res.json()['id'])
-
-        self.assertEqual(instance.result_indicator_period.id, data['result_indicator_period'])
-        self.assertEqual(instance.ref, data['ref'])
-        self.assertEqual(instance.location.ref, data['ref'])
-
-    def test_update_result_indicator_period_actual_location(self):
-        result_indicator_period_actual_location = iati_factory.ResultIndicatorPeriodActualLocationFactory.create()
-        location = iati_factory.LocationFactory.create(
-            activity=result_indicator_period_actual_location.result_indicator_period.result_indicator.result.activity,
-            ref="test123")
-
-        data = {
-            "result_indicator_period": result_indicator_period_actual_location.result_indicator_period.id,
-            "ref": "test123",
-        }
-
-        result_indicator_period = result_indicator_period_actual_location.result_indicator_period
-
-        res = self.c.put(
-            "/api/publishers/{}/activities/{}/results/{}/indicators/{}/periods/{}/actual/location/{}?format=json".format(
-                self.publisher.id,
-                result_indicator_period.result_indicator.result.activity.id,
-                result_indicator_period.result_indicator.result.id,
-                result_indicator_period.result_indicator.id,
-                result_indicator_period.id,
-                result_indicator_period_actual_location.id),
-            data,
-            format='json')
-
-        self.assertEquals(res.status_code, 200, res.json())
-
-        instance = iati_models.ResultIndicatorPeriodActualLocation.objects.get(pk=res.json()['id'])
-
-        self.assertEqual(instance.result_indicator_period.id, data['result_indicator_period'])
-        self.assertEqual(instance.ref, data['ref'])
-        self.assertEqual(instance.location.ref, data['ref'])
-
-    def test_delete_result_indicator_period_actual_location(self):
-        result_indicator_period_actual_location = iati_factory.ResultIndicatorPeriodActualLocationFactory.create()
-
-        result_indicator_period = result_indicator_period_actual_location.result_indicator_period
-
-        res = self.c.delete(
-            "/api/publishers/{}/activities/{}/results/{}/indicators/{}/periods/{}/actual/location/{}?format=json".format(
-                self.publisher.id,
-                result_indicator_period.result_indicator.result.activity.id,
-                result_indicator_period.result_indicator.result.id,
-                result_indicator_period.result_indicator.id,
-                result_indicator_period.id,
-                result_indicator_period_actual_location.id),
-            format='json')
-
-        self.assertEquals(res.status_code, 204)
-
-        with self.assertRaises(ObjectDoesNotExist):
-            instance = iati_models.ResultIndicatorPeriodActualLocation.objects.get(
-                pk=result_indicator_period_actual_location.id)
 
 
 class ResultIndicatorPeriodTargetLocationSaveTestCase(TestCase):
@@ -3206,275 +3194,42 @@ class ResultIndicatorPeriodTargetLocationSaveTestCase(TestCase):
         self.c.force_authenticate(user.user)
 
     def test_create_result_indicator_period_target_location(self):
-        result_indicator_period = iati_factory.ResultIndicatorPeriodFactory.create()
-        location = iati_factory.LocationFactory.create(
+        result_indicator_period_target = ResultIndicatorPeriodTargetFactory.create()  # NOQA: E501
+        result_indicator_period = result_indicator_period_target\
+            .result_indicator_period
+
+        location = LocationFactory.create(
             activity=result_indicator_period.result_indicator.result.activity)
 
         data = {
             "result_indicator_period": result_indicator_period.id,
+            "result_indicator_period_target": result_indicator_period_target.id,  # NOQA: E501
             "ref": location.ref,
         }
 
         res = self.c.post(
-            "/api/publishers/{}/activities/{}/results/{}/indicators/{}/periods/{}/target/location/?format=json".format(
+            "/api/publishers/{}/activities/{}/results/{}/indicators/{}/periods/{}/target/{}/location/?format=json".format(  # NOQA: E501
                 self.publisher.id,
                 result_indicator_period.result_indicator.result.activity.id,
                 result_indicator_period.result_indicator.result.id,
                 result_indicator_period.result_indicator.id,
-                result_indicator_period.id),
+                result_indicator_period.id,
+                result_indicator_period_target.id
+            ),
             data,
             format='json')
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
-        instance = iati_models.ResultIndicatorPeriodTargetLocation.objects.get(pk=res.json()['id'])
+        instance = iati_models.ResultIndicatorPeriodTargetLocation.objects.get(
+            pk=res.json()['id'])
 
-        self.assertEqual(instance.result_indicator_period.id, data['result_indicator_period'])
+        self.assertEqual(
+            instance.result_indicator_period_target.result_indicator_period.id,
+            data['result_indicator_period']
+        )
         self.assertEqual(instance.ref, data['ref'])
         self.assertEqual(instance.location.ref, data['ref'])
-
-    def test_update_result_indicator_period_target_location(self):
-        result_indicator_period_target_location = iati_factory.ResultIndicatorPeriodTargetLocationFactory.create()
-        location = iati_factory.LocationFactory.create(
-            activity=result_indicator_period_target_location.result_indicator_period.result_indicator.result.activity,
-            ref="test123")
-
-        data = {
-            "result_indicator_period": result_indicator_period_target_location.result_indicator_period.id,
-            "ref": "test123",
-        }
-
-        result_indicator_period = result_indicator_period_target_location.result_indicator_period
-
-        res = self.c.put(
-            "/api/publishers/{}/activities/{}/results/{}/indicators/{}/periods/{}/target/location/{}?format=json".format(
-                self.publisher.id,
-                result_indicator_period.result_indicator.result.activity.id,
-                result_indicator_period.result_indicator.result.id,
-                result_indicator_period.result_indicator.id,
-                result_indicator_period.id,
-                result_indicator_period_target_location.id),
-            data,
-            format='json')
-
-        self.assertEquals(res.status_code, 200, res.json())
-
-        instance = iati_models.ResultIndicatorPeriodTargetLocation.objects.get(pk=res.json()['id'])
-
-        self.assertEqual(instance.result_indicator_period.id, data['result_indicator_period'])
-        self.assertEqual(instance.ref, data['ref'])
-        self.assertEqual(instance.location.ref, data['ref'])
-
-    def test_delete_result_indicator_period_target_location(self):
-        result_indicator_period_target_location = iati_factory.ResultIndicatorPeriodTargetLocationFactory.create()
-
-        result_indicator_period = result_indicator_period_target_location.result_indicator_period
-
-        res = self.c.delete(
-            "/api/publishers/{}/activities/{}/results/{}/indicators/{}/periods/{}/target/location/{}?format=json".format(
-                self.publisher.id,
-                result_indicator_period.result_indicator.result.activity.id,
-                result_indicator_period.result_indicator.result.id,
-                result_indicator_period.result_indicator.id,
-                result_indicator_period.id,
-                result_indicator_period_target_location.id),
-            format='json')
-
-        self.assertEquals(res.status_code, 204)
-
-        with self.assertRaises(ObjectDoesNotExist):
-            instance = iati_models.ResultIndicatorPeriodTargetLocation.objects.get(
-                pk=result_indicator_period_target_location.id)
-
-
-class ResultIndicatorPeriodActualDimensionSaveTestCase(TestCase):
-    request_dummy = RequestFactory().get('/')
-    c = APIClient()
-
-    def setUp(self):
-        admin_group = OrganisationAdminGroupFactory.create()
-        user = OrganisationUserFactory.create(user__username='test1')
-
-        admin_group.organisationuser_set.add(user)
-
-        self.publisher = admin_group.publisher
-
-        self.c.force_authenticate(user.user)
-
-    def test_create_result_indicator_period_actual_dimension(self):
-        result_indicator_period = iati_factory.ResultIndicatorPeriodFactory.create()
-
-        data = {
-            "result_indicator_period": result_indicator_period.id,
-            "name": "sex",
-            "value": "female",
-        }
-
-        res = self.c.post(
-            "/api/publishers/{}/activities/{}/results/{}/indicators/{}/periods/{}/actual/dimension/?format=json".format(
-                self.publisher.id,
-                result_indicator_period.result_indicator.result.activity.id,
-                result_indicator_period.result_indicator.result.id,
-                result_indicator_period.result_indicator.id,
-                result_indicator_period.id),
-            data,
-            format='json')
-
-        self.assertEquals(res.status_code, 201, res.json())
-
-        instance = iati_models.ResultIndicatorPeriodActualDimension.objects.get(pk=res.json()[
-                                                                                'id'])
-
-        self.assertEqual(instance.result_indicator_period.id, data['result_indicator_period'])
-        self.assertEqual(instance.name, data['name'])
-        self.assertEqual(instance.value, data['value'])
-
-    def test_update_result_indicator_period_actual_dimension(self):
-        result_indicator_period_actual_dimension = iati_factory.ResultIndicatorPeriodActualDimensionFactory.create()
-
-        data = {
-            "result_indicator_period": result_indicator_period_actual_dimension.result_indicator_period.id,
-            "name": "sex",
-            "value": "female",
-        }
-
-        result_indicator_period = result_indicator_period_actual_dimension.result_indicator_period
-
-        res = self.c.put(
-            "/api/publishers/{}/activities/{}/results/{}/indicators/{}/periods/{}/actual/dimension/{}?format=json".format(
-                self.publisher.id,
-                result_indicator_period.result_indicator.result.activity.id,
-                result_indicator_period.result_indicator.result.id,
-                result_indicator_period.result_indicator.id,
-                result_indicator_period.id,
-                result_indicator_period_actual_dimension.id),
-            data,
-            format='json')
-
-        self.assertEquals(res.status_code, 200, res.json())
-
-        instance = iati_models.ResultIndicatorPeriodActualDimension.objects.get(pk=res.json()[
-                                                                                'id'])
-
-        self.assertEqual(instance.result_indicator_period.id, data['result_indicator_period'])
-        self.assertEqual(instance.name, data['name'])
-        self.assertEqual(instance.value, data['value'])
-
-    def test_delete_result_indicator_period_actual_dimension(self):
-        result_indicator_period_actual_dimension = iati_factory.ResultIndicatorPeriodActualDimensionFactory.create()
-
-        result_indicator_period = result_indicator_period_actual_dimension.result_indicator_period
-
-        res = self.c.delete(
-            "/api/publishers/{}/activities/{}/results/{}/indicators/{}/periods/{}/actual/dimension/{}?format=json".format(
-                self.publisher.id,
-                result_indicator_period.result_indicator.result.activity.id,
-                result_indicator_period.result_indicator.result.id,
-                result_indicator_period.result_indicator.id,
-                result_indicator_period.id,
-                result_indicator_period_actual_dimension.id),
-            format='json')
-
-        self.assertEquals(res.status_code, 204)
-
-        with self.assertRaises(ObjectDoesNotExist):
-            instance = iati_models.ResultIndicatorPeriodActualDimension.objects.get(
-                pk=result_indicator_period_actual_dimension.id)
-
-
-class ResultIndicatorPeriodTargetDimensionSaveTestCase(TestCase):
-    request_dummy = RequestFactory().get('/')
-    c = APIClient()
-
-    def setUp(self):
-        admin_group = OrganisationAdminGroupFactory.create()
-        user = OrganisationUserFactory.create(user__username='test1')
-
-        admin_group.organisationuser_set.add(user)
-
-        self.publisher = admin_group.publisher
-
-        self.c.force_authenticate(user.user)
-
-    def test_create_result_indicator_period_target_dimension(self):
-        result_indicator_period = iati_factory.ResultIndicatorPeriodFactory.create()
-
-        data = {
-            "result_indicator_period": result_indicator_period.id,
-            "name": "sex",
-            "value": "female",
-        }
-
-        res = self.c.post(
-            "/api/publishers/{}/activities/{}/results/{}/indicators/{}/periods/{}/target/dimension/?format=json".format(
-                self.publisher.id,
-                result_indicator_period.result_indicator.result.activity.id,
-                result_indicator_period.result_indicator.result.id,
-                result_indicator_period.result_indicator.id,
-                result_indicator_period.id),
-            data,
-            format='json')
-
-        self.assertEquals(res.status_code, 201, res.json())
-
-        instance = iati_models.ResultIndicatorPeriodTargetDimension.objects.get(pk=res.json()[
-                                                                                'id'])
-
-        self.assertEqual(instance.result_indicator_period.id, data['result_indicator_period'])
-        self.assertEqual(instance.name, data['name'])
-        self.assertEqual(instance.value, data['value'])
-
-    def test_update_result_indicator_period_target_dimension(self):
-        result_indicator_period_target_dimension = iati_factory.ResultIndicatorPeriodTargetDimensionFactory.create()
-
-        data = {
-            "result_indicator_period": result_indicator_period_target_dimension.result_indicator_period.id,
-            "name": "sex",
-            "value": "female",
-        }
-
-        result_indicator_period = result_indicator_period_target_dimension.result_indicator_period
-
-        res = self.c.put(
-            "/api/publishers/{}/activities/{}/results/{}/indicators/{}/periods/{}/target/dimension/{}?format=json".format(
-                self.publisher.id,
-                result_indicator_period.result_indicator.result.activity.id,
-                result_indicator_period.result_indicator.result.id,
-                result_indicator_period.result_indicator.id,
-                result_indicator_period.id,
-                result_indicator_period_target_dimension.id),
-            data,
-            format='json')
-
-        self.assertEquals(res.status_code, 200, res.json())
-
-        instance = iati_models.ResultIndicatorPeriodTargetDimension.objects.get(pk=res.json()[
-                                                                                'id'])
-
-        self.assertEqual(instance.result_indicator_period.id, data['result_indicator_period'])
-        self.assertEqual(instance.name, data['name'])
-        self.assertEqual(instance.value, data['value'])
-
-    def test_delete_result_indicator_period_target_dimension(self):
-        result_indicator_period_target_dimension = iati_factory.ResultIndicatorPeriodTargetDimensionFactory.create()
-
-        result_indicator_period = result_indicator_period_target_dimension.result_indicator_period
-
-        res = self.c.delete(
-            "/api/publishers/{}/activities/{}/results/{}/indicators/{}/periods/{}/target/dimension/{}?format=json".format(
-                self.publisher.id,
-                result_indicator_period.result_indicator.result.activity.id,
-                result_indicator_period.result_indicator.result.id,
-                result_indicator_period.result_indicator.id,
-                result_indicator_period.id,
-                result_indicator_period_target_dimension.id),
-            format='json')
-
-        self.assertEquals(res.status_code, 204)
-
-        with self.assertRaises(ObjectDoesNotExist):
-            instance = iati_models.ResultIndicatorPeriodTargetDimension.objects.get(
-                pk=result_indicator_period_target_dimension.id)
 
 
 class OtherIdentifierSaveTestCase(TestCase):
@@ -3492,8 +3247,9 @@ class OtherIdentifierSaveTestCase(TestCase):
         self.c.force_authenticate(user.user)
 
     def test_create_other_identifier(self):
-        activity = iati_factory.ActivityFactory.create()
-        other_identifier_type = codelist_factory.OtherIdentifierTypeFactory.create()
+        activity = ActivityFactory.create()
+        other_identifier_type = codelist_factory\
+            .OtherIdentifierTypeFactory.create()
 
         data = {
             "activity": activity.id,
@@ -3516,13 +3272,13 @@ class OtherIdentifierSaveTestCase(TestCase):
         }
 
         res = self.c.post(
-            "/api/publishers/{}/activities/{}/other_identifiers/?format=json".format(
+            "/api/publishers/{}/activities/{}/other_identifiers/?format=json".format(  # NOQA: E501
                 self.publisher.id, activity.id),
             data,
             format='json'
         )
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
         instance = iati_models.OtherIdentifier.objects.get(pk=res.json()['id'])
 
@@ -3532,12 +3288,15 @@ class OtherIdentifierSaveTestCase(TestCase):
         self.assertEqual(instance.owner_ref, data['owner_org']['ref'])
 
         narratives = instance.narratives.all()
-        self.assertEqual(narratives[0].content, data['owner_org']['narratives'][0]['text'])
-        self.assertEqual(narratives[1].content, data['owner_org']['narratives'][1]['text'])
+        self.assertEqual(narratives[0].content,
+                         data['owner_org']['narratives'][0]['text'])
+        self.assertEqual(narratives[1].content,
+                         data['owner_org']['narratives'][1]['text'])
 
     def test_update_other_identifier(self):
-        other_identifier = iati_factory.OtherIdentifierFactory.create()
-        other_identifier_type = codelist_factory.OtherIdentifierTypeFactory.create(code="A100")
+        other_identifier = OtherIdentifierFactory.create()
+        other_identifier_type = codelist_factory.OtherIdentifierTypeFactory\
+            .create(code="A100")
 
         data = {
             "activity": other_identifier.activity.id,
@@ -3560,13 +3319,16 @@ class OtherIdentifierSaveTestCase(TestCase):
         }
 
         res = self.c.put(
-            "/api/publishers/{}/activities/{}/other_identifiers/{}?format=json".format(
-                self.publisher.id, other_identifier.activity.id, other_identifier.id),
+            "/api/publishers/{}/activities/{}/other_identifiers/{}?format=json".format(  # NOQA: E501
+                self.publisher.id,
+                other_identifier.activity.id,
+                other_identifier.id
+            ),
             data,
             format='json'
         )
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
         instance = iati_models.OtherIdentifier.objects.get(pk=res.json()['id'])
 
@@ -3576,22 +3338,28 @@ class OtherIdentifierSaveTestCase(TestCase):
         self.assertEqual(instance.owner_ref, data['owner_org']['ref'])
 
         narratives = instance.narratives.all()
-        self.assertEqual(narratives[0].content, data['owner_org']['narratives'][0]['text'])
-        self.assertEqual(narratives[1].content, data['owner_org']['narratives'][1]['text'])
+        self.assertEqual(narratives[0].content,
+                         data['owner_org']['narratives'][0]['text'])
+        self.assertEqual(narratives[1].content,
+                         data['owner_org']['narratives'][1]['text'])
 
     def test_delete_other_identifier(self):
-        other_identifier = iati_factory.OtherIdentifierFactory.create()
+        other_identifier = OtherIdentifierFactory.create()
 
         res = self.c.delete(
-            "/api/publishers/{}/activities/{}/other_identifiers/{}?format=json".format(
-                self.publisher.id, other_identifier.activity.id, other_identifier.id),
+            "/api/publishers/{}/activities/{}/other_identifiers/{}?format=json".format(  # NOQA: E501
+                self.publisher.id,
+                other_identifier.activity.id,
+                other_identifier.id
+            ),
             format='json'
         )
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
-            instance = iati_models.OtherIdentifier.objects.get(pk=other_identifier.id)
+            iati_models.OtherIdentifier.objects.get(
+                pk=other_identifier.id)
 
 
 class CountryBudgetItemsSaveTestCase(TestCase):
@@ -3609,8 +3377,9 @@ class CountryBudgetItemsSaveTestCase(TestCase):
         self.c.force_authenticate(user.user)
 
     def test_create_country_budget_items(self):
-        activity = iati_factory.ActivityFactory.create()
-        vocabulary = vocabulary_factory.BudgetIdentifierVocabularyFactory.create()
+        activity = ActivityFactory.create()
+        vocabulary = vocabulary_factory.BudgetIdentifierVocabularyFactory\
+            .create()
 
         data = {
             "activity": activity.id,
@@ -3622,21 +3391,23 @@ class CountryBudgetItemsSaveTestCase(TestCase):
         }
 
         res = self.c.post(
-            "/api/publishers/{}/activities/{}/country_budget_items/?format=json".format(
+            "/api/publishers/{}/activities/{}/country_budget_items/?format=json".format(  # NOQA: E501
                 self.publisher.id, activity.id),
             data,
             format='json'
         )
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
-        instance = iati_models.CountryBudgetItem.objects.get(pk=res.json()['id'])
+        instance = iati_models.CountryBudgetItem.objects.get(pk=res.json()[
+                                                             'id'])
         self.assertEqual(instance.activity.id, data['activity'])
         self.assertEqual(instance.vocabulary.code, data['vocabulary']['code'])
 
     def test_update_country_budget_items(self):
-        country_budget_items = iati_factory.CountryBudgetItemFactory.create()
-        vocabulary = vocabulary_factory.BudgetIdentifierVocabularyFactory.create(code="A0")
+        country_budget_items = CountryBudgetItemFactory.create()
+        vocabulary = vocabulary_factory.BudgetIdentifierVocabularyFactory\
+            .create(code="A0")
 
         data = {
             "activity": country_budget_items.activity.id,
@@ -3648,31 +3419,33 @@ class CountryBudgetItemsSaveTestCase(TestCase):
         }
 
         res = self.c.put(
-            "/api/publishers/{}/activities/{}/country_budget_items/?format=json".format(
+            "/api/publishers/{}/activities/{}/country_budget_items/?format=json".format(  # NOQA: E501
                 self.publisher.id, country_budget_items.activity.id),
             data,
             format='json'
         )
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
-        instance = iati_models.CountryBudgetItem.objects.get(pk=res.json()['id'])
+        instance = iati_models.CountryBudgetItem.objects.get(pk=res.json()[
+                                                             'id'])
         self.assertEqual(instance.activity.id, data['activity'])
         self.assertEqual(instance.vocabulary.code, data['vocabulary']['code'])
 
     def test_delete_country_budget_items(self):
-        country_budget_items = iati_factory.CountryBudgetItemFactory.create()
+        country_budget_items = CountryBudgetItemFactory.create()
 
         res = self.c.delete(
-            "/api/publishers/{}/activities/{}/country_budget_items/?format=json".format(
+            "/api/publishers/{}/activities/{}/country_budget_items/?format=json".format(  # NOQA: E501
                 self.publisher.id, country_budget_items.activity.id),
             format='json'
         )
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
-            instance = iati_models.CountryBudgetItem.objects.get(pk=country_budget_items.id)
+            iati_models.CountryBudgetItem.objects.get(
+                pk=country_budget_items.id)
 
 
 class BudgetItemSaveTestCase(TestCase):
@@ -3690,7 +3463,7 @@ class BudgetItemSaveTestCase(TestCase):
         self.c.force_authenticate(user.user)
 
     def test_create_budget_item(self):
-        country_budget_item = iati_factory.CountryBudgetItemFactory.create()
+        country_budget_item = CountryBudgetItemFactory.create()
         budget_identifier = codelist_factory.BudgetIdentifierFactory.create()
 
         data = {
@@ -3712,25 +3485,29 @@ class BudgetItemSaveTestCase(TestCase):
         }
 
         res = self.c.post(
-            "/api/publishers/{}/activities/{}/country_budget_items/budget_items/?format=json".format(
+            "/api/publishers/{}/activities/{}/country_budget_items/budget_items/?format=json".format(  # NOQA: E501
                 self.publisher.id,
                 country_budget_item.activity.id),
             data,
             format='json')
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
         instance = iati_models.BudgetItem.objects.get(pk=res.json()['id'])
-        self.assertEqual(instance.country_budget_item.id, data['country_budget_item'])
+        self.assertEqual(instance.country_budget_item.id,
+                         data['country_budget_item'])
         self.assertEqual(instance.code.code, data['budget_identifier']['code'])
 
         narratives = instance.description.narratives.all()
-        self.assertEqual(narratives[0].content, data['description']['narratives'][0]['text'])
-        self.assertEqual(narratives[1].content, data['description']['narratives'][1]['text'])
+        self.assertEqual(narratives[0].content,
+                         data['description']['narratives'][0]['text'])
+        self.assertEqual(narratives[1].content,
+                         data['description']['narratives'][1]['text'])
 
     def test_update_budget_item(self):
-        budget_item = iati_factory.BudgetItemFactory.create()
-        budget_identifier = codelist_factory.BudgetIdentifierFactory.create(code="1.3.2")
+        budget_item = BudgetItemFactory.create()
+        budget_identifier = codelist_factory.BudgetIdentifierFactory.create(
+            code="1.3.2")
 
         data = {
             "country_budget_item": budget_item.country_budget_item.id,
@@ -3751,37 +3528,40 @@ class BudgetItemSaveTestCase(TestCase):
         }
 
         res = self.c.put(
-            "/api/publishers/{}/activities/{}/country_budget_items/budget_items/{}?format=json".format(
+            "/api/publishers/{}/activities/{}/country_budget_items/budget_items/{}?format=json".format(  # NOQA: E501
                 self.publisher.id,
                 budget_item.country_budget_item.activity.id,
                 budget_item.id),
             data,
             format='json')
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
         instance = iati_models.BudgetItem.objects.get(pk=res.json()['id'])
-        self.assertEqual(instance.country_budget_item.id, data['country_budget_item'])
+        self.assertEqual(instance.country_budget_item.id,
+                         data['country_budget_item'])
         self.assertEqual(instance.code.code, data['budget_identifier']['code'])
 
         narratives = instance.description.narratives.all()
-        self.assertEqual(narratives[0].content, data['description']['narratives'][0]['text'])
-        self.assertEqual(narratives[1].content, data['description']['narratives'][1]['text'])
+        self.assertEqual(narratives[0].content,
+                         data['description']['narratives'][0]['text'])
+        self.assertEqual(narratives[1].content,
+                         data['description']['narratives'][1]['text'])
 
     def test_delete_budget_item(self):
-        budget_item = iati_factory.BudgetItemFactory.create()
+        budget_item = BudgetItemFactory.create()
 
         res = self.c.delete(
-            "/api/publishers/{}/activities/{}/country_budget_items/budget_items/{}?format=json".format(
+            "/api/publishers/{}/activities/{}/country_budget_items/budget_items/{}?format=json".format(  # NOQA: E501
                 self.publisher.id,
                 budget_item.country_budget_item.activity.id,
                 budget_item.id),
             format='json')
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
-            instance = iati_models.BudgetItem.objects.get(pk=budget_item.id)
+            iati_models.BudgetItem.objects.get(pk=budget_item.id)
 
 
 class LegacyDataSaveTestCase(TestCase):
@@ -3799,7 +3579,7 @@ class LegacyDataSaveTestCase(TestCase):
         self.c.force_authenticate(user.user)
 
     def test_create_legacy_data(self):
-        activity = iati_factory.ActivityFactory.create()
+        activity = ActivityFactory.create()
 
         data = {
             "activity": activity.id,
@@ -3815,7 +3595,7 @@ class LegacyDataSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
         instance = iati_models.LegacyData.objects.get(pk=res.json()['id'])
         self.assertEqual(instance.activity.id, data['activity'])
@@ -3824,7 +3604,7 @@ class LegacyDataSaveTestCase(TestCase):
         self.assertEqual(instance.iati_equivalent, data['iati_equivalent'])
 
     def test_update_legacy_data(self):
-        legacy_data = iati_factory.LegacyDataFactory.create()
+        legacy_data = LegacyDataFactory.create()
 
         data = {
             "activity": legacy_data.activity.id,
@@ -3834,13 +3614,13 @@ class LegacyDataSaveTestCase(TestCase):
         }
 
         res = self.c.put(
-            "/api/publishers/{}/activities/{}/legacy_data/{}?format=json".format(
+            "/api/publishers/{}/activities/{}/legacy_data/{}?format=json".format(  # NOQA: E501
                 self.publisher.id, legacy_data.activity.id, legacy_data.id),
             data,
             format='json'
         )
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
         instance = iati_models.LegacyData.objects.get(pk=res.json()['id'])
         self.assertEqual(instance.activity.id, data['activity'])
@@ -3849,18 +3629,18 @@ class LegacyDataSaveTestCase(TestCase):
         self.assertEqual(instance.iati_equivalent, data['iati_equivalent'])
 
     def test_delete_legacy_data(self):
-        legacy_data = iati_factory.LegacyDataFactory.create()
+        legacy_data = LegacyDataFactory.create()
 
         res = self.c.delete(
-            "/api/publishers/{}/activities/{}/legacy_data/{}?format=json".format(
+            "/api/publishers/{}/activities/{}/legacy_data/{}?format=json".format(  # NOQA: E501
                 self.publisher.id, legacy_data.activity.id, legacy_data.id),
             format='json'
         )
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
-            instance = iati_models.LegacyData.objects.get(pk=legacy_data.id)
+            iati_models.LegacyData.objects.get(pk=legacy_data.id)
 
 
 class ConditionsSaveTestCase(TestCase):
@@ -3878,7 +3658,7 @@ class ConditionsSaveTestCase(TestCase):
         self.c.force_authenticate(user.user)
 
     def test_create_conditions(self):
-        activity = iati_factory.ActivityFactory.create()
+        activity = ActivityFactory.create()
 
         data = {
             "activity": activity.id,
@@ -3892,14 +3672,14 @@ class ConditionsSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
         instance = iati_models.Conditions.objects.get(pk=res.json()['id'])
         self.assertEqual(instance.activity.id, data['activity'])
         self.assertEqual(instance.attached, bool(data['attached']))
 
     def test_update_conditions(self):
-        conditions = iati_factory.ConditionsFactory.create()
+        conditions = ConditionsFactory.create()
 
         data = {
             "activity": conditions.activity.id,
@@ -3913,14 +3693,14 @@ class ConditionsSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
         instance = iati_models.Conditions.objects.get(pk=res.json()['id'])
         self.assertEqual(instance.activity.id, data['activity'])
         self.assertEqual(instance.attached, bool(data['attached']))
 
     def test_delete_conditions(self):
-        conditions = iati_factory.ConditionsFactory.create()
+        conditions = ConditionsFactory.create()
 
         res = self.c.delete(
             "/api/publishers/{}/activities/{}/conditions/?format=json".format(
@@ -3928,10 +3708,10 @@ class ConditionsSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
-            instance = iati_models.Conditions.objects.get(pk=conditions.id)
+            iati_models.Conditions.objects.get(pk=conditions.id)
 
 
 class ConditionSaveTestCase(TestCase):
@@ -3949,7 +3729,7 @@ class ConditionSaveTestCase(TestCase):
         self.c.force_authenticate(user.user)
 
     def test_create_condition(self):
-        conditions = iati_factory.ConditionsFactory.create()
+        conditions = ConditionsFactory.create()
         condition_type = codelist_factory.ConditionTypeFactory.create()
 
         data = {
@@ -3969,13 +3749,13 @@ class ConditionSaveTestCase(TestCase):
         }
 
         res = self.c.post(
-            "/api/publishers/{}/activities/{}/conditions/condition/?format=json".format(
+            "/api/publishers/{}/activities/{}/conditions/condition/?format=json".format(  # NOQA: E501
                 self.publisher.id, conditions.activity.id),
             data,
             format='json'
         )
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
         instance = iati_models.Condition.objects.get(pk=res.json()['id'])
         self.assertEqual(instance.conditions.id, data['conditions'])
@@ -3986,8 +3766,9 @@ class ConditionSaveTestCase(TestCase):
         self.assertEqual(narratives[1].content, data['narratives'][1]['text'])
 
     def test_update_condition(self):
-        condition = iati_factory.ConditionFactory.create()
-        condition_type = codelist_factory.ConditionTypeFactory.create(code="1.3.2")
+        condition = ConditionFactory.create()
+        condition_type = codelist_factory.ConditionTypeFactory.create(
+            code="1.3.2")
 
         data = {
             "conditions": condition.conditions.id,
@@ -4006,13 +3787,16 @@ class ConditionSaveTestCase(TestCase):
         }
 
         res = self.c.put(
-            "/api/publishers/{}/activities/{}/conditions/condition/{}?format=json".format(
-                self.publisher.id, condition.conditions.activity.id, condition.id),
+            "/api/publishers/{}/activities/{}/conditions/condition/{}?format=json".format(  # NOQA: E501
+                self.publisher.id,
+                condition.conditions.activity.id,
+                condition.id
+            ),
             data,
             format='json'
         )
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
         instance = iati_models.Condition.objects.get(pk=res.json()['id'])
         self.assertEqual(instance.conditions.id, data['conditions'])
@@ -4023,18 +3807,21 @@ class ConditionSaveTestCase(TestCase):
         self.assertEqual(narratives[1].content, data['narratives'][1]['text'])
 
     def test_delete_condition(self):
-        condition = iati_factory.ConditionFactory.create()
+        condition = ConditionFactory.create()
 
         res = self.c.delete(
-            "/api/publishers/{}/activities/{}/conditions/condition/{}?format=json".format(
-                self.publisher.id, condition.conditions.activity.id, condition.id),
+            "/api/publishers/{}/activities/{}/conditions/condition/{}?format=json".format(  # NOQA: E501
+                self.publisher.id,
+                condition.conditions.activity.id,
+                condition.id
+            ),
             format='json'
         )
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
-            instance = iati_models.Condition.objects.get(pk=condition.id)
+            iati_models.Condition.objects.get(pk=condition.id)
 
 
 class CrsAddSaveTestCase(TestCase):
@@ -4052,10 +3839,10 @@ class CrsAddSaveTestCase(TestCase):
         self.c.force_authenticate(user.user)
 
     def test_create_crs_add(self):
-        activity = iati_factory.ActivityFactory.create()
-        repayment_type = iati_factory.LoanRepaymentTypeFactory.create()
-        repayment_period = iati_factory.LoanRepaymentPeriodFactory.create()
-        currency = iati_factory.CurrencyFactory.create()
+        activity = ActivityFactory.create()
+        repayment_type = LoanRepaymentTypeFactory.create()
+        repayment_period = LoanRepaymentPeriodFactory.create()
+        currency = CurrencyFactory.create()
 
         data = {
             "activity": activity.id,
@@ -4096,7 +3883,7 @@ class CrsAddSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
         instance = iati_models.CrsAdd.objects.get(pk=res.json()['id'])
         self.assertEqual(instance.activity.id, data['activity'])
@@ -4119,22 +3906,27 @@ class CrsAddSaveTestCase(TestCase):
         self.assertEqual(loan_terms.repayment_final_date.isoformat(),
                          data['loan_terms']['repayment_final_date'])
 
-        loan_status = iati_models.CrsAddLoanStatus.objects.get(crs_add=instance)
+        loan_status = iati_models.CrsAddLoanStatus.objects.get(
+            crs_add=instance)
 
         self.assertEqual(loan_status.year, data['loan_status']['year'])
-        self.assertEqual(loan_status.currency.code, data['loan_status']['currency']['code'])
-        self.assertEqual(loan_status.interest_received, data['loan_status']['interest_received'])
+        self.assertEqual(loan_status.currency.code,
+                         data['loan_status']['currency']['code'])
+        self.assertEqual(loan_status.interest_received,
+                         data['loan_status']['interest_received'])
         self.assertEqual(
             loan_status.principal_outstanding,
             data['loan_status']['principal_outstanding'])
-        self.assertEqual(loan_status.principal_arrears, data['loan_status']['principal_arrears'])
-        self.assertEqual(loan_status.interest_arrears, data['loan_status']['interest_arrears'])
+        self.assertEqual(loan_status.principal_arrears,
+                         data['loan_status']['principal_arrears'])
+        self.assertEqual(loan_status.interest_arrears,
+                         data['loan_status']['interest_arrears'])
 
     def test_update_crs_add(self):
-        crs_add = iati_factory.CrsAddFactory.create()
-        repayment_type = iati_factory.LoanRepaymentTypeFactory.create()
-        repayment_period = iati_factory.LoanRepaymentPeriodFactory.create()
-        currency = iati_factory.CurrencyFactory.create()
+        crs_add = CrsAddFactory.create()
+        repayment_type = LoanRepaymentTypeFactory.create()
+        repayment_period = LoanRepaymentPeriodFactory.create()
+        currency = CurrencyFactory.create()
 
         data = {
             "activity": crs_add.activity.id,
@@ -4175,7 +3967,7 @@ class CrsAddSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
         instance = iati_models.CrsAdd.objects.get(pk=res.json()['id'])
         self.assertEqual(instance.activity.id, data['activity'])
@@ -4198,19 +3990,24 @@ class CrsAddSaveTestCase(TestCase):
         self.assertEqual(loan_terms.repayment_final_date.isoformat(),
                          data['loan_terms']['repayment_final_date'])
 
-        loan_status = iati_models.CrsAddLoanStatus.objects.get(crs_add=instance)
+        loan_status = iati_models.CrsAddLoanStatus.objects.get(
+            crs_add=instance)
 
         self.assertEqual(loan_status.year, data['loan_status']['year'])
-        self.assertEqual(loan_status.currency.code, data['loan_status']['currency']['code'])
-        self.assertEqual(loan_status.interest_received, data['loan_status']['interest_received'])
+        self.assertEqual(loan_status.currency.code,
+                         data['loan_status']['currency']['code'])
+        self.assertEqual(loan_status.interest_received,
+                         data['loan_status']['interest_received'])
         self.assertEqual(
             loan_status.principal_outstanding,
             data['loan_status']['principal_outstanding'])
-        self.assertEqual(loan_status.principal_arrears, data['loan_status']['principal_arrears'])
-        self.assertEqual(loan_status.interest_arrears, data['loan_status']['interest_arrears'])
+        self.assertEqual(loan_status.principal_arrears,
+                         data['loan_status']['principal_arrears'])
+        self.assertEqual(loan_status.interest_arrears,
+                         data['loan_status']['interest_arrears'])
 
     def test_delete_crs_add(self):
-        crs_add = iati_factory.CrsAddFactory.create()
+        crs_add = CrsAddFactory.create()
 
         res = self.c.delete(
             "/api/publishers/{}/activities/{}/crs_add/{}?format=json".format(
@@ -4218,10 +4015,10 @@ class CrsAddSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
-            instance = iati_models.CrsAdd.objects.get(pk=crs_add.id)
+            iati_models.CrsAdd.objects.get(pk=crs_add.id)
 
 
 class CrsAddOtherFlagsSaveTestCase(TestCase):
@@ -4239,7 +4036,7 @@ class CrsAddOtherFlagsSaveTestCase(TestCase):
         self.c.force_authenticate(user.user)
 
     def test_create_crs_add_other_flags(self):
-        crs_add = iati_factory.CrsAddFactory.create()
+        crs_add = CrsAddFactory.create()
         other_flags = codelist_factory.OtherFlagsFactory.create()
 
         data = {
@@ -4252,21 +4049,23 @@ class CrsAddOtherFlagsSaveTestCase(TestCase):
         }
 
         res = self.c.post(
-            "/api/publishers/{}/activities/{}/crs_add/{}/other_flags/?format=json".format(
+            "/api/publishers/{}/activities/{}/crs_add/{}/other_flags/?format=json".format(  # NOQA: E501
                 self.publisher.id, crs_add.activity.id, crs_add.id),
             data,
             format='json'
         )
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
-        instance = iati_models.CrsAddOtherFlags.objects.get(pk=res.json()['id'])
+        instance = iati_models.CrsAddOtherFlags.objects.get(
+            pk=res.json()['id'])
         self.assertEqual(instance.crs_add.id, data['crs_add'])
-        self.assertEqual(instance.other_flags.code, data['other_flags']['code'])
+        self.assertEqual(instance.other_flags.code,
+                         data['other_flags']['code'])
         self.assertEqual(instance.significance, bool(data['significance']))
 
     def test_update_crs_add_other_flags(self):
-        crs_add_other_flags = iati_factory.CrsAddOtherFlagsFactory.create()
+        crs_add_other_flags = CrsAddOtherFlagsFactory.create()
         other_flags = codelist_factory.OtherFlagsFactory.create()
 
         data = {
@@ -4279,7 +4078,7 @@ class CrsAddOtherFlagsSaveTestCase(TestCase):
         }
 
         res = self.c.put(
-            "/api/publishers/{}/activities/{}/crs_add/{}/other_flags/{}?format=json".format(
+            "/api/publishers/{}/activities/{}/crs_add/{}/other_flags/{}?format=json".format(  # NOQA: E501
                 self.publisher.id,
                 crs_add_other_flags.crs_add.activity.id,
                 crs_add_other_flags.crs_add.id,
@@ -4288,18 +4087,20 @@ class CrsAddOtherFlagsSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
-        instance = iati_models.CrsAddOtherFlags.objects.get(pk=res.json()['id'])
+        instance = iati_models.CrsAddOtherFlags.objects.get(
+            pk=res.json()['id'])
         self.assertEqual(instance.crs_add.id, data['crs_add'])
-        self.assertEqual(instance.other_flags.code, data['other_flags']['code'])
+        self.assertEqual(instance.other_flags.code,
+                         data['other_flags']['code'])
         self.assertEqual(instance.significance, bool(data['significance']))
 
     def test_delete_crs_add_other_flags(self):
-        crs_add_other_flags = iati_factory.CrsAddOtherFlagsFactory.create()
+        crs_add_other_flags = CrsAddOtherFlagsFactory.create()
 
         res = self.c.delete(
-            "/api/publishers/{}/activities/{}/crs_add/{}/other_flags/{}?format=json".format(
+            "/api/publishers/{}/activities/{}/crs_add/{}/other_flags/{}?format=json".format(  # NOQA: E501
                 self.publisher.id,
                 crs_add_other_flags.crs_add.activity.id,
                 crs_add_other_flags.crs_add.id,
@@ -4307,10 +4108,11 @@ class CrsAddOtherFlagsSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
-            instance = iati_models.CrsAddOtherFlags.objects.get(pk=crs_add_other_flags.id)
+            iati_models.CrsAddOtherFlags.objects.get(
+                pk=crs_add_other_flags.id)
 
 
 class FssSaveTestCase(TestCase):
@@ -4328,7 +4130,7 @@ class FssSaveTestCase(TestCase):
         self.c.force_authenticate(user.user)
 
     def test_create_fss(self):
-        activity = iati_factory.ActivityFactory.create()
+        activity = ActivityFactory.create()
 
         data = {
             "activity": activity.id,
@@ -4344,7 +4146,7 @@ class FssSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
         instance = iati_models.Fss.objects.get(pk=res.json()['id'])
         self.assertEqual(instance.activity.id, data['activity'])
@@ -4352,7 +4154,7 @@ class FssSaveTestCase(TestCase):
         self.assertEqual(instance.phaseout_year, data['phaseout_year'])
 
     def test_update_fss(self):
-        fss = iati_factory.FssFactory.create()
+        fss = FssFactory.create()
 
         data = {
             "activity": fss.activity.id,
@@ -4368,7 +4170,7 @@ class FssSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
         instance = iati_models.Fss.objects.get(pk=res.json()['id'])
         self.assertEqual(instance.activity.id, data['activity'])
@@ -4376,7 +4178,7 @@ class FssSaveTestCase(TestCase):
         self.assertEqual(instance.phaseout_year, data['phaseout_year'])
 
     def test_delete_fss(self):
-        fss = iati_factory.FssFactory.create()
+        fss = FssFactory.create()
 
         res = self.c.delete(
             "/api/publishers/{}/activities/{}/fss/{}?format=json".format(
@@ -4384,10 +4186,10 @@ class FssSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
-            instance = iati_models.Fss.objects.get(pk=fss.id)
+            iati_models.Fss.objects.get(pk=fss.id)
 
 
 class FssForecastSaveTestCase(TestCase):
@@ -4405,8 +4207,8 @@ class FssForecastSaveTestCase(TestCase):
         self.c.force_authenticate(user.user)
 
     def test_create_fss_forecast(self):
-        fss = iati_factory.FssFactory.create()
-        currency = iati_factory.CurrencyFactory.create()
+        fss = FssFactory.create()
+        currency = CurrencyFactory.create()
 
         data = {
             "fss": fss.id,
@@ -4420,13 +4222,13 @@ class FssForecastSaveTestCase(TestCase):
         }
 
         res = self.c.post(
-            "/api/publishers/{}/activities/{}/fss/{}/forecast/?format=json".format(
+            "/api/publishers/{}/activities/{}/fss/{}/forecast/?format=json".format(  # NOQA: E501
                 self.publisher.id, fss.activity.id, fss.id),
             data,
             format='json'
         )
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
         instance = iati_models.FssForecast.objects.get(pk=res.json()['id'])
         self.assertEqual(instance.fss.id, data['fss'])
@@ -4436,8 +4238,8 @@ class FssForecastSaveTestCase(TestCase):
         self.assertEqual(instance.value, data['value'])
 
     def test_update_fss_forecast(self):
-        fss_forecast = iati_factory.FssForecastFactory.create()
-        currency = iati_factory.CurrencyFactory.create(code="eur")
+        fss_forecast = FssForecastFactory.create()
+        currency = CurrencyFactory.create(code="eur")
 
         data = {
             "fss": fss_forecast.fss.id,
@@ -4451,7 +4253,7 @@ class FssForecastSaveTestCase(TestCase):
         }
 
         res = self.c.put(
-            "/api/publishers/{}/activities/{}/fss/{}/forecast/{}?format=json".format(
+            "/api/publishers/{}/activities/{}/fss/{}/forecast/{}?format=json".format(  # NOQA: E501
                 self.publisher.id,
                 fss_forecast.fss.activity.id,
                 fss_forecast.fss.id,
@@ -4459,7 +4261,7 @@ class FssForecastSaveTestCase(TestCase):
             data,
             format='json')
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
         instance = iati_models.FssForecast.objects.get(pk=res.json()['id'])
         self.assertEqual(instance.fss.id, data['fss'])
@@ -4469,20 +4271,20 @@ class FssForecastSaveTestCase(TestCase):
         self.assertEqual(instance.value, data['value'])
 
     def test_delete_fss_forecast(self):
-        fss_forecast = iati_factory.FssForecastFactory.create()
+        fss_forecast = FssForecastFactory.create()
 
         res = self.c.delete(
-            "/api/publishers/{}/activities/{}/fss/{}/forecast/{}?format=json".format(
+            "/api/publishers/{}/activities/{}/fss/{}/forecast/{}?format=json".format(  # NOQA: E501
                 self.publisher.id,
                 fss_forecast.fss.activity.id,
                 fss_forecast.fss.id,
                 fss_forecast.id),
             format='json')
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
-            instance = iati_models.FssForecast.objects.get(pk=fss_forecast.id)
+            iati_models.FssForecast.objects.get(pk=fss_forecast.id)
 
 
 class RelatedActivitySaveTestCase(TestCase):
@@ -4500,9 +4302,9 @@ class RelatedActivitySaveTestCase(TestCase):
         self.c.force_authenticate(user.user)
 
     def test_create_related_activity(self):
-        activity = iati_factory.ActivityFactory.create()
-        activity2 = iati_factory.ActivityFactory.create(id="another-activity")
-        type = codelist_factory.RelatedActivityTypeFactory.create()
+        activity = ActivityFactory.create()
+        activity2 = ActivityFactory.create(id="another-activity")
+        codelist_factory.RelatedActivityTypeFactory.create()
 
         data = {
             "activity": activity.id,
@@ -4514,13 +4316,13 @@ class RelatedActivitySaveTestCase(TestCase):
         }
 
         res = self.c.post(
-            "/api/publishers/{}/activities/{}/related_activities/?format=json".format(
+            "/api/publishers/{}/activities/{}/related_activities/?format=json".format(  # NOQA: E501
                 self.publisher.id, activity.id),
             data,
             format='json'
         )
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
         instance = iati_models.RelatedActivity.objects.get(pk=res.json()['id'])
         self.assertEqual(instance.current_activity.id, data['activity'])
@@ -4529,8 +4331,8 @@ class RelatedActivitySaveTestCase(TestCase):
         self.assertEqual(instance.type.code, data['type']['code'])
 
     def test_update_related_activity(self):
-        related_activity = iati_factory.RelatedActivityFactory.create()
-        activity2 = iati_factory.ActivityFactory.create(id="another-activity")
+        related_activity = RelatedActivityFactory.create()
+        activity2 = ActivityFactory.create(id="another-activity")
         type = codelist_factory.RelatedActivityTypeFactory.create(code="2")
 
         data = {
@@ -4543,13 +4345,16 @@ class RelatedActivitySaveTestCase(TestCase):
         }
 
         res = self.c.put(
-            "/api/publishers/{}/activities/{}/related_activities/{}?format=json".format(
-                self.publisher.id, related_activity.current_activity.id, related_activity.id),
+            "/api/publishers/{}/activities/{}/related_activities/{}?format=json".format(  # NOQA: E501
+                self.publisher.id,
+                related_activity.current_activity.id,
+                related_activity.id
+            ),
             data,
             format='json'
         )
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
         instance = iati_models.RelatedActivity.objects.get(pk=res.json()['id'])
         self.assertEqual(instance.current_activity.id, data['activity'])
@@ -4558,18 +4363,22 @@ class RelatedActivitySaveTestCase(TestCase):
         self.assertEqual(instance.type.code, data['type']['code'])
 
     def test_delete_related_activity(self):
-        related_activity = iati_factory.RelatedActivityFactory.create()
+        related_activity = RelatedActivityFactory.create()
 
         res = self.c.delete(
-            "/api/publishers/{}/activities/{}/related_activities/{}?format=json".format(
-                self.publisher.id, related_activity.current_activity.id, related_activity.id),
+            "/api/publishers/{}/activities/{}/related_activities/{}?format=json".format(  # NOQA: E501
+                self.publisher.id,
+                related_activity.current_activity.id,
+                related_activity.id
+            ),
             format='json'
         )
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
-            instance = iati_models.RelatedActivity.objects.get(pk=related_activity.id)
+            iati_models.RelatedActivity.objects.get(
+                pk=related_activity.id)
 
 
 class DocumentLinkSaveTestCase(TestCase):
@@ -4587,7 +4396,7 @@ class DocumentLinkSaveTestCase(TestCase):
         self.c.force_authenticate(user.user)
 
     def test_create_document_link(self):
-        activity = iati_factory.ActivityFactory.create()
+        activity = ActivityFactory.create()
         file_format = codelist_factory.FileFormatFactory.create()
 
         data = {
@@ -4613,29 +4422,34 @@ class DocumentLinkSaveTestCase(TestCase):
         }
 
         res = self.c.post(
-            "/api/publishers/{}/activities/{}/document_links/?format=json".format(
+            "/api/publishers/{}/activities/{}/document_links/?format=json".format(  # NOQA: E501
                 self.publisher.id, activity.id),
             data,
             format='json'
         )
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
         instance = iati_models.DocumentLink.objects.get(pk=res.json()['id'])
 
         self.assertEqual(instance.activity.id, data['activity'])
         self.assertEqual(instance.url, data['url'])
-        self.assertEqual(instance.iso_date.isoformat(), data['document_date']['iso_date'])
+        self.assertEqual(instance.iso_date.isoformat(),
+                         data['document_date']['iso_date'])
         self.assertEqual(instance.file_format.code, data['format']['code'])
 
-        instance2 = iati_models.DocumentLinkTitle.objects.get(document_link_id=res.json()['id'])
+        instance2 = iati_models.DocumentLinkTitle.objects.get(
+            document_link_id=res.json()['id'])
         narratives2 = instance2.narratives.all()
-        self.assertEqual(narratives2[0].content, data['title']['narratives'][0]['text'])
-        self.assertEqual(narratives2[1].content, data['title']['narratives'][1]['text'])
+        self.assertEqual(narratives2[0].content,
+                         data['title']['narratives'][0]['text'])
+        self.assertEqual(narratives2[1].content,
+                         data['title']['narratives'][1]['text'])
 
     def test_update_document_link(self):
-        document_link = iati_factory.DocumentLinkFactory.create()
-        file_format = codelist_factory.FileFormatFactory.create(code="application/json")
+        document_link = DocumentLinkFactory.create()
+        file_format = codelist_factory.FileFormatFactory.create(
+            code="application/json")
 
         data = {
             "activity": document_link.activity.id,
@@ -4660,39 +4474,50 @@ class DocumentLinkSaveTestCase(TestCase):
         }
 
         res = self.c.put(
-            "/api/publishers/{}/activities/{}/document_links/{}?format=json".format(
-                self.publisher.id, document_link.activity.id, document_link.id),
+            "/api/publishers/{}/activities/{}/document_links/{}?format=json".format(  # NOQA: E501
+                self.publisher.id,
+                document_link.activity.id,
+                document_link.id
+            ),
             data,
             format='json'
         )
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
         instance = iati_models.DocumentLink.objects.get(pk=res.json()['id'])
 
         self.assertEqual(instance.activity.id, data['activity'])
         self.assertEqual(instance.url, data['url'])
-        self.assertEqual(instance.iso_date.isoformat(), data['document_date']['iso_date'])
+        self.assertEqual(instance.iso_date.isoformat(),
+                         data['document_date']['iso_date'])
         self.assertEqual(instance.file_format.code, data['format']['code'])
 
-        instance2 = iati_models.DocumentLinkTitle.objects.get(document_link_id=res.json()['id'])
+        instance2 = iati_models.DocumentLinkTitle.objects.get(
+            document_link_id=res.json()['id'])
         narratives2 = instance2.narratives.all()
-        self.assertEqual(narratives2[0].content, data['title']['narratives'][0]['text'])
-        self.assertEqual(narratives2[1].content, data['title']['narratives'][1]['text'])
+        self.assertEqual(narratives2[0].content,
+                         data['title']['narratives'][0]['text'])
+        self.assertEqual(narratives2[1].content,
+                         data['title']['narratives'][1]['text'])
 
     def test_delete_document_link(self):
-        document_links = iati_factory.DocumentLinkFactory.create()
+        document_links = DocumentLinkFactory.create()
 
         res = self.c.delete(
-            "/api/publishers/{}/activities/{}/document_links/{}?format=json".format(
-                self.publisher.id, document_links.activity.id, document_links.id),
+            "/api/publishers/{}/activities/{}/document_links/{}?format=json".format(  # NOQA: E501
+                self.publisher.id,
+                document_links.activity.id,
+                document_links.id
+            ),
             format='json'
         )
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
-            instance = iati_models.DocumentLink.objects.get(pk=document_links.id)
+            iati_models.DocumentLink.objects.get(
+                pk=document_links.id)
 
 
 class DocumentLinkCategorySaveTestCase(TestCase):
@@ -4710,7 +4535,7 @@ class DocumentLinkCategorySaveTestCase(TestCase):
         self.c.force_authenticate(user.user)
 
     def test_create_document_link_category(self):
-        document_link = iati_factory.DocumentLinkFactory.create()
+        document_link = DocumentLinkFactory.create()
         document_category = codelist_factory.DocumentCategoryFactory.create()
 
         data = {
@@ -4722,22 +4547,27 @@ class DocumentLinkCategorySaveTestCase(TestCase):
         }
 
         res = self.c.post(
-            "/api/publishers/{}/activities/{}/document_links/{}/categories/?format=json".format(
-                self.publisher.id, document_link.activity.id, document_link.id),
+            "/api/publishers/{}/activities/{}/document_links/{}/categories/?format=json".format(  # NOQA: E501
+                self.publisher.id,
+                document_link.activity.id,
+                document_link.id
+            ),
             data,
             format='json'
         )
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
-        instance = iati_models.DocumentLinkCategory.objects.get(pk=res.json()['id'])
+        instance = iati_models.DocumentLinkCategory.objects.get(pk=res.json()[
+                                                                'id'])
 
         self.assertEqual(instance.document_link.id, data['document_link'])
         self.assertEqual(instance.category.code, data['category']['code'])
 
     def test_update_document_link_category(self):
-        document_link_category = iati_factory.DocumentLinkCategoryFactory.create()
-        document_category = codelist_factory.DocumentCategoryFactory.create(code="2")
+        document_link_category = DocumentLinkCategoryFactory.create()
+        document_category = codelist_factory.DocumentCategoryFactory.create(
+            code="2")
 
         data = {
             "document_link": document_link_category.document_link.id,
@@ -4748,7 +4578,7 @@ class DocumentLinkCategorySaveTestCase(TestCase):
         }
 
         res = self.c.put(
-            "/api/publishers/{}/activities/{}/document_links/{}/categories/{}?format=json".format(
+            "/api/publishers/{}/activities/{}/document_links/{}/categories/{}?format=json".format(  # NOQA: E501
                 self.publisher.id,
                 document_link_category.document_link.activity.id,
                 document_link_category.document_link.id,
@@ -4757,18 +4587,19 @@ class DocumentLinkCategorySaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
-        instance = iati_models.DocumentLinkCategory.objects.get(pk=res.json()['id'])
+        instance = iati_models.DocumentLinkCategory.objects.get(pk=res.json()[
+                                                                'id'])
 
         self.assertEqual(instance.document_link.id, data['document_link'])
         self.assertEqual(instance.category.code, data['category']['code'])
 
     def test_delete_document_link_category(self):
-        document_link_category = iati_factory.DocumentLinkCategoryFactory.create()
+        document_link_category = DocumentLinkCategoryFactory.create()
 
         res = self.c.delete(
-            "/api/publishers/{}/activities/{}/document_links/{}/categories/{}?format=json".format(
+            "/api/publishers/{}/activities/{}/document_links/{}/categories/{}?format=json".format(  # NOQA: E501
                 self.publisher.id,
                 document_link_category.document_link.activity.id,
                 document_link_category.document_link.id,
@@ -4776,10 +4607,11 @@ class DocumentLinkCategorySaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
-            instance = iati_models.DocumentLinkCategory.objects.get(pk=document_link_category.id)
+            iati_models.DocumentLinkCategory.objects.get(
+                pk=document_link_category.id)
 
 
 class DocumentLinkLanguageSaveTestCase(TestCase):
@@ -4797,7 +4629,7 @@ class DocumentLinkLanguageSaveTestCase(TestCase):
         self.c.force_authenticate(user.user)
 
     def test_create_language(self):
-        document_link = iati_factory.DocumentLinkFactory.create()
+        document_link = DocumentLinkFactory.create()
         language = codelist_factory.LanguageFactory.create()
 
         data = {
@@ -4809,21 +4641,25 @@ class DocumentLinkLanguageSaveTestCase(TestCase):
         }
 
         res = self.c.post(
-            "/api/publishers/{}/activities/{}/document_links/{}/languages/?format=json".format(
-                self.publisher.id, document_link.activity.id, document_link.id),
+                "/api/publishers/{}/activities/{}/document_links/{}/languages/?format=json".format(  # NOQA: E501
+                self.publisher.id,
+                document_link.activity.id,
+                document_link.id
+            ),
             data,
             format='json'
         )
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
-        instance = iati_models.DocumentLinkLanguage.objects.get(pk=res.json()['id'])
+        instance = iati_models.DocumentLinkLanguage.objects.get(pk=res.json()[
+                                                                'id'])
 
         self.assertEqual(instance.document_link.id, data['document_link'])
         self.assertEqual(instance.language.code, data['language']['code'])
 
     def test_update_language(self):
-        document_link_language = iati_factory.DocumentLinkLanguageFactory.create()
+        document_link_language = DocumentLinkLanguageFactory.create()
         language = codelist_factory.LanguageFactory.create(code="2")
 
         data = {
@@ -4835,7 +4671,7 @@ class DocumentLinkLanguageSaveTestCase(TestCase):
         }
 
         res = self.c.put(
-            "/api/publishers/{}/activities/{}/document_links/{}/languages/{}?format=json".format(
+            "/api/publishers/{}/activities/{}/document_links/{}/languages/{}?format=json".format(  # NOQA: E501
                 self.publisher.id,
                 document_link_language.document_link.activity.id,
                 document_link_language.document_link.id,
@@ -4844,18 +4680,19 @@ class DocumentLinkLanguageSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
-        instance = iati_models.DocumentLinkLanguage.objects.get(pk=res.json()['id'])
+        instance = iati_models.DocumentLinkLanguage.objects.get(pk=res.json()[
+                                                                'id'])
 
         self.assertEqual(instance.document_link.id, data['document_link'])
         self.assertEqual(instance.language.code, data['language']['code'])
 
     def test_delete_language(self):
-        document_link_language = iati_factory.DocumentLinkLanguageFactory.create()
+        document_link_language = DocumentLinkLanguageFactory.create()
 
         res = self.c.delete(
-            "/api/publishers/{}/activities/{}/document_links/{}/languages/{}?format=json".format(
+            "/api/publishers/{}/activities/{}/document_links/{}/languages/{}?format=json".format(  # NOQA: E501
                 self.publisher.id,
                 document_link_language.document_link.activity.id,
                 document_link_language.document_link.id,
@@ -4863,7 +4700,8 @@ class DocumentLinkLanguageSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
-            instance = iati_models.DocumentLinkLanguage.objects.get(pk=document_link_language.id)
+            iati_models.DocumentLinkLanguage.objects.get(
+                pk=document_link_language.id)

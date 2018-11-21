@@ -1,10 +1,10 @@
-from factory.django import DjangoModelFactory
-from factory import SubFactory
-from iati_synchroniser.models import Dataset
-from iati_synchroniser.models import Publisher
 from datetime import datetime
 
+from factory import Sequence, SubFactory
+from factory.django import DjangoModelFactory
+
 from iati.factory.iati_factory import OrganisationFactory
+from iati_synchroniser.models import Dataset, Publisher
 
 
 class NoDatabaseFactory(DjangoModelFactory):
@@ -29,7 +29,9 @@ class DatasetFactory(NoDatabaseFactory):
     class Meta:
         model = Dataset
 
-    iati_id = '31403-42090-13011-13003'
+    iati_id = Sequence(
+        lambda n: '{0}{0}{0}{0}{0}-{0}{0}{0}{0}{0}-{0}{0}{0}{0}{0}-{0}{0}{0}{0}{0}-'.format(n)  # NOQA: E501
+    )
     name = 'nl-1'
     title = '1998-2008 Activities'
     filetype = 1

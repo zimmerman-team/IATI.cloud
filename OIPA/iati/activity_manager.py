@@ -23,11 +23,14 @@ class ActivityQuerySet(SearchQuerySet):
                         Q(pk=pk_int) | Q(iati_identifier=pk_int))
 
                 except ValueError:
-                    return super(ActivityQuerySet, self).get(Q(iati_identifier=pk))
+                    return super(
+                        ActivityQuerySet, self
+                    ).get(Q(iati_identifier=pk))
 
         return super(ActivityQuerySet, self).get(*args, **kwargs)
 
-    # TODO: this makes counting a lot slower than it has to be for a lot of queries
+    # TODO: this makes counting a lot slower than it has to be for a lot of
+    # queries
     def count(self):
         # self = self.order_by('iati_identifier').only('iati_identifier')
         return super(ActivityQuerySet, self).count()
@@ -200,11 +203,10 @@ class ActivityQuerySet(SearchQuerySet):
                 .select_related('vocabulary')))
 
     def prefetch_locations(self):
-        from iati.models import Location, LocationName, LocationDescription, LocationAdministrative
-        from iati.models import LocationActivityDescription, Narrative, GeographicVocabulary
-        # from django.contrib.contenttypes.models import ContentType
+        from iati.models import Location, LocationAdministrative
+        from iati.models import Narrative
 
-        narrative_prefetch = Prefetch(
+        Prefetch(
             'narratives',
             queryset=Narrative.objects.select_related('language'))
 
@@ -309,27 +311,9 @@ class ActivityQuerySet(SearchQuerySet):
                 queryset=PlannedDisbursement.objects.all()
             ))
 
-    # def prefetch_transactions(self):
-    #     from iati.transaction.models import Transaction
-
-    #     # TODO: Nullable foreign keys do not get prefetched in select_related() call - 2016-01-20
-    #     return self.prefetch_related(
-    #         Prefetch(
-    #             'transaction_set',
-    #             queryset=Transaction.objects.all() \
-    #             .select_related('transaction_type')
-    #             .select_related('currency')
-    #             .select_related('disbursement_channel')
-    #             .select_related('flow_type')
-    #             .select_related('finance_type')
-    #             .select_related('aid_type')
-    #             .select_related('tied_status')
-    #             .prefetch_all()
-    #         )
-    #     )
-
     def prefetch_document_links(self):
-        from iati.models import DocumentLink, DocumentLinkCategory, DocumentLinkLanguage, Narrative
+        from iati.models import DocumentLink, DocumentLinkCategory, \
+            DocumentLinkLanguage, Narrative
 
         # TODO: fix category prefetch, not working
 
@@ -382,17 +366,16 @@ class ActivityQuerySet(SearchQuerySet):
         )
 
     def prefetch_conditions(self):
-        from iati.models import Conditions, Narrative
 
         return self.select_related('conditions')
-        # return self.prefetch_related(
-        #     Prefetch(
-        #         'conditions_set',
-        #         queryset=Conditions.objects.all()
-        #         ))
 
     def prefetch_results(self):
-        from iati.models import Result, Narrative, ResultIndicatorPeriod, ResultIndicator, ResultIndicatorReference, ResultIndicatorPeriodTargetLocation, ResultIndicatorPeriodActualLocation, ResultIndicatorPeriodTargetDimension, ResultIndicatorPeriodActualDimension
+        from iati.models import Result, Narrative, ResultIndicatorPeriod, \
+            ResultIndicator, ResultIndicatorReference, \
+            ResultIndicatorPeriodTargetLocation, \
+            ResultIndicatorPeriodActualLocation, \
+            ResultIndicatorPeriodTargetDimension, \
+            ResultIndicatorPeriodActualDimension
 
         title_prefetch = Prefetch(
             'resulttitle__narratives',
@@ -419,47 +402,42 @@ class ActivityQuerySet(SearchQuerySet):
             queryset=Narrative.objects.all()
             .select_related('language'))
 
-        indicator_baseline_comment_prefetch = Prefetch(
-            'resultindicatorbaselinecomment__narratives',
-            queryset=Narrative.objects.all()
-            .select_related('language'))
-
         indicator_period_target_location_prefetch = Prefetch(
-            'resultindicatorperiodtargetlocation_set',
+            'targets__resultindicatorperiodtargetlocation_set',
             queryset=ResultIndicatorPeriodTargetLocation.objects.all()
             .select_related('location'))
 
         indicator_period_actual_location_prefetch = Prefetch(
-            'resultindicatorperiodactuallocation_set',
+            'actuals__resultindicatorperiodactuallocation_set',
             queryset=ResultIndicatorPeriodActualLocation.objects.all()
             .select_related('location'))
 
         indicator_period_target_dimension_prefetch = Prefetch(
-            'resultindicatorperiodtargetdimension_set',
+            'targets__resultindicatorperiodtargetdimension_set',
             queryset=ResultIndicatorPeriodTargetDimension.objects.all()
         )
 
         indicator_period_actual_dimension_prefetch = Prefetch(
-            'resultindicatorperiodactualdimension_set',
+            'actuals__resultindicatorperiodactualdimension_set',
             queryset=ResultIndicatorPeriodActualDimension.objects.all()
         )
 
         indicator_period_target_comment_prefetch = Prefetch(
-            'resultindicatorperiodtargetcomment__narratives',
+            'targets__resultindicatorperiodtargetcomment_set__narratives',
             queryset=Narrative.objects.all()
             .select_related('language'))
 
         indicator_period_actual_comment_prefetch = Prefetch(
-            'resultindicatorperiodactualcomment__narratives',
+            'actuals__resultindicatorperiodactualcomment_set__narratives',
             queryset=Narrative.objects.all()
             .select_related('language'))
 
         indicator_period_prefetch = Prefetch(
             'resultindicatorperiod_set',
             queryset=ResultIndicatorPeriod.objects.all()
-            .select_related(
-                'resultindicatorperiodtargetcomment',
-                'resultindicatorperiodactualcomment'
+            .prefetch_related(
+                'targets__resultindicatorperiodtargetcomment_set',
+                'actuals__resultindicatorperiodactualcomment_set',
             )
             .prefetch_related(
                 indicator_period_target_location_prefetch,
@@ -478,13 +456,11 @@ class ActivityQuerySet(SearchQuerySet):
                 'measure',
                 'resultindicatortitle',
                 'resultindicatordescription',
-                'resultindicatorbaselinecomment'
             )
             .prefetch_related(
                 indicator_reference_prefetch,
                 indicator_title_prefetch,
                 indicator_description_prefetch,
-                indicator_baseline_comment_prefetch,
                 indicator_period_prefetch,
             )
         )
@@ -502,7 +478,7 @@ class ActivityQuerySet(SearchQuerySet):
         )
 
     def prefetch_crs_add(self):
-        from iati.models import CrsAdd, CrsAddOtherFlags, CrsAddLoanTerms, CrsAddLoanStatus
+        from iati.models import CrsAdd, CrsAddOtherFlags
 
         other_flags_prefetch = Prefetch(
             'other_flags',
@@ -540,7 +516,6 @@ class ActivityQuerySet(SearchQuerySet):
         return self.select_related('default_finance_type__category')
 
     def prefetch_aggregations(self):
-        from iati.models import ActivityAggregation, ChildAggregation, ActivityPlusChildAggregation
 
         return self.select_related(
             'activity_aggregation',

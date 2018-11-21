@@ -1,6 +1,6 @@
-from OIPA.settings import *  # noqa: F401, F403
+from OIPA.settings import *  # NOQA: F401, F403
 
-MIDDLEWARE_CLASSES += [  # noqa: F405
+MIDDLEWARE += [  # noqa: F405
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'yet_another_django_profiler.middleware.ProfilerMiddleware'
 ]

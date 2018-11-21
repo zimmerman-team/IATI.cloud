@@ -1,14 +1,12 @@
-from rest_framework.generics import RetrieveAPIView
-from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.generics import RetrieveAPIView
 from rest_framework_extensions.cache.mixins import CacheResponseMixin
 
-from iati.models import Location
-
-from api.generics.views import DynamicListView
-from api.location.serializers import LocationSerializer
-from api.location.filters import LocationFilter
+from api.activity.serializers import LocationSerializer
 from api.generics.filters import DistanceFilter
+from api.generics.views import DynamicListView
+from api.location.filters import LocationFilter
+from iati.models import Location
 
 
 class LocationList(DynamicListView):

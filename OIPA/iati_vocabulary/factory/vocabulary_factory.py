@@ -1,10 +1,8 @@
-from iati.models import RegionVocabulary
-from iati.models import GeographicVocabulary
+from factory.django import DjangoModelFactory
 
+from iati.models import GeographicVocabulary, RegionVocabulary
 from iati_codelists import models as codelist_models
 from iati_vocabulary import models as vocabulary_models
-
-from factory.django import DjangoModelFactory
 
 
 class NoDatabaseFactory(DjangoModelFactory):
@@ -74,3 +72,36 @@ class IndicatorVocabularyFactory(NoDatabaseFactory):
     code = '1'
     name = 'WHO Registry'
     description = 'description'
+
+
+class TagVocabularyFactory(NoDatabaseFactory):
+    class Meta(GetOrCreateMetaMixin):
+        model = vocabulary_models.TagVocabulary
+
+    code = '1'
+    name = 'Agrovoc'
+    description = ('A controlled vocabulary covering all areas of interest of '
+                   'the Food and Agriculture Organization (FAO) of the United '
+                   'Nations, including food, nutrition, agriculture, '
+                   'fisheries, forestry, environment etc.')
+
+
+class AidTypeVocabularyFactory(NoDatabaseFactory):
+    class Meta(GetOrCreateMetaMixin):
+        model = vocabulary_models.AidTypeVocabulary
+
+    code = '3'
+    name = 'Earmarking Modality'
+    description = ('Codes A to L replicated directly from Grand Bargain '
+                   'document found in Annex 1 (pg.16)')
+
+
+class ResultVocabularyFactory(NoDatabaseFactory):
+    class Meta(GetOrCreateMetaMixin):
+        model = vocabulary_models.ResultVocabulary
+
+    code = '99'
+    name = 'reporting organisation'
+    description = ('The region reported corresponds to a region vocabulary '
+                   'maintained by the reporting organisation for this '
+                   'activity.')

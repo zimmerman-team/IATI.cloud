@@ -1,7 +1,7 @@
-from django.test import TestCase
-from django.test import RequestFactory
-from iati_synchroniser.factory.synchroniser_factory import DatasetFactory
+from django.test import RequestFactory, TestCase
+
 from api.dataset.serializers import DatasetSerializer
+from iati_synchroniser.factory.synchroniser_factory import DatasetFactory
 
 
 class TestDatasetSerializers(TestCase):
@@ -19,19 +19,9 @@ class TestDatasetSerializers(TestCase):
         self.assertEqual(serializer.data.get('title'), dataset.title)
         self.assertEqual(serializer.data.get('filetype'), 'Activity')
         self.assertEqual(serializer.data.get('source_url'), dataset.source_url)
-        # assert serializer.data['date_created'] == dataset.date_created,\
-        #     """
-        #     'dataset.date_created' should be serialized to a field called 'date_created'
-        #     """
-        # assert serializer.data['date_updated'] == dataset.date_updated,\
-        #     """
-        #     'dataset.date_updated' should be serialized to a field called 'date_updated'
-        #     """
-        # assert serializer.data['last_found_in_registry'] == dataset.last_found_in_registry,\
-        #     """
-        #     'dataset.last_found_in_registry' should be serialized to a field called 'last_found_in_registry'
-        #     """
-        self.assertEqual(serializer.data.get('iati_version'), dataset.iati_version)
+        self.assertEqual(serializer.data.get(
+            'iati_version'
+        ), dataset.iati_version)
 
         required_fields = (
             'id',

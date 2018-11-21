@@ -13,7 +13,7 @@
 
       This W3C XML Schema defines an XML document type for information
       about one or more aid-related activities, following the standard
-      published at http://iatistandard.org/
+      published at http://reference.iatistandard.org/
 
       This document type may be extended with additional elements and
       attributes, but they must belong to an explicit XML namespace.
@@ -154,7 +154,7 @@
           <xsd:documentation xml:lang="en">
             Default ISO 4217 currency code for all financial values in
             this activity report.  See
-            http://iatistandard.org/codelists/currency
+            http://reference.iatistandard.org/codelists/currency
           </xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
@@ -212,7 +212,7 @@
         content.
 
         For the value of the @type attribute, see
-        http://iatistandard.org/codelists/organisation-type
+        http://reference.iatistandard.org/codelists/organisation-type
       </xsd:documentation>
     </xsd:annotation>
     <xsd:complexType mixed="true">
@@ -228,7 +228,7 @@
             A code describing the organisation's role in the activity
             (donor, agency, etc.).
 
-            See http://iatistandard.org/codelists/organisation_role
+            See http://reference.iatistandard.org/codelists/organisation_role
           </xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
@@ -256,7 +256,7 @@
         geographical location, use the location element.
 
         For the value of the @code attribute, see
-        http://iatistandard.org/codelists/country
+        http://reference.iatistandard.org/codelists/country
       </xsd:documentation>
     </xsd:annotation>
     <xsd:complexType mixed="true">
@@ -281,7 +281,7 @@
         use the location element.
 
         For the value of the @code attribute, see
-        http://iatistandard.org/codelists/region
+        http://reference.iatistandard.org/codelists/region
       </xsd:documentation>
     </xsd:annotation>
     <xsd:complexType mixed="true">
@@ -310,7 +310,7 @@
         disbursements, e.g. "bilateral" or "multilateral".
 
         For the value of the @code attribute, see
-        http://iatistandard.org/codelists/collaboration_type
+        http://reference.iatistandard.org/codelists/collaboration_type
       </xsd:documentation>
     </xsd:annotation>
   </xsd:element>
@@ -322,7 +322,7 @@
         Assistance (ODA).  Type types will be defined by IATI.
 
         For the value of the @code attribute, see
-        http://iatistandard.org/codelists/flow_type
+        http://reference.iatistandard.org/codelists/flow_type
       </xsd:documentation>
     </xsd:annotation>
   </xsd:element>
@@ -336,7 +336,7 @@
         individual transaction level.
 
         For the value of the @code attribute, see
-        http://iatistandard.org/codelists/aid_type
+        http://reference.iatistandard.org/codelists/aid_type
       </xsd:documentation>
     </xsd:annotation>
   </xsd:element>
@@ -350,7 +350,7 @@
         transactions.
 
         For the value of the @code attribute, see
-        http://iatistandard.org/codelists/finance_type
+        http://reference.iatistandard.org/codelists/finance_type
       </xsd:documentation>
     </xsd:annotation>
   </xsd:element>
@@ -372,7 +372,7 @@
           <xsd:documentation xml:lang="en">
             An identifier for the owner of this identifier.
             For guidance on constructing the value of the @ref
-            attribute, see http://iatistandard.org/org-ref
+            attribute, see http://reference.iatistandard.org/org-ref
           </xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
@@ -392,7 +392,7 @@
     <xsd:annotation>
       <xsd:documentation xml:lang="en">
         Sector code and name.  For the value of the @code attribute,
-        see http://iatistandard.org/codelists/sector
+        see http://reference.iatistandard.org/codelists/sector
 
         Either the @code attribute or descriptive text content must be
         present.
@@ -426,7 +426,7 @@
             if multiple sector codes are used in multiple vocabularies
             then each vocabulary's percentages should add up to 100%.
 
-            See http://iatistandard.org/codelists/vocabulary
+            See http://reference.iatistandard.org/codelists/vocabulary
           </xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
@@ -446,7 +446,7 @@
         2010-10-01. 
         
         For the value of the @type attribute, see
-        http://iatistandard.org/codelists/activity_date_type
+        http://reference.iatistandard.org/codelists/activity_date_type
 
         The text content may contain a general date text (e.g. 2011Q1)
         for recording less specific dates such as month, quarter, or
@@ -477,7 +477,7 @@
       <xsd:documentation xml:lang="en">
         The current status of the project (e.g. "planned"), using a
         list defined by IATI.  For the value of the @code attribute,
-        see http://iatistandard.org/codelists/activity_status
+        see http://reference.iatistandard.org/codelists/activity_status
       </xsd:documentation>
     </xsd:annotation>
   </xsd:element>
@@ -575,7 +575,7 @@
         using a codelist created by IATI.  The content is free text
         that can optionally provide more detail.  For the value of the
         @code attribute, see
-        http://iatistandard.org/codelists/tied_status
+        http://reference.iatistandard.org/codelists/tied_status
       </xsd:documentation>
     </xsd:annotation>
   </xsd:element>
@@ -589,7 +589,7 @@
         attribute can also help to segment the markers into separate
         vocabularies.  This element can be repeated for each policy
         marker.  For the value of the @code attribute, see
-        http://iatistandard.org/codelists/policy_marker
+        http://reference.iatistandard.org/codelists/policy_marker
       </xsd:documentation>
     </xsd:annotation>
     <xsd:complexType mixed="true">
@@ -612,7 +612,7 @@
             Policy vocabulary used. Default is "DAC", but "RO" may also
             be used for publisher's own markers.
 
-            See http://iatistandard.org/codelists/vocabulary
+            See http://reference.iatistandard.org/codelists/vocabulary
           </xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
@@ -624,7 +624,7 @@
             IATI.  If a marker is not significant, the policy-marker
             element will not be present.
 
-            See http://iatistandard.org/codelists/policy_significance
+            See http://reference.iatistandard.org/codelists/policy_significance
           </xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
@@ -683,7 +683,7 @@
               optional free-text description of the type.
 
               For the value of the @code attribute, see
-              http://iatistandard.org/codelists/transaction_type
+              http://reference.iatistandard.org/codelists/transaction_type
             </xsd:documentation>
           </xsd:annotation>
         </xsd:element>
@@ -766,7 +766,7 @@
               default-flow-type element.
               
               For the value of the @code attribute, see
-              http://iatistandard.org/codelists/flow_type
+              http://reference.iatistandard.org/codelists/flow_type
             </xsd:documentation>
           </xsd:annotation>
         </xsd:element>
@@ -778,7 +778,7 @@
               transaction-by-transaction basis, if needed.
 
               For the value of the @code attribute, see
-              http://iatistandard.org/codelists/finance_type
+              http://reference.iatistandard.org/codelists/finance_type
             </xsd:documentation>
           </xsd:annotation>
         </xsd:element>
@@ -790,7 +790,7 @@
               transaction-by-transaction basis if needed.
 
               For the value of the @code attribute, see
-              http://iatistandard.org/codelists/aid_type
+              http://reference.iatistandard.org/codelists/aid_type
             </xsd:documentation>
           </xsd:annotation>
         </xsd:element>
@@ -802,7 +802,7 @@
               transaction-by-transaction basis if needed.
 
               For the value of the @code attribute, see
-              http://iatistandard.org/codelists/tied_status
+              http://reference.iatistandard.org/codelists/tied_status
             </xsd:documentation>
           </xsd:annotation>
         </xsd:element>
@@ -940,7 +940,7 @@
                   (e.g. "GB" for the United Kingdom).
 
                   For the @code attribute, see
-                  http://iatistandard.org/codelists/country
+                  http://reference.iatistandard.org/codelists/country
                 </xsd:documentation>
               </xsd:annotation>
             </xsd:attribute>
@@ -952,7 +952,7 @@
                   The UNSALB level-one administrative code for a
                   subdivision of a country.
 
-                  See http://iatistandard.org/codelists/admin1
+                  See http://reference.iatistandard.org/codelists/admin1
                 </xsd:documentation>
               </xsd:annotation>
             </xsd:attribute>
@@ -964,7 +964,7 @@
                   The UNSALB level-two administrative code for a
                   subdivision of a country.
 
-                  See http://iatistandard.org/codelists/admin2
+                  See http://reference.iatistandard.org/codelists/admin2
                 </xsd:documentation>
               </xsd:annotation>
             </xsd:attribute>
@@ -1127,7 +1127,7 @@
                   the location (e.g. "2" for within 25 km of the
                   specified latitude/longitude).
 
-                  See http://iatistandard.org/codelists/geographical_precision
+                  See http://reference.iatistandard.org/codelists/geographical_precision
                 </xsd:documentation>
               </xsd:annotation>
             </xsd:attribute>
@@ -1155,7 +1155,7 @@
 
                   Reference to the gazetteer containing the entry.
 
-                  See http://iatistandard.org/codelists/gazetteer_agency
+                  See http://reference.iatistandard.org/codelists/gazetteer_agency
                 </xsd:documentation>
               </xsd:annotation>
             </xsd:attribute>
@@ -1171,7 +1171,7 @@
               from the feature designation codes maintained by the 
               US National Geospatial-Intelligence Agency
 
-              See http://iatistandard.org/codelists/location_type
+              See http://reference.iatistandard.org/codelists/location_type
             </xsd:documentation>
           </xsd:annotation>
         </xsd:element>
@@ -1258,7 +1258,7 @@
         transactions.
 
         For the value of the @type attribute, see
-        http://iatistandard.org/codelists/related_activity_type
+        http://reference.iatistandard.org/codelists/related_activity_type
       </xsd:documentation>
     </xsd:annotation>
     <xsd:complexType mixed="true">
@@ -1668,7 +1668,7 @@
                     Type of Repayment. 1 = equal principal payments
                     (EPP); 2 = annuity; 3 = lump sum; 5 = other,
                     Codes are listed at
-                    http://iatistandard.org/codelists/crs-repayment-type
+                    http://reference.iatistandard.org/codelists/crs-repayment-type
                   </xsd:documentation>
                 </xsd:annotation>
               </xsd:element>
@@ -1678,7 +1678,7 @@
                     Number of repayments per annum. 1 = annual; 2 =
                     semi-annual; 4 = quarterly; 12 = monthly. Codes
                     are listed at
-                    http://iatistandard.org/codelists/repayment-nopa.
+                    http://reference.iatistandard.org/codelists/repayment-nopa.
                   </xsd:documentation>
                 </xsd:annotation>
               </xsd:element>

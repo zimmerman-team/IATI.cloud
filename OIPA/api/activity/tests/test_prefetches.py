@@ -1,30 +1,14 @@
-
-
 # TODO: no need to test codelist fields separately; instead test the whole
 # serializer in once along with the code and vocabulary fields. Or is
 # testing the fields separately preferable?
 
-from django.test import TestCase  # Runs each test in a transaction and flushes database
-from unittest import skip
-import datetime
-
-from django.test import RequestFactory, Client
+# Runs each test in a transaction and flushes database
+from django.test import RequestFactory, TestCase
 from rest_framework.test import APIClient
-from iati.factory import iati_factory
-from iati.transaction import factories as transaction_factory
-from iati_codelists.factory import codelist_factory
-from iati_vocabulary.factory import vocabulary_factory
-from api.activity import serializers
-from iati import models as iati_models
-from iati.transaction import models as transaction_models
-from django.core.exceptions import ObjectDoesNotExist
 
-from decimal import Decimal
-
-from iati.models import Activity
-from iati.factory.utils import _create_test_activity
 from api.activity.serializers import ActivitySerializer
-from django.core import management
+from iati.factory.utils import _create_test_activity
+from iati.models import Activity
 
 
 class ActivitySaveTestCase(TestCase):
@@ -32,10 +16,18 @@ class ActivitySaveTestCase(TestCase):
     c = APIClient()
 
     def setUp(self):
-        management.call_command('flush', interactive=False, verbosity=0)
-        self.activity1 = _create_test_activity(id="0001", iati_identifier="0001")
-        self.activity2 = _create_test_activity(id="0002", iati_identifier="0002")
-        self.activity3 = _create_test_activity(id="0003", iati_identifier="0003")
+        self.activity1 = _create_test_activity(
+            id="0001",
+            iati_identifier="0001"
+        )
+        self.activity2 = _create_test_activity(
+            id="0002",
+            iati_identifier="0002"
+        )
+        self.activity3 = _create_test_activity(
+            id="0003",
+            iati_identifier="0003"
+        )
 
     def test_prefetch_reporting_organisations(self):
         """
@@ -47,7 +39,8 @@ class ActivitySaveTestCase(TestCase):
         """
 
         with self.assertNumQueries(2):
-            queryset = Activity.objects.all().prefetch_reporting_organisations()
+            queryset = Activity.objects.all()\
+                .prefetch_reporting_organisations()
             serializer = ActivitySerializer(
                 queryset,
                 many=True,
@@ -103,7 +96,8 @@ class ActivitySaveTestCase(TestCase):
         """
 
         with self.assertNumQueries(3):
-            queryset = Activity.objects.all().prefetch_participating_organisations()
+            queryset = Activity.objects.all()\
+                .prefetch_participating_organisations()
             serializer = ActivitySerializer(
                 queryset,
                 many=True,
@@ -221,7 +215,8 @@ class ActivitySaveTestCase(TestCase):
         TODO: Reduce queries number 09-01-2017
         """
 
-        # TODO: should be 6 queries, LocationAdministrative gets duplicated - 2017-03-27
+        # TODO: should be 6 queries, LocationAdministrative gets
+        # duplicated - 2017-03-27
         with self.assertNumQueries(7):
             queryset = Activity.objects.all().prefetch_locations()
             serializer = ActivitySerializer(
@@ -443,7 +438,7 @@ class ActivitySaveTestCase(TestCase):
         """
 
         # TODO: this should be 16 - 2017-03-27
-        with self.assertNumQueries(60):
+        with self.assertNumQueries(90):
             queryset = Activity.objects.all().prefetch_results()
             serializer = ActivitySerializer(
                 queryset,

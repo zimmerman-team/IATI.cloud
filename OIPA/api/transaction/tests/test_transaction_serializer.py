@@ -1,11 +1,10 @@
-from django.core.urlresolvers import reverse
-from api.transaction.serializers import TransactionSerializer
-from iati.transaction.factories import TransactionFactory
-
+from django.test import RequestFactory
+from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from django.test import RequestFactory
+from api.transaction.serializers import TransactionSerializer
+from iati.transaction.factories import TransactionFactory
 
 
 class TransactionSerializerTestCase(APITestCase):
@@ -42,7 +41,7 @@ class TransactionSerializerTestCase(APITestCase):
         """
 
         """
-        transaction = TransactionFactory.create(id=2)
+        TransactionFactory.create(id=2)
         url = reverse('transactions:transaction-detail', args={'2'})
         msg = 'activity transaction detail endpoint should be localed at {0}'
         expect_url = '/api/transactions/2/'

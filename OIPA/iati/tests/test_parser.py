@@ -1,27 +1,33 @@
 """
     Unit tests and integration tests for parser.
 """
-from django.core import management
-from iati.factory import iati_factory
 from unittest import skip
+
+import pytest
+from django.core import management
 from django.test import TestCase as DjangoTestCase
-import iati_codelists.models as codelist_models
-from iati.parser.IATI_2_01 import Parse as Parser_201
-from iati.parser.iati_parser import IatiParser
-from iati.models import Activity
 from lxml.builder import E
 
+import iati_codelists.models as codelist_models
+from iati.factory import iati_factory
+from iati.models import Activity
+from iati.parser.IATI_2_01 import Parse as Parser_201
+from iati.parser.iati_parser import IatiParser
 
 # TODO: use factories instead of these fixtures
-def setUpModule():
-    fixtures = ['test_vocabulary', 'test_codelists.json', ]
 
-    for fixture in fixtures:
-        management.call_command("loaddata", fixture)
+
+@pytest.fixture(scope='session')
+def django_db_setup(django_db_setup, django_db_blocker):
+    with django_db_blocker.unblock():
+        fixtures = ['test_vocabulary', 'test_codelists.json', ]
+
+        for fixture in fixtures:
+            management.call_command("loaddata", fixture)
 
 
 def tearDownModule():
-    management.call_command('flush', interactive=False, verbosity=0)
+    pass
 
 
 # TODO: refactor in test util module
@@ -44,10 +50,13 @@ class IatiParserTestCase(DjangoTestCase):
         self.parser = IatiParser(None)
 
     def test_get_or_none_charset_encoding(self):
-        self.assertIsNone(self.parser.get_or_none(Activity, code=u'Default-aid-type: [code="D02"\xa0]\xa0'))
+        self.assertIsNone(self.parser.get_or_none(
+            Activity, code=u'Default-aid-type: [code="D02"\xa0]\xa0'))
         self.assertIsNone(self.parser.get_or_none(Activity, code=u'\xa0'))
-        self.assertIsNone(self.parser.get_or_none(codelist_models.AidType, code=u''))
-        self.assertIsNone(self.parser.get_or_none(codelist_models.AidType, code=''))
+        self.assertIsNone(self.parser.get_or_none(
+            codelist_models.AidType, code=u''))
+        self.assertIsNone(self.parser.get_or_none(
+            codelist_models.AidType, code=''))
 
     def test_register_model_stores_model(self):
         activity = build_activity()
@@ -80,18 +89,10 @@ class IatiParserTestCase(DjangoTestCase):
 
     def test_normalize(self):
         """
-        normalize should remove spaces / tabs etc, replace special characters by a -
+        normalize should remove spaces / tabs etc, replace special characters
+        by a -
         """
         self.assertEqual(self.parser._normalize("no,commas"), 'noCOMMAcommas')
-        # self.assertEqual(self.parser._normalize("notrailingtabs\t"), 'notrailingtabs')
-        # self.assertEqual(self.parser._normalize("notrailingtabs\r"), 'notrailingtabs')
-        # self.assertEqual(self.parser._normalize("notrailingnewline\n"), 'notrailingnewline')
-        # self.assertEqual(self.parser._normalize("notrailingspaces "), 'notrailingspaces')
-        # self.assertEqual(self.parser._normalize("no spaces"), 'nospaces')
-        # self.assertEqual(self.parser._normalize("replace,commas"), 'replace-commas')
-        # self.assertEqual(self.parser._normalize("replace:colons"), 'replace-colons')
-        # self.assertEqual(self.parser._normalize("replace/slash"), 'replace-slash')
-        # self.assertEqual(self.parser._normalize("replace'apostrophe"), 'replace-apostrophe')
 
     def test_validate_date(self):
         """
@@ -124,7 +125,8 @@ class IatiParserTestCase(DjangoTestCase):
 
         narrative = E('narrative', "new narrative")
         narrative.attrib['{http://www.w3.org/XML/1998/namespace}lang'] = "en"
-        primary_name = self.parser.get_primary_name(narrative, "current primary name")
+        primary_name = self.parser.get_primary_name(
+            narrative, "current primary name")
         self.assertEqual(primary_name, "new narrative")
 
         narrative = E('narrative', "french narrative")

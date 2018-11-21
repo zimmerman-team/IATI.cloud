@@ -1,13 +1,11 @@
-import iati
-from rest_framework import generics
-from api.sector import serializers
-from api.activity.views import ActivityList
-from rest_framework.generics import ListAPIView
+
 from rest_framework.generics import RetrieveAPIView
 from rest_framework_extensions.cache.mixins import CacheResponseMixin
-from api.cache import QueryParamsKeyConstructor
 
-from api.generics.views import DynamicListView, DynamicDetailView
+import iati
+from api.cache import QueryParamsKeyConstructor
+from api.generics.views import DynamicListView
+from api.sector import serializers
 
 
 class SectorList(CacheResponseMixin, DynamicListView):

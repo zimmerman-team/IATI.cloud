@@ -1,27 +1,29 @@
-from django.db.models import Count, Sum
-
+from django.db.models import Count
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
 
-from traceability.models import Chain, ChainNode, ChainNodeError, ChainLink, ChainLinkRelation
-from iati.models import Activity, ActivityReportingOrganisation
-from iati.transaction.models import Transaction
-
-from api.generics.views import DynamicListView, DynamicDetailView
-from api.pagination import CustomTransactionPagination
-
-from api.organisation.serializers import OrganisationSerializer
-from api.aggregation.views import AggregationView, Aggregation, GroupBy
-from api.chain.filters import ChainFilter, ChainLinkFilter, ChainNodeErrorFilter, ChainNodeFilter
-from api.chain.serializers import ChainSerializer, ChainLinkSerializer, ChainNodeErrorSerializer, ChainNodeSerializer
 from api.activity.views import ActivityList
-from api.transaction.serializers import TransactionSerializer
+from api.aggregation.views import Aggregation, AggregationView, GroupBy
+from api.chain.filters import (
+    ChainFilter, ChainLinkFilter, ChainNodeErrorFilter, ChainNodeFilter
+)
+from api.chain.serializers import (
+    ChainLinkSerializer, ChainNodeErrorSerializer, ChainNodeSerializer,
+    ChainSerializer
+)
+from api.generics.views import DynamicDetailView, DynamicListView
+from api.pagination import CustomTransactionPagination
 from api.transaction.filters import TransactionFilter
+from api.transaction.serializers import TransactionSerializer
+from iati.models import Activity
+from iati.transaction.models import Transaction
+from traceability.models import Chain, ChainLink, ChainNode, ChainNodeError
 
 
 class ChainAggregations(AggregationView):
     """
-    Returns aggregations based on the item grouped by, and the selected aggregation.
+    Returns aggregations based on the item grouped by, and the selected
+    aggregation.
 
     ## Group by options
 
@@ -67,9 +69,14 @@ class ChainAggregations(AggregationView):
         ),
         GroupBy(
             query_param="reporting_organisation",
-            fields=("activity__reporting_organisations__organisation__organisation_identifier",
-                    "activity__reporting_organisations__organisation__primary_name"),
-            renamed_fields=("reporting_organisation_ref", "reporting_organisation_name"),
+            fields=("activity__reporting_organisations__organisation__\
+                     organisation_identifier",
+                    "activity__reporting_organisations__organisation__\
+                     primary_name"),
+            renamed_fields=(
+                "reporting_organisation_ref",
+                "reporting_organisation_name"
+            ),
         ),
     )
 
@@ -80,7 +87,8 @@ class ChainList(DynamicListView):
 
     ## Aggregations
 
-    The [`  /chains/aggregations`](/api/chains/aggregations) endpoint can be used for chain based aggregations.
+    The [`  /chains/aggregations`](/api/chains/aggregations) endpoint can be
+    used for chain based aggregations.
 
     ## Result details
 
@@ -126,7 +134,8 @@ class ChainTransactionList(DynamicListView):
 
     ## Result details
 
-    Each result item contains short information about transaction including URI to transaction details.
+    Each result item contains short information about transaction including
+    URI to transaction details.
 
     URI is constructed as follows: `/api/transactions/{transaction_id}`
 
@@ -214,8 +223,10 @@ class ChainLinkList(DynamicListView):
 
     def get_queryset(self):
         pk = self.kwargs.get('pk')
-        return ChainLink.objects.filter(chain=Chain.objects.get(pk=pk)).prefetch_related(
-            'relations').prefetch_related('start_node').prefetch_related('end_node')
+        return ChainLink.objects.filter(
+            chain=Chain.objects.get(pk=pk)
+        ).prefetch_related('relations').prefetch_related('start_node')\
+            .prefetch_related('end_node')
 
 
 class ChainNodeList(DynamicListView):
@@ -326,7 +337,9 @@ class ChainNodeErrorList(DynamicListView):
 
     def get_queryset(self):
         pk = self.kwargs.get('pk')
-        return ChainNodeError.objects.filter(chain_node__chain=Chain.objects.get(pk=pk))
+        return ChainNodeError.objects.filter(
+            chain_node__chain=Chain.objects.get(pk=pk)
+        )
 
 
 class ChainActivities(ActivityList):
@@ -336,4 +349,6 @@ class ChainActivities(ActivityList):
 
     def get_queryset(self):
         pk = self.kwargs.get('pk')
-        return Activity.objects.filter(id__in=Activity.objects.filter(chainnode__chain=pk))
+        return Activity.objects.filter(
+            id__in=Activity.objects.filter(chainnode__chain=pk)
+        )

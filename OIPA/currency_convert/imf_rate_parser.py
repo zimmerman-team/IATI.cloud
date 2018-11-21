@@ -1,14 +1,16 @@
-from calendar import monthrange
 import datetime
-import mechanize
-from mechanize._urllib2_fork import URLError
-import cookielib
+import time
+from calendar import monthrange
+from decimal import Decimal, InvalidOperation
+from http import cookiejar
+from urllib.error import URLError
+
+import mechanicalsoup
+from django.utils.encoding import smart_text
 from lxml import etree
-from decimal import Decimal
-from decimal import InvalidOperation
+
 from currency_convert.models import MonthlyAverage
 from iati_codelists.models import Currency
-import time
 
 
 class RateBrowser():
@@ -17,26 +19,16 @@ class RateBrowser():
         self.browser = self.prepare_browser()
 
     def prepare_browser(self):
-        browser = mechanize.Browser()
+        browser = mechanicalsoup.Browser()
 
         # Cookie Jar
-        cj = cookielib.LWPCookieJar()
+        cj = cookiejar.LWPCookieJar()
         browser.set_cookiejar(cj)
-
-        # Browser options
-        browser.set_handle_equiv(True)
-        browser.set_handle_redirect(True)
-        browser.set_handle_referer(True)
-        browser.set_handle_robots(False)
-        browser.set_handle_refresh(mechanize._http.HTTPRefreshProcessor(), max_time=1)
-        browser.set_debug_http(False)
-        browser.set_debug_redirects(False)
-        browser.set_debug_responses(False)
 
         # User-Agent
         browser.addheaders = [
             ('User-agent',
-             'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.1) Gecko/2008071615 Fedora/3.0.1-1.fc9 Firefox/3.0.1')]
+            'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.1) Gecko/2008071615 Fedora/3.0.1-1.fc9 Firefox/3.0.1')]  # NOQA: E501
 
         return browser
 
@@ -46,11 +38,14 @@ class RateBrowser():
         try:
             # wait couple sec to prevent retries due to too many connections
             time.sleep(5)
-            self.browser.open(url, timeout=80)
-            response = self.browser.open(download_url, timeout=80)
-            xml_data = response.read()
+
+            self.browser.get(url, timeout=80)
+            response = self.browser.get(download_url, timeout=80)
+
             self.browser.close()
-            return etree.fromstring(str(xml_data))
+            return etree.fromstring(
+                smart_text(response.content, 'utf-8').encode('utf-8')
+            )
         except URLError as e:
             # retry once
             self.get_xml_data(url, download_url, retry_count=retry_count + 1)
@@ -59,8 +54,8 @@ class RateBrowser():
 class RateParser():
 
     def __init__(self):
-        self.imf_url = "http://www.imf.org/external/np/fin/ert/GUI/Pages/Report.aspx?Type=XML&CU=%27EUR%27,%27JPY%27,%27GBP%27,%27USD%27,%27DZD%27,%27AUD%27,%27ATS%27,%27BHD%27,%27BEF%27,%27VEF%27,%27BWP%27,%27BRL%27,%27BND%27,%27CAD%27,%27CLP%27,%27CNY%27,%27COP%27,%27CYP%27,%27CZK%27,%27DKK%27,%27DEM%27,%27FIM%27,%27FRF%27,%27GRD%27,%27HUF%27,%27ISK%27,%27INR%27,%27IDR%27,%27IRR%27,%27IEP%27,%27ILS%27,%27ITL%27,%27KZT%27,%27KRW%27,%27EEK%27,%27KWD%27,%27LYD%27,%27LUF%27,%27MYR%27,%27MTL%27,%27MUR%27,%27MXN%27,%27NPR%27,%27NLG%27,%27NZD%27,%27NOK%27,%27PEN%27,%27PKR%27,%27UYU%27,%27PHP%27,%27PLN%27,%27PTE%27,%27QAR%27,%27OMR%27,%27RUB%27,%27SAR%27,%27SGD%27,%27SKK%27,%27SIT%27,%27ZAR%27,%27ESP%27,%27LKR%27,%27SEK%27,%27CHF%27,%27THB%27,%27TTD%27,%27TND%27,%27AED%27,%27VEB%27&EX=SDRC&P=DateRange&CF=UnCompressed&CUF=Period&DS=Ascending&DT=NA"
-        self.imf_download_url = "http://www.imf.org/external/np/fin/ert/GUI/Pages/ReportData.aspx?Type=XML"
+        self.imf_url = "http://www.imf.org/external/np/fin/ert/GUI/Pages/Report.aspx?Type=XML&CU=%27EUR%27,%27JPY%27,%27GBP%27,%27USD%27,%27DZD%27,%27AUD%27,%27ATS%27,%27BHD%27,%27BEF%27,%27VEF%27,%27BWP%27,%27BRL%27,%27BND%27,%27CAD%27,%27CLP%27,%27CNY%27,%27COP%27,%27CYP%27,%27CZK%27,%27DKK%27,%27DEM%27,%27FIM%27,%27FRF%27,%27GRD%27,%27HUF%27,%27ISK%27,%27INR%27,%27IDR%27,%27IRR%27,%27IEP%27,%27ILS%27,%27ITL%27,%27KZT%27,%27KRW%27,%27EEK%27,%27KWD%27,%27LYD%27,%27LUF%27,%27MYR%27,%27MTL%27,%27MUR%27,%27MXN%27,%27NPR%27,%27NLG%27,%27NZD%27,%27NOK%27,%27PEN%27,%27PKR%27,%27UYU%27,%27PHP%27,%27PLN%27,%27PTE%27,%27QAR%27,%27OMR%27,%27RUB%27,%27SAR%27,%27SGD%27,%27SKK%27,%27SIT%27,%27ZAR%27,%27ESP%27,%27LKR%27,%27SEK%27,%27CHF%27,%27THB%27,%27TTD%27,%27TND%27,%27AED%27,%27VEB%27&EX=SDRC&P=DateRange&CF=UnCompressed&CUF=Period&DS=Ascending&DT=NA"  # NOQA: E501
+        self.imf_download_url = "http://www.imf.org/external/np/fin/ert/GUI/Pages/ReportData.aspx?Type=XML"  # NOQA: E501
         self.year = 1993
         self.month = 12
         self.min_tick = 0
@@ -112,21 +107,21 @@ class RateParser():
         """
         receives exchange rates per day for 1 specific month in xml format.
 
-        should calculate averages per currency for all dates that an exchange rate is available.
+        should calculate averages per currency for all dates that an exchange
+        rate is available.
         """
         for e in data.getchildren():
-            # if e.tag == 'ReportName':
-            #     print e.text
             if e.tag == 'EFFECTIVE_DATE':
                 self.parse_day_rates(e)
 
     def save_averages(self):
         """
-        Based on self.rates (see parse_day_rates) calculates the average per currency for a specific month.
+        Based on self.rates (see parse_day_rates) calculates the average per
+        currency for a specific month.
 
         Stores the results into the MonthlyAverage model.
         """
-        for currency_iso, cur_obj in self.rates.iteritems():
+        for currency_iso, cur_obj in self.rates.items():
             average_value = sum(cur_obj['values']) / len(cur_obj['values'])
             currency, created = Currency.objects.get_or_create(
                 code=currency_iso,
@@ -142,22 +137,28 @@ class RateParser():
 
     def ticks(self, dt):
         """
-        calculate ticks. A single tick represents one hundred nanoseconds or one ten-millionth of a second.
-        IMF works with these tickrates. Check MSDN system.datetime.ticks for more info.
+        calculate ticks. A single tick represents one hundred nanoseconds or
+        one ten-millionth of a second.
+        IMF works with these tickrates. Check MSDN system.datetime.ticks for
+        more info.
         """
-        return long((dt - datetime.datetime(1, 1, 1)).total_seconds() * 10000000)
+        return int(
+            (dt - datetime.datetime(1, 1, 1)).total_seconds() * 10000000
+        )
 
     def set_tick_rates(self):
         """
         get first and last day of the month and set tickrates
         """
 
-        # returns tuple of weekday of first day of the month and number of days in month
+        # returns tuple of weekday of first day of the month and number of
+        # days in month
         month_range = monthrange(self.year, self.month)
         last_day_of_month = month_range[1]
 
         self.min_tick = self.ticks(datetime.datetime(self.year, self.month, 1))
-        self.max_tick = self.ticks(datetime.datetime(self.year, self.month, last_day_of_month))
+        self.max_tick = self.ticks(datetime.datetime(
+            self.year, self.month, last_day_of_month))
 
     def reset_data(self):
         self.rates = {}
@@ -167,9 +168,8 @@ class RateParser():
 
     def update_rates(self, force):
         """
-
-
-        force: re-parse rates even when there's already data in the db for this year / month combination.
+        force: re-parse rates even when there's already data in the db for
+        this year / month combination.
         """
         count = 0
         while self.year < self.now.year or self.month < self.now.month:

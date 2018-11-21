@@ -1,7 +1,10 @@
+from django.db.models import Q
+from django_filters import (
+    CharFilter, DateTimeFilter, Filter, FilterSet, NumberFilter
+)
+
 from api.generics.filters import CommaSeparatedCharFilter, ToManyFilter
 from iati_synchroniser.models import Dataset, DatasetNote
-from django_filters import Filter, FilterSet, CharFilter, NumberFilter, DateTimeFilter
-from django.db.models import Q
 
 
 class SearchQueryFilter(Filter):
@@ -22,87 +25,87 @@ class DatasetFilter(FilterSet):
 
     id = CharFilter(
         lookup_expr='exact',
-        name='id')
+        field_name='id')
 
     name = CharFilter(
         lookup_expr='icontains',
-        name='name')
+        field_name='name')
 
     title = CharFilter(
         lookup_expr='icontains',
-        name='title')
+        field_name='title')
 
     filetype = CommaSeparatedCharFilter(
         lookup_expr='in',
-        name='filetype')
+        field_name='filetype')
 
     publisher_id = CharFilter(
         lookup_expr='exact',
-        name='publisher__id')
+        field_name='publisher__id')
 
     publisher_name = CharFilter(
         lookup_expr='icontains',
-        name='publisher__publisher_iati_id')
+        field_name='publisher__publisher_iati_id')
 
     publisher_title = CharFilter(
         lookup_expr='icontains',
-        name='publisher__title')
+        field_name='publisher__title')
 
     note_exception_type = ToManyFilter(
         qs=DatasetNote,
         lookup_expr='in',
-        name='exception_type',
+        field_name='exception_type',
         fk='source')
 
     note_exception_type_contains = ToManyFilter(
         qs=DatasetNote,
         lookup_expr='icontains',
-        name='exception_type',
+        field_name='exception_type',
         fk='source')
 
     note_model = ToManyFilter(
         qs=DatasetNote,
         lookup_expr='in',
-        name='model',
+        field_name='model',
         fk='dataset')
 
     note_model_contains = ToManyFilter(
         qs=DatasetNote,
         lookup_expr='icontains',
-        name='model',
+        field_name='model',
         fk='dataset')
 
     note_field = ToManyFilter(
         qs=DatasetNote,
         lookup_expr='in',
-        name='field',
+        field_name='field',
         fk='dataset')
 
     note_field_contains = ToManyFilter(
         qs=DatasetNote,
         lookup_expr='icontains',
-        name='field',
+        field_name='field',
         fk='dataset')
 
     note_message = ToManyFilter(
         qs=DatasetNote,
         lookup_expr='in',
-        name='message',
+        field_name='message',
         fk='dataset')
 
     note_message_contains = ToManyFilter(
         qs=DatasetNote,
         lookup_expr='icontains',
-        name='message',
+        field_name='message',
         fk='dataset')
 
     note_count_gte = NumberFilter(
         lookup_expr='gte',
-        name='note_count')
+        field_name='note_count')
 
     metadata_modified_gte = DateTimeFilter(
         lookup_expr='gte',
-        name='metadata_modified')
+        field_name='metadata_modified')
 
     q = SearchQueryFilter()
 

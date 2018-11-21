@@ -1,21 +1,24 @@
-from operator import itemgetter
 from functools import reduce
+from operator import itemgetter
+
+from django.utils.encoding import smart_text
 
 
-def apply_annotations(queryset, selected_groupings, selected_aggregations, query_params):
+def apply_annotations(
+        queryset, selected_groupings, selected_aggregations, query_params):
     """
-    Builds and performs the query, when multiple aggregations were requested it joins the results
+    Builds and performs the query, when multiple aggregations were requested
+    it joins the results
     """
-    result_dict = None
 
-    #
-    # Apply group_by fields and renames
-    #
-
-    group_fields = flatten([grouping.get_fields() for grouping in selected_groupings])
-    rename_annotations = merge([grouping.get_renamed_fields() for grouping in selected_groupings])
+    group_fields = flatten(
+        [grouping.get_fields() for grouping in selected_groupings]
+    )
+    rename_annotations = merge([grouping.get_renamed_fields()
+                                for grouping in selected_groupings])
     group_extras = merge(
-        [grouping.extra for grouping in selected_groupings if grouping.extra is not None])
+        [grouping.extra for grouping in selected_groupings
+            if grouping.extra is not None])
 
     queryset = queryset \
         .extra(**group_extras) \
@@ -24,17 +27,19 @@ def apply_annotations(queryset, selected_groupings, selected_aggregations, query
     # null filter should not be applied to:
     # - group by's that also has a filter on the group by
     # - group by's that have extra's (null filter would not be correct)
-    # TODO: do this different or rewrite the if part, too complicated 23-06-2016
-    nullable_group_fields = flatten([grouping.get_fields() for grouping in selected_groupings if (
-        grouping.extra is None and grouping.query_param not in query_params and grouping.renamed_name_search_field not in query_params)])
-    eliminate_nulls = {"{}__isnull".format(grouping): False for grouping in nullable_group_fields}
+    # TODO: do this different or rewrite the if part, too complicated
+    # 23-06-2016
+    nullable_group_fields = flatten(
+        [grouping.get_fields() for grouping in selected_groupings if (
+            grouping.extra is None
+            and grouping.query_param not in query_params
+            and grouping.renamed_name_search_field not in query_params
+        )])
+    eliminate_nulls = {"{}__isnull".format(
+        grouping): False for grouping in nullable_group_fields}
 
     queryset = queryset \
         .filter(**eliminate_nulls)
-
-    # preparation for aggregation look
-    main_group_key = group_fields[0]
-    rest_group_keys = group_fields[1:]
 
     def get_aggregation_queryset(queryset, group_fields, aggregation):
 
@@ -49,7 +54,9 @@ def apply_annotations(queryset, selected_groupings, selected_aggregations, query
         next_result = next_result.values(*group_fields)
 
         # apply the aggregation annotation
-        next_result = aggregation.apply_annotation(next_result, query_params, selected_groupings)
+        next_result = aggregation.apply_annotation(
+            next_result, query_params, selected_groupings
+        )
         # print str(next_result.query)
         return next_result
 
@@ -60,8 +67,10 @@ def apply_annotations(queryset, selected_groupings, selected_aggregations, query
 
     def merge_results(querysets, group_fields):
         """
-        Execute the querysets and merge the results into one list of dictionaries
-        This method keeps ordering of keys in order of execution of the aggregations
+        Execute the querysets and merge the results into one list of
+        dictionaries
+        This method keeps ordering of keys in order of execution of the
+        aggregations
         """
         if len(querysets) is 1:
             return querysets[0]
@@ -88,9 +97,13 @@ def apply_annotations(queryset, selected_groupings, selected_aggregations, query
                 group_keys = []
                 for group_field in group_fields:
                     if isinstance(item[group_field], int):
-                        group_keys.append(str(item[group_field]))
-                    if isinstance(item[group_field], unicode):
-                        group_keys.append(item[group_field].encode('utf-8'))
+                        group_keys.append(smart_text(item[group_field]))
+                    # In python 3.x all strings are sequences of Unicode
+                    # characters:
+                    if isinstance(item[group_field], str):
+                        group_keys.append(
+                            smart_text(item[group_field].encode('utf-8'))
+                        )
                 return '__'.join(group_keys)
 
         for item in iter(first_queryset):
@@ -103,9 +116,13 @@ def apply_annotations(queryset, selected_groupings, selected_aggregations, query
 
                 # new key not previously seen
                 if group_key not in result_dict:
-                    result_dict[group_key] = set_item_keys(item.copy(), group_fields)
+                    result_dict[group_key] = set_item_keys(
+                        item.copy(), group_fields
+                    )
                 else:
-                    result_dict[group_key] = merge([result_dict[group_key], item.copy()])
+                    result_dict[group_key] = merge(
+                        [result_dict[group_key], item.copy()]
+                    )
 
         return list(result_dict.values())
 
@@ -118,15 +135,14 @@ def serialize_foreign_keys(result, selected_groupings, request):
     """
     Re-use serializers to show full info of the grouped by items.
 
-    Not all group by keys are serialized, this is based upon the value at _groupings.serializer
+    Not all group by keys are serialized, this is based upon the value at
+    _groupings.serializer
     """
 
     for grouping in selected_groupings:
         """
         Mutate result object for each item in the result[] array
         """
-        serializer = grouping.serializer
-        serializer_fields = grouping.serializer_fields
 
         result = grouping.serialize_results(result, request)
 
@@ -142,7 +158,7 @@ def apply_ordering(result, orderings):
     orderings - list of order keys
     """
 
-    if len(orderings):
+    if orderings and len(orderings):
         orderings = reversed(orderings)
         reverse = False
 
@@ -185,7 +201,9 @@ def apply_group_filters(queryset, selected_groupings, params):
         # TODO: We assume here all item filters are IN filters - 2016-03-07
         if isinstance(main_field, str):
             queryset._next_is_sticky()
-            queryset = queryset.filter(**{"{}__in".format(main_field): value.split(',')})
+            queryset = queryset.filter(
+                **{"{}__in".format(main_field): value.split(',')}
+            )
 
     # TODO combine with for loop above? - 23-06-2016
     for group in name_groupings:
@@ -193,12 +211,15 @@ def apply_group_filters(queryset, selected_groupings, params):
         value = params[group.renamed_name_search_field]
         if isinstance(main_field, str):
             queryset._next_is_sticky()
-            queryset = queryset.filter(**{"{}__icontains".format(main_field): value})
+            queryset = queryset.filter(
+                **{"{}__icontains".format(main_field): value}
+            )
 
     return queryset
 
 
-def aggregate(queryset, request, selected_groupings, selected_aggregations, selected_orderings):
+def aggregate(queryset, request, selected_groupings, selected_aggregations,
+              selected_orderings):
     """
         A view can call this function
     """
@@ -208,21 +229,24 @@ def aggregate(queryset, request, selected_groupings, selected_aggregations, sele
 
     # TODO: just throw exceptions here and catch in view - 2016-04-08
 
-    if not len(selected_groupings):
+    if not len(list(selected_groupings)):
         raise ValueError(
             "Invalid value {} for mandatory field 'group_by'".format(
                 params.get('group_by')))
-    elif not len(selected_aggregations):
+    elif not len(list(selected_aggregations)):
         raise ValueError(
             "Invalid value {} for mandatory field 'aggregations'".format(
                 params.get('aggregations')))
 
     # filters that reduce the amount of "items" returned in the group_by
-    # These filters must be applied directly instead of through "activity id" IN filters
+    # These filters must be applied directly instead of through "activity id"
+    # IN filters
     queryset = apply_group_filters(queryset, selected_groupings, params)
 
     # from here, queryset is a list
-    result = apply_annotations(queryset, selected_groupings, selected_aggregations, params)
+    result = apply_annotations(
+        queryset, selected_groupings, selected_aggregations, params
+    )
 
     # TODO: is this correct? - 2016-04-07
     count = len(result)

@@ -1,12 +1,11 @@
-from django.core import management
 from django.test import TestCase
-import unittest
 
 from iati.factory import iati_factory
-from iati_synchroniser.create_publisher_organisation import create_publisher_organisation
-from iati_synchroniser.factory import synchroniser_factory
-from iati_synchroniser.models import Publisher
 from iati_organisation.models import Organisation
+from iati_synchroniser.create_publisher_organisation import (
+    create_publisher_organisation
+)
+from iati_synchroniser.factory import synchroniser_factory
 
 
 class CreatePublisherOrganisationTestCase(TestCase):
@@ -15,10 +14,10 @@ class CreatePublisherOrganisationTestCase(TestCase):
     """
 
     def setUp(self):
-        management.call_command('flush', interactive=False, verbosity=0)
         iati_factory.LanguageFactory.create(code='en', name='English')
         iati_factory.VersionFactory.create(code='2.02', name='2.02')
-        iati_factory.OrganisationTypeFactory.create(code='22', name='Multilateral')
+        iati_factory.OrganisationTypeFactory.create(
+            code='22', name='Multilateral')
 
     def test_update_or_create_publisher_organisation(self):
         """
@@ -26,7 +25,8 @@ class CreatePublisherOrganisationTestCase(TestCase):
         """
 
         # setup
-        publisher = synchroniser_factory.PublisherFactory.create(organisation=None)
+        publisher = synchroniser_factory.PublisherFactory.create(
+            organisation=None)
         publisher_organization_type = "22"
 
         # call
@@ -38,8 +38,10 @@ class CreatePublisherOrganisationTestCase(TestCase):
             organisation_identifier=publisher.publisher_iati_id)
 
         # assert
-        self.assertEqual(publisher.publisher_iati_id, organisation.organisation_identifier)
-        self.assertEqual(publisher.display_name, organisation.name.narratives.first().content)
+        self.assertEqual(publisher.publisher_iati_id,
+                         organisation.organisation_identifier)
+        self.assertEqual(publisher.display_name,
+                         organisation.name.narratives.first().content)
         self.assertEqual(publisher_organization_type, organisation.type.code)
         self.assertEqual(publisher.publisher_iati_id,
                          organisation.reporting_org.reporting_org_identifier)
