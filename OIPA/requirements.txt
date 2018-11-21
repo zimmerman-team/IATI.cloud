@@ -30,8 +30,6 @@ drf-extensions==0.3.1
 # Dynamic filters for DRF:
 django-filter==1.1.0
 django-formtools==2.1 # dependency of two_factor
-django-grappelli==2.10.2
-django-modeladmin-reorder==0.2
 django-otp-yubikey==0.4.2
 django-otp==0.4.2
 
