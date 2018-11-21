@@ -1,6 +1,6 @@
-import ujson
 from django.conf import settings
 
+import ujson
 from geodata.models import Region, RegionVocabulary
 
 
@@ -15,7 +15,7 @@ class M49RegionsImporter:
     BASE_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
     DATA_PLUGINS = {
         'codelist': {
-            'm48_region_file': '{base_dir}/plugins/data/{filename}'.format(
+            'm49_region_file': '{base_dir}/plugins/data/{filename}'.format(
                 base_dir=BASE_DIR, filename='regions.json')
         }
     }
@@ -26,9 +26,9 @@ class M49RegionsImporter:
         # The filename should be including full path of file itself.
         if not filename:
             try:
-                # If the settings has codelist with m48_region_file
+                # If the settings has codelist with m49_region_file
                 # then continue this process otherwise just pass it.
-                filename = settings.DATA_PLUGINS['codelist']['m48_region_file']
+                filename = settings.DATA_PLUGINS['codelist']['m49_region_file']
             except KeyError:
                 pass
 

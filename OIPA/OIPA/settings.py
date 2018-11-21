@@ -347,7 +347,7 @@ REST_FRAMEWORK_EXTENSIONS = {
 # BASE_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 # DATA_PLUGINS = {
 #     'codelist': {
-#        'm48_region_file': '{base_dir}/plugins/data/{filename}'.format(
+#        'm49_region_file': '{base_dir}/plugins/data/{filename}'.format(
 #             base_dir=BASE_DIR, filename='regions.json')
 #     }
 # }

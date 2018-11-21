@@ -3,7 +3,6 @@ import os
 from django.test import TestCase
 
 import iati_synchroniser
-
 from geodata.models import Region, RegionVocabulary
 from iati_synchroniser.m49_regions_importer import M49RegionsImporter
 
