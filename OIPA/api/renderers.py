@@ -3,9 +3,9 @@
 
 from __future__ import unicode_literals
 
+import ast
 import csv
 import io
-import ast
 from collections import OrderedDict
 
 import xlsxwriter
@@ -169,10 +169,11 @@ class XlsRenderer(BaseRenderer):
         # In an array to make checks if a longer values has not entered
         self.col_widths = []
 
-    def render(self, data, media_type=None, renderer_context=None, *args, **kwargs):
+    def render(self, data, media_type=None, renderer_context=None):
 
         try:
-            self.requested_fields = ast.literal_eval(renderer_context['request'].query_params['export_fields'])
+            self.requested_fields = ast.literal_eval(
+                renderer_context['request'].query_params['export_fields'])
         except KeyError:
             pass
 
@@ -270,7 +271,8 @@ class XlsRenderer(BaseRenderer):
 
                 # We set the column width according to the
                 # length of the data/value or the header if its longer
-                width = len(str(data)) if len(str(data)) > len(desired_col_name) \
+                width = len(str(data)) if \
+                    len(str(data)) > len(desired_col_name) \
                     else len(desired_col_name)
                 # And we check here if the previously set
                 # width for the is bigger than this
@@ -281,6 +283,7 @@ class XlsRenderer(BaseRenderer):
                 except IndexError:
                     self.col_widths.append(width)
 
-                self.ws.set_column(self.column_number, self.column_number, width)
+                self.ws.set_column(
+                    self.column_number, self.column_number, width)
                 # Everytime we add a value we increase the column number
                 self.column_number += 1
