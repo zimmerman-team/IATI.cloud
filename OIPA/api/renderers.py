@@ -157,6 +157,7 @@ class XlsRenderer(BaseRenderer):
         self.header_style = None
         self.cell_style = None
         self.column_width = 0
+        self.requested_fields = None
         # We have the column number here,
         # because it's a much easier and tidier way
         # To have it as a class variable,
@@ -170,9 +171,12 @@ class XlsRenderer(BaseRenderer):
 
     def render(self, data, media_type=None, renderer_context=None, *args, **kwargs):
 
-        actual_kwargs = renderer_context['args'][1].get('kwargs', {})
+        try:
+            self.requested_fields = ast.literal_eval(renderer_context['request'].query_params['export_fields'])
+        except KeyError:
+            pass
 
-        lol = ast.literal_eval(renderer_context['request'].query_params['export_fields'])
+        actual_kwargs = renderer_context.get('kwargs', {})
 
         # this is a list view
         if 'pk' not in actual_kwargs:
@@ -221,6 +225,7 @@ class XlsRenderer(BaseRenderer):
 
     def _write_this(self, data, col_name='', row_numb=1):
 
+        skip_write = False
         divider = '.' if col_name != '' else ''
         if type(data) is ReturnList or type(data) is list:
             for i, item in enumerate(data):
@@ -232,39 +237,50 @@ class XlsRenderer(BaseRenderer):
                 column_name = col_name + divider + key
                 self._write_this(value, column_name, row_numb)
         else:
-            # If it goes in here that means that it is an actual value
-            # with a column name, so we right the actual thing here
-            if row_numb > 1:
-                # And if the row number is more
-                # then one, that means that we don't need
-                # to add the header anymore
-                # And tis the cell, data is the value of the actual item
-                self.ws.write(row_numb, self.column_number,
-                              data, self.cell_style)
-            else:
-                # Here we write the header, in the first row(row == 0)
-                # col_name is the properly formed col_name
-                # after recursively going
-                # through each item thats why we don't modify it
-                self.ws.write(0, self.column_number, col_name,
-                              self.header_style)
-                # And tis the cell, data is the value of the actual item
-                self.ws.write(row_numb, self.column_number,
-                              data, self.cell_style)
+            desired_col_name = col_name
 
-            # We set the column width according to the
-            # length of the data/value or the header if its longer
-            width = len(str(data)) if len(str(data)) > len(col_name) \
-                else len(col_name)
-            # And we check here if the previously set
-            # width for the is bigger than this
-            try:
-                if width > self.col_widths[self.column_number]:
-                    self.col_widths[self.column_number] = width
-                width = self.col_widths[self.column_number]
-            except IndexError:
-                self.col_widths.append(width)
+            if self.requested_fields:
+                # We check if the formed column is one of the requested fields
+                try:
+                    desired_col_name = self.requested_fields[col_name]
+                except KeyError:
+                    # And if its not requested we skip writing
+                    skip_write = True
 
-            self.ws.set_column(self.column_number, self.column_number, width)
-            # Everytime we add a value we increase the column number
-            self.column_number += 1
+            if not skip_write:
+                # If it goes in here that means that it is an actual value
+                # with a column name, so we right the actual thing here
+                if row_numb > 1:
+                    # And if the row number is more
+                    # then one, that means that we don't need
+                    # to add the header anymore
+                    # And tis the cell, data is the value of the actual item
+                    self.ws.write(row_numb, self.column_number,
+                                  data, self.cell_style)
+                else:
+                    # Here we write the header, in the first row(row == 0)
+                    # col_name is the properly formed col_name
+                    # after recursively going
+                    # through each item thats why we don't modify it
+                    self.ws.write(0, self.column_number, desired_col_name,
+                                  self.header_style)
+                    # And tis the cell, data is the value of the actual item
+                    self.ws.write(row_numb, self.column_number,
+                                  data, self.cell_style)
+
+                # We set the column width according to the
+                # length of the data/value or the header if its longer
+                width = len(str(data)) if len(str(data)) > len(desired_col_name) \
+                    else len(desired_col_name)
+                # And we check here if the previously set
+                # width for the is bigger than this
+                try:
+                    if width > self.col_widths[self.column_number]:
+                        self.col_widths[self.column_number] = width
+                    width = self.col_widths[self.column_number]
+                except IndexError:
+                    self.col_widths.append(width)
+
+                self.ws.set_column(self.column_number, self.column_number, width)
+                # Everytime we add a value we increase the column number
+                self.column_number += 1
