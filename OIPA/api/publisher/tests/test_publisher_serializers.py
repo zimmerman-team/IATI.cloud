@@ -1,5 +1,5 @@
-from django.core.urlresolvers import reverse
 from django.test import RequestFactory, TestCase
+from django.urls import reverse
 
 from api.publisher.serializers import PublisherSerializer
 from iati_synchroniser.factory.synchroniser_factory import PublisherFactory

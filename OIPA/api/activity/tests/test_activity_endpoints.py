@@ -1,7 +1,7 @@
 import json
 
-from django.core.urlresolvers import reverse
 from django.test import RequestFactory
+from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient, APITestCase
 
@@ -119,9 +119,7 @@ class TestActivityEndpoints(APITestCase):
         url = reverse('activities:activity-detail-by-iati-identifier',
                       args={'activity_id'})
         iati_factory.ActivityFactory.create(iati_identifier='activity_id')
-        url = reverse('activities:activity-detail', args={'activity_id'})
         ActivityFactory.create(iati_identifier='activity_id')
-        url = reverse('activities:activity-detail', args={'activity_id'})
         msg = 'activity detail endpoint should be located at {0}'
         expect_url = '/api/activities/activity_id/'
         assert url == expect_url, msg.format(expect_url)

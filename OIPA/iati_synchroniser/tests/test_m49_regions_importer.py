@@ -30,8 +30,13 @@ class M49RegionsImporterTestCase(TestCase):
     def test_m49_regions_importer_region_should_empty(self):
         # If DATA_PLUGINS is just empty dictionary then not import anything
         # Override DATA_PLUGINS settings
+
+        regions_before = Region.objects.count()
+
         with self.settings(DATA_PLUGINS={}):
             M49RegionsImporter()
 
+        regions_after = Region.objects.count()
+
         # The Region should be empty
-        self.assertEqual(Region.objects.count(), 0)
+        self.assertEqual(regions_before, regions_after)
