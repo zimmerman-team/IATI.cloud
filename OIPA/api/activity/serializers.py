@@ -675,6 +675,7 @@ class ParticipatingOrganisationSerializer(ModelSerializerNoValidation):
     role = CodelistSerializer()
     activity_id = serializers.CharField(source='org_activity_id', required=False)
     narratives = NarrativeSerializer(many=True, required=False)
+    primary_name = serializers.CharField()
 
     activity = serializers.CharField(write_only=True)
 
@@ -730,6 +731,7 @@ class ParticipatingOrganisationSerializer(ModelSerializerNoValidation):
             'activity_id',
             'activity',
             'narratives',
+            'primary_name'
         )
 
 
