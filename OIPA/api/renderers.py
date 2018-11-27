@@ -162,20 +162,25 @@ class XlsRenderer(BaseRenderer):
         # so here we have the columns dictionary - its basically an association
         # between column name and its number, and it will be used
         # to associate cell values with their actual columns
-        # now we use this instead of the column_number, because some cells, according to the data,
+        # now we use this instead of the column_number,
+        # because some cells, according to the data,
         # should not have a value in them
-        # and the column number would work only if all columns have the same amount of values
-        # so thats why we want to write cells int to the column number of which the cell value is associated with
+        # and the column number would work only if
+        # all columns have the same amount of values
+        # so thats why we want to write cells int to the
+        # column number of which the cell value is associated with
         # and we also gonna use this dictionary because
-        # in the below code, whenever we write a value we also have the column name of that value stored
+        # in the below code, whenever we write a value we
+        # also have the column name of that value stored
         # so its an easy association
 
         # So we gonna store the columns seperately
         # Index is the column number, value the column name
         self.columns = []
 
-        # Then we gonna store the cells seperately, in a weird dictionary matrix thingy
-        self.cells ={}
+        # Then we gonna store the cells seperately,
+        # in a weird dictionary matrix thingy
+        self.cells = {}
 
         # Cause each column might have different widths,
         # and we need to store each columns widths
@@ -231,10 +236,14 @@ class XlsRenderer(BaseRenderer):
             # So if the initial data, is a list, that means that
             # We can create a seperate row for each item.
             #
-            # So first we write the columns, cause we need to form the appropriate columns
-            # for all the possible values, for each result item
-            # this is needed to be done seperatly for results, because some results
-            # might have more values than others == more values in their arrays and etc.
+            # So first we write the columns,
+            # cause we need to form the appropriate columns
+            # for all the possible values,
+            # for each result item
+            # this is needed to be done seperatly for results,
+            # because some results
+            # might have more values than others == more values
+            # in their arrays and etc.
             for item in data:
                 self._store_columns(item)
 
@@ -259,29 +268,33 @@ class XlsRenderer(BaseRenderer):
                 column_name = col_name + divider + str(i)
                 self._store_columns(item, column_name)
         elif type(data) is ReturnDict or type(data) is dict \
-            or type(data) is OrderedDict:
+                or type(data) is OrderedDict:
             for key, value in data.items():
                 column_name = col_name + divider + key
                 self._store_columns(value, column_name)
         else:
             try:
-                # this is here just as a check, to make this try except work as expected
+                # this is here just as a check,
+                # to make this try except work as expected
                 self.columns.index(col_name)
                 self.prev_col_name = col_name
             except ValueError:
 
                 if self.requested_fields:
-                    # We check if the formed column is one of the requested fields
+                    # We check if the formed column
+                    # is one of the requested fields
                     try:
                         self.requested_fields[col_name]
                         # if it is we continue with the storing of the column
                     except KeyError:
                         # if it isn't we return the this recursive method
-                        # thus skipping the below code, where the column header is stored
+                        # thus skipping the below code,
+                        # where the column header is stored
                         return
 
                 if self.prev_col_name:
-                    # So this part of the if is mainly used to store column header names,
+                    # So this part of the if is mainly
+                    # used to store column header names,
                     # that were not available in the previous result items,
                     # into there appropriate place
                     index = self.columns.index(self.prev_col_name) + 1
@@ -299,7 +312,7 @@ class XlsRenderer(BaseRenderer):
                 column_name = col_name + divider + str(i)
                 self._store_cells(item, column_name, row_numb)
         elif type(data) is ReturnDict or type(data) is dict \
-            or type(data) is OrderedDict:
+                or type(data) is OrderedDict:
             for key, value in data.items():
                 column_name = col_name + divider + key
                 self._store_cells(value, column_name, row_numb)
@@ -320,7 +333,8 @@ class XlsRenderer(BaseRenderer):
         # write column headers
         for ind, header in enumerate(self.columns):
             if self.requested_fields:
-                self.ws.write(0, ind, self.requested_fields[header], self.header_style)
+                self.ws.write(0, ind, self.requested_fields[header],
+                              self.header_style)
             else:
                 self.ws.write(0, ind, header, self.header_style)
 
@@ -330,11 +344,13 @@ class XlsRenderer(BaseRenderer):
             row_numb = i + 1
             for col_numb, header in enumerate(self.columns):
                 # so as described in some comments above
-                # sometimes some cells will not have some values for some columns
+                # sometimes some cells
+                # will not have some values for some columns
                 # so we just pass these cell values and dont write them
                 try:
                     cell_value = self.cells[(row_numb, col_numb)]
-                    self.ws.write(row_numb, col_numb, cell_value, self.cell_style)
+                    self.ws.write(row_numb, col_numb, cell_value,
+                                  self.cell_style)
 
                     # We set the column width according to the
                     # length of the data/value or the header if its longer
