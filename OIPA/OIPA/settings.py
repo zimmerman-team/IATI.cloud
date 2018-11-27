@@ -284,19 +284,14 @@ CKAN_URL = env.get('OIPA_CKAN_URL', 'https://iati-staging.ckan.io')
 
 API_CACHE_SECONDS = int(env.get('OIPA_API_CACHE_SECONDS', 0))
 
+# Don't cache anything when developing:
 CACHES = {
     'default': {
-        'BACKEND': env.get(
-            'OIPA_CACHES_DEFAULT_BACKEND', 'redis_cache.RedisCache'
-        ),
-        'LOCATION': env.get('OIPA_CACHES_DEFAULT_LOCATION', 'localhost:6379'),
+        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
     },
     'api': {
-        'BACKEND': env.get(
-            'OIPA_CACHES_DEFAULT_BACKEND', 'redis_cache.RedisCache'
-        ),
-        'LOCATION': env.get('OIPA_CACHES_DEFAULT_LOCATION', 'localhost:6379'),
-    }
+        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+    },
 }
 
 OIPA_LOG_LEVEL = env.get('OIPA_LOG_LEVEL', 'ERROR')
