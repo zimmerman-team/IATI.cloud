@@ -1,7 +1,7 @@
+import urllib.request
 from unittest import TestCase
 
 import xlrd
-import urllib.request
 
 
 class TestFilter(TestCase):
@@ -13,9 +13,9 @@ class TestFilter(TestCase):
         # that are used in the
         # below url
         export_fields = {
-            "title.narratives.0.text":"Project title",
-            "title.id":"Project id",
-            "iati_identifier":"IATI Identifier"
+            "title.narratives.0.text": "Project title",
+            "title.id": "Project id",
+            "iati_identifier": "IATI Identifier"
         }
 
         link = 'http://localhost:8000/api/activities/?export_fields=' \
@@ -33,5 +33,5 @@ class TestFilter(TestCase):
             column_name = cell_obj.value
             column_name_exists = column_name in export_fields.values()
             self.assertTrue(column_name_exists)
-            export_fields = {key: val for key, val in export_fields.items() if val != column_name}
-
+            export_fields = {key: val for key, val in export_fields.items()
+                             if val != column_name}
