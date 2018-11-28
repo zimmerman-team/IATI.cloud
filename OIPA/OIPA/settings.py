@@ -25,8 +25,8 @@ DATABASES = {
         'HOST': os.getenv('OIPA_DB_HOST', 'localhost'),
         'PORT': os.getenv('OIPA_DB_PORT', 5432),
         'NAME': os.getenv('OIPA_DB_NAME', 'oipa'),
-        'USER': os.getenv('OIPA_DB_USER', 'oipa'),
-        'PASSWORD': os.getenv('OIPA_DB_PASSWORD', 'oipa'),
+        'USER': os.getenv('OIPA_DB_USER', 'postgres'),
+        'PASSWORD': os.getenv('OIPA_DB_PASSWORD', 'postgres'),
         'CONN_MAX_AGE': int(os.getenv('OIPA_DB_CONN_MAX_AGE', 500))
     },
 }
