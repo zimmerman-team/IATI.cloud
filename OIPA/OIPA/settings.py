@@ -25,8 +25,8 @@ DATABASES = {
         'HOST': os.getenv('OIPA_DB_HOST', 'localhost'),
         'PORT': os.getenv('OIPA_DB_PORT', 5432),
         'NAME': os.getenv('OIPA_DB_NAME', 'oipa'),
-        'USER': os.getenv('OIPA_DB_USER', 'postgres'),
-        'PASSWORD': os.getenv('OIPA_DB_PASSWORD', 'postgres'),
+        'USER': os.getenv('OIPA_DB_USER', 'oipa'),
+        'PASSWORD': os.getenv('OIPA_DB_PASSWORD', 'oipa'),
         'CONN_MAX_AGE': int(os.getenv('OIPA_DB_CONN_MAX_AGE', 500))
     },
 }
@@ -186,7 +186,6 @@ INSTALLED_APPS = [
     'rest_auth.registration',
     'django_filters',
     'markdownify'
-
 ]
 
 ADMIN_REORDER = (
@@ -284,14 +283,19 @@ CKAN_URL = env.get('OIPA_CKAN_URL', 'https://iati-staging.ckan.io')
 
 API_CACHE_SECONDS = int(env.get('OIPA_API_CACHE_SECONDS', 0))
 
-# Don't cache anything when developing:
 CACHES = {
     'default': {
-        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+        'BACKEND': env.get(
+            'OIPA_CACHES_DEFAULT_BACKEND', 'redis_cache.RedisCache'
+        ),
+        'LOCATION': env.get('OIPA_CACHES_DEFAULT_LOCATION', 'localhost:6379'),
     },
     'api': {
-        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
-    },
+        'BACKEND': env.get(
+            'OIPA_CACHES_DEFAULT_BACKEND', 'redis_cache.RedisCache'
+        ),
+        'LOCATION': env.get('OIPA_CACHES_DEFAULT_LOCATION', 'localhost:6379'),
+    }
 }
 
 OIPA_LOG_LEVEL = env.get('OIPA_LOG_LEVEL', 'ERROR')
@@ -334,3 +338,22 @@ REST_FRAMEWORK_EXTENSIONS = {
     # reset cache every x seconds:
     'DEFAULT_CACHE_RESPONSE_TIMEOUT': 1 * 60 * 60 * 24 * 7,  # 1 week
 }
+
+# DATA PLUGINS is a dict with data which is not related to the IATI data.
+# For example, for M49 Regions import, add such code block it in the
+# local_settings.py:
+
+# import os
+# BASE_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+# DATA_PLUGINS = {
+#     'codelist': {
+#        'm49_region_file': '{base_dir}/plugins/data/{filename}'.format(
+#             base_dir=BASE_DIR, filename='regions.json')
+#     }
+# }
+DATA_PLUGINS = {}
+
+try:
+    from local_settings import *  # noqa: F401, F403
+except ImportError:
+    pass
