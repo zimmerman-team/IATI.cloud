@@ -3,9 +3,9 @@
 
 from __future__ import unicode_literals
 
+import ast
 import csv
 import io
-import ast
 from collections import OrderedDict
 
 import xlsxwriter
@@ -358,4 +358,3 @@ class XlsRenderer(BaseRenderer):
 
                 except KeyError:
                     pass
-
