@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 
 import csv
 import io
+import ast
 from collections import OrderedDict
 
 import xlsxwriter
@@ -142,11 +143,15 @@ class OrganisationXMLRenderer(XMLRenderer):
 # All of this was done in the same way that the csv is formed
 # Which was okay for them peeps
 
+# All of this was done in the same way that the csv is formed
+# Which was okay for them peeps
+
 # XXX: file name is always 'download' and it should probably be set per-view
 # TODO: test
 class XlsRenderer(BaseRenderer):
     media_type = 'application/vnd.ms-excel'
     results_field = 'results'
+    render_style = 'xls'
     format = 'xls'
 
     def __init__(self):
@@ -155,20 +160,34 @@ class XlsRenderer(BaseRenderer):
         self.header_style = None
         self.cell_style = None
         self.column_width = 0
-        # We have the column number here,
-        # because it's a much easier and tidier way
-        # To have it as a class variable,
-        # because of the way the columns need to be formed
-        # and because of recursiveness
-        self.column_number = 0
+        self.requested_fields = None
+
+        # So we gonna store the columns seperately
+        # Index is the column number, value the column name
+        self.columns = []
+
+        # Then we gonna store the cells seperately,
+        # in a weird dictionary matrix thingy
+        self.cells = {}
+
         # Cause each column might have different widths,
         # and we need to store each columns widths
         # In an array to make checks if a longer values has not entered
         self.col_widths = []
 
-    def render(self, data, *args, **kwargs):
+        # Saves the previous column name
+        # This is used for aditional column values that might not be found
+        # in the first item of the results
+        self.prev_col_name = False
 
-        actual_kwargs = args[1].get('kwargs', {})
+    def render(self, data, media_type=None, renderer_context=None):
+        try:
+            self.requested_fields = ast.literal_eval(
+                renderer_context['request'].query_params['export_fields'])
+        except KeyError:
+            pass
+
+        actual_kwargs = renderer_context.get('kwargs', {})
 
         # this is a list view
         if 'pk' not in actual_kwargs:
@@ -203,64 +222,140 @@ class XlsRenderer(BaseRenderer):
         if type(data) is ReturnList or type(data) is list \
                 or type(data) is OrderedDict:
             # So if the initial data, is a list, that means that
-            # We can create a seperate row for each item
+            # We can create a seperate row for each item.
+            #
+            # So first we write the columns,
+            # cause we need to form the appropriate columns
+            # for all the possible values,
+            # for each result item
+            # this is needed to be done seperatly for results,
+            # because some results
+            # might have more values than others == more values
+            # in their arrays and etc.
+            for item in data:
+                self._store_columns(item)
+
+            # And here we form the cell matrix according to the saved columns
+            # and the row number
             for i, item in enumerate(data):
                 # + 1 cause first row is reserved for the header
                 row_numb = i + 1
-                # Need to reset the column_number
-                # each time a new row is being written
-                self.column_number = 0
-                self._write_this(item, '', row_numb)
+                self._store_cells(item, '', row_numb)
         elif type(data) is ReturnDict or type(data) is dict:
-            # Otherwise, it doesn't make sense to create rows
-            self._write_this(data)
+            # Here we do the same as above just without for loops
+            # cause if it goes in here, it is most likely detail data
+            self._store_columns(data)
+            self._store_cells(data)
 
-    def _write_this(self, data, col_name='', row_numb=1):
+        self._write_data(data)
 
+    def _store_columns(self, data, col_name=''):
         divider = '.' if col_name != '' else ''
         if type(data) is ReturnList or type(data) is list:
             for i, item in enumerate(data):
                 column_name = col_name + divider + str(i)
-                self._write_this(item, column_name, row_numb)
+                self._store_columns(item, column_name)
         elif type(data) is ReturnDict or type(data) is dict \
                 or type(data) is OrderedDict:
             for key, value in data.items():
                 column_name = col_name + divider + key
-                self._write_this(value, column_name, row_numb)
+                self._store_columns(value, column_name)
         else:
-            # If it goes in here that means that it is an actual value
-            # with a column name, so we right the actual thing here
-            if row_numb > 1:
-                # And if the row number is more
-                # then one, that means that we don't need
-                # to add the header anymore
-                # And tis the cell, data is the value of the actual item
-                self.ws.write(row_numb, self.column_number,
-                              data, self.cell_style)
-            else:
-                # Here we write the header, in the first row(row == 0)
-                # col_name is the properly formed col_name
-                # after recursively going
-                # through each item thats why we don't modify it
-                self.ws.write(0, self.column_number, col_name,
-                              self.header_style)
-                # And tis the cell, data is the value of the actual item
-                self.ws.write(row_numb, self.column_number,
-                              data, self.cell_style)
-
-            # We set the column width according to the
-            # length of the data/value or the header if its longer
-            width = len(str(data)) if len(str(data)) > len(col_name) \
-                else len(col_name)
-            # And we check here if the previously set
-            # width for the is bigger than this
             try:
-                if width > self.col_widths[self.column_number]:
-                    self.col_widths[self.column_number] = width
-                width = self.col_widths[self.column_number]
-            except IndexError:
-                self.col_widths.append(width)
+                # this is here just as a check,
+                # to make this try except work as expected
+                self.columns.index(col_name)
+                self.prev_col_name = col_name
+            except ValueError:
 
-            self.ws.set_column(self.column_number, self.column_number, width)
-            # Everytime we add a value we increase the column number
-            self.column_number += 1
+                if self.requested_fields:
+                    # We check if the formed column
+                    # is one of the requested fields
+                    try:
+                        self.requested_fields[col_name]
+                        # if it is we continue with the storing of the column
+                    except KeyError:
+                        # if it isn't we return the this recursive method
+                        # thus skipping the below code,
+                        # where the column header is stored
+                        return
+
+                if self.prev_col_name:
+                    # So this part of the if is mainly
+                    # used to store column header names,
+                    # that were not available in the previous result items,
+                    # into there appropriate place
+                    index = self.columns.index(self.prev_col_name) + 1
+                    self.columns.insert(index, col_name)
+                    self.prev_col_name = col_name
+                else:
+                    # This is used only to store the column header names
+                    # formed from the initial result item
+                    self.columns.append(col_name)
+
+    def _store_cells(self, data, col_name='', row_numb=1):
+        divider = '.' if col_name != '' else ''
+        if type(data) is ReturnList or type(data) is list:
+            for i, item in enumerate(data):
+                column_name = col_name + divider + str(i)
+                self._store_cells(item, column_name, row_numb)
+        elif type(data) is ReturnDict or type(data) is dict \
+                or type(data) is OrderedDict:
+            for key, value in data.items():
+                column_name = col_name + divider + key
+                self._store_cells(value, column_name, row_numb)
+        else:
+            # So if we go in here the data is the actual value of the cell
+            # and so here we store the actual cell
+            # and we give this cell matrix/dictionary appropriate
+            # indexes according to the row_number
+            # and its appropriate column name
+            try:
+                self.cells[(row_numb, self.columns.index(col_name))] = data
+            except ValueError:
+                # so if the index for the columns does not exist it means that
+                # it is not a requested field and thus we skip it
+                pass
+
+    def _write_data(self, data):
+        # write column headers
+        for ind, header in enumerate(self.columns):
+            if self.requested_fields:
+                self.ws.write(0, ind, self.requested_fields[header],
+                              self.header_style)
+            else:
+                self.ws.write(0, ind, header, self.header_style)
+
+        # write cells
+        for i in range(len(data)):
+            # Cause we already wrote the column headers
+            row_numb = i + 1
+            for col_numb, header in enumerate(self.columns):
+                # so as described in some comments above
+                # sometimes some cells
+                # will not have some values for some columns
+                # so we just pass these cell values and dont write them
+                try:
+                    cell_value = self.cells[(row_numb, col_numb)]
+                    self.ws.write(row_numb, col_numb, cell_value,
+                                  self.cell_style)
+
+                    # We set the column width according to the
+                    # length of the data/value or the header if its longer
+                    width = len(str(cell_value)) if \
+                        len(str(cell_value)) > len(header) \
+                        else len(header)
+                    # And we check here if the previously set
+                    # width for the is bigger than this
+                    try:
+                        if width > self.col_widths[col_numb]:
+                            self.col_widths[col_numb] = width
+                        width = self.col_widths[col_numb]
+                    except IndexError:
+                        self.col_widths.append(width)
+
+                    self.ws.set_column(col_numb, col_numb, width)
+
+                except KeyError:
+                    pass
+
