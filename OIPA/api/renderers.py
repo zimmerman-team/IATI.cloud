@@ -159,21 +159,6 @@ class XlsRenderer(BaseRenderer):
         self.column_width = 0
         self.requested_fields = None
 
-        # so here we have the columns dictionary - its basically an association
-        # between column name and its number, and it will be used
-        # to associate cell values with their actual columns
-        # now we use this instead of the column_number,
-        # because some cells, according to the data,
-        # should not have a value in them
-        # and the column number would work only if
-        # all columns have the same amount of values
-        # so thats why we want to write cells int to the
-        # column number of which the cell value is associated with
-        # and we also gonna use this dictionary because
-        # in the below code, whenever we write a value we
-        # also have the column name of that value stored
-        # so its an easy association
-
         # So we gonna store the columns seperately
         # Index is the column number, value the column name
         self.columns = []
