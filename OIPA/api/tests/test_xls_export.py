@@ -29,7 +29,7 @@ class TestFilter(TestCase):
     # with export fields applied and checks if the fields exist
     def test_xls_export_fields(self):
         link = reverse('activities:activity-list')
-        link = link + str(self.activity.id) + self.export_fields
+        link = link + str(self.activity.id) + self.export_field_params
         c = Client()
         response = c.get(link)
 
