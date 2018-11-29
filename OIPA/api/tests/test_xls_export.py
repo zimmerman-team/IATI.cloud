@@ -1,19 +1,8 @@
-import base64
-import datetime
-import urllib.request
-from django.test import TestCase, RequestFactory
+import xlrd
+from django.test import Client, TestCase
 from rest_framework.reverse import reverse
 
-from iati.models import Activity
-from iati.parser.parse_manager import ParseManager
-from lxml.builder import E
-
-from iati.factory.iati_factory import (ResultFactory, ActivityFactory)
-from iati_synchroniser.factory import synchroniser_factory
-
-from django.test import Client
-
-import xlrd
+from iati.factory.iati_factory import ActivityFactory
 
 
 class TestFilter(TestCase):
@@ -24,10 +13,12 @@ class TestFilter(TestCase):
     # basically downloads some data in xls format
     # with export fields applied and checks if the fields exist
     def test_xls_export_fields(self):
-        link = reverse('activities:activity-list') + '1/?export_fields=' \
-                                                     '%7B%22title.narratives.0.text%22%3A%22Project+' \
-                                                     'title%22%2C%22title.id%22%3A%22Project+id%22%2C%22iati_' \
-                                                     'identifier%22%3A%22IATI+Identifier%22%7D&format=xls'
+        link = reverse('activities:activity-list')
+        link = link + '1/?export_fields=' \
+                      '%7B%22title.narratives.0.text%22%3A%22Project+' \
+                      'title%22%2C%22title.id%22%3A%22' \
+                      'Project+id%22%2C%22iati_' \
+                      'identifier%22%3A%22IATI+Identifier%22%7D&format=xls'
         c = Client()
         response = c.get(link)
 
