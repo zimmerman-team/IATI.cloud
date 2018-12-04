@@ -91,6 +91,8 @@ Pytest-django is used to run tests. This will be installed automatically when th
 
 To run tests, from the top level directory of the project, run ```pytest OIPA/```. If you are in the same directory where ```manage.py``` is, only running ```pytest``` will be sufficient. Refer to <a href="https://pytest-django.readthedocs.io/en/latest/#" target="_blank">Pytest-django documentations</a> for details.
 
+Testing / code quality settings can be found in the `setup.cfg` file
+
 
 ## Who makes use of OIPA?
 * Dutch Ministry of Foreign Affairs:         <a href="https://www.openaid.nl" target="_blank">www.openaid.nl</a>
