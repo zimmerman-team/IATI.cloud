@@ -556,3 +556,15 @@ class TransactionAggregationFilter(TransactionFilter):
         field_name='activity__activitypolicymarker__significance',
         lookup_expr='in',
     )
+
+    #
+    # Aggregated Budget values filters
+    #
+
+    total_budget_lte = NumberFilter(
+        lookup_expr='lte',
+        field_name='activity__activity_aggregation__budget_value')
+
+    total_budget_gte = NumberFilter(
+        lookup_expr='gte',
+        field_name='activity__activity_aggregation__budget_value')

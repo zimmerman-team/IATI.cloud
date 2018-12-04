@@ -2966,8 +2966,6 @@ class ResultIndicatorSaveTestCase(TestCase):
         self.assertEqual(instance.result.id, data['result'])
         self.assertEqual(instance.measure.code, data['measure']['code'])
         self.assertEqual(instance.ascending, data['ascending'])
-        self.assertEqual(instance.baseline_year, data['baseline']['year'])
-        self.assertEqual(instance.baseline_value, data['baseline']['value'])
 
         instance2 = iati_models.ResultIndicatorTitle.objects.get(
             result_indicator_id=res.json()['id'])
@@ -3048,8 +3046,6 @@ class ResultIndicatorSaveTestCase(TestCase):
         self.assertEqual(instance.result.id, data['result'])
         self.assertEqual(instance.measure.code, data['measure']['code'])
         self.assertEqual(instance.ascending, data['ascending'])
-        self.assertEqual(instance.baseline_year, data['baseline']['year'])
-        self.assertEqual(instance.baseline_value, data['baseline']['value'])
 
         instance2 = iati_models.ResultIndicatorTitle.objects.get(
             result_indicator_id=res.json()['id'])

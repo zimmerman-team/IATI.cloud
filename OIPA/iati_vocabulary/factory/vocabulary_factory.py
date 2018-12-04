@@ -94,3 +94,14 @@ class AidTypeVocabularyFactory(NoDatabaseFactory):
     name = 'Earmarking Modality'
     description = ('Codes A to L replicated directly from Grand Bargain '
                    'document found in Annex 1 (pg.16)')
+
+
+class ResultVocabularyFactory(NoDatabaseFactory):
+    class Meta(GetOrCreateMetaMixin):
+        model = vocabulary_models.ResultVocabulary
+
+    code = '99'
+    name = 'reporting organisation'
+    description = ('The region reported corresponds to a region vocabulary '
+                   'maintained by the reporting organisation for this '
+                   'activity.')

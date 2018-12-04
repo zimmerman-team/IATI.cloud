@@ -1,4 +1,5 @@
 from django.test import RequestFactory, TestCase
+from django.urls import reverse
 
 from api.publisher.serializers import PublisherSerializer
 from iati_synchroniser.factory.synchroniser_factory import PublisherFactory
@@ -53,3 +54,22 @@ class TestPublisherSerializers(TestCase):
         assertion_msg = "the field '{0}' should be in the serialized dataset"
         for field in required_fields:
             assert field in serializer.data, assertion_msg.format(field)
+
+    def test_publisher_activities_link(self):
+        '''Tests if PublisherSerializer returs proper link for its activities
+        '''
+        publisher = PublisherFactory()
+
+        serializer = PublisherSerializer(
+            publisher,
+            context={'request': self.request_dummy}
+        )
+
+        url = self.request_dummy.build_absolute_uri(
+            reverse('activities:activity-list')
+        )
+        endpoint_url = (url
+                        + '?reporting_organisation_identifier='
+                        + publisher.publisher_iati_id)
+
+        assert serializer.data['activities'] == endpoint_url

@@ -30,12 +30,12 @@ from iati.models import (
     LocationAdministrative, LocationDescription, LocationName, Narrative,
     Organisation, OtherIdentifier, PlannedDisbursement,
     PlannedDisbursementProvider, PlannedDisbursementReceiver, RelatedActivity,
-    Result, ResultDescription, ResultIndicator, ResultIndicatorBaselineComment,
-    ResultIndicatorDescription, ResultIndicatorPeriod,
-    ResultIndicatorPeriodActualDimension, ResultIndicatorPeriodActualLocation,
-    ResultIndicatorPeriodTarget, ResultIndicatorPeriodTargetDimension,
-    ResultIndicatorPeriodTargetLocation, ResultIndicatorReference,
-    ResultIndicatorTitle, ResultTitle, ResultType, Title
+    Result, ResultDescription, ResultIndicator, ResultIndicatorDescription,
+    ResultIndicatorPeriod, ResultIndicatorPeriodActualDimension,
+    ResultIndicatorPeriodActualLocation, ResultIndicatorPeriodTarget,
+    ResultIndicatorPeriodTargetDimension, ResultIndicatorPeriodTargetLocation,
+    ResultIndicatorReference, ResultIndicatorTitle, ResultTitle, ResultType,
+    Title
 )
 from iati.parser import validators
 from iati_organisation import models as organisation_models
@@ -1829,10 +1829,16 @@ class ResultIndicatorPeriodSerializer(ModelSerializerNoValidation):
 
 
 class ResultIndicatorBaselineSerializer(SerializerNoValidation):
+    # year = serializers.CharField(
+        # source='baseline_year', required=False, allow_null=True)
+    # value = serializers.CharField(
+        # source='baseline_value', required=False, allow_null=True)
+
+    # XXX: not sure if this fixes tests:
     year = serializers.CharField(
-        source='baseline_year', required=False, allow_null=True)
+        required=False, allow_null=True)
     value = serializers.CharField(
-        source='baseline_value', required=False, allow_null=True)
+        required=False, allow_null=True)
     comment = NarrativeContainerSerializer(
         source="resultindicatorbaselinecomment")
 
@@ -1928,8 +1934,8 @@ class ResultIndicatorSerializer(ModelSerializerNoValidation):
             data.get('ascending'),
             data.get('resultindicatortitle', {}).get('narratives'),
             data.get('resultindicatordescription', {}).get('narratives'),
-            data.get('baseline_year'),
-            data.get('baseline_value'),
+            # data.get('baseline_year'),
+            # data.get('baseline_value'),
             data.get('resultindicatorbaselinecomment', {}).get('narratives'),
         )
 
@@ -1940,8 +1946,6 @@ class ResultIndicatorSerializer(ModelSerializerNoValidation):
         title_narratives_data = validated_data.pop('title_narratives', [])
         description_narratives_data = validated_data.pop(
             'description_narratives', [])
-        baseline_comment_narratives_data = validated_data.pop(
-            'baseline_comment_narratives', [])
 
         instance = ResultIndicator.objects.create(**validated_data)
 
@@ -1949,17 +1953,11 @@ class ResultIndicatorSerializer(ModelSerializerNoValidation):
             result_indicator=instance)
         result_indicator_description = ResultIndicatorDescription.objects.create(  # NOQA: E501
             result_indicator=instance)
-        result_indicator_baseline_comment = ResultIndicatorBaselineComment.objects.create(  # NOQA: E501
-            result_indicator=instance)
 
         save_narratives(result_indicator_title,
                         title_narratives_data, result.activity)
         save_narratives(result_indicator_description,
                         description_narratives_data, result.activity)
-        save_narratives(
-            result_indicator_baseline_comment,
-            baseline_comment_narratives_data,
-            result.activity)
 
         result.activity.modified = True
         result.activity.save()
@@ -1971,8 +1969,6 @@ class ResultIndicatorSerializer(ModelSerializerNoValidation):
         title_narratives_data = validated_data.pop('title_narratives', [])
         description_narratives_data = validated_data.pop(
             'description_narratives', [])
-        baseline_comment_narratives_data = validated_data.pop(
-            'baseline_comment_narratives', [])
 
         update_instance = ResultIndicator(**validated_data)
         update_instance.id = instance.id
@@ -1983,10 +1979,6 @@ class ResultIndicatorSerializer(ModelSerializerNoValidation):
         save_narratives(
             instance.resultindicatordescription,
             description_narratives_data,
-            result.activity)
-        save_narratives(
-            instance.resultindicatorbaselinecomment,
-            baseline_comment_narratives_data,
             result.activity)
 
         result.activity.modified = True
@@ -3046,3 +3038,227 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
         )
 
         validators = []
+
+
+class ActivitySerializerByIatiIdentifier(DynamicFieldsModelSerializer):
+    url = serializers.HyperlinkedIdentityField(
+        view_name='activities:activity-detail-by-iati-identifier',
+        lookup_field='iati_identifier',
+        read_only=True)
+
+    id = serializers.CharField(required=False)
+    iati_identifier = serializers.CharField()
+
+    reporting_organisation = ReportingOrganisationSerializer(
+        read_only=True,
+        source="*"
+    )
+    title = TitleSerializer(required=False)
+
+    descriptions = DescriptionSerializer(
+        many=True,
+        source='description_set',
+        read_only=True,
+    )
+    participating_organisations = ParticipatingOrganisationSerializer(
+        many=True,
+        read_only=True,
+    )
+
+    other_identifier = OtherIdentifierSerializer(
+        many=True, source="otheridentifier_set", required=False)
+
+    activity_status = CodelistSerializer(required=False)
+    activity_dates = ActivityDateSerializer(
+        many=True,
+        source='activitydate_set',
+        read_only=True,
+    )
+
+    contact_info = ContactInfoSerializer(
+        many=True,
+        source="contactinfo_set",
+        read_only=True,
+        required=False,
+    )
+
+    activity_scope = CodelistSerializer(source='scope', required=False)
+    recipient_countries = RecipientCountrySerializer(
+        many=True,
+        source='activityrecipientcountry_set',
+        read_only=True,
+        required=False,
+    )
+    recipient_regions = ActivityRecipientRegionSerializer(
+        many=True,
+        source='activityrecipientregion_set',
+        read_only=True,
+        required=False,
+    )
+    locations = LocationSerializer(
+        many=True,
+        source='location_set',
+        read_only=True,
+        required=False,
+    )
+    sectors = ActivitySectorSerializer(
+        many=True,
+        source='activitysector_set',
+        read_only=True,
+        required=False,
+    )
+
+    country_budget_items = CountryBudgetItemsSerializer(required=False)
+
+    humanitarian_scope = HumanitarianScopeSerializer(
+        many=True,
+        source='humanitarianscope_set',
+        read_only=True,
+        required=False,
+    )
+
+    policy_markers = ActivityPolicyMarkerSerializer(
+        many=True,
+        source='activitypolicymarker_set',
+        read_only=True,
+        required=False,
+    )
+
+    collaboration_type = CodelistSerializer(required=False)
+    default_flow_type = CodelistSerializer(required=False)
+    default_finance_type = CodelistSerializer(required=False)
+    default_aid_type = CodelistSerializer(required=False)
+    default_tied_status = CodelistSerializer(required=False)
+
+    budgets = BudgetSerializer(
+        many=True,
+        source='budget_set',
+        read_only=True,
+    )
+
+    planned_disbursements = PlannedDisbursementSerializer(
+        many=True,
+        source='planneddisbursement_set',
+        read_only=True,
+    )
+
+    capital_spend = serializers.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        coerce_to_string=False,
+        required=False,
+    )
+
+    transactions = serializers.HyperlinkedIdentityField(
+        read_only=True,
+        view_name='activities:activity-transactions',
+    )
+
+    document_links = DocumentLinkSerializer(
+        many=True,
+        read_only=True,
+        source='documentlink_set')
+    related_activities = RelatedActivitySerializer(
+        many=True,
+        read_only=True,
+        source='relatedactivity_set')
+
+    legacy_data = LegacyDataSerializer(
+        many=True, source="legacydata_set", required=False)
+
+    conditions = ConditionsSerializer(required=False)
+
+    results = ResultSerializer(
+        many=True,
+        read_only=True,
+        source="result_set")
+
+    crs_add = CrsAddSerializer(many=True, source="crsadd_set", required=False)
+
+    fss = FssSerializer(many=True, source="fss_set", required=False)
+
+    last_updated_datetime = serializers.DateTimeField(required=False)
+    xml_lang = serializers.CharField(source='default_lang.code',
+                                     required=False)
+    default_currency = CodelistSerializer(required=False)
+
+    humanitarian = serializers.BooleanField(required=False)
+
+    secondary_reporter = serializers.BooleanField(
+        write_only=True, required=False)
+
+    aggregations = ActivityAggregationContainerSerializer(
+        source="*", read_only=True)
+
+    dataset = SimpleDatasetSerializer(
+        read_only=True,
+        fields=(
+            'id',
+            'iati_id',
+            'name',
+            'title',
+            'source_url'))
+
+    publisher = PublisherSerializer(
+        read_only=True,
+        fields=(
+            'id',
+            'url',
+            'publisher_iati_id',
+            'display_name',
+            'name'))
+
+    published_state = PublishedStateSerializer(source="*", read_only=True)
+
+    class Meta:
+        model = Activity
+        lookup_field = 'iati_identifier'
+        fields = (
+            'url',
+            'id',
+            'iati_identifier',
+            'reporting_organisation',
+            'title',
+            'descriptions',
+            'participating_organisations',
+            'other_identifier',
+            'activity_status',
+            'activity_dates',
+            'contact_info',
+            'activity_scope',
+            'recipient_countries',
+            'recipient_regions',
+            'locations',
+            'sectors',
+            'country_budget_items',
+            'humanitarian',
+            'humanitarian_scope',
+            'policy_markers',
+            'collaboration_type',
+            'default_flow_type',
+            'default_finance_type',
+            'default_aid_type',
+            'default_tied_status',
+            'planned_disbursements',
+            'budgets',
+            'capital_spend',
+            'transactions',
+            'document_links',
+            'related_activities',
+            'legacy_data',
+            'conditions',
+            'results',
+            'crs_add',
+            'fss',
+            'last_updated_datetime',
+            'xml_lang',
+            'default_currency',
+            'humanitarian',
+            'hierarchy',
+            'linked_data_uri',
+            'secondary_reporter',
+            'aggregations',
+            'dataset',
+            'publisher',
+            'published_state',
+        )

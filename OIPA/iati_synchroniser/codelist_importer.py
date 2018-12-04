@@ -14,6 +14,7 @@ from iati_codelists.models import (
     OrganisationIdentifier, OrganisationRegistrationAgency, Sector
 )
 from iati_synchroniser.dac_sector_importer import DacSectorImporter
+from iati_synchroniser.m49_regions_importer import M49RegionsImporter
 from iati_synchroniser.models import Codelist
 from iati_synchroniser.sdg_sector_importer import SdgSectorImporter
 from iati_vocabulary.models import RegionVocabulary, SectorVocabulary
@@ -347,3 +348,6 @@ class CodeListImporter():
         # (will be) used globally, so we have to keep them in OIPA:
         ssi = SdgSectorImporter()
         ssi.update()
+
+        # Added M49 Regions if available
+        M49RegionsImporter()

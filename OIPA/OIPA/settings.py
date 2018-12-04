@@ -186,7 +186,6 @@ INSTALLED_APPS = [
     'rest_auth.registration',
     'django_filters',
     'markdownify'
-
 ]
 
 ADMIN_REORDER = (
@@ -339,3 +338,22 @@ REST_FRAMEWORK_EXTENSIONS = {
     # reset cache every x seconds:
     'DEFAULT_CACHE_RESPONSE_TIMEOUT': 1 * 60 * 60 * 24 * 7,  # 1 week
 }
+
+# DATA PLUGINS is a dict with data which is not related to the IATI data.
+# For example, for M49 Regions import, add such code block it in the
+# local_settings.py:
+
+# import os
+# BASE_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+# DATA_PLUGINS = {
+#     'codelist': {
+#        'm49_region_file': '{base_dir}/plugins/data/{filename}'.format(
+#             base_dir=BASE_DIR, filename='regions.json')
+#     }
+# }
+DATA_PLUGINS = {}
+
+try:
+    from local_settings import *  # noqa: F401, F403
+except ImportError:
+    pass

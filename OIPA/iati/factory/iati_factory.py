@@ -99,6 +99,17 @@ class OrganisationFactory(NoDatabaseFactory):
     name = RelatedFactory(OrganisationNameFactory, 'organisation')
 
 
+class ActivityReportingOrganisationFactory(NoDatabaseFactory):
+    ref = 'US-EIN-262681792'
+
+    activity = SubFactory(ActivityFactory)
+    organisation = SubFactory(OrganisationFactory)
+
+    class Meta:
+        model = iati.models.ActivityReportingOrganisation
+        django_get_or_create = ('ref', )
+
+
 class RegionFactory(NoDatabaseFactory):
     class Meta:
         model = geodata.models.Region
@@ -286,6 +297,9 @@ class DocumentLinkFactory(NoDatabaseFactory):
     activity = SubFactory(ActivityFactory)
     url = 'http://someuri.com'
     file_format = SubFactory(FileFormatFactory)
+    result_indicator = SubFactory(
+        'iati.factory.iati_factory.ResultIndicatorFactory'
+    )
 
     documentlinktitle = RelatedFactory(
         DocumentLinkTitleFactory, 'document_link')
@@ -715,7 +729,21 @@ class ResultIndicatorDescriptionFactory(NoDatabaseFactory):
     # result_indicator = SubFactory(ResultIndicatorFactory)
 
 
+class ResultIndicatorBaselineFactory(NoDatabaseFactory):
+    result_indicator = SubFactory(
+        'iati.factory.iati_factory.ResultIndicatorFactory'
+    )
+
+    year = 2018
+
+    class Meta:
+        model = iati.models.ResultIndicatorBaseline
+
+
 class ResultIndicatorBaselineCommentFactory(NoDatabaseFactory):
+    result_indicator_baseline = SubFactory(
+        ResultIndicatorBaselineFactory)
+
     class Meta:
         model = iati.models.ResultIndicatorBaselineComment
 
@@ -731,13 +759,9 @@ class ResultIndicatorFactory(NoDatabaseFactory):
         ResultIndicatorTitleFactory, 'result_indicator')
     resultindicatordescription = RelatedFactory(
         ResultIndicatorDescriptionFactory, 'result_indicator')
-    resultindicatorbaselinecomment = RelatedFactory(
-        ResultIndicatorBaselineCommentFactory, 'result_indicator')
 
     measure = SubFactory(IndicatorMeasureFactory)
     ascending = True
-    baseline_year = 2012
-    baseline_value = "10"
 
 
 class ResultIndicatorReferenceFactory(NoDatabaseFactory):

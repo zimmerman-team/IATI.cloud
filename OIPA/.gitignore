@@ -1,3 +1,5 @@
 env
+plugins
+local_settings.py
+.pytest_cache/
 .env
-.pytest_cashe

@@ -177,12 +177,6 @@ class ActivityTestCase(ParserSetupTestCase):
 
         build_activity(version="2.02")
 
-    @skip('NotImplemented')
-    def test_add_narrative(self):
-        """
-        Check if the narrative element is parsed correctly
-        """
-
     def test_activity_202(self):
         """
         Check complete element is parsed correctly
