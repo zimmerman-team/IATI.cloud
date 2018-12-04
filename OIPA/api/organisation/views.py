@@ -709,6 +709,6 @@ class OrganisationFileOrganisationDocumentLinkList(ListAPIView):
         try:
             return Organisation.objects.get(
                 organisation_identifier=organisation_identifier
-            ).organisationdocumentlink_set.all()
+            ).organisationdocumentlink_set.all().order_by('id')
         except Organisation.DoesNotExist:
             return None
