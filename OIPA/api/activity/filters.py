@@ -629,7 +629,7 @@ class RelatedOrderingFilter(filters.OrderingFilter):
 
             # reverse relation
             if isinstance(field, ForeignObjectRel):
-                return self.is_valid_field(field.model, components[1])
+                return self.is_valid_field(field.related_model, components[1])
 
             # foreign key
             if field.rel and len(components) == 2:
@@ -655,7 +655,7 @@ class RelatedOrderingFilter(filters.OrderingFilter):
             'actual_end_date': 'actual_end',
             'start_date': 'start_date',
             'end_date': 'end_date',
-            'xml_source_ref': 'xml_source_ref'
+            'xml_source_ref': 'xml_source_ref',
         }
 
         for i, term in enumerate(ordering):

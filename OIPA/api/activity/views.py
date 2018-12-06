@@ -4,7 +4,6 @@ from rest_framework.views import APIView
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import mixins
 from rest_framework_extensions.cache.mixins import CacheResponseMixin
-from rest_framework_extensions.cache.decorators import cache_response
 
 from api.generics.views import SaveAllSerializer
 from api.activity import serializers as activity_serializers
@@ -376,7 +375,11 @@ class ActivityList(CacheResponseMixin, DynamicListView):
         'activity_incoming_funds_value',
         'activity_disbursement_value',
         'activity_expenditure_value',
-        'activity_plus_child_budget_value')
+        'activity_plus_child_budget_value',
+        'activity_status',
+        'sector__code',
+        'participating_organisations__primary_name'
+    )
 
     list_cache_key_func = QueryParamsKeyConstructor()
 
