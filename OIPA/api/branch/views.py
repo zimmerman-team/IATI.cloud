@@ -18,7 +18,7 @@ class GitBranch(ListAPIView):
         stdoutput, stderroutput = process.communicate(timeout=15)
         try:
             stdoutput_in_string = stdoutput.decode()
-            current_branch = stdoutput_in_string.split('*')[1].split('\n')[0]
+            current_branch = stdoutput_in_string.split('* ')[1].split('\n')[0]
             process.kill()
             return current_branch
         except TimeoutError:
