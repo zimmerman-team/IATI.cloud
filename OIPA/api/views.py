@@ -42,6 +42,8 @@ def welcome(request, format=None):
     * Codelists: [`/api/publishers`](/api/codelists)
 
     * Chains: [`/api/chains`](/api/chains)
+    
+    * Git Branch: [`/api/branch`](/api/branch)
 
     ## Info about XLS export
 
@@ -125,6 +127,11 @@ def welcome(request, format=None):
                 'chains:chain-list',
                 request=request,
                 format=format),
+            'branch': reverse(
+                'branch:git-branch',
+                request=request,
+                format=format
+            )
         }
     })
 
