@@ -14,7 +14,12 @@ class GitBranch(ListAPIView):
         process = subprocess.Popen(['git', 'branch'],
                                    stdout=subprocess.PIPE,
                                    stderr=subprocess.PIPE)
-        stdoutput, stderroutput = process.communicate()
-        stdoutput_in_string = stdoutput.decode()
-        current_branch = stdoutput_in_string.split('*')[1].split('\n')[0]
-        return current_branch
+
+        stdoutput, stderroutput = process.communicate(timeout=15)
+        try:
+            stdoutput_in_string = stdoutput.decode()
+            current_branch = stdoutput_in_string.split('*')[1].split('\n')[0]
+            process.kill()
+            return current_branch
+        except TimeoutError:
+            return None
