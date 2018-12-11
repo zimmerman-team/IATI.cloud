@@ -43,7 +43,7 @@ def welcome(request, format=None):
 
     * Chains: [`/api/chains`](/api/chains)
 
-    * Git Branch: [`/api/branch`](/api/branch)
+    * Git branch: [`/api/branch`](/api/branch)
 
     ## Info about XLS export
 
