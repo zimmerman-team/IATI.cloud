@@ -43,6 +43,8 @@ def welcome(request, format=None):
 
     * Chains: [`/api/chains`](/api/chains)
 
+    * Current branch: [`/api/branch`](/api/branch)
+
     ## Info about XLS export
 
     The XLS export currently works similarly to the way the CSV one works:
@@ -125,6 +127,11 @@ def welcome(request, format=None):
                 'chains:chain-list',
                 request=request,
                 format=format),
+            'branch': reverse(
+                'branch:current-branch',
+                request=request,
+                format=format
+            )
         }
     })
 
