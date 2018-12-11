@@ -1,6 +1,7 @@
-from rest_framework.response import Response
-from rest_framework.generics import ListAPIView
 import subprocess
+
+from rest_framework.generics import ListAPIView
+from rest_framework.response import Response
 
 
 class GitBranch(ListAPIView):
