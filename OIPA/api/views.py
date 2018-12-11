@@ -128,7 +128,7 @@ def welcome(request, format=None):
                 request=request,
                 format=format),
             'branch': reverse(
-                'branch:git-branch',
+                'branch:current-branch',
                 request=request,
                 format=format
             )

@@ -4,14 +4,14 @@ from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 
 
-class GitBranch(ListAPIView):
-    """Return the current git branch."""
+class CurrentBranchView(ListAPIView):
+    """Return the current branch."""
 
     def get(self, request, *args, **kwargs):
-        content = {'current branch': self.get_git_branch()}
+        content = {'current branch': self.get_current_branch()}
         return Response(content)
 
-    def get_git_branch(self):
+    def get_current_branch(self):
         process = subprocess.Popen(['git', 'branch'],
                                    stdout=subprocess.PIPE,
                                    stderr=subprocess.PIPE)
