@@ -33,4 +33,5 @@ urlpatterns = [
     # TODO: no email confirmation? - 2016-10-18
     url(r'^auth/', include('rest_auth.urls')),
     url(r'^auth/registration/', include('rest_auth.registration.urls')),
+    url(r'^branch/', include('api.branch.urls', namespace='branch')),
 ]
