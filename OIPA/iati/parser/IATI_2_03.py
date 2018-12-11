@@ -922,6 +922,14 @@ class Parse(IatiParser):
 
         return element
 
+    def iati_activities__iati_activity__recipient_country__narrative(self,
+                                                                     element):
+        """attributes:
+
+        tag:narrative"""
+        model = self.get_model('ActivityRecipientCountry')
+        self.add_narrative(element, model)
+
     def iati_activities__iati_activity__recipient_region(self, element):
         """attributes:
         code:489
