@@ -42,7 +42,7 @@ def welcome(request, format=None):
     * Codelists: [`/api/publishers`](/api/codelists)
 
     * Chains: [`/api/chains`](/api/chains)
-    
+
     * Git Branch: [`/api/branch`](/api/branch)
 
     ## Info about XLS export
