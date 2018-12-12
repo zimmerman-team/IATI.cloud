@@ -1402,6 +1402,14 @@ class Parse(IatiParser):
 
         return element
 
+    def iati_activities__iati_activity__sector__narrative(self, element):
+        """attribute:
+
+        tag: narrative"""
+        model = self.get_model('ActivitySector')
+        self.add_narrative(element, model)
+        return element
+
     def iati_activities__iati_activity__country_budget_items(self, element):
         """attributes:
         vocabulary:2
