@@ -16,7 +16,7 @@ urlpatterns = [
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
     url(r'^admin/', admin.site.urls),
     url(r'^api/', include('api.urls')),
-    url(r'^home$', TemplateView.as_view(template_name='home/home.html')),
+    url(r'^home$', TemplateView.as_view(template_name='home/home.html'), name='home'),
     url(r'^404$', views.error404),
     url(r'^500$', views.error500),
     url(r'^about$', TemplateView.as_view(template_name='home/about.html')),
