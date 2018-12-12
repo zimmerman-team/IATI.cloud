@@ -10,8 +10,8 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name='location',
-            name='result_indicator_baseline',
-        ),
+        # migrations.RemoveField(
+            # model_name='location',
+            # name='result_indicator_baseline',
+        # ),
     ]

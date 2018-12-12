@@ -12,9 +12,9 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AddField(
-            model_name='location',
-            name='result_indicator_baseline',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='baseline_locations', to='iati.ResultIndicator'),
-        ),
+        # migrations.AddField(
+            # model_name='location',
+            # name='result_indicator_baseline',
+            # field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='baseline_locations', to='iati.ResultIndicator'),
+        # ),
     ]
