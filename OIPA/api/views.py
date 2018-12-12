@@ -11,7 +11,9 @@ def welcome(request, format=None):
 
     The REST API provides programmatic access to read (and soon also write)
     IATI data.
-    The REST API responses are available in JSON.
+    The REST API responses are available in JSON, CSV and XLS for the latter
+    two, you can use the 'export_name' api parameter to give them a name
+    otherwise it will be given a default name, depending on the endpoint
 
     ## Available endpoints
 
