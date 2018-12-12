@@ -194,6 +194,7 @@ INSTALLED_APPS = [
     'rest_auth.registration',
     'django_filters',
     'nested_admin',
+    'iom',
 ]
 
 ADMIN_REORDER = (
