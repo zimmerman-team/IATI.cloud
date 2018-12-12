@@ -2644,6 +2644,14 @@ class Parse(IatiParser):
                             transaction_recipient_region)
         return element
 
+    def iati_activities__iati_activity__transaction__recipient_region__narrative(self, element):  # NOQA:E501
+        """attributes:
+
+        tag: narrative"""
+        model = self.get_model('TransactionRecipientRegion')
+        self.add_narrative(element, model)
+        return element
+
     def iati_activities__iati_activity__transaction__flow_type(self, element):
         """attributes:
         code:10
