@@ -30,7 +30,9 @@ class TestFilter(TestCase):
         self.export_name_param = 'export_name='
 
         self.activity = ActivityFactory()
-        self.activity_detail_link = reverse('activities:activity-detail', kwargs={'pk': self.activity.id})
+        self.activity_detail_link = reverse(
+            'activities:activity-detail',
+            kwargs={'pk': self.activity.id})
 
     # basically downloads some data in xls format
     # with export fields applied and checks if the fields exist
@@ -73,7 +75,8 @@ class TestFilter(TestCase):
                 # the attachment field retrieved from content disposition
                 attachment = response._headers['content-disposition'][1]
                 # how the attachment should be in content disposition
-                attachment_should = 'attachment; filename={}.xls'.format(self.export_name)
+                attachment_should = \
+                    'attachment; filename={}.xls'.format(self.export_name)
                 name_correct = attachment == attachment_should
 
         self.assertTrue(name_correct)
@@ -96,7 +99,8 @@ class TestFilter(TestCase):
                 # the attachment field retrieved from content disposition
                 attachment = response._headers['content-disposition'][1]
                 # how the attachment should be in content disposition
-                attachment_should = 'attachment; filename={}.csv'.format(self.export_name)
+                attachment_should = \
+                    'attachment; filename={}.csv'.format(self.export_name)
                 name_correct = attachment == attachment_should
 
         self.assertTrue(name_correct)
@@ -121,7 +125,8 @@ class TestFilter(TestCase):
                 # the attachment field retrieved from content disposition
                 attachment = response._headers['content-disposition'][1]
                 # how the attachment should be in content disposition
-                attachment_should = 'attachment; filename={}.csv'.format(file_name)
+                attachment_should = \
+                    'attachment; filename={}.csv'.format(file_name)
                 name_correct = attachment == attachment_should
 
         self.assertTrue(name_correct)
@@ -146,7 +151,8 @@ class TestFilter(TestCase):
                 # the attachment field retrieved from content disposition
                 attachment = response._headers['content-disposition'][1]
                 # how the attachment should be in content disposition
-                attachment_should = 'attachment; filename={}.xls'.format(file_name)
+                attachment_should = \
+                    'attachment; filename={}.xls'.format(file_name)
                 name_correct = attachment == attachment_should
 
         self.assertTrue(name_correct)
