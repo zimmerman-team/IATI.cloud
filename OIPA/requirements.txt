@@ -29,6 +29,9 @@ drf-extensions==0.3.1
 
 # Dynamic filters for DRF:
 django-filter==1.1.0
+django-formtools==2.1 # dependency of two_factor
+django-otp-yubikey==0.4.2
+django-otp==0.4.2
 
 # A Redis cache backend for Django:
 django-redis-cache==1.7.1

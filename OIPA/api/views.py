@@ -11,7 +11,9 @@ def welcome(request, format=None):
 
     The REST API provides programmatic access to read (and soon also write)
     IATI data.
-    The REST API responses are available in JSON.
+    The REST API responses are available in JSON, CSV and XLS for the latter
+    two, you can use the 'export_name' api parameter to give them a name
+    otherwise it will be given a default name, depending on the endpoint
 
     ## Available endpoints
 
@@ -44,6 +46,31 @@ def welcome(request, format=None):
     * Chains: [`/api/chains`](/api/chains)
 
     * UNESCO specific [`/api/unesco/ransaction-balance-aggregations`](/api/unesco/ransaction-balance-aggregations)
+
+    * Current branch: [`/api/branch`](/api/branch)
+
+    ## Info about XLS export
+
+    The XLS export currently works similarly to the way the CSV one works:
+
+    * There's a different way of forming detail results and a list of results:
+    If a detail view is requested(something like this:  [`/api/activities/1`](/api/activities/1))
+    the data would be formed from all of the json fields, whereas for a multiple result api call
+    (something like this:  [`/api/activities`](/api/activities)) the data would be formed only
+    from the 'results' field
+
+    * The headers are formed according to the json format of the api call for example for a json like this -
+        "title:{ narrative: [ text: 'The actual text' ] }" the column header for the cell 'The actual text'
+         would look like this - "title.narratives.0.text"
+
+    Now, when exporting in xls, you may pass in a parameter 'export_fields',
+    with this parameter you can specify what do you wish to get in your xls file, and how these fields are named.
+    Similarly to the above example the parameter should/could look like this:
+    'export_fields={"title.narratives.0.text":"Project title one","title.narratives.1.text":"Project title 2"}'
+
+    #### NOTE: \n
+    The easiest way to figure out what fields you want and what to change them to is to just download the
+    xls with the default values and form the export_fields parameter from that
 
     """  # NOQA: E501
     return Response({
@@ -108,6 +135,11 @@ def welcome(request, format=None):
                 'unesco:transaction-balance-aggregations',
                 request=request,
                 format=format),
+            'branch': reverse(
+                'branch:current-branch',
+                request=request,
+                format=format
+            )
         }
     })
 

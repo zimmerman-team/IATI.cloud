@@ -36,4 +36,5 @@ urlpatterns = [
 
     # UNESCO specific endpoint
     url(r'^unesco/', include('api.unesco.urls', namespace='unesco')),
+    url(r'^branch/', include('api.branch.urls', namespace='branch')),
 ]

@@ -402,11 +402,6 @@ class ActivityQuerySet(SearchQuerySet):
             queryset=Narrative.objects.all()
             .select_related('language'))
 
-        indicator_baseline_comment_prefetch = Prefetch(
-            'resultindicatorbaselinecomment__narratives',
-            queryset=Narrative.objects.all()
-            .select_related('language'))
-
         indicator_period_target_location_prefetch = Prefetch(
             'targets__resultindicatorperiodtargetlocation_set',
             queryset=ResultIndicatorPeriodTargetLocation.objects.all()
@@ -461,13 +456,11 @@ class ActivityQuerySet(SearchQuerySet):
                 'measure',
                 'resultindicatortitle',
                 'resultindicatordescription',
-                'resultindicatorbaselinecomment'
             )
             .prefetch_related(
                 indicator_reference_prefetch,
                 indicator_title_prefetch,
                 indicator_description_prefetch,
-                indicator_baseline_comment_prefetch,
                 indicator_period_prefetch,
             )
         )

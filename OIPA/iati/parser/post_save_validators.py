@@ -157,7 +157,7 @@ def use_direct_geo_or_transaction_geo(self, a):
             "FieldValidationError",
             "recipient-country/recipient-region",
             "-",
-            ("Either transaction/recipient-country,transaction/recipient- "
+            ("Either transaction/recipient-country,transaction/recipient-"
                 "region or recipient-country,recipient-region must be present "
                 "(DAC vocabulary)"),
             -1,

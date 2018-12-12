@@ -897,27 +897,22 @@ class DocumentLink(models.Model):
         null=True,
         on_delete=models.CASCADE
     )
-    # FIXME: this relationship has to point to (currently, non existing)
-    # ResultIndicatorBaseline model. See: #761, #794
     result_indicator_baseline = models.ForeignKey(
-        'ResultIndicator',
-        related_name='result_indicator_baselines',
+        'ResultIndicatorBaseline',
+        related_name='baseline_document_links',
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE
+    )
+    result_indicator_period_target = models.ForeignKey(
+        'ResultIndicatorPeriodTarget',
+        related_name='period_target_document_links',
         null=True,
         on_delete=models.CASCADE
     )
-    # FIXME: this relationship has to point to ResultIndicatorPeriodTarget.
-    # See: #794
-    period_target = models.ForeignKey(
-        'ResultIndicator',
-        related_name='period_targets',
-        null=True,
-        on_delete=models.CASCADE
-    )
-    # FIXME: this relationship has to point to ResultIndicatorPeriodActual.
-    # See: #794
-    period_actual = models.ForeignKey(
-        'ResultIndicator',
-        related_name='period_actuals',
+    result_indicator_period_actual = models.ForeignKey(
+        'ResultIndicatorPeriodActual',
+        related_name='period_actual_document_links',
         null=True,
         on_delete=models.CASCADE
     )
@@ -1060,11 +1055,6 @@ class ResultDescription(models.Model):
 
 class ResultIndicator(models.Model):
     result = models.ForeignKey(Result, on_delete=models.CASCADE)
-    # FIXME: this relationship has to point to (currently, non existing)
-    # ResultIndicatorBaseline model. See: #761
-    baseline_year = models.IntegerField(null=True, blank=True, default=None)
-    baseline_value = models.CharField(
-        null=True, blank=True, default=None, max_length=100)
     measure = models.ForeignKey(
         IndicatorMeasure,
         null=True,
@@ -1076,8 +1066,19 @@ class ResultIndicator(models.Model):
     def get_activity(self):
         return self.result.activity
 
+
+class ResultIndicatorBaseline(models.Model):
+    result_indicator = models.ForeignKey(
+        ResultIndicator,
+        on_delete=models.CASCADE
+    )
+    year = models.IntegerField()
+    value = models.CharField(
+        null=True, blank=True, default=None, max_length=100)
+    iso_date = models.DateField(null=True, blank=True)
+
     def __unicode__(self,):
-        return "baseline year: %s" % self.baseline_year
+        return "baseline year: %s" % self.year
 
 
 class ResultReference(models.Model):
@@ -1136,18 +1137,18 @@ class ResultIndicatorDescription(models.Model):
         return self.result_indicator.result.activity
 
 
-# FIXME: this relationship has to point to (currently, non existing)
-# ResultIndicatorBaseline model. See: #761
 class ResultIndicatorBaselineComment(models.Model):
-    result_indicator = models.OneToOneField(
-        ResultIndicator, on_delete=models.CASCADE)
+    result_indicator_baseline = models.OneToOneField(
+        ResultIndicatorBaseline,
+        on_delete=models.CASCADE,
+    )
     narratives = GenericRelation(
         Narrative,
         content_type_field='related_content_type',
         object_id_field='related_object_id')
 
     def get_activity(self):
-        return self.result_indicator.result.activity
+        return self.result_indicator_baseline.result_indicator.result.activity
 
 
 class ResultIndicatorPeriod(models.Model):
@@ -1247,11 +1248,11 @@ class ResultIndicatorPeriodActualDimension(models.Model):
         return self.result_indicator_period.result_indicator.result.activity
 
 
-# FIXME: this relationship has to point to (currently, non existing)
-# ResultIndicatorBaseline model. See: #761
 class ResultIndicatorBaselineDimension(models.Model):
-    result_indicator = models.ForeignKey(
-        ResultIndicator, on_delete=models.CASCADE)
+    result_indicator_baseline = models.ForeignKey(
+        ResultIndicatorBaseline,
+        on_delete=models.CASCADE,
+    )
     name = models.CharField(max_length=100)
     value = models.CharField(max_length=100)
 
@@ -1259,7 +1260,7 @@ class ResultIndicatorBaselineDimension(models.Model):
         return "%s: %s" % (self.name, self.value)
 
     def get_activity(self):
-        return self.result_indicator.result.activity
+        return self.result_indicator_baseline.result_indicator.result.activity
 
 
 class ResultIndicatorPeriodTargetComment(models.Model):
@@ -1549,14 +1550,11 @@ class Condition(models.Model):
 
 class Location(models.Model):
     activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
-    # FIXME: this relationship has to point to (currently, non existing)
-    # ResultIndicatorBaseline model. See: #761
     result_indicator_baseline = models.ForeignKey(
-        ResultIndicator,
+        ResultIndicatorBaseline,
         null=True,
         blank=True,
         on_delete=models.CASCADE,
-        related_name='baseline_locations',
     )
 
     ref = models.CharField(max_length=200, default="", null=True, blank=True)

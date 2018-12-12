@@ -14,16 +14,17 @@ from api.activity.filters import (
 from api.activity.serializers import (
     ActivityDateSerializer, ActivityPolicyMarkerSerializer,
     ActivityRecipientRegionSerializer, ActivitySectorSerializer,
-    ActivitySerializer, BudgetItemSerializer, BudgetSerializer,
-    CodelistSerializer, ConditionSerializer, ConditionsSerializer,
-    ContactInfoSerializer, CountryBudgetItemsSerializer,
-    CrsAddOtherFlagsSerializer, CrsAddSerializer, DescriptionSerializer,
-    DocumentLinkCategorySerializer, DocumentLinkLanguageSerializer,
-    DocumentLinkSerializer, FssForecastSerializer, FssSerializer,
-    HumanitarianScopeSerializer, LegacyDataSerializer, LocationSerializer,
-    OtherIdentifierSerializer, ParticipatingOrganisationSerializer,
-    PlannedDisbursementSerializer, RecipientCountrySerializer,
-    RelatedActivitySerializer, ReportingOrganisationSerializer,
+    ActivitySerializer, ActivitySerializerByIatiIdentifier,
+    BudgetItemSerializer, BudgetSerializer, CodelistSerializer,
+    ConditionSerializer, ConditionsSerializer, ContactInfoSerializer,
+    CountryBudgetItemsSerializer, CrsAddOtherFlagsSerializer, CrsAddSerializer,
+    DescriptionSerializer, DocumentLinkCategorySerializer,
+    DocumentLinkLanguageSerializer, DocumentLinkSerializer,
+    FssForecastSerializer, FssSerializer, HumanitarianScopeSerializer,
+    LegacyDataSerializer, LocationSerializer, OtherIdentifierSerializer,
+    ParticipatingOrganisationSerializer, PlannedDisbursementSerializer,
+    RecipientCountrySerializer, RelatedActivitySerializer,
+    ReportingOrganisationSerializer,
     ResultIndicatorPeriodActualDimensionSerializer,
     ResultIndicatorPeriodActualLocationSerializer,
     ResultIndicatorPeriodSerializer,
@@ -269,7 +270,7 @@ class ActivityList(CacheResponseMixin, DynamicListView):
     - `recipient_region` (*optional*): Comma separated list of region codes.
     - `sector` (*optional*): Comma separated list of 5-digit sector codes.
     - `sector_category` (*optional*): Comma separated list of 3-digit sector codes.
-    - `reporting_organisation` (*optional*): Comma separated list of organisation id's.
+    - `reporting_organisation` (*optional*): Comma separated list of reporting organisation IATI identifiers.
     - `participating_organisation` (*optional*): Comma separated list of organisation id's.
     - `total_budget_value_lte` (*optional*): Less then or equal total budget value
     - `total_budget_value_gte` (*optional*): Greater then or equal total budget value
@@ -470,7 +471,33 @@ class ActivityDetail(CacheResponseMixin, DynamicDetailView):
 # ActivityResults 08-07-2016
 
 
-class ActivityTransactionList(CacheResponseMixin, DynamicListView):
+class ActivityDetailByIatiIdentifier(CacheResponseMixin, DynamicDetailView):
+    """
+    Returns detailed information of the Activity.
+
+    ## URI Format
+
+    ```
+    /api/activities/{iati_identifier}
+    ```
+
+    ### URI Parameters
+
+    - `iati_ideantifier`: Desired to IATI Identifier of activity
+
+    ## Request parameters
+
+    - `fields` (*optional*): List of fields to display
+
+    """
+
+    queryset = Activity.objects.all()
+    filter_class = ActivityFilter
+    serializer_class = ActivitySerializerByIatiIdentifier
+    lookup_field = 'iati_identifier'
+
+
+class ActivityTransactionList(DynamicListView):
     """
     Returns a list of IATI Activity Transactions stored in OIPA.
 
@@ -515,9 +542,21 @@ class ActivityTransactionList(CacheResponseMixin, DynamicListView):
     """  # NOQA: E501
     serializer_class = TransactionSerializer
     filter_class = TransactionFilter
-    list_cache_key_func = QueryParamsKeyConstructor()
+
+    # TODO: Create cached logic for this class
+    """
+    This class has unique URL so not compatible the rest_framework_extensions
+    cached. We should make a Params Key Constructor function
+    then override the default below function and will be like below:
+
+    @cache_response(key_func=YourQueryParamsKeyConstructor())
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+    """
 
     def get_queryset(self):
+        # Override default get query to get transaction list by primary key of
+        # the activity
         pk = self.kwargs.get('pk')
         try:
             return Activity.objects.get(pk=pk).\

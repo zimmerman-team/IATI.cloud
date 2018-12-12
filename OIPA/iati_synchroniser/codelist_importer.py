@@ -14,6 +14,7 @@ from iati_codelists.models import (
     OrganisationIdentifier, OrganisationRegistrationAgency, Sector
 )
 from iati_synchroniser.dac_sector_importer import DacSectorImporter
+from iati_synchroniser.m49_regions_importer import M49RegionsImporter
 from iati_synchroniser.models import Codelist
 from iati_synchroniser.sdg_sector_importer import SdgSectorImporter
 from iati_synchroniser.unesco_region_importer import UnescoRegionImporter
@@ -360,3 +361,6 @@ class CodeListImporter():
         # Unesco-specific sectors (they shouldn't be in OIPA):
         usi = UnescoSectorImporter()
         usi.update()
+
+        # Added M49 Regions if available
+        M49RegionsImporter()
