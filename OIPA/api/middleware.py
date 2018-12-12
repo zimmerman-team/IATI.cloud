@@ -1,7 +1,11 @@
 from django.urls import resolve
-from django.utils.datastructures import MultiValueDictKeyError
 
 
+# This middleware is used to give a name and an extension for
+# files exported by using the renderers.py(currently only csv and xls)
+# as the 'Content-Disposition' given in those renderers
+# response is not applied(or maybe overriden by something else)
+# we need to apply it here
 class FileExportMiddleware:
 
     def __init__(self, get_response):
@@ -16,22 +20,19 @@ class FileExportMiddleware:
         # So here we check if the view that we're dealing with
         # is actually an api view
         if request.resolver_match.app_name == 'api':
-            try:
+            if 'format' in request.GET:
                 formatz = request.GET['format']
 
                 if formatz == 'csv' or formatz == 'xls':
                     current_url = resolve(request.path_info).url_name
 
-                    try:
+                    if 'export_name' in request.GET:
                         file_name = request.GET['export_name']
-                    except MultiValueDictKeyError:
+                    else:
                         file_name = current_url \
                             if current_url is not None else 'export'
 
                     response['Content-Disposition'] = \
                         "attachment; filename={}.{}".format(file_name, formatz)
-
-            except MultiValueDictKeyError:
-                pass
 
         return response
