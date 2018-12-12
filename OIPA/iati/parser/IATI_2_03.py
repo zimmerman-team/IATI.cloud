@@ -2516,7 +2516,8 @@ class Parse(IatiParser):
         self.register_model('TransactionSector', transaction_sector)
         return element
 
-    def iati_activities__iati_activity__transaction__sector__narrative(self, element):  # NOQA: E501
+    def iati_activities__iati_activity__transaction__sector__narrative(
+            self, element):
         """attributes:
 
         tag: narrative"""
