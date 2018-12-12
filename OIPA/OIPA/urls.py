@@ -18,6 +18,7 @@ urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^nested_admin/', include('nested_admin.urls')),
     url(r'^api/', include('api.urls')),
+    url(r'^iom/', include('iom.urls')),
     url(r'^home$', TemplateView.as_view(template_name='home/home.html')),
     url(r'^404$', views.error404),
     url(r'^500$', views.error500),
