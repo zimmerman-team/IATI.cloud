@@ -82,6 +82,9 @@ pytest-django
 # Distributed testing for Pytest
 pytest-xdist
 
+# Test coverage plugin for Pytest
+pytest-cov==2.6.0
+
 redis==2.10.6
 
 requests==2.18.4
