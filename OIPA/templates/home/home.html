@@ -24,32 +24,7 @@
 	{% block body %}
 	<body class="{% block bodyclass %}home{% endblock %}">
 		{% block branding %}
-		<header>
-	        <div class="row">
-	        	<!-- <div class="small-7 medium-6 large-5 columns small-centered text-center logostatic">
-	        		<img src="{% static "foundation/img/oipa.svg" %}" >
-	        	</div> -->
-	            <div class="small-12 columns small-centered text-center logo">
-	                <span class="haakje">[</span>
-	                <span class="letter">O</span>
-	                <span class="letter">I</span>
-	                <span class="letter">P</span>
-	                <span class="letter">A</span>
-	                <span class="blink flash infinite">|</span>
-	                <span class="haakje">]</span>
-	                <!-- <span class="zimmer animated zoomIn">by zimmerman & zimmerman</span> -->
-	            </div>
-	        </div>
-	        <div class="row">
-	            <div class="columns large-8 medium-10 small-12 small-centered text-center">
-	                <h1>Openaid IATI Parser and API</h1>
-	                <p>OIPA is an IATI data-engine providing a rich and usable API for managing IATI compliant data.</p>
-	                <p class="buttons">
-	                	<a href="https://github.com/zimmerman-zimmerman/OIPA" target="_blank" class="button radius roze">OIPA on Github</a>
-	                </p>
-	            </div>
-	        </div>
-	    </header>
+
 	    {% endblock %}
 	    {% block navi %}
 	    <nav>
@@ -88,21 +63,9 @@
                 </div>
                 <div class="columns small-12 large-4">
                     <h2>License</h2>
-                    <p>OIPA is licensed under the GNU AFFERO GENERAL PUBLIC LICENSE.</p>
+                    <p>OIPA is licensed under AGPLV3.</p>
                 </div>
 			</div>   
-			<div class="row">
-                <div class="large-12 columns text-center">
-                    <h1>Showcase</h1>
-                    <p>Websites using OIPA</p>
-                    <ul class="small-block-grid-2 medium-block-grid-4">
-                        <li><a href="http://opendata.unesco.org/" target="_blank" class="th"><img src="{% static "foundation/img/unesco.png" %}" data-tooltip aria-haspopup="true" title="UNESCO Transparency Portal"></a></li>
-                        <li><a href="http://open.unhabitat.org/" target="_blank" class="th"><img src="{% static "foundation/img/openun.png" %}" data-tooltip aria-haspopup="true" title="Open UN-Habitat"></a></li>
-                        <li><a href="http://www.openaid.nl/" target="_blank" class="th"><img src="{% static "foundation/img/openaid.png" %}" data-tooltip aria-haspopup="true" title="Openaid NL"></a></li>
-                        <li><a href="http://devtracker.dfid.gov.uk/" target="_blank" class="th"><img src="{% static "foundation/img/dfid.png" %}" data-tooltip aria-haspopup="true" title="DFID Development tracker"></a></li>
-                    </ul>
-                </div>
-            </div>
 		</section>
 		{% endblock %}
 
