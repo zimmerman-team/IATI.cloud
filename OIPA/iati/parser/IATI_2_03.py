@@ -3025,6 +3025,28 @@ class Parse(IatiParser):
 
         return element
 
+    # tag: condtions"""
+    def iati_activities__iati_activity__conditions(self, element):
+        conditions_attached = element.attrib.get('attached')
+
+        if not conditions_attached:
+            raise RequiredFieldError(
+                "conditions",
+                "attached",
+                "required attribute missing"
+            )
+        activity = self.get_model('Activity')
+        conditions = models.Conditions()
+        conditions.activity = activity
+        conditions.attached = self.makeBool(conditions_attached)
+
+        # It is impossible to assign related object (ForeignKey) before it's
+        # saved (later in other parser methods), so:
+        # XXX: not sure how efficient this is.
+        conditions.save()
+        self.register_model('Conditions', conditions)
+        return element
+
     # tag:result"""
     def iati_activities__iati_activity__result(self, element):
         result_type_code = element.attrib.get('type')
