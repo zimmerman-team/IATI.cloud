@@ -63,7 +63,7 @@ class OrganisationList(CacheResponseMixin, DynamicListView):
     ## Result details
 
     Each result item contains short information about organisation
-    including URI to city details.
+    including URI to organisation details.
 
     URI is constructed as follows: `/api/organisations/{organisation_id}`
 
@@ -82,7 +82,7 @@ class OrganisationDetail(CacheResponseMixin, DynamicDetailView):
     ## URI Format
 
     ```
-    /api/organisations/{city_id}
+    /api/organisations/{organisation_id}
     ```
 
     ### URI Parameters
