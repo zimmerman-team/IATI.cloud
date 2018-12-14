@@ -2586,6 +2586,14 @@ class Parse(IatiParser):
         self.register_model('TransactionRecipientCountry', transaction_country)
         return element
 
+    def iati_activities__iati_activity__transaction__recipient_country__narrative(self, element):  # NOQA: E501
+        """attributes:
+
+        tag: narrative"""
+        model = self.get_model('TransactionRecipientCountry')
+        self.add_narrative(element, model)
+        return element
+
     def iati_activities__iati_activity__transaction__recipient_region(
             self, element):
         """attributes:
