@@ -12,8 +12,7 @@ DEBUG = False
 
 # These e-mails will be used for Internal server error reporting:
 ADMINS = [
-    # ('ZZ-Monitoring', 'mon-zz-dev@zimmermanzimmerman.nl'),
-    ('Eimantas', 'eimantas@zimmermanzimmerman.nl'),
+    ('ZZ-Monitoring', 'mon-zz-dev@zimmermanzimmerman.nl'),
 ]
 
 DATABASES = {
