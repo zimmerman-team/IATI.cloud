@@ -3031,7 +3031,7 @@ class Parse(IatiParser):
         condition_type_code = element.attrib.get('type')
 
         condition_type = self.get_or_none(codelist_models.ConditionType,
-                                  code=condition_type_code)
+                                          code=condition_type_code)
 
         # 'type_code'is required attribute.
 
@@ -3061,7 +3061,6 @@ class Parse(IatiParser):
 
         self.register_model('Condition', condition)
         return element
-
 
     # tag:result"""
     def iati_activities__iati_activity__result(self, element):
