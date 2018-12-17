@@ -40,14 +40,18 @@ IATI is a global aid transparency standard and it makes information about aid sp
    * OIPA_DB_NAME= ```your_database_name```
    * OIPA_DB_USER= ```your_db_user```
    * OIPA_DB_PASSWORD= ```your_db_password```
-7. Run database migrations with ```python manage.py migrate```
-8. Start the development server: ```python manage.py runserver```
-8. In order for the parser to work, you need to start Redis too: ```redis-server```
-9. Create a superuser account: `python manage.py createsuperuser`
-10. Start the process control centre (Supervisor): ```python manage.py supervisor```
-11. Open your browser at <a href="http://localhost:8000" target="_blank">localhost:8000</a>
-12. Follow instructions for signing-in: <a href="http://docs.oipa.nl/en/latest/admin_interface/" target="_blank">http://docs.oipa.nl/en/latest/admin_interface</a>
-13. Finally, follow the instructions from here: <a href="http://docs.oipa.nl/en/latest/where_to_start/" target="_blank">http://docs.oipa.nl/en/latest/where_to_start</a>
+7. In production environments, these settings also have to be set in ```OIPA/.env``` file:
+   * EMAIL_HOST= ``
+   * EMAIL_HOST_USER= ``
+   * EMAIL_HOST_PASSWORD= ``
+8. Run database migrations with ```python manage.py migrate```
+9. Start the development server: ```python manage.py runserver```
+10. In order for the parser to work, you need to start Redis too: ```redis-server```
+11. Create a superuser account: `python manage.py createsuperuser`
+12. Start the process control centre (Supervisor): ```python manage.py supervisor```
+13. Open your browser at <a href="http://localhost:8000" target="_blank">localhost:8000</a>
+14. Follow instructions for signing-in: <a href="http://docs.oipa.nl/en/latest/admin_interface/" target="_blank">http://docs.oipa.nl/en/latest/admin_interface</a>
+15. Finally, follow the instructions from here: <a href="http://docs.oipa.nl/en/latest/where_to_start/" target="_blank">http://docs.oipa.nl/en/latest/where_to_start</a>
 
 Happy Hunting!
 
