@@ -17,6 +17,8 @@ DATA_UPLOAD_MAX_NUMBER_FIELDS = 3000
 
 SECRET_KEY = env.get('OIPA_SECRET_KEY', 'PXwlMOpfNJTgIdQeH5zk39jKfUMZPOUK')
 
+SERVER_EMAIL = 'dev@zimmermanzimmerman.nl'
+
 DATABASES = {
     'default': {
         'ENGINE': env.get(
