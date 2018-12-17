@@ -3040,10 +3040,6 @@ class Parse(IatiParser):
         conditions.activity = activity
         conditions.attached = self.makeBool(conditions_attached)
 
-        # It is impossible to assign related object (ForeignKey) before it's
-        # saved (later in other parser methods), so:
-        # XXX: not sure how efficient this is.
-        conditions.save()
         self.register_model('Conditions', conditions)
         return element
 
