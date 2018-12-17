@@ -1,5 +1,7 @@
 from OIPA.settings import *  # NOQA: F401, F403
 
+DEBUG = True
+
 MIDDLEWARE += [  # noqa: F405
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'yet_another_django_profiler.middleware.ProfilerMiddleware'

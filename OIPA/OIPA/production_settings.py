@@ -8,6 +8,8 @@ from OIPA.settings import *  # NOQA: F401, F403
 
 load_dotenv(find_dotenv())
 
+DEBUG = False
+
 DATABASES = {
     'default': {
         'ENGINE': os.getenv(
