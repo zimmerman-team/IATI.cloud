@@ -41,6 +41,10 @@ LOGGING = {
         },
     },
     'handlers': {
+        'mail_admins': {
+            'level': 'ERROR',
+            'class': 'django.utils.log.AdminEmailHandler',
+        },
         'oipa-json-logfile': {
             'level': OIPA_LOG_LEVEL,  # NOQA: F405
             'class': 'logging.handlers.WatchedFileHandler',
@@ -63,7 +67,7 @@ LOGGING = {
     'loggers': {
         # All other errors:
         '': {
-            'handlers': ['oipa-json-logfile'],
+            'handlers': ['mail_admins', 'oipa-json-logfile'],
             'level': OIPA_LOG_LEVEL,  # NOQA: F405
             'propagate': False,
         },
@@ -75,7 +79,7 @@ LOGGING = {
         },
         # Django-related errors:
         'django': {
-            'handlers': ['django-json-logfile'],
+            'handlers': ['mail_admins', 'django-json-logfile'],
             'level': OIPA_LOG_LEVEL,  # NOQA: F405
             'propagate': False,
         },
