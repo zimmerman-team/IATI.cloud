@@ -206,7 +206,9 @@ def get_failed_tasks(request):
             'job_id': job.id,
             'func_name': job.description,
             'error_message': job.exc_info,
-            'ended_at': job.ended_at.strftime("%a, %d %b %Y %H:%M:%S +0000"),
+            'ended_at': job.ended_at.strftime(
+                "%a, %d %b %Y %H:%M:%S +0000"
+            ) if job.ended_at else None,
             'enqueued_at': job.enqueued_at.strftime(
                 "%a, %d %b %Y %H:%M:%S +0000"
             ),
