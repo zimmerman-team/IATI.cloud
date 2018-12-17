@@ -71,6 +71,13 @@ LOGGING = {
             'level': OIPA_LOG_LEVEL,  # NOQA: F405
             'propagate': False,
         },
+        # Only log critical errors for urllib3 to avoid spam for urllib's
+        # SSL-related CertificateErrors when getting Datasets, etc.:
+        'urllib3.connection': {
+            'handlers': ['mail_admins', 'iati-parser-json-logfile'],
+            'level': 'CRITICAL',  # NOQA: F405
+            'propagate': False,
+        },
         # IATI Parser related errors:
         'iati.parser': {
             'handlers': ['iati-parser-json-logfile'],
