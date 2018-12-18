@@ -129,7 +129,8 @@ class PaginatedCSVRenderer(CSVRenderer):
         actual_kwargs = args[1].get('kwargs', {})
 
         # this is a list view
-        if 'pk' not in actual_kwargs:
+        if 'pk' not in actual_kwargs \
+                and 'iati_identifier' not in actual_kwargs:
             data = data.get(self.results_field, [])
 
         return super(PaginatedCSVRenderer, self).render(data, *args, **kwargs)
