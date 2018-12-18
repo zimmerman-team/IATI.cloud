@@ -128,9 +128,18 @@ class PaginatedCSVRenderer(CSVRenderer):
         # need to update this - 2017-04-03
         actual_kwargs = args[1].get('kwargs', {})
 
-        # this is a list view
+        # So basically when exporting a list view we need to only
+        # parse what we get from the 'results' field of the response
+        # otherwise what we see in the file, will not make much sense
+        # so we do a check here to determine if the response is a list
+        # response or a detail response, by checking if there's a
+        # 'pk' or a 'iati_identifier'
+        # one of the exceptions is for the 'activity/{id}/transactions'
+        # because it returns a list so we have a check for it here as well
         if 'pk' not in actual_kwargs \
-                and 'iati_identifier' not in actual_kwargs:
+            and 'iati_identifier' not in actual_kwargs or \
+            'pk' in actual_kwargs and \
+                'transactions' in args[1]['request']._request.path:
             data = data.get(self.results_field, [])
 
         return super(PaginatedCSVRenderer, self).render(data, *args, **kwargs)
@@ -140,9 +149,6 @@ class OrganisationXMLRenderer(XMLRenderer):
     root_tag_name = 'iati-organisations'
     item_tag_name = 'iati-organisation'
 
-
-# All of this was done in the same way that the csv is formed
-# Which was okay for them peeps
 
 # XXX: file name is always 'download' and it should probably be set per-view
 # TODO: test
@@ -187,9 +193,18 @@ class XlsRenderer(BaseRenderer):
 
         actual_kwargs = renderer_context.get('kwargs', {})
 
-        # this is a list view
+        # So basically when exporting a list view we need to only
+        # parse what we get from the 'results' field of the response
+        # otherwise what we see in the file, will not make much sense
+        # so we do a check here to determine if the response is a list
+        # response or a detail response, by checking if there's a
+        # 'pk' or a 'iati_identifier'
+        # one of the exceptions is for the 'activity/{id}/transactions'
+        # because it returns a list so we have a check for it here as well
         if 'pk' not in actual_kwargs \
-                and 'iati_identifier' not in actual_kwargs:
+                and 'iati_identifier' not in actual_kwargs or\
+                'pk' in actual_kwargs and \
+                'transactions' in renderer_context['request']._request.path:
             data = data.get(self.results_field, [])
 
         # Create an in-memory output file for the new workbook.
