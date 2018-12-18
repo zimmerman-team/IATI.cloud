@@ -1569,9 +1569,9 @@ class ActivityConditionsCondititionTestCase(TestCase):
 
         # case 3: all is well.
 
-        condition_type = self.condition_type.code
+        condition_type_code = self.condition_type.code
         conditions_condition_attr = {
-             'type': condition_type
+             'type': condition_type_code
         }
         conditions_condition_XML_element = E(
             'condition',
