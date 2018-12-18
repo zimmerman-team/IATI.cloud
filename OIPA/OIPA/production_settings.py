@@ -74,7 +74,7 @@ LOGGING = {
         # SSL-related CertificateErrors when getting Datasets, etc.:
         'urllib3.connection': {
             'handlers': ['mail_admins', 'iati-parser-json-logfile'],
-            'level': 'CRITICAL',  # NOQA: F405
+            'level': 'CRITICAL',
             'propagate': False,
         },
         # IATI Parser related errors:
