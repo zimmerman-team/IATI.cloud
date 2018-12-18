@@ -111,6 +111,7 @@ class XMLRenderer(BaseRenderer):
             pass
 
 
+# TODO: test this, see: #958
 class PaginatedCSVRenderer(CSVRenderer):
     results_field = 'results'
     header = []
@@ -151,7 +152,7 @@ class OrganisationXMLRenderer(XMLRenderer):
 
 
 # XXX: file name is always 'download' and it should probably be set per-view
-# TODO: test
+# TODO: test this, see: #958
 class XlsRenderer(BaseRenderer):
     media_type = 'application/vnd.ms-excel'
     results_field = 'results'
