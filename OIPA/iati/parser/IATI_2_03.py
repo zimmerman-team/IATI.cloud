@@ -1,3 +1,4 @@
+import re
 from datetime import datetime
 from decimal import Decimal, InvalidOperation
 
@@ -4843,6 +4844,56 @@ class Parse(IatiParser):
         """
         activity_tag = self.get_model('ActivityTag')
         self.add_narrative(element, activity_tag)
+
+    def iati_activities__iati_activity__fss(self, element):
+        """"(optional) <fss> element inside <iati_activities/iati-activity>
+        element in 2.03
+        """
+        extraction_date = element.attrib.get('extraction-date')
+        priority = element.attrib.get('priority')
+        phaseout_year = element.attrib.get('phaseout-year')
+
+        if not extraction_date:
+            raise RequiredFieldError(
+                "fss",
+                "extraction-date",
+                "required attribute missing"
+            )
+        validated_extraction_date = self.validate_date(extraction_date)
+
+        if not validated_extraction_date:
+            raise FieldValidationError(
+                "fss",
+                "extraction-date",
+                "extraction-date not of type xsd:date",
+                None,
+                None,
+                element.attrib.get('extraction-date'))
+
+        # phaseout_year must be of type xsd:decimal.
+
+        if phaseout_year is not None:  # 'phasoutout_year' is an optional
+            # attribute.
+            regex = re.compile(r'^((-|\+)?\d*\.?)?\d+$')
+            if regex.match(phaseout_year) is None:
+                raise FieldValidationError(
+                    "fss",
+                    "phaseout-year",
+                    "phaseout-year not of type xsd:decimal",
+                    None,
+                    None,
+                    element.attrib.get('phaseout-year'))
+
+        priority_bool = self.makeBool(priority)
+        activity = self.get_model('Activity')
+        fss = models.Fss()
+        fss.activity = activity
+        fss.extraction_date = extraction_date
+        fss.phaseout_year = phaseout_year
+        fss.priority = priority_bool
+
+        self.register_model('Fss', fss)
+        return element
 
     def post_save_models(self):
         """Perform all actions that need to happen after a single activity's

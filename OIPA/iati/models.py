@@ -1659,7 +1659,8 @@ class LocationActivityDescription(models.Model):
 
 
 class Fss(models.Model):
-    activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
+    # This element MUST occur no more than once (with each parent element)
+    activity = models.OneToOneField(Activity, on_delete=models.CASCADE)
     extraction_date = models.DateField()
     priority = models.BooleanField(default=False)
     phaseout_year = models.IntegerField(null=True, blank=True)
