@@ -270,7 +270,7 @@ class ActivityList(CacheResponseMixin, DynamicListView):
     - `recipient_region` (*optional*): Comma separated list of region codes.
     - `sector` (*optional*): Comma separated list of 5-digit sector codes.
     - `sector_category` (*optional*): Comma separated list of 3-digit sector codes.
-    - `reporting_organisation` (*optional*): Comma separated list of reporting organisation IATI identifiers.
+    - `reporting_organisation_identifier` (*optional*): Comma separated list of reporting organisation IATI identifiers.
     - `participating_organisation` (*optional*): Comma separated list of organisation id's.
     - `total_budget_value_lte` (*optional*): Less then or equal total budget value
     - `total_budget_value_gte` (*optional*): Greater then or equal total budget value

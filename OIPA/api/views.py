@@ -19,31 +19,31 @@ def welcome(request, format=None):
 
     * Activities: [`/api/activities`](/api/activities)
 
-    * Publishers: [`/api/publishers`](/api/publishers)
-
-    * Organisations: [`/api/organisations`](/api/organisations)
-
-    * Results aggregations: [`/api/results/aggregations`](/api/results/aggregations)
-
-    * Locations: [`/api/locations`](/api/locations)
-
-    * Cities: [`/api/cities`](/api/cities)
-
-    * Datasets: [`/api/datasets`](/api/datasets)
-
-    * Sectors: [`/api/sectors`](/api/sectors)
-
-    * Countries: [`/api/countries`](/api/countries)
-
-    * Transactions: [`/api/transactions`](/api/transactions)
-
-    * Regions: [`/api/regions`](/api/regions)
-
     * Budget aggregations: [`/api/budgets/aggregations`](/api/budgets/aggregations)
+
+    * Chains: [`/api/chains`](/api/chains)
 
     * Codelists: [`/api/publishers`](/api/codelists)
 
-    * Chains: [`/api/chains`](/api/chains)
+    * Countries: [`/api/countries`](/api/countries)
+
+    * Current branch: [`/api/branch`](/api/branch)
+
+    * Datasets: [`/api/datasets`](/api/datasets)
+
+    * Locations: [`/api/locations`](/api/locations)
+
+    * Organisations: [`/api/organisations`](/api/organisations)
+
+    * Publishers: [`/api/publishers`](/api/publishers)
+
+    * Regions: [`/api/regions`](/api/regions)
+
+    * Results aggregations: [`/api/results/aggregations`](/api/results/aggregations)
+
+    * Sectors: [`/api/sectors`](/api/sectors)
+
+    * Transactions: [`/api/transactions`](/api/transactions)
 
     * UNESCO specific [`/api/unesco/ransaction-balance-aggregations`](/api/unesco/ransaction-balance-aggregations)
 
@@ -75,10 +75,6 @@ def welcome(request, format=None):
     """  # NOQA: E501
     return Response({
         'endpoints': {
-            'cities': reverse(
-                'cities:city-list',
-                request=request,
-                format=format),
             'regions': reverse(
                 'regions:region-list',
                 request=request,

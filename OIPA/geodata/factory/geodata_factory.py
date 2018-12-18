@@ -10,15 +10,6 @@ class NoDatabaseFactory(factory.django.DjangoModelFactory):
         return 0
 
 
-class CityFactory(NoDatabaseFactory):
-    class Meta:
-        model = models.City
-
-    geoname_id = 1000
-    name = 'dummy_city'
-    location = Point(5, 23)
-
-
 class CountryFactory(NoDatabaseFactory):
     class Meta:
         model = models.Country
