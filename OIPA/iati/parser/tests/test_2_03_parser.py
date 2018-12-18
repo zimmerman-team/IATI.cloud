@@ -1493,6 +1493,82 @@ class ActivityDocumentLinkDescriptionTestCase(TestCase):
         )
 
 
+class ActivityConditionsTestCase(TestCase):
+
+    '''
+    2.03: Added new (optional) <conditions> element for <iati-activity>
+    element.
+    '''
+
+    def setUp(self):
+        # 'Main' XML file for instantiating parser:
+        xml_file_attrs = {
+            "generated-datetime": datetime.datetime.now().isoformat(),
+            "version": '2.03',
+        }
+        self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
+
+        dummy_source = synchroniser_factory.DatasetFactory.create()
+
+        self.parser_203 = ParseManager(
+            dataset=dummy_source,
+            root=self.iati_203_XML_file,
+        ).get_parser()
+
+        # Related objects:
+        # create dummy object
+
+        self.activity = iati_factory.ActivityFactory.create()
+        self.parser_203.register_model('Activity', self.activity)
+
+    def test_activity_conditions(self):
+        """Test if 'attached' attribute of <conditions> element is correctly
+         passed and saved.
+         """
+
+        # case 1 : when 'attached' attribute is missing.
+
+        reference_attr = {
+
+            # "attached": '1',
+        }
+        reference_XML_element = E(
+            'conditions',
+            **reference_attr
+        )
+
+        try:
+            self.parser_203 \
+                .iati_activities__iati_activity__conditions(
+                    reference_XML_element
+                )
+        except RequiredFieldError as inst:
+            self.assertEqual(inst.field, 'attached')
+            self.assertEqual(inst.message,
+                             'required attribute missing')
+
+        # case 2 : all is good
+
+        reference_attr = {
+            "attached": '1'
+        }
+        reference_XML_element = E(
+            'conditions',
+            **reference_attr
+        )
+
+        self.parser_203.iati_activities__iati_activity__conditions(
+                reference_XML_element
+            )
+
+        #  get 'Conditions' to check if its attributes, which are
+        #  'attached'and 'activity', are correctly stored.
+
+        conditions = self.parser_203.get_model('Conditions')
+        self.assertEqual(self.activity, conditions.activity)
+        self.assertTrue(conditions.attached)
+
+
 class ActivityResultDocumentLinkTestCase(TestCase):
     '''
     2.03: Added new (optional) <document-link> element for <result>
