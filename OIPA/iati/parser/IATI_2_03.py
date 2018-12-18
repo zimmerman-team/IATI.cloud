@@ -2586,6 +2586,14 @@ class Parse(IatiParser):
         self.register_model('TransactionRecipientCountry', transaction_country)
         return element
 
+    def iati_activities__iati_activity__transaction__recipient_country__narrative(self, element):  # NOQA: E501
+        """attributes:
+
+        tag: narrative"""
+        model = self.get_model('TransactionRecipientCountry')
+        self.add_narrative(element, model)
+        return element
+
     def iati_activities__iati_activity__transaction__recipient_region(
             self, element):
         """attributes:
@@ -2642,6 +2650,14 @@ class Parse(IatiParser):
 
         self.register_model('TransactionRecipientRegion',
                             transaction_recipient_region)
+        return element
+
+    def iati_activities__iati_activity__transaction__recipient_region__narrative(self, element):  # NOQA:E501
+        """attributes:
+
+        tag: narrative"""
+        model = self.get_model('TransactionRecipientRegion')
+        self.add_narrative(element, model)
         return element
 
     def iati_activities__iati_activity__transaction__flow_type(self, element):
@@ -3023,6 +3039,24 @@ class Parse(IatiParser):
 
         self.register_model('LegacyData', legacy_data)
 
+        return element
+
+    # tag: condtions"""
+    def iati_activities__iati_activity__conditions(self, element):
+        conditions_attached = element.attrib.get('attached')
+
+        if not conditions_attached:
+            raise RequiredFieldError(
+                "conditions",
+                "attached",
+                "required attribute missing"
+            )
+        activity = self.get_model('Activity')
+        conditions = models.Conditions()
+        conditions.activity = activity
+        conditions.attached = self.makeBool(conditions_attached)
+
+        self.register_model('Conditions', conditions)
         return element
 
     # tag: condition"""
