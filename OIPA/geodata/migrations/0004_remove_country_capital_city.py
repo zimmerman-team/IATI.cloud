@@ -6,7 +6,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('geodata', '0003_remove_region_added_manually'),
+        ('geodata', '0002_region_added_manually'),
     ]
 
     operations = [
