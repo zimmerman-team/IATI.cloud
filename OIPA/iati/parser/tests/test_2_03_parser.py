@@ -5530,7 +5530,9 @@ class ActivityFssTestCase(TestCase):
         self.parser_203.iati_activities__iati_activity__fss(
                 fss_XML_element
             )
+        # get 'Fss' object to check if its attributes are correctly assigned.
         fss = self.parser_203.get_model('Fss')
+
         self.assertEqual(fss.extraction_date, fss_XML_element.attrib.get(
             'extraction-date'))
         self.assertTrue(fss.priority)  # 'priority' attribute is boolean value.
