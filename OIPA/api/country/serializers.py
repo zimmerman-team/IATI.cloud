@@ -8,17 +8,6 @@ from api.region.serializers import RegionSerializer
 
 
 class CountrySerializer(DynamicFieldsModelSerializer):
-    class BasicCitySerializer(serializers.ModelSerializer):
-        url = serializers.HyperlinkedIdentityField(
-            view_name='cities:city-detail')
-
-        class Meta:
-            model = geodata.models.City
-            fields = (
-                'url',
-                'id',
-                'name'
-            )
 
     code = serializers.CharField()
     name = serializers.CharField(required=False)
@@ -27,21 +16,14 @@ class CountrySerializer(DynamicFieldsModelSerializer):
     region = RegionSerializer(fields=('url', 'code', 'name'))
     un_region = RegionSerializer(fields=('url', 'code', 'name'))
     unesco_region = RegionSerializer(fields=('url', 'code', 'name'))
-    capital_city = BasicCitySerializer()
     location = JSONField(source='center_longlat.json')
     polygon = JSONField()
     activities = serializers.SerializerMethodField()
-    cities = serializers.SerializerMethodField()
 
     def get_activities(self, obj):
         request = self.context.get('request')
         url = request.build_absolute_uri(reverse('activities:activity-list'))
         return url + '?recipient_country=' + obj.code
-
-    def get_cities(self, obj):
-        request = self.context.get('request')
-        url = request.build_absolute_uri(reverse('cities:city-list'))
-        return url + '?country=' + obj.code
 
     class Meta:
         model = geodata.models.Country
@@ -53,7 +35,6 @@ class CountrySerializer(DynamicFieldsModelSerializer):
             'name',
             'alt_name',
             'language',
-            'capital_city',
             'region',
             'un_region',
             'unesco_region',
@@ -63,7 +44,6 @@ class CountrySerializer(DynamicFieldsModelSerializer):
             'fips10',
             'data_source',
             'activities',
-            'cities',
             'location',
             'polygon',
         )

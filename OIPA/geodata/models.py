@@ -23,9 +23,6 @@ class Country(models.Model):
     name = models.CharField(max_length=100, db_index=True)
     alt_name = models.CharField(max_length=100, null=True, blank=True)
     language = models.CharField(max_length=2, null=True)
-    capital_city = models.OneToOneField("City", related_name='capital_of',
-                                        null=True,
-                                        blank=True, on_delete=models.CASCADE)
     region = models.ForeignKey(Region, null=True,
                                blank=True, on_delete=models.CASCADE)
     un_region = models.ForeignKey('Region', null=True, blank=True,
@@ -50,28 +47,6 @@ class Country(models.Model):
 
     def __unicode__(self):
         return self.name
-
-
-class City(models.Model):
-    geoname_id = models.IntegerField(null=True, blank=True)
-    name = models.CharField(max_length=200)
-    country = models.ForeignKey(Country, null=True, blank=True,
-                                on_delete=models.CASCADE)
-    location = models.PointField(null=True, blank=True)
-    ascii_name = models.CharField(max_length=200, null=True, blank=True)
-    alt_name = models.CharField(max_length=200, null=True, blank=True)
-    namepar = models.CharField(max_length=200, null=True, blank=True)
-    objects = models.Manager()
-
-    @property
-    def is_capital(self):
-        return hasattr(self, 'capital_of')
-
-    def __unicode__(self):
-        return self.name
-
-    class Meta:
-        verbose_name_plural = "cities"
 
 
 class Adm1Region(models.Model):
