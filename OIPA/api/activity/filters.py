@@ -590,6 +590,20 @@ class ActivityFilter(TogetherFilterSet):
             return queryset.filter(Q(published=False))
     published = CharFilter(method='filter_published')
 
+    def filter_recipient_location(self, queryset, name, value):
+        if value == 'countries':
+            return queryset.filter(Q(activityrecipientcountry__isnull=False))
+        elif value == 'regions':
+            return queryset.filter(
+                Q(activityrecipientregion__isnull=False) &
+                ~Q(activityrecipientregion__region__code='99')
+            )
+        elif value == 'global':
+            return queryset.filter(
+                Q(activityrecipientregion__region__code='99')
+            )
+    recipient_location = CharFilter(method='filter_recipient_location')
+
     class Meta:
         model = Activity
         together_exclusive = [('budget_period_start', 'budget_period_end')]
