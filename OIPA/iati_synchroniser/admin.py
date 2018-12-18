@@ -164,9 +164,8 @@ class DatasetAdmin(admin.ModelAdmin):
         xml_id = request.GET.get('xml_id')
         obj = get_object_or_404(Dataset, pk=xml_id)
         queue = django_rq.get_queue("parser")
-        #queue.enqueue(force_parse_source_by_url, args=(
-            #obj.source_url, True), timeout=7200)
-        force_parse_source_by_url(obj.source_url)
+        queue.enqueue(force_parse_source_by_url, args=(
+            obj.source_url, True), timeout=7200)
 
         return HttpResponse('Success')
 
