@@ -2586,6 +2586,14 @@ class Parse(IatiParser):
         self.register_model('TransactionRecipientCountry', transaction_country)
         return element
 
+    def iati_activities__iati_activity__transaction__recipient_country__narrative(self, element):  # NOQA: E501
+        """attributes:
+
+        tag: narrative"""
+        model = self.get_model('TransactionRecipientCountry')
+        self.add_narrative(element, model)
+        return element
+
     def iati_activities__iati_activity__transaction__recipient_region(
             self, element):
         """attributes:
@@ -2642,6 +2650,14 @@ class Parse(IatiParser):
 
         self.register_model('TransactionRecipientRegion',
                             transaction_recipient_region)
+        return element
+
+    def iati_activities__iati_activity__transaction__recipient_region__narrative(self, element):  # NOQA:E501
+        """attributes:
+
+        tag: narrative"""
+        model = self.get_model('TransactionRecipientRegion')
+        self.add_narrative(element, model)
         return element
 
     def iati_activities__iati_activity__transaction__flow_type(self, element):
@@ -3025,7 +3041,67 @@ class Parse(IatiParser):
 
         return element
 
+    def iati_activities__iati_activity__conditions(self, element):
+        conditions_attached = element.attrib.get('attached')
+
+        if not conditions_attached:
+            raise RequiredFieldError(
+                "conditions",
+                "attached",
+                "required attribute missing"
+            )
+        activity = self.get_model('Activity')
+        conditions = models.Conditions()
+        conditions.activity = activity
+        conditions.attached = self.makeBool(conditions_attached)
+
+        self.register_model('Conditions', conditions)
+        return element
+
+    # tag: condition"""
+    def iati_activities__iati_activity__conditions__condition(self, element):
+
+        condition_type_code = element.attrib.get('type')
+
+        condition_type = self.get_or_none(codelist_models.ConditionType,
+                                          code=condition_type_code)
+
+        # 'type_code'is required attribute.
+
+        if not condition_type_code:
+            raise RequiredFieldError(
+                "condition",
+                "type",
+                "required attribute missing."
+            )
+
+        #  'condition_type_code' value must be on the 'ConditionType codelist.
+        #  so:'
+
+        if not condition_type:
+            raise FieldValidationError(
+                "condition",
+                "type",
+                "not found on the accompanying codelist.",
+                None,
+                None,
+                condition_type_code
+            )
+        conditions = self.get_model('Conditions')  # parent element
+        condition = models.Condition()
+        condition.conditions = conditions
+        condition.type = condition_type
+
+        self.register_model('Condition', condition)
+        return element
+
     # tag:result"""
+    def iati_activities__iati_activity__conditions__condition__narrative(
+            self, element):
+        condition = self.get_model('Condition')
+        self.add_narrative(element, condition)
+        return element
+
     def iati_activities__iati_activity__result(self, element):
         result_type_code = element.attrib.get('type')
         result_type = self.get_or_none(

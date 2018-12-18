@@ -129,15 +129,6 @@ class CountryFactory(NoDatabaseFactory):
     iso3 = 'and'
 
 
-class CityFactory(NoDatabaseFactory):
-    class Meta:
-        model = geodata.models.City
-
-    id = 1
-    name = 'Colonia del Sacramento'
-    geoname_id = 3443013
-
-
 class ActivityDummyFactory(NoDatabaseFactory):
     class Meta:
         model = iati.models.Activity
