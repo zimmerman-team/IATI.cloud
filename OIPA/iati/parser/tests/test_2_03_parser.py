@@ -5498,7 +5498,7 @@ class ActivityFssTestCase(TestCase):
         fss_attr = {
 
             "extraction-date": '20160712',
-            "phaseout-year": '2016.'
+            "phaseout-year": '.ab'
 
         }
         fss_XML_element = E(
@@ -5510,9 +5510,8 @@ class ActivityFssTestCase(TestCase):
                 fss_XML_element
             )
         except FieldValidationError as inst:
-            self.assertEqual(inst.field, 'phaseout-year')
-            self.assertEqual(inst.message, 'phaseout-year not of type '
-                                           'xsd:decimal')
+            self.assertEqual(inst.field, 'value')
+            self.assertEqual(inst.message, 'Must be decimal or integer string')
 
         # case 5: all is well.
         fss_attr = {
