@@ -3058,6 +3058,44 @@ class Parse(IatiParser):
         self.register_model('Conditions', conditions)
         return element
 
+    # tag: condition"""
+    def iati_activities__iati_activity__conditions__condition(self, element):
+
+        condition_type_code = element.attrib.get('type')
+
+        condition_type = self.get_or_none(codelist_models.ConditionType,
+                                          code=condition_type_code)
+
+        # 'type_code'is required attribute.
+
+        if not condition_type_code:
+            raise RequiredFieldError(
+                "condition",
+                "type",
+                "required attribute missing."
+            )
+
+        #  'condition_type_code' value must be on the 'ConditionType codelist.
+        #  so:'
+
+        if not condition_type:
+            raise FieldValidationError(
+                "condition",
+                "type",
+                "not found on the accompanying codelist.",
+                None,
+                None,
+                condition_type_code
+            )
+        conditions = self.get_model('Conditions')  # parent element
+        condition = models.Condition()
+        condition.conditions = conditions
+        condition.type = condition_type
+
+        self.register_model('Condition', condition)
+        return element
+
+    # tag:result"""
     def iati_activities__iati_activity__conditions__condition__narrative(
             self, element):
         condition = self.get_model('Condition')
