@@ -1663,7 +1663,8 @@ class Fss(models.Model):
     activity = models.OneToOneField(Activity, on_delete=models.CASCADE)
     extraction_date = models.DateField()
     priority = models.BooleanField(default=False)
-    phaseout_year = models.IntegerField(null=True, blank=True)
+    # This value must be of type xsd:decimal
+    phaseout_year = models.DecimalField(max_digits=15, decimal_places=2)
 
     def __unicode__(self,):
         return "%s" % self.extraction_date

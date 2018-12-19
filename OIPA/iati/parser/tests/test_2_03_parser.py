@@ -5535,6 +5535,6 @@ class ActivityFssTestCase(TestCase):
         self.assertEqual(fss.extraction_date, fss_XML_element.attrib.get(
             'extraction-date'))
         self.assertTrue(fss.priority)  # 'priority' attribute is boolean value.
-        self.assertEqual(fss.phaseout_year, fss_XML_element.attrib.get(
-            'phaseout-year'))
+        self.assertEqual(fss.phaseout_year, Decimal(fss_XML_element.attrib.get(
+            'phaseout-year')))
         self.assertEqual(fss.activity, self.activity)

@@ -4873,22 +4873,14 @@ class Parse(IatiParser):
 
         if phaseout_year is not None:  # 'phasoutout_year' is an optional
             # attribute.
-            regex = re.compile(r'^((-|\+)?\d*\.?)?\d+$')
-            if regex.match(phaseout_year) is None:
-                raise FieldValidationError(
-                    "fss",
-                    "phaseout-year",
-                    "phaseout-year not of type xsd:decimal",
-                    None,
-                    None,
-                    element.attrib.get('phaseout-year'))
+            phaseout_year_decimal = self.guess_number('Fss', phaseout_year)
 
         priority_bool = self.makeBool(priority)
         activity = self.get_model('Activity')
         fss = models.Fss()
         fss.activity = activity
         fss.extraction_date = extraction_date
-        fss.phaseout_year = phaseout_year
+        fss.phaseout_year = phaseout_year_decimal
         fss.priority = priority_bool
 
         self.register_model('Fss', fss)
