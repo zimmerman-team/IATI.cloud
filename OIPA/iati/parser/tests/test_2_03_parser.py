@@ -5607,10 +5607,11 @@ class ActivityFssTestCase(TestCase):
                 fss_XML_element
             )
         except FieldValidationError as inst:
-            self.assertEqual(inst.field, 'value')
-            self.assertEqual(inst.message, 'Must be decimal or integer string')
+            self.assertEqual(inst.field, 'phaseout-year')
+            self.assertEqual(inst.message, 'phaseout-year not of type '
+                                           'xsd:decimal')
 
-        # case 5: all is well.
+        # case 6: all is well.
         fss_attr = {
 
             "extraction-date": '20180712',
@@ -5622,16 +5623,35 @@ class ActivityFssTestCase(TestCase):
             'fss',
             **fss_attr
         )
-
         self.parser_203.iati_activities__iati_activity__fss(
-                fss_XML_element
-            )
+            fss_XML_element
+        )
         # get 'Fss' object to check if its attributes are correctly assigned.
         fss = self.parser_203.get_model('Fss')
 
         self.assertEqual(fss.extraction_date, fss_XML_element.attrib.get(
             'extraction-date'))
         self.assertTrue(fss.priority)  # 'priority' attribute is boolean value.
-        self.assertEqual(fss.phaseout_year, Decimal(fss_XML_element.attrib.get(
-            'phaseout-year')))
+        self.assertEqual(fss.phaseout_year, fss_XML_element.attrib.get(
+                                 'phaseout-year'))
         self.assertEqual(fss.activity, self.activity)
+
+        # case 5: when 'Fss'element occurs more than one in the parent element.
+        fss_attr = {
+
+            "extraction-date": '20180712',
+            "priority": '1',
+            "phaseout-year": '2016'
+
+        }
+        fss_XML_element2 = E(
+            'fss',
+            **fss_attr
+        )
+        try:
+            self.parser_203.iati_activities__iati_activity__fss(
+                fss_XML_element2
+            )
+        except ParserError as inst:
+            self.assertEqual(inst.field, 'Fss')
+            self.assertEqual(inst.message, 'must occur no more than once.')

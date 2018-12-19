@@ -1,3 +1,4 @@
+import re
 from datetime import datetime
 from decimal import Decimal, InvalidOperation
 
@@ -4886,6 +4887,17 @@ class Parse(IatiParser):
         """"(optional) <fss> element inside <iati_activities/iati-activity>
         element in 2.03
         """
+        # we need to check if this element occurs more than once in  the
+        # parent element, which is <iati-activity>
+
+        # FIXME: should database relation be changed to OnetoOne?? see #964
+        parent_activity = self.get_model('Activity')
+        if 'Fss' in self.model_store:
+            for fss in self.model_store['Fss']:
+                if fss.activity == parent_activity:
+                    raise ParserError("Activity", "Fss", "must occur no more "
+                                                         "than once.")
+
         extraction_date = element.attrib.get('extraction-date')
         priority = element.attrib.get('priority')
         phaseout_year = element.attrib.get('phaseout-year')
@@ -4911,14 +4923,22 @@ class Parse(IatiParser):
 
         if phaseout_year is not None:  # 'phasoutout_year' is an optional
             # attribute.
-            phaseout_year_decimal = self.guess_number('Fss', phaseout_year)
+            regex = re.compile(r'^((-|\+)?\d*\.?)?\d+$')
+            if regex.match(phaseout_year) is None:
+                raise FieldValidationError(
+                    "fss",
+                    "phaseout-year",
+                    "phaseout-year not of type xsd:decimal",
+                    None,
+                    None,
+                    element.attrib.get('phaseout-year'))
 
         priority_bool = self.makeBool(priority)
         activity = self.get_model('Activity')
         fss = models.Fss()
         fss.activity = activity
         fss.extraction_date = extraction_date
-        fss.phaseout_year = phaseout_year_decimal
+        fss.phaseout_year = phaseout_year
         fss.priority = priority_bool
 
         self.register_model('Fss', fss)
