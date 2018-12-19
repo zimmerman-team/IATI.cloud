@@ -1,4 +1,5 @@
-from django_filters import DateFilter, NumberFilter
+from django_filters import DateFilter, NumberFilter, CharFilter
+from django.db.models import Q
 
 from api.generics.filters import (
     CommaSeparatedCharFilter, StartsWithInCommaSeparatedCharFilter,
@@ -72,6 +73,23 @@ class TransactionBalanceFilter(TogetherFilterSet):
     activity_scope = CommaSeparatedCharFilter(
         lookup_expr='in',
         field_name='activity__scope__code')
+
+    def filter_recipient_location(self, queryset, name, value):
+        if value == 'countries':
+            return queryset.filter(
+                Q(activity__activityrecipientcountry__isnull=False)
+            )
+        elif value == 'regions':
+            return queryset.filter(
+                Q(activity__activityrecipientregion__isnull=False) &
+                ~Q(activity__activityrecipientregion__region__code='99')
+            )
+        elif value == 'global':
+            return queryset.filter(
+                Q(activity__activityrecipientregion__region__code='99')
+            )
+
+    recipient_location = CharFilter(method='filter_recipient_location')
 
     class Meta:
         model = TransactionBalance
