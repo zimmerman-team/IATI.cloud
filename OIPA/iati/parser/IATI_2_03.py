@@ -4891,10 +4891,10 @@ class Parse(IatiParser):
         # parent element, which is <iati-activity>
 
         # FIXME: should database relation be changed to OnetoOne?? see #964
-        parent_activity = self.get_model('Activity')
+        activity = self.get_model('Activity')
         if 'Fss' in self.model_store:
             for fss in self.model_store['Fss']:
-                if fss.activity == parent_activity:
+                if fss.activity == activity:
                     raise ParserError("Activity", "Fss", "must occur no more "
                                                          "than once.")
 
@@ -4923,6 +4923,9 @@ class Parse(IatiParser):
 
         if phaseout_year is not None:  # 'phasoutout_year' is an optional
             # attribute.
+            # FIXME: should 'phaseout_year' field be changed to
+            #  DecimalField ?? see #968
+
             regex = re.compile(r'^((-|\+)?\d*\.?)?\d+$')
             if regex.match(phaseout_year) is None:
                 raise FieldValidationError(
@@ -4934,7 +4937,6 @@ class Parse(IatiParser):
                     element.attrib.get('phaseout-year'))
 
         priority_bool = self.makeBool(priority)
-        activity = self.get_model('Activity')
         fss = models.Fss()
         fss.activity = activity
         fss.extraction_date = extraction_date
