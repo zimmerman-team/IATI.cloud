@@ -1,5 +1,5 @@
-from django_filters import DateFilter, NumberFilter, CharFilter
 from django.db.models import Q
+from django_filters import CharFilter, DateFilter, NumberFilter
 
 from api.generics.filters import (
     CommaSeparatedCharFilter, StartsWithInCommaSeparatedCharFilter,
