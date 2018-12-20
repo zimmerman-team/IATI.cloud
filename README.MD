@@ -1,5 +1,7 @@
 ## OIPA
 --------
+
+Please make sure to use the develop branch. We will be merging the develop branch into master in January 2019. Default branch therefore is currently set to Develop.
 <!---
 These are temporary disabled:
 
