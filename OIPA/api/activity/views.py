@@ -1544,3 +1544,19 @@ class ActivityFssForecastDetail(RetrieveUpdateDestroyAPIView):
     def get_object(self):
         pk = self.kwargs.get('forecast_id')
         return FssForecast.objects.get(pk=pk)
+
+
+class ActivityTransactionListByIatiIdentifier(ActivityTransactionList):
+    """
+    Get all transactions of the activity by the IATI Identifier
+    """
+
+    def get_queryset(self):
+        # Override default get query to get transaction list
+        # by iati_identifier of the activity
+        iati_identifier = self.kwargs.get('iati_identifier')
+        try:
+            return Activity.objects.get(iati_identifier=iati_identifier).\
+                transaction_set.all().order_by('id')
+        except Activity.DoesNotExist:
+            return Transaction.objects.none().order_by('id')
