@@ -12,6 +12,8 @@ from rq_scheduler import Scheduler
 
 from task_queue import tasks
 
+# TODO: all these custok views have to be tested, see: #968
+
 
 # PARSE TASKS
 @staff_member_required
