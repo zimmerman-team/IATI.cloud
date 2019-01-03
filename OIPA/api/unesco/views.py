@@ -106,22 +106,22 @@ class TransactionBalanceAggregation(AggregationView):
         ),
         GroupBy(
             query_param="recipient_country",
-            fields="activity__transaction__transactionrecipientcountry__country", # NOQA: E501
+            fields="activity__transaction__transactionrecipientcountry__country",  # NOQA: E501
             renamed_fields="recipient_country",
             queryset=Country.objects.all(),
             serializer=CountrySerializer,
             serializer_fields=('url', 'code', 'name', 'location', 'region'),
-            name_search_field='activity__transaction__transactionrecipientcountry__country__name', # NOQA: E501
+            name_search_field='activity__transaction__transactionrecipientcountry__country__name',  # NOQA: E501
             renamed_name_search_field='recipient_country_name',
         ),
         GroupBy(
             query_param="recipient_region",
-            fields="activity__transaction__transactionrecipientregion__region", # NOQA: E501
+            fields="activity__transaction__transactionrecipientregion__region",  # NOQA: E501
             renamed_fields="recipient_region",
             queryset=Region.objects.all(),
             serializer=RegionSerializer,
             serializer_fields=('url', 'code', 'name', 'location'),
-            name_search_field="activity__transaction__transactionrecipientregion__region__name", # NOQA: E501
+            name_search_field="activity__transaction__transactionrecipientregion__region__name",  # NOQA: E501
             renamed_name_search_field="recipient_region_name",
         ),
         GroupBy(
