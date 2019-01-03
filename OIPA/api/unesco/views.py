@@ -1,14 +1,10 @@
 from django.db.models import (
-    Sum,
-    Count
+    Sum, Count
 )
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
-
 from api.aggregation.views import (
-    Aggregation,
-    AggregationView,
-    GroupBy
+    Aggregation, AggregationView, GroupBy
 )
 from api.generics.filters import SearchFilter
 from api.unesco.filters import TransactionBalanceFilter
@@ -18,8 +14,7 @@ from iati.models import ActivitySector, Sector
 from iati.models import ActivityParticipatingOrganisation
 from geodata.models import Country, Region
 from api.country.serializers import (
-    CountrySerializer,
-    RegionSerializer
+    CountrySerializer, RegionSerializer
 )
 from unesco.models import SectorBudgetBalance, TransactionBalance
 
