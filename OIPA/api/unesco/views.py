@@ -16,7 +16,9 @@ from geodata.models import Country, Region
 from api.country.serializers import (
     CountrySerializer, RegionSerializer
 )
-from unesco.models import SectorBudgetBalance, TransactionBalance
+from unesco.models import (
+    SectorBudgetBalance, TransactionBalance
+)
 
 
 class TransactionBalanceAggregation(AggregationView):
