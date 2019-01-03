@@ -1,24 +1,18 @@
-from django.db.models import (
-    Sum, Count
-)
+from django.db.models import Count, Sum
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
-from api.aggregation.views import (
-    Aggregation, AggregationView, GroupBy
-)
+
+from api.aggregation.views import Aggregation, AggregationView, GroupBy
+from api.country.serializers import CountrySerializer, RegionSerializer
 from api.generics.filters import SearchFilter
+from api.sector.serializers import SectorSerializer
 from api.unesco.filters import TransactionBalanceFilter
 from api.unesco.serializers import SectorBudgetsSerializer
-from api.sector.serializers import SectorSerializer
-from iati.models import ActivitySector, Sector
-from iati.models import ActivityParticipatingOrganisation
 from geodata.models import Country, Region
-from api.country.serializers import (
-    CountrySerializer, RegionSerializer
+from iati.models import (
+    ActivityParticipatingOrganisation, ActivitySector, Sector
 )
-from unesco.models import (
-    SectorBudgetBalance, TransactionBalance
-)
+from unesco.models import SectorBudgetBalance, TransactionBalance
 
 
 class TransactionBalanceAggregation(AggregationView):
@@ -138,7 +132,7 @@ class TransactionBalanceAggregation(AggregationView):
             queryset=Sector.objects.all(),
             serializer=SectorSerializer,
             serializer_fields=('url', 'code', 'name', 'location'),
-            name_search_field="activity__transaction__transactionsector__sector__name",
+            name_search_field="activity__transaction__transactionsector__sector__name",  # NOQA: E501
             renamed_name_search_field="sector_name",
         ),
         GroupBy(
