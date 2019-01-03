@@ -74,6 +74,11 @@ class TransactionBalanceFilter(TogetherFilterSet):
         lookup_expr='in',
         field_name='activity__scope__code')
 
+    sector_vocabulary = CommaSeparatedCharFilter(
+        lookup_expr='in',
+        field_name='activity__sector__vocabulary__code'
+    )
+
     def filter_recipient_location(self, queryset, name, value):
         if value == 'countries':
             return queryset.filter(
