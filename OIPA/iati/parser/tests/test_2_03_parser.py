@@ -5497,6 +5497,166 @@ class ActivityResultReferenceTestCase(TestCase):
                          reference.vocabulary_uri)
 
 
+class ActivityFssTestCase(TestCase):
+
+    '''
+    2.03: Added new (optional) <fss> element for <activity>
+    element.
+    '''
+
+    def setUp(self):
+        # 'Main' XML file for instantiating parser:
+        xml_file_attrs = {
+            "generated-datetime": datetime.datetime.now().isoformat(),
+            "version": '2.03',
+        }
+        self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
+
+        dummy_source = synchroniser_factory.DatasetFactory.create()
+
+        self.parser_203 = ParseManager(
+            dataset=dummy_source,
+            root=self.iati_203_XML_file,
+        ).get_parser()
+
+        # Related objects:
+        # create dummy object
+
+        self.activity = iati_factory.ActivityFactory.create()
+        self.parser_203.register_model('Activity', self.activity)
+
+    def test_activity_fss(self):
+        """
+        Test if related attributes  in <Fss> XML element is correctly saved.
+
+        """
+
+        # case 1: 'extraction-date' is missing
+
+        fss_attr = {
+            # "extraction-date": '25116600000'
+
+        }
+        fss_XML_element = E(
+            'fss',
+            **fss_attr
+        )
+
+        try:
+            self.date = self.parser_203 \
+                .iati_activities__iati_activity__fss(
+                    fss_XML_element
+                )
+
+        except RequiredFieldError as inst:
+            self.assertEqual(inst.field, 'extraction-date')
+            self.assertEqual(inst.message, 'required attribute missing')
+
+        # case 2 : 'extraction-date' is not valid
+        fss_attr = {
+
+            "extraction-date": '25116600000'
+
+        }
+        fss_XML_element = E(
+            'fss',
+            **fss_attr
+        )
+
+        try:
+            self.parser_203.iati_activities__iati_activity__fss(
+                fss_XML_element
+            )
+        except RequiredFieldError as inst:
+            self.assertEqual(inst.field, 'iso-date')
+            self.assertEqual(inst.message, 'Unspecified or invalid. Date '
+                                           'should be of type xml:date.')
+
+        # case 3: 'extraction-date' is not in correct range
+        fss_attr = {
+
+            "extraction-date": '18200915'
+
+        }
+        fss_XML_element = E(
+            'fss',
+            **fss_attr
+        )
+        try:
+            self.parser_203.iati_activities__iati_activity__fss(
+                fss_XML_element
+            )
+        except FieldValidationError as inst:
+            self.assertEqual(inst.field, 'extraction-date')
+            self.assertEqual(inst.message, 'extraction-date not of type '
+                                           'xsd:date')
+
+        # case 4: 'phaseout_year' is not valid value.
+        fss_attr = {
+
+            "extraction-date": '20160712',
+            "phaseout-year": '2016.'
+
+        }
+        fss_XML_element = E(
+            'fss',
+            **fss_attr
+        )
+        try:
+            self.parser_203.iati_activities__iati_activity__fss(
+                fss_XML_element
+            )
+        except FieldValidationError as inst:
+            self.assertEqual(inst.field, 'phaseout-year')
+            self.assertEqual(inst.message, 'phaseout-year not of type '
+                                           'xsd:decimal')
+
+        # case 6: all is well.
+        fss_attr = {
+
+            "extraction-date": '20180712',
+            "priority": '1',
+            "phaseout-year": '2016'
+
+        }
+        fss_XML_element = E(
+            'fss',
+            **fss_attr
+        )
+        self.parser_203.iati_activities__iati_activity__fss(
+            fss_XML_element
+        )
+        # get 'Fss' object to check if its attributes are correctly assigned.
+        fss = self.parser_203.get_model('Fss')
+
+        self.assertEqual(fss.extraction_date, fss_XML_element.attrib.get(
+            'extraction-date'))
+        self.assertTrue(fss.priority)  # 'priority' attribute is boolean value.
+        self.assertEqual(fss.phaseout_year, fss_XML_element.attrib.get(
+                                 'phaseout-year'))
+        self.assertEqual(fss.activity, self.activity)
+
+        # case 5: when 'Fss'element occurs more than one in the parent element.
+        fss_attr = {
+
+            "extraction-date": '20180712',
+            "priority": '1',
+            "phaseout-year": '2016'
+
+        }
+        fss_XML_element2 = E(
+            'fss',
+            **fss_attr
+        )
+        try:
+            self.parser_203.iati_activities__iati_activity__fss(
+                fss_XML_element2
+            )
+        except ParserError as inst:
+            self.assertEqual(inst.field, 'Fss')
+            self.assertEqual(inst.message, 'must occur no more than once.')
+
+
 class ActivityFssForecastTestCase(TestCase):
     '''
        2.03: Added new (optional) <forecast> element for <fss>

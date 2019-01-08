@@ -12,6 +12,8 @@ from rq_scheduler import Scheduler
 
 from task_queue import tasks
 
+# TODO: all these custok views have to be tested, see: #968
+
 
 # PARSE TASKS
 @staff_member_required
@@ -46,7 +48,7 @@ def get_workers(request):
         if cj:
             cjinfo = {
                 'id': cj.id,
-                'args': cj.args,
+                'args': [str(arg) for arg in cj.args],
                 'enqueued_at': cj.enqueued_at.strftime(
                     "%a, %d %b %Y %H:%M:%S +0000"
                 ),
@@ -147,7 +149,7 @@ def get_queue(request):
             ),
             'status': job.get_status(),
             'function': job.func_name,
-            'args': job.args}
+            'args': [str(arg) for arg in job.args]}
 
         jobdata.append(job_dict)
     data = json.dumps(jobdata)
@@ -174,7 +176,7 @@ def get_scheduled_tasks(request):
             'job_id': job._id,
             'task': job.description,
             'period': interval,
-            'args': job.args,
+            'args': [str(arg) for arg in job.args],
             'queue': "default"}
 
         jobdata.append(job_dict)
@@ -210,7 +212,7 @@ def get_failed_tasks(request):
             'enqueued_at': job.enqueued_at.strftime(
                 "%a, %d %b %Y %H:%M:%S +0000"
             ),
-            'args': job.args
+            'args': [str(arg) for arg in job.args]
         }
 
         jobdata.append(job_dict)
@@ -250,7 +252,7 @@ def get_finished_tasks(request):
             'enqueued_at': job.enqueued_at.strftime(
                 "%a, %d %b %Y %H:%M:%S +0000"
             ),
-            'args': job.args}
+            'args': [str(arg) for arg in job.args]}
 
         jobdata.append(job_dict)
 
