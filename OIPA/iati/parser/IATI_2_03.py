@@ -1,4 +1,3 @@
-import re
 from datetime import datetime
 from decimal import Decimal, InvalidOperation
 
@@ -4884,7 +4883,7 @@ class Parse(IatiParser):
         self.add_narrative(element, activity_tag)
 
     def iati_activities__iati_activity__fss(self, element):
-        """"(optional) <fss> element inside <iati_activities/iati-activity>
+        """"(optional) <fss> element inside <iati-activities/iati-activity>
         element in 2.03
         """
         # we need to check if this element occurs more than once in  the
@@ -4919,22 +4918,19 @@ class Parse(IatiParser):
                 None,
                 element.attrib.get('extraction-date'))
 
-        # phaseout_year must be of type xsd:decimal.
+        # phaseout_year must be of type xsd:decimal but here it is checked if
+        # it is integer as it is year.
 
         if phaseout_year is not None:  # 'phasoutout_year' is an optional
             # attribute.
-            # FIXME: should 'phaseout_year' field be changed to
-            #  DecimalField ?? see #968
-
-            regex = re.compile(r'^((-|\+)?\d*\.?)?\d+$')
-            if regex.match(phaseout_year) is None:
+            if not self.isInt(phaseout_year):
                 raise FieldValidationError(
-                    "fss",
-                    "phaseout-year",
-                    "phaseout-year not of type xsd:decimal",
-                    None,
-                    None,
-                    element.attrib.get('phaseout-year'))
+                            "fss",
+                            "phaseout-year",
+                            "phaseout-year not of type xsd:decimal",
+                            None,
+                            None,
+                            element.attrib.get('phaseout-year'))
 
         priority_bool = self.makeBool(priority)
         fss = models.Fss()

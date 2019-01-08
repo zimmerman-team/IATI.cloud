@@ -5595,7 +5595,7 @@ class ActivityFssTestCase(TestCase):
         fss_attr = {
 
             "extraction-date": '20160712',
-            "phaseout-year": '.ab'
+            "phaseout-year": '2016.'
 
         }
         fss_XML_element = E(
