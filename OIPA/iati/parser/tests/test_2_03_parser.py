@@ -1493,6 +1493,179 @@ class ActivityDocumentLinkDescriptionTestCase(TestCase):
         )
 
 
+class ActivityConditionsCondititionTestCase(TestCase):
+    '''
+    2.03: Added new (optional) <condttion> element for <conditions> element
+    '''
+
+    def setUp(self):
+        # 'Main' XML file for instantiating parser:
+        xml_file_attrs = {
+            "generated-datetime": datetime.datetime.now().isoformat(),
+            "version": '2.03',
+        }
+        self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
+
+        dummy_source = synchroniser_factory.DatasetFactory.create()
+
+        self.parser_203 = ParseManager(
+            dataset=dummy_source,
+            root=self.iati_203_XML_file,
+        ).get_parser()
+
+        # related object
+
+        self.conditions = iati_factory.ConditionsFactory.create()
+        self.parser_203.register_model('Conditions', self.conditions)
+        self.condition_type = iati_factory.ConditionTypeFactory.create()
+        self.parser_203.register_model('ConditionType', self.condition_type)
+
+    def test_activity_conditions_condition(self):
+        """
+        - Tests if '<conditions/condition>' xml element is parsed and saved
+        correctly with the proper attribute.
+        - Doesn't test if object is actually saved in the database (the final
+        stage), because 'save_all_models()' parser's function is (probably)
+        tested separately
+        """
+        # case 1: 'type' missing.
+
+        conditions_condition_attr = {
+            # type : '1'
+        }
+        conditions_condition_XML_element = E(
+            'condition',
+            **conditions_condition_attr
+        )
+
+        try:
+            self.parser_203. \
+                iati_activities__iati_activity__conditions__condition(
+                    conditions_condition_XML_element)
+
+        except RequiredFieldError as inst:
+            self.assertEqual(inst.field, 'type')
+            self.assertEqual(inst.message, 'required attribute missing.')
+
+        # case 2: 'type' code is not found in the 'ConditionType' codelist.
+
+        conditions_condition_attr = {
+             'type': '3'
+        }
+        conditions_condition_XML_element = E(
+            'condition',
+            **conditions_condition_attr
+        )
+
+        try:
+            self.parser_203. \
+                iati_activities__iati_activity__conditions__condition(
+                    conditions_condition_XML_element)
+
+        except FieldValidationError as inst:
+            self.assertEqual(inst.field, 'type')
+            self.assertEqual(inst.message, 'not found on the accompanying '
+                                           'codelist.')
+
+        # case 3: all is well.
+
+        condition_type_code = self.condition_type.code
+        conditions_condition_attr = {
+             'type': condition_type_code
+        }
+        conditions_condition_XML_element = E(
+            'condition',
+            **conditions_condition_attr
+        )
+
+        self.parser_203. \
+            iati_activities__iati_activity__conditions__condition(
+                conditions_condition_XML_element)
+
+        condition = self.parser_203.get_model('Condition')
+
+        # testing fields are correctly assigned.
+
+        self.assertEqual(condition.conditions, self.conditions)
+        self.assertEqual(condition.type, self.condition_type)
+
+
+class ActivityConditionsTestCase(TestCase):
+
+    '''
+    2.03: Added new (optional) <conditions> element for <iati-activity>
+    element.
+    '''
+
+    def setUp(self):
+        # 'Main' XML file for instantiating parser:
+        xml_file_attrs = {
+            "generated-datetime": datetime.datetime.now().isoformat(),
+            "version": '2.03',
+        }
+        self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
+
+        dummy_source = synchroniser_factory.DatasetFactory.create()
+
+        self.parser_203 = ParseManager(
+            dataset=dummy_source,
+            root=self.iati_203_XML_file,
+        ).get_parser()
+
+        # Related objects:
+        # create dummy object
+
+        self.activity = iati_factory.ActivityFactory.create()
+        self.parser_203.register_model('Activity', self.activity)
+
+    def test_activity_conditions(self):
+        """Test if 'attached' attribute of <conditions> element is correctly
+         passed and saved.
+         """
+
+        # case 1 : when 'attached' attribute is missing.
+
+        reference_attr = {
+
+            # "attached": '1',
+        }
+        reference_XML_element = E(
+            'conditions',
+            **reference_attr
+        )
+
+        try:
+            self.parser_203 \
+                .iati_activities__iati_activity__conditions(
+                    reference_XML_element
+                )
+        except RequiredFieldError as inst:
+            self.assertEqual(inst.field, 'attached')
+            self.assertEqual(inst.message,
+                             'required attribute missing')
+
+        # case 2 : all is good
+
+        reference_attr = {
+            "attached": '1'
+        }
+        reference_XML_element = E(
+            'conditions',
+            **reference_attr
+        )
+
+        self.parser_203.iati_activities__iati_activity__conditions(
+                reference_XML_element
+            )
+
+        #  get 'Conditions' to check if its attributes, which are
+        #  'attached'and 'activity', are correctly stored.
+
+        conditions = self.parser_203.get_model('Conditions')
+        self.assertEqual(self.activity, conditions.activity)
+        self.assertTrue(conditions.attached)
+
+
 class ActivityResultDocumentLinkTestCase(TestCase):
     '''
     2.03: Added new (optional) <document-link> element for <result>

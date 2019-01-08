@@ -59,7 +59,6 @@
 
                     <optgroup label="Geographic data tasks">
                         <option value="update_region_data">Add/update region data</option>
-                        <option value="update_city_data">Add/update city data</option>
                         <option value="update_country_data">Add/update country data</option>
                         <option value="update_adm1_region_data">Add/update adm1 region data</option>
                     </optgroup>
@@ -92,11 +91,11 @@
         </div>
         <div class="small-6 large-6 columns text-right">
         <a id="refresh-tables" href="#refresh"><h1><i class="fa fa-refresh" aria-hidden="true"></i></h1></a>
-            Last refreshed: 
-            <span id="seconds">0</span> seconds ago 
+            Last refreshed:
+            <span id="seconds">0</span> seconds ago
             <br>&nbsp;<br>
             <p>
-            Press "r" to refresh. 
+            Press "r" to refresh.
             </p>
         </div>
     </div>
@@ -106,7 +105,7 @@
     <div class="row">
         <div class="small-12 large-6 columns">
             <h1>Task queues</h1>
-       
+
             <div id="task-queue-overview-table-wrapper">
                 <table id="task-queue-overview-table" class="table table-striped table-bordered table-hover table-condensed django-rq-table">
                     <thead>
@@ -154,7 +153,7 @@
         </div>
         <div class="small-12 large-6 columns">
             <h1>Worker details</h1>
-                   
+
             <table id="workers-table" class="table table-striped table-bordered table-hover table-condensed django-rq-table">
                 <thead>
                     <tr>
@@ -174,7 +173,7 @@
     <div class="row">
       <div class="small-12 large-6 columns">
             <h1>Default queue</h1>
-            
+
             <table id="default-tasks-table" class="table table-striped table-bordered table-hover table-condensed django-rq-table">
                 <thead>
                     <tr>
@@ -190,7 +189,7 @@
       </div>
       <div class="small-12 large-6 columns">
             <h1>Parser queue</h1>
-            
+
             <table id="parser-tasks-table" class="table table-striped table-bordered table-hover table-condensed django-rq-table">
                 <thead>
                     <tr>
@@ -211,7 +210,7 @@
     <div class="row">
       <div class="small-12 large-6 columns">
             <h1>Finished in default queue</h1>
-            
+
             <table id="finished-default-table" class="table table-striped table-bordered table-hover table-condensed django-rq-table">
                 <thead>
                     <tr>
@@ -226,7 +225,7 @@
       </div>
       <div class="small-12 large-6 columns">
             <h1>Finished in parser queue</h1>
-            
+
             <table id="finished-parser-table" class="table table-striped table-bordered table-hover table-condensed django-rq-table">
                 <thead>
                     <tr>
@@ -248,8 +247,8 @@
             <h1>Failed tasks</h1>
             <a id="requeue-all-failed-tasks" href="#" class="task-btn btn-info oipa-admin-button">Re-queue all failed tasks</a>
             <a id="clear-failed-tasks" href="#" class="task-btn btn-info oipa-admin-button">Clear failed tasks</a>
-        
-   
+
+
             <table id="failed-tasks-table" class="table table-striped table-bordered table-hover table-condensed django-rq-table">
                 <thead>
                     <tr>
@@ -257,7 +256,7 @@
                         <th>Task</th>
                         <th>Args</th>
                         <th>Ended at</th>
-                        <th>Stacktrace</th>   
+                        <th>Stacktrace</th>
                         <th>Remove</th>
                     </tr>
                 </thead>
@@ -286,7 +285,7 @@
                     <tbody>
                     </tbody>
                 </table>
-                   
+
             </div>
         </div>
         <div class="small-12 large-4 columns">
@@ -317,7 +316,6 @@
 
                             <optgroup label="Geographic data tasks">
                                 <option value="update_region_data">Add/update region data</option>
-                                <option value="update_city_data">Add/update city data</option>
                                 <option value="update_country_data">Add/update country data</option>
                                 <option value="update_adm1_region_data">Add/update adm1 region data</option>
                             </optgroup>
@@ -625,7 +623,7 @@ $(document).ready(function (){
     function fill_default_queue(){
 
         $.ajax({
-           type: "GET",     
+           type: "GET",
            url: "/admin/task_queue/get_queue/",
            data: {
                 "queue": "default"
@@ -667,7 +665,7 @@ $(document).ready(function (){
     function fill_finished_default_tasks(){
 
         $.ajax({
-           type: "GET",     
+           type: "GET",
            url: "/admin/task_queue/get_finished_tasks/",
            data: {
                 "queue": "default"
@@ -685,7 +683,7 @@ $(document).ready(function (){
     function fill_finished_parser_tasks(){
 
         $.ajax({
-           type: "GET",     
+           type: "GET",
            url: "/admin/task_queue/get_finished_tasks/",
            data: {
                 "queue": "parser"

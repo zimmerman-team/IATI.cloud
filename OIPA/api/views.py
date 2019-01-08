@@ -18,25 +18,25 @@ def welcome(request, format=None):
     ## Available endpoints
 
     * Activities: [`/api/activities`](/api/activities)
-    
+
     * Budget aggregations: [`/api/budgets/aggregations`](/api/budgets/aggregations)
-    
+
     * Chains: [`/api/chains`](/api/chains)
-    
+
     * Codelists: [`/api/publishers`](/api/codelists)
-    
+
     * Countries: [`/api/countries`](/api/countries)
-    
+
     * Current branch: [`/api/branch`](/api/branch)
-    
+
     * Datasets: [`/api/datasets`](/api/datasets)
-    
+
     * Locations: [`/api/locations`](/api/locations)
-    
+
     * Organisations: [`/api/organisations`](/api/organisations)
 
     * Publishers: [`/api/publishers`](/api/publishers)
-    
+
     * Regions: [`/api/regions`](/api/regions)
 
     * Results aggregations: [`/api/results/aggregations`](/api/results/aggregations)
@@ -72,10 +72,6 @@ def welcome(request, format=None):
     """  # NOQA: E501
     return Response({
         'endpoints': {
-            'cities': reverse(
-                'cities:city-list',
-                request=request,
-                format=format),
             'regions': reverse(
                 'regions:region-list',
                 request=request,
