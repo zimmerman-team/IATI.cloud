@@ -70,7 +70,7 @@ class TransactionBalanceAggregation(AggregationView):
         Aggregation(
             query_param='activity_count',
             field='activity_count',
-            annotate=Count('activity', distinct=True),
+            annotate=Count('activity'),
         ),
         Aggregation(
             query_param='total_budget',
@@ -107,22 +107,22 @@ class TransactionBalanceAggregation(AggregationView):
         ),
         GroupBy(
             query_param="recipient_country",
-            fields="activity__transaction__transactionrecipientcountry__country",  # NOQA: E501
+            fields="activity__activityrecipientcountry__country",  # NOQA: E501
             renamed_fields="recipient_country",
             queryset=Country.objects.all(),
             serializer=CountrySerializer,
             serializer_fields=('url', 'code', 'name', 'location', 'region'),
-            name_search_field='activity__transaction__transactionrecipientcountry__country__name',  # NOQA: E501
+            name_search_field='activity__activityrecipientcountry__country__name',  # NOQA: E501
             renamed_name_search_field='recipient_country_name',
         ),
         GroupBy(
             query_param="recipient_region",
-            fields="activity__transaction__transactionrecipientregion__region",  # NOQA: E501
+            fields="activity__activityrecipientregion__region",  # NOQA: E501
             renamed_fields="recipient_region",
             queryset=Region.objects.all(),
             serializer=RegionSerializer,
             serializer_fields=('url', 'code', 'name', 'location'),
-            name_search_field="activity__transaction__transactionrecipientregion__region__name",  # NOQA: E501
+            name_search_field="activity__activityrecipientregion__region__name",  # NOQA: E501
             renamed_name_search_field="recipient_region_name",
         ),
         GroupBy(
@@ -137,13 +137,10 @@ class TransactionBalanceAggregation(AggregationView):
         ),
         GroupBy(
             query_param="participating_organisation",
-            fields=("activity__participating_organisations__primary_name",
-                    "activity__participating_organisations__normalized_ref"),
-            renamed_fields=("participating_organisation",
-                            "participating_organisation_ref"),
+            fields="activity__participating_organisations__primary_name",
+            renamed_fields="participating_organisation",
             queryset=ActivityParticipatingOrganisation.objects.all(),
-            name_search_field="activity__participating_organisations\
-                           __primary_name",
+            name_search_field="activity__participating_organisations__primary_name",  # NOQA: E501
             renamed_name_search_field="participating_organisation_name"
         ),
     )
