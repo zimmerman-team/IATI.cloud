@@ -650,8 +650,12 @@ class RelatedOrderingFilter(filters.OrderingFilter):
         if ordering:
             ordering = [order.replace("-", "") for order in ordering]
 
+            # TODO: please check below code is really needed
+            # Currently, just comment out because effected to data consistency
+            """
             if 'iati_identifier' not in ordering:
                 queryset = queryset.distinct(*ordering)
+            """
 
         return super(RelatedOrderingFilter, self).filter_queryset(
             request, queryset, view)
