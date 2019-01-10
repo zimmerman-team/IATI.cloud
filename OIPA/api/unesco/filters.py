@@ -26,10 +26,6 @@ class TransactionBalanceFilter(TogetherFilterSet):
         lookup_expr='in',
         field_name='activity__sector__code')
 
-    participating_organisation_name = CommaSeparatedCharFilter(
-        lookup_expr='in',
-        field_name='activity__participating_organisations__primary_name')
-
     sector_startswith_in = StartsWithInCommaSeparatedCharFilter(
         lookup_expr='startswith',
         field_name='activity__sector__code')
@@ -73,6 +69,15 @@ class TransactionBalanceFilter(TogetherFilterSet):
     activity_scope = CommaSeparatedCharFilter(
         lookup_expr='in',
         field_name='activity__scope__code')
+
+    sector_vocabulary = CommaSeparatedCharFilter(
+        lookup_expr='in',
+        field_name='activity__sector__vocabulary__code'
+    )
+
+    participating_organisations = CommaSeparatedCharFilter(
+        lookup_expr='in',
+        field_name='activity__participating_organisations__primary_name')
 
     def filter_recipient_location(self, queryset, name, value):
         if value == 'countries':

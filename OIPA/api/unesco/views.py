@@ -1,12 +1,17 @@
-from django.db.models import Sum
+from django.db.models import Count, Sum
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
 
 from api.aggregation.views import Aggregation, AggregationView, GroupBy
+from api.country.serializers import CountrySerializer, RegionSerializer
 from api.generics.filters import SearchFilter
+from api.sector.serializers import SectorSerializer
 from api.unesco.filters import TransactionBalanceFilter
 from api.unesco.serializers import SectorBudgetsSerializer
-from iati.models import ActivitySector, Sector
+from geodata.models import Country, Region
+from iati.models import (
+    ActivityParticipatingOrganisation, ActivitySector, Sector
+)
 from unesco.models import SectorBudgetBalance, TransactionBalance
 
 
@@ -63,6 +68,11 @@ class TransactionBalanceAggregation(AggregationView):
 
     allowed_aggregations = (
         Aggregation(
+            query_param='activity_count',
+            field='activity_count',
+            annotate=Count('activity'),
+        ),
+        Aggregation(
             query_param='total_budget',
             field='total_budget',
             annotate=Sum('total_budget'),
@@ -94,6 +104,44 @@ class TransactionBalanceAggregation(AggregationView):
             query_param="activity_iati_identifier",
             fields="activity__iati_identifier",
             renamed_fields="activity_iati_identifier",
+        ),
+        GroupBy(
+            query_param="recipient_country",
+            fields="activity__activityrecipientcountry__country",  # NOQA: E501
+            renamed_fields="recipient_country",
+            queryset=Country.objects.all(),
+            serializer=CountrySerializer,
+            serializer_fields=('url', 'code', 'name', 'location', 'region'),
+            name_search_field='activity__activityrecipientcountry__country__name',  # NOQA: E501
+            renamed_name_search_field='recipient_country_name',
+        ),
+        GroupBy(
+            query_param="recipient_region",
+            fields="activity__activityrecipientregion__region",  # NOQA: E501
+            renamed_fields="recipient_region",
+            queryset=Region.objects.all(),
+            serializer=RegionSerializer,
+            serializer_fields=('url', 'code', 'name', 'location'),
+            name_search_field="activity__activityrecipientregion__region__name",  # NOQA: E501
+            renamed_name_search_field="recipient_region_name",
+        ),
+        GroupBy(
+            query_param="sector",
+            fields="activity__transaction__transactionsector__sector",
+            renamed_fields="sector",
+            queryset=Sector.objects.all(),
+            serializer=SectorSerializer,
+            serializer_fields=('url', 'code', 'name', 'location'),
+            name_search_field="activity__transaction__transactionsector__sector__name",  # NOQA: E501
+            renamed_name_search_field="sector_name",
+        ),
+        GroupBy(
+            query_param="participating_organisation",
+            fields="activity__participating_organisations__primary_name",
+            renamed_fields="participating_organisation",
+            queryset=ActivityParticipatingOrganisation.objects.all(),
+            name_search_field="activity__participating_organisations__primary_name",  # NOQA: E501
+            renamed_name_search_field="participating_organisation_name"
         ),
     )
 
