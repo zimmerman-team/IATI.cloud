@@ -1,4 +1,4 @@
-from datetime import datetime
+from django.conf import settings
 
 from iati.models import Activity
 from unesco.models import SectorBudgetBalance, TransactionBalance
@@ -38,7 +38,9 @@ def calculated_transaction_balance_for_one_activity(activity):
     # So we need to check some stuff here according
     # to what Maxime (the responsible person from Unesco) noted
 
-    now = datetime.now()
+    # NOTE: please create a variable "PERIOD_YEAR on local_settings.py, exp:
+    # PERIOD_YEAR = 2018
+    period_year = settings.PERIOD_YEAR
     total_budget = 0
     total_expenditure = 0
     cumulative_budget = 0
@@ -60,7 +62,7 @@ def calculated_transaction_balance_for_one_activity(activity):
             # Total expenditures is
             # Sum of all if transaction-type code="4"
             # where transaction-date year is current year
-            if transaction.value_date.year == now.year:
+            if transaction.value_date.year == period_year:
                 total_expenditure = total_expenditure + transaction.value
 
         # Cumulative budget is Sum of all transaction type code="2"
@@ -72,7 +74,7 @@ def calculated_transaction_balance_for_one_activity(activity):
     # with period start year and period end year are the current year
     budget = activity.budget_set.filter(
         type__code='1', status__code='2',
-        period_start__year=now.year, period_end__year=now.year).first()
+        period_start__year=period_year, period_end__year=period_year).first()
     if budget:
         total_budget = budget.value
 
