@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.conf import settings
 
 from iati.models import Activity
@@ -40,7 +41,11 @@ def calculated_transaction_balance_for_one_activity(activity):
 
     # NOTE: please create a variable "PERIOD_YEAR on local_settings.py, exp:
     # PERIOD_YEAR = 2018
-    period_year = settings.PERIOD_YEAR
+    try:
+        period_year = settings.PERIOD_YEAR
+    except NameError:
+        period_year = datetime.now().year
+
     total_budget = 0
     total_expenditure = 0
     cumulative_budget = 0
