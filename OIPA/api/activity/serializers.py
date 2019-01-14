@@ -1,5 +1,3 @@
-import datetime
-
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
@@ -2876,11 +2874,8 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
             'name'))
 
     published_state = PublishedStateSerializer(source="*", read_only=True)
-
-    # TODO: remove this field 'transaction_balance'
-    # after the field 'transactionbalance' has been implemented on the frontend
-    transaction_balance = serializers.SerializerMethodField()
-    transactionbalance = TransactionBalanceSerializer(read_only=True)
+    transaction_balance = TransactionBalanceSerializer(
+        read_only=True, source='transactionbalance')
 
     def validate(self, data):
         validated = validators.activity(
@@ -2993,53 +2988,6 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
 
         return update_instance
 
-    def get_transaction_balance(self, obj):
-        # TODO: test this feature on the endpoint of activity detail and
-        # activity list
-
-        # We need this because the cumulative expenditure
-        # is not so straightforwardly received from oipa
-        # So we need to check some stuff here according
-        # to what Maxime (the responsible person from Unesco) noted
-        balance = {
-            'total_budget': 0,
-            'total_expenditure': 0,
-            'cumulative_budget': 0,
-            'cumulative_expenditure': 0
-        }
-
-        now = datetime.datetime.now()
-        transactions = obj.transaction_set.all()
-        for transaction in transactions:
-            # Cumulative expenditure is  Sum of all transaction type code="4"
-            # (whatever the year)
-            if transaction.transaction_type_id == '4':
-                balance['cumulative_expenditure'] = \
-                    balance['cumulative_expenditure'] + transaction.value
-
-                # Total expenditures is
-                # Sum of all if transaction-type code="4"
-                # where transaction-date year is current year
-                if transaction.value_date.year == now.year:
-                    balance['total_expenditure'] = \
-                        balance['total_expenditure'] + transaction.value
-
-            # Cumulative budget is Sum of all transaction type code="2"
-            # (whatever the year))
-            if transaction.transaction_type_id == '2':
-                balance['cumulative_budget'] = \
-                    balance['cumulative_budget'] + transaction.value
-
-        # Total Budget is if budget type="1" and status="2"
-        # with period start year and period end year are the current year
-        budgets = obj.budget_set.filter(
-            type__code='1', status__code='2',
-            period_start__year=now.year, period_end__year=now.year)
-        if budgets:
-            balance['total_budget'] = budgets[0].value
-
-        return balance
-
     class Meta:
         model = Activity
         fields = (
@@ -3090,8 +3038,7 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
             'dataset',
             'publisher',
             'published_state',
-            'transaction_balance',
-            'transactionbalance'
+            'transaction_balance'
         )
 
         validators = []

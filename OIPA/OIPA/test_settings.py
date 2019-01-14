@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 
 from OIPA.production_settings import *  # noqa: F401, F403
 
@@ -61,3 +62,6 @@ LOGGING = {
         },
     },
 }
+
+# UNESCO specific for calculated transaction by year period
+PERIOD_YEAR = datetime.now().year
