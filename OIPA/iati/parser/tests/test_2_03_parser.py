@@ -5659,7 +5659,7 @@ class ActivityFssTestCase(TestCase):
 
 class ActivityFssForecastTestCase(TestCase):
     '''
-       2.03: Added new (optional) <forecast> element for <fss>
+       Added new (optional) <forecast> element for <fss>
        element.
     '''
     def setUp(self):
@@ -5686,8 +5686,8 @@ class ActivityFssForecastTestCase(TestCase):
 
     def test_activity_fss_forecast(self):
         """
-        Test if attributes in <fss/forecast> XML
-        element is correctly assigned.
+        Test if attributes of <forecast> XML
+        element are correctly assigned.
         """
         # case 1: where 'year' is missing
 
