@@ -63,6 +63,5 @@ LOGGING = {
     },
 }
 
-
 # UNESCO specific for calculated transaction by year period
 PERIOD_YEAR = datetime.now().year
