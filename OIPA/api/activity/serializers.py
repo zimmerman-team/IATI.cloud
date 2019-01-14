@@ -2876,7 +2876,8 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
             'name'))
 
     published_state = PublishedStateSerializer(source="*", read_only=True)
-    transaction_balance = TransactionBalanceSerializer(read_only=True)
+    transaction_balance = TransactionBalanceSerializer(
+        read_only=True, source='transactionbalance')
 
     def validate(self, data):
         validated = validators.activity(
@@ -3039,8 +3040,7 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
             'dataset',
             'publisher',
             'published_state',
-            'transaction_balance',
-            'transactionbalance'
+            'transaction_balance'
         )
 
         validators = []
