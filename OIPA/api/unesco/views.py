@@ -127,12 +127,12 @@ class TransactionBalanceAggregation(AggregationView):
         ),
         GroupBy(
             query_param="sector",
-            fields="activity__transaction__transactionsector__sector",
+            fields="activity__activitysector__sector",
             renamed_fields="sector",
             queryset=Sector.objects.all(),
             serializer=SectorSerializer,
             serializer_fields=('url', 'code', 'name', 'location'),
-            name_search_field="activity__transaction__transactionsector__sector__name",  # NOQA: E501
+            name_search_field="activity__activitysector__sector__name",  # NOQA: E501
             renamed_name_search_field="sector_name",
         ),
         GroupBy(
