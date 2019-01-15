@@ -75,6 +75,8 @@ python-dateutil==2.7.3
 python-dotenv==0.8.2
 
 psycopg2-binary
+# TODO: this needs to be checked (do we need this for Docker?):
+psycopg2
 
 # Django plugin for Pytest
 pytest-django
