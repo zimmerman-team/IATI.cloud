@@ -2,11 +2,29 @@
 #
 #
 
-version: "2"
+version: "3"
 services:
 
+  db:
+    image: postgres
+    #expose:
+    #- "5432"
+    #restart: always
+    #ports:
+      #- "5432:5432"
+    environment:
+      POSTGRES_DB: oipa
+      POSTGRES_USER: oipa
+      POSTGRES_PASSWORD: oipa
+
   oipa:
+    #this starts 'db' service:
+    #depends_on:
+      #- db
+    command: /usr/bin/python3.6 /app/src/OIPA/manage.py runserver 0.0.0.0:8000
     build: .
+    ports:
+      - "8000:8000"
 
   #oipa-supervisor:
     #build: .
