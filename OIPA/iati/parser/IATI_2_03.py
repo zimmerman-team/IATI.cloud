@@ -4898,15 +4898,30 @@ class Parse(IatiParser):
 
         # 'channel-code' must not occur no more than once within each parent
         # element.
-        channel_code = element.xpath('channel-code')
-        if len(channel_code) > 1:
+        channel_code_list = element.xpath('channel-code')
+
+        if len(channel_code_list) > 1:
             raise ParserError(
                 "crs-add",
                 "channel-code",
                 "must occur no more than once")
+        elif len(channel_code_list) == 1:
+            channel_code = self.get_or_none(codelist_models.CRSChannelCode,
+                                            code=channel_code_list[0].text)
+            if not channel_code:
+                raise FieldValidationError(
+                    "iati-activities/iati-activity/crs-add",
+                    "channel-code",
+                    "not found on the accompanying code list",
+                    None,
+                    None,
+                    channel_code)
+        else:
+            channel_code = None  # 'channel-code'is optional.
+
         crs_add = models.CrsAdd()
         crs_add.activity = activity
-        crs_add.channel_code = channel_code[0].text
+        crs_add.channel_code = channel_code
         self.register_model('CrsAdd', crs_add)
         return element
 

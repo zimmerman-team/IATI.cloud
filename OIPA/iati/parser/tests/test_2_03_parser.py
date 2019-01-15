@@ -5523,6 +5523,7 @@ class ActivityCrsAddTestCase(TestCase):
 
         self.activity = iati_factory.ActivityFactory.create()
         self.parser_203.register_model('Activity', self.activity)
+        self.crs_channel_code = codelist_factory.CRSChannelCodeFactory.create()
 
     def test_activity_crs_add(self):
         """
@@ -5532,7 +5533,7 @@ class ActivityCrsAddTestCase(TestCase):
 
         # case 1: more than one 'channel-code'elements in 'crs-add' element
 
-        crs_add__channel_code_1 = '1223'
+        crs_add__channel_code_1 = '47143'
         crs_add__channel_code_2 = '1443'
         crs_add_XML_element = E(
             'crs-add',
@@ -5547,20 +5548,39 @@ class ActivityCrsAddTestCase(TestCase):
             self.assertEqual(inst.field, 'channel-code')
             self.assertEqual(inst.message, 'must occur no more than once')
 
-        # case 2: all is well.
+        # case 2: when 'channel-code'is not found in the accompanying codelist.
 
+        crs_add__channel_code_1 = '1234'
+        crs_add_XML_element = E(
+            'crs-add',
+            E('channel-code', crs_add__channel_code_1),
+
+        )
+
+        try:
+            self.parser_203.iati_activities__iati_activity__crs_add(
+                crs_add_XML_element)
+        except FieldValidationError as inst:
+            self.assertEqual(inst.field, 'channel-code')
+            self.assertEqual(inst.message, 'not found on the accompanying '
+                                           'code list')
+
+        # case 3: all is well.
+
+        crs_add__channel_code_1 = '47143'
         crs_add_XML_element = E(
             'crs-add',
             E('channel-code', crs_add__channel_code_1)
         )
         self.parser_203.iati_activities__iati_activity__crs_add(
             crs_add_XML_element)
+
         # check if all fields are correctly assigned.
         crs_add = self.parser_203.get_model('CrsAdd')
         self.assertEqual(crs_add.activity, self.activity)
-        self.assertEqual(crs_add.channel_code, crs_add__channel_code_1)
+        self.assertEqual(crs_add.channel_code, self.crs_channel_code)
 
-        # case 3: when 'crs-add' element occurs more than once in the parent
+        # case 4: when 'crs-add' element occurs more than once in the parent
         # element.
         crs_add_XML_element = E(
             'crs-add',
