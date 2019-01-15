@@ -13,11 +13,13 @@ RUN apt-get install -y build-essential python3.6 python3.6-dev python3-pip pytho
 RUN python3.6 -m pip install pip --upgrade
 RUN python3.6 -m pip install wheel
 
+#XXX: is this needed if we run everything with /usr/bin/python3.6 ?
 RUN echo "alias python='/usr/bin/python3.6'" >> ~/.bash_profile
 
 RUN /bin/bash -c "source ~/.bash_profile"
 RUN /bin/bash -c "source ~/.bashrc"
 
+#TODO: all these need to be checked:
 RUN apt-get -y install \
     #python-virtualenv \
     postgresql-client \
@@ -65,7 +67,6 @@ RUN pip3 install -U pip setuptools
 # Install Python dependencies
 ADD OIPA/requirements.txt /app/requirements.txt
 RUN pip3 install -r /app/requirements.txt
-RUN pip3 show django
 #XXX: this shows /usr/local/lib/python3.5:
 #RUN pip3 show django
 
@@ -86,6 +87,3 @@ ADD . /app/src
 CMD ["/app/src/bin/docker-cmd.sh"]
 
 #RUN rm -f /usr/bin/python && ln -s /usr/bin/python /usr/bin/python3.6
-
-RUN python -V
-RUN cat ~/.bash_profile
