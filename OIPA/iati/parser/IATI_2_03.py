@@ -4882,13 +4882,38 @@ class Parse(IatiParser):
         activity_tag = self.get_model('ActivityTag')
         self.add_narrative(element, activity_tag)
 
+    def iati_activities__iati_activity__crs_add(self, element):
+        """New (optional) <crs-add> element inside
+          <iati-activities/iati-activity> element in 2.03
+        """
+        # FIXME: should database relation be changed to OnetoOne?? see #981
+        # we need to check if this element occurs more than once in  the
+        # parent element, which is <iati-activity>
+        activity = self.get_model('Activity')
+        if 'CrsAdd' in self.model_store:
+            for crs_add in self.model_store['CrsAdd']:
+                if crs_add.activity == activity:
+                    raise ParserError("Activity", "CrsAdd", "must occur no "
+                                                            "more than once")
+
+        # 'channel-code' must not occur no more than once within each parent
+        # element.
+        channel_code = element.xpath('channel-code')
+        if len(channel_code) > 1:
+            raise ParserError(
+                "crs-add",
+                "channel-code",
+                "must occur no more than once")
+        crs_add = models.CrsAdd()
+        crs_add.activity = activity
+        crs_add.channel_code = channel_code[0].text
+        self.register_model('CrsAdd', crs_add)
+        return element
+
     def iati_activities__iati_activity__fss(self, element):
         """"(optional) <fss> element inside <iati-activities/iati-activity>
         element in 2.03
         """
-        # we need to check if this element occurs more than once in  the
-        # parent element, which is <iati-activity>
-
         # FIXME: should database relation be changed to OnetoOne?? see #964
         activity = self.get_model('Activity')
         if 'Fss' in self.model_store:
