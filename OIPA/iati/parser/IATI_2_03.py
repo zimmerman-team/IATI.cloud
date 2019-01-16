@@ -4883,32 +4883,40 @@ class Parse(IatiParser):
         self.add_narrative(element, activity_tag)
 
     def iati_activities__iati_activity__crs_add__other_flags(self, element):
-
+        """"A method to save (optional) <other-flags> element and its
+        attributes inside <crs-add> element in 2.03
+        """
         code = element.attrib.get('code')
         significance = element.attrib.get('significance')
         if not code:
             raise RequiredFieldError(
                 "crs-add/other-flags",
                 "code",
-                "required attribute missing"
+                "required attribute missing."
             )
         if not significance:
             raise RequiredFieldError(
                 "crs-add/other-flags",
                 "significance",
-                "required attribute missing"
+                "required attribute missing."
             )
-        code_in_codelist = self.get_or_none(codelist_models.OtherFlags, code)
+        code_in_codelist = self.get_or_none(codelist_models.OtherFlags,
+                                            code=code)
         if code_in_codelist is None:
             raise FieldValidationError(
                 "crs-add/other-flags",
                 "code",
-                "not found on the accompanying code list",
+                "not found on the accompanying code list.",
                 None,
                 None,
                 code)
-        
-
+        crs_add = self.get_model('CrsAdd')
+        other_flags = models.CrsAddOtherFlags()
+        other_flags.code = code_in_codelist
+        other_flags.significance = self.makeBool(significance)
+        other_flags.crs_add = crs_add
+        self.register_model('CrsAddOtherFlags', other_flags)
+        return element
 
     def iati_activities__iati_activity__fss(self, element):
         """"(optional) <fss> element inside <iati-activities/iati-activity>
