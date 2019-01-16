@@ -4882,6 +4882,34 @@ class Parse(IatiParser):
         activity_tag = self.get_model('ActivityTag')
         self.add_narrative(element, activity_tag)
 
+    def iati_activities__iati_activity__crs_add__other_flags(self, element):
+
+        code = element.attrib.get('code')
+        significance = element.attrib.get('significance')
+        if not code:
+            raise RequiredFieldError(
+                "crs-add/other-flags",
+                "code",
+                "required attribute missing"
+            )
+        if not significance:
+            raise RequiredFieldError(
+                "crs-add/other-flags",
+                "significance",
+                "required attribute missing"
+            )
+        code_in_codelist = self.get_or_none(codelist_models.OtherFlags, code)
+        if code_in_codelist is None:
+            raise FieldValidationError(
+                "crs-add/other-flags",
+                "code",
+                "not found on the accompanying code list",
+                None,
+                None,
+                code)
+        
+
+
     def iati_activities__iati_activity__fss(self, element):
         """"(optional) <fss> element inside <iati-activities/iati-activity>
         element in 2.03
