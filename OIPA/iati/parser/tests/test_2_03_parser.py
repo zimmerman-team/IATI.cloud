@@ -5811,5 +5811,5 @@ class ActivityFssForecastTestCase(TestCase):
         self.assertEqual(forecast_XML_element.attrib.get('year'),
                          fss_forecast.year)
         self.assertEqual(self.currency, fss_forecast.currency)
-        self.assertEqual(value_date,fss_forecast.value_date)
+        self.assertEqual(value_date, fss_forecast.value_date)
         self.assertEqual(self.fss, fss_forecast.fss)
