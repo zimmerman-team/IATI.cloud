@@ -5628,9 +5628,9 @@ class ActivityFssTestCase(TestCase):
         )
         # get 'Fss' object to check if its attributes are correctly assigned.
         fss = self.parser_203.get_model('Fss')
+        extraction_date = dateutil.parser.parse('20180712', ignoretz=True)
 
-        self.assertEqual(fss.extraction_date, fss_XML_element.attrib.get(
-            'extraction-date'))
+        self.assertEqual(fss.extraction_date, extraction_date)
         self.assertTrue(fss.priority)  # 'priority' attribute is boolean value.
         self.assertEqual(fss.phaseout_year, fss_XML_element.attrib.get(
                                  'phaseout-year'))
@@ -5804,12 +5804,12 @@ class ActivityFssForecastTestCase(TestCase):
         # get 'fss_forecast' element to check its attributes are correctly
         # assigned.
         fss_forecast = self.parser_203.get_model('FssForecast')
+        value_date = dateutil.parser.parse('2016-03-04', ignoretz=True)
 
         self.assertEqual(Decimal(forecast_XML_element.text),
                          fss_forecast.value)
         self.assertEqual(forecast_XML_element.attrib.get('year'),
                          fss_forecast.year)
         self.assertEqual(self.currency, fss_forecast.currency)
-        self.assertEqual(forecast_XML_element.attrib.get('value-date'),
-                         fss_forecast.value_date)
+        self.assertEqual(value_date,fss_forecast.value_date)
         self.assertEqual(self.fss, fss_forecast.fss)
