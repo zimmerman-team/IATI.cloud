@@ -1,7 +1,3 @@
-from datetime import datetime
-
-from django.conf import settings
-
 from iati.models import Activity
 from unesco.models import SectorBudgetBalance, TransactionBalance
 
@@ -40,12 +36,16 @@ def calculated_transaction_balance_for_one_activity(activity):
     # So we need to check some stuff here according
     # to what Maxime (the responsible person from Unesco) noted
 
-    # NOTE: please create a variable "PERIOD_YEAR on local_settings.py, exp:
-    # PERIOD_YEAR = 2018
-    try:
-        period_year = settings.PERIOD_YEAR
-    except NameError:
-        period_year = datetime.now().year
+    # Period budget is related to last updated of the activity
+    # Apply the actually correct date times year for transaction balance.
+    # So as Orestis said we shouldn't use the current year,
+    # but we should use <last update datetime> attribute of
+    # <iati-activities> tag.
+    # And the transaction balance should be calculated by that.
+    if activity.last_updated_datetime:
+        period_year = activity.last_updated_datetime.year
+    else:
+        period_year = None
 
     total_budget = 0
     total_expenditure = 0
