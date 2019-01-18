@@ -5528,7 +5528,7 @@ class CrsAddOtherFlagsTestCase(TestCase):
     def test_crs_add_other_flags(self):
 
         """
-        Test if related attributes  in <crs-add/other-flags> XML element is
+        Test if related attributes  in <other-flags> XML element is
         correctly saved.
 
         """
