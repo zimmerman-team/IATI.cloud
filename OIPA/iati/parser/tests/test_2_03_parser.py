@@ -5628,9 +5628,9 @@ class ActivityFssTestCase(TestCase):
         )
         # get 'Fss' object to check if its attributes are correctly assigned.
         fss = self.parser_203.get_model('Fss')
+        extraction_date = dateutil.parser.parse('20180712', ignoretz=True)
 
-        self.assertEqual(fss.extraction_date, fss_XML_element.attrib.get(
-            'extraction-date'))
+        self.assertEqual(fss.extraction_date, extraction_date)
         self.assertTrue(fss.priority)  # 'priority' attribute is boolean value.
         self.assertEqual(fss.phaseout_year, fss_XML_element.attrib.get(
                                  'phaseout-year'))
@@ -5655,3 +5655,161 @@ class ActivityFssTestCase(TestCase):
         except ParserError as inst:
             self.assertEqual(inst.field, 'Fss')
             self.assertEqual(inst.message, 'must occur no more than once.')
+
+
+class ActivityFssForecastTestCase(TestCase):
+    '''
+       Added new (optional) <forecast> element for <fss>
+       element.
+    '''
+    def setUp(self):
+        # 'Main' XML file for instantiating parser:
+        xml_file_attrs = {
+            "generated-datetime": datetime.datetime.now().isoformat(),
+            "version": '2.03',
+        }
+        self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
+
+        dummy_source = synchroniser_factory.DatasetFactory.create()
+
+        self.parser_203 = ParseManager(
+            dataset=dummy_source,
+            root=self.iati_203_XML_file,
+        ).get_parser()
+
+        # Related objects:
+        # create dummy object
+        self.fss = iati_factory.FssFactory.create()
+        self.currency = iati_factory.CurrencyFactory.create()
+        self.parser_203.register_model('Fss', self.fss)
+        self.parser_203.register_model('Currency', self.currency)
+
+    def test_activity_fss_forecast(self):
+        """
+        Test if attributes of <forecast> XML
+        element are correctly assigned.
+        """
+        # case 1: where 'year' is missing
+
+        forecast_attr = {
+            # "year": 2016,
+            "currency": 'USD',
+            "value-date": '2018'
+
+        }
+        forecast_XML_element = E(
+            'forecast',
+            **forecast_attr
+        )
+        forecast_XML_element.text = "2000"
+
+        try:
+            self.parser_203 \
+                .iati_activities__iati_activity__fss__forecast(
+                    forecast_XML_element
+                )
+        except RequiredFieldError as inst:
+            self.assertEqual(inst.field, 'year')
+            self.assertEqual(inst.message,
+                             'required attribute missing')
+
+        # case 2: where 'year' is present but wrong type.
+
+        forecast_attr = {
+            "year": '2016.34',  # year wrong format.
+            "currency": 'USD',
+            "value-date": '2018'
+
+        }
+        forecast_XML_element = E(
+            'forecast',
+            **forecast_attr
+        )
+        forecast_XML_element.text = "2000"
+
+        try:
+            self.parser_203 \
+                .iati_activities__iati_activity__fss__forecast(
+                    forecast_XML_element
+                )
+        except FieldValidationError as inst:
+            self.assertEqual(inst.field, 'year')
+            self.assertEqual(inst.message,
+                             'year not of correct type')
+
+        # case 3: where value-date is not in correct range.
+        forecast_attr = {
+            "year": '2016',
+            "currency": 'USD',
+            "value-date": '1700-03-04'
+
+        }
+        forecast_XML_element = E(
+            'forecast',
+            **forecast_attr
+        )
+        forecast_XML_element.text = "2000"
+
+        try:
+            self.parser_203 \
+                .iati_activities__iati_activity__fss__forecast(
+                    forecast_XML_element
+                )
+        except FieldValidationError as inst:
+            self.assertEqual(inst.field, 'value-date')
+            self.assertEqual(inst.message,
+                             'value-date not in correct range')
+
+        # case 4: where 'text' is not present.
+        forecast_attr = {
+            "year": '2016',
+            "currency": 'USD',
+            "value-date": '2016-03-04'
+
+        }
+        forecast_XML_element = E(
+            'forecast',
+            **forecast_attr
+        )
+        # forecast_XML_element.text = "2000"
+
+        try:
+            self.parser_203 \
+                .iati_activities__iati_activity__fss__forecast(
+                    forecast_XML_element
+                )
+        except RequiredFieldError as inst:
+            self.assertEqual(inst.field, 'value')
+            self.assertEqual(inst.message,
+                             'required element missing')
+
+        # case 5: when all is well.
+        forecast_attr = {
+            "year": '2016',
+            "currency": 'USD',
+            "value-date": '2016-03-04'
+
+        }
+        forecast_XML_element = E(
+            'forecast',
+            **forecast_attr
+        )
+        forecast_XML_element.text = "2000"
+
+        self.parser_203 \
+            .iati_activities__iati_activity__fss__forecast(
+                forecast_XML_element
+            )
+
+        # get 'fss_forecast' element to check its attributes are correctly
+        # assigned.
+        fss_forecast = self.parser_203.get_model('FssForecast')
+        value_date = dateutil.parser.parse('2016-03-04', ignoretz=True)
+
+        self.assertEqual(Decimal(forecast_XML_element.text),
+                         fss_forecast.value)
+        self.assertEqual(forecast_XML_element.attrib.get('year'),
+                         fss_forecast.year)
+        self.assertEqual(self.currency, fss_forecast.currency)
+        self.assertEqual(value_date, fss_forecast.value_date)
+        self.assertEqual(self.fss, fss_forecast.fss)
