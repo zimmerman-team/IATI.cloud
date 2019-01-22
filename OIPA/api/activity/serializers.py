@@ -661,7 +661,7 @@ class ReportingOrganisationSerializer(DynamicFieldsModelSerializer):
         view_name='organisations:organisation-detail',
     )
     type = CodelistSerializer(source="publisher.organisation.type")
-    secondary_reporter = serializers.BooleanField()
+    secondary_reporter = serializers.BooleanField(required=False)
 
     activity = serializers.CharField(write_only=True)
 
