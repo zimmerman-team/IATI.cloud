@@ -556,7 +556,6 @@ class ActivityTransactionList(DynamicListView):
             return Transaction.objects.none().order_by('id')
 
 
-# TODO: test
 class ActivityTransactionListByIatiIdentifier(DynamicListView):
     """
     Returns a list of IATI Activity Transactions stored in OIPA.
@@ -564,7 +563,7 @@ class ActivityTransactionListByIatiIdentifier(DynamicListView):
     ## URI Format
 
     ```
-    /api/activities/{activity_id}/transactions
+    /api/activities/{iati_identifier}/transactions
     ```
 
     ### URI Parameters
