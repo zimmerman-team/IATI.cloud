@@ -637,7 +637,6 @@ class ActivityAggregationSerializer(DynamicFieldsSerializer):
     incoming_commitment_currency = serializers.CharField()
 
 
-# TODO: test
 class CustomReportingOrganisationURLSerializer(
         serializers.HyperlinkedIdentityField):
     """A custom serializer to allow to use different argument for
