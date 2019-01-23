@@ -5084,7 +5084,7 @@ class Parse(IatiParser):
         crs_add_loan_status.principal_arrears = principal_arrears
         crs_add_loan_status.interest_arrears = interest_arrears
 
-        self.register_model("CrsAddLoanStatus")
+        self.register_model("CrsAddLoanStatus", crs_add_loan_status)
         return element
 
 
