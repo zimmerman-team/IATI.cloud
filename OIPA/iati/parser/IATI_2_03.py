@@ -4955,7 +4955,7 @@ class Parse(IatiParser):
                 code)
         crs_add = self.get_model('CrsAdd')
         other_flags = models.CrsAddOtherFlags()
-        other_flags.code = code_in_codelist
+        other_flags.other_flags = code_in_codelist
         other_flags.significance = self.makeBool(significance)
         other_flags.crs_add = crs_add
         self.register_model('CrsAddOtherFlags', other_flags)
