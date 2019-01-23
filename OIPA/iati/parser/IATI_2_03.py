@@ -4886,7 +4886,7 @@ class Parse(IatiParser):
 
         year = element.attrib.get('year')
         currency = self.get_or_none(codelist_models.Currency,
-                                    element.attrib.get('currency'))
+                                    code=element.attrib.get('currency'))
         value_date = element.attrib.get('value-date')
 
         # @year is required field.
