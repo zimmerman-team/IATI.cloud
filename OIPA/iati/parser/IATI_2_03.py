@@ -5063,9 +5063,9 @@ class Parse(IatiParser):
                 "extraction-date",
                 "required attribute missing"
             )
-        validated_extraction_date = self.validate_date(extraction_date)
+        extraction_date = self.validate_date(extraction_date)
 
-        if not validated_extraction_date:
+        if not extraction_date:
             raise FieldValidationError(
                 "fss",
                 "extraction-date",
@@ -5124,14 +5124,16 @@ class Parse(IatiParser):
                     element.attrib.get('year'))
 
         # value_date is optional field.
-        if value_date and self.validate_date(value_date)is None:
-            raise FieldValidationError(
-                "budget/value",
-                "value-date",
-                "value-date not in correct range",
-                None,
-                None,
-                element.attrib.get('value-date'))
+        if value_date:
+            value_date = self.validate_date(value_date)
+            if value_date is None:
+                raise FieldValidationError(
+                    "budget/value",
+                    "value-date",
+                    "value-date not in correct range",
+                    None,
+                    None,
+                    element.attrib.get('value-date'))
 
         if not value:
             raise RequiredFieldError(
