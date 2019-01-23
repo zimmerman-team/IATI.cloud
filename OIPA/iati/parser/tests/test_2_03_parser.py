@@ -5497,6 +5497,103 @@ class ActivityResultReferenceTestCase(TestCase):
                          reference.vocabulary_uri)
 
 
+class ActivityCrsAddTestCase(TestCase):
+    '''
+    Added new (optional) <crs-add> element for <activity>
+    element.
+    '''
+
+    def setUp(self):
+        # 'Main' XML file for instantiating parser:
+        xml_file_attrs = {
+            "generated-datetime": datetime.datetime.now().isoformat(),
+            "version": '2.03',
+        }
+        self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
+
+        dummy_source = synchroniser_factory.DatasetFactory.create()
+
+        self.parser_203 = ParseManager(
+            dataset=dummy_source,
+            root=self.iati_203_XML_file,
+        ).get_parser()
+
+        # Related objects:
+        # create dummy object
+
+        self.activity = iati_factory.ActivityFactory.create()
+        self.parser_203.register_model('Activity', self.activity)
+        self.crs_channel_code = codelist_factory.CRSChannelCodeFactory.create()
+
+    def test_activity_crs_add(self):
+        """
+        Test if related attributes  in <crs-add> XML element is correctly
+        saved.
+        """
+
+        # case 1: more than one 'channel-code'elements in 'crs-add' element
+
+        crs_add__channel_code_1 = '47143'
+        crs_add__channel_code_2 = '1443'
+        crs_add_XML_element = E(
+            'crs-add',
+            E('channel-code', crs_add__channel_code_1),
+            E('channel-code', crs_add__channel_code_2)
+        )
+
+        try:
+            self.parser_203.iati_activities__iati_activity__crs_add(
+                crs_add_XML_element)
+        except ParserError as inst:
+            self.assertEqual(inst.field, 'channel-code')
+            self.assertEqual(inst.message, 'must occur no more than once')
+
+        # case 2: when 'channel-code'is not found in the accompanying codelist.
+
+        crs_add__channel_code_1 = '1234'
+        crs_add_XML_element = E(
+            'crs-add',
+            E('channel-code', crs_add__channel_code_1),
+
+        )
+
+        try:
+            self.parser_203.iati_activities__iati_activity__crs_add(
+                crs_add_XML_element)
+        except FieldValidationError as inst:
+            self.assertEqual(inst.field, 'channel-code')
+            self.assertEqual(inst.message, 'not found on the accompanying '
+                                           'code list')
+
+        # case 3: all is well.
+
+        crs_add__channel_code_1 = '47143'
+        crs_add_XML_element = E(
+            'crs-add',
+            E('channel-code', crs_add__channel_code_1)
+        )
+        self.parser_203.iati_activities__iati_activity__crs_add(
+            crs_add_XML_element)
+
+        # check if all fields are correctly assigned.
+        crs_add = self.parser_203.get_model('CrsAdd')
+        self.assertEqual(crs_add.activity, self.activity)
+        self.assertEqual(crs_add.channel_code, self.crs_channel_code)
+
+        # case 4: when 'crs-add' element occurs more than once in the parent
+        # element.
+        crs_add_XML_element = E(
+            'crs-add',
+            E('channel-code', crs_add__channel_code_1)
+        )
+        try:
+            self.parser_203.iati_activities__iati_activity__crs_add(
+                crs_add_XML_element)
+        except ParserError as inst:
+            self.assertEqual(inst.field, 'CrsAdd')
+            self.assertEqual(inst.message, 'must occur no more than once')
+
+
 class ActivityFssTestCase(TestCase):
 
     '''
@@ -5543,10 +5640,8 @@ class ActivityFssTestCase(TestCase):
         )
 
         try:
-            self.date = self.parser_203 \
-                .iati_activities__iati_activity__fss(
-                    fss_XML_element
-                )
+            self.parser_203.iati_activities__iati_activity__fss(
+                fss_XML_element)
 
         except RequiredFieldError as inst:
             self.assertEqual(inst.field, 'extraction-date')
