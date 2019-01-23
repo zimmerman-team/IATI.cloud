@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
+from rest_framework.reverse import reverse
 
 from api.activity.filters import RelatedActivityFilter
 from api.codelist.serializers import (
@@ -637,13 +638,30 @@ class ActivityAggregationSerializer(DynamicFieldsSerializer):
     incoming_commitment_currency = serializers.CharField()
 
 
+class CustomReportingOrganisationURLSerializer(
+        serializers.HyperlinkedIdentityField):
+    """A custom serializer to allow to use different argument for
+       HyperlinkedIdentityField for ReportingOrganisation serializer
+    """
+
+    def get_url(self, obj, view_name, request, format):
+        url_kwargs = {
+            'pk': obj.publisher.organisation.organisation_identifier
+        }
+        return reverse(
+            view_name, kwargs=url_kwargs, request=request, format=format)
+
+
 class ReportingOrganisationSerializer(DynamicFieldsModelSerializer):
     # TODO: Link to organisation standard (hyperlinked)
     ref = serializers.CharField(
         source="publisher.organisation.organisation_identifier"
     )
+    url = CustomReportingOrganisationURLSerializer(
+        view_name='organisations:organisation-detail',
+    )
     type = CodelistSerializer(source="publisher.organisation.type")
-    secondary_reporter = serializers.BooleanField()
+    secondary_reporter = serializers.BooleanField(required=False)
 
     activity = serializers.CharField(write_only=True)
 
@@ -658,6 +676,7 @@ class ReportingOrganisationSerializer(DynamicFieldsModelSerializer):
         fields = (
             'id',
             'ref',
+            'url',
             'type',
             'secondary_reporter',
             'narratives',

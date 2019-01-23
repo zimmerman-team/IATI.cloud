@@ -4882,6 +4882,123 @@ class Parse(IatiParser):
         activity_tag = self.get_model('ActivityTag')
         self.add_narrative(element, activity_tag)
 
+    def iati_activities__iati_activity__fss(self, element):
+        """"(optional) <fss> element inside <iati-activities/iati-activity>
+        element in 2.03
+        """
+        # we need to check if this element occurs more than once in  the
+        # parent element, which is <iati-activity>
+
+        # FIXME: should database relation be changed to OnetoOne?? see #964
+        activity = self.get_model('Activity')
+        if 'Fss' in self.model_store:
+            for fss in self.model_store['Fss']:
+                if fss.activity == activity:
+                    raise ParserError("Activity", "Fss", "must occur no more "
+                                                         "than once.")
+
+        extraction_date = element.attrib.get('extraction-date')
+        priority = element.attrib.get('priority')
+        phaseout_year = element.attrib.get('phaseout-year')
+
+        if not extraction_date:
+            raise RequiredFieldError(
+                "fss",
+                "extraction-date",
+                "required attribute missing"
+            )
+        extraction_date = self.validate_date(extraction_date)
+
+        if not extraction_date:
+            raise FieldValidationError(
+                "fss",
+                "extraction-date",
+                "extraction-date not of type xsd:date",
+                None,
+                None,
+                element.attrib.get('extraction-date'))
+
+        # phaseout_year must be of type xsd:decimal but here it is checked if
+        # it is integer as it is year.
+
+        if phaseout_year is not None:  # 'phasoutout_year' is an optional
+            # attribute.
+            if not self.isInt(phaseout_year):
+                raise FieldValidationError(
+                            "fss",
+                            "phaseout-year",
+                            "phaseout-year not of type xsd:decimal",
+                            None,
+                            None,
+                            element.attrib.get('phaseout-year'))
+
+        priority_bool = self.makeBool(priority)
+        fss = models.Fss()
+        fss.activity = activity
+        fss.extraction_date = extraction_date
+        fss.phaseout_year = phaseout_year
+        fss.priority = priority_bool
+
+        self.register_model('Fss', fss)
+        return element
+
+    def iati_activities__iati_activity__fss__forecast(self, element):
+        year = element.attrib.get('year')
+        currency = self.get_or_none(models.Currency,
+                                    code=element.attrib.get('currency'))
+        value_date = element.attrib.get('value-date')
+        value = element.text
+
+        if not year:  # year is required field.
+            raise RequiredFieldError(
+                "iati-activity/fss/forecast",
+                "year",
+                "required attribute missing"
+            )
+        else:
+            # year must be of type xsd:decimal but here it is checked
+            # if it is integer as it is year.
+            if not self.isInt(year):
+                raise FieldValidationError(
+                    "forecast",
+                    "year",
+                    "year not of correct type",
+                    None,
+                    None,
+                    element.attrib.get('year'))
+
+        # value_date is optional field.
+        if value_date:
+            value_date = self.validate_date(value_date)
+            if value_date is None:
+                raise FieldValidationError(
+                    "budget/value",
+                    "value-date",
+                    "value-date not in correct range",
+                    None,
+                    None,
+                    element.attrib.get('value-date'))
+
+        if not value:
+            raise RequiredFieldError(
+                "forcast",
+                "value",
+                "required element missing")
+
+        if not currency:
+            currency = self._get_currency_or_raise('forecast', currency)
+
+        decimal_value = self.guess_number('forecast', value)
+        fss = self.get_model('Fss')
+        fss_forecast = models.FssForecast()
+        fss_forecast.value = decimal_value
+        fss_forecast.year = year
+        fss_forecast.currency = currency
+        fss_forecast.value_date = value_date
+        fss_forecast.fss = fss
+        self.register_model('FssForecast', fss_forecast)
+        return element
+
     def post_save_models(self):
         """Perform all actions that need to happen after a single activity's
         been parsed."""

@@ -20,3 +20,4 @@ parse.log
 session.vim
 tags
 .pytest_cache/*
+setup.cfg
