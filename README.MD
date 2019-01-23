@@ -93,6 +93,8 @@ Pytest-django is used to run tests. This will be installed automatically when th
 
 To run tests, from the top level directory of the project, run ```pytest OIPA/```. If you are in the same directory where ```manage.py``` is, only running ```pytest``` will be sufficient. Refer to <a href="https://pytest-django.readthedocs.io/en/latest/#" target="_blank">Pytest-django documentations</a> for details.
 
+Tip: to be able to use debuggers (f. ex. ipdb) with pytest, run it with `-s` option (to turn off capturing test output).
+
 Testing / code quality settings can be found in the `setup.cfg` file. Test coverage settings (for pytest-cov plugin) can be found at `.coveragerc` file.
 
 

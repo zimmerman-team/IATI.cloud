@@ -2,16 +2,18 @@
 # serializer in once along with the code and vocabulary fields. Or is
 # testing the fields separately preferable?
 
-# Runs each test in a transaction and flushes database
 import datetime
+from collections import OrderedDict
 from unittest import skip
 
 from django.test import RequestFactory, TestCase
+from rest_framework.reverse import reverse
 
 from api.activity import serializers
 from api.codelist.serializers import CodelistCategorySerializer
 from iati.factory import iati_factory
 from iati_codelists.factory import codelist_factory
+from iati_synchroniser.factory.synchroniser_factory import PublisherFactory
 
 
 class CodelistSerializerTestCase(TestCase):
@@ -694,3 +696,30 @@ class ActivitySerializerTestCase(TestCase):
         assertion_msg = "the field '{0}' should be in the serialized activity"
         for field in required_fields:
             assert field in serializer.data, assertion_msg.format(field)
+
+    def test_ReportingOrganisationSerializer(self):
+        pub = PublisherFactory()
+
+        org = pub.organisation
+        serializer = serializers.ReportingOrganisationSerializer(
+            org, context={'request': self.request_dummy}
+        )
+
+        desired_url = reverse(
+            'organisations:organisation-detail',
+            kwargs={'pk': org.organisation_identifier},
+        )
+
+        self.assertEqual(
+            serializer.data,
+            {
+                'id': org.id,
+                'ref': org.organisation_identifier,
+                'url': 'http://testserver{0}'.format(desired_url),
+                'type': OrderedDict([
+                    ('code', org.type.code),
+                    ('name', org.type.name)
+                ]),
+                'narratives': []
+            }
+        )

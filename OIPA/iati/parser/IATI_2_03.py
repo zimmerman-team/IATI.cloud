@@ -4918,13 +4918,53 @@ class Parse(IatiParser):
         self.register_model('CrsAddOtherFlags', other_flags)
         return element
 
+    def iati_activities__iati_activity__crs_add(self, element):
+        """New (optional) <crs-add> element inside
+          <iati-activities/iati-activity> element in 2.03
+        """
+        # FIXME: should database relation be changed to OnetoOne?? see #981
+        # we need to check if this element occurs more than once in  the
+        # parent element, which is <iati-activity>
+        activity = self.get_model('Activity')
+        if 'CrsAdd' in self.model_store:
+            for crs_add in self.model_store['CrsAdd']:
+                if crs_add.activity == activity:
+                    raise ParserError("Activity", "CrsAdd", "must occur no "
+                                                            "more than once")
+
+        # 'channel-code' must not occur no more than once within each parent
+        # element.
+        channel_code_list = element.xpath('channel-code')
+
+        if len(channel_code_list) > 1:
+            raise ParserError(
+                "crs-add",
+                "channel-code",
+                "must occur no more than once")
+        elif len(channel_code_list) == 1:
+            channel_code = self.get_or_none(codelist_models.CRSChannelCode,
+                                            code=channel_code_list[0].text)
+            if not channel_code:
+                raise FieldValidationError(
+                    "iati-activities/iati-activity/crs-add",
+                    "channel-code",
+                    "not found on the accompanying code list",
+                    None,
+                    None,
+                    channel_code)
+        else:
+            channel_code = None  # 'channel-code'is optional.
+
+        crs_add = models.CrsAdd()
+        crs_add.activity = activity
+        crs_add.channel_code = channel_code
+        self.register_model('CrsAdd', crs_add)
+        return element
+
     def iati_activities__iati_activity__fss(self, element):
         """"(optional) <fss> element inside <iati-activities/iati-activity>
         element in 2.03
         """
-        # we need to check if this element occurs more than once in  the
-        # parent element, which is <iati-activity>
-
         # FIXME: should database relation be changed to OnetoOne?? see #964
         activity = self.get_model('Activity')
         if 'Fss' in self.model_store:
@@ -4943,9 +4983,9 @@ class Parse(IatiParser):
                 "extraction-date",
                 "required attribute missing"
             )
-        validated_extraction_date = self.validate_date(extraction_date)
+        extraction_date = self.validate_date(extraction_date)
 
-        if not validated_extraction_date:
+        if not extraction_date:
             raise FieldValidationError(
                 "fss",
                 "extraction-date",
@@ -5004,14 +5044,16 @@ class Parse(IatiParser):
                     element.attrib.get('year'))
 
         # value_date is optional field.
-        if value_date and self.validate_date(value_date)is None:
-            raise FieldValidationError(
-                "budget/value",
-                "value-date",
-                "value-date not in correct range",
-                None,
-                None,
-                element.attrib.get('value-date'))
+        if value_date:
+            value_date = self.validate_date(value_date)
+            if value_date is None:
+                raise FieldValidationError(
+                    "budget/value",
+                    "value-date",
+                    "value-date not in correct range",
+                    None,
+                    None,
+                    element.attrib.get('value-date'))
 
         if not value:
             raise RequiredFieldError(
