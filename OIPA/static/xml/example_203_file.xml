@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <iati-activities version="2.03" generated-datetime="2018-06-22T10:29:25">
-  <iati-activity last-updated-datetime="2018-06-22T10:22:07" xml:lang="nl" default-currency="EUR" hierarchy="1">
+  <iati-activity last-updated-datetime="2018-06-22T10:22:07" xml:lang="nl"
+                 default-currency="EUR" hierarchy="1"
+                 budget-not-provided="1">
     <iati-identifier>NL-1-PPR-24706</iati-identifier>
     <reporting-org ref="XM-DAC-7" type="10">
       <narrative xml:lang="en">Ministry of Foreign Affairs (DGIS)</narrative>
@@ -342,7 +344,8 @@
 
 
   </iati-activity>
-  <iati-activity last-updated-datetime="2018-06-22T10:22:07" xml:lang="nl" default-currency="EUR" hierarchy="1">
+  <iati-activity last-updated-datetime="2018-06-22T10:22:07" xml:lang="nl"
+                 default-currency="EUR" hierarchy="1" budget-not-provided="2">
     <iati-identifier>NL-1-PPR-25275</iati-identifier>
     <reporting-org ref="XM-DAC-7" type="10">
       <narrative xml:lang="en">Ministry of Foreign Affairs (DGIS)</narrative>

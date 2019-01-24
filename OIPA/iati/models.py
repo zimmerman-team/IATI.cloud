@@ -20,7 +20,7 @@ from iati_codelists.models import (
     LoanRepaymentPeriod, LoanRepaymentType, LocationType, OrganisationRole,
     OrganisationType, OtherFlags, OtherIdentifierType, PolicyMarker,
     PolicySignificance, RelatedActivityType, ResultType, Sector, TiedStatus,
-    Version
+    Version, BudgetNotProvided
 )
 from iati_organisation.models import Organisation
 from iati_synchroniser.models import Dataset, Publisher
@@ -118,6 +118,9 @@ class Activity(models.Model):
                                      default=None, on_delete=models.CASCADE)
     linked_data_uri = models.CharField(
         max_length=100, blank=True, null=True, default="")
+    budget_not_provided = models.ForeignKey(BudgetNotProvided, null=True,
+                                            default=None,
+                                            on_delete=models.CASCADE)
 
     planned_start = models.DateField(
         null=True, blank=True, default=None, db_index=True)
