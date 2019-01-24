@@ -5604,7 +5604,7 @@ class CrsAddOtherFlagsTestCase(TestCase):
         # get the 'other_flags' to check its attribute.
         other_flags = self.parser_203.get_model('CrsAddOtherFlags')
 
-        self.assertEqual(self.other_flags_code, other_flags.code)
+        self.assertEqual(self.other_flags_code, other_flags.other_flags)
         self.assertEqual(self.crs_add, other_flags.crs_add)
         self.assertTrue(other_flags.significance)
 
