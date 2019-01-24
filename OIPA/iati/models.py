@@ -13,14 +13,14 @@ from djorm_pgfulltext.fields import VectorField
 from geodata.models import Country, Region
 from iati_codelists.models import (
     ActivityDateType, ActivityScope, ActivityStatus, AidType, BudgetIdentifier,
-    BudgetStatus, BudgetType, CollaborationType, ConditionType, ContactType,
-    CRSChannelCode, Currency, DescriptionType, DocumentCategory, FileFormat,
-    FinanceType, FlowType, GeographicExactness, GeographicLocationClass,
-    GeographicLocationReach, HumanitarianScopeType, IndicatorMeasure, Language,
-    LoanRepaymentPeriod, LoanRepaymentType, LocationType, OrganisationRole,
-    OrganisationType, OtherFlags, OtherIdentifierType, PolicyMarker,
-    PolicySignificance, RelatedActivityType, ResultType, Sector, TiedStatus,
-    Version, BudgetNotProvided
+    BudgetNotProvided, BudgetStatus, BudgetType, CollaborationType,
+    ConditionType, ContactType, CRSChannelCode, Currency, DescriptionType,
+    DocumentCategory, FileFormat, FinanceType, FlowType, GeographicExactness,
+    GeographicLocationClass, GeographicLocationReach, HumanitarianScopeType,
+    IndicatorMeasure, Language, LoanRepaymentPeriod, LoanRepaymentType,
+    LocationType, OrganisationRole, OrganisationType, OtherFlags,
+    OtherIdentifierType, PolicyMarker, PolicySignificance, RelatedActivityType,
+    ResultType, Sector, TiedStatus, Version
 )
 from iati_organisation.models import Organisation
 from iati_synchroniser.models import Dataset, Publisher
