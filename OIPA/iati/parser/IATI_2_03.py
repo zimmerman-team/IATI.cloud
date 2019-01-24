@@ -4983,9 +4983,10 @@ class Parse(IatiParser):
                 None,
                 None,
                 element.attrib.get('year'))
+
         # @currency is required unless the iati-activity/@default-currency
-        # is present and applies. This value must be on the Currency codelsit.
-        if not currency:
+        # is present and applies. This value must be on the Currency codelist.
+        if currency is None:
             currency = self._get_currency_or_raise(
                 "CrsAddLoanStatus", currency)
 
@@ -4994,16 +4995,16 @@ class Parse(IatiParser):
             raise RequiredFieldError(
                 "CrsAddLoanStatus", "value-date", "required field missing.")
 
-        # @value-date must be of type xsd:date.
+        # @value-date must be of type xsd:date and in the correct range.
         value_date = self.validate_date(value_date)
-        if not value_date:
+        if value_date is None:
             raise FieldValidationError(
                 "CrsAddLoanStatus",
                 "value-date",
-                "value-date not of type xsd:date",
+                "is not in correct range.",
                 None,
                 None,
-                element.attrib.get('value-date'))
+                )
 
         # interest-received must occur no more than once. The text in this
         # element must be of type xsd:decimal.
@@ -5018,7 +5019,7 @@ class Parse(IatiParser):
             # presents.
             if interest_received:
                 # interest_received is of type decimal. Otherwise
-                # guess_number() method would raise error.
+                # guess_number() method would raise an error.
                 interest_received = self.guess_number(
                     "CrsAddLoanStatus", interest_received)
 
@@ -5086,10 +5087,6 @@ class Parse(IatiParser):
 
         self.register_model("CrsAddLoanStatus", crs_add_loan_status)
         return element
-
-
-
-
 
     def iati_activities__iati_activity__fss(self, element):
         """"(optional) <fss> element inside <iati-activities/iati-activity>
