@@ -4882,6 +4882,7 @@ class Parse(IatiParser):
         activity_tag = self.get_model('ActivityTag')
         self.add_narrative(element, activity_tag)
 
+<<<<<<< HEAD
     def iati_activities__iati_activity__crs_add__loan_terms(self, element):
         '''New (optional) <loan-terms> element for <crs-add> element
            inside <iati-activity> element in 2.03
@@ -5041,10 +5042,95 @@ class Parse(IatiParser):
     def iati_activities__iati_activity__fss(self, element):
         """"(optional) <fss> element inside <iati-activities/iati-activity>
         element in 2.03
+||||||| merged common ancestors
+    def iati_activities__iati_activity__fss(self, element):
+        """"(optional) <fss> element inside <iati-activities/iati-activity>
+        element in 2.03
+=======
+    def iati_activities__iati_activity__crs_add(self, element):
+        """New (optional) <crs-add> element inside
+          <iati-activities/iati-activity> element in 2.03
+>>>>>>> develop
         """
+        # FIXME: should database relation be changed to OnetoOne?? see #981
         # we need to check if this element occurs more than once in  the
         # parent element, which is <iati-activity>
+        activity = self.get_model('Activity')
+        if 'CrsAdd' in self.model_store:
+            for crs_add in self.model_store['CrsAdd']:
+                if crs_add.activity == activity:
+                    raise ParserError("Activity", "CrsAdd", "must occur no "
+                                                            "more than once")
 
+        # 'channel-code' must not occur no more than once within each parent
+        # element.
+        channel_code_list = element.xpath('channel-code')
+
+        if len(channel_code_list) > 1:
+            raise ParserError(
+                "crs-add",
+                "channel-code",
+                "must occur no more than once")
+        elif len(channel_code_list) == 1:
+            channel_code = self.get_or_none(codelist_models.CRSChannelCode,
+                                            code=channel_code_list[0].text)
+            if not channel_code:
+                raise FieldValidationError(
+                    "iati-activities/iati-activity/crs-add",
+                    "channel-code",
+                    "not found on the accompanying code list",
+                    None,
+                    None,
+                    channel_code)
+        else:
+            channel_code = None  # 'channel-code'is optional.
+
+        crs_add = models.CrsAdd()
+        crs_add.activity = activity
+        crs_add.channel_code = channel_code
+        self.register_model('CrsAdd', crs_add)
+        return element
+
+    def iati_activities__iati_activity__crs_add__other_flags(self, element):
+        """"A method to save (optional) <other-flags> element and its
+        attributes inside <crs-add> element in 2.03
+        """
+        code = element.attrib.get('code')
+        significance = element.attrib.get('significance')
+        if not code:
+            raise RequiredFieldError(
+                "crs-add/other-flags",
+                "code",
+                "required attribute missing."
+            )
+        if not significance:
+            raise RequiredFieldError(
+                "crs-add/other-flags",
+                "significance",
+                "required attribute missing."
+            )
+        code_in_codelist = self.get_or_none(codelist_models.OtherFlags,
+                                            code=code)
+        if code_in_codelist is None:
+            raise FieldValidationError(
+                "crs-add/other-flags",
+                "code",
+                "not found on the accompanying code list.",
+                None,
+                None,
+                code)
+        crs_add = self.get_model('CrsAdd')
+        other_flags = models.CrsAddOtherFlags()
+        other_flags.other_flags = code_in_codelist
+        other_flags.significance = self.makeBool(significance)
+        other_flags.crs_add = crs_add
+        self.register_model('CrsAddOtherFlags', other_flags)
+        return element
+
+    def iati_activities__iati_activity__fss(self, element):
+        """"(optional) <fss> element inside <iati-activities/iati-activity>
+        element in 2.03
+        """
         # FIXME: should database relation be changed to OnetoOne?? see #964
         activity = self.get_model('Activity')
         if 'Fss' in self.model_store:
