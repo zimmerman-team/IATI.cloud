@@ -5497,6 +5497,466 @@ class ActivityResultReferenceTestCase(TestCase):
                          reference.vocabulary_uri)
 
 
+class CrsAddLoanTermsTestCase(TestCase):
+
+    '''
+    Added new (optional) <loan-terms> element for <crs-add> element.
+    '''
+
+    def setUp(self):
+        # 'Main' XML file for instantiating parser:
+        xml_file_attrs = {
+            "generated-datetime": datetime.datetime.now().isoformat(),
+            "version": '2.03',
+        }
+        self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
+
+        dummy_source = synchroniser_factory.DatasetFactory.create()
+
+        self.parser_203 = ParseManager(
+            dataset=dummy_source,
+            root=self.iati_203_XML_file,
+        ).get_parser()
+
+        # Related objects:
+        # create dummy object
+
+        self.crs_add = iati_factory.CrsAddFactory.create()
+        self.parser_203.register_model('CrsAdd', self.crs_add)
+        self.loan_payment_type = \
+            codelist_factory.LoanRepaymentTypeFactory.create()
+        self.loan_payment_plan = \
+            codelist_factory.LoanRepaymentPeriodFactory.create()
+
+    def test_crs_add_loan_terms(self):
+        """
+        Test if related attributes  in <crs-add/loan-terms> XML element are
+        correctly assigned.
+        """
+
+        # case 1: child element <repayment-type>  has no 'code' attribute.
+        loan_terms_attr = {
+            "rate-1": '2',
+            "rate-2": '3',
+
+        }
+        loan_terms_XML_element = E(
+            'loan-terms',
+            E('repayment-type', ),     # @code is missing
+            **loan_terms_attr
+        )
+
+        try:
+            self.parser_203.\
+                iati_activities__iati_activity__crs_add__loan_terms(
+                    loan_terms_XML_element)
+
+        except RequiredFieldError as inst:
+            self.assertEqual(inst.field, 'code')
+            self.assertEqual(inst.message, 'required attribute missing.')
+
+        # case 2: child element <repayment-type> occurs more than once.
+        loan_terms_attr = {
+            "rate-1": '2',
+            "rate-2": '3',
+
+        }
+        loan_terms_XML_element = E(
+            'loan-terms',
+            E('repayment-type', {"code": "2"}),
+            E('repayment-type', {"code": "4"}),
+            **loan_terms_attr
+        )
+
+        try:
+            self.parser_203. \
+                iati_activities__iati_activity__crs_add__loan_terms(
+                    loan_terms_XML_element)
+        except ParserError as inst:
+            self.assertEqual(inst.field, 'repayment-type')
+            self.assertEqual(inst.message, 'must occur no more than once.')
+
+        # case 3: when @code of child element <repayment-type> is not found
+        # on the LoanPaymentType codelist.
+        loan_terms_attr = {
+            "rate-1": '2',
+            "rate-2": '3',
+
+        }
+        loan_terms_XML_element = E(
+            'loan-terms',
+            E('repayment-type', {"code": "1848"}),  # no 'repayment-type'with
+            # 1848.
+            **loan_terms_attr
+        )
+
+        try:
+            self.parser_203. \
+                iati_activities__iati_activity__crs_add__loan_terms(
+                    loan_terms_XML_element)
+        except FieldValidationError as inst:
+            self.assertEqual(inst.field, 'code')
+            self.assertEqual(inst.message, 'not found on the accompanying '
+                                           'codelist')
+
+        # case 4: child element <repayment-plan> has no attribute @code.
+
+        loan_terms_attr = {
+            "rate-1": '2',
+            "rate-2": '3',
+
+        }
+        loan_terms_XML_element = E(
+            'loan-terms',
+            E('repayment-plan', ),  # @code is missing
+            **loan_terms_attr
+        )
+
+        try:
+            self.parser_203. \
+                iati_activities__iati_activity__crs_add__loan_terms(
+                    loan_terms_XML_element)
+
+        except RequiredFieldError as inst:
+            self.assertEqual(inst.field, 'code')
+            self.assertEqual(inst.message, 'required attribute missing.')
+
+        # case 5: child element <repayment-plan> occurs more than once.
+        loan_terms_attr = {
+            "rate-1": '2',
+            "rate-2": '3',
+
+        }
+        loan_terms_XML_element = E(
+            'loan-terms',
+            E('repayment-plan', {"code": "2"}),
+            E('repayment-plan', {"code": "4"}),
+            **loan_terms_attr
+        )
+
+        try:
+            self.parser_203. \
+                iati_activities__iati_activity__crs_add__loan_terms(
+                    loan_terms_XML_element)
+        except ParserError as inst:
+            self.assertEqual(inst.field, 'repayment-plan')
+            self.assertEqual(inst.message, 'must occur no more than once.')
+
+        # case 6: when @code of child element <repayment-plan> is not found
+        # on the LoanPaymentType codelist.
+        loan_terms_attr = {
+            "rate-1": '2',
+            "rate-2": '3',
+
+        }
+        loan_terms_XML_element = E(
+            'loan-terms',
+            E('repayment-plan', {"code": "1848"}),
+            # no 'repayment-plan'with 1848.
+            **loan_terms_attr
+        )
+
+        try:
+            self.parser_203. \
+                iati_activities__iati_activity__crs_add__loan_terms(
+                    loan_terms_XML_element)
+        except FieldValidationError as inst:
+            self.assertEqual(inst.field, 'code')
+            self.assertEqual(inst.message, 'not found on the accompanying '
+                                           'codelist.')
+
+        # case 7: child element <commitment-date> has no attribute @iso-date.
+        loan_terms_attr = {
+            "rate-1": '2',
+            "rate-2": '3',
+
+        }
+        loan_terms_XML_element = E(
+            'loan-terms',
+            E('commitment-date', ),  # @iso-date is missing
+            **loan_terms_attr
+        )
+
+        try:
+            self.parser_203. \
+                iati_activities__iati_activity__crs_add__loan_terms(
+                    loan_terms_XML_element)
+
+        except RequiredFieldError as inst:
+            self.assertEqual(inst.field, 'iso-date')
+            self.assertEqual(inst.message, 'required attribute missing.')
+
+        # case 8: child element <commitment-date> occurs more than once.
+        loan_terms_attr = {
+            "rate-1": '2',
+            "rate-2": '3',
+
+        }
+        loan_terms_XML_element = E(
+            'loan-terms',
+            E('commitment-date', {"iso-date": "2015-03-01"}),
+            E('commitment-date', {"iso-date": "2017-12-12"}),
+            **loan_terms_attr
+        )
+
+        try:
+            self.parser_203. \
+                iati_activities__iati_activity__crs_add__loan_terms(
+                    loan_terms_XML_element)
+        except ParserError as inst:
+            self.assertEqual(inst.field, 'commitment-date')
+            self.assertEqual(inst.message, 'must occur no more than once.')
+
+        # case 9: when @iso-date of child element <commitment-date> is not
+        # in xsd:date format.
+        loan_terms_attr = {
+            "rate-1": '2',
+            "rate-2": '3',
+
+        }
+        loan_terms_XML_element = E(
+            'loan-terms',
+            E('commitment-date', {"iso-date": "209392022"}),
+            **loan_terms_attr
+        )
+
+        try:
+            self.parser_203. \
+                iati_activities__iati_activity__crs_add__loan_terms(
+                    loan_terms_XML_element)
+        except RequiredFieldError as inst:
+            self.assertEqual(inst.field, 'iso-date')
+            self.assertEqual(inst.message, 'Unspecified or invalid. Date '
+                                           'should be of type xml:date.')
+
+        # case 10: when @iso-date of child element <commitment-date> is out
+        # of range.
+        loan_terms_attr = {
+            "rate-1": '2',
+            "rate-2": '3',
+
+        }
+        loan_terms_XML_element = E(
+            'loan-terms',
+            E('commitment-date', {"iso-date": "1309-01-04"}),
+            **loan_terms_attr
+        )
+
+        try:
+            self.parser_203. \
+                iati_activities__iati_activity__crs_add__loan_terms(
+                    loan_terms_XML_element)
+        except FieldValidationError as inst:
+            self.assertEqual(inst.field, 'iso-date')
+            self.assertEqual(inst.message, 'iso-date is not in correct range.')
+
+        # case 11: child element <repayment-first-date> has no attribute
+        # @iso-date.
+        loan_terms_attr = {
+            "rate-1": '2',
+            "rate-2": '3',
+
+        }
+        loan_terms_XML_element = E(
+            'loan-terms',
+            E('repayment-first-date', ),  # @iso-date is  missing
+            **loan_terms_attr
+        )
+
+        try:
+            self.parser_203. \
+                iati_activities__iati_activity__crs_add__loan_terms(
+                    loan_terms_XML_element)
+
+        except RequiredFieldError as inst:
+            self.assertEqual(inst.field, 'iso-date')
+            self.assertEqual(inst.message, 'required attribute missing.')
+
+        # case 12: child element <repayment-first-date> occurs more than once.
+        loan_terms_attr = {
+            "rate-1": '2',
+            "rate-2": '3',
+
+        }
+        loan_terms_XML_element = E(
+            'loan-terms',
+            E('repayment-first-date', {"iso-date": "2015-03-01"}),
+            E('repayment-first-date', {"iso-date": "2017-12-12"}),
+            **loan_terms_attr
+        )
+
+        try:
+            self.parser_203. \
+                iati_activities__iati_activity__crs_add__loan_terms(
+                    loan_terms_XML_element)
+        except ParserError as inst:
+            self.assertEqual(inst.field, 'repayment-first-date')
+            self.assertEqual(inst.message, 'must occur no more than once.')
+
+        # case 13: when @iso-date of child element <repayment-first-date> is
+        # not in xsd:date format.
+        loan_terms_attr = {
+            "rate-1": '2',
+            "rate-2": '3',
+
+        }
+        loan_terms_XML_element = E(
+            'loan-terms',
+            E('repayment-first-date', {"iso-date": "209392022"}),
+            **loan_terms_attr
+        )
+
+        try:
+            self.parser_203. \
+                iati_activities__iati_activity__crs_add__loan_terms(
+                    loan_terms_XML_element)
+        except RequiredFieldError as inst:
+            self.assertEqual(inst.field, 'iso-date')
+            self.assertEqual(inst.message, 'Unspecified or invalid. Date '
+                                           'should be of type xml:date.')
+
+        # case 14: when @iso-date of child element <repayment-first-date> is
+        # out of range.
+        loan_terms_attr = {
+            "rate-1": '2',
+            "rate-2": '3',
+
+        }
+        loan_terms_XML_element = E(
+            'loan-terms',
+            E('repayment-first-date', {"iso-date": "1309-01-04"}),
+            **loan_terms_attr
+        )
+
+        try:
+            self.parser_203. \
+                iati_activities__iati_activity__crs_add__loan_terms(
+                    loan_terms_XML_element)
+        except FieldValidationError as inst:
+            self.assertEqual(inst.field, 'iso-date')
+            self.assertEqual(inst.message, 'iso-date is not in correct range.')
+
+        # case 15: child element <repayment-final-date> has no attribute
+        # @iso-date.
+        loan_terms_attr = {
+            "rate-1": '2',
+            "rate-2": '3',
+
+        }
+        loan_terms_XML_element = E(
+            'loan-terms',
+            E('repayment-final-date', ),  # @iso-date is  missing
+            **loan_terms_attr
+        )
+
+        try:
+            self.parser_203. \
+                iati_activities__iati_activity__crs_add__loan_terms(
+                    loan_terms_XML_element)
+
+        except RequiredFieldError as inst:
+            self.assertEqual(inst.field, 'iso-date')
+            self.assertEqual(inst.message, 'required attribute missing.')
+
+        # case 16: child element <repayment-final-date> occurs more than once.
+        loan_terms_attr = {
+            "rate-1": '2',
+            "rate-2": '3',
+
+        }
+        loan_terms_XML_element = E(
+            'loan-terms',
+            E('repayment-final-date', {"iso-date": "2015-03-01"}),
+            E('repayment-final-date', {"iso-date": "2017-12-12"}),
+            **loan_terms_attr
+        )
+
+        try:
+            self.parser_203. \
+                iati_activities__iati_activity__crs_add__loan_terms(
+                    loan_terms_XML_element)
+        except ParserError as inst:
+            self.assertEqual(inst.field, 'repayment-final-date')
+            self.assertEqual(inst.message, 'must occur no more than once.')
+
+        # case 16: when @iso-date of child element <repayment-final-date> is
+        # not in xsd:date format.
+        loan_terms_attr = {
+            "rate-1": '2',
+            "rate-2": '3',
+
+        }
+        loan_terms_XML_element = E(
+            'loan-terms',
+            E('repayment-final-date', {"iso-date": "209392022"}),
+            **loan_terms_attr
+        )
+
+        try:
+            self.parser_203. \
+                iati_activities__iati_activity__crs_add__loan_terms(
+                    loan_terms_XML_element)
+        except RequiredFieldError as inst:
+            self.assertEqual(inst.field, 'iso-date')
+            self.assertEqual(inst.message, 'Unspecified or invalid. Date '
+                                           'should be of type xml:date.')
+
+        # case 17: when @iso-date of child element <repayment-final-date> is
+        # out of range.
+        loan_terms_attr = {
+            "rate-1": '2',
+            "rate-2": '3',
+
+        }
+        loan_terms_XML_element = E(
+            'loan-terms',
+            E('repayment-final-date', {"iso-date": "1309-01-04"}),
+            **loan_terms_attr
+        )
+
+        try:
+            self.parser_203. \
+                iati_activities__iati_activity__crs_add__loan_terms(
+                    loan_terms_XML_element)
+        except FieldValidationError as inst:
+            self.assertEqual(inst.field, 'iso-date')
+            self.assertEqual(inst.message, 'iso-date is not in correct range.')
+
+        # case 18: when all is well.
+        loan_terms_attr = {
+            "rate-1": "2",
+            "rate-2": "3",
+        }
+        loan_terms_XML_element = E(
+            'loan-terms',
+            E('repayment-type', {'code': '1'}),
+            E('repayment-plan', {'code': '1'}),
+            E('commitment-date', {'iso-date': '2017-09-01'}),
+            E('repayment-first-date', {'iso-date': '2018-12-12'}),
+            E('repayment-final-date', {'iso-date': '2019-12-12'}),
+            **loan_terms_attr,
+        )
+
+        self.parser_203.iati_activities__iati_activity__crs_add__loan_terms(
+            loan_terms_XML_element)
+        commitment_date = dateutil.parser.parse('2017-09-01')
+        repayment_first_date = dateutil.parser.parse('2018-12-12')
+        repayment_final_date = dateutil.parser.parse('2019-12-12')
+
+        # get 'loan_terms'object to check if its fields are correctly assigned.
+        loan_terms = self.parser_203.get_model('CrsAddLoanTerms')
+        self.assertEqual(self.crs_add, loan_terms.crs_add)
+        self.assertEqual(Decimal(loan_terms_XML_element.attrib.get('rate-1')),
+                         loan_terms.rate_1)
+        self.assertEqual(Decimal(loan_terms_XML_element.attrib.get(
+            'rate-2')), loan_terms.rate_2)
+        self.assertEqual(self.loan_payment_type, loan_terms.repayment_type)
+        self.assertEqual(self.loan_payment_plan, loan_terms.repayment_plan)
+        self.assertEqual(commitment_date, loan_terms.commitment_date)
+        self.assertEqual(repayment_first_date, loan_terms.repayment_first_date)
+        self.assertEqual(repayment_final_date, loan_terms.repayment_final_date)
+
+
 class CrsAddOtherFlagsTestCase(TestCase):
     '''
     Added new (optional) <other-flags> element for <crs-add>
@@ -5604,7 +6064,7 @@ class CrsAddOtherFlagsTestCase(TestCase):
         # get the 'other_flags' to check its attribute.
         other_flags = self.parser_203.get_model('CrsAddOtherFlags')
 
-        self.assertEqual(self.other_flags_code, other_flags.code)
+        self.assertEqual(self.other_flags_code, other_flags.other_flags)
         self.assertEqual(self.crs_add, other_flags.crs_add)
         self.assertTrue(other_flags.significance)
 

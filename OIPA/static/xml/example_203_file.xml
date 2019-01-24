@@ -323,6 +323,7 @@
         </indicator>
       </result>
       <crs-add>
+
    <other-flags code="1" significance="1" />
    <loan-terms rate-1="4" rate-2="3">
     <repayment-type code="1" />
@@ -339,6 +340,7 @@
    </loan-status>
    <channel-code>21039</channel-code>
   </crs-add>
+       
 
 
   </iati-activity>
