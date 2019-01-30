@@ -14,13 +14,23 @@ services:
       POSTGRES_PASSWORD: oipa
 
   oipa:
-    #this starts 'db' service:
-    #depends_on:
-      #- db
-    command: /usr/bin/python3.6 /app/src/OIPA/manage.py runserver 0.0.0.0:8000
     build: .
+    #this starts 'db' service:
+    depends_on:
+      - db
+    #see: https://docs.docker.com/compose/startup-order/
+    command: ["/app/src/docker-entrypoint.sh", "python3.6", "/app/src/OIPA/manage.py", "runserver", "0.0.0.0:8000"]
     ports:
       - "8000:8000"
+    environment:
+      DJANGO_SETTINGS_MODULE: OIPA.docker_settings
+      POSTGRES_DB: oipa
+      # XXX: this has to match database service name, because this is passed to
+      # the docker-entrypoint script:
+      POSTGRES_HOST: db
+      POSTGRES_USER: oipa
+      POSTGRES_PASSWORD: oipa
+
 
   #oipa-supervisor:
     #build: .
