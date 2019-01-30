@@ -14,7 +14,7 @@ from iati_organisation.parser import post_save
 
 class Parse(IatiParser):
     """
-    # TODO: Cover elements as The IATI Organisation File Standard.
+    This covers elements as The IATI Organisation File Standard.
     http://reference.iatistandard.org/203/organisation-standard/overview
     /organisation-file/
     """
