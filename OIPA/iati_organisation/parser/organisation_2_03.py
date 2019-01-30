@@ -202,6 +202,18 @@ class Parse(IatiParser):
 
             return element
 
+    def iati_organisations__iati_organisation__name(self, element):
+
+        # Although OrganisationName and Organisation has One-to-One relation
+        # on the database level, we check here whether element 'name' occurs
+        # only once in the parent element 'organisation'.
+        organisation = self.get_model('Organisation')
+        if 'OrganisationName' in self.model_store:
+            for name in self.model_store['OrganisationName']:
+                if name.organisation == organisation:
+                    raise ParserError("Organisation", "OrganisationName",
+                                      "must occur no more than once.")
+
     def post_save_models(self):
         """Perform all actions that need to happen after a single
         organisation's been parsed."""
