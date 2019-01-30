@@ -30,6 +30,11 @@ services:
       POSTGRES_HOST: db
       POSTGRES_USER: oipa
       POSTGRES_PASSWORD: oipa
+      #These settings are passed to the docker-entrypoint script for creating a
+      #super user:
+      SUPERUSER_USERNAME: oipa
+      SUPERUSER_EMAIL: oipa
+      SUPERUSER_PASSWORD: oipa
 
 
   #oipa-supervisor:
