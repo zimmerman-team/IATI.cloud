@@ -41,6 +41,7 @@ class OrganisationsOrganisationTestCase(DjangoTestCase):
         organisation_XML_element = E("iati-organisation",
                                      # E("organisation-identifier",
                                      # "AA-AAA_123"),
+                                     E("name", E("narrative", "text")),
                                      **organisation_attribute)
         try:
             self.organisation_parser_203\
@@ -56,6 +57,7 @@ class OrganisationsOrganisationTestCase(DjangoTestCase):
                                        "AA-AAA-123"),
                                      E("organisation-identifier",
                                        "AA-ABC-123"),
+                                     E("name", E("narrative", "text")),
                                      **organisation_attribute)
         try:
             self.organisation_parser_203\
@@ -68,6 +70,7 @@ class OrganisationsOrganisationTestCase(DjangoTestCase):
         # case 3: when text in organisation-identifier element is missing.
         organisation_XML_element = E("iati-organisation",
                                      E("organisation-identifier"),  # no text
+                                     E("name", E("narrative", "text")),
                                      **organisation_attribute)
         try:
             self.organisation_parser_203\
@@ -81,6 +84,7 @@ class OrganisationsOrganisationTestCase(DjangoTestCase):
         organisation_XML_element = E("iati-organisation",
                                      E("organisation-identifier",
                                        "AA-AAA_123"),
+                                     E("name", E("narrative", "text")),
                                      **organisation_attribute)
         self.organisation_parser_203.iati_organisations__iati_organisation(
             organisation_XML_element)
@@ -111,6 +115,7 @@ class OrganisationsOrganisationTestCase(DjangoTestCase):
         new_organisation_XML_element = E("iati-organisation",
                                          E("organisation-identifier",
                                            "AA-AAA_123"),
+                                         E("name", E("narrative", "text")),
                                          **new_organisation_attribute)
         self.organisation_parser_203.iati_organisations__iati_organisation(
             new_organisation_XML_element)
@@ -132,6 +137,7 @@ class OrganisationsOrganisationTestCase(DjangoTestCase):
         new_organisation_XML_element = E("iati-organisation",
                                          E("organisation-identifier",
                                            "AA-AAA_123"),
+                                         E("name", E("narrative", "text")),
                                          **new_organisation_attribute)
         self.organisation_parser_203.iati_organisations__iati_organisation(
             new_organisation_XML_element)

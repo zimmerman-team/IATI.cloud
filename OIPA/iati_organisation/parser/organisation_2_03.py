@@ -113,6 +113,14 @@ class Parse(IatiParser):
         normalized_organisation_identifier = self._normalize(
             organisation_identifier)
 
+        # Although name is saved in different table, according to
+        # specifications it must occur once and only once in organisation
+        # element. So we check 'name' element here.
+        name = element.xpath("name")
+        if len(name) is not 1:
+            raise ParserError("Organisation", "name", "must occur once and "
+                                                      "only once.")
+
         last_updated_datetime = self.validate_date(element.attrib.get(
             "last-updated-datetime"))
         default_lang_code = element.attrib.get(
