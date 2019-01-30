@@ -19,13 +19,14 @@ SECRET_KEY = env.get('OIPA_SECRET_KEY', 'PXwlMOpfNJTgIdQeH5zk39jKfUMZPOUK')
 
 DATABASES = {
     'default': {
-        # 'ENGINE': 'django.db.backends.sqlite3',
-        'ENGINE': 'django.db.backends.postgresql',
-        'HOST': 'db',
-        'PORT': 5432,
-        'NAME': 'oipa',
-        'USER': 'oipa',
-        'PASSWORD': 'oipa',
+        'ENGINE': env.get(
+            'OIPA_DB_ENGINE', 'django.contrib.gis.db.backends.postgis'
+        ),
+        'HOST': os.getenv('OIPA_DB_HOST', 'localhost'),
+        'PORT': os.getenv('OIPA_DB_PORT', 5432),
+        'NAME': os.getenv('OIPA_DB_NAME', 'oipa'),
+        'USER': os.getenv('OIPA_DB_USER', 'oipa'),
+        'PASSWORD': os.getenv('OIPA_DB_PASSWORD', 'oipa'),
         'CONN_MAX_AGE': int(os.getenv('OIPA_DB_CONN_MAX_AGE', 500))
     },
 }
