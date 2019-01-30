@@ -1,22 +1,15 @@
 from django.conf import settings
 
-from geodata.models import Country, Region
-from iati.parser.exceptions import (
-    FieldValidationError, ParserError, RequiredFieldError
-)
+from iati.parser.exceptions import ParserError, RequiredFieldError
 from iati.parser.iati_parser import IatiParser
 from iati_codelists import models as codelist_models
 from iati_organisation.models import (
-    DocumentLinkRecipientCountry, DocumentLinkTitle, Organisation,
-    OrganisationDocumentLink, OrganisationDocumentLinkCategory,
-    OrganisationDocumentLinkLanguage, OrganisationName, OrganisationNarrative,
-    OrganisationReportingOrganisation, RecipientCountryBudget,
-    RecipientCountryBudgetLine, RecipientOrgBudget, RecipientOrgBudgetLine,
-    RecipientRegionBudget, RecipientRegionBudgetLine, TotalBudget,
-    TotalBudgetLine, TotalExpenditure, TotalExpenditureLine
+    Organisation, OrganisationDocumentLink, OrganisationName,
+    OrganisationNarrative, OrganisationReportingOrganisation,
+    RecipientCountryBudget, RecipientOrgBudget, RecipientRegionBudget,
+    TotalBudget, TotalExpenditure
 )
 from iati_organisation.parser import post_save
-from iati_vocabulary.models import RegionVocabulary
 
 
 class Parse(IatiParser):
@@ -109,9 +102,17 @@ class Parse(IatiParser):
             raise ParserError("Organisation", "organisation-identifier",
                               "must occur once and only once.")
         # Here organisation_identifier is a string.
+        organisation_identifier = organisation_identifier[0].text
+
+        if organisation_identifier is None:
+            raise RequiredFieldError("Organisation",
+                                     "organisation-identifier", "required "
+                                                                "field "
+                                                                "missing.")
+        # Here normalized_organisation_identifier is a string.
         normalized_organisation_identifier = self._normalize(
-            organisation_identifier[
-                                                      0].text)
+            organisation_identifier)
+
         last_updated_datetime = self.validate_date(element.attrib.get(
             "last-updated-datetime"))
         default_lang_code = element.attrib.get(
@@ -129,7 +130,7 @@ class Parse(IatiParser):
             code=element.attrib.get('default-currency'))
 
         old_organisation = self.get_or_none(
-            Organisation, organisation_identifier=id)
+            Organisation, organisation_identifier=organisation_identifier)
         if old_organisation:
             if old_organisation.last_updated_datetime < last_updated_datetime:
 
@@ -152,7 +153,8 @@ class Parse(IatiParser):
 
                 organisation = old_organisation
                 organisation.organisation_identifier = organisation_identifier
-                organisation.normalized_organisation_identifier = normalized_organisation_identifier
+                organisation.normalized_organisation_identifier = \
+                    normalized_organisation_identifier
                 organisation.last_updated_datetime = last_updated_datetime
                 organisation.default_lang = default_lang
                 organisation.iati_standard_version_id = self.VERSION
@@ -162,7 +164,8 @@ class Parse(IatiParser):
                 organisation.ready_to_publish = True
                 organisation.modified = True
 
-                self.organisation_identifier = organisation.organisation_identifier
+                self.organisation_identifier = \
+                    organisation.organisation_identifier
                 self.default_currency = default_currency
 
                 # for later reference
@@ -178,7 +181,8 @@ class Parse(IatiParser):
             organisation = Organisation()
 
             organisation.organisation_identifier = organisation_identifier
-            organisation.normalized_organisation_identifier = normalized_organisation_identifier
+            organisation.normalized_organisation_identifier = \
+                normalized_organisation_identifier
             organisation.last_updated_datetime = last_updated_datetime
             organisation.default_lang = default_lang
             organisation.iati_standard_version_id = self.VERSION
@@ -198,3 +202,19 @@ class Parse(IatiParser):
 
             return element
 
+    def post_save_models(self):
+        """Perform all actions that need to happen after a single
+        organisation's been parsed."""
+        organisation = self.get_model('Organisation')
+
+        if not organisation:
+            return False
+
+        post_save.set_activity_reporting_organisation(organisation)
+        post_save.set_publisher_fk(organisation)
+
+    def post_save_file(self, xml_source):
+        pass
+
+    def post_save_validators(self, dataset):
+        pass

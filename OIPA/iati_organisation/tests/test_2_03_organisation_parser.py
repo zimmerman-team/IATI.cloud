@@ -1,16 +1,12 @@
-import copy
+
 import datetime
 
-import pytest
-from django.core import management
 from django.test import TestCase as DjangoTestCase
 from lxml.builder import E
 
-import iati_codelists.models as codelist_models
-from geodata.models import Country
-from iati.factory import iati_factory
+from iati.parser.exceptions import ParserError, RequiredFieldError
 from iati.parser.parse_manager import ParseManager
-from iati_organisation.parser.organisation_2_03 import Parse as OrgParse_203
+from iati_codelists.factory import codelist_factory
 from iati_synchroniser.factory import synchroniser_factory
 
 
@@ -23,21 +19,130 @@ class OrganisationsOrganisationTestCase(DjangoTestCase):
         }
         self.iati_203_XML_file = E("iati-organisations", **xml_file_attrs)
 
-        dummy_source = synchroniser_factory.DatasetFactory(filetype=2).create()
+        dummy_source = synchroniser_factory.DatasetFactory(filetype=2)
 
         self.organisation_parser_203 = ParseManager(
             dataset=dummy_source,
             root=self.iati_203_XML_file,
         ).get_parser()
 
-        
+        # related orbjects.
+
+        self.default_currency = codelist_factory.CurrencyFactory()
+        self.default_language = codelist_factory.LanguageFactory()
 
     def test_iati_organisations__iati_organisation(self):
+
+        # case 1: organisation-identifier is missing.
         organisation_attribute = {"last-updated-datetime": "2014-09-10",
-                                  "xml:lang": "en",
-                                  "default-currency": "EUR"}
+                                  "{http://www.w3.org/XML/1998/namespace}lang":
+                                      "en",
+                                  "default-currency": "USD"}
         organisation_XML_element = E("iati-organisation",
-                                     E("organisation-identifier","AA-AAA_123"),
+                                     # E("organisation-identifier",
+                                     # "AA-AAA_123"),
                                      **organisation_attribute)
+        try:
+            self.organisation_parser_203\
+                .iati_organisations__iati_organisation(
+                    organisation_XML_element)
+        except ParserError as inst:
+            self.assertEqual("organisation-identifier", inst.field)
+            self.assertEqual("must occur once and only once.", inst.message)
 
+        # case 2: organisation-identifier occurs more than once.
+        organisation_XML_element = E("iati_organisation",
+                                     E("organisation-identifier",
+                                       "AA-AAA-123"),
+                                     E("organisation-identifier",
+                                       "AA-ABC-123"),
+                                     **organisation_attribute)
+        try:
+            self.organisation_parser_203\
+                .iati_organisations__iati_organisation(
+                    organisation_XML_element)
+        except ParserError as inst:
+            self.assertEqual("organisation-identifier", inst.field)
+            self.assertEqual("must occur once and only once.", inst.message)
 
+        # case 3: when text in organisation-identifier element is missing.
+        organisation_XML_element = E("iati-organisation",
+                                     E("organisation-identifier"),  # no text
+                                     **organisation_attribute)
+        try:
+            self.organisation_parser_203\
+                .iati_organisations__iati_organisation(
+                    organisation_XML_element)
+        except RequiredFieldError as inst:
+            self.assertEqual("organisation-identifier", inst.field)
+            self.assertEqual("required field missing.", inst.message)
+
+        # case 3: when all is well.
+        organisation_XML_element = E("iati-organisation",
+                                     E("organisation-identifier",
+                                       "AA-AAA_123"),
+                                     **organisation_attribute)
+        self.organisation_parser_203.iati_organisations__iati_organisation(
+            organisation_XML_element)
+
+        # get organisation back to check related fields are correctly assigned.
+        organisation = self.organisation_parser_203.get_model("Organisation")
+        organisation_identifier = organisation_XML_element.xpath(
+            "organisation-identifier")[0].text
+        last_updated_datetime = self.organisation_parser_203.validate_date(
+            organisation_XML_element.attrib.get("last-updated-datetime"))
+
+        self.assertEqual(last_updated_datetime,
+                         organisation.last_updated_datetime)
+        self.assertEqual(self.default_language, organisation.default_lang)
+        self.assertEqual(self.default_currency, organisation.default_currency)
+        self.assertEqual(organisation_identifier,
+                         organisation.organisation_identifier)
+
+        # case 4: when there are more than one organisation.
+        organisation.save()
+        self.organisation_parser_203.model_store
+        # case 4.1: when "last-updated-datetime" is earlier than old
+        # element's last_updated_datetime.
+        new_organisation_attribute = {"last-updated-datetime": "2012-09-10",
+                                      "{"
+                                      "http://www.w3.org/XML/1998/namespace}lang": "en",  # NOQA: E501
+                                      "default-currency": "USD"}
+        new_organisation_XML_element = E("iati-organisation",
+                                         E("organisation-identifier",
+                                           "AA-AAA_123"),
+                                         **new_organisation_attribute)
+        self.organisation_parser_203.iati_organisations__iati_organisation(
+            new_organisation_XML_element)
+
+        # get organisation again.
+        organisation = self.organisation_parser_203.get_model("Organisation")
+
+        # the parser do not update anything so the last_updated_datetime is
+        # old one.
+        self.assertEqual(last_updated_datetime,
+                         organisation.last_updated_datetime)
+
+        # case 4.2: when "last-updated-datetime" is more recent than old
+        # element's last_updated_datetime.
+        new_organisation_attribute = {"last-updated-datetime": "2015-09-10",
+                                      "{http://www.w3.org/XML/1998/namespace}lang":  # NOQA: E501
+                                          "en",
+                                      "default-currency": "USD"}
+        new_organisation_XML_element = E("iati-organisation",
+                                         E("organisation-identifier",
+                                           "AA-AAA_123"),
+                                         **new_organisation_attribute)
+        self.organisation_parser_203.iati_organisations__iati_organisation(
+            new_organisation_XML_element)
+
+        # get the organisation again.
+        organisation = self.organisation_parser_203.get_model("Organisation")
+
+        # the parser update the organisation so the last_updated_datetime is
+        # the new one.
+        last_updated_datetime = self.organisation_parser_203.validate_date(
+            new_organisation_XML_element.attrib.get("last-updated-datetime"))
+
+        self.assertEqual(last_updated_datetime,
+                         organisation.last_updated_datetime)
