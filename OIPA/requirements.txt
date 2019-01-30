@@ -65,9 +65,6 @@ factory-boy==2.11.1
 # Working with XML files
 lxml==4.2.1
 
-# Tracking test coverage with https://coveralls.io/:
-python-coveralls==2.9.1
-
 # Extensions to the standard datetime module:
 python-dateutil==2.7.3
 
@@ -83,6 +80,10 @@ pytest-django
 
 # Distributed testing for Pytest
 pytest-xdist
+
+# Test coverage plugin for Pytest
+coverage==4.5.2
+pytest-cov==2.6.0
 
 redis==2.10.6
 

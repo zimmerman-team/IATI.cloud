@@ -11,37 +11,40 @@ def welcome(request, format=None):
 
     The REST API provides programmatic access to read (and soon also write)
     IATI data.
-    The REST API responses are available in JSON.
+    The REST API responses are available in JSON, CSV and XLS for the latter
+    two, you can use the 'export_name' api parameter to give them a name
+    otherwise it will be given a default name, depending on the endpoint
 
     ## Available endpoints
 
     * Activities: [`/api/activities`](/api/activities)
 
-    * Publishers: [`/api/publishers`](/api/publishers)
-
-    * Organisations: [`/api/organisations`](/api/organisations)
-
-    * Results aggregations: [`/api/results/aggregations`](/api/results/aggregations)
-
-    * Locations: [`/api/locations`](/api/locations)
-
-    * Cities: [`/api/cities`](/api/cities)
-
-    * Datasets: [`/api/datasets`](/api/datasets)
-
-    * Sectors: [`/api/sectors`](/api/sectors)
-
-    * Countries: [`/api/countries`](/api/countries)
-
-    * Transactions: [`/api/transactions`](/api/transactions)
-
-    * Regions: [`/api/regions`](/api/regions)
-
     * Budget aggregations: [`/api/budgets/aggregations`](/api/budgets/aggregations)
+
+    * Chains: [`/api/chains`](/api/chains)
 
     * Codelists: [`/api/publishers`](/api/codelists)
 
-    * Chains: [`/api/chains`](/api/chains)
+    * Countries: [`/api/countries`](/api/countries)
+
+    * Current branch: [`/api/branch`](/api/branch)
+
+    * Datasets: [`/api/datasets`](/api/datasets)
+
+    * Locations: [`/api/locations`](/api/locations)
+
+    * Organisations: [`/api/organisations`](/api/organisations)
+
+    * Publishers: [`/api/publishers`](/api/publishers)
+
+    * Regions: [`/api/regions`](/api/regions)
+
+    * Results aggregations: [`/api/results/aggregations`](/api/results/aggregations)
+
+    * Sectors: [`/api/sectors`](/api/sectors)
+
+    * Transactions: [`/api/transactions`](/api/transactions)
+
 
     ## Info about XLS export
 
@@ -69,10 +72,6 @@ def welcome(request, format=None):
     """  # NOQA: E501
     return Response({
         'endpoints': {
-            'cities': reverse(
-                'cities:city-list',
-                request=request,
-                format=format),
             'regions': reverse(
                 'regions:region-list',
                 request=request,
@@ -125,6 +124,11 @@ def welcome(request, format=None):
                 'chains:chain-list',
                 request=request,
                 format=format),
+            'branch': reverse(
+                'branch:current-branch',
+                request=request,
+                format=format
+            )
         }
     })
 

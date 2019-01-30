@@ -14,7 +14,6 @@ urlpatterns = [
                 namespace='export_organisation')),
     url(r'^regions/', include('api.region.urls', namespace='regions')),
     url(r'^countries/', include('api.country.urls', namespace='countries')),
-    url(r'^cities/', include('api.city.urls', namespace='cities')),
     url(r'^locations/', include('api.location.urls', namespace='locations')),
     url(r'^organisations/', include(
         'api.organisation.urls', namespace='organisations'
@@ -33,4 +32,5 @@ urlpatterns = [
     # TODO: no email confirmation? - 2016-10-18
     url(r'^auth/', include('rest_auth.urls')),
     url(r'^auth/registration/', include('rest_auth.registration.urls')),
+    url(r'^branch/', include('api.branch.urls', namespace='branch')),
 ]

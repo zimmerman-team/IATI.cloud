@@ -88,6 +88,7 @@ def perform_initial_tasks():
     queue = django_rq.get_queue("default")
     queue.enqueue(update_iati_codelists)
     queue.enqueue(update_country_data)
+    queue.enqueue(update_region_data)
     queue.enqueue(get_new_sources_from_iati_api)
 
 
@@ -296,7 +297,6 @@ def update_all_geo_data():
     queue.enqueue(update_region_data)
     queue.enqueue(update_country_data)
     queue.enqueue(update_adm1_region_data)
-    queue.enqueue(update_city_data)
 
 
 @job
@@ -320,13 +320,6 @@ def update_adm1_region_data():
     from geodata.importer.admin1region import Adm1RegionImport
     ai = Adm1RegionImport()
     ai.update_from_json()
-
-
-@job
-def update_city_data():
-    from geodata.importer.city import CityImport
-    ci = CityImport()
-    ci.update_cities()
 
 
 #############################################

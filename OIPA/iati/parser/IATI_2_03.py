@@ -922,6 +922,15 @@ class Parse(IatiParser):
 
         return element
 
+    def iati_activities__iati_activity__recipient_country__narrative(self,
+                                                                     element):
+        """attributes:
+
+        tag:narrative"""
+        model = self.get_model('ActivityRecipientCountry')
+        self.add_narrative(element, model)
+        return element
+
     def iati_activities__iati_activity__recipient_region(self, element):
         """attributes:
         code:489
@@ -989,6 +998,15 @@ class Parse(IatiParser):
         self.register_model('ActivityRecipientRegion',
                             activity_recipient_region)
 
+        return element
+
+    def iati_activities__iati_activity__recipient_region__narrative(self,
+                                                                    element):
+        """attributes:
+
+        tag: narrative"""
+        model = self.get_model('ActivityRecipientRegion')
+        self.add_narrative(element, model)
         return element
 
     def iati_activities__iati_activity__location(self, element):
@@ -1391,6 +1409,14 @@ class Parse(IatiParser):
         activity_sector.vocabulary_uri = vocabulary_uri
         self.register_model('ActivitySector', activity_sector)
 
+        return element
+
+    def iati_activities__iati_activity__sector__narrative(self, element):
+        """attribute:
+
+        tag: narrative"""
+        model = self.get_model('ActivitySector')
+        self.add_narrative(element, model)
         return element
 
     def iati_activities__iati_activity__country_budget_items(self, element):
@@ -2516,6 +2542,15 @@ class Parse(IatiParser):
         self.register_model('TransactionSector', transaction_sector)
         return element
 
+    def iati_activities__iati_activity__transaction__sector__narrative(
+            self, element):
+        """attributes:
+
+        tag: narrative"""
+        model = self.get_model('TransactionSector')
+        self.add_narrative(element, model)
+        return element
+
     def iati_activities__iati_activity__transaction__recipient_country(
             self, element):
         """attributes:
@@ -2549,6 +2584,14 @@ class Parse(IatiParser):
         transaction_country.reported_on_transaction = True
 
         self.register_model('TransactionRecipientCountry', transaction_country)
+        return element
+
+    def iati_activities__iati_activity__transaction__recipient_country__narrative(self, element):  # NOQA: E501
+        """attributes:
+
+        tag: narrative"""
+        model = self.get_model('TransactionRecipientCountry')
+        self.add_narrative(element, model)
         return element
 
     def iati_activities__iati_activity__transaction__recipient_region(
@@ -2607,6 +2650,14 @@ class Parse(IatiParser):
 
         self.register_model('TransactionRecipientRegion',
                             transaction_recipient_region)
+        return element
+
+    def iati_activities__iati_activity__transaction__recipient_region__narrative(self, element):  # NOQA:E501
+        """attributes:
+
+        tag: narrative"""
+        model = self.get_model('TransactionRecipientRegion')
+        self.add_narrative(element, model)
         return element
 
     def iati_activities__iati_activity__transaction__flow_type(self, element):
@@ -2990,7 +3041,67 @@ class Parse(IatiParser):
 
         return element
 
+    def iati_activities__iati_activity__conditions(self, element):
+        conditions_attached = element.attrib.get('attached')
+
+        if not conditions_attached:
+            raise RequiredFieldError(
+                "conditions",
+                "attached",
+                "required attribute missing"
+            )
+        activity = self.get_model('Activity')
+        conditions = models.Conditions()
+        conditions.activity = activity
+        conditions.attached = self.makeBool(conditions_attached)
+
+        self.register_model('Conditions', conditions)
+        return element
+
+    # tag: condition"""
+    def iati_activities__iati_activity__conditions__condition(self, element):
+
+        condition_type_code = element.attrib.get('type')
+
+        condition_type = self.get_or_none(codelist_models.ConditionType,
+                                          code=condition_type_code)
+
+        # 'type_code'is required attribute.
+
+        if not condition_type_code:
+            raise RequiredFieldError(
+                "condition",
+                "type",
+                "required attribute missing."
+            )
+
+        #  'condition_type_code' value must be on the 'ConditionType codelist.
+        #  so:'
+
+        if not condition_type:
+            raise FieldValidationError(
+                "condition",
+                "type",
+                "not found on the accompanying codelist.",
+                None,
+                None,
+                condition_type_code
+            )
+        conditions = self.get_model('Conditions')  # parent element
+        condition = models.Condition()
+        condition.conditions = conditions
+        condition.type = condition_type
+
+        self.register_model('Condition', condition)
+        return element
+
     # tag:result"""
+    def iati_activities__iati_activity__conditions__condition__narrative(
+            self, element):
+        condition = self.get_model('Condition')
+        self.add_narrative(element, condition)
+        return element
+
     def iati_activities__iati_activity__result(self, element):
         result_type_code = element.attrib.get('type')
         result_type = self.get_or_none(
@@ -4770,6 +4881,355 @@ class Parse(IatiParser):
         """
         activity_tag = self.get_model('ActivityTag')
         self.add_narrative(element, activity_tag)
+
+    def iati_activities__iati_activity__crs_add(self, element):
+        """New (optional) <crs-add> element inside
+          <iati-activities/iati-activity> element in 2.03
+        """
+        # FIXME: should database relation be changed to OnetoOne?? see #981
+        # we need to check if this element occurs more than once in  the
+        # parent element, which is <iati-activity>
+        activity = self.get_model('Activity')
+        if 'CrsAdd' in self.model_store:
+            for crs_add in self.model_store['CrsAdd']:
+                if crs_add.activity == activity:
+                    raise ParserError("Activity", "CrsAdd", "must occur no "
+                                                            "more than once")
+
+        # 'channel-code' must not occur no more than once within each parent
+        # element.
+        channel_code_list = element.xpath('channel-code')
+
+        if len(channel_code_list) > 1:
+            raise ParserError(
+                "crs-add",
+                "channel-code",
+                "must occur no more than once")
+        elif len(channel_code_list) == 1:
+            channel_code = self.get_or_none(codelist_models.CRSChannelCode,
+                                            code=channel_code_list[0].text)
+            if not channel_code:
+                raise FieldValidationError(
+                    "iati-activities/iati-activity/crs-add",
+                    "channel-code",
+                    "not found on the accompanying code list",
+                    None,
+                    None,
+                    channel_code)
+        else:
+            channel_code = None  # 'channel-code'is optional.
+
+        crs_add = models.CrsAdd()
+        crs_add.activity = activity
+        crs_add.channel_code = channel_code
+        self.register_model('CrsAdd', crs_add)
+        return element
+
+    def iati_activities__iati_activity__crs_add__loan_terms(self, element):
+        '''New (optional) <loan-terms> element for <crs-add> element
+           inside <iati-activity> element in 2.03
+        '''
+
+        rate_1 = element.attrib.get('rate-1')
+        rate_2 = element.attrib.get('rate-2')
+
+        # repayment_type_code is of type list.
+        repayment_type_code = element.xpath('repayment-type')
+        if len(repayment_type_code) > 1:
+            raise ParserError("loan-terms", "repayment-type",
+                              "must occur no more than once.")
+        elif len(repayment_type_code) == 1:
+            # repayment_type_code is of type string.
+            repayment_type_code = repayment_type_code[
+                    0].attrib.get('code')
+            if not repayment_type_code:  # 'code'is required.
+                raise RequiredFieldError(
+                    "repayment-type",
+                    "code",
+                    "required attribute missing."
+                )
+
+            # repayment_type_code is of type LoanRepaymentType object.
+            repayment_type_code = self.get_or_none(
+                codelist_models.LoanRepaymentType, code=repayment_type_code)
+            if repayment_type_code is None:
+                raise FieldValidationError(
+                    "repayment-type",
+                    "code",
+                    "not found on the accompanying codelist",
+                    None,
+                    None,
+                    repayment_type_code)
+
+        # repayment_plan_code is of type list.
+        repayment_plan_code = element.xpath('repayment-plan')
+        if len(repayment_plan_code) > 1:
+            raise ParserError("loan-terms", "repayment-plan",
+                              "must occur no more than once.")
+        elif len(repayment_plan_code) == 1:
+            # repayment_plan_code is of type string.
+            repayment_plan_code = repayment_plan_code[0].attrib.get('code')
+            if not repayment_plan_code:
+                raise RequiredFieldError(
+                    "repayment-plan",
+                    "code",
+                    "required attribute missing."
+                )
+            # repayment_plan_code is of type LoanRepaymentPeriod object.
+            repayment_plan_code = self.get_or_none(
+                codelist_models.LoanRepaymentPeriod,
+                code=repayment_plan_code)
+            if repayment_plan_code is None:
+                raise FieldValidationError(
+                    "repayment-plan",
+                    "code",
+                    "not found on the accompanying codelist.",
+                    None,
+                    None,
+                    repayment_plan_code)
+
+        # commitment_iso_date is of type list.
+        commitment_iso_date = element.xpath('commitment-date')
+        if len(commitment_iso_date) > 1:
+            raise ParserError("loan-terms", "commitment-date",
+                              "must occur no more than once.")
+        elif len(commitment_iso_date) == 1:
+            # commitment_iso_date is of type string.
+            commitment_iso_date = commitment_iso_date[0].attrib.get(
+                'iso-date')
+            if not commitment_iso_date:
+                raise RequiredFieldError(
+                    "commitment-date",
+                    "iso-date",
+                    "required attribute missing."
+                )
+            # commitment_iso_date  is of type datetime.datetime
+            commitment_iso_date = self.validate_date(commitment_iso_date)
+            if commitment_iso_date is None:
+                raise FieldValidationError(
+                    "commitment-date",
+                    "iso-date",
+                    "iso-date is not in correct range.",
+                    None,
+                    None,
+                    )
+
+        # repayment_firs_iso_date is of type list.
+        repayment_first_iso_date = element.xpath('repayment-first-date')
+        if len(repayment_first_iso_date) > 1:
+            raise ParserError("loan-terms", "repayment-first-date",
+                              "must occur no more than once.")
+        elif len(repayment_first_iso_date) == 1:
+            # repayment_first_iso_date is of type string.
+            repayment_first_iso_date = repayment_first_iso_date[0].attrib.get(
+                'iso-date')
+            if not repayment_first_iso_date:
+                raise RequiredFieldError(
+                    "repayment-first-date",
+                    "iso-date",
+                    "required attribute missing."
+                )
+            # repayment_first_iso_date is of type datetime.datetime
+            repayment_first_iso_date = self.validate_date(
+                repayment_first_iso_date)
+            if repayment_first_iso_date is None:
+                raise FieldValidationError(
+                    "repayment-first-date",
+                    "iso-date",
+                    "iso-date is not in correct range.",
+                    None,
+                    None,
+                    )
+
+        # repayment_final_iso_date is of type list.
+        repayment_final_iso_date = element.xpath('repayment-final-date')
+        if len(repayment_final_iso_date) > 1:
+            raise ParserError("loan-terms", "repayment-final-date",
+                              "must occur no more than once.")
+        elif len(repayment_final_iso_date) == 1:
+            # repayment_final_iso_date is of type string.
+            repayment_final_iso_date = repayment_final_iso_date[0].attrib.get(
+                'iso-date')
+            if not repayment_final_iso_date:
+                raise RequiredFieldError(
+                    "repayment-final-date",
+                    "iso-date",
+                    "required attribute missing."
+                )
+            # repayment_final_iso_date is of type datetime.datetime.
+            repayment_final_iso_date = self.validate_date(
+                repayment_final_iso_date)
+            if repayment_final_iso_date is None:
+                raise FieldValidationError(
+                    "repayment-final-date",
+                    "iso-date",
+                    "iso-date is not in correct range.",
+                    None,
+                    None,
+                    )
+
+        crs_add = self.get_model('CrsAdd')
+        crs_add_loan_terms = models.CrsAddLoanTerms()
+        crs_add_loan_terms.crs_add = crs_add
+        crs_add_loan_terms.rate_1 = self.guess_number('loan-terms', rate_1)
+        crs_add_loan_terms.rate_2 = self.guess_number('loan-terms', rate_2)
+        crs_add_loan_terms.repayment_type = repayment_type_code
+        crs_add_loan_terms.repayment_plan = repayment_plan_code
+        crs_add_loan_terms.commitment_date = commitment_iso_date
+        crs_add_loan_terms.repayment_first_date = repayment_first_iso_date
+        crs_add_loan_terms.repayment_final_date = repayment_final_iso_date
+        self.register_model('CrsAddLoanTerms', crs_add_loan_terms)
+        return element
+
+    def iati_activities__iati_activity__crs_add__other_flags(self, element):
+        """"A method to save (optional) <other-flags> element and its
+        attributes inside <crs-add> element in 2.03
+        """
+        code = element.attrib.get('code')
+        significance = element.attrib.get('significance')
+        if not code:
+            raise RequiredFieldError(
+                "crs-add/other-flags",
+                "code",
+                "required attribute missing."
+            )
+        if not significance:
+            raise RequiredFieldError(
+                "crs-add/other-flags",
+                "significance",
+                "required attribute missing."
+            )
+        code_in_codelist = self.get_or_none(codelist_models.OtherFlags,
+                                            code=code)
+        if code_in_codelist is None:
+            raise FieldValidationError(
+                "crs-add/other-flags",
+                "code",
+                "not found on the accompanying code list.",
+                None,
+                None,
+                code)
+        crs_add = self.get_model('CrsAdd')
+        other_flags = models.CrsAddOtherFlags()
+        other_flags.other_flags = code_in_codelist
+        other_flags.significance = self.makeBool(significance)
+        other_flags.crs_add = crs_add
+        self.register_model('CrsAddOtherFlags', other_flags)
+        return element
+
+    def iati_activities__iati_activity__fss(self, element):
+        """"(optional) <fss> element inside <iati-activities/iati-activity>
+        element in 2.03
+        """
+        # FIXME: should database relation be changed to OnetoOne?? see #964
+        activity = self.get_model('Activity')
+        if 'Fss' in self.model_store:
+            for fss in self.model_store['Fss']:
+                if fss.activity == activity:
+                    raise ParserError("Activity", "Fss", "must occur no more "
+                                                         "than once.")
+
+        extraction_date = element.attrib.get('extraction-date')
+        priority = element.attrib.get('priority')
+        phaseout_year = element.attrib.get('phaseout-year')
+
+        if not extraction_date:
+            raise RequiredFieldError(
+                "fss",
+                "extraction-date",
+                "required attribute missing"
+            )
+        extraction_date = self.validate_date(extraction_date)
+
+        if not extraction_date:
+            raise FieldValidationError(
+                "fss",
+                "extraction-date",
+                "extraction-date not of type xsd:date",
+                None,
+                None,
+                element.attrib.get('extraction-date'))
+
+        # phaseout_year must be of type xsd:decimal but here it is checked if
+        # it is integer as it is year.
+
+        if phaseout_year is not None:  # 'phasoutout_year' is an optional
+            # attribute.
+            if not self.isInt(phaseout_year):
+                raise FieldValidationError(
+                            "fss",
+                            "phaseout-year",
+                            "phaseout-year not of type xsd:decimal",
+                            None,
+                            None,
+                            element.attrib.get('phaseout-year'))
+
+        priority_bool = self.makeBool(priority)
+        fss = models.Fss()
+        fss.activity = activity
+        fss.extraction_date = extraction_date
+        fss.phaseout_year = phaseout_year
+        fss.priority = priority_bool
+
+        self.register_model('Fss', fss)
+        return element
+
+    def iati_activities__iati_activity__fss__forecast(self, element):
+        year = element.attrib.get('year')
+        currency = self.get_or_none(models.Currency,
+                                    code=element.attrib.get('currency'))
+        value_date = element.attrib.get('value-date')
+        value = element.text
+
+        if not year:  # year is required field.
+            raise RequiredFieldError(
+                "iati-activity/fss/forecast",
+                "year",
+                "required attribute missing"
+            )
+        else:
+            # year must be of type xsd:decimal but here it is checked
+            # if it is integer as it is year.
+            if not self.isInt(year):
+                raise FieldValidationError(
+                    "forecast",
+                    "year",
+                    "year not of correct type",
+                    None,
+                    None,
+                    element.attrib.get('year'))
+
+        # value_date is optional field.
+        if value_date:
+            value_date = self.validate_date(value_date)
+            if value_date is None:
+                raise FieldValidationError(
+                    "budget/value",
+                    "value-date",
+                    "value-date not in correct range",
+                    None,
+                    None,
+                    element.attrib.get('value-date'))
+
+        if not value:
+            raise RequiredFieldError(
+                "forcast",
+                "value",
+                "required element missing")
+
+        if not currency:
+            currency = self._get_currency_or_raise('forecast', currency)
+
+        decimal_value = self.guess_number('forecast', value)
+        fss = self.get_model('Fss')
+        fss_forecast = models.FssForecast()
+        fss_forecast.value = decimal_value
+        fss_forecast.year = year
+        fss_forecast.currency = currency
+        fss_forecast.value_date = value_date
+        fss_forecast.fss = fss
+        self.register_model('FssForecast', fss_forecast)
+        return element
 
     def post_save_models(self):
         """Perform all actions that need to happen after a single activity's

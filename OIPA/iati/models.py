@@ -1734,7 +1734,6 @@ class CrsAddLoanTerms(models.Model):
         null=True,
         blank=True,
         default=None, on_delete=models.CASCADE)
-    repayment_plan_text = models.TextField(null=True, blank=True, default="")
     commitment_date = models.DateField(null=True, blank=True, default=None)
     repayment_first_date = models.DateField(
         null=True, blank=True, default=None)

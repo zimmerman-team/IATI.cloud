@@ -270,7 +270,7 @@ class ActivityList(CacheResponseMixin, DynamicListView):
     - `recipient_region` (*optional*): Comma separated list of region codes.
     - `sector` (*optional*): Comma separated list of 5-digit sector codes.
     - `sector_category` (*optional*): Comma separated list of 3-digit sector codes.
-    - `reporting_organisation` (*optional*): Comma separated list of reporting organisation IATI identifiers.
+    - `reporting_organisation_identifier` (*optional*): Comma separated list of reporting organisation IATI identifiers.
     - `participating_organisation` (*optional*): Comma separated list of organisation id's.
     - `total_budget_value_lte` (*optional*): Less then or equal total budget value
     - `total_budget_value_gte` (*optional*): Greater then or equal total budget value
@@ -551,6 +551,74 @@ class ActivityTransactionList(DynamicListView):
         pk = self.kwargs.get('pk')
         try:
             return Activity.objects.get(pk=pk).\
+                transaction_set.all().order_by('id')
+        except Activity.DoesNotExist:
+            return Transaction.objects.none().order_by('id')
+
+
+class ActivityTransactionListByIatiIdentifier(DynamicListView):
+    """
+    Returns a list of IATI Activity Transactions stored in OIPA.
+
+    ## URI Format
+
+    ```
+    /api/activities/{iati_identifier}/transactions
+    ```
+
+    ### URI Parameters
+
+    - `iati_identifier`: Desired activity IATI identifier
+
+    ## Request parameters:
+
+    - `recipient_country` (*optional*): Recipient countries list.
+        Comma separated list of strings.
+    - `recipient_region` (*optional*): Recipient regions list.
+        Comma separated list of integers.
+    - `sector` (*optional*): Sectors list. Comma separated list of integers.
+    - `sector_category` (*optional*): Sectors list. Comma separated list of integers.
+    - `reporting_organisations` (*optional*): Organisation ID's list.
+    - `participating_organisations` (*optional*): Organisation IDs list.
+        Comma separated list of strings.
+    - `min_total_budget` (*optional*): Minimal total budget value.
+    - `max_total_budget` (*optional*): Maximal total budget value.
+    - `activity_status` (*optional*):
+
+
+    - `related_activity_id` (*optional*):
+    - `related_activity_type` (*optional*):
+    - `related_activity_recipient_country` (*optional*):
+    - `related_activity_recipient_region` (*optional*):
+    - `related_activity_sector` (*optional*):
+
+    ## Searching is performed on fields:
+
+    - `description`
+    - `provider_organisation_name`
+    - `receiver_organisation_name`
+
+    """  # NOQA: E501
+    serializer_class = TransactionSerializer
+    filter_class = TransactionFilter
+
+    # TODO: Create cached logic for this class
+    """
+    This class has unique URL so not compatible the rest_framework_extensions
+    cached. We should make a Params Key Constructor function
+    then override the default below function and will be like below:
+
+    @cache_response(key_func=YourQueryParamsKeyConstructor())
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+    """
+
+    def get_queryset(self):
+        # Override default get query to get transaction list by primary key of
+        # the activity
+        iati_identifier = self.kwargs.get('iati_identifier')
+        try:
+            return Activity.objects.get(iati_identifier=iati_identifier).\
                 transaction_set.all().order_by('id')
         except Activity.DoesNotExist:
             return Transaction.objects.none().order_by('id')

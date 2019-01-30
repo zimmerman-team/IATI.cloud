@@ -82,7 +82,6 @@ class TestCountrySerializers(TestCase):
             'name',
             'alt_name',
             'language',
-            'capital_city',
             'region',
             'un_region',
             'unesco_region',
@@ -92,7 +91,6 @@ class TestCountrySerializers(TestCase):
             'fips10',
             'data_source',
             'activities',
-            'cities',
             'location',
             'polygon',
         )
