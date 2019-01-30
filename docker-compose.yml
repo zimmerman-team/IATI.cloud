@@ -6,8 +6,8 @@ version: "3"
 services:
 
   db:
-    #FIXME: this is using latest (not particular) Postgres version:
-    image: kartoza/postgis
+    #See https://hub.docker.com/r/kartoza/postgis for version info
+    image: kartoza/postgis:9.6-2.4
     environment:
       POSTGRES_DB: oipa
       POSTGRES_USER: oipa
