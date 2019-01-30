@@ -4,6 +4,7 @@ import datetime
 from django.test import TestCase as DjangoTestCase
 from lxml.builder import E
 
+from iati.factory import iati_factory
 from iati.parser.exceptions import ParserError, RequiredFieldError
 from iati.parser.parse_manager import ParseManager
 from iati_codelists.factory import codelist_factory
@@ -152,3 +153,62 @@ class OrganisationsOrganisationTestCase(DjangoTestCase):
 
         self.assertEqual(last_updated_datetime,
                          organisation.last_updated_datetime)
+
+
+class OrganisationsOrganisationNameTestCase(DjangoTestCase):
+
+    def setUp(self):
+        # 'Main' XML file for instantiating parser:
+        xml_file_attrs = {
+            "generated-datetime": datetime.datetime.now().isoformat(),
+            "version": '2.03',
+        }
+        self.iati_203_XML_file = E("iati-organisations", **xml_file_attrs)
+
+        dummy_source = synchroniser_factory.DatasetFactory(filetype=2)
+
+        self.organisation_parser_203 = ParseManager(
+            dataset=dummy_source,
+            root=self.iati_203_XML_file,
+        ).get_parser()
+
+        # related objects.
+        self.organisation = iati_factory.OrganisationFactory()
+        self.organisation_parser_203.register_model(
+            "Organisation", self.organisation)
+
+    def test_iati_organisations__iati_organisation__name(self):
+        # case 1 : child element 'narrative' is missing.
+        name_attribute = {}
+        name_XML_element = E("name",
+                             # E("narrative", "text"),
+                             **name_attribute)
+        try:
+            self.organisation_parser_203\
+                .iati_organisations__iati_organisation__name(name_XML_element)
+        except RequiredFieldError as inst:
+            self.assertEqual("narrative", inst.field)
+            self.assertEqual("must occur at least once.", inst.message)
+
+        # case 2: when all is ok.
+        name_XML_element = E("name",
+                             E("narrative", "text"),
+                             **name_attribute)
+        self.organisation_parser_203\
+            .iati_organisations__iati_organisation__name(name_XML_element)
+
+        # get 'name' back.
+        name = self.organisation_parser_203.get_model("OrganisationName")
+        self.assertEqual(self.organisation, name.organisation)
+
+        # case 3: when 'name' element occurs more than once in its parent
+        # element, which is 'organisation'.
+        name_XML_element = E("name",
+                             E("narrative", "text"),
+                             **name_attribute)
+        try:
+            self.organisation_parser_203\
+                .iati_organisations__iati_organisation__name(name_XML_element)
+        except ParserError as inst:
+            self.assertEqual("OrganisationName", inst.field)
+            self.assertEqual("must occur no more than once.", inst.message)

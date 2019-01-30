@@ -221,6 +221,17 @@ class Parse(IatiParser):
                 if name.organisation == organisation:
                     raise ParserError("Organisation", "OrganisationName",
                                       "must occur no more than once.")
+        # narrative is parsed in different method but as it is required
+        # sub-element in 'name' element so we check it here.
+        narrative = element.xpath("narrative")
+        if len(narrative) < 1:
+            raise RequiredFieldError("OrganisationName", "narrative",
+                                     "must occur at least once.")
+        organisation_name = OrganisationName()
+        organisation_name.organisation = organisation
+
+        self.register_model("OrganisationName", organisation_name)
+        return element
 
     def post_save_models(self):
         """Perform all actions that need to happen after a single
