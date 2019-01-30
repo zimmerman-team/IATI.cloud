@@ -6,12 +6,8 @@ version: "3"
 services:
 
   db:
-    image: postgres
-    #expose:
-    #- "5432"
-    #restart: always
-    #ports:
-      #- "5432:5432"
+    #FIXME: this is using latest (not particular) Postgres version:
+    image: kartoza/postgis
     environment:
       POSTGRES_DB: oipa
       POSTGRES_USER: oipa
