@@ -13,11 +13,15 @@ services:
       POSTGRES_USER: oipa
       POSTGRES_PASSWORD: oipa
 
+  oipa-redis:
+    image: redis:4.0.10
+
   oipa:
     build: .
     #this starts 'db' service:
     depends_on:
       - db
+      - oipa-redis
     #see: https://docs.docker.com/compose/startup-order/
     command: ["/app/src/docker-entrypoint.sh", "python3.6", "/app/src/OIPA/manage.py", "runserver", "0.0.0.0:8000"]
     ports:

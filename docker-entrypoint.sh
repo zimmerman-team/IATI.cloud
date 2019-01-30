@@ -12,9 +12,10 @@ cmd="$@"
 
 #Wait for database:
 
-#XXX: this is quite sensitive and at some cases might fail, because it is very
-#difficult to determine when database is at 'ready' state. Try to play around
-#with 'sleep' settings here.
+#FIXME: this is quite sensitive and at some cases fails, because it is very
+#difficult to determine when database is at 'ready' state. Especially when db
+#already exists.
+
 until PGPASSWORD=$POSTGRES_PASSWORD psql -h $POSTGRES_HOST -U $POSTGRES_USER -c '\q'; do
   >&2 echo "Postgres is unavailable - sleeping"
   sleep 1
