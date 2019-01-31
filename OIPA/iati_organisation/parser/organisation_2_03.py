@@ -113,13 +113,15 @@ class Parse(IatiParser):
         normalized_organisation_identifier = self._normalize(
             organisation_identifier)
 
-        # Although name is saved in different table, according to
-        # specifications it must occur once and only once in organisation
-        # element. So we check if 'name' element occurs at least once here.
+        # Although name and reporting-org is saved in different table,
+        # according to specifications it must occur once and only once in
+        # organisation element. So we check if 'name' and 'reporting-org'
+        # element occurs at least once here.
         name = element.xpath("name")
-        if len(name) is not 1:
-            raise ParserError("Organisation", "name", "must occur at least "
-                                                      "once.")
+        reporting_org = element.xpath("reporting-org")
+        if len(name) and len(reporting_org) is not 1:
+            raise ParserError("Organisation", "name and reporting-org",
+                              "must occur at least once.")
 
         last_updated_datetime = self.validate_date(element.attrib.get(
             "last-updated-datetime"))
