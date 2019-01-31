@@ -287,6 +287,12 @@ class Parse(IatiParser):
         self.register_model("OrganisationReportingOrganisation", reporting_org)
         return element
 
+    def iati_organisations__iati_organisation__reporting_org__narrative(
+            self, element):
+        reporting_org = self.get_model('OrganisationReportingOrganisation')
+        self.add_narrative(element, reporting_org)
+        return element
+
     def post_save_models(self):
         """Perform all actions that need to happen after a single
         organisation's been parsed."""
