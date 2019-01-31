@@ -39,7 +39,7 @@ class Parse(IatiParser):
         self.total_expenditure_line_current_index = 0
 
     def add_narrative(self, element, parent):
-        default_lang = self.default_lang  # set on activity (if set)
+        default_lang = self.default_lang  # set on organisation. (if set)
         lang = element.attrib.get('{http://www.w3.org/XML/1998/namespace}lang')
         text = element.text
 
@@ -115,11 +115,11 @@ class Parse(IatiParser):
 
         # Although name is saved in different table, according to
         # specifications it must occur once and only once in organisation
-        # element. So we check 'name' element here.
+        # element. So we check if 'name' element occurs at least once here.
         name = element.xpath("name")
         if len(name) is not 1:
-            raise ParserError("Organisation", "name", "must occur once and "
-                                                      "only once.")
+            raise ParserError("Organisation", "name", "must occur at least "
+                                                      "once.")
 
         last_updated_datetime = self.validate_date(element.attrib.get(
             "last-updated-datetime"))
