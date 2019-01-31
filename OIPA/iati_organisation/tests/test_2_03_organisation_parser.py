@@ -51,6 +51,20 @@ class OrganisationsOrganisationTestCase(DjangoTestCase):
             self.assertEqual("organisation-identifier", inst.field)
             self.assertEqual("must occur once and only once.", inst.message)
 
+        # case 3: when child element 'name' is missing.
+        organisation_XML_element = E("iati-organisation",
+                                     E("organisation-identifier",
+                                       "AA-AAA_123"),
+                                     # E("name", E("narrative", "text")),
+                                     **organisation_attribute)
+
+        try:
+            self.organisation_parser_203\
+                .iati_organisations__iati_organisation(organisation_XML_element)
+        except ParserError as inst:
+            self.assertEqual("name", inst.field)
+            self.assertEqual("must occur at least once.", inst.message)
+
         # case 2: organisation-identifier occurs more than once.
         organisation_XML_element = E("iati_organisation",
                                      E("organisation-identifier",
