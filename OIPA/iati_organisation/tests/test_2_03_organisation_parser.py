@@ -42,6 +42,8 @@ class OrganisationsOrganisationTestCase(DjangoTestCase):
                                      # E("organisation-identifier",
                                      # "AA-AAA_123"),
                                      E("name", E("narrative", "text")),
+                                     E("reporting-org", E("narrative",
+                                                          "text")),
                                      **organisation_attribute)
         try:
             self.organisation_parser_203\
@@ -51,27 +53,31 @@ class OrganisationsOrganisationTestCase(DjangoTestCase):
             self.assertEqual("organisation-identifier", inst.field)
             self.assertEqual("must occur once and only once.", inst.message)
 
-        # case 3: when child element 'name' is missing.
+        # case 2: when child element 'name' and 'reporting-org' is missing.
         organisation_XML_element = E("iati-organisation",
                                      E("organisation-identifier",
                                        "AA-AAA_123"),
                                      # E("name", E("narrative", "text")),
+                                     # E("reporting-org", E("narrative",
+                                     # "text")),
                                      **organisation_attribute)
 
         try:
             self.organisation_parser_203\
                 .iati_organisations__iati_organisation(organisation_XML_element)
         except ParserError as inst:
-            self.assertEqual("name", inst.field)
+            self.assertEqual("name and reporting-org", inst.field)
             self.assertEqual("must occur at least once.", inst.message)
 
-        # case 2: organisation-identifier occurs more than once.
+        # case 3: organisation-identifier occurs more than once.
         organisation_XML_element = E("iati_organisation",
                                      E("organisation-identifier",
                                        "AA-AAA-123"),
                                      E("organisation-identifier",
                                        "AA-ABC-123"),
                                      E("name", E("narrative", "text")),
+                                     E("reporting-org", E("narrative",
+                                                          "text")),
                                      **organisation_attribute)
         try:
             self.organisation_parser_203\
@@ -81,10 +87,12 @@ class OrganisationsOrganisationTestCase(DjangoTestCase):
             self.assertEqual("organisation-identifier", inst.field)
             self.assertEqual("must occur once and only once.", inst.message)
 
-        # case 3: when text in organisation-identifier element is missing.
+        # case 4: when text in organisation-identifier element is missing.
         organisation_XML_element = E("iati-organisation",
                                      E("organisation-identifier"),  # no text
                                      E("name", E("narrative", "text")),
+                                     E("reporting-org", E("narrative",
+                                                          "text")),
                                      **organisation_attribute)
         try:
             self.organisation_parser_203\
@@ -94,11 +102,13 @@ class OrganisationsOrganisationTestCase(DjangoTestCase):
             self.assertEqual("organisation-identifier", inst.field)
             self.assertEqual("required field missing.", inst.message)
 
-        # case 3: when all is well.
+        # case 5: when all is well.
         organisation_XML_element = E("iati-organisation",
                                      E("organisation-identifier",
                                        "AA-AAA_123"),
                                      E("name", E("narrative", "text")),
+                                     E("reporting-org", E("narrative",
+                                                          "text")),
                                      **organisation_attribute)
         self.organisation_parser_203.iati_organisations__iati_organisation(
             organisation_XML_element)
@@ -117,10 +127,10 @@ class OrganisationsOrganisationTestCase(DjangoTestCase):
         self.assertEqual(organisation_identifier,
                          organisation.organisation_identifier)
 
-        # case 4: when there are more than one organisation.
+        # case 5: when there are more than one organisation.
         organisation.save()
 
-        # case 4.1: when "last-updated-datetime" is earlier than old
+        # case 5.1: when "last-updated-datetime" is earlier than old
         # element's last_updated_datetime.
         new_organisation_attribute = {"last-updated-datetime": "2012-09-10",
                                       "{"
@@ -130,6 +140,8 @@ class OrganisationsOrganisationTestCase(DjangoTestCase):
                                          E("organisation-identifier",
                                            "AA-AAA_123"),
                                          E("name", E("narrative", "text")),
+                                         E("reporting-org", E("narrative",
+                                                              "text")),
                                          **new_organisation_attribute)
         self.organisation_parser_203.iati_organisations__iati_organisation(
             new_organisation_XML_element)
@@ -142,7 +154,7 @@ class OrganisationsOrganisationTestCase(DjangoTestCase):
         self.assertEqual(last_updated_datetime,
                          organisation.last_updated_datetime)
 
-        # case 4.2: when "last-updated-datetime" is more recent than old
+        # case 5.2: when "last-updated-datetime" is more recent than old
         # element's last_updated_datetime.
         new_organisation_attribute = {"last-updated-datetime": "2015-09-10",
                                       "{http://www.w3.org/XML/1998/namespace}lang":  # NOQA: E501
@@ -152,6 +164,8 @@ class OrganisationsOrganisationTestCase(DjangoTestCase):
                                          E("organisation-identifier",
                                            "AA-AAA_123"),
                                          E("name", E("narrative", "text")),
+                                         E("reporting-org", E("narrative",
+                                                              "text")),
                                          **new_organisation_attribute)
         self.organisation_parser_203.iati_organisations__iati_organisation(
             new_organisation_XML_element)
