@@ -311,7 +311,7 @@ class Parse(IatiParser):
             raise ParserError("TotalBudget",
                               "period-start",
                               "must occur once and only once.")
-        period_start_date = period_start[0].atrib.get("iso-date")
+        period_start_date = period_start[0].attrib.get("iso-date")
         if period_start_date is None:
             raise RequiredFieldError("TotalBudget", "iso-date", "required "
                                                                 "field "
