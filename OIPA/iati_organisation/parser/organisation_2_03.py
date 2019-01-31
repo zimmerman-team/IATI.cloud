@@ -1,7 +1,8 @@
 from django.conf import settings
 
-from iati.parser.exceptions import ParserError, RequiredFieldError, \
-    FieldValidationError
+from iati.parser.exceptions import (
+    FieldValidationError, ParserError, RequiredFieldError
+)
 from iati.parser.iati_parser import IatiParser
 from iati_codelists import models as codelist_models
 from iati_organisation.models import (
@@ -236,7 +237,7 @@ class Parse(IatiParser):
         self.register_model("OrganisationName", organisation_name)
         return element
 
-    def iati_organisations__iati_organisation_reporting_org(self, element):
+    def iati_organisations__iati_organisation__reporting_org(self, element):
         # Although OrganisationReportingOrganisation and Organisation has
         # One-to-One relation on the database level, we check here whether
         # element 'reporting-org' occurs only once in the parent element
@@ -269,8 +270,8 @@ class Parse(IatiParser):
         if org_type is None:
             raise FieldValidationError(
                 "OrganisationReportingOrganisation",
-                "ref",
-                "not found on the accompanying code list.",
+                "type",
+                "not found on the accompanying codelist.",
                 None,
                 None,
             )
@@ -285,8 +286,6 @@ class Parse(IatiParser):
 
         self.register_model("OrganisationReportingOrganisation", reporting_org)
         return element
-
-
 
     def post_save_models(self):
         """Perform all actions that need to happen after a single

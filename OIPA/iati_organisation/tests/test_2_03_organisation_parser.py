@@ -5,7 +5,9 @@ from django.test import TestCase as DjangoTestCase
 from lxml.builder import E
 
 from iati.factory import iati_factory
-from iati.parser.exceptions import ParserError, RequiredFieldError
+from iati.parser.exceptions import (
+    FieldValidationError, ParserError, RequiredFieldError
+)
 from iati.parser.parse_manager import ParseManager
 from iati_codelists.factory import codelist_factory
 from iati_synchroniser.factory import synchroniser_factory
@@ -240,4 +242,123 @@ class OrganisationsOrganisationNameTestCase(DjangoTestCase):
                 .iati_organisations__iati_organisation__name(name_XML_element)
         except ParserError as inst:
             self.assertEqual("OrganisationName", inst.field)
+            self.assertEqual("must occur no more than once.", inst.message)
+
+
+class OrganisationsOrganisationReportingOrganisationTestCase(DjangoTestCase):
+    def setUp(self):
+        # 'Main' XML file for instantiating parser:
+        xml_file_attrs = {
+            "generated-datetime": datetime.datetime.now().isoformat(),
+            "version": '2.03',
+        }
+        self.iati_203_XML_file = E("iati-organisations", **xml_file_attrs)
+
+        dummy_source = synchroniser_factory.DatasetFactory(filetype=2)
+
+        self.organisation_parser_203 = ParseManager(
+            dataset=dummy_source,
+            root=self.iati_203_XML_file,
+        ).get_parser()
+
+        # related objects.
+        self.organisation_type = codelist_factory.OrganisationTypeFactory()
+        self.organisation = iati_factory.OrganisationFactory()
+        self.organisation_parser_203.register_model(
+            "Organisation", self.organisation)
+
+    def test_iati_organisations__iati_organisation__reporting_org(self):
+        # case 1 : child element 'narrative' is missing.
+        reporting_org_attribute = {"ref": "AA-AAA-123",
+                                   "type": "40",
+                                   "secondary-reporter": "1"}
+        reporting_org_XML_element = E("reporting-org",
+                                      # E("narrative", "text"),
+                                      **reporting_org_attribute)
+        try:
+            self.organisation_parser_203 \
+                .iati_organisations__iati_organisation__reporting_org(
+                    reporting_org_XML_element)
+        except RequiredFieldError as inst:
+            self.assertEqual("narrative", inst.field)
+            self.assertEqual("must occur at least once.", inst.message)
+
+        # case 2: when "ref" is missing.
+        reporting_org_attribute = {  # "ref": "AA-AAA-123",
+                                   "type": "40",
+                                   "secondary-reporter": "1"}
+        reporting_org_XML_element = E("reporting-org",
+                                      E("narrative", "text"),
+                                      **reporting_org_attribute)
+        try:
+            self.organisation_parser_203\
+                .iati_organisations__iati_organisation__reporting_org(
+                    reporting_org_XML_element)
+        except RequiredFieldError as inst:
+            self.assertEqual("ref", inst.field)
+            self.assertEqual("required field missing.", inst.message)
+
+        # case 3: when "type" is missing.
+        reporting_org_attribute = {"ref": "AA-AAA-123",
+                                   # "type": "40",
+                                   "secondary-reporter": "1"}
+        reporting_org_XML_element = E("reporting-org",
+                                      E("narrative", "text"),
+                                      **reporting_org_attribute)
+        try:
+            self.organisation_parser_203 \
+                .iati_organisations__iati_organisation__reporting_org(
+                    reporting_org_XML_element)
+        except RequiredFieldError as inst:
+            self.assertEqual("type", inst.field)
+            self.assertEqual("required field missing.", inst.message)
+
+        # case 4: when "type" is not in the codelist.
+        reporting_org_attribute = {"ref": "AA-AAA-123",
+                                   "type": "40",
+                                   "secondary-reporter": "1"}
+        reporting_org_XML_element = E("reporting-org",
+                                      E("narrative", "text"),
+                                      **reporting_org_attribute)
+        try:
+            self.organisation_parser_203 \
+                .iati_organisations__iati_organisation__reporting_org(
+                    reporting_org_XML_element)
+        except FieldValidationError as inst:
+            self.assertEqual("type", inst.field)
+            self.assertEqual("not found on the accompanying codelist.",
+                             inst.message)
+
+        # case 5: when all is ok.
+        reporting_org_attribute = {"ref": "AA-AAA-123",
+                                   "type": "10",
+                                   "secondary-reporter": "1"}
+        reporting_org_XML_element = E("reporting-org",
+                                      E("narrative", "text"),
+                                      **reporting_org_attribute)
+        self.organisation_parser_203\
+            .iati_organisations__iati_organisation__reporting_org(
+                reporting_org_XML_element)
+
+        # get the "reporting_org" object to check its related fields.
+        reporting_org = self.organisation_parser_203.get_model(
+            "OrganisationReportingOrganisation")
+
+        self.assertEqual(reporting_org_XML_element.attrib.get("ref"),
+                         reporting_org.reporting_org_identifier)
+        self.assertEqual(self.organisation, reporting_org.organisation)
+        self.assertEqual(self.organisation_type, reporting_org.org_type)
+        self.assertTrue(reporting_org.secondary_reporter)
+
+        # case 6: when 'reporting-org' element occurs more than once in its
+        # parent element, which is 'organisation'.
+        reporting_org_XML_element = E("reporting-org",
+                                      E("narrative", "text"),
+                                      **reporting_org_attribute)
+        try:
+            self.organisation_parser_203 \
+                .iati_organisations__iati_organisation__reporting_org(
+                    reporting_org_XML_element)
+        except ParserError as inst:
+            self.assertEqual("OrganisationReportingOrganisation", inst.field)
             self.assertEqual("must occur no more than once.", inst.message)
