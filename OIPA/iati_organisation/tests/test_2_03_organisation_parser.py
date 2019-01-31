@@ -119,7 +119,7 @@ class OrganisationsOrganisationTestCase(DjangoTestCase):
 
         # case 4: when there are more than one organisation.
         organisation.save()
-        self.organisation_parser_203.model_store
+
         # case 4.1: when "last-updated-datetime" is earlier than old
         # element's last_updated_datetime.
         new_organisation_attribute = {"last-updated-datetime": "2012-09-10",
