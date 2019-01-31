@@ -187,8 +187,11 @@ class Parse(IatiParser):
 
                 return element
             else:  # if the current element's date is later than or equal to
-                # the existing element's date, do nothing and return.
-                return element
+                # the existing element's date, raise parser error.
+                raise ParserError("Organisation", msg="last-updated-datetime "
+                                                      "is earlier than old "
+                                                      "element's "
+                                                      "last_updated_datetime.")
         else:
             organisation = Organisation()
 
@@ -235,6 +238,25 @@ class Parse(IatiParser):
         organisation_name.organisation = organisation
 
         self.register_model("OrganisationName", organisation_name)
+        return element
+
+    def iati_organisations__iati_organisation__name__narrative(self, element):
+        name = self.get_model('OrganisationName')
+        self.add_narrative(element, name)
+
+        # adding primary_name in the "Organisation" table.
+        if element.text:
+
+            organisation = self.get_model('Organisation')
+
+            if organisation.primary_name:
+                default_lang = self.default_lang  # set on activity (if set)
+                lang = element.attrib.get(
+                    '{http://www.w3.org/XML/1998/namespace}lang', default_lang)
+                if lang == 'en':
+                    organisation.primary_name = element.text
+            else:
+                organisation.primary_name = element.text
         return element
 
     def iati_organisations__iati_organisation__reporting_org(self, element):

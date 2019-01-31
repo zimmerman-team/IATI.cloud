@@ -147,16 +147,12 @@ class OrganisationsOrganisationTestCase(DjangoTestCase):
                                          E("reporting-org", E("narrative",
                                                               "text")),
                                          **new_organisation_attribute)
-        self.organisation_parser_203.iati_organisations__iati_organisation(
-            new_organisation_XML_element)
-
-        # get organisation again.
-        organisation = self.organisation_parser_203.get_model("Organisation")
-
-        # the parser do not update anything so the last_updated_datetime is
-        # old one.
-        self.assertEqual(last_updated_datetime,
-                         organisation.last_updated_datetime)
+        try:
+            self.organisation_parser_203.iati_organisations__iati_organisation(
+                new_organisation_XML_element)
+        except ParserError as inst:
+            self.assertEqual("last-updated-datetime is earlier than old " 
+                             "element's last_updated_datetime.", inst.message)
 
         # case 5.2: when "last-updated-datetime" is more recent than old
         # element's last_updated_datetime.
