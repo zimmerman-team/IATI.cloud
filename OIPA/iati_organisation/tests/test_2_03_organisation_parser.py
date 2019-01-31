@@ -64,7 +64,8 @@ class OrganisationsOrganisationTestCase(DjangoTestCase):
 
         try:
             self.organisation_parser_203\
-                .iati_organisations__iati_organisation(organisation_XML_element)
+                .iati_organisations__iati_organisation(
+                    organisation_XML_element)
         except ParserError as inst:
             self.assertEqual("name and reporting-org", inst.field)
             self.assertEqual("must occur at least once.", inst.message)
