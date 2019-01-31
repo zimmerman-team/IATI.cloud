@@ -185,8 +185,11 @@ class Parse(IatiParser):
 
                 return element
             else:  # if the current element's date is later than or equal to
-                # the existing element's date, do nothing and return.
-                return element
+                # the existing element's date, raise parser error.
+                raise ParserError("Organisation", msg="last-updated-datetime "
+                                                      "is earlier than old "
+                                                      "element's "
+                                                      "last_updated_datetime.")
         else:
             organisation = Organisation()
 
