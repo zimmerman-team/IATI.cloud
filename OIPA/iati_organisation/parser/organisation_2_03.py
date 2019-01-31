@@ -293,6 +293,110 @@ class Parse(IatiParser):
         self.add_narrative(element, reporting_org)
         return element
 
+    def iati_organisations__iati_organisation__total_budget(self, element):
+        status = element.attrib.get("status")
+        if status:
+            status = self.get_or_none(codelist_models.BudgetStatus,
+                                      code=status)
+            if status is None:
+                raise FieldValidationError(
+                    "OrganisationReportingOrganisation",
+                    "type",
+                    "not found on the accompanying codelist.",
+                    None,
+                    None,
+                )
+        period_start = element.xpath("period-start")
+        if len(period_start) is not 1:
+            raise ParserError("TotalBudget",
+                              "period-start",
+                              "must occur once and only once.")
+        period_start_date = period_start[0].atrib.get("iso-date")
+        if period_start_date is None:
+            raise RequiredFieldError("TotalBudget", "iso-date", "required "
+                                                                "field "
+                                                                "missing.")
+        period_start_date = self.validate_date(period_start_date)
+        if not period_start_date:
+            raise FieldValidationError(
+                "TotalBudget",
+                "iso-date",
+                "not of type xsd:date",
+                None,
+                None,
+                )
+
+        period_end = element.xpath("period-end")
+        if len(period_end) is not 1:
+            raise ParserError("TotalBudget",
+                              "period-end",
+                              "must occur once and only once.")
+        period_end_date = period_end[0].atrib.get("iso-date")
+        if period_end_date is None:
+            raise RequiredFieldError("TotalBudget", "iso-date", "required "
+                                                                "field "
+                                                                "missing.")
+        period_end_date = self.validate_date(period_end_date)
+        if not period_end_date:
+            raise FieldValidationError(
+                "TotalBudget",
+                "iso-date",
+                "not of type xsd:date",
+                None,
+                None,
+            )
+
+        value_element = element.xpath("period-start")
+        if len(value_element) is not 1:
+            raise ParserError("TotalBudget",
+                              "value",
+                              "must occur once and only once.")
+        value = self.guess_number(value_element[0].text)
+
+        currency = value_element[0].attrib.get("currency")
+        if not currency and not self.default_currency:
+            raise ParserError("TotalBudget", "currency",
+                              "required for all currency amounts unless the "
+                              "iati-organisation/@default-currency attribute "
+                              "is specified.")
+        currency = self.get_or_none(codelist_models.Currency, code=currency)
+        if currency is None:
+            raise FieldValidationError(
+                "TotalBudget",
+                "currency",
+                "not found on the accompanying codelist.",
+                None,
+                None,
+            )
+        value_date = value_element[0].atrib.get("value-date")
+        if value_date is None:
+            raise RequiredFieldError("TotalBudget", "value-date", "required "
+                                                                  "field "
+                                                                  "missing.")
+        value_date = self.validate_date(value_date)
+        if not value_date:
+            raise FieldValidationError(
+                "TotalBudget",
+                "value-date",
+                "not of type xsd:date",
+                None,
+                None,
+            )
+        total_budget = self.get_model("TotalBudget")
+        total_budget.status = status
+        total_budget.period_start = period_start_date
+        total_budget.period_end = period_end_date
+        total_budget.value = value
+        total_budget.currency = currency
+        total_budget.value_date = value_date
+        self.register_model("TotalBudget", total_budget)
+
+
+
+
+
+
+
     def post_save_models(self):
         """Perform all actions that need to happen after a single
         organisation's been parsed."""
