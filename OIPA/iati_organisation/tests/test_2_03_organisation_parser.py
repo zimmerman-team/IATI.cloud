@@ -315,7 +315,7 @@ class OrganisationsOrganisationReportingOrganisationTestCase(DjangoTestCase):
 
         # case 4: when "type" is not in the codelist.
         reporting_org_attribute = {"ref": "AA-AAA-123",
-                                   "type": "40",
+                                   "type": "409999",
                                    "secondary-reporter": "1"}
         reporting_org_XML_element = E("reporting-org",
                                       E("narrative", "text"),
@@ -336,6 +336,7 @@ class OrganisationsOrganisationReportingOrganisationTestCase(DjangoTestCase):
         reporting_org_XML_element = E("reporting-org",
                                       E("narrative", "text"),
                                       **reporting_org_attribute)
+
         self.organisation_parser_203\
             .iati_organisations__iati_organisation__reporting_org(
                 reporting_org_XML_element)
