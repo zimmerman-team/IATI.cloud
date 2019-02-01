@@ -43,5 +43,5 @@ else 'Superuser already exists . . .'"
 python3.6 /app/src/OIPA/manage.py supervisor -d
 
 # Start dev server:
->&2 echo "Postgres is up - executing command . . ."
+>&2 echo "\n\n\n*** Database is up - executing Docker container entrypoint (startup) command ***\n\n\n"
 exec $cmd
