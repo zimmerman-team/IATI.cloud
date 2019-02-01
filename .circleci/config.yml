@@ -72,10 +72,10 @@ jobs:
             pytest OIPA/ --cov-report xml
             # send this report to Codacy:
             python-codacy-coverage -r coverage.xml
-            environment:
-              # Environment variable to be able to send test coverage to
-              # Codacy:
-              CODACY_PROJECT_TOKEN: 3ea587a799264a99a57a4f3512b5383a
+          environment:
+            # Environment variable to be able to send test coverage to
+            # Codacy:
+            CODACY_PROJECT_TOKEN: 3ea587a799264a99a57a4f3512b5383a
 
       - store_artifacts:
           path: test-reports
