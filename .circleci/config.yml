@@ -68,7 +68,7 @@ jobs:
           name: Run Pytest tests
           command: |
             . env/bin/activate
-            pytest OIPA/
+            pytest OIPA/ --cov-report xml
 
       - store_artifacts:
           path: test-reports
