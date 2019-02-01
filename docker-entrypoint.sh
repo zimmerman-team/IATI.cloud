@@ -10,18 +10,17 @@ set -e
 
 cmd="$@"
 
-#Wait for database:
-
-#FIXME: this is quite sensitive and at some cases fails, because it is very
-#difficult to determine when database is at 'ready' state. Especially when db
-#already exists. A workaround is to remove postgis image and run
-#'docker-compose up' again. TODO: wait for open port?:
-# https://stackoverflow.com/a/27601038/2942981
-
+#Wait for database to be ready:
 until PGPASSWORD=$POSTGRES_PASSWORD psql -h $POSTGRES_HOST -U $POSTGRES_USER -c '\q'; do
   >&2 echo "Postgres is unavailable - sleeping"
   sleep 1
 done
+
+#We need this when Docker containers are *resumed*, because stuff happens too
+#quickly (when database container is already built) and the above psql check
+#can not even detect it:
+>&2 echo "Caution sleeping for 5 secs . . ."
+sleep 5
 
 #Run migrations:
 >&2 echo "Running migrations . . ."
