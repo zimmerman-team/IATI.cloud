@@ -40,9 +40,6 @@
         <narrative>Ministerie van Buitenlandse Zaken, Postbus 20061, 2500 EB Den Haag</narrative>
       </mailing-address>
     </contact-info>
-    <fss extraction-date="2014-05-06" priority="1" phaseout-year="2016">
-      <forecast year="2014" value-date="2013-07-03" currency="GBP">10000</forecast>
-    </fss>
     <recipient-region code="998">
       <narrative xml:lang="en">WORLD WIDE</narrative>
     </recipient-region>
@@ -339,6 +336,9 @@
         </loan-status>
         <channel-code>21039</channel-code>
       </crs-add>
+      <fss extraction-date="2014-05-06" priority="1" phaseout-year="2016">
+        <forecast year="2014" value-date="2013-07-03" currency="GBP">10000</forecast>
+      </fss>
 
   </iati-activity>
   <iati-activity last-updated-datetime="2018-06-22T10:22:07" xml:lang="nl" default-currency="EUR" hierarchy="1">
