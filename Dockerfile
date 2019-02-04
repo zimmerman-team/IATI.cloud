@@ -49,7 +49,8 @@ RUN apt-get -y install \
     uwsgi \
     uwsgi-plugin-python \
     python3-pip \
-    vim
+    vim \
+    locales
 
 RUN mkdir /app
 
@@ -64,5 +65,12 @@ RUN pip3 install -r /app/src/OIPA/requirements.txt
 ADD . /app/src
 
 ENV PYTHONPATH="$PYTHONPATH:/usr/local/lib/python3.6/dist-packages"
+
+# Set the locale
+RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
+    locale-gen
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US:en
+ENV LC_ALL en_US.UTF-8
 
 RUN ["chmod", "+x", "/app/src/docker-entrypoint.sh"]
