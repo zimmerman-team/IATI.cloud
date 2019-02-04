@@ -123,6 +123,9 @@ class Parse(IatiParser):
         last_updated_datetime = self.validate_date(
             element.attrib.get('last-updated-datetime'))
         linked_data_uri = element.attrib.get('linked-data-uri')
+        budget_not_provided = self.get_or_none(
+            codelist_models.BudgetNotProvided, code=element.attrib.get(
+                'budget-not-provided'))
         default_currency = self.get_or_none(
             models.Currency, code=element.attrib.get('default-currency'))
 
@@ -204,6 +207,7 @@ class Parse(IatiParser):
         activity.last_updated_datetime = last_updated_datetime
         activity.linked_data_uri = linked_data_uri
         activity.default_currency = default_currency
+        activity.budget_not_provided = budget_not_provided
         activity.iati_standard_version_id = self.VERSION
 
         activity.published = True
