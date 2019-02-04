@@ -363,3 +363,295 @@ class OrganisationsOrganisationReportingOrganisationTestCase(DjangoTestCase):
         except ParserError as inst:
             self.assertEqual("OrganisationReportingOrganisation", inst.field)
             self.assertEqual("must occur no more than once.", inst.message)
+
+
+class OrganisationsOrganisationTotalBudgetTestCase(DjangoTestCase):
+    def setUp(self):
+        # 'Main' XML file for instantiating parser:
+        xml_file_attrs = {
+            "generated-datetime": datetime.datetime.now().isoformat(),
+            "version": '2.03',
+        }
+        self.iati_203_XML_file = E("iati-organisations", **xml_file_attrs)
+
+        dummy_source = synchroniser_factory.DatasetFactory(filetype=2)
+
+        self.organisation_parser_203 = ParseManager(
+            dataset=dummy_source,
+            root=self.iati_203_XML_file,
+        ).get_parser()
+
+        # related objects.
+        self.organisation = iati_factory.OrganisationFactory()
+        self.organisation_parser_203.register_model(
+            "Organisation", self.organisation)
+        self.budget_status = codelist_factory.BudgetStatusFactory()
+        self.currency = codelist_factory.CurrencyFactory()
+
+    def test_organisations_organisation_total_budget(self):
+        # case 1: "status" is not in the codelist.
+        total_budget_attrib = {
+            "status": "2000",
+        }
+        total_budget_XML_element = E(
+            "total-budget",
+            E("period-start", {"iso-date": "2014-04-06"}),
+            E("period-end", {"iso-date": "2015-03-05"}),
+            E("value", "3000", {"currency": "USD", "value-date":
+                                "2013-03-04"}),
+            **total_budget_attrib
+        )
+        try:
+            self.organisation_parser_203\
+                .iati_organisations__iati_organisation__total_budget(
+                    total_budget_XML_element)
+        except FieldValidationError as inst:
+            self.assertEqual("status", inst.field)
+            self.assertEqual("not found on the accompanying codelist.",
+                             inst.message)
+
+        # case 2: when "period-start" element is missing.
+        total_budget_attrib = {
+            "status": "1",
+        }
+        total_budget_XML_element = E(
+            "total-budget",
+            # E("period-start", {"iso-date": "2014-04-06"}),
+            E("period-end", {"iso-date": "2015-03-05"}),
+            E("value", "2000", {"currency": "USD", "value-date":
+                                "2013-03-04"}),
+            **total_budget_attrib
+        )
+        try:
+            self.organisation_parser_203\
+                .iati_organisations__iati_organisation__total_budget(
+                    total_budget_XML_element)
+        except ParserError as inst:
+            self.assertEqual("period-start", inst.field)
+            self.assertEqual("must occur once and only once.", inst.message)
+
+        # case 3: when "period-start" element is present but "iso-date"
+        # attribute is absent.
+        total_budget_attrib = {
+            "status": "1",
+        }
+        total_budget_XML_element = E(
+            "total-budget",
+            E("period-start", {}),  # iso-date is missing.
+            E("period-end", {"iso-date": "2015-03-05"}),
+            E("value", "4000", {"currency": "USD", "value-date":
+                                "2013-03-04"}),
+            **total_budget_attrib
+        )
+        try:
+            self.organisation_parser_203\
+                .iati_organisations__iati_organisation__total_budget(
+                    total_budget_XML_element)
+        except RequiredFieldError as inst:
+            self.assertEqual("iso-date", inst.field)
+            self.assertEqual("required field missing.", inst.message)
+
+        # case 4: "iso-date"in "period-start"element is not in the correct
+        # range.
+        total_budget_attrib = {
+            "status": "1",
+        }
+        total_budget_XML_element = E(
+            "total-budget",
+            E("period-start", {"iso-date": "1000-03-05"}),  # not in range.
+            E("period-end", {"iso-date": "2015-03-05"}),
+            E("value", "4999", {"currency": "USD", "value-date":
+                                "2013-03-04"}),
+            **total_budget_attrib
+        )
+        try:
+            self.organisation_parser_203 \
+                .iati_organisations__iati_organisation__total_budget(
+                    total_budget_XML_element)
+        except FieldValidationError as inst:
+            self.assertEqual("iso-date", inst.field)
+            self.assertEqual("is not in correct range.", inst.message)
+
+        # case 5: when "period-end" element is missing.
+        total_budget_attrib = {
+            "status": "1",
+        }
+        total_budget_XML_element = E(
+            "total-budget",
+            E("period-start", {"iso-date": "2014-04-06"}),
+            # E("period-end", {"iso-date": "2015-03-05"}),
+            E("value", "3000", {"currency": "USD", "value-date":
+                                "2013-03-04"}),
+            **total_budget_attrib
+        )
+        try:
+            self.organisation_parser_203 \
+                .iati_organisations__iati_organisation__total_budget(
+                    total_budget_XML_element)
+        except ParserError as inst:
+            self.assertEqual("period-end", inst.field)
+            self.assertEqual("must occur once and only once.", inst.message)
+
+        # case 6: when "period-end" element is present but "iso-date"attrib
+        # is missing.
+        total_budget_attrib = {
+            "status": "1",
+        }
+        total_budget_XML_element = E(
+            "total-budget",
+            E("period-start", {"iso-date": "2013-04-02"}),
+            E("period-end", {}),  # iso-date is missing.
+            E("value", "3999", {"currency": "USD", "value-date":
+                                "2013-03-04"}),
+            **total_budget_attrib
+        )
+        try:
+            self.organisation_parser_203 \
+                .iati_organisations__iati_organisation__total_budget(
+                    total_budget_XML_element)
+        except RequiredFieldError as inst:
+            self.assertEqual("iso-date", inst.field)
+            self.assertEqual("required field missing.", inst.message)
+
+        # case 7: when "iso-date"is not in the correct range.
+        total_budget_attrib = {
+            "status": "1",
+        }
+        total_budget_XML_element = E(
+            "total-budget",
+            E("period-start", {"iso-date": "2013-03-05"}),
+            E("period-end", {"iso-date": "1000-03-05"}),  # not in range.
+            E("value", "3000", {"currency": "USD", "value-date":
+                                "2013-03-04"}),
+            **total_budget_attrib
+        )
+        try:
+            self.organisation_parser_203 \
+                .iati_organisations__iati_organisation__total_budget(
+                    total_budget_XML_element)
+        except FieldValidationError as inst:
+            self.assertEqual("iso-date", inst.field)
+            self.assertEqual("is not in correct range.", inst.message)
+
+        # case 8: "value"element occurs more than once.
+        total_budget_attrib = {
+            "status": "1",
+        }
+        total_budget_XML_element = E(
+            "total-budget",
+            E("period-start", {"iso-date": "2013-04-02"}),
+            E("period-end", {"iso-date": "2015-03-05"}),
+            E("value", "3999", {"currency": "USD", "value-date":
+                                "2013-03-04"}),
+            E("value", "2000", {"currency": "EUR", "value-date":
+                                "2013-03-04"}),
+            **total_budget_attrib
+        )
+
+        try:
+            self.organisation_parser_203\
+                .iati_organisations__iati_organisation__total_budget(
+                    total_budget_XML_element)
+        except ParserError as inst:
+            self.assertEqual("value", inst.field)
+            self.assertEqual("must occur once and only once.", inst.message)
+
+        # case 9: when "currency" is not in the codelist.
+        total_budget_attrib = {
+            "status": "1",
+        }
+        total_budget_XML_element = E(
+            "total-budget",
+            E("period-start", {"iso-date": "2013-04-02"}),
+            E("period-end", {"iso-date": "2015-03-05"}),
+            E("value", "3999", {"currency": "MMK", "value-date":
+                                "2013-03-04"}),
+            **total_budget_attrib
+        )
+
+        try:
+            self.organisation_parser_203\
+                .iati_organisations__iati_organisation__total_budget(
+                    total_budget_XML_element)
+        except FieldValidationError as inst:
+            self.assertEqual("currency", inst.field)
+            self.assertEqual("not found on the accompanying codelist.",
+                             inst.message)
+
+        # case 10: "value-date"attirbute is absent.
+        total_budget_attrib = {
+            "status": "1",
+        }
+        total_budget_XML_element = E(
+            "total-budget",
+            E("period-start", {"iso-date": "2013-04-02"}),
+            E("period-end", {"iso-date": "2015-03-05"}),
+            E("value", "3999", {"currency": "USD", }),  # value-date is
+            # absent.
+            **total_budget_attrib
+        )
+
+        try:
+            self.organisation_parser_203 \
+                .iati_organisations__iati_organisation__total_budget(
+                    total_budget_XML_element)
+        except RequiredFieldError as inst:
+            self.assertEqual("value-date", inst.field)
+            self.assertEqual("required field missing.",
+                             inst.message)
+
+        # case 11: "value-date"is not in the correct range.
+        total_budget_attrib = {
+            "status": "1",
+        }
+        total_budget_XML_element = E(
+            "total-budget",
+            E("period-start", {"iso-date": "2013-03-05"}),
+            E("period-end", {"iso-date": "2012-03-05"}),
+            E("value", "3000", {"currency": "USD", "value-date":
+                                "5000-03-04"}),  # is not in correct range.
+            **total_budget_attrib
+        )
+        try:
+            self.organisation_parser_203 \
+                .iati_organisations__iati_organisation__total_budget(
+                    total_budget_XML_element)
+        except FieldValidationError as inst:
+            self.assertEqual("value-date", inst.field)
+            self.assertEqual("not in the correct range.", inst.message)
+
+        # case 12: when all is good.
+        total_budget_attrib = {
+            "status": "1",
+        }
+        total_budget_XML_element = E(
+            "total-budget",
+            E("period-start", {"iso-date": "2013-03-05"}),
+            E("period-end", {"iso-date": "2012-03-05"}),
+            E("value", "3000", {"currency": "USD", "value-date":
+                                "2013-03-04"}),
+            **total_budget_attrib
+        )
+        self.organisation_parser_203\
+            .iati_organisations__iati_organisation__total_budget(
+                total_budget_XML_element)
+
+        # get "TotalBudget" object to check its fields.
+
+        total_budget = self.organisation_parser_203.get_model("TotalBudget")
+        period_start_date = self.organisation_parser_203.validate_date(
+            "2013-03-05")
+        period_end_date = self.organisation_parser_203.validate_date(
+            "2012-03-05")
+        value = 3000
+        value_date = self.organisation_parser_203.validate_date("2013-03-04")
+
+        # checking.
+
+        self.assertEqual(self.organisation, total_budget.organisation)
+        self.assertEqual(self.budget_status, total_budget.status)
+        self.assertEqual(period_start_date, total_budget.period_start)
+        self.assertEqual(period_end_date, total_budget.period_end)
+        self.assertEqual(value, total_budget.value)
+        self.assertEqual(self.currency, total_budget.currency)
+        self.assertEqual(value_date, total_budget.value_date)

@@ -97,6 +97,7 @@ class Parse(IatiParser):
                     "currency",
                     "must specify default-currency on iati-organisation or \
                         as currency on the element itself")
+        return currency
 
     def iati_organisations__iati_organisation(self, element):
         organisation_identifier = element.xpath('organisation-identifier')
@@ -301,7 +302,7 @@ class Parse(IatiParser):
             if status is None:
                 raise FieldValidationError(
                     "OrganisationReportingOrganisation",
-                    "type",
+                    "status",
                     "not found on the accompanying codelist.",
                     None,
                     None,
@@ -321,7 +322,7 @@ class Parse(IatiParser):
             raise FieldValidationError(
                 "TotalBudget",
                 "iso-date",
-                "not of type xsd:date",
+                "is not in correct range.",
                 None,
                 None,
                 )
@@ -331,7 +332,7 @@ class Parse(IatiParser):
             raise ParserError("TotalBudget",
                               "period-end",
                               "must occur once and only once.")
-        period_end_date = period_end[0].atrib.get("iso-date")
+        period_end_date = period_end[0].attrib.get("iso-date")
         if period_end_date is None:
             raise RequiredFieldError("TotalBudget", "iso-date", "required "
                                                                 "field "
@@ -341,24 +342,22 @@ class Parse(IatiParser):
             raise FieldValidationError(
                 "TotalBudget",
                 "iso-date",
-                "not of type xsd:date",
+                "is not in correct range.",
                 None,
                 None,
             )
 
-        value_element = element.xpath("period-start")
+        value_element = element.xpath("value")
         if len(value_element) is not 1:
             raise ParserError("TotalBudget",
                               "value",
                               "must occur once and only once.")
-        value = self.guess_number(value_element[0].text)
+        value = self.guess_number("TotalBudget", value_element[0].text)
 
-        currency = value_element[0].attrib.get("currency")
-        if not currency and not self.default_currency:
-            raise ParserError("TotalBudget", "currency",
-                              "required for all currency amounts unless the "
-                              "iati-organisation/@default-currency attribute "
-                              "is specified.")
+        currency = self._get_currency_or_raise("TotalBudget", value_element[
+            0].attrib.get("currency"))  # check if default currency is
+        # specified.
+
         currency = self.get_or_none(codelist_models.Currency, code=currency)
         if currency is None:
             raise FieldValidationError(
@@ -368,7 +367,7 @@ class Parse(IatiParser):
                 None,
                 None,
             )
-        value_date = value_element[0].atrib.get("value-date")
+        value_date = value_element[0].attrib.get("value-date")
         if value_date is None:
             raise RequiredFieldError("TotalBudget", "value-date", "required "
                                                                   "field "
@@ -378,11 +377,13 @@ class Parse(IatiParser):
             raise FieldValidationError(
                 "TotalBudget",
                 "value-date",
-                "not of type xsd:date",
+                "not in the correct range.",
                 None,
                 None,
             )
-        total_budget = self.get_model("TotalBudget")
+        total_budget = TotalBudget()
+        organisation = self.get_model("Organisation")
+        total_budget.organisation = organisation
         total_budget.status = status
         total_budget.period_start = period_start_date
         total_budget.period_end = period_end_date
@@ -390,12 +391,6 @@ class Parse(IatiParser):
         total_budget.currency = currency
         total_budget.value_date = value_date
         self.register_model("TotalBudget", total_budget)
-
-
-
-
-
-
 
     def post_save_models(self):
         """Perform all actions that need to happen after a single
