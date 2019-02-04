@@ -5117,6 +5117,133 @@ class Parse(IatiParser):
         self.register_model('CrsAddOtherFlags', other_flags)
         return element
 
+    def iati_activities__iati_activity__crs_add__loan_status(self, element):
+
+        year = element.attrib.get('year')
+        currency = self.get_or_none(codelist_models.Currency,
+                                    code=element.attrib.get('currency'))
+        value_date = element.attrib.get('value-date')
+
+        # @year is required field.
+        if not year:
+            raise RequiredFieldError(
+                "CrsAddLoanStatus", "year", "required field missing.")
+
+        # @year is must be of type xsd:decimal but here it is checked if
+        # integer as it is a year.
+        if not self.isInt(year):
+            raise FieldValidationError(
+                "CrsAddLoanStatus",
+                "year",
+                "year not of type xsd:decimal",
+                None,
+                None,
+                element.attrib.get('year'))
+
+        # @currency is required unless the iati-activity/@default-currency
+        # is present and applies. This value must be on the Currency codelist.
+        if currency is None:
+            currency = self._get_currency_or_raise(
+                "CrsAddLoanStatus", currency)
+
+        # @value-date is required field.
+        if not value_date:
+            raise RequiredFieldError(
+                "CrsAddLoanStatus", "value-date", "required field missing.")
+
+        # @value-date must be of type xsd:date and in the correct range.
+        value_date = self.validate_date(value_date)
+        if value_date is None:
+            raise FieldValidationError(
+                "CrsAddLoanStatus",
+                "value-date",
+                "is not in correct range.",
+                None,
+                None,
+                )
+
+        # interest-received must occur no more than once. The text in this
+        # element must be of type xsd:decimal.
+        interest_received = element.xpath('interest-received')
+        if len(interest_received) > 1:
+            raise ParserError("CrsAddLoanStatus", "interest-received",
+                              "must occur no more than once.")
+        elif len(interest_received) == 1:
+            # interest_received is of type string.
+            interest_received = interest_received[0].text
+            # text is optional so we check if it is decimal only when it
+            # presents.
+            if interest_received:
+                # interest_received is of type decimal. Otherwise
+                # guess_number() method would raise an error.
+                interest_received = self.guess_number(
+                    "CrsAddLoanStatus", interest_received)
+
+        # principal-outstanding must occur no more than once. The text in
+        # this element must be of type xsd:decimal.
+        principal_outstanding = element.xpath('principal-outstanding')
+        if len(principal_outstanding) > 1:
+            raise ParserError("CrsAddLoanStatus", "principal-outstanding",
+                              "must occur no more than once.")
+        elif len(principal_outstanding) == 1:
+            # principal-outstanding is of type string.
+            principal_outstanding = principal_outstanding[0].text
+            # text is optional so we check if it is decimal only when it
+            # presents.
+            if principal_outstanding:
+                # principal-outstanding must be of type decimal. Otherwise
+                # guess_number() method would raise error.
+                principal_outstanding = self.guess_number(
+                    "CrsAddLoanStatus", principal_outstanding)
+
+        # principal-arrears must occur no more than once. The text in this
+        # element must be of type xsd:decimal.
+        principal_arrears = element.xpath('principal-arrears')
+        if len(principal_arrears) > 1:
+            raise ParserError("CrsAddLoanStatus", "principal-arrears",
+                              "must occur no more than once.")
+        elif len(principal_arrears) == 1:
+            # Here principal-arrears is of type string.
+            principal_arrears = principal_arrears[0].text
+            # text is optional so we check if it is decimal only when it
+            # presents.
+            if principal_arrears:
+                # principal-arrears is of type decimal. Otherwise
+                # guess_number() method would raise error.
+                principal_arrears = self.guess_number(
+                    "CrsAddLoanStatus", principal_arrears)
+
+        # interest-arrears must occur no more than once. The text in this
+        # element must be of type xsd:decimal.
+        interest_arrears = element.xpath('interest-arrears')
+        if len(interest_arrears) > 1:
+            raise ParserError("CrsAddLoanStatus", "interest-arrears",
+                              "must occur no more than once.")
+        elif len(interest_arrears) == 1:
+            # Here interest-arrears is of type string.
+            interest_arrears = interest_arrears[0].text
+            # text is optional so we check if it is decimal only when it
+            # presents.
+            if interest_arrears:
+                # interest-arrears is of type decimal. Otherwise
+                # guess_number() method would raise error.
+                interest_arrears = self.guess_number(
+                    "CrsAddLoanStatus", interest_arrears)
+
+        crs_add = self.get_model("CrsAdd")
+        crs_add_loan_status = models.CrsAddLoanStatus()
+        crs_add_loan_status.crs_add = crs_add
+        crs_add_loan_status.year = year
+        crs_add_loan_status.currency = currency
+        crs_add_loan_status.value_date = value_date
+        crs_add_loan_status.interest_received = interest_received
+        crs_add_loan_status.principal_outstanding = principal_outstanding
+        crs_add_loan_status.principal_arrears = principal_arrears
+        crs_add_loan_status.interest_arrears = interest_arrears
+
+        self.register_model("CrsAddLoanStatus", crs_add_loan_status)
+        return element
+
     def iati_activities__iati_activity__fss(self, element):
         """"(optional) <fss> element inside <iati-activities/iati-activity>
         element in 2.03
