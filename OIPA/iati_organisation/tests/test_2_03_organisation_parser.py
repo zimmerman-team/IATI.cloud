@@ -149,7 +149,7 @@ class OrganisationsOrganisationTestCase(DjangoTestCase):
             self.organisation_parser_203.iati_organisations__iati_organisation(
                 new_organisation_XML_element)
         except ParserError as inst:
-            self.assertEqual("last-updated-datetime is earlier than old " 
+            self.assertEqual("last-updated-datetime is earlier than old "
                              "element's last_updated_datetime.", inst.message)
 
         # case 5.2: when "last-updated-datetime" is more recent than old
