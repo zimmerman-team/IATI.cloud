@@ -48,7 +48,8 @@ RUN apt-get -y install \
     python-psycopg2 \
     uwsgi \
     uwsgi-plugin-python \
-    python3-pip
+    python3-pip \
+    vim
 
 RUN mkdir /app
 
