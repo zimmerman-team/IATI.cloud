@@ -1,7 +1,3 @@
-# Base Docker Compose file for OIPA
-#
-#
-
 version: "3"
 services:
 
@@ -39,7 +35,3 @@ services:
       SUPERUSER_USERNAME: oipa
       SUPERUSER_EMAIL: oipa
       SUPERUSER_PASSWORD: oipa
-
-
-  #oipa-supervisor:
-    #build: .

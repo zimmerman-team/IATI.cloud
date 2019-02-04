@@ -59,7 +59,6 @@ RUN pip3 install -U pip setuptools
 ADD OIPA/requirements.txt /app/src/OIPA/requirements.txt
 
 # Install Python dependencies
-#FIXME: use cache: https://stackoverflow.com/a/25307587/2942981
 RUN pip3 install -r /app/src/OIPA/requirements.txt
 
 ADD . /app/src

@@ -26,7 +26,7 @@ IATI is a global aid transparency standard and it makes information about aid sp
 
 ## Quick start
 
-If you have Docker installed, run:
+If you have Docker installed and want to be able to use OIPA right away, run:
 
 ```
 docker-compose up
