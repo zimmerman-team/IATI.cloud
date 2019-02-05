@@ -446,6 +446,12 @@ class Parse(IatiParser):
         self.register_model("TotalBudgetLine", total_budtet_line)
         return element
 
+    def iati_organisations__iati_organisation__total_budget__budget_line__narrative(  # NOQA: E501
+            self, element):
+        budget_line = self.get_model("TotalBudgetLine")
+        self.add_narrative(element, budget_line)
+        return element
+
     def post_save_models(self):
         """Perform all actions that need to happen after a single
         organisation's been parsed."""
