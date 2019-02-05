@@ -50,7 +50,8 @@ RUN apt-get -y install \
     uwsgi-plugin-python \
     python3-pip \
     vim \
-    locales
+    locales \
+    libsqlite3-mod-spatialite
 
 RUN mkdir /app
 
