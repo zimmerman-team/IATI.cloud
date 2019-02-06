@@ -354,19 +354,27 @@ class Parse(IatiParser):
                               "must occur once and only once.")
         value = self.guess_number("TotalBudget", value_element[0].text)
 
-        currency = self._get_currency_or_raise("TotalBudget", value_element[
-            0].attrib.get("currency"))  # check if default currency is
-        # specified.
-
-        currency = self.get_or_none(codelist_models.Currency, code=currency)
-        if currency is None:
-            raise FieldValidationError(
-                "TotalBudget",
-                "currency",
-                "not found on the accompanying codelist.",
-                None,
-                None,
-            )
+        currency = value_element[0].attrib.get("currency")
+        if not currency:
+            currency = getattr(self.get_model("Organisation"),
+                               "default_currency")
+            if not currency:
+                raise RequiredFieldError(
+                    "TotalBudget",
+                    "currency",
+                    "must specify default-currency on iati-activity or as "
+                    "currency on the element itself."
+                )
+        else:
+            currency = self.get_or_none(codelist_models.Currency, code=currency)
+            if currency is None:
+                raise FieldValidationError(
+                    "TotalBudget",
+                    "currency",
+                    "not found on the accompanying codelist.",
+                    None,
+                    None,
+                )
         value_date = value_element[0].attrib.get("value-date")
         if value_date is None:
             raise RequiredFieldError("TotalBudget", "value-date", "required "
