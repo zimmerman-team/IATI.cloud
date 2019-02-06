@@ -368,7 +368,8 @@ class Parse(IatiParser):
                     "currency on the element itself."
                 )
         else:
-            currency = self.get_or_none(codelist_models.Currency, code=currency)
+            currency = self.get_or_none(codelist_models.Currency,
+                                        code=currency)
             if currency is None:
                 raise FieldValidationError(
                     "TotalBudget",
@@ -430,7 +431,8 @@ class Parse(IatiParser):
                 )
 
         else:
-            currency = self.get_or_none(codelist_models.Currency, code=currency)
+            currency = self.get_or_none(codelist_models.Currency,
+                                        code=currency)
             if currency is None:
                 raise FieldValidationError(
                     "TotalBudgetLine",
