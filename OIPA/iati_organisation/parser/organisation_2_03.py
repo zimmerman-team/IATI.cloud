@@ -307,6 +307,8 @@ class Parse(IatiParser):
                     None,
                     None,
                 )
+        else:
+            status = codelist_models.BudgetStatus.objects.get(code=1)
         period_start = element.xpath("period-start")
         if len(period_start) is not 1:
             raise ParserError("TotalBudget",
