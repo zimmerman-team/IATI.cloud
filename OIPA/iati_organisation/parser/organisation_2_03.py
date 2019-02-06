@@ -483,6 +483,8 @@ class Parse(IatiParser):
                     None,
                     None,
                 )
+        else:
+            status = codelist_models.BudgetStatus.objects.get(code=1)
         recipient_org = element.xpath("recipient-org")
         if len(recipient_org) is not 1:
             raise ParserError("RecipientOrgBudget",
