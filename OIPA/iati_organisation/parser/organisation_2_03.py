@@ -537,7 +537,18 @@ class Parse(IatiParser):
                     "RecipientOrgBudget",
                     "currency",
                     "must specify default-currency on iati-organisation or "
-                    "as currency on the element itself"
+                    "as currency on the element itself."
+                )
+        else:
+            currency = self.get_or_none(codelist_models.Currency,
+                                        code=currency)
+            if not currency:
+                raise FieldValidationError(
+                    "RecipientOrgBudget",
+                    "currency",
+                    "not found on the accompanying codelist.",
+                    None,
+                    None,
                 )
 
         value_date = value_element[0].attrib.get("value-date")
