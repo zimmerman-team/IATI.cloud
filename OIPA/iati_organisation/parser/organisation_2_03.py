@@ -528,19 +528,18 @@ class Parse(IatiParser):
                               "must occur once and only once.")
         value = self.guess_number("RecipientOrgBudget", value_element[0].text)
 
-        currency = self._get_currency_or_raise("RecipientOrgBudget",
-                                               value_element[0].attrib.get(
-                                                   "currency"))
+        currency = value_element[0].attrib.get("currency")
+        if not currency:
+            currency = getattr(self.get_model("Organisation"),
+                               "default_currency")
+            if not currency:
+                raise RequiredFieldError(
+                    "RecipientOrgBudget",
+                    "currency",
+                    "must specify default-currency on iati-organisation or "
+                    "as currency on the element itself"
+                )
 
-        currency = self.get_or_none(codelist_models.Currency, code=currency)
-        if currency is None:
-            raise FieldValidationError(
-                "RecipientOrgBudget",
-                "currency",
-                "not found on the accompanying codelist.",
-                None,
-                None,
-            )
         value_date = value_element[0].attrib.get("value-date")
         if value_date is None:
             raise RequiredFieldError("RecipientOrgBudget", "value-date",
