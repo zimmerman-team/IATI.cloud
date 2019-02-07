@@ -1,6 +1,6 @@
 from django.conf import settings
 
-from geodata.models import Region, Country
+from geodata.models import Country, Region
 from iati.parser.exceptions import (
     FieldValidationError, ParserError, RequiredFieldError
 )

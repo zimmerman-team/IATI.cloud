@@ -3,9 +3,8 @@ import datetime
 from django.test import TestCase as DjangoTestCase
 from lxml.builder import E
 
-
-from geodata.factory.geodata_factory import RegionFactory, CountryFactory
 from geodata import models as codelist_model
+from geodata.factory.geodata_factory import CountryFactory, RegionFactory
 from iati.factory import iati_factory
 from iati.parser.exceptions import (
     FieldValidationError, ParserError, RequiredFieldError
@@ -2089,4 +2088,3 @@ class OrganisationsOrganisationRecipientCountryBudgetTestCase(DjangoTestCase):
         self.assertEqual(value, recipient_country_budget.value)
         self.assertEqual(self.currency, recipient_country_budget.currency)
         self.assertEqual(value_date, recipient_country_budget.value_date)
-
