@@ -3,8 +3,9 @@ import datetime
 from django.test import TestCase as DjangoTestCase
 from lxml.builder import E
 
-from geodata import models as codelist_model
+
 from geodata.factory.geodata_factory import RegionFactory, CountryFactory
+from geodata import models as codelist_model
 from iati.factory import iati_factory
 from iati.parser.exceptions import (
     FieldValidationError, ParserError, RequiredFieldError
@@ -1469,7 +1470,7 @@ class OrganisationsOrganisationRecipientRegionBudgetTestCase(DjangoTestCase):
             "status": "1",
         }
         recipient_region_budget_XML_element = E(
-            "recipient-org-budget",
+            "recipient-region-budget",
             E("recipient-region", E("narrative", "text"),
               {"vocabulary": "1",
                "vocabulary-uri": "http://example.com/vocab.html",
@@ -1572,7 +1573,7 @@ class OrganisationsOrganisationRecipientRegionBudgetTestCase(DjangoTestCase):
             "status": "1",
         }
         recipient_region_budget_XML_element = E(
-            "recipient-org-budget",
+            "recipient-region-budget",
             E("recipient-region", E("narrative", "text"),
               {"vocabulary": "1",
                "vocabulary-uri": "http://example.com/vocab.html",
