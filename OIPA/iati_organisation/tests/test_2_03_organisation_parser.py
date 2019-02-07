@@ -1421,7 +1421,7 @@ class OrganisationsOrganisationRecipientRegionBudgetTestCase(DjangoTestCase):
             "status": "1",
         }
         recipient_region_budget_XML_element = E(
-            "recipient-org-budget",
+            "recipient-region-budget",
             E("recipient-region", E("narrative", "text"),
               {"vocabulary": "1",
                "vocabulary-uri": "http://example.com/vocab.html",
@@ -1469,7 +1469,7 @@ class OrganisationsOrganisationRecipientRegionBudgetTestCase(DjangoTestCase):
             "status": "1",
         }
         recipient_region_budget_XML_element = E(
-            "recipient-org-budget",
+            "recipient-region-budget",
             E("recipient-region", E("narrative", "text"),
               {"vocabulary": "1",
                "vocabulary-uri": "http://example.com/vocab.html",
@@ -1572,7 +1572,7 @@ class OrganisationsOrganisationRecipientRegionBudgetTestCase(DjangoTestCase):
             "status": "1",
         }
         recipient_region_budget_XML_element = E(
-            "recipient-org-budget",
+            "recipient-region-budget",
             E("recipient-region", E("narrative", "text"),
               {"vocabulary": "1",
                "vocabulary-uri": "http://example.com/vocab.html",
