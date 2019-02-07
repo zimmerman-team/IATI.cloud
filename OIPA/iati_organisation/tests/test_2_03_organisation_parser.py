@@ -9,6 +9,7 @@ from iati.parser.exceptions import (
     FieldValidationError, ParserError, RequiredFieldError
 )
 from iati.parser.parse_manager import ParseManager
+from geodata import models as codelist_model
 from iati_codelists.factory import codelist_factory
 from iati_synchroniser.factory import synchroniser_factory
 from iati_vocabulary.factory.vocabulary_factory import RegionVocabularyFactory
@@ -1284,7 +1285,10 @@ class OrganisationsOrganisationRecipientRegionBudgetTestCase(DjangoTestCase):
             "Organisation", self.organisation)
         self.budget_status = codelist_factory.BudgetStatusFactory()
         self.currency = codelist_factory.CurrencyFactory()
-        self.region = RegionFactory()
+        if codelist_model.Region.objects.filter(code=689).exists():
+            self.region = codelist_model.Region.objects.get(code=689)
+        else:
+            self.region = RegionFactory()
         self.region_vocabulary = RegionVocabularyFactory()
 
     def test_organisations_organisation_recipient_region_budget(self):
