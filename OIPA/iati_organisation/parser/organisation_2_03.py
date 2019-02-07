@@ -634,7 +634,7 @@ class Parse(IatiParser):
                                "default_currency")
             if not currency:
                 raise RequiredFieldError(
-                    "TotalBudgetLine",
+                    "RecipientOrgBudgetLine",
                     "currency",
                     "must specify default-currency on iati-activity or as "
                     "currency on the element itself."
