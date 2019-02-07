@@ -3,13 +3,13 @@ import datetime
 from django.test import TestCase as DjangoTestCase
 from lxml.builder import E
 
+from geodata import models as codelist_model
 from geodata.factory.geodata_factory import RegionFactory
 from iati.factory import iati_factory
 from iati.parser.exceptions import (
     FieldValidationError, ParserError, RequiredFieldError
 )
 from iati.parser.parse_manager import ParseManager
-from geodata import models as codelist_model
 from iati_codelists.factory import codelist_factory
 from iati_synchroniser.factory import synchroniser_factory
 from iati_vocabulary.factory.vocabulary_factory import RegionVocabularyFactory
