@@ -6166,6 +6166,251 @@ class ActivityCrsAddTestCase(TestCase):
             self.assertEqual(inst.message, 'must occur no more than once')
 
 
+class ActivityCrsAddLoanStatusTestCase(TestCase):
+    """
+    (optional) <loan-status> element for <crs-add> element.
+    """
+    def setUp(self):
+        # 'Main' XML file for instantiating parser:
+        xml_file_attrs = {
+            "generated-datetime": datetime.datetime.now().isoformat(),
+            "version": '2.03',
+        }
+        self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
+
+        dummy_source = synchroniser_factory.DatasetFactory.create()
+
+        self.parser_203 = ParseManager(
+            dataset=dummy_source,
+            root=self.iati_203_XML_file,
+        ).get_parser()
+
+        # Related objects:
+        # create dummy object
+
+        self.crs_add = iati_factory.CrsAddFactory.create()
+        self.parser_203.register_model('CrsAdd', self.crs_add)
+        self.currency = codelist_factory.CurrencyFactory.create()
+
+    def test_activity__crs_add__loan_status(self):
+        """
+        Test if related attributes  in <loan-status> XML element is correctly
+        assigned.
+        """
+        # case 1: when @year is missing.
+        loan_status_attr = {
+            # "year": "2014",
+            "currency": "USD",
+            "value-date": "2013-05-24",
+
+        }
+        loan_status_XML_element = E(
+            'loan-status',
+            E("interest-reveived", "200000"),  # 200000 is text.
+            E("principal-outstanding", "150000"),  # 150000 is text.
+            E("principal-arrears", "0"),
+            E("interest-arrears", "0"),
+            **loan_status_attr,
+        )
+        try:
+            self.parser_203.iati_activities__iati_activity__crs_add__loan_status(  # NOQA: E501
+                loan_status_XML_element)
+        except RequiredFieldError as inst:
+            self.assertEqual(inst.field, 'year')
+            self.assertEqual(inst.message, 'required field missing.')
+
+        # According to specifications, @currency is required unless the
+        # iati-activity/@default-currency is present and applies. This value
+        # must be on the Currency codelist.We do not test currency here
+        # because the related methods that are used to check against the said
+        # specifications are tested separately.
+
+        # case 2: when @value-date is missing.
+        loan_status_attr = {
+            "year": "2014",
+            "currency": "USD",
+            # "value-date": "2013-05-24",
+
+        }
+        loan_status_XML_element = E(
+            'loan-status',
+            E("interest-reveived", "200000"),  # 200000 is text.
+            E("principal-outstanding", "150000"),  # 150000 is text.
+            E("principal-arrears", "0"),
+            E("interest-arrears", "0"),
+            **loan_status_attr,
+        )
+        try:
+            self.parser_203.iati_activities__iati_activity__crs_add__loan_status(  # NOQA: E501
+                loan_status_XML_element)
+        except RequiredFieldError as inst:
+            self.assertEqual(inst.field, 'value-date')
+            self.assertEqual(inst.message, 'required field missing.')
+
+        # case 3: when @value-date is not in correct range.
+        loan_status_attr = {
+            "year": "2014",
+            "currency": "USD",
+            "value-date": "1200-05-24",
+
+        }
+        loan_status_XML_element = E(
+            'loan-status',
+            E("interest-reveived", "200000"),  # 200000 is text.
+            E("principal-outstanding", "150000"),  # 150000 is text.
+            E("principal-arrears", "0"),
+            E("interest-arrears", "0"),
+            **loan_status_attr,
+        )
+        try:
+            self.parser_203.iati_activities__iati_activity__crs_add__loan_status(  # NOQA: E501
+                loan_status_XML_element)
+        except FieldValidationError as inst:
+            self.assertEqual(inst.field, 'value-date')
+            self.assertEqual(inst.message, 'is not in correct range.')
+
+        # case 4: when child element 'interest-received' occurs more than once.
+        loan_status_attr = {
+            "year": "2014",
+            "currency": "USD",
+            "value-date": "2013-05-24",
+
+        }
+        loan_status_XML_element = E(
+            'loan-status',
+            E("interest-received", "200000"),  # 200000 is text.
+            E("interest-received", "100"),
+            E("principal-outstanding", "150000"),  # 150000 is text.
+            E("principal-arrears", "0"),
+            E("interest-arrears", "0"),
+            **loan_status_attr,
+        )
+        try:
+            self.parser_203.iati_activities__iati_activity__crs_add__loan_status(  # NOQA: E501
+                loan_status_XML_element)
+        except ParserError as inst:
+            self.assertEqual(inst.field, 'interest-received')
+            self.assertEqual(inst.message, 'must occur no more than once.')
+
+        # case 5: when child element 'principal-outstanding' occurs more
+        # than once.
+        loan_status_attr = {
+            "year": "2014",
+            "currency": "USD",
+            "value-date": "2013-05-24",
+
+        }
+        loan_status_XML_element = E(
+            'loan-status',
+            E("interest-received", "200000"),  # 200000 is text.
+            E("principal-outstanding", "100"),
+            E("principal-outstanding", "150000"),  # 150000 is text.
+            E("principal-arrears", "0"),
+            E("interest-arrears", "0"),
+            **loan_status_attr,
+        )
+        try:
+            self.parser_203.iati_activities__iati_activity__crs_add__loan_status(  # NOQA: E501
+                loan_status_XML_element)
+        except ParserError as inst:
+            self.assertEqual(inst.field, 'principal-outstanding')
+            self.assertEqual(inst.message, 'must occur no more than once.')
+
+        # case 6: when child element 'principal-arrears' occurs more than once.
+        loan_status_attr = {
+            "year": "2014",
+            "currency": "USD",
+            "value-date": "2013-05-24",
+
+        }
+        loan_status_XML_element = E(
+            'loan-status',
+            E("interest-received", "200000"),  # 200000 is text.
+            E("principal-outstanding", "100"),
+            E("principal-arrears", "150000"),  # 150000 is text.
+            E("principal-arrears", "0"),
+            E("interest-arrears", "0"),
+            **loan_status_attr,
+        )
+        try:
+            self.parser_203.iati_activities__iati_activity__crs_add__loan_status(  # NOQA: E501
+                loan_status_XML_element)
+        except ParserError as inst:
+            self.assertEqual(inst.field, 'principal-arrears')
+            self.assertEqual(inst.message, 'must occur no more than once.')
+
+        # case 7 : when child element 'interest-arrears' occurs more than once.
+        loan_status_attr = {
+            "year": "2014",
+            "currency": "USD",
+            "value-date": "2013-05-24",
+
+        }
+        loan_status_XML_element = E(
+            'loan-status',
+            E("interest-received", "200000"),  # 200000 is text.
+            E("principal-outstanding", "100"),
+            E("principal-arrears", "150000"),  # 150000 is text.
+            E("interest-arrears", "0"),
+            E("interest-arrears", "0"),
+            **loan_status_attr,
+        )
+        try:
+            self.parser_203.iati_activities__iati_activity__crs_add__loan_status(  # NOQA: E501
+                loan_status_XML_element)
+        except ParserError as inst:
+            self.assertEqual(inst.field, 'interest-arrears')
+            self.assertEqual(inst.message, 'must occur no more than once.')
+
+        # case 8: when all are ok.
+        loan_status_attr = {
+            "year": "2014",
+            "currency": self.currency.code,
+            "value-date": "2013-05-24",
+
+        }
+        loan_status_XML_element = E(
+            'loan-status',
+            E("interest-received", "200000"),  # 200000 is text.
+            E("principal-outstanding", "100"),
+            E("principal-arrears", "150000"),  # 150000 is text.
+            E("interest-arrears", "0"),
+            **loan_status_attr,
+        )
+
+        self.parser_203.iati_activities__iati_activity__crs_add__loan_status(
+            loan_status_XML_element)
+
+        value_date = dateutil.parser.parse('2013-05-24')
+        interest_received = loan_status_XML_element.xpath(
+            'interest-received')[0].text
+        principal_outstanding = loan_status_XML_element.xpath(
+            'principal-outstanding')[0].text
+        principal_arrears = loan_status_XML_element.xpath(
+            'principal-arrears')[0].text
+        interest_arrears = loan_status_XML_element.xpath(
+            'interest-arrears')[0].text
+
+        # get 'loan-status' object to check if the related fields are
+        # assigned correctly. Note that this object has NOT been saved yet in
+        # the database at this stage.
+        crs_add_loan_status = self.parser_203.get_model('CrsAddLoanStatus')
+
+        # check related fields are correctly assigned.
+        self.assertEqual(loan_status_XML_element.attrib.get('year'),
+                         crs_add_loan_status.year)
+        self.assertEqual(self.currency, crs_add_loan_status.currency)
+        self.assertEqual(value_date, crs_add_loan_status.value_date)
+        self.assertEqual(Decimal(interest_received),
+                         crs_add_loan_status.interest_received)
+        self.assertEqual(Decimal(principal_outstanding),
+                         crs_add_loan_status.principal_outstanding)
+        self.assertEqual(Decimal(principal_arrears),
+                         crs_add_loan_status.principal_arrears)
+        self.assertEqual(Decimal(interest_arrears),
+                         crs_add_loan_status.interest_arrears)
+
+
 class ActivityFssTestCase(TestCase):
 
     '''
