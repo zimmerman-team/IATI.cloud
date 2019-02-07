@@ -539,3 +539,12 @@ class TransactionType(models.Model):
 
     def __unicode__(self,):
         return "%s" % self.name
+
+
+class BudgetNotProvided(models.Model):
+    code = models.CharField(primary_key=True, max_length=2)
+    name = models.CharField(max_length=200)
+    description = models.TextField()
+
+    def __unicode__(self):
+        return "%s" % self.name
