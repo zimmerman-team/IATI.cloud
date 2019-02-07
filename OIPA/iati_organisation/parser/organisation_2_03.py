@@ -687,7 +687,7 @@ class Parse(IatiParser):
         self.add_narrative(element, recipient_org_budget_line)
         return element
 
-    def iati_organisations__iati_organisation__recipient_region__budget(
+    def iati_organisations__iati_organisation__recipient_region_budget(
             self, element):
         status = element.attrib.get("status")
         if status:
