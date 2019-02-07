@@ -1,0 +1,2960 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<iati-organisations version="2.03" generated-datetime="2018-12-28T10:26:15">
+    <iati-organisation xml:lang="en"
+                       last-updated-datetime="2018-12-29T10:24:42"
+                       default-currency="EUR">
+        <organisation-identifier>XM-LMH-7</organisation-identifier>
+        <name>
+            <narrative xml:lang="en">Ministry of Magic
+            </narrative>
+        </name>
+        <reporting-org ref="XM-DAC-7" type="10">
+            <narrative xml:lang="en">Ministry of Foreign Affairs (DGIS)
+            </narrative>
+        </reporting-org>
+        <total-budget>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">2912507000</value>
+        </total-budget>
+        <total-budget>
+            <period-start iso-date="2019-01-01"></period-start>
+            <period-end iso-date="2019-12-31"></period-end>
+            <value value-date="2018-01-01">2851959000</value>
+        </total-budget>
+        <total-budget>
+            <period-start iso-date="2020-01-01"></period-start>
+            <period-end iso-date="2020-12-31"></period-end>
+            <value value-date="2018-01-01">2950867000</value>
+        </total-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>Dkt-Ethiopia</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">3904000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>Dkt-Ethiopia</narrative>
+            </recipient-org>
+            <period-start iso-date="2019-01-01"></period-start>
+            <period-end iso-date="2019-12-31"></period-end>
+            <value value-date="2018-01-01">1464000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>IDEA</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">4000000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>Agri-Profocus</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">2668475</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>Agri-Profocus</narrative>
+            </recipient-org>
+            <period-start iso-date="2019-01-01"></period-start>
+            <period-end iso-date="2019-12-31"></period-end>
+            <value value-date="2018-01-01">2467750</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>Agri-Profocus</narrative>
+            </recipient-org>
+            <period-start iso-date="2020-01-01"></period-start>
+            <period-end iso-date="2020-12-31"></period-end>
+            <value value-date="2018-01-01">2467750</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>IMF</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">3800000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>IMF</narrative>
+            </recipient-org>
+            <period-start iso-date="2019-01-01"></period-start>
+            <period-end iso-date="2019-12-31"></period-end>
+            <value value-date="2018-01-01">2320000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>IMF</narrative>
+            </recipient-org>
+            <period-start iso-date="2020-01-01"></period-start>
+            <period-end iso-date="2020-12-31"></period-end>
+            <value value-date="2018-01-01">2320000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org ref="41304">
+                <narrative>UNESCO</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">2535684</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org ref="44000">
+                <narrative>WB</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">50645639</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org ref="44000">
+                <narrative>WB</narrative>
+            </recipient-org>
+            <period-start iso-date="2019-01-01"></period-start>
+            <period-end iso-date="2019-12-31"></period-end>
+            <value value-date="2018-01-01">31890320</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org ref="44000">
+                <narrative>WB</narrative>
+            </recipient-org>
+            <period-start iso-date="2020-01-01"></period-start>
+            <period-end iso-date="2020-12-31"></period-end>
+            <value value-date="2018-01-01">31890320</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org ref="XM-DAC-41140">
+                <narrative>WFP</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">32000000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>WHO-Assessed</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">11841203</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>WHO-Assessed</narrative>
+            </recipient-org>
+            <period-start iso-date="2019-01-01"></period-start>
+            <period-end iso-date="2019-12-31"></period-end>
+            <value value-date="2018-01-01">620000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>WHO-Assessed</narrative>
+            </recipient-org>
+            <period-start iso-date="2020-01-01"></period-start>
+            <period-end iso-date="2020-12-31"></period-end>
+            <value value-date="2018-01-01">400000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>European Union</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">46703100</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org ref="XM-DAC-41302">
+                <narrative>ILO-Assessed</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">7965567</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org ref="XM-DAC-41302">
+                <narrative>ILO-Assessed</narrative>
+            </recipient-org>
+            <period-start iso-date="2019-01-01"></period-start>
+            <period-end iso-date="2019-12-31"></period-end>
+            <value value-date="2018-01-01">5000000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org ref="XM-DAC-41302">
+                <narrative>ILO-Assessed</narrative>
+            </recipient-org>
+            <period-start iso-date="2020-01-01"></period-start>
+            <period-end iso-date="2020-12-31"></period-end>
+            <value value-date="2018-01-01">5000000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>International Aids Society</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">1900000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>International Aids Society</narrative>
+            </recipient-org>
+            <period-start iso-date="2019-01-01"></period-start>
+            <period-end iso-date="2019-12-31"></period-end>
+            <value value-date="2018-01-01">100000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>ICRC</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">45000000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>ATM</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">575000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>ATM</narrative>
+            </recipient-org>
+            <period-start iso-date="2019-01-01"></period-start>
+            <period-end iso-date="2019-12-31"></period-end>
+            <value value-date="2018-01-01">575000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>ATM</narrative>
+            </recipient-org>
+            <period-start iso-date="2020-01-01"></period-start>
+            <period-end iso-date="2020-12-31"></period-end>
+            <value value-date="2018-01-01">575000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>UNHCR</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">40500000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>United Nations Agency, Fund or Commission
+                </narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">6160573</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>United Nations Agency, Fund or Commission
+                </narrative>
+            </recipient-org>
+            <period-start iso-date="2019-01-01"></period-start>
+            <period-end iso-date="2019-12-31"></period-end>
+            <value value-date="2018-01-01">244640</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>GAVI</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">38228640</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>GAVI</narrative>
+            </recipient-org>
+            <period-start iso-date="2019-01-01"></period-start>
+            <period-end iso-date="2019-12-31"></period-end>
+            <value value-date="2018-01-01">31156080</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>GAVI</narrative>
+            </recipient-org>
+            <period-start iso-date="2020-01-01"></period-start>
+            <period-end iso-date="2020-12-31"></period-end>
+            <value value-date="2018-01-01">31735680</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>UNDPA</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">2500000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>ACET</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">440000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>ACET</narrative>
+            </recipient-org>
+            <period-start iso-date="2019-01-01"></period-start>
+            <period-end iso-date="2019-12-31"></period-end>
+            <value value-date="2018-01-01">440000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>ACET</narrative>
+            </recipient-org>
+            <period-start iso-date="2020-01-01"></period-start>
+            <period-end iso-date="2020-12-31"></period-end>
+            <value value-date="2018-01-01">440000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>SWAC</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">200000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>SWAC</narrative>
+            </recipient-org>
+            <period-start iso-date="2019-01-01"></period-start>
+            <period-end iso-date="2019-12-31"></period-end>
+            <value value-date="2018-01-01">200000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>SWAC</narrative>
+            </recipient-org>
+            <period-start iso-date="2020-01-01"></period-start>
+            <period-end iso-date="2020-12-31"></period-end>
+            <value value-date="2018-01-01">200000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>UNMAS</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">3000000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org ref="47045">
+                <narrative>GFATM</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">55772583</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org ref="47045">
+                <narrative>GFATM</narrative>
+            </recipient-org>
+            <period-start iso-date="2019-01-01"></period-start>
+            <period-end iso-date="2019-12-31"></period-end>
+            <value value-date="2018-01-01">54756333</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org ref="47045">
+                <narrative>GFATM</narrative>
+            </recipient-org>
+            <period-start iso-date="2020-01-01"></period-start>
+            <period-end iso-date="2020-12-31"></period-end>
+            <value value-date="2018-01-01">55000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>Platform for Inclusive Finance</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">220000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>Platform for Inclusive Finance</narrative>
+            </recipient-org>
+            <period-start iso-date="2019-01-01"></period-start>
+            <period-end iso-date="2019-12-31"></period-end>
+            <value value-date="2018-01-01">220000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>Platform for Inclusive Finance</narrative>
+            </recipient-org>
+            <period-start iso-date="2020-01-01"></period-start>
+            <period-end iso-date="2020-12-31"></period-end>
+            <value value-date="2018-01-01">176000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org ref="46004">
+                <narrative>AsDB</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">1875000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org ref="46004">
+                <narrative>AsDB</narrative>
+            </recipient-org>
+            <period-start iso-date="2019-01-01"></period-start>
+            <period-end iso-date="2019-12-31"></period-end>
+            <value value-date="2018-01-01">2355000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org ref="46004">
+                <narrative>AsDB</narrative>
+            </recipient-org>
+            <period-start iso-date="2020-01-01"></period-start>
+            <period-end iso-date="2020-12-31"></period-end>
+            <value value-date="2018-01-01">2850000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>AFRICAN LEGAL SUPPORT FACILITY</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">1500000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>EUROPEAN ENDOWMENT FOR DEMOCRACY</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">500000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>Bop Innovation Center For Ppp Only</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">172707</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org ref="XM-DAC-41114">
+                <narrative>UNDP</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">62717525</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org ref="XM-DAC-41114">
+                <narrative>UNDP</narrative>
+            </recipient-org>
+            <period-start iso-date="2019-01-01"></period-start>
+            <period-end iso-date="2019-12-31"></period-end>
+            <value value-date="2018-01-01">6096101</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org ref="XM-DAC-41114">
+                <narrative>UNDP</narrative>
+            </recipient-org>
+            <period-start iso-date="2020-01-01"></period-start>
+            <period-end iso-date="2020-12-31"></period-end>
+            <value value-date="2018-01-01">10096102</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>GCF</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">12300000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>GCF</narrative>
+            </recipient-org>
+            <period-start iso-date="2019-01-01"></period-start>
+            <period-end iso-date="2019-12-31"></period-end>
+            <value value-date="2018-01-01">11900000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>GCF</narrative>
+            </recipient-org>
+            <period-start iso-date="2020-01-01"></period-start>
+            <period-end iso-date="2020-12-31"></period-end>
+            <value value-date="2018-01-01">11900000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>UNDP</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2017-01-01">2500000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>ECDPM</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">2840550</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>ECDPM</narrative>
+            </recipient-org>
+            <period-start iso-date="2019-01-01"></period-start>
+            <period-end iso-date="2019-12-31"></period-end>
+            <value value-date="2018-01-01">2700000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>ECDPM</narrative>
+            </recipient-org>
+            <period-start iso-date="2020-01-01"></period-start>
+            <period-end iso-date="2020-12-31"></period-end>
+            <value value-date="2018-01-01">2700000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>ICG</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">1000000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>UNEP</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">6286653</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>UNEP</narrative>
+            </recipient-org>
+            <period-start iso-date="2019-01-01"></period-start>
+            <period-end iso-date="2019-12-31"></period-end>
+            <value value-date="2018-01-01">7428653</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>UNEP</narrative>
+            </recipient-org>
+            <period-start iso-date="2020-01-01"></period-start>
+            <period-end iso-date="2020-12-31"></period-end>
+            <value value-date="2018-01-01">3286653</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org ref="41127">
+                <narrative>UNOCHA</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">60000000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org ref="41502">
+                <narrative>UNOPS</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">1800868</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org ref="41502">
+                <narrative>UNOPS</narrative>
+            </recipient-org>
+            <period-start iso-date="2019-01-01"></period-start>
+            <period-end iso-date="2019-12-31"></period-end>
+            <value value-date="2018-01-01">968000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org ref="41502">
+                <narrative>UNOPS</narrative>
+            </recipient-org>
+            <period-start iso-date="2020-01-01"></period-start>
+            <period-end iso-date="2020-12-31"></period-end>
+            <value value-date="2018-01-01">968000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>UNRWA</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">19000000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>United Nations Secretariat</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">6500000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>United Nations Secretariat</narrative>
+            </recipient-org>
+            <period-start iso-date="2019-01-01"></period-start>
+            <period-end iso-date="2019-12-31"></period-end>
+            <value value-date="2018-01-01">2000000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>United Nations Secretariat</narrative>
+            </recipient-org>
+            <period-start iso-date="2020-01-01"></period-start>
+            <period-end iso-date="2020-12-31"></period-end>
+            <value value-date="2018-01-01">2000000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>Interpeace</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">0</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org ref="46002">
+                <narrative>Afr.DB</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">54087165</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org ref="46002">
+                <narrative>Afr.DB</narrative>
+            </recipient-org>
+            <period-start iso-date="2019-01-01"></period-start>
+            <period-end iso-date="2019-12-31"></period-end>
+            <value value-date="2018-01-01">58962820</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org ref="46002">
+                <narrative>Afr.DB</narrative>
+            </recipient-org>
+            <period-start iso-date="2020-01-01"></period-start>
+            <period-end iso-date="2020-12-31"></period-end>
+            <value value-date="2018-01-01">56928704</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org ref="GB-CHC-229476">
+                <narrative>IPPF</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">4936135</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org ref="GB-CHC-229476">
+                <narrative>IPPF</narrative>
+            </recipient-org>
+            <period-start iso-date="2019-01-01"></period-start>
+            <period-end iso-date="2019-12-31"></period-end>
+            <value value-date="2018-01-01">4799440</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org ref="GB-CHC-229476">
+                <narrative>IPPF</narrative>
+            </recipient-org>
+            <period-start iso-date="2020-01-01"></period-start>
+            <period-end iso-date="2020-12-31"></period-end>
+            <value value-date="2018-01-01">4711440</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org ref="47122">
+                <narrative>GAVI</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">14446666</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org ref="47122">
+                <narrative>GAVI</narrative>
+            </recipient-org>
+            <period-start iso-date="2019-01-01"></period-start>
+            <period-end iso-date="2019-12-31"></period-end>
+            <value value-date="2018-01-01">14666666</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org ref="47122">
+                <narrative>GAVI</narrative>
+            </recipient-org>
+            <period-start iso-date="2020-01-01"></period-start>
+            <period-end iso-date="2020-12-31"></period-end>
+            <value value-date="2018-01-01">15106668</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>UNCCD</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">109564</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>ICTSD</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">789300</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>ICTSD</narrative>
+            </recipient-org>
+            <period-start iso-date="2019-01-01"></period-start>
+            <period-end iso-date="2019-12-31"></period-end>
+            <value value-date="2018-01-01">1052400</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>ICTSD</narrative>
+            </recipient-org>
+            <period-start iso-date="2020-01-01"></period-start>
+            <period-end iso-date="2020-12-31"></period-end>
+            <value value-date="2018-01-01">1052400</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>GEF</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">16685000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>Cabi</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">6085000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>Cabi</narrative>
+            </recipient-org>
+            <period-start iso-date="2019-01-01"></period-start>
+            <period-end iso-date="2019-12-31"></period-end>
+            <value value-date="2018-01-01">3000000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>Cabi</narrative>
+            </recipient-org>
+            <period-start iso-date="2020-01-01"></period-start>
+            <period-end iso-date="2020-12-31"></period-end>
+            <value value-date="2018-01-01">2915000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>IOM</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">6600000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>OHCHR</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">3861000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>ODI</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">54000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>ODI</narrative>
+            </recipient-org>
+            <period-start iso-date="2019-01-01"></period-start>
+            <period-end iso-date="2019-12-31"></period-end>
+            <value value-date="2018-01-01">54000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>ODI</narrative>
+            </recipient-org>
+            <period-start iso-date="2020-01-01"></period-start>
+            <period-end iso-date="2020-12-31"></period-end>
+            <value value-date="2018-01-01">54000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>Transparency International</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">3358219</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>Transparency International</narrative>
+            </recipient-org>
+            <period-start iso-date="2019-01-01"></period-start>
+            <period-end iso-date="2019-12-31"></period-end>
+            <value value-date="2018-01-01">1862016</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>Transparency International</narrative>
+            </recipient-org>
+            <period-start iso-date="2020-01-01"></period-start>
+            <period-end iso-date="2020-12-31"></period-end>
+            <value value-date="2018-01-01">1200000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>OECD</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">891383</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>OECD</narrative>
+            </recipient-org>
+            <period-start iso-date="2019-01-01"></period-start>
+            <period-end iso-date="2019-12-31"></period-end>
+            <value value-date="2018-01-01">260000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>World Bank Institute</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">1525786</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>World Resources Institute</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">3784000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>World Resources Institute</narrative>
+            </recipient-org>
+            <period-start iso-date="2019-01-01"></period-start>
+            <period-end iso-date="2019-12-31"></period-end>
+            <value value-date="2018-01-01">3784000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>World Resources Institute</narrative>
+            </recipient-org>
+            <period-start iso-date="2020-01-01"></period-start>
+            <period-end iso-date="2020-12-31"></period-end>
+            <value value-date="2018-01-01">3784000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org ref="NL-KVK-41009723">
+                <narrative>Zoa Vluchtelingenzorg</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">26481</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>EC</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">3000000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org ref="GB-COH-2153193">
+                <narrative>International Alert</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">0</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>UNIVERSITEIT UTRECHT</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">302000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>UNIVERSITEIT UTRECHT</narrative>
+            </recipient-org>
+            <period-start iso-date="2019-01-01"></period-start>
+            <period-end iso-date="2019-12-31"></period-end>
+            <value value-date="2018-01-01">301000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>UNIVERSITEIT UTRECHT</narrative>
+            </recipient-org>
+            <period-start iso-date="2020-01-01"></period-start>
+            <period-end iso-date="2020-12-31"></period-end>
+            <value value-date="2018-01-01">163300</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>Centre for Humanitarian Dialogue</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">2104222</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>WTO-ACWL</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">438500</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>WTO-ACWL</narrative>
+            </recipient-org>
+            <period-start iso-date="2019-01-01"></period-start>
+            <period-end iso-date="2019-12-31"></period-end>
+            <value value-date="2018-01-01">438500</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>WTO-ACWL</narrative>
+            </recipient-org>
+            <period-start iso-date="2020-01-01"></period-start>
+            <period-end iso-date="2020-12-31"></period-end>
+            <value value-date="2018-01-01">438500</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>ICTJ</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">950000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>ICTJ</narrative>
+            </recipient-org>
+            <period-start iso-date="2019-01-01"></period-start>
+            <period-end iso-date="2019-12-31"></period-end>
+            <value value-date="2018-01-01">50000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org ref="41119">
+                <narrative>UNFPA</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">33000000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>IBRD</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">50000000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>IBRD</narrative>
+            </recipient-org>
+            <period-start iso-date="2019-01-01"></period-start>
+            <period-end iso-date="2019-12-31"></period-end>
+            <value value-date="2018-01-01">19999999</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>IBRD</narrative>
+            </recipient-org>
+            <period-start iso-date="2020-01-01"></period-start>
+            <period-end iso-date="2020-12-31"></period-end>
+            <value value-date="2018-01-01">15000000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org ref="41108">
+                <narrative>IFAD</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">22000000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org ref="41108">
+                <narrative>IFAD</narrative>
+            </recipient-org>
+            <period-start iso-date="2019-01-01"></period-start>
+            <period-end iso-date="2019-12-31"></period-end>
+            <value value-date="2018-01-01">22000000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org ref="41108">
+                <narrative>IFAD</narrative>
+            </recipient-org>
+            <period-start iso-date="2020-01-01"></period-start>
+            <period-end iso-date="2020-12-31"></period-end>
+            <value value-date="2018-01-01">22000000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>ATNI</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">600000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>ATNI</narrative>
+            </recipient-org>
+            <period-start iso-date="2019-01-01"></period-start>
+            <period-end iso-date="2019-12-31"></period-end>
+            <value value-date="2018-01-01">600000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>ATNI</narrative>
+            </recipient-org>
+            <period-start iso-date="2020-01-01"></period-start>
+            <period-end iso-date="2020-12-31"></period-end>
+            <value value-date="2018-01-01">600000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>ICNL</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">880000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>ICNL</narrative>
+            </recipient-org>
+            <period-start iso-date="2019-01-01"></period-start>
+            <period-end iso-date="2019-12-31"></period-end>
+            <value value-date="2018-01-01">880000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>ICNL</narrative>
+            </recipient-org>
+            <period-start iso-date="2020-01-01"></period-start>
+            <period-end iso-date="2020-12-31"></period-end>
+            <value value-date="2018-01-01">880000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>IFOAM</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">725000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>IFOAM</narrative>
+            </recipient-org>
+            <period-start iso-date="2019-01-01"></period-start>
+            <period-end iso-date="2019-12-31"></period-end>
+            <value value-date="2018-01-01">650000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>IFOAM</narrative>
+            </recipient-org>
+            <period-start iso-date="2020-01-01"></period-start>
+            <period-end iso-date="2020-12-31"></period-end>
+            <value value-date="2018-01-01">247850</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org ref="41122">
+                <narrative>UNICEF</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">57520000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org ref="41122">
+                <narrative>UNICEF</narrative>
+            </recipient-org>
+            <period-start iso-date="2019-01-01"></period-start>
+            <period-end iso-date="2019-12-31"></period-end>
+            <value value-date="2018-01-01">24120000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org ref="41122">
+                <narrative>UNICEF</narrative>
+            </recipient-org>
+            <period-start iso-date="2020-01-01"></period-start>
+            <period-end iso-date="2020-12-31"></period-end>
+            <value value-date="2018-01-01">15320000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>FGAE</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">1568696</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>FGAE</narrative>
+            </recipient-org>
+            <period-start iso-date="2019-01-01"></period-start>
+            <period-end iso-date="2019-12-31"></period-end>
+            <value value-date="2018-01-01">3399304</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>FGAE</narrative>
+            </recipient-org>
+            <period-start iso-date="2020-01-01"></period-start>
+            <period-end iso-date="2020-12-31"></period-end>
+            <value value-date="2018-01-01">1080000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>FUNDACION ACCESO</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">393180</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>FUNDACION ACCESO</narrative>
+            </recipient-org>
+            <period-start iso-date="2019-01-01"></period-start>
+            <period-end iso-date="2019-12-31"></period-end>
+            <value value-date="2018-01-01">20694</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org ref="XM-DAC-47059">
+                <narrative>IDLO</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">0</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>UNAIDS</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">20000000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>UNIDO</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">1236914</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>Musawa</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">331188</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>Musawa</narrative>
+            </recipient-org>
+            <period-start iso-date="2019-01-01"></period-start>
+            <period-end iso-date="2019-12-31"></period-end>
+            <value value-date="2018-01-01">307692</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>UNCDF</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">956521</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>UNCDF</narrative>
+            </recipient-org>
+            <period-start iso-date="2020-01-01"></period-start>
+            <period-end iso-date="2020-12-31"></period-end>
+            <value value-date="2018-01-01">956521</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org ref="41146">
+                <narrative>UN WOMEN (v/h UNIFEM)</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">8000000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>EDF</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">229468490</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>EDF</narrative>
+            </recipient-org>
+            <period-start iso-date="2019-01-01"></period-start>
+            <period-end iso-date="2019-12-31"></period-end>
+            <value value-date="2018-01-01">234281880</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>EDF</narrative>
+            </recipient-org>
+            <period-start iso-date="2020-01-01"></period-start>
+            <period-end iso-date="2020-12-31"></period-end>
+            <value value-date="2018-01-01">234281880</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>KENYA NATIONAL COMMISSION ON HUMAN RIGHTS (KNCHR)
+                </narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">151682</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>Legal Aid Forum</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">1733</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>Trademark East Africa</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">1760000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>ABPF</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">364079</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>National Coalition of Human Right Defenders
+                </narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">21547</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org ref="GB-COH-1102208">
+                <narrative>Marie Stopes International</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">1225854</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org ref="GB-COH-1102208">
+                <narrative>Marie Stopes International</narrative>
+            </recipient-org>
+            <period-start iso-date="2019-01-01"></period-start>
+            <period-end iso-date="2019-12-31"></period-end>
+            <value value-date="2018-01-01">1182481</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org ref="GB-COH-1102208">
+                <narrative>Marie Stopes International</narrative>
+            </recipient-org>
+            <period-start iso-date="2020-01-01"></period-start>
+            <period-end iso-date="2020-12-31"></period-end>
+            <value value-date="2018-01-01">1024818</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>GASIN</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">26266</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>Kituo Cha Sheria</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">185817</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>Kituo Cha Sheria</narrative>
+            </recipient-org>
+            <period-start iso-date="2019-01-01"></period-start>
+            <period-end iso-date="2019-12-31"></period-end>
+            <value value-date="2018-01-01">77330</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>ACCESS TO SEEDS FOUNDATION</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">1000000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>ACCESS TO SEEDS FOUNDATION</narrative>
+            </recipient-org>
+            <period-start iso-date="2019-01-01"></period-start>
+            <period-end iso-date="2019-12-31"></period-end>
+            <value value-date="2018-01-01">1500000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>ACCESS TO SEEDS FOUNDATION</narrative>
+            </recipient-org>
+            <period-start iso-date="2020-01-01"></period-start>
+            <period-end iso-date="2020-12-31"></period-end>
+            <value value-date="2018-01-01">2275000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>IPAS</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">5000000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>IPAS</narrative>
+            </recipient-org>
+            <period-start iso-date="2019-01-01"></period-start>
+            <period-end iso-date="2019-12-31"></period-end>
+            <value value-date="2018-01-01">5000000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>IPAS</narrative>
+            </recipient-org>
+            <period-start iso-date="2020-01-01"></period-start>
+            <period-end iso-date="2020-12-31"></period-end>
+            <value value-date="2018-01-01">5000000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>ACTION CANADA FOR SEXUAL HEALTH AND RIGHTS
+                </narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">977778</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>ACTION CANADA FOR SEXUAL HEALTH AND RIGHTS
+                </narrative>
+            </recipient-org>
+            <period-start iso-date="2019-01-01"></period-start>
+            <period-end iso-date="2019-12-31"></period-end>
+            <value value-date="2018-01-01">977778</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>GCERF</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">1400000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>GCERF</narrative>
+            </recipient-org>
+            <period-start iso-date="2019-01-01"></period-start>
+            <period-end iso-date="2019-12-31"></period-end>
+            <value value-date="2018-01-01">1250000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>GCERF</narrative>
+            </recipient-org>
+            <period-start iso-date="2020-01-01"></period-start>
+            <period-end iso-date="2020-12-31"></period-end>
+            <value value-date="2018-01-01">1250000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>GIRLS NOT BRIDES</narrative>
+            </recipient-org>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">500000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>GIRLS NOT BRIDES</narrative>
+            </recipient-org>
+            <period-start iso-date="2019-01-01"></period-start>
+            <period-end iso-date="2019-12-31"></period-end>
+            <value value-date="2018-01-01">500000</value>
+        </recipient-org-budget>
+        <recipient-org-budget>
+            <recipient-org>
+                <narrative>GIRLS NOT BRIDES</narrative>
+            </recipient-org>
+            <period-start iso-date="2020-01-01"></period-start>
+            <period-end iso-date="2020-12-31"></period-end>
+            <value value-date="2018-01-01">500000</value>
+        </recipient-org-budget>
+        <recipient-country-budget>
+            <recipient-country code="AF">
+                <narrative xml:lang="en">AFGHANISTAN</narrative>
+            </recipient-country>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">20000000</value>
+        </recipient-country-budget>
+        <recipient-country-budget>
+            <recipient-country code="BD">
+                <narrative xml:lang="en">BANGLADESH</narrative>
+            </recipient-country>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">47400000</value>
+        </recipient-country-budget>
+        <recipient-country-budget>
+            <recipient-country code="BI">
+                <narrative xml:lang="en">BURUNDI</narrative>
+            </recipient-country>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">26500000</value>
+        </recipient-country-budget>
+        <recipient-country-budget>
+            <recipient-country code="BJ">
+                <narrative xml:lang="en">BENIN</narrative>
+            </recipient-country>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">35739000</value>
+        </recipient-country-budget>
+        <recipient-country-budget>
+            <recipient-country code="CD">
+                <narrative xml:lang="en">CONGO, THE DEMOCRATIC REPUBLIC OF
+                    THE
+                </narrative>
+            </recipient-country>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">600000</value>
+        </recipient-country-budget>
+        <recipient-country-budget>
+            <recipient-country code="ET">
+                <narrative xml:lang="en">ETHIOPIA</narrative>
+            </recipient-country>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">60177000</value>
+        </recipient-country-budget>
+        <recipient-country-budget>
+            <recipient-country code="GH">
+                <narrative xml:lang="en">GHANA</narrative>
+            </recipient-country>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">22600000</value>
+        </recipient-country-budget>
+        <recipient-country-budget>
+            <recipient-country code="ID">
+                <narrative xml:lang="en">INDONESIA</narrative>
+            </recipient-country>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">14286000</value>
+        </recipient-country-budget>
+        <recipient-country-budget>
+            <recipient-country code="KE">
+                <narrative xml:lang="en">KENYA</narrative>
+            </recipient-country>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">14200000</value>
+        </recipient-country-budget>
+        <recipient-country-budget>
+            <recipient-country code="ML">
+                <narrative xml:lang="en">MALI</narrative>
+            </recipient-country>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">32500000</value>
+        </recipient-country-budget>
+        <recipient-country-budget>
+            <recipient-country code="MZ">
+                <narrative xml:lang="en">MOZAMBIQUE</narrative>
+            </recipient-country>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">34363000</value>
+        </recipient-country-budget>
+        <recipient-country-budget>
+            <recipient-country code="PS">
+                <narrative xml:lang="en">PALESTINIAN TERRITORY, OCCUPIED
+                </narrative>
+            </recipient-country>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">18850000</value>
+        </recipient-country-budget>
+        <recipient-country-budget>
+            <recipient-country code="RW">
+                <narrative xml:lang="en">RWANDA</narrative>
+            </recipient-country>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">48300000</value>
+        </recipient-country-budget>
+        <recipient-country-budget>
+            <recipient-country code="SR">
+                <narrative xml:lang="en">SURINAME</narrative>
+            </recipient-country>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">2425000</value>
+        </recipient-country-budget>
+        <recipient-country-budget>
+            <recipient-country code="SS">
+                <narrative xml:lang="en">SOUTH SUDAN</narrative>
+            </recipient-country>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">19500000</value>
+        </recipient-country-budget>
+        <recipient-country-budget>
+            <recipient-country code="UG">
+                <narrative xml:lang="en">UGANDA</narrative>
+            </recipient-country>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">16000000</value>
+        </recipient-country-budget>
+        <recipient-country-budget>
+            <recipient-country code="YE">
+                <narrative xml:lang="en">YEMEN</narrative>
+            </recipient-country>
+            <period-start iso-date="2018-01-01"></period-start>
+            <period-end iso-date="2018-12-31"></period-end>
+            <value value-date="2018-01-01">11200000</value>
+        </recipient-country-budget>
+        <document-link
+                url="http://www.rijksoverheid.nl/bestanden/documenten-en-publicaties/publicaties/2013/10/24/accra-food-security/accra-food-security.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Accra food security results
+                </narrative>
+            </title>
+            <category code="A08"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksoverheid.nl/bestanden/documenten-en-publicaties/publicaties/2013/10/24/accra-srhr/accra-srhr.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Accra shrh results</narrative>
+            </title>
+            <category code="A08"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksoverheid.nl/bestanden/documenten-en-publicaties/publicaties/2013/10/24/accra-water/accra-water.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Accra water results</narrative>
+            </title>
+            <category code="A08"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksoverheid.nl/bestanden/documenten-en-publicaties/publicaties/2013/10/24/addis-abeba-food-security/addis-abeba-food-security.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Addis Abeba food security results
+                </narrative>
+            </title>
+            <category code="A08"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksoverheid.nl/bestanden/documenten-en-publicaties/publicaties/2013/10/24/addis-abeba-security-and-the-rule-of-law/addis-abeba-security-and-the-rule-of-law.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Addis Abeba security and the rule of
+                    law results
+                </narrative>
+            </title>
+            <category code="A08"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksoverheid.nl/bestanden/documenten-en-publicaties/publicaties/2013/10/24/addis-abeda-srhr/addis-abeba-srhr.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Addis Abeba srhr results</narrative>
+            </title>
+            <category code="A08"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksoverheid.nl/bestanden/documenten-en-publicaties/publicaties/2013/10/24/bamako-food-security-and-water/bamako-food-security-and-water.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Bamako food security and water
+                    results
+                </narrative>
+            </title>
+            <category code="A08"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksoverheid.nl/bestanden/documenten-en-publicaties/publicaties/2013/10/24/bamako-srhr/bamako-srhr.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Bamako srhr results</narrative>
+            </title>
+            <category code="A08"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksoverheid.nl/bestanden/documenten-en-publicaties/publicaties/2013/10/24/bujumbura-food-security/bujumbura-food-security.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Bujumbura food security results
+                </narrative>
+            </title>
+            <category code="A08"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksoverheid.nl/bestanden/documenten-en-publicaties/publicaties/2013/10/24/bujumbura-security-and-the-rule-of-law/bujumbura-security-and-the-rule-of-law.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Bujumbura security and the rule of law
+                    results
+                </narrative>
+            </title>
+            <category code="A08"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksoverheid.nl/bestanden/documenten-en-publicaties/publicaties/2013/10/24/bujumbura-srhr/bujumbura-srhr.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Bujumbura srhr results</narrative>
+            </title>
+            <category code="A08"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksoverheid.nl/bestanden/documenten-en-publicaties/publicaties/2013/10/24/cotonou-food-security/cotonou-food-security.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Cotonou food security results
+                </narrative>
+            </title>
+            <category code="A08"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksoverheid.nl/bestanden/documenten-en-publicaties/publicaties/2013/10/24/cotonou-srhr/cotonou-srhr.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Cotonou srhr results</narrative>
+            </title>
+            <category code="A08"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksoverheid.nl/bestanden/documenten-en-publicaties/publicaties/2013/10/24/cotonou-water/cotonou-water.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Cotonou water results</narrative>
+            </title>
+            <category code="A08"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksoverheid.nl/bestanden/documenten-en-publicaties/publicaties/2013/10/24/dhaka-food-security/dhaka-food-security.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Dhaka food security results
+                </narrative>
+            </title>
+            <category code="A08"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksoverheid.nl/bestanden/documenten-en-publicaties/publicaties/2013/10/24/dhaka-srhr/dhaka-srhr.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Dhaka srhr results</narrative>
+            </title>
+            <category code="A08"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksoverheid.nl/bestanden/documenten-en-publicaties/publicaties/2013/10/24/dhaka-water/dhaka-water.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Dhaka water results</narrative>
+            </title>
+            <category code="A08"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksoverheid.nl/bestanden/documenten-en-publicaties/publicaties/2013/10/24/directie-dde-food-security/directie-dde-food-security.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Directie DDE food security results
+                </narrative>
+            </title>
+            <category code="A08"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksoverheid.nl/bestanden/documenten-en-publicaties/publicaties/2013/10/24/directie-dme-water/directie-dme-water.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Directie DME water results</narrative>
+            </title>
+            <category code="A08"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksoverheid.nl/bestanden/documenten-en-publicaties/publicaties/2013/10/24/directie-dsh-security-and-the-rule-of-law/directie-dsh-security-and-the-rule-of-law.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Directie DSH security and the rule of
+                    law results
+                </narrative>
+            </title>
+            <category code="A08"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksoverheid.nl/bestanden/documenten-en-publicaties/publicaties/2013/10/24/directie-dso-srhr/directie-dso-srhr.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Directie DSO srhr results</narrative>
+            </title>
+            <category code="A08"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksoverheid.nl/bestanden/documenten-en-publicaties/publicaties/2013/10/24/jakarta-security-and-the-rule-of-law/jakarta-security-and-the-rule-of-law.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Jakarta security and the rule of law
+                    results
+                </narrative>
+            </title>
+            <category code="A08"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksoverheid.nl/bestanden/documenten-en-publicaties/publicaties/2013/10/24/jakarta-water/jakarta-water.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Jakarta water results</narrative>
+            </title>
+            <category code="A08"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksoverheid.nl/bestanden/documenten-en-publicaties/publicaties/2013/10/24/jakarta-food-security/jakarta-food-security.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Jakarta food security results
+                </narrative>
+            </title>
+            <category code="A08"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksoverheid.nl/bestanden/documenten-en-publicaties/publicaties/2013/10/24/juba-food-security/juba-food-security.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Juba food security results</narrative>
+            </title>
+            <category code="A08"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="https://www.iob-evaluatie.nl/binaries/iob-evaluatie/documenten/evaluaties/2015/04/01/401---iob-evaluation-of-the-mdg3-fund-%E2%80%93-investing-in-equality-2008-2011/evaluation-of-the-mdg3-fund-%E2%80%93-investing-in-equality-2008-2011.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Evaluation of the MDG3 Fund –
+                    Investing in Equality (2008-2011)
+                </narrative>
+            </title>
+            <category code="B09"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksoverheid.nl/bestanden/documenten-en-publicaties/publicaties/2013/10/24/juba-security-and-the-rule-of-law/juba-security-and-the-rule-of-law.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Juba security and the rule of law
+                    results
+                </narrative>
+            </title>
+            <category code="A08"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksoverheid.nl/bestanden/documenten-en-publicaties/publicaties/2013/10/24/juba-water/juba-water.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Juba water results</narrative>
+            </title>
+            <category code="A08"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksoverheid.nl/bestanden/documenten-en-publicaties/publicaties/2013/10/24/kabul-food-security/kabul-food-security.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Kabul food security results
+                </narrative>
+            </title>
+            <category code="A08"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksoverheid.nl/bestanden/documenten-en-publicaties/publicaties/2013/10/24/kampala-food-security/kampala-food-security.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Kampala food security results
+                </narrative>
+            </title>
+            <category code="A08"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksoverheid.nl/bestanden/documenten-en-publicaties/publicaties/2013/10/24/kabul-security-and-the-rule-of-law/kabul-security-and-the-rule-of-law.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Kabul security and the rule of law
+                    results
+                </narrative>
+            </title>
+            <category code="A08"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksoverheid.nl/bestanden/documenten-en-publicaties/publicaties/2013/10/24/kampala-security-and-the-rule-of-law/kampala-security-and-the-rule-of-law.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Kampala security and the rule of law
+                    results
+                </narrative>
+            </title>
+            <category code="A08"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksoverheid.nl/bestanden/documenten-en-publicaties/publicaties/2013/10/24/kigali-food-security/kigali-food-security.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Kigali food security results
+                </narrative>
+            </title>
+            <category code="A08"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksoverheid.nl/bestanden/documenten-en-publicaties/publicaties/2013/10/24/kigali-security-and-the-rule-of-law/kigali-security-and-the-rule-of-law.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Kigali security and the rule of law
+                    results
+                </narrative>
+            </title>
+            <category code="A08"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksoverheid.nl/bestanden/documenten-en-publicaties/publicaties/2013/10/24/maputo-food-security/maputo-food-security.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Maputo food security results
+                </narrative>
+            </title>
+            <category code="A08"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksoverheid.nl/bestanden/documenten-en-publicaties/publicaties/2013/10/24/maputo-srhr/maputo-srhr.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Maputo security and the rule of law
+                    results
+                </narrative>
+            </title>
+            <category code="A08"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksoverheid.nl/bestanden/documenten-en-publicaties/publicaties/2013/10/24/maputo-water/maputo-water.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Maputo water results</narrative>
+            </title>
+            <category code="A08"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksoverheid.nl/bestanden/documenten-en-publicaties/publicaties/2013/10/24/nairobi-food-security/nairobi-food-security.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Nairobi food security results
+                </narrative>
+            </title>
+            <category code="A08"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksoverheid.nl/bestanden/documenten-en-publicaties/publicaties/2013/10/24/nairobi-security-an-the-rule-of-law/nairobi-security-and-the-rule-of-law.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Nairobi security and the rule of law
+                </narrative>
+            </title>
+            <category code="A08"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksoverheid.nl/bestanden/documenten-en-publicaties/publicaties/2013/10/24/nairobi-water/nairobi-water.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Nairobi water results</narrative>
+            </title>
+            <category code="A08"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksoverheid.nl/bestanden/documenten-en-publicaties/publicaties/2013/10/24/ramallah-food-security/ramallah-food-security.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Ramallah food security results
+                </narrative>
+            </title>
+            <category code="A08"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksoverheid.nl/bestanden/documenten-en-publicaties/publicaties/2013/10/24/ramallah-security-and-the-rule-of-law/ramallah-security-and-the-rule-of-law.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Ramallah security and the rule of law
+                    results
+                </narrative>
+            </title>
+            <category code="A08"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksoverheid.nl/bestanden/documenten-en-publicaties/publicaties/2013/10/24/ramallah-water/ramallah-water.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Ramallah water results</narrative>
+            </title>
+            <category code="A08"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksoverheid.nl/bestanden/documenten-en-publicaties/publicaties/2013/10/24/sanaa-security-and-the-rule-of-law/sanaa-security-and-the-rule-of-law.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Sanaa security and the rule of law
+                    results
+                </narrative>
+            </title>
+            <category code="A08"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksoverheid.nl/bestanden/documenten-en-publicaties/publicaties/2013/10/24/sanaa-srhr/sanaa-srhr.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Sanaa srhr results</narrative>
+            </title>
+            <category code="A08"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksoverheid.nl/bestanden/documenten-en-publicaties/publicaties/2013/10/24/sanaa-water/sanaa-water.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Sanaa water results</narrative>
+            </title>
+            <category code="A08"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksoverheid.nl/bestanden/documenten-en-publicaties/kamerstukken/2013/10/24/kamerbrief-over-voortgang-speerpunten-ontwikkelingssamenwerking/kamerbrief-over-voortgang-speerpunten-ontwikkelingssamenwerking.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="nl">Kamerbrief resultaten speerpunten
+                    2012
+                </narrative>
+            </title>
+            <category code="A08"></category>
+            <language code="nl"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksoverheid.nl/bestanden/documenten-en-publicaties/rapporten/2014/02/05/meerjarige-strategische-plannen-mjsp-2014-2017/afghanistan-meerjarig-strategisch-plan-2014-2017.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="nl">Afghanistan MJSP 2014-2017</narrative>
+            </title>
+            <category code="B03"></category>
+            <language code="nl"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksoverheid.nl/bestanden/documenten-en-publicaties/rapporten/2014/02/05/meerjarige-strategische-plannen-mjsp-2014-2017/bangladesh-multi-annual-strategic-plan-2014-2017.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Bangladesh MASP 2014-2017</narrative>
+            </title>
+            <category code="B03"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksoverheid.nl/bestanden/documenten-en-publicaties/rapporten/2014/02/05/meerjarige-strategische-plannen-mjsp-2014-2017/benin-multi-annual-strategic-plan-2014-2017.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Benin MASP 2014-2017</narrative>
+            </title>
+            <category code="B03"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksoverheid.nl/bestanden/documenten-en-publicaties/rapporten/2014/02/05/meerjarige-strategische-plannen-mjsp-2014-2017/burundi-multi-annual-strategic-plan-2014-2017.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Burundi MASP 2014-2017</narrative>
+            </title>
+            <category code="B03"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksoverheid.nl/bestanden/documenten-en-publicaties/rapporten/2014/02/05/meerjarige-strategische-plannen-mjsp-2014-2017/ethiopia-multi-annuial-strategic-plan-2014-2017.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Ethiopia MASP 2014-2017</narrative>
+            </title>
+            <category code="B03"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksoverheid.nl/bestanden/documenten-en-publicaties/rapporten/2014/02/05/meerjarige-strategische-plannen-mjsp-2014-2017/ghana-multi-annual-strategic-plan-2014-2017.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Ghana MASP 2014-2017</narrative>
+            </title>
+            <category code="B03"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksoverheid.nl/bestanden/documenten-en-publicaties/rapporten/2014/02/05/meerjarige-strategische-plannen-mjsp-2014-2017/great-lakes-region-multi-annual-strategic-plan-2014-2017.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Great Lakes MASP 2014-2017</narrative>
+            </title>
+            <category code="B03"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksoverheid.nl/bestanden/documenten-en-publicaties/rapporten/2014/02/05/meerjarige-strategische-plannen-mjsp-2014-2017/meerjarig-strategisch-plan-hoorn-van-afrika-2014-2017.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="nl">Hoorn van Afrika MJSP 2014-2017
+                </narrative>
+            </title>
+            <category code="B03"></category>
+            <language code="nl"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksoverheid.nl/bestanden/documenten-en-publicaties/rapporten/2014/02/05/meerjarige-strategische-plannen-mjsp-2014-2017/indonesia-multi-annual-strategic-plan-2014-2017.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Indonesia MASP 2014-2017</narrative>
+            </title>
+            <category code="B03"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksoverheid.nl/bestanden/documenten-en-publicaties/rapporten/2014/02/05/meerjarige-strategische-plannen-mjsp-2014-2017/yemen-multi-annual-strategic-plan-2014-2017.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Yemen MASP 2014-2017</narrative>
+            </title>
+            <category code="B03"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksoverheid.nl/bestanden/documenten-en-publicaties/rapporten/2014/02/05/meerjarige-strategische-plannen-mjsp-2014-2017/kenya-multi-annual-strategic-plan-2014-2017.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Kenya MASP 2014-2017</narrative>
+            </title>
+            <category code="B03"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksoverheid.nl/bestanden/documenten-en-publicaties/rapporten/2014/02/05/meerjarige-strategische-plannen-mjsp-2014-2017/mali-multi-annual-strategic-plan-2014-2017.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Mali MASP 2014-2017</narrative>
+            </title>
+            <category code="B03"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksoverheid.nl/bestanden/documenten-en-publicaties/rapporten/2014/02/05/meerjarige-strategische-plannen-mjsp-2014-2017/mozambique-multi-annual-strategic-plan-2014-2017.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Mozambique MASP 2014-2017</narrative>
+            </title>
+            <category code="B03"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksoverheid.nl/bestanden/documenten-en-publicaties/rapporten/2014/02/05/meerjarige-strategische-plannen-mjsp-2014-2017/palestinian-territories-multi-annual-strategic-plan-2014-2017.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Palestinian Territories MASP
+                    2014-2017
+                </narrative>
+            </title>
+            <category code="B03"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksoverheid.nl/bestanden/documenten-en-publicaties/rapporten/2014/02/05/meerjarige-strategische-plannen-mjsp-2014-2017/rwanda-multi-annual-strategic-plan-2014-2017.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Rwanda MASP 2014-2017</narrative>
+            </title>
+            <category code="B03"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksoverheid.nl/bestanden/documenten-en-publicaties/rapporten/2014/02/05/meerjarige-strategische-plannen-mjsp-2014-2017/uganda-multi-annual-strategic-plan-2014-2017.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Uganda MASP 2014-2017</narrative>
+            </title>
+            <category code="B03"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="http://wetten.overheid.nl/BWBR0019366/geldigheidsdatum_03-04-2015"
+                format="text/html">
+            <title>
+                <narrative xml:lang="en">Subsidy Law Ministry of Foreign
+                    Affairs
+                </narrative>
+            </title>
+            <category code="B05"></category>
+            <language code="nl"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksbegroting.nl/binaries/pdfs/1/9/5/kst195506.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Annual report Foreign Affairs 2013
+                </narrative>
+            </title>
+            <category code="B01"></category>
+            <category code="B06"></category>
+            <language code="nl"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksbegroting.nl/binaries/pdfs/1/9/5/kst195506.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Annual report Foreign Trade and
+                    Development Cooperation 2013
+                </narrative>
+            </title>
+            <category code="B01"></category>
+            <category code="B06"></category>
+            <language code="nl"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksbegroting.nl/binaries/pdfs/1/7/3/kst173852.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Annual budget Foreign Affairs 2013
+                    Proposal
+                </narrative>
+            </title>
+            <category code="B04"></category>
+            <language code="nl"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksbegroting.nl/binaries/pdfs/1/7/3/kst173853.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Annual budget Foreign Affairs 2013
+                    Explanation
+                </narrative>
+            </title>
+            <category code="B04"></category>
+            <language code="nl"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksbegroting.nl/binaries/pdfs/1/8/6/kst186604.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Annual budget Foreign Affairs 2014
+                    Proposal
+                </narrative>
+            </title>
+            <category code="B04"></category>
+            <language code="nl"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksbegroting.nl/binaries/pdfs/1/8/6/kst186605.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Annual budget Foreign Affairs 2014
+                    Explanation
+                </narrative>
+            </title>
+            <category code="B04"></category>
+            <language code="nl"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksbegroting.nl/binaries/pdfs/1/8/6/kst186653.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Annual budget Foreign Trade and
+                    Development Cooperation 2014 Proposal
+                </narrative>
+            </title>
+            <category code="B04"></category>
+            <language code="nl"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksbegroting.nl/binaries/pdfs/1/8/6/kst186654.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Annual budget Foreign Trade and
+                    Development Cooperation 2014 Explanation
+                </narrative>
+            </title>
+            <category code="B04"></category>
+            <language code="nl"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksbegroting.nl/binaries/pdfs/1/9/9/kst199432.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Annual budget Foreign Affairs 2015
+                    Proposal
+                </narrative>
+            </title>
+            <category code="B04"></category>
+            <language code="nl"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksbegroting.nl/binaries/pdfs/1/9/9/kst199433.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Annual budget Foreign Affairs 2015
+                    Explanation
+                </narrative>
+            </title>
+            <category code="B04"></category>
+            <language code="nl"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksbegroting.nl/binaries/pdfs/1/9/9/kst199396.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Annual budget Foreign Trade and
+                    Development Cooperation 2015 Proposal
+                </narrative>
+            </title>
+            <category code="B04"></category>
+            <language code="nl"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksbegroting.nl/binaries/pdfs/1/9/9/kst199398.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Annual budget Foreign Trade and
+                    Development Cooperation 2015 Explanation
+                </narrative>
+            </title>
+            <category code="B04"></category>
+            <language code="nl"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksoverheid.nl/bestanden/documenten-en-publicaties/brieven/2012/09/18/homogene-groep-internationale-samenwerking-2013-hgis-nota-2013/homogene-groep-internationale-samenwerking-2013-hgis-nota-2013.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Annual budget Homogeneous Group
+                    International Cooperation 2013
+                </narrative>
+            </title>
+            <category code="B04"></category>
+            <language code="nl"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksoverheid.nl/bestanden/documenten-en-publicaties/begrotingen/2013/09/17/hgis-nota-homogene-groep-internationale-samenwerking-rijksbegroting-2014/hgis-nota-homogene-groep-internationale-samenwerking-rijksbegroting-2014.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Annual budget Homogeneous Group
+                    International Cooperation 2014
+                </narrative>
+            </title>
+            <category code="B04"></category>
+            <language code="nl"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksoverheid.nl/bestanden/documenten-en-publicaties/begrotingen/2014/09/16/hgis-nota-homogene-groep-internationale-samenwerking-rijksbegroting-2015/homogene-groep-internationale-samenwerking.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Annual budget Homogeneous Group
+                    International Cooperation 2015
+                </narrative>
+            </title>
+            <category code="B04"></category>
+            <language code="nl"></language>
+        </document-link>
+        <document-link
+                url="http://www.government.nl/files/documents-and-publications/letters/2013/04/05/global-dividends-a-new-agenda-for-aid-trade-and-investment/a-world-to-gain-en.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">A world to gain: A New Agenda for Aid,
+                    Trade and Investment
+                </narrative>
+            </title>
+            <category code="B02"></category>
+            <category code="B04"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="http://www.government.nl/files/documents-and-publications/notes/2013/06/14/justice-and-respect-for-all/b49-619083-respect-en-recht-en-web.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Human rights policy – Justice and
+                    respect for all
+                </narrative>
+            </title>
+            <category code="B02"></category>
+            <category code="B04"></category>
+            <language code="nl"></language>
+        </document-link>
+        <document-link
+                url="https://www.rijksoverheid.nl/binaries/rijksoverheid/documenten/rapporten/2014/10/31/iob-review-riding-the-wave-of-sustainable-commodity-sourcing-engels/riding-the-wave-of-sustainable-commodity-sourcing-review-of-the-sustainable-trade-initiative-idh-2008-2013.pdf "
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Riding the wave of sustainable
+                    commodity sourcing – Review of the Sustainable Trade
+                    Initiative IDH 2008-2013
+                </narrative>
+            </title>
+            <category code="B09"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="https://www.government.nl/binaries/government/documents/reports/2015/04/28/iob-access-to-energy-in-rwanda-impact-evaluation-of-activities-supported-by-the-dutch-promoting-renewable-energy-programme/access-to-energy-in-rwanda-%E2%80%93-impact-evaluation-of-activities-supported-by-the-dutch-promoting-renewable-energy-programme.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Access to Energy in Rwanda – Impact
+                    evaluation of activities supported by the Dutch Promoting
+                    Renewable Energy Programme
+                </narrative>
+            </title>
+            <category code="B09"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="https://www.government.nl/binaries/government/documents/reports/2014/07/24/iob-autonomy-partnership-and-beyond-a-counterfactual-analysis-of-policy-coherence-for-ghana/autonomy-partnership-and-beyond-a-counterfactual-analysis-of-policy-coherence-for-ghana.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Autonomy, partnership and beyond: A
+                    counterfactual analysis of policy coherence for Ghana
+                </narrative>
+            </title>
+            <category code="B09"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="https://www.government.nl/binaries/government/documents/reports/2014/04/01/iob-return-on-aid-for-dutch-exports/good-things-come-to-those-who-make-them-happen-return-on-aid-for-dutch-exports.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Good things come to those who make
+                    them happen: Return on aid for Dutch exports
+                </narrative>
+            </title>
+            <category code="B09"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="https://www.rijksoverheid.nl/binaries/rijksoverheid/documenten/rapporten/2014/03/03/iob-evaluatie-useful-patchwork-direct-funding-of-local-ngo-s-by-netherlands-embassies-2006-2012/2-useful-patchwork-direct-funding-of-local-ngos-by-netherlands-embassies-2006-2012.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Useful Patchwork – Direct Funding of
+                    Local NGOs by Netherlands Embassies 2006-2012
+                </narrative>
+            </title>
+            <category code="B09"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="https://www.rijksoverheid.nl/binaries/rijksoverheid/documenten/begrotingen/2015/09/15/hgis---nota-homogene-groep-internationale-samenwerking-rijksbegroting-2016/hgis-nota-rijksbegroting-2016.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Annual budget Homogeneous Group
+                    International Cooperation 2016
+                </narrative>
+            </title>
+            <category code="B04"></category>
+            <language code="nl"></language>
+        </document-link>
+        <document-link
+                url="https://www.rijksoverheid.nl/binaries/rijksoverheid/documenten/begrotingen/2016/09/20/hgis---nota-homogene-groep-internationale-samenwerking-rijksbegroting-2017/hgis-nota.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Annaul budget Homogeneous Group
+                    International Cooperation 2017
+                </narrative>
+            </title>
+            <category code="B04"></category>
+            <language code="nl"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksbegroting.nl/binaries/pdfs/2/1/2/kst212303.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Annual budget Foreign Affairs 2016
+                    Proposal
+                </narrative>
+            </title>
+            <category code="B04"></category>
+            <language code="nl"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksbegroting.nl/binaries/pdfs/2/1/2/kst212304.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Annual budget Foreign Affairs 2016
+                    Explanation
+                </narrative>
+            </title>
+            <category code="B04"></category>
+            <language code="nl"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksbegroting.nl/binaries/pdfs/2/2/5/kst225870.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Annual budget Foreign Affairs 2017
+                    Proposal
+                </narrative>
+            </title>
+            <category code="B04"></category>
+            <language code="nl"></language>
+        </document-link>
+        <document-link
+                url="http://www.rijksbegroting.nl/binaries/pdfs/2/2/5/kst225873.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Annual budget Foreign Affairs 2017
+                    ExplanationProposal
+                </narrative>
+            </title>
+            <category code="B04"></category>
+            <language code="nl"></language>
+        </document-link>
+        <document-link
+                url="https://www.rijksoverheid.nl/binaries/rijksoverheid/documenten/kamerstukken/2016/09/19/kamerbrief-vernieuwng-oda-en-partnerlandenlijst/Vernieuwing+ODA+en+partnerlandenlijst.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Renewed ODA and partner country list
+                </narrative>
+            </title>
+            <category code="B02"></category>
+            <category code="B04"></category>
+            <language code="nl"></language>
+        </document-link>
+        <document-link url="http://www.dutchdevelopmentresults.nl/"
+                       format="text/html">
+            <title>
+                <narrative xml:lang="en">Development results in perspective
+                    edition 2016
+                </narrative>
+            </title>
+            <category code="A08"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="https://www.iob-evaluatie.nl/binaries/iob-evaluatie/documenten/evaluaties/2015/07/01/402-work-in-progress-evaluation-of-the-oret-programme-investing-in-public-infrastructure-in-developing-countries/work-in-progress-%E2%80%93-evaluation-of-the-oret-programme-%E2%80%93-investing-in-public-infrastructure-in-developing-countries.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Work in Progress – Evaluation of the
+                    ORET Programme: Investing in Public Infrastructure in
+                    Developing Countries
+                </narrative>
+            </title>
+            <category code="B09"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="https://www.iob-evaluatie.nl/binaries/iob-evaluatie/documenten/evaluaties/2015/04/01/399---iob-evaluation-gender-peace-and-security-evaluation-of-the-netherlands-and-un-security-council-resolution-1325/gender-peace-and-security-%E2%80%93-evaluation-of-the-netherlands-and-un-security-council-resolution-1325.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Gender, peace and security, evaluation
+                    of the Netherlands and UN Security Council resolution 1325
+                </narrative>
+            </title>
+            <category code="B09"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="https://www.iob-evaluatie.nl/binaries/iob-evaluatie/documenten/beleidsdoorlichtingen/2015/07/01/405---iob-gender-sense--sensitivity-%E2%80%93-policy-evaluation-on-womens-rights-and-gender-equality-2007-2014/gender-sense-sensitivity-%E2%80%93-policy-evaluation-on-womens-rights-and-gender-equality-2007-2014.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Gender sense &amp; sensitivity –
+                    Policy evaluation on women&apos;s rights and gender
+                    equality (2007-2014)
+                </narrative>
+            </title>
+            <category code="B09"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="https://www.iob-evaluatie.nl/binaries/iob-evaluatie/documenten/evaluaties/2015/04/01/400---iob-the-only-constant-is-change---evaluation-of-the-dutch-contribution-to-transition-in-the-arab-region-2009-2013/the-only-constant-is-change-%E2%80%93-evaluation-of-the-dutch-contribution-to-transition-in-the-arab-region-2009-2013.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">The only constant is change –
+                    Evaluation of the Dutch contribution to transition in the
+                    Arab region (2009-2013)
+                </narrative>
+            </title>
+            <category code="B09"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="https://www.iob-evaluatie.nl/binaries/iob-evaluatie/documenten/evaluaties/2015/06/01/398---iob-evaluation---navigating-a-sea-of-interests-policy-evaluation-of-dutch-foreign-human-rights-policy-2008-2013/398-iob-evaluation-navigating-a-sea-of-interests-policy-evaluation-of-dutch-foreign-human-rights-policy-2008-2013.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Navigating a sea of interests, Policy
+                    evaluation of Dutch foreign human rights policy (2008-2013)
+                </narrative>
+            </title>
+            <category code="B09"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="https://www.iob-evaluatie.nl/binaries/iob-evaluatie/documenten/evaluaties/2016/07/01/415-%E2%80%93-iob-%E2%80%93-an-evaluation-of-the-impact-of-ending-aid-%E2%80%93-the-gaps-left-behind/The+gaps+left+behind+%E2%80%93+An+evaluation+of+the+impact+of+ending+aid.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">An evaluation of the impact of ending
+                    aid – The gaps left behind
+                </narrative>
+            </title>
+            <category code="B09"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="https://www.iob-evaluatie.nl/binaries/iob-evaluatie/documenten/evaluaties/2016/04/01/412-%E2%80%93-evaluation-of-dutch-development-cooperation-in-the-palestinian-territories-2008-2014-%E2%80%93-how-to-break-the-vicious-cycle/How+to+Break+the+Vicious+Cycle+%E2%80%93+Evaluation+of+Dutch+Development+Cooperation+in+the+Palestinian+Territories+2008-2014.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Evaluation of Dutch development
+                    cooperation in the Palestinian Territories 2008-2014 – How
+                    to Break the Vicious Cycle
+                </narrative>
+            </title>
+            <category code="B09"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="https://www.iob-evaluatie.nl/binaries/iob-evaluatie/documenten/publicaties/2015/09/01/409---iob-evaluation-of-the-matra-programme-in-the-eastern-partnership-countries-2008-2014-409/2015-iob-evaluation-of-the-matra-programme-in-the-eastern-partnership-countries-2008-2014-409.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Evaluation of the Matra programme in
+                    the Eastern Partnership countries 2008-2014
+                </narrative>
+            </title>
+            <category code="B09"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="https://www.iob-evaluatie.nl/binaries/iob-evaluatie/documenten/evaluaties/2015/09/01/408---iob-aided-trade---an-evaluation-of-the-centre-for-the-promotion-of-imports-from-developing-countries-2005-2012/aided-trade-%E2%80%93-an-evaluation-of-the-centre-for-the-promotion-of-imports-from-developing-countries-2005-2012.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Aided Trade – An evaluation of the
+                    Centre for the Promotion of Imports from Developing
+                    Countries (2005-2012)
+                </narrative>
+            </title>
+            <category code="B09"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="https://www.iob-evaluatie.nl/binaries/iob-evaluatie/documenten/publicaties/2015/12/01/407--evaluation-of-support-for-policy-influencing-lobbying-and-advocacy-pila/2015-iob-opening-doors-and-unlocking-potential-%E2%80%93-key-lessons-from-an-evaluation-of-support-for-policy-influencing-lobbying.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Key lessons from an evaluation of
+                    support for Policy Influencing, Lobbying and Advocacy
+                    (PILA) - Opening doors and unlocking potential
+                </narrative>
+            </title>
+            <category code="B09"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="https://www.rijksoverheid.nl/binaries/rijksoverheid/documenten/begrotingen/2015/09/15/hgis---nota-homogene-groep-internationale-samenwerking-rijksbegroting-2016/hgis-nota-rijksbegroting-2016.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Budget Homogeneous Group International
+                    Cooperation 2016
+                </narrative>
+            </title>
+            <category code="B04"></category>
+            <language code="nl"></language>
+        </document-link>
+        <document-link
+                url="https://www.rijksoverheid.nl/binaries/rijksoverheid/documenten/begrotingen/2016/09/20/hgis---nota-homogene-groep-internationale-samenwerking-rijksbegroting-2017/hgis-nota.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Budget Homogeneous Group International
+                    Cooperation 2017
+                </narrative>
+            </title>
+            <category code="B04"></category>
+            <language code="nl"></language>
+        </document-link>
+        <document-link
+                url="https://www.rijksoverheid.nl/binaries/rijksoverheid/documenten/begrotingen/2017/09/19/hgis---nota-homogene-groep-internationale-samenwerking-rijksbegroting-2018/HGIS-nota-2018.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Budget Homogeneous Group International
+                    Cooperation 2018
+                </narrative>
+            </title>
+            <category code="B04"></category>
+            <language code="nl"></language>
+        </document-link>
+        <document-link
+                url="https://www.rijksoverheid.nl/binaries/rijksoverheid/documenten/jaarverslagen/2016/05/18/jaarverslag-homogene-groep-internationale-samenwerking-hgis/jaarverslag-homogene-groep-internationale-samenwerking-hgis.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Annual Report Homogeneous Group
+                    International Cooperation 2015
+                </narrative>
+            </title>
+            <category code="B01"></category>
+            <category code="B06"></category>
+            <language code="nl"></language>
+        </document-link>
+        <document-link
+                url="https://www.rijksoverheid.nl/binaries/rijksoverheid/documenten/kamerstukken/2017/05/17/bijlage-kamerbrief-aanbieding-hgis-jaarverslag-2016/HGIS-jaarverslag+2016.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Annual Report Homogeneous Group
+                    International Cooperation 2016
+                </narrative>
+            </title>
+            <category code="B01"></category>
+            <category code="B06"></category>
+            <language code="nl"></language>
+        </document-link>
+        <document-link
+                url="https://www.iob-evaluatie.nl/binaries/iob-evaluatie/documenten/beleidsdoorlichtingen/2017/07/01/417-%E2%80%93-iob-%E2%80%93-beleidsdoorlichting-van-de-nederlandse-samenwerking-met-de-ontwikkelingsorganisaties-van-de-verenigde-naties/417+%E2%80%93+IOB+%E2%80%93+Beleidsdoorlichting+van+de+Nederlandse+samenwerking+met+de+ontwikkelingsorganisaties+van+de+Verenigde+Naties.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Evaluation of the Netherlands
+                    cooperation with the UN development agencies
+                </narrative>
+            </title>
+            <category code="B09"></category>
+            <language code="nl"></language>
+        </document-link>
+        <document-link
+                url="https://www.iob-evaluatie.nl/binaries/iob-evaluatie/documenten/beleidsdoorlichtingen/2017/04/01/416-%E2%80%93-iob-%E2%80%93-policy-review-of-dutch-support-to-southern-civil-society-development-%E2%80%93-shifting-interests-changing-relations-support-under-pressure/416+%E2%80%93+IOB+%E2%80%93+Policy+review+of+Dutch+support+to+Southern+civil+society+development+%E2%80%93+Shifting+Interests%2C+Changing+Relations%2C+Support+Under+Pressure.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Policy review of Dutch support to
+                    southern civil society development
+                </narrative>
+            </title>
+            <category code="B09"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="https://www.iob-evaluatie.nl/binaries/iob-evaluatie/documenten/beleidsdoorlichtingen/2016/11/01/413-%E2%80%93-iob-%E2%80%93-policy-review-public-diplomacy-2010-2014/413+%E2%80%93+IOB+%E2%80%93+Policy+Review+Public+diplomacy+2010-2014.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Policy review of Public Diplomacy
+                </narrative>
+            </title>
+            <category code="B09"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="https://www.iob-evaluatie.nl/binaries/iob-evaluatie/documenten/beleidsdoorlichtingen/2016/03/01/411--cultuur-als-kans-%E2%80%93-beleidsdoorlichting-van-het-internationaal-cultuurbeleid-2009-2014/2016-cultuur-als-kans-%E2%80%93-iob-beleidsdoorlichting-van-het-internationaal-cultuurbeleid-2009-2014-411.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Policy review of policy for
+                    International Culture
+                </narrative>
+            </title>
+            <category code="B09"></category>
+            <language code="nl"></language>
+        </document-link>
+        <document-link
+                url="https://www.iob-evaluatie.nl/binaries/iob-evaluatie/documenten/beleidsdoorlichtingen/2015/12/01/410---iob-beleidsdoorlichting-internationale-rechtsorde-vreedzame-geschillenbeslechting-en-het-tegengaan-van-straffeloosheid/Vreedzame+geschillenbeslechting+en+het+tegengaan+van+straffeloosheid+%E2%80%93+Beleidsdoorlichting+internationale+rechtsorde.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Policy review of policy for
+                    International Law, Countering Impunity and Peaceful
+                    Conflict Resolution
+                </narrative>
+            </title>
+            <category code="B09"></category>
+            <language code="nl"></language>
+        </document-link>
+        <document-link
+                url="https://www.iob-evaluatie.nl/binaries/iob-evaluatie/documenten/rapporten/2016/07/01/414---iob-evaluation-of-nl-and-who-2011-2015-%E2%80%93-main-findings-eng/414-iob-evaluation-of-nl-and-who-2011-2015-%E2%80%93-main-findings-eng.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Evaluation on the Netherlands and the
+                    WTO (unofficial resume)
+                </narrative>
+            </title>
+            <category code="B09"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="https://www.iob-evaluatie.nl/binaries/iob-evaluatie/documenten/evaluaties/2016/03/01/414---iob-evaluatie-voorkomen-is-beter-dan-genezen.-evaluatie-over-nederland-en-de-who-2011-2015/voorkomen-is-beter-dan-genezen.-evaluatie-over-nederland-en-de-who-2011-2015.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Evaluation of the Netherlands and the
+                    WTO
+                </narrative>
+            </title>
+            <category code="B09"></category>
+            <language code="nl"></language>
+        </document-link>
+        <document-link url="http://www.osresultaten.nl/"
+                       format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Results of Dutch Development
+                    Cooperation
+                </narrative>
+            </title>
+            <category code="A08"></category>
+            <language code="nl"></language>
+        </document-link>
+        <document-link
+                url="https://www.rijksoverheid.nl/binaries/rijksoverheid/documenten/begrotingen/2015/09/15/xvii-buitenlandse-handel-en-ontwikkelingssamenwerking-rijksbegroting-2016/xvii-buitenlandse-handel-en-ontwikkelingssamenwerking-rijksbegroting-2016.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Annual budget Foreign Trade and
+                    Development Cooperation 2016
+                </narrative>
+            </title>
+            <category code="B04"></category>
+            <language code="nl"></language>
+        </document-link>
+        <document-link
+                url="https://www.rijksoverheid.nl/binaries/rijksoverheid/documenten/begrotingen/2016/09/20/xvii-buitenlandse-handel-en-ontwikkelingssamenwerking-rijksbegroting-2017/17.-xvii-buitenlandse-handel-en-ontwikkelingssamenwerking.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Annual budget Foreign Trade and
+                    Development Cooperation 2017
+                </narrative>
+            </title>
+            <category code="B04"></category>
+            <language code="nl"></language>
+        </document-link>
+        <document-link
+                url="https://www.rijksoverheid.nl/binaries/rijksoverheid/documenten/begrotingen/2017/09/19/xvii-buitenlandse-handel-en-ontwikkelingssamenwerking-rijksbegroting-2018/XVII-Buitenlandse-Handel.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Annual budget Foreign Trade and
+                    Development Cooperation 2018
+                </narrative>
+            </title>
+            <category code="B04"></category>
+            <language code="nl"></language>
+        </document-link>
+        <document-link
+                url="https://www.rijksoverheid.nl/binaries/rijksoverheid/documenten/begrotingen/2017/09/19/v-buitenlandse-zaken-rijksbegroting-2018/V-Buitenlandse-Zaken.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Annual budget Foreign Affairs 2018
+                </narrative>
+            </title>
+            <category code="B04"></category>
+            <language code="nl"></language>
+        </document-link>
+        <document-link
+                url="https://www.rijksoverheid.nl/binaries/rijksoverheid/documenten/jaarverslagen/2016/05/18/buitenlandse-handel-en-ontwikkelingssamenwerking-2015/17.+XVII+Buitenlandse+Handel+en+Ontw..pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Annual report Foreign Trade and
+                    Development Cooperation 2015
+                </narrative>
+            </title>
+            <category code="B01"></category>
+            <category code="B06"></category>
+            <language code="nl"></language>
+        </document-link>
+        <document-link
+                url="https://www.rijksoverheid.nl/binaries/rijksoverheid/documenten/jaarverslagen/2017/05/17/buitenlandse-handel-en-ontwikkelingssamenwerking-2016/17.+XVII+Jaarverslag+Buitenlandse+Handel+en+Ontwikkelingssamenwerking+2016.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Annual report Foreign Trade and
+                    Development Cooperation 2016
+                </narrative>
+            </title>
+            <category code="B01"></category>
+            <category code="B06"></category>
+            <language code="nl"></language>
+        </document-link>
+        <document-link
+                url="https://www.rijksoverheid.nl/binaries/rijksoverheid/documenten/jaarverslagen/2016/05/18/buitenlandse-zaken-2015/5.%20V%20Buitenlandse%20Zaken.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Annual report Foreign Affairs 2015
+                </narrative>
+            </title>
+            <category code="B01"></category>
+            <category code="B06"></category>
+            <language code="nl"></language>
+        </document-link>
+        <document-link
+                url="https://www.rijksoverheid.nl/binaries/rijksoverheid/documenten/jaarverslagen/2017/05/17/buitenlandse-zaken-2016/5.+V+Jaarverslag+Ministerie+van+Buitenlandse+Zaken+2016.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Annual report Foreign Affairs 2016
+                </narrative>
+            </title>
+            <category code="B01"></category>
+            <category code="B06"></category>
+            <language code="nl"></language>
+        </document-link>
+        <document-link
+                url="https://www.rijksoverheid.nl/documenten/jaarverslagen/2015/05/20/buitenlandse-zaken"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Annual report Foreign Affairs 2014
+                </narrative>
+            </title>
+            <category code="B01"></category>
+            <category code="B06"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="https://www.rijksoverheid.nl/documenten/jaarverslagen/2015/05/20/buitenlandse-handel-en-ontwikkelingssamenwerking"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Annual report Foreign Trade and
+                    Development Cooperation 2014
+                </narrative>
+            </title>
+            <category code="B01"></category>
+            <category code="B06"></category>
+            <language code="en"></language>
+        </document-link>
+        <document-link
+                url="https://zoek.officielebekendmakingen.nl/kst-32734-15.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">Policy paper on Netherlands missions
+                    abroad
+                </narrative>
+            </title>
+            <category code="B02"></category>
+            <category code="B04"></category>
+            <language code="nl"></language>
+        </document-link>
+        <document-link
+                url="https://www.government.nl/binaries/government/documents/reports/2016/10/18/evaluation-of-ictj-kenya-program-2012-2014/BHOS+4.3+23662+ICTJ+Kenya+2012-2014+201507.pdf"
+                format="application/pdf">
+            <title>
+                <narrative xml:lang="en">International Centre for Transitional
+                    Justice – Evaluation of ICTJ Kenya Program 2012-2014
+                </narrative>
+            </title>
+            <category code="B09"></category>
+            <language code="en"></language>
+        </document-link>
+    </iati-organisation>
+</iati-organisations>
