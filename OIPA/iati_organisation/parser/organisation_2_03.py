@@ -310,6 +310,8 @@ class Parse(IatiParser):
                     None,
                     None,
                 )
+        else:
+            status = codelist_models.BudgetStatus.objects.get(code=1)
         period_start = element.xpath("period-start")
         if len(period_start) is not 1:
             raise ParserError("TotalBudget",
@@ -357,19 +359,28 @@ class Parse(IatiParser):
                               "must occur once and only once.")
         value = self.guess_number("TotalBudget", value_element[0].text)
 
-        currency = self._get_currency_or_raise("TotalBudget", value_element[
-            0].attrib.get("currency"))  # check if default currency is
-        # specified.
-
-        currency = self.get_or_none(codelist_models.Currency, code=currency)
-        if currency is None:
-            raise FieldValidationError(
-                "TotalBudget",
-                "currency",
-                "not found on the accompanying codelist.",
-                None,
-                None,
-            )
+        currency = value_element[0].attrib.get("currency")
+        if not currency:
+            currency = getattr(self.get_model("Organisation"),
+                               "default_currency")
+            if not currency:
+                raise RequiredFieldError(
+                    "TotalBudget",
+                    "currency",
+                    "must specify default-currency on iati-activity or as "
+                    "currency on the element itself."
+                )
+        else:
+            currency = self.get_or_none(codelist_models.Currency,
+                                        code=currency)
+            if currency is None:
+                raise FieldValidationError(
+                    "TotalBudget",
+                    "currency",
+                    "not found on the accompanying codelist.",
+                    None,
+                    None,
+                )
         value_date = value_element[0].attrib.get("value-date")
         if value_date is None:
             raise RequiredFieldError("TotalBudget", "value-date", "required "
@@ -394,6 +405,7 @@ class Parse(IatiParser):
         total_budget.currency = currency
         total_budget.value_date = value_date
         self.register_model("TotalBudget", total_budget)
+        return element
 
     def iati_organisations__iati_organisation__total_budget__budget_line(
             self, element):
@@ -410,19 +422,29 @@ class Parse(IatiParser):
                               "value",
                               "must occur once and only once.")
         value = self.guess_number("TotalBudget", value_element[0].text)
-        currency = self._get_currency_or_raise("TotalBudgetLine",
-                                               value_element[0].attrib.
-                                               get("currency"))
+        currency = value_element[0].attrib.get("currency")
+        if not currency:
+            currency = getattr(self.get_model("Organisation"),
+                               "default_currency")
+            if not currency:
+                raise RequiredFieldError(
+                    "TotalBudgetLine",
+                    "currency",
+                    "must specify default-currency on iati-activity or as "
+                    "currency on the element itself."
+                )
 
-        currency = self.get_or_none(codelist_models.Currency, code=currency)
-        if currency is None:
-            raise FieldValidationError(
-                "TotalBudget",
-                "currency",
-                "not found on the accompanying codelist.",
-                None,
-                None,
-            )
+        else:
+            currency = self.get_or_none(codelist_models.Currency,
+                                        code=currency)
+            if currency is None:
+                raise FieldValidationError(
+                    "TotalBudgetLine",
+                    "currency",
+                    "not found on the accompanying codelist.",
+                    None,
+                    None,
+                )
         value_date = value_element[0].attrib.get("value-date")
         if value_date is None:
             raise RequiredFieldError("TotalBudget", "value-date", "required "
@@ -431,7 +453,7 @@ class Parse(IatiParser):
         value_date = self.validate_date(value_date)
         if not value_date:
             raise FieldValidationError(
-                "TotalBudget",
+                "TotalBudgetLine",
                 "value-date",
                 "not in the correct range.",
                 None,
