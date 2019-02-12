@@ -2511,3 +2511,153 @@ class OrganisationsOrganisationTotalExpenditureTestCase(DjangoTestCase):
         self.assertEqual(value, total_expenditure.value)
         self.assertEqual(self.currency, total_expenditure.currency)
         self.assertEqual(value_date, total_expenditure.value_date)
+
+
+class OrganisationsOrganisationTotalExpenditureExpenseLineTestCase(DjangoTestCase):  # NOQA:
+
+    def setUp(self):
+        # 'Main' XML file for instantiating parser:
+        xml_file_attrs = {
+            "generated-datetime": datetime.datetime.now().isoformat(),
+            "version": '2.03',
+        }
+        self.iati_203_XML_file = E("iati-organisations", **xml_file_attrs)
+
+        dummy_source = synchroniser_factory.DatasetFactory(filetype=2)
+
+        self.organisation_parser_203 = ParseManager(
+            dataset=dummy_source,
+            root=self.iati_203_XML_file,
+        ).get_parser()
+
+        # related objects.
+        self.total_expenditure = \
+            iati_factory.OrganisationTotalExpenditureFactory()
+        self.organisation_parser_203.register_model(
+            "TotalExpenditure", self.total_expenditure)
+        self.currency = codelist_factory.CurrencyFactory()
+
+    def test_organisations__organisation__total_expenditure__expense_line(
+            self):
+        # case 1: when "narrative"element is missing.
+        expense_line_attrib = {
+            "ref": "123"
+        }
+        expense_line_XML_element = E("expense-line",
+                                    E("value", "3000", {"currency": "USD",
+                                                        "value-date":
+                                                            "2015-04-06"}),
+                                     # E("narrative", "text"),
+                                    **expense_line_attrib)
+        try:
+            self.organisation_parser_203\
+                .iati_organisations__iati_organisation__total_expenditure__expense_line(expense_line_XML_element)  # NOQA:
+        except ParserError as inst:
+            self.assertEqual("narrative", inst.field)
+            self.assertEqual("must occur at least once.", inst.message)
+
+        # case 2: when "value"element occurs more than once.
+        expense_line_attrib = {
+            "ref": "123"
+        }
+        expense_line_XML_element = E("expense-line",
+                                    E("value", "2000", {"currency": "USD",
+                                                        "value-date":
+                                                        "2015-04-06"}),
+                                    E("value", "2400", {"currency": "EUR",
+                                                        "value-date":
+                                                            "2013-10-06"}),
+                                    E("narrative", "text"),
+                                    **expense_line_attrib)
+
+        try:
+            self.organisation_parser_203 \
+                .iati_organisations__iati_organisation__total_expenditure__expense_line(  # NOQA: E501
+                    expense_line_XML_element)
+        except ParserError as inst:
+            self.assertEqual("value", inst.field)
+            self.assertEqual("must occur once and only once.", inst.message)
+
+        # case 3: when "currency" is not in the codelist.
+        expense_line_attrib = {
+            "ref": "123"
+        }
+        expense_line_XML_element = E("expense-line",
+                                    E("value", "6000", {"currency": "MMK",
+                                                        "value-date":
+                                                            "2015-04-06"}),
+                                    E("narrative", "text"),
+                                    **expense_line_attrib)
+
+        try:
+            self.organisation_parser_203 \
+                .iati_organisations__iati_organisation__total_expenditure__expense_line(  # NOQA: E501
+                    expense_line_XML_element)
+        except FieldValidationError as inst:
+            self.assertEqual("currency", inst.field)
+            self.assertEqual("not found on the accompanying codelist.",
+                             inst.message)
+
+        # case 4: "value-date"attirbute is absent.
+        expense_line_attrib = {
+            "ref": "123"
+        }
+        expense_line_XML_element = E("expense-line",
+                                    E("value", "8000", {"currency": "USD", }),
+                                    E("narrative", "text"),
+                                    **expense_line_attrib)
+
+        try:
+            self.organisation_parser_203 \
+                .iati_organisations__iati_organisation__total_expenditure__expense_line(  # NOQA: E501
+                    expense_line_XML_element)
+        except RequiredFieldError as inst:
+            self.assertEqual("value-date", inst.field)
+            self.assertEqual("required field missing.",
+                             inst.message)
+
+        # case 5: "value-date"is not in the correct range.
+        expense_line_attrib = {
+            "ref": "123"
+        }
+        expense_line_XML_element = E("expense-line",
+                                    E("value", "3000",  {"currency": "USD",
+                                                         "value-date":
+                                                             "1000-04-06"}),
+                                    E("narrative", "text"),
+                                    **expense_line_attrib)
+
+        try:
+            self.organisation_parser_203 \
+                .iati_organisations__iati_organisation__total_expenditure__expense_line(  # NOQA: E501
+                    expense_line_XML_element)
+        except FieldValidationError as inst:
+            self.assertEqual("value-date", inst.field)
+            self.assertEqual("not in the correct range.", inst.message)
+
+        # case 6: when all is ok.
+        expense_line_attrib = {
+            "ref": "123"
+        }
+        expense_line_XML_element = E("expense-line",
+                                    E("value", "3000", {"currency": "USD",
+                                                        "value-date":
+                                                            "2013-04-06"}),
+                                    E("narrative", "text"),
+                                    **expense_line_attrib)
+        self.organisation_parser_203\
+            .iati_organisations__iati_organisation__total_expenditure__expense_line(  # NOQA:
+                expense_line_XML_element)
+
+        # get "BudgetLine" object to test.
+        expense_line = self.organisation_parser_203.get_model(
+            "TotalExpenditureLine")
+        value = 3000
+        value_date = self.organisation_parser_203.validate_date("2013-04-06")
+        self.assertEqual(self.total_expenditure,
+                         expense_line.total_expenditure)
+        self.assertEqual(expense_line_XML_element.attrib.get("ref"),
+                         expense_line.ref)
+        self.assertEqual(self.currency, expense_line.currency)
+        self.assertEqual(value, expense_line.value)
+        self.assertEqual(value_date, expense_line.value_date)

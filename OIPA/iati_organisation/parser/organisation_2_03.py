@@ -11,7 +11,7 @@ from iati_organisation.models import (
     OrganisationNarrative, OrganisationReportingOrganisation,
     RecipientCountryBudget, RecipientCountryBudgetLine, RecipientOrgBudget,
     RecipientOrgBudgetLine, RecipientRegionBudget, RecipientRegionBudgetLine,
-    TotalBudget, TotalBudgetLine, TotalExpenditure
+    TotalBudget, TotalBudgetLine, TotalExpenditure, TotalExpenditureLine
 )
 from iati_organisation.parser import post_save
 from iati_vocabulary.models import RegionVocabulary
@@ -1238,6 +1238,81 @@ class Parse(IatiParser):
         total_expenditure.currency = currency
         total_expenditure.value_date = value_date
         self.register_model("TotalExpenditure", total_expenditure)
+        return element
+
+    def iati_organisations__iati_organisation__total_expenditure__expense_line(self, element):  # NOQA: E501
+
+        ref = element.attrib.get("ref")
+        narrative = element.xpath("narrative")
+        # "narrative" element must occur at least once.
+        if len(narrative) < 1:
+            raise ParserError("TotalExpenditureLine", "narrative",
+                              "must occur at least once.")
+        value_element = element.xpath("value")
+        # "value"element must occur once and only once.
+        if len(value_element) is not 1:
+            raise ParserError("TotalExpenditureLine",
+                              "value",
+                              "must occur once and only once.")
+        value = self.guess_number("TotalExpenditureLine", value_element[
+            0].text)
+        currency = value_element[0].attrib.get("currency")
+        if not currency:
+            currency = getattr(self.get_model("Organisation"),
+                               "default_currency")
+            if not currency:
+                raise RequiredFieldError(
+                    "TotalExpenditureLine",
+                    "currency",
+                    "must specify default-currency on iati-activity or as "
+                    "currency on the element itself."
+                )
+
+        else:
+            currency = self.get_or_none(codelist_models.Currency,
+                                        code=currency)
+            if currency is None:
+                raise FieldValidationError(
+                    "TotalExpenditureLine",
+                    "currency",
+                    "not found on the accompanying codelist.",
+                    None,
+                    None,
+                )
+        value_date = value_element[0].attrib.get("value-date")
+        if value_date is None:
+            raise RequiredFieldError("TotalExpenditureLine",
+                                     "value-date",
+                                     "required field missing."
+                                     )
+
+        value_date = self.validate_date(value_date)
+        if not value_date:
+            raise FieldValidationError(
+                "TotalExpenditureLine",
+                "value-date",
+                "not in the correct range.",
+                None,
+                None,
+            )
+        total_expenditure = self.get_model("TotalExpenditure")
+        total_expenditure_expense_line = TotalExpenditureLine()
+
+        total_expenditure_expense_line.total_expenditure = total_expenditure
+        total_expenditure_expense_line.ref = ref
+        total_expenditure_expense_line.currency = currency
+        total_expenditure_expense_line.value = value
+        total_expenditure_expense_line.value_date = value_date
+
+        self.register_model("TotalExpenditureLine",
+                            total_expenditure_expense_line)
+        return element
+
+    def iati_organisations__iati_organisation__total_expenditure__expense_line__narrative(self, element):  # NOQA: E501
+
+        total_expenditure_line = self.get_model(
+            'TotalExpenditureLine')
+        self.add_narrative(element, total_expenditure_line)
         return element
 
     def post_save_models(self):
