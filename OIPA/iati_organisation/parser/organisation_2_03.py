@@ -405,6 +405,7 @@ class Parse(IatiParser):
         total_budget.currency = currency
         total_budget.value_date = value_date
         self.register_model("TotalBudget", total_budget)
+        return element
 
     def post_save_models(self):
         """Perform all actions that need to happen after a single
