@@ -9,9 +9,9 @@ from iati_codelists import models as codelist_models
 from iati_organisation.models import (
     Organisation, OrganisationDocumentLink, OrganisationName,
     OrganisationNarrative, OrganisationReportingOrganisation,
-    RecipientCountryBudget, RecipientOrgBudget, RecipientOrgBudgetLine,
-    RecipientRegionBudget, RecipientRegionBudgetLine, TotalBudget,
-    TotalBudgetLine, TotalExpenditure
+    RecipientCountryBudget, RecipientCountryBudgetLine, RecipientOrgBudget,
+    RecipientOrgBudgetLine, RecipientRegionBudget, RecipientRegionBudgetLine,
+    TotalBudget, TotalBudgetLine, TotalExpenditure
 )
 from iati_organisation.parser import post_save
 from iati_vocabulary.models import RegionVocabulary
@@ -1067,6 +1067,82 @@ class Parse(IatiParser):
             self, element):
         recipient_country_budget = self.get_model('RecipientCountryBudget')
         self.add_narrative(element, recipient_country_budget)
+        return element
+
+    def iati_organisations__iati_organisation__recipient_country_budget__budget_line(self, element):  # NOQA: E501
+        ref = element.attrib.get("ref")
+        narrative = element.xpath("narrative")
+        # "narrative" element must occur at least once.
+        if len(narrative) < 1:
+            raise ParserError("RecipientCountryBudgetLine", "narrative",
+                              "must occur at least once.")
+        value_element = element.xpath("value")
+        # "value"element must occur once and only once.
+        if len(value_element) is not 1:
+            raise ParserError("RecipientCountryBudgetLine",
+                              "value",
+                              "must occur once and only once.")
+        value = self.guess_number("RecipientRegionBudget", value_element[
+            0].text)
+        currency = value_element[0].attrib.get("currency")
+        if not currency:
+            currency = getattr(self.get_model("Organisation"),
+                               "default_currency")
+            if not currency:
+                raise RequiredFieldError(
+                    "RecipientCountryBudgetLine",
+                    "currency",
+                    "must specify default-currency on iati-activity or as "
+                    "currency on the element itself."
+                )
+
+        else:
+            currency = self.get_or_none(codelist_models.Currency,
+                                        code=currency)
+            if currency is None:
+                raise FieldValidationError(
+                    "RecipientCountryBudgetLine",
+                    "currency",
+                    "not found on the accompanying codelist.",
+                    None,
+                    None,
+                )
+        value_date = value_element[0].attrib.get("value-date")
+        if value_date is None:
+            raise RequiredFieldError("RecipientCountryBudgetLine",
+                                     "value-date",
+                                     "required field missing."
+                                     )
+
+        value_date = self.validate_date(value_date)
+        if not value_date:
+            raise FieldValidationError(
+                "RecipientCountryBudgetLine",
+                "value-date",
+                "not in the correct range.",
+                None,
+                None,
+            )
+        recipient_country_budget = self.get_model("RecipientCountryBudget")
+        recipient_country_budget_line = RecipientCountryBudgetLine()
+
+        recipient_country_budget_line.recipient_country_budget = \
+            recipient_country_budget
+        recipient_country_budget_line.ref = ref
+        recipient_country_budget_line.currency = currency
+        recipient_country_budget_line.value = value
+        recipient_country_budget_line.value_date = value_date
+
+        self.register_model("RecipientCountryBudgetLine",
+                            recipient_country_budget_line)
+        return element
+
+    def iati_organisations__iati_organisation__recipient_country_budget__budget_line__narrative(  # NOQA: E501
+            self, element):
+
+        recipient_country_budget_line = self.get_model(
+            'RecipientCountryBudgetLine')
+        self.add_narrative(element, recipient_country_budget_line)
         return element
 
     def post_save_models(self):
