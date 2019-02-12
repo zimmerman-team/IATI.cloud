@@ -90,6 +90,11 @@ class PublisherPermissions(permissions.BasePermission):
         and Delete
         """
 
+
+        return True
+        # this is currently disabled. See: #1067
+
+        """
         user = request.user
         organisation_user = user.organisationuser
 
@@ -111,3 +116,4 @@ class PublisherPermissions(permissions.BasePermission):
         # check if this user is in the admin group
         return organisation_user.organisation_admin_groups.filter(
             publisher=publisher).exists()
+        """
