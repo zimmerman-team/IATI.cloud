@@ -90,7 +90,6 @@ class PublisherPermissions(permissions.BasePermission):
         and Delete
         """
 
-
         return True
         # this is currently disabled. See: #1067
 
