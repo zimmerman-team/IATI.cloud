@@ -408,6 +408,7 @@ class Parse(IatiParser):
         total_budget.currency = currency
         total_budget.value_date = value_date
         self.register_model("TotalBudget", total_budget)
+        return element
 
     def iati_organisations__iati_organisation__total_budget__budget_line(
             self, element):
