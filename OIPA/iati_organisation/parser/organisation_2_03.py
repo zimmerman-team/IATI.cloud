@@ -239,6 +239,25 @@ class Parse(IatiParser):
         self.register_model("OrganisationName", organisation_name)
         return element
 
+    def iati_organisations__iati_organisation__name__narrative(self, element):
+        name = self.get_model('OrganisationName')
+        self.add_narrative(element, name)
+
+        # adding primary_name in the "Organisation" table.
+        if element.text:
+
+            organisation = self.get_model('Organisation')
+
+            if organisation.primary_name:
+                default_lang = self.default_lang  # set on activity (if set)
+                lang = element.attrib.get(
+                    '{http://www.w3.org/XML/1998/namespace}lang', default_lang)
+                if lang == 'en':
+                    organisation.primary_name = element.text
+            else:
+                organisation.primary_name = element.text
+        return element
+
     def post_save_models(self):
         """Perform all actions that need to happen after a single
         organisation's been parsed."""
