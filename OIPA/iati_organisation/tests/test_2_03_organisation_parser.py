@@ -2661,3 +2661,296 @@ class OrganisationsOrganisationTotalExpenditureExpenseLineTestCase(DjangoTestCas
         self.assertEqual(self.currency, expense_line.currency)
         self.assertEqual(value, expense_line.value)
         self.assertEqual(value_date, expense_line.value_date)
+
+
+class OrganisationsOrganisationDocumentLinkTestCase(DjangoTestCase):
+
+    def setUp(self):
+        # 'Main' XML file for instantiating parser:
+        xml_file_attrs = {
+            "generated-datetime": datetime.datetime.now().isoformat(),
+            "version": '2.03',
+        }
+        self.iati_203_XML_file = E("iati-organisations", **xml_file_attrs)
+
+        dummy_source = synchroniser_factory.DatasetFactory(filetype=2)
+
+        self.organisation_parser_203 = ParseManager(
+            dataset=dummy_source,
+            root=self.iati_203_XML_file,
+        ).get_parser()
+
+        # related object
+        self.organisation = iati_factory.OrganisationFactory()
+        self.organisation_parser_203.register_model(
+            "Organisation", self.organisation)
+        self.file_format = codelist_factory.FileFormatFactory()
+
+    def test_organisations_organisation_document_link(self):
+        # case 1: when "url" is missing.
+        document_link_attrib = {
+            # "url": "www.example.com",
+            "format": "application/pdf"
+        }
+        document_link_XML_element = E("document-link",
+            E("title"),
+            E("description"),
+            E("category"),
+            E("document-date", {"iso-date": "2014-02-05"}),
+            **document_link_attrib
+        )
+        try:
+            self.organisation_parser_203\
+                .iati_organisations__iati_organisation__document_link(
+                    document_link_XML_element
+                )
+        except RequiredFieldError as inst:
+            self.assertEqual("url", inst.field)
+            self.assertEqual("required field missing.", inst.message)
+
+        # case 2: when "file_format_code"is missing.
+        document_link_attrib = {
+            "url": "www.example.com",
+            # "format": "application/pdf"
+        }
+        document_link_XML_element = E("document-link",
+                                      E("title"),
+                                      E("description"),
+                                      E("category"),
+                                      E("document-date",
+                                        {"iso-date": "2014-02-05"}),
+                                      **document_link_attrib
+                                      )
+
+        try:
+            self.organisation_parser_203 \
+                .iati_organisations__iati_organisation__document_link(
+                    document_link_XML_element
+                )
+        except RequiredFieldError as inst:
+            self.assertEqual("file_format", inst.field)
+            self.assertEqual("required field missing.", inst.message)
+
+        # case 3: when "file_format_code" is not in codelist.
+        document_link_attrib = {
+            "url": "www.example.com",
+            "format": "application/csv"
+        }
+        document_link_XML_element = E("document-link",
+                                      E("title"),
+                                      E("description"),
+                                      E("category"),
+                                      E("document-date",
+                                        {"iso-date": "2014-02-05"}),
+                                      **document_link_attrib
+                                      )
+
+        try:
+            self.organisation_parser_203 \
+                .iati_organisations__iati_organisation__document_link(
+                    document_link_XML_element
+                )
+        except FieldValidationError as inst:
+            self.assertEqual("file_format", inst.field)
+            self.assertEqual("not found on the accompanying codelist.",
+                             inst.message)
+
+        # case 4: when child element "title" occurs more than once.
+        document_link_attrib = {
+            "url": "www.example.com",
+            "format": "application/pdf"
+        }
+        document_link_XML_element = E("document-link",
+                                      E("title"),
+                                      E("title"),
+                                      E("description"),
+                                      E("category"),
+                                      E("document-date",
+                                        {"iso-date": "2014-02-05"}),
+                                      **document_link_attrib
+                                      )
+
+        try:
+            self.organisation_parser_203 \
+                .iati_organisations__iati_organisation__document_link(
+                    document_link_XML_element
+                )
+        except ParserError as inst:
+            self.assertEqual("title", inst.field)
+            self.assertEqual("this element must occur once and only once.",
+                             inst.message)
+
+        # case 5: when child element "title"is missing.
+        document_link_attrib = {
+            "url": "www.example.com",
+            "format": "application/pdf"
+        }
+        document_link_XML_element = E("document-link",
+                                      # E("title"),
+                                      E("description"),
+                                      E("category"),
+                                      E("document-date",
+                                        {"iso-date": "2014-02-05"}),
+                                      **document_link_attrib
+                                      )
+
+        try:
+            self.organisation_parser_203 \
+                .iati_organisations__iati_organisation__document_link(
+                    document_link_XML_element
+                )
+        except ParserError as inst:
+            self.assertEqual("title", inst.field)
+            self.assertEqual("this element must occur once and only once.",
+                             inst.message)
+
+        # case 6: when child element "description"occurs more than once.
+        document_link_attrib = {
+            "url": "www.example.com",
+            "format": "application/pdf"
+        }
+        document_link_XML_element = E("document-link",
+                                      E("title"),
+                                      E("description"),
+                                      E("description"),
+                                      E("category"),
+                                      E("document-date",
+                                        {"iso-date": "2014-02-05"}),
+                                      **document_link_attrib
+                                      )
+
+        try:
+            self.organisation_parser_203 \
+                .iati_organisations__iati_organisation__document_link(
+                    document_link_XML_element
+                )
+        except ParserError as inst:
+            self.assertEqual("description", inst.field)
+            self.assertEqual("this element must occur no more than once.",
+                             inst.message)
+
+        # case 7: when child element "category" is missing.
+        document_link_attrib = {
+            "url": "www.example.com",
+            "format": "application/pdf"
+        }
+        document_link_XML_element = E("document-link",
+                                      E("title"),
+                                      E("description"),
+                                      # E("category"),
+                                      E("document-date",
+                                        {"iso-date": "2014-02-05"}),
+                                      **document_link_attrib
+                                      )
+
+        try:
+            self.organisation_parser_203 \
+                .iati_organisations__iati_organisation__document_link(
+                    document_link_XML_element
+                )
+        except ParserError as inst:
+            self.assertEqual("categories", inst.field)
+            self.assertEqual("this element must occur at least once.",
+                             inst.message)
+
+        # case 8: when child element "document-date" occur more than once.
+        document_link_attrib = {
+            "url": "www.example.com",
+            "format": "application/pdf"
+        }
+        document_link_XML_element = E("document-link",
+                                      E("title"),
+                                      E("description"),
+                                      E("category"),
+                                      E("document-date",
+                                        {"iso-date": "2014-02-05"}),
+                                      E("document-date",
+                                        {"iso-date": "2015-03-02"}),
+                                      **document_link_attrib
+                                      )
+
+        try:
+            self.organisation_parser_203 \
+                .iati_organisations__iati_organisation__document_link(
+                    document_link_XML_element
+                )
+        except ParserError as inst:
+            self.assertEqual("document-date", inst.field)
+            self.assertEqual("this element must occur no more than once.",
+                             inst.message)
+
+        # case 9: when attribute "iso-date" in "document-date" is missing.
+        document_link_attrib = {
+            "url": "www.example.com",
+            "format": "application/pdf"
+        }
+        document_link_XML_element = E("document-link",
+                                      E("title"),
+                                      E("description"),
+                                      E("category"),
+                                      E("document-date",
+                                        # {"iso-date": "2014-02-05"}
+                                        ),
+                                      **document_link_attrib
+                                      )
+
+        try:
+            self.organisation_parser_203 \
+                .iati_organisations__iati_organisation__document_link(
+                    document_link_XML_element
+                )
+        except RequiredFieldError as inst:
+            self.assertEqual("iso_date", inst.field)
+            self.assertEqual("required field missing.",
+                             inst.message)
+
+        # case 10: when "iso-date" is not in correct range.
+        document_link_attrib = {
+            "url": "www.example.com",
+            "format": "application/pdf"
+        }
+        document_link_XML_element = E("document-link",
+                                      E("title"),
+                                      E("description"),
+                                      E("category"),
+                                      E("document-date",
+                                        {"iso-date": "1000-02-05"}),
+                                      **document_link_attrib
+                                      )
+
+        try:
+            self.organisation_parser_203 \
+                .iati_organisations__iati_organisation__document_link(
+                    document_link_XML_element
+                )
+        except FieldValidationError as inst:
+            self.assertEqual("iso-date", inst.field)
+            self.assertEqual("not in the correct range.",
+                             inst.message)
+
+        # case 11: when everything ok.
+        document_link_attrib = {
+            "url": "www.example.com",
+            "format": "application/pdf"
+        }
+        document_link_XML_element = E("document-link",
+                                      E("title"),
+                                      E("description"),
+                                      E("category"),
+                                      E("document-date",
+                                        {"iso-date": "2014-02-05"}),
+                                      **document_link_attrib
+                                      )
+        self.organisation_parser_203\
+            .iati_organisations__iati_organisation__document_link(
+                document_link_XML_element
+            )
+
+        document_link = self.organisation_parser_203.get_model(
+            "OrganisationDocumentLink")
+        iso_date = self.organisation_parser_203.validate_date("2014-02-05")
+
+        self.assertEqual(self.organisation, document_link.organisation)
+        self.assertEqual("www.example.com", document_link.url)
+        self.assertEqual(self.file_format, document_link.file_format)
+        self.assertEqual(iso_date, document_link.iso_date)
