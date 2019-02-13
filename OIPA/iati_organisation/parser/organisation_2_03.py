@@ -1371,6 +1371,7 @@ class Parse(IatiParser):
                 "document-date",
                 "this element must occur no more than once."
             )
+        iso_date = None
         if len(document_date_list) == 1:
             iso_date = document_date_list[0].attrib.get("iso-date")
             if not iso_date:
@@ -1380,7 +1381,7 @@ class Parse(IatiParser):
                     "required field missing."
                 )
             iso_date = self.validate_date(iso_date)
-            if not iso_date:
+            if iso_date is None:
                 raise FieldValidationError(
                     "OrganisationDocumentLink",
                     "iso-date",
