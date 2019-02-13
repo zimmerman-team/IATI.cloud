@@ -308,6 +308,13 @@ class BudgetSerializer(ModelSerializerNoValidation):
             'period_start',
             'period_end',
             'value',
+            # TODO: update test (if it exists):
+            'xdr_value',
+            'usd_value',
+            'eur_value',
+            'gbp_value',
+            'jpy_value',
+            'cad_value',
         )
 
     def validate(self, data):
