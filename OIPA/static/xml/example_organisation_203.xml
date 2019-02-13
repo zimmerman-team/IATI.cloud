@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <iati-organisations version="2.03" generated-datetime="2018-12-28T10:26:15">
+    <!--This will create a DatasetNote object, because Organisation objects that we-->
+    <!--get from IATI API will have last-updated-datetime latern than this:-->
     <iati-organisation xml:lang="en"
                        last-updated-datetime="2018-12-29T10:24:42"
                        default-currency="EUR">

@@ -14,7 +14,7 @@ from iati_organisation.parser import post_save
 
 class Parse(IatiParser):
     """
-    # TODO: Cover elements as The IATI Organisation File Standard.
+    This covers elements as The IATI Organisation File Standard.
     http://reference.iatistandard.org/203/organisation-standard/overview
     /organisation-file/
     """
@@ -214,6 +214,29 @@ class Parse(IatiParser):
             self.register_model('Organisation', organisation)
 
             return element
+
+    def iati_organisations__iati_organisation__name(self, element):
+
+        # Although OrganisationName and Organisation has One-to-One relation
+        # on the database level, we check here whether element 'name' occurs
+        # only once in the parent element 'organisation'.
+        organisation = self.get_model('Organisation')
+        if 'OrganisationName' in self.model_store:
+            for name in self.model_store['OrganisationName']:
+                if name.organisation == organisation:
+                    raise ParserError("Organisation", "OrganisationName",
+                                      "must occur no more than once.")
+        # narrative is parsed in different method but as it is required
+        # sub-element in 'name' element so we check it here.
+        narrative = element.xpath("narrative")
+        if len(narrative) < 1:
+            raise RequiredFieldError("OrganisationName", "narrative",
+                                     "must occur at least once.")
+        organisation_name = OrganisationName()
+        organisation_name.organisation = organisation
+
+        self.register_model("OrganisationName", organisation_name)
+        return element
 
     def post_save_models(self):
         """Perform all actions that need to happen after a single
