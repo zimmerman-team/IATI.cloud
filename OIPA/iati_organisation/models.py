@@ -303,3 +303,9 @@ class OrganisationDocumentLinkLanguage(models.Model):
         OrganisationDocumentLink, on_delete=models.CASCADE)
     language = models.ForeignKey(Language, null=True, blank=True, default=None,
                                  on_delete=models.CASCADE)
+
+
+class OrganisationDocumentLinkDescription(models.Model):
+    document_link = models.ForeignKey(OrganisationDocumentLink,
+                                      on_delete=models.CASCADE)
+    narratives = GenericRelation(OrganisationNarrative)

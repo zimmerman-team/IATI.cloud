@@ -7,8 +7,10 @@ from iati.parser.exceptions import (
 from iati.parser.iati_parser import IatiParser
 from iati_codelists import models as codelist_models
 from iati_organisation.models import (
-    Organisation, OrganisationDocumentLink, OrganisationName,
-    OrganisationNarrative, OrganisationReportingOrganisation,
+    DocumentLinkRecipientCountry, DocumentLinkTitle, Organisation,
+    OrganisationDocumentLink, OrganisationDocumentLinkCategory,
+    OrganisationDocumentLinkDescription, OrganisationDocumentLinkLanguage,
+    OrganisationName, OrganisationNarrative, OrganisationReportingOrganisation,
     RecipientCountryBudget, RecipientCountryBudgetLine, RecipientOrgBudget,
     RecipientOrgBudgetLine, RecipientRegionBudget, RecipientRegionBudgetLine,
     TotalBudget, TotalBudgetLine, TotalExpenditure, TotalExpenditureLine
@@ -1313,6 +1315,199 @@ class Parse(IatiParser):
         total_expenditure_line = self.get_model(
             'TotalExpenditureLine')
         self.add_narrative(element, total_expenditure_line)
+        return element
+
+    def iati_organisations__iati_organisation__document_link(self, element):
+
+        url = element.attrib.get("url")
+        if not url:
+            raise RequiredFieldError(
+                "OrganisationDocumentLink",
+                "url",
+                "required field missing."
+            )
+        file_format = element.attrib.get("format")
+        if not file_format:
+            raise RequiredFieldError(
+                "OrganisationDocumentLink",
+                "file_format",
+                "required field missing."
+            )
+        file_format = self.get_or_none(codelist_models.FileFormat,
+                                       code=file_format)
+        if not file_format:
+            raise FieldValidationError(
+                "OrganisationDocumentLink",
+                "file_format",
+                "not found on the accompanying codelist.",
+                None,
+                None
+            )
+        title_list = element.xpath("title")
+        if len(title_list) is not 1:
+            raise ParserError(
+                "OrganisationDocumentLink",
+                "title",
+                "this element must occur once and only once."
+            )
+        category_list = element.xpath("category")
+        if len(category_list) < 1:
+            raise ParserError(
+                "OrganisationDocumentLink",
+                "categories",
+                "this element must occur at least once."
+            )
+        description_list = element.xpath("description")
+        if len(description_list) > 1:
+            raise ParserError(
+                "OrganisationDocumentLink",
+                "description",
+                "this element must occur no more than once."
+            )
+        document_date_list = element.xpath("document-date")
+        if len(document_date_list) > 1:
+            raise ParserError(
+                "OrganisationDocumentLink",
+                "document-date",
+                "this element must occur no more than once."
+            )
+        if len(document_date_list) == 1:
+            iso_date = document_date_list[0].attrib.get("iso-date")
+            if not iso_date:
+                raise RequiredFieldError(
+                    "OrganisationDocumentLink",
+                    "iso_date",
+                    "required field missing."
+                )
+            iso_date = self.validate_date(iso_date)
+            if not iso_date:
+                raise FieldValidationError(
+                    "OrganisationDocumentLink",
+                    "iso-date",
+                    "not in the correct range.",
+                    None,
+                    None,
+                )
+        organisation = self.get_model("Organisation")
+        document_link = OrganisationDocumentLink()
+        document_link.organisation = organisation
+        document_link.url = url
+        document_link.file_format = file_format
+        document_link.iso_date = iso_date
+        self.register_model("OrganisationDocumentLink", document_link)
+        return element
+
+    def iati_organisations__iati_organisation__document_link__recipient_country(self, element):  # NOQA: E501
+        recipeint_country_code = element.attrib.get("code")
+        if not recipeint_country_code:
+            raise RequiredFieldError(
+                "DocumentLinkRecipientCountry",
+                "recipient_country",
+                "required field missing."
+            )
+        recipeint_country = self.get_or_none(Country,
+                                             code=recipeint_country_code)
+        if not recipeint_country:
+            raise FieldValidationError(
+                "DocumentLinkRecipientCountry",
+                "recipient_country",
+                "not found on the accompanying codelist.",
+                None,
+                None
+            )
+        document_link = self.get_model("OrganisationDocumentLink")
+        document_link_recipient_country = DocumentLinkRecipientCountry()
+        document_link_recipient_country.document_link = document_link
+        document_link_recipient_country.recipient_country = recipeint_country
+        self.register_model("DocumentLinkRecipientCountry",
+                            document_link_recipient_country)
+        return element
+
+    def iati_organisations__iati_organisation__document_link__recipient_country__narrative(self, element):  # NOQA: E501
+        recipient_country = self.get_model(
+            'DocumentLinkRecipientCountry')
+        self.add_narrative(element, recipient_country)
+        return element
+
+    def iati_organisations__iati_organisation__document_link__title(self,
+                                                                    element):
+        document_link = self.get_model("OrganisationDocumentLink")
+        document_link_title = DocumentLinkTitle()
+        document_link_title.document_link = document_link
+        self.register_model("DocumentLinkTitle", document_link_title)
+        return element
+
+    def iati_organisations__iati_organisation__document_link__title__narrative(self, element):  # NOQA: E501
+        tital = self.get_model(
+            'DocumentLinkTitle')
+        self.add_narrative(element, tital)
+        return element
+
+    def iati_organisations__iati_organisation__document_link__description(self, element):  # NOQA: E501
+        document_link = self.get_model("OrganisationDocumentLink")
+        description = OrganisationDocumentLinkDescription()
+        description.document_link = document_link
+        self.register_model("OrganisationDocumentLinkDescription", description)
+        return element
+
+    def iati_organisations__iati_organisation__document_link__description__narrative(self, element):  # NOQA: E501
+        description = self.get_model(
+            'OrganisationDocumentLinkDescription')
+        self.add_narrative(element, description)
+        return element
+
+    def iati_organisations__iati_organisation__document_link__category(self,
+                                                                       element):  # NOQA: E501
+        document_category_code = element.attrib.get("code")
+        if not document_category_code:
+            raise RequiredFieldError(
+                "OrganisationDocumentLinkCategory",
+                "category",
+                "required field missing."
+            )
+        document_category = self.get_or_none(
+            codelist_models.DocumentCategory, code=document_category_code)
+        if not document_category_code:
+            raise FieldValidationError(
+                "OrganisationDocumentLinkCategory",
+                "category",
+                "not found on the accompanying codelist.",
+                None,
+                None
+            )
+        document_link = self.get_model("OrganisationDocumentLink")
+        document_link_category = OrganisationDocumentLinkCategory()
+        document_link_category.document_link = document_link
+        document_link_category.category = document_category
+        self.register_model("OrganisationDocumentLinkCategory",
+                            document_link_category)
+        return element
+
+    def iati_organisations__iati_organisation__document_link__language(self,
+                                                                       element):  # NOQA: E501
+        language_code = element.attrib.get("code")
+        if not language_code:
+            raise RequiredFieldError(
+                "OrganisationDocumentLinkLanguage",
+                "language",
+                "required field missing."
+            )
+        language = self.get_or_none(codelist_models.Language,
+                                    code=language_code)
+        if not language:
+            raise FieldValidationError(
+                "OrganisationDocumentLinkLanguage",
+                "language",
+                "not found on the accompanying codelist.",
+                None,
+                None,
+            )
+        document_link = self.get_model("OrganisationDocumentLink")
+        document_link_language = OrganisationDocumentLinkLanguage()
+        document_link_language.document_link = document_link
+        document_link_language.language = language
+        self.register_model("OrganisationDocumentLinkLanguage",
+                            document_link_language)
         return element
 
     def post_save_models(self):
