@@ -40,6 +40,7 @@ class Parse(IatiParser):
         self.total_expenditure_current_index = 0
         self.total_expenditure_line_current_index = 0
 
+    # TODO: test this, see: #1070:
     def add_narrative(self, element, parent):
         default_lang = self.default_lang  # set on organisation. (if set)
         lang = element.attrib.get('{http://www.w3.org/XML/1998/namespace}lang')
