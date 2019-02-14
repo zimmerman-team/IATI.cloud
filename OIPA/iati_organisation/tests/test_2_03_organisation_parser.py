@@ -3056,7 +3056,6 @@ class OrganisationsOrganisationDocumentLinkCategoryTestCase(DjangoTestCase):
         self.document_link = iati_factory.OrganisationDocumentLinkFactory()
         self.organisation_parser_203.register_model(
             "OrganisationDocumentLink", self.document_link)
-        self.file_format = codelist_factory.FileFormatFactory()
         self.document_category = codelist_factory.DocumentCategoryFactory()
 
     def test_organisations_organisation_document_link_category(self):
@@ -3112,3 +3111,81 @@ class OrganisationsOrganisationDocumentLinkCategoryTestCase(DjangoTestCase):
                          document_link_category.document_link)
         self.assertEqual(self.document_category,
                          document_link_category.category)
+
+
+class OrganisationsOrganisationDocumentLinkLanguageTestCase(DjangoTestCase):
+
+    def setUp(self):
+        # 'Main' XML file for instantiating parser:
+        xml_file_attrs = {
+            "generated-datetime": datetime.datetime.now().isoformat(),
+            "version": '2.03',
+        }
+        self.iati_203_XML_file = E("iati-organisations", **xml_file_attrs)
+
+        dummy_source = synchroniser_factory.DatasetFactory(filetype=2)
+
+        self.organisation_parser_203 = ParseManager(
+            dataset=dummy_source,
+            root=self.iati_203_XML_file,
+        ).get_parser()
+
+        # related object
+        self.document_link = iati_factory.OrganisationDocumentLinkFactory()
+        self.organisation_parser_203.register_model(
+            "OrganisationDocumentLink", self.document_link)
+        self.document_language = codelist_factory.LanguageFactory()
+
+    def test_organisations_organisation_document_link_language(self):
+        # case 1: when "code"is missing.
+        language_attrib = {
+            # "code": "en"
+        }
+        language_XML_element = E("language",
+                                 **language_attrib)
+        try:
+            self.organisation_parser_203\
+                .iati_organisations__iati_organisation__document_link__language(  # NOQA: E501
+                    language_XML_element
+                )
+        except RequiredFieldError as inst:
+            self.assertEqual("language", inst.field)
+            self.assertEqual("required field missing.", inst.message)
+
+        # case 2: when "code" is not in the codelist.
+        language_attrib = {
+            "code": "2000"
+        }
+        language_XML_element = E("language",
+                                 **language_attrib)
+        try:
+            self.organisation_parser_203 \
+                .iati_organisations__iati_organisation__document_link__language(  # NOQA: E501
+                    language_XML_element
+                )
+        except FieldValidationError as inst:
+            self.assertEqual("language", inst.field)
+            self.assertEqual("not found on the accompanying codelist.",
+                             inst.message)
+
+        # case 3: when all ok.
+        language_attrib = {
+            "code": "en"
+        }
+        language_XML_element = E("language",
+                                 **language_attrib)
+
+        self.organisation_parser_203\
+            .iati_organisations__iati_organisation__document_link__language(
+                language_XML_element
+            )
+
+        # get back the object to check.
+        document_link_language = \
+            self.organisation_parser_203.get_model(
+                "OrganisationDocumentLinkLanguage")
+
+        self.assertEqual(self.document_link,
+                         document_link_language.document_link)
+        self.assertEqual(self.document_language,
+                         document_link_language.language)
