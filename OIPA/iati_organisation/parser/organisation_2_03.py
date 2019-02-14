@@ -497,6 +497,141 @@ class Parse(IatiParser):
         self.add_narrative(element, budget_line)
         return element
 
+    def iati_organisations__iati_organisation__recipient_org_budget(self,
+                                                                    element):
+        status = element.attrib.get("status")
+        if status:
+            status = self.get_or_none(codelist_models.BudgetStatus,
+                                      code=status)
+            if status is None:
+                raise FieldValidationError(
+                    "RecipientOrgBudget",
+                    "status",
+                    "not found on the accompanying codelist.",
+                    None,
+                    None,
+                )
+        else:
+            status = codelist_models.BudgetStatus.objects.get(code=1)
+        recipient_org = element.xpath("recipient-org")
+        if len(recipient_org) is not 1:
+            raise ParserError("RecipientOrgBudget",
+                              "recipient-org",
+                              "must occur once and only once.")
+        narrative = recipient_org[0].xpath("narrative")
+        if len(narrative) < 1:
+            raise ParserError("RecipientOrgBudget",
+                              "recipient-org",
+                              "must occur at least once.")
+
+        recipient_org_budget = RecipientOrgBudget()
+        recipient_org_identifier = recipient_org[0].attrib.get("ref")
+        if Organisation.objects.filter(
+                organisation_identifier=recipient_org_identifier).exists():
+            recipient_org = Organisation.objects.get(
+                organisation_identifier=recipient_org_identifier)
+            recipient_org_budget.recipient_org = recipient_org
+
+        period_start = element.xpath("period-start")
+        if len(period_start) is not 1:
+            raise ParserError("RecipientOrgBudget",
+                              "period-start",
+                              "must occur once and only once.")
+        period_start_date = period_start[0].attrib.get("iso-date")
+        if period_start_date is None:
+            raise RequiredFieldError("RecipientOrgBudget", "iso-date",
+                                     "required field missing.")
+        period_start_date = self.validate_date(period_start_date)
+        if not period_start_date:
+            raise FieldValidationError(
+                "RecipientOrgBudget",
+                "iso-date",
+                "is not in correct range.",
+                None,
+                None,
+            )
+        period_end = element.xpath("period-end")
+        if len(period_end) is not 1:
+            raise ParserError("RecipientOrgBudget",
+                              "period-end",
+                              "must occur once and only once.")
+        period_end_date = period_end[0].attrib.get("iso-date")
+        if period_end_date is None:
+            raise RequiredFieldError("RecipientOrgBudget", "iso-date",
+                                     "required field missing.")
+        period_end_date = self.validate_date(period_end_date)
+        if not period_end_date:
+            raise FieldValidationError(
+                "RecipientOrgBudget",
+                "iso-date",
+                "is not in correct range.",
+                None,
+                None,
+            )
+        value_element = element.xpath("value")
+        if len(value_element) is not 1:
+            raise ParserError("RecipientOrgBudget",
+                              "value",
+                              "must occur once and only once.")
+        value = self.guess_number("RecipientOrgBudget", value_element[0].text)
+
+        currency = value_element[0].attrib.get("currency")
+        if not currency:
+            currency = getattr(self.get_model("Organisation"),
+                               "default_currency")
+            if not currency:
+                raise RequiredFieldError(
+                    "RecipientOrgBudget",
+                    "currency",
+                    "must specify default-currency on iati-organisation or "
+                    "as currency on the element itself."
+                )
+        else:
+            currency = self.get_or_none(codelist_models.Currency,
+                                        code=currency)
+            if not currency:
+                raise FieldValidationError(
+                    "RecipientOrgBudget",
+                    "currency",
+                    "not found on the accompanying codelist.",
+                    None,
+                    None,
+                )
+
+        value_date = value_element[0].attrib.get("value-date")
+        if value_date is None:
+            raise RequiredFieldError("RecipientOrgBudget", "value-date",
+                                     "required field missing.")
+        value_date = self.validate_date(value_date)
+        if not value_date:
+            raise FieldValidationError(
+                "RecipientOrgBudget",
+                "value-date",
+                "not in the correct range.",
+                None,
+                None,
+            )
+        organisation = self.get_model("Organisation")
+
+        recipient_org_budget.organisation = organisation
+        recipient_org_budget.status = status
+        recipient_org_budget.recipient_org_identifier = \
+            recipient_org_identifier
+        recipient_org_budget.period_start = period_start_date
+        recipient_org_budget.period_end = period_end_date
+        recipient_org_budget.value_date = value_date
+        recipient_org_budget.currency = currency
+        recipient_org_budget.value = value
+
+        self.register_model("RecipientOrgBudget", recipient_org_budget)
+        return element
+
+    def iati_organisations__iati_organisation__recipient_org_budget__recipient_org__narrative(  # NOQA: E501
+            self, element):
+        recipient_org_budget = self.get_model('RecipientOrgBudget')
+        self.add_narrative(element, recipient_org_budget)
+        return element
+
     def post_save_models(self):
         """Perform all actions that need to happen after a single
         organisation's been parsed."""
