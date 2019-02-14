@@ -1,3 +1,5 @@
+from unittest import skip
+
 from django.test import RequestFactory
 from rest_framework.test import APIClient, APITestCase
 
@@ -41,6 +43,7 @@ class TestActivityPermissions(APITestCase):
 
         self.assertEqual(res.status_code, 201)
 
+    @skip('this is currently disabled. See: #1067')
     def test_post_activity_fail_if_not_in_admin_group(self):
         """
         Test the user can only POST activities as a publisher of which he is
@@ -100,6 +103,7 @@ class TestActivityPermissions(APITestCase):
 
         self.assertEqual(res.status_code, 200)
 
+    @skip('this is currently disabled. See: #1067')
     def test_update_activity_fail_if_not_in_admin_group(self):
         """
         Test the user can only PUT activities as a publisher of which he is in

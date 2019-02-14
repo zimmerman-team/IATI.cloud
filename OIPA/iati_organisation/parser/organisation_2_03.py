@@ -40,6 +40,7 @@ class Parse(IatiParser):
         self.total_expenditure_current_index = 0
         self.total_expenditure_line_current_index = 0
 
+    # TODO: test this, see: #1070:
     def add_narrative(self, element, parent):
         default_lang = self.default_lang  # set on organisation. (if set)
         lang = element.attrib.get('{http://www.w3.org/XML/1998/namespace}lang')
@@ -239,6 +240,25 @@ class Parse(IatiParser):
         organisation_name.organisation = organisation
 
         self.register_model("OrganisationName", organisation_name)
+        return element
+
+    def iati_organisations__iati_organisation__name__narrative(self, element):
+        name = self.get_model('OrganisationName')
+        self.add_narrative(element, name)
+
+        # adding primary_name in the "Organisation" table.
+        if element.text:
+
+            organisation = self.get_model('Organisation')
+
+            if organisation.primary_name:
+                default_lang = self.default_lang  # set on activity (if set)
+                lang = element.attrib.get(
+                    '{http://www.w3.org/XML/1998/namespace}lang', default_lang)
+                if lang == 'en':
+                    organisation.primary_name = element.text
+            else:
+                organisation.primary_name = element.text
         return element
 
     def iati_organisations__iati_organisation__reporting_org(self, element):
