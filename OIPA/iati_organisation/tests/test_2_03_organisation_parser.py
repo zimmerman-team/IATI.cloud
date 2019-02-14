@@ -2544,11 +2544,11 @@ class OrganisationsOrganisationTotalExpenditureExpenseLineTestCase(DjangoTestCas
             "ref": "123"
         }
         expense_line_XML_element = E("expense-line",
-                                    E("value", "3000", {"currency": "USD",
-                                                        "value-date":
-                                                            "2015-04-06"}),
+                                     E("value", "3000", {"currency": "USD",
+                                                         "value-date":
+                                                         "2015-04-06"}),
                                      # E("narrative", "text"),
-                                    **expense_line_attrib)
+                                     **expense_line_attrib)
         try:
             self.organisation_parser_203\
                 .iati_organisations__iati_organisation__total_expenditure__expense_line(expense_line_XML_element)  # NOQA:
@@ -2561,14 +2561,14 @@ class OrganisationsOrganisationTotalExpenditureExpenseLineTestCase(DjangoTestCas
             "ref": "123"
         }
         expense_line_XML_element = E("expense-line",
-                                    E("value", "2000", {"currency": "USD",
-                                                        "value-date":
-                                                        "2015-04-06"}),
-                                    E("value", "2400", {"currency": "EUR",
-                                                        "value-date":
-                                                            "2013-10-06"}),
-                                    E("narrative", "text"),
-                                    **expense_line_attrib)
+                                     E("value", "2000", {"currency": "USD",
+                                                         "value-date":
+                                                         "2015-04-06"}),
+                                     E("value", "2400", {"currency": "EUR",
+                                                         "value-date":
+                                                         "2013-10-06"}),
+                                     E("narrative", "text"),
+                                     **expense_line_attrib)
 
         try:
             self.organisation_parser_203 \
@@ -2583,11 +2583,11 @@ class OrganisationsOrganisationTotalExpenditureExpenseLineTestCase(DjangoTestCas
             "ref": "123"
         }
         expense_line_XML_element = E("expense-line",
-                                    E("value", "6000", {"currency": "MMK",
-                                                        "value-date":
-                                                            "2015-04-06"}),
-                                    E("narrative", "text"),
-                                    **expense_line_attrib)
+                                     E("value", "6000", {"currency": "MMK",
+                                                         "value-date":
+                                                         "2015-04-06"}),
+                                     E("narrative", "text"),
+                                     **expense_line_attrib)
 
         try:
             self.organisation_parser_203 \
@@ -2603,9 +2603,9 @@ class OrganisationsOrganisationTotalExpenditureExpenseLineTestCase(DjangoTestCas
             "ref": "123"
         }
         expense_line_XML_element = E("expense-line",
-                                    E("value", "8000", {"currency": "USD", }),
-                                    E("narrative", "text"),
-                                    **expense_line_attrib)
+                                     E("value", "8000", {"currency": "USD", }),
+                                     E("narrative", "text"),
+                                     **expense_line_attrib)
 
         try:
             self.organisation_parser_203 \
@@ -2621,11 +2621,11 @@ class OrganisationsOrganisationTotalExpenditureExpenseLineTestCase(DjangoTestCas
             "ref": "123"
         }
         expense_line_XML_element = E("expense-line",
-                                    E("value", "3000",  {"currency": "USD",
-                                                         "value-date":
-                                                             "1000-04-06"}),
-                                    E("narrative", "text"),
-                                    **expense_line_attrib)
+                                     E("value", "3000",  {"currency": "USD",
+                                                          "value-date":
+                                                          "1000-04-06"}),
+                                     E("narrative", "text"),
+                                     **expense_line_attrib)
 
         try:
             self.organisation_parser_203 \
@@ -2640,11 +2640,11 @@ class OrganisationsOrganisationTotalExpenditureExpenseLineTestCase(DjangoTestCas
             "ref": "123"
         }
         expense_line_XML_element = E("expense-line",
-                                    E("value", "3000", {"currency": "USD",
-                                                        "value-date":
-                                                            "2013-04-06"}),
-                                    E("narrative", "text"),
-                                    **expense_line_attrib)
+                                     E("value", "3000", {"currency": "USD",
+                                                         "value-date":
+                                                         "2013-04-06"}),
+                                     E("narrative", "text"),
+                                     **expense_line_attrib)
         self.organisation_parser_203\
             .iati_organisations__iati_organisation__total_expenditure__expense_line(  # NOQA:
                 expense_line_XML_element)
@@ -2694,12 +2694,13 @@ class OrganisationsOrganisationDocumentLinkTestCase(DjangoTestCase):
             "format": "application/pdf"
         }
         document_link_XML_element = E("document-link",
-            E("title"),
-            E("description"),
-            E("category"),
-            E("document-date", {"iso-date": "2014-02-05"}),
-            **document_link_attrib
-        )
+                                      E("title"),
+                                      E("description"),
+                                      E("category"),
+                                      E("document-date", {"iso-date":
+                                                          "2014-02-05"}),
+                                      **document_link_attrib
+                                      )
         try:
             self.organisation_parser_203\
                 .iati_organisations__iati_organisation__document_link(
