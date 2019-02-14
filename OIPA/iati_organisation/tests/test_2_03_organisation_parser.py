@@ -1102,7 +1102,6 @@ class OrganisationsOrganisationRecipientOrgBudgetTestCase(DjangoTestCase):
         self.assertEqual(value, recipient_org_budget.value)
         self.assertEqual(self.currency, recipient_org_budget.currency)
         self.assertEqual(value_date, recipient_org_budget.value_date)
-#  ===========================================================================
 
 
 class OrganisationsOrganisationRecipientOrgBudgetBudgetLineTestCase(
