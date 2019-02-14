@@ -2978,8 +2978,7 @@ class OrganisationsOrganisationDocumentLinkRecipientCountryTestCase(DjangoTestCa
         self.document_link = iati_factory.OrganisationDocumentLinkFactory()
         self.organisation_parser_203.register_model(
             "OrganisationDocumentLink", self.document_link)
-        self.file_format = codelist_factory.FileFormatFactory()
-        self.country = iati_factory.CountryFactory()
+        self.country = CountryFactory()
 
     def test_organisations_organisation_document_link_recipient_country(self):
         # case 1: when "code"is missing.
@@ -2990,9 +2989,126 @@ class OrganisationsOrganisationDocumentLinkRecipientCountryTestCase(DjangoTestCa
                                           **recipient_country_attrib)
         try:
             self.organisation_parser_203\
-                .iati_organisations__iati_organisation__document_link__recipient_country(
+                .iati_organisations__iati_organisation__document_link__recipient_country(  # NOQA: E501
                     recipient_country_XML_element
                 )
         except RequiredFieldError as inst:
             self.assertEqual("recipient_country", inst.field)
             self.assertEqual("required field missing.", inst.message)
+
+        # case 2: when "code" is not in the codelist.
+        recipient_country_attrib = {
+            "code": "2000"
+        }
+        recipient_country_XML_element = E("recipient-country",
+                                          **recipient_country_attrib)
+        try:
+            self.organisation_parser_203 \
+                .iati_organisations__iati_organisation__document_link__recipient_country(  # NOQA: E501
+                    recipient_country_XML_element
+                )
+        except FieldValidationError as inst:
+            self.assertEqual("recipient_country", inst.field)
+            self.assertEqual("not found on the accompanying codelist.",
+                             inst.message)
+
+        # case 3: when all ok.
+        recipient_country_attrib = {
+            "code": "OO"
+        }
+        recipient_country_XML_element = E("recipient-country",
+                                          **recipient_country_attrib)
+
+        self.organisation_parser_203\
+            .iati_organisations__iati_organisation__document_link__recipient_country(  # NOQA: E501
+                recipient_country_XML_element
+            )
+
+        # get back the object to check.
+        document_link_recipient_country = \
+            self.organisation_parser_203.get_model(
+                "DocumentLinkRecipientCountry")
+
+        self.assertEqual(self.document_link,
+                         document_link_recipient_country.document_link)
+        self.assertEqual(self.country,
+                         document_link_recipient_country.recipient_country)
+
+
+class OrganisationsOrganisationDocumentLinkCategoryTestCase(DjangoTestCase):
+
+    def setUp(self):
+        # 'Main' XML file for instantiating parser:
+        xml_file_attrs = {
+            "generated-datetime": datetime.datetime.now().isoformat(),
+            "version": '2.03',
+        }
+        self.iati_203_XML_file = E("iati-organisations", **xml_file_attrs)
+
+        dummy_source = synchroniser_factory.DatasetFactory(filetype=2)
+
+        self.organisation_parser_203 = ParseManager(
+            dataset=dummy_source,
+            root=self.iati_203_XML_file,
+        ).get_parser()
+
+        # related object
+        self.document_link = iati_factory.OrganisationDocumentLinkFactory()
+        self.organisation_parser_203.register_model(
+            "OrganisationDocumentLink", self.document_link)
+        self.file_format = codelist_factory.FileFormatFactory()
+        self.document_category = codelist_factory.DocumentCategoryFactory()
+
+    def test_organisations_organisation_document_link_category(self):
+        # case 1: when "code"is missing.
+        category_attrib = {
+            # "code": "A04"
+        }
+        category_XML_element = E("category",
+                                 **category_attrib)
+        try:
+            self.organisation_parser_203\
+                .iati_organisations__iati_organisation__document_link__category(  # NOQA: E501
+                    category_XML_element
+                )
+        except RequiredFieldError as inst:
+            self.assertEqual("category", inst.field)
+            self.assertEqual("required field missing.", inst.message)
+
+        # case 2: when "code" is not in the codelist.
+        category_attrib = {
+            "code": "2000"
+        }
+        category_XML_element = E("category",
+                                 **category_attrib)
+        try:
+            self.organisation_parser_203 \
+                .iati_organisations__iati_organisation__document_link__category(  # NOQA: E501
+                    category_XML_element
+                )
+        except FieldValidationError as inst:
+            self.assertEqual("category", inst.field)
+            self.assertEqual("not found on the accompanying codelist.",
+                             inst.message)
+
+        # case 3: when all ok.
+        category_attrib = {
+            "code": "A04"
+        }
+        category_XML_element = E("category",
+                                 **category_attrib)
+
+        self.organisation_parser_203\
+            .iati_organisations__iati_organisation__document_link__category(
+                category_XML_element
+            )
+
+        # get back the object to check.
+        document_link_category = \
+            self.organisation_parser_203.get_model(
+                "OrganisationDocumentLinkCategory")
+
+        self.assertEqual(self.document_link,
+                         document_link_category.document_link)
+        self.assertEqual(self.document_category,
+                         document_link_category.category)
