@@ -822,7 +822,7 @@ class OrganisationsOrganisationRecipientOrgBudgetTestCase(DjangoTestCase):
         self.budget_status = codelist_factory.BudgetStatusFactory()
         self.currency = codelist_factory.CurrencyFactory()
 
-    def test_organisations_organisation_total_budget(self):
+    def test_organisations_organisation_recipient_org_budget(self):
         # case 1: "status" is not in the codelist.
         recipient_org_budget_attrib = {
             "status": "2000",
@@ -1102,3 +1102,155 @@ class OrganisationsOrganisationRecipientOrgBudgetTestCase(DjangoTestCase):
         self.assertEqual(value, recipient_org_budget.value)
         self.assertEqual(self.currency, recipient_org_budget.currency)
         self.assertEqual(value_date, recipient_org_budget.value_date)
+
+
+class OrganisationsOrganisationRecipientOrgBudgetBudgetLineTestCase(
+        DjangoTestCase):
+
+    def setUp(self):
+        # 'Main' XML file for instantiating parser:
+        xml_file_attrs = {
+            "generated-datetime": datetime.datetime.now().isoformat(),
+            "version": '2.03',
+        }
+        self.iati_203_XML_file = E("iati-organisations", **xml_file_attrs)
+
+        dummy_source = synchroniser_factory.DatasetFactory(filetype=2)
+
+        self.organisation_parser_203 = ParseManager(
+            dataset=dummy_source,
+            root=self.iati_203_XML_file,
+        ).get_parser()
+
+        # related objects.
+        self.recipient_org_budget = \
+            iati_factory.OrganisationRecipientOrgBudgetFactory()
+        self.organisation_parser_203.register_model(
+            "RecipientOrgBudget", self.recipient_org_budget)
+        self.currency = codelist_factory.CurrencyFactory()
+
+    def test_organisations__organisation__recipient_org_budget__budget_line(
+            self):
+        # case 1: when "narrative"element is missing.
+        budget_line_attrib = {
+            "ref": "123"
+        }
+        budget_line_XML_element = E("budget-line", E("value", "3000",
+                                                     {"currency": "USD",
+                                                      "value-date":
+                                                          "2015-04-06"}),
+                                    # E("narrative", "text"),
+                                    **budget_line_attrib)
+        try:
+            self.organisation_parser_203\
+                .iati_organisations__iati_organisation__recipient_org_budget__budget_line(  # NOQA: E501
+                    budget_line_XML_element)
+        except ParserError as inst:
+            self.assertEqual("narrative", inst.field)
+            self.assertEqual("must occur at least once.", inst.message)
+
+        # case 2: when "value"element occurs more than once.
+        budget_line_attrib = {
+            "ref": "123"
+        }
+        budget_line_XML_element = E("budget-line",
+                                    E("value", "2000", {"currency": "USD",
+                                                        "value-date":
+                                                        "2015-04-06"}),
+                                    E("value", "2400", {"currency": "EUR",
+                                                        "value-date":
+                                                            "2013-10-06"}),
+                                    E("narrative", "text"),
+                                    **budget_line_attrib)
+
+        try:
+            self.organisation_parser_203 \
+                .iati_organisations__iati_organisation__recipient_org_budget__budget_line(  # NOQA: E501
+                    budget_line_XML_element)
+        except ParserError as inst:
+            self.assertEqual("value", inst.field)
+            self.assertEqual("must occur once and only once.", inst.message)
+
+        # case 3: when "currency" is not in the codelist.
+        budget_line_attrib = {
+            "ref": "123"
+        }
+        budget_line_XML_element = E("budget-line",
+                                    E("value", "6000", {"currency": "MMK",
+                                                        "value-date":
+                                                            "2015-04-06"}),
+                                    E("narrative", "text"),
+                                    **budget_line_attrib)
+
+        try:
+            self.organisation_parser_203 \
+                .iati_organisations__iati_organisation__recipient_org_budget__budget_line(  # NOQA: E501
+                    budget_line_XML_element)
+        except FieldValidationError as inst:
+            self.assertEqual("currency", inst.field)
+            self.assertEqual("not found on the accompanying codelist.",
+                             inst.message)
+
+        # case 4: "value-date"attirbute is absent.
+        budget_line_attrib = {
+            "ref": "123"
+        }
+        budget_line_XML_element = E("budget-line",
+                                    E("value", "8000", {"currency": "USD", }),
+                                    E("narrative", "text"),
+                                    **budget_line_attrib)
+
+        try:
+            self.organisation_parser_203 \
+                .iati_organisations__iati_organisation__recipient_org_budget__budget_line(  # NOQA: E501
+                    budget_line_XML_element)
+        except RequiredFieldError as inst:
+            self.assertEqual("value-date", inst.field)
+            self.assertEqual("required field missing.",
+                             inst.message)
+
+        # case 5: "value-date"is not in the correct range.
+        budget_line_attrib = {
+            "ref": "123"
+        }
+        budget_line_XML_element = E("budget-line",
+                                    E("value", "3000",  {"currency": "USD",
+                                                         "value-date":
+                                                             "1000-04-06"}),
+                                    E("narrative", "text"),
+                                    **budget_line_attrib)
+
+        try:
+            self.organisation_parser_203 \
+                .iati_organisations__iati_organisation__recipient_org_budget__budget_line(  # NOQA: E501
+                    budget_line_XML_element)
+        except FieldValidationError as inst:
+            self.assertEqual("value-date", inst.field)
+            self.assertEqual("not in the correct range.", inst.message)
+
+        # case 6: when all is ok.
+        budget_line_attrib = {
+            "ref": "123"
+        }
+        budget_line_XML_element = E("budget-line",
+                                    E("value", "3000", {"currency": "USD",
+                                                        "value-date":
+                                                            "2013-04-06"}),
+                                    E("narrative", "text"),
+                                    **budget_line_attrib)
+        self.organisation_parser_203\
+            .iati_organisations__iati_organisation__recipient_org_budget__budget_line(  # NOQA: E501
+                budget_line_XML_element)
+
+        # get "BudgetLine" object to test.
+        budget_line = self.organisation_parser_203.get_model(
+            "RecipientOrgBudgetLine")
+        value = 3000
+        value_date = self.organisation_parser_203.validate_date("2013-04-06")
+        self.assertEqual(self.recipient_org_budget,
+                         budget_line.recipient_org_budget)
+        self.assertEqual(budget_line_XML_element.attrib.get("ref"),
+                         budget_line.ref)
+        self.assertEqual(self.currency, budget_line.currency)
+        self.assertEqual(value, budget_line.value)
+        self.assertEqual(value_date, budget_line.value_date)
