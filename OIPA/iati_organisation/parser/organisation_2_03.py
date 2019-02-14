@@ -10,8 +10,7 @@ from iati_organisation.models import (
     Organisation, OrganisationDocumentLink, OrganisationName,
     OrganisationNarrative, OrganisationReportingOrganisation,
     RecipientCountryBudget, RecipientOrgBudget, RecipientOrgBudgetLine,
-    RecipientRegionBudget, TotalBudget,
-    TotalBudgetLine, TotalExpenditure
+    RecipientRegionBudget, TotalBudget, TotalBudgetLine, TotalExpenditure
 )
 from iati_organisation.parser import post_save
 from iati_vocabulary.models import RegionVocabulary
