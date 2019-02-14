@@ -2955,3 +2955,44 @@ class OrganisationsOrganisationDocumentLinkTestCase(DjangoTestCase):
         self.assertEqual("www.example.com", document_link.url)
         self.assertEqual(self.file_format, document_link.file_format)
         self.assertEqual(iso_date, document_link.iso_date)
+
+
+class OrganisationsOrganisationDocumentLinkRecipientCountryTestCase(DjangoTestCase):  # NOQA: E501
+
+    def setUp(self):
+        # 'Main' XML file for instantiating parser:
+        xml_file_attrs = {
+            "generated-datetime": datetime.datetime.now().isoformat(),
+            "version": '2.03',
+        }
+        self.iati_203_XML_file = E("iati-organisations", **xml_file_attrs)
+
+        dummy_source = synchroniser_factory.DatasetFactory(filetype=2)
+
+        self.organisation_parser_203 = ParseManager(
+            dataset=dummy_source,
+            root=self.iati_203_XML_file,
+        ).get_parser()
+
+        # related object
+        self.document_link = iati_factory.OrganisationDocumentLinkFactory()
+        self.organisation_parser_203.register_model(
+            "OrganisationDocumentLink", self.document_link)
+        self.file_format = codelist_factory.FileFormatFactory()
+        self.country = iati_factory.CountryFactory()
+
+    def test_organisations_organisation_document_link_recipient_country(self):
+        # case 1: when "code"is missing.
+        recipient_country_attrib = {
+            # "code": "OO"
+        }
+        recipient_country_XML_element = E("recipient-country",
+                                          **recipient_country_attrib)
+        try:
+            self.organisation_parser_203\
+                .iati_organisations__iati_organisation__document_link__recipient_country(
+                    recipient_country_XML_element
+                )
+        except RequiredFieldError as inst:
+            self.assertEqual("recipient_country", inst.field)
+            self.assertEqual("required field missing.", inst.message)
