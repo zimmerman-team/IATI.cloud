@@ -799,8 +799,6 @@ class OrganisationsOrganisationTotalBudgetBudgetLineTestCase(DjangoTestCase):
         self.assertEqual(value_date, budget_line.value_date)
 
 
-# ============================================================================
-
 class OrganisationsOrganisationRecipientOrgBudgetTestCase(DjangoTestCase):
     def setUp(self):
         # 'Main' XML file for instantiating parser:
