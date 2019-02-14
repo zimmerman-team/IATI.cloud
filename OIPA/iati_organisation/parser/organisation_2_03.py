@@ -1399,16 +1399,16 @@ class Parse(IatiParser):
         return element
 
     def iati_organisations__iati_organisation__document_link__recipient_country(self, element):  # NOQA: E501
-        recipeint_country_code = element.attrib.get("code")
-        if not recipeint_country_code:
+        recipient_country_code = element.attrib.get("code")
+        if not recipient_country_code:
             raise RequiredFieldError(
                 "DocumentLinkRecipientCountry",
                 "recipient_country",
                 "required field missing."
             )
-        recipeint_country = self.get_or_none(Country,
-                                             code=recipeint_country_code)
-        if not recipeint_country:
+        recipient_country = self.get_or_none(Country,
+                                             code=recipient_country_code)
+        if not recipient_country:
             raise FieldValidationError(
                 "DocumentLinkRecipientCountry",
                 "recipient_country",
@@ -1419,7 +1419,7 @@ class Parse(IatiParser):
         document_link = self.get_model("OrganisationDocumentLink")
         document_link_recipient_country = DocumentLinkRecipientCountry()
         document_link_recipient_country.document_link = document_link
-        document_link_recipient_country.recipient_country = recipeint_country
+        document_link_recipient_country.recipient_country = recipient_country
         self.register_model("DocumentLinkRecipientCountry",
                             document_link_recipient_country)
         return element
