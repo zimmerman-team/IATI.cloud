@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <iati-organisations version="2.03" generated-datetime="2018-12-28T10:26:15">
+    <!--This will create a DatasetNote object, because Organisation objects that we-->
+    <!--get from IATI API will have last-updated-datetime latern than this:-->
     <iati-organisation xml:lang="en"
                        last-updated-datetime="2018-12-29T10:24:42"
                        default-currency="EUR">
@@ -16,6 +18,10 @@
             <period-start iso-date="2018-01-01"></period-start>
             <period-end iso-date="2018-12-31"></period-end>
             <value value-date="2018-01-01">2912507000</value>
+            <budget-line ref="1234">
+                <value currency="USD" value-date="2014-01-01">200000000</value>
+                <narrative>Budget Line</narrative>
+            </budget-line>
         </total-budget>
         <total-budget>
             <period-start iso-date="2019-01-01"></period-start>
@@ -34,6 +40,10 @@
             <period-start iso-date="2018-01-01"></period-start>
             <period-end iso-date="2018-12-31"></period-end>
             <value value-date="2018-01-01">3904000</value>
+            <budget-line ref="1234">
+                <value currency="USD" value-date="2014-01-01">2000000</value>
+                <narrative>Budget Line</narrative>
+            </budget-line>
         </recipient-org-budget>
         <recipient-org-budget>
             <recipient-org>

@@ -1,8 +1,6 @@
 ## OIPA
 --------
 
-Please make sure to use the develop branch. We will be merging the develop branch into master in January 2019. Default branch therefore is currently set to Develop.
-
 [![Codacy Badge](https://api.codacy.com/project/badge/Coverage/66a6772e1f264199830b01a86f9a2b47)](https://www.codacy.com/app/eimantas_4/OIPA?utm_source=github.com&utm_medium=referral&utm_content=zimmerman-zimmerman/OIPA&utm_campaign=Badge_Coverage)
 [![License: AGPLv3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://github.com/zimmerman-zimmerman/OIPA/blob/master/LICENSE.MD)
 ![Open issues](https://img.shields.io/github/issues/zimmerman-zimmerman/OIPA.svg?style=flat)
