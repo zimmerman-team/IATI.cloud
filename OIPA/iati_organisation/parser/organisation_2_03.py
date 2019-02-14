@@ -9,7 +9,7 @@ from iati_organisation.models import (
     Organisation, OrganisationDocumentLink, OrganisationName,
     OrganisationNarrative, OrganisationReportingOrganisation,
     RecipientCountryBudget, RecipientOrgBudget, RecipientRegionBudget,
-    TotalBudget, TotalExpenditure
+    TotalBudget, TotalBudgetLine, TotalExpenditure
 )
 from iati_organisation.parser import post_save
 
@@ -425,6 +425,70 @@ class Parse(IatiParser):
         total_budget.currency = currency
         total_budget.value_date = value_date
         self.register_model("TotalBudget", total_budget)
+        return element
+
+    def iati_organisations__iati_organisation__total_budget__budget_line(
+            self, element):
+        ref = element.attrib.get("ref")
+        narrative = element.xpath("narrative")
+        # "narrative" element must occur at least once.
+        if len(narrative) < 1:
+            raise ParserError("TotalBudgetLine", "narrative", "must occur at "
+                                                              "least once.")
+        value_element = element.xpath("value")
+        # "value"element must occur once and only once.
+        if len(value_element) is not 1:
+            raise ParserError("TotalBudgetLine",
+                              "value",
+                              "must occur once and only once.")
+        value = self.guess_number("TotalBudget", value_element[0].text)
+        currency = value_element[0].attrib.get("currency")
+        if not currency:
+            currency = getattr(self.get_model("Organisation"),
+                               "default_currency")
+            if not currency:
+                raise RequiredFieldError(
+                    "TotalBudgetLine",
+                    "currency",
+                    "must specify default-currency on iati-activity or as "
+                    "currency on the element itself."
+                )
+
+        else:
+            currency = self.get_or_none(codelist_models.Currency,
+                                        code=currency)
+            if currency is None:
+                raise FieldValidationError(
+                    "TotalBudgetLine",
+                    "currency",
+                    "not found on the accompanying codelist.",
+                    None,
+                    None,
+                )
+        value_date = value_element[0].attrib.get("value-date")
+        if value_date is None:
+            raise RequiredFieldError("TotalBudget", "value-date", "required "
+                                                                  "field "
+                                                                  "missing.")
+        value_date = self.validate_date(value_date)
+        if not value_date:
+            raise FieldValidationError(
+                "TotalBudgetLine",
+                "value-date",
+                "not in the correct range.",
+                None,
+                None,
+            )
+        total_budget = self.get_model("TotalBudget")
+        total_budtet_line = TotalBudgetLine()
+
+        total_budtet_line.total_budget = total_budget
+        total_budtet_line.ref = ref
+        total_budtet_line.currency = currency
+        total_budtet_line.value = value
+        total_budtet_line.value_date = value_date
+
+        self.register_model("TotalBudgetLine", total_budtet_line)
         return element
 
     def post_save_models(self):

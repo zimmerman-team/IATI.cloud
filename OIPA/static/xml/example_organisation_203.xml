@@ -18,6 +18,10 @@
             <period-start iso-date="2018-01-01"></period-start>
             <period-end iso-date="2018-12-31"></period-end>
             <value value-date="2018-01-01">2912507000</value>
+            <budget-line ref="1234">
+                <value currency="USD" value-date="2014-01-01">200000000</value>
+                <narrative>Budget Line</narrative>
+            </budget-line>
         </total-budget>
         <total-budget>
             <period-start iso-date="2019-01-01"></period-start>
