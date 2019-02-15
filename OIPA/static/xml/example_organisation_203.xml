@@ -47,17 +47,6 @@
             </budget-line>
         </recipient-org-budget>
 
-        <recipient-region-budget status="2">
-            <recipient-region vocabulary="99" vocabulary-uri="http://example.com/vocab.html" code="A1" />
-            <period-start iso-date="2014-01-01" />
-            <period-end iso-date="2014-12-31" />
-            <value currency="USD" value-date="2014-01-01">25000000</value>
-            <budget-line ref="1234">
-                <value currency="USD" value-date="2014-01-01">2000000</value>
-                <narrative xml:lang="en">Budget Line</narrative>
-            </budget-line>
-        </recipient-region-budget>
-
         <recipient-org-budget>
             <recipient-org>
                 <narrative>Dkt-Ethiopia</narrative>
@@ -1488,6 +1477,18 @@
             <period-end iso-date="2020-12-31"></period-end>
             <value value-date="2018-01-01">500000</value>
         </recipient-org-budget>
+
+        <recipient-region-budget status="2">
+            <recipient-region vocabulary="99" vocabulary-uri="http://example.com/vocab.html" code="A1" />
+            <period-start iso-date="2014-01-01" />
+            <period-end iso-date="2014-12-31" />
+            <value currency="USD" value-date="2014-01-01">25000000</value>
+            <budget-line ref="1234">
+                <value currency="USD" value-date="2014-01-01">2000000</value>
+                <narrative xml:lang="en">Budget Line</narrative>
+            </budget-line>
+        </recipient-region-budget>
+
         <recipient-country-budget>
             <recipient-country code="AF">
                 <narrative xml:lang="en">AFGHANISTAN</narrative>
