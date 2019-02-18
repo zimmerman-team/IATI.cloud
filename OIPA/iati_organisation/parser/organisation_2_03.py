@@ -10,8 +10,7 @@ from iati_organisation.models import (
     Organisation, OrganisationDocumentLink, OrganisationName,
     OrganisationNarrative, OrganisationReportingOrganisation,
     RecipientCountryBudget, RecipientOrgBudget, RecipientOrgBudgetLine,
-    RecipientRegionBudget, RecipientRegionBudgetLine, TotalBudget,
-    TotalBudgetLine, TotalExpenditure
+    RecipientRegionBudget, TotalBudget, TotalBudgetLine, TotalExpenditure
 )
 from iati_organisation.parser import post_save
 from iati_vocabulary.models import RegionVocabulary
@@ -730,11 +729,6 @@ class Parse(IatiParser):
             raise ParserError("RecipientRegionBudget",
                               "recipient-region",
                               "must occur once and only once.")
-        narrative = recipient_region[0].xpath("narrative")
-        if len(narrative) < 1:
-            raise ParserError("RecipientRegionBudget",
-                              "recipient-region",
-                              "must occur at least once.")
 
         recipient_region_vocabulary = recipient_region[0].attrib.get(
             "vocabulary")
@@ -753,6 +747,7 @@ class Parse(IatiParser):
             recipient_region_vocabulary = RegionVocabulary.objects.get(code=1)
 
         vocabulary_uri = recipient_region[0].attrib.get("vocabulary-uri")
+
         region = recipient_region[0].attrib.get("code")
         if region and recipient_region_vocabulary == \
                 RegionVocabulary.objects.get(code=1):
@@ -765,6 +760,8 @@ class Parse(IatiParser):
                     None,
                     None,
                 )
+        else:
+                region = None
 
         period_start = element.xpath("period-start")
         if len(period_start) is not 1:
@@ -865,83 +862,6 @@ class Parse(IatiParser):
     def iati_organistions__iati_organisation__recipient_region_budget__recipient_region__narrative(self, element):  # NOQA: E501
         recipient_region_budget = self.get_model('RecipientRegionBudget')
         self.add_narrative(element, recipient_region_budget)
-        return element
-
-    def iati_organisations__iati_organisation__recipient_region_budget__budget_line(  # NOQA: E501
-            self, element):
-        ref = element.attrib.get("ref")
-        narrative = element.xpath("narrative")
-        # "narrative" element must occur at least once.
-        if len(narrative) < 1:
-            raise ParserError("RecipientRegionBudgetLine", "narrative",
-                              "must occur at least once.")
-        value_element = element.xpath("value")
-        # "value"element must occur once and only once.
-        if len(value_element) is not 1:
-            raise ParserError("RecipientRegionBudgetLine",
-                              "value",
-                              "must occur once and only once.")
-        value = self.guess_number("RecipientRegionBudget", value_element[
-            0].text)
-        currency = value_element[0].attrib.get("currency")
-        if not currency:
-            currency = getattr(self.get_model("Organisation"),
-                               "default_currency")
-            if not currency:
-                raise RequiredFieldError(
-                    "RecipientRegionBudgetLine",
-                    "currency",
-                    "must specify default-currency on iati-activity or as "
-                    "currency on the element itself."
-                )
-
-        else:
-            currency = self.get_or_none(codelist_models.Currency,
-                                        code=currency)
-            if currency is None:
-                raise FieldValidationError(
-                    "RecipientRegionBudgetLine",
-                    "currency",
-                    "not found on the accompanying codelist.",
-                    None,
-                    None,
-                )
-        value_date = value_element[0].attrib.get("value-date")
-        if value_date is None:
-            raise RequiredFieldError("RecipientRegionBudgetLine",
-                                     "value-date",
-                                     "required field missing."
-                                     )
-
-        value_date = self.validate_date(value_date)
-        if not value_date:
-            raise FieldValidationError(
-                "RecipientRegionBudgetLine",
-                "value-date",
-                "not in the correct range.",
-                None,
-                None,
-            )
-        recipient_region_budget = self.get_model("RecipientRegionBudget")
-        recipient_region_budget_line = RecipientRegionBudgetLine()
-
-        recipient_region_budget_line.recipient_region_budget = \
-            recipient_region_budget
-        recipient_region_budget_line.ref = ref
-        recipient_region_budget_line.currency = currency
-        recipient_region_budget_line.value = value
-        recipient_region_budget_line.value_date = value_date
-
-        self.register_model("RecipientRegionBudgetLine",
-                            recipient_region_budget_line)
-        return element
-
-    def iati_organisations__iati_organisation__recipient_region_budget__budget_line__narrative(  # NOQA: E501
-            self, element):
-
-        recipient_region_budget_line = self.get_model(
-            'RecipientRegionBudgetLine')
-        self.add_narrative(element, recipient_region_budget_line)
         return element
 
     def post_save_models(self):
