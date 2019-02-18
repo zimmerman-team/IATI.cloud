@@ -1761,4 +1761,3 @@ class OrganisationsOrganisationRecipientRegionBudgetBudgetLineTestCase(
         self.assertEqual(self.currency, budget_line.currency)
         self.assertEqual(value, budget_line.value)
         self.assertEqual(value_date, budget_line.value_date)
-
