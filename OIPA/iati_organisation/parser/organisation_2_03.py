@@ -729,11 +729,6 @@ class Parse(IatiParser):
             raise ParserError("RecipientRegionBudget",
                               "recipient-region",
                               "must occur once and only once.")
-        narrative = recipient_region[0].xpath("narrative")
-        if len(narrative) < 1:
-            raise ParserError("RecipientRegionBudget",
-                              "recipient-region",
-                              "must occur at least once.")
 
         recipient_region_vocabulary = recipient_region[0].attrib.get(
             "vocabulary")
@@ -752,6 +747,7 @@ class Parse(IatiParser):
             recipient_region_vocabulary = RegionVocabulary.objects.get(code=1)
 
         vocabulary_uri = recipient_region[0].attrib.get("vocabulary-uri")
+
         region = recipient_region[0].attrib.get("code")
         if region and recipient_region_vocabulary == \
                 RegionVocabulary.objects.get(code=1):
