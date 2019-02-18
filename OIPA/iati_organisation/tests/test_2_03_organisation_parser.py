@@ -802,8 +802,6 @@ class OrganisationsOrganisationTotalBudgetBudgetLineTestCase(DjangoTestCase):
         self.assertEqual(value_date, budget_line.value_date)
 
 
-# ============================================================================
-
 class OrganisationsOrganisationRecipientOrgBudgetTestCase(DjangoTestCase):
     def setUp(self):
         # 'Main' XML file for instantiating parser:
@@ -1107,7 +1105,6 @@ class OrganisationsOrganisationRecipientOrgBudgetTestCase(DjangoTestCase):
         self.assertEqual(value, recipient_org_budget.value)
         self.assertEqual(self.currency, recipient_org_budget.currency)
         self.assertEqual(value_date, recipient_org_budget.value_date)
-#  ===========================================================================
 
 
 class OrganisationsOrganisationRecipientOrgBudgetBudgetLineTestCase(

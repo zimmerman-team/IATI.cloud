@@ -43,6 +43,7 @@ class Parse(IatiParser):
         self.total_expenditure_current_index = 0
         self.total_expenditure_line_current_index = 0
 
+    # TODO: test this, see: #1070:
     def add_narrative(self, element, parent):
         default_lang = self.default_lang  # set on organisation. (if set)
         lang = element.attrib.get('{http://www.w3.org/XML/1998/namespace}lang')
@@ -242,6 +243,25 @@ class Parse(IatiParser):
         organisation_name.organisation = organisation
 
         self.register_model("OrganisationName", organisation_name)
+        return element
+
+    def iati_organisations__iati_organisation__name__narrative(self, element):
+        name = self.get_model('OrganisationName')
+        self.add_narrative(element, name)
+
+        # adding primary_name in the "Organisation" table.
+        if element.text:
+
+            organisation = self.get_model('Organisation')
+
+            if organisation.primary_name:
+                default_lang = self.default_lang  # set on activity (if set)
+                lang = element.attrib.get(
+                    '{http://www.w3.org/XML/1998/namespace}lang', default_lang)
+                if lang == 'en':
+                    organisation.primary_name = element.text
+            else:
+                organisation.primary_name = element.text
         return element
 
     def iati_organisations__iati_organisation__reporting_org(self, element):
@@ -710,11 +730,6 @@ class Parse(IatiParser):
             raise ParserError("RecipientRegionBudget",
                               "recipient-region",
                               "must occur once and only once.")
-        narrative = recipient_region[0].xpath("narrative")
-        if len(narrative) < 1:
-            raise ParserError("RecipientRegionBudget",
-                              "recipient-region",
-                              "must occur at least once.")
 
         recipient_region_vocabulary = recipient_region[0].attrib.get(
             "vocabulary")
@@ -733,6 +748,7 @@ class Parse(IatiParser):
             recipient_region_vocabulary = RegionVocabulary.objects.get(code=1)
 
         vocabulary_uri = recipient_region[0].attrib.get("vocabulary-uri")
+
         region = recipient_region[0].attrib.get("code")
         if region and recipient_region_vocabulary == \
                 RegionVocabulary.objects.get(code=1):
@@ -745,6 +761,8 @@ class Parse(IatiParser):
                     None,
                     None,
                 )
+        else:
+                region = None
 
         period_start = element.xpath("period-start")
         if len(period_start) is not 1:
