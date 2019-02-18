@@ -760,6 +760,8 @@ class Parse(IatiParser):
                     None,
                     None,
                 )
+        else:
+                region = None
 
         period_start = element.xpath("period-start")
         if len(period_start) is not 1:

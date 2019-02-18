@@ -1479,7 +1479,7 @@
         </recipient-org-budget>
 
         <recipient-region-budget status="2">
-            <recipient-region vocabulary="99" vocabulary-uri="http://example.com/vocab.html" code="A1" />
+            <recipient-region vocabulary="99" vocabulary-uri="http://example.com/vocab.html" code="489" />
             <period-start iso-date="2014-01-01" />
             <period-end iso-date="2014-12-31" />
             <value currency="USD" value-date="2014-01-01">25000000</value>
