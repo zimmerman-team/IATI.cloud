@@ -945,11 +945,6 @@ class Parse(IatiParser):
             raise ParserError("RecipientCountryBudget",
                               "recipient-country",
                               "must occur once and only once.")
-        narrative = recipient_country[0].xpath("narrative")
-        if len(narrative) < 1:
-            raise ParserError("RecipientCountryBudget",
-                              "recipient-country",
-                              "must occur at least once.")
 
         recipient_country_code = recipient_country[0].attrib.get(
             "code")
