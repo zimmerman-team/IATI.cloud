@@ -1077,7 +1077,7 @@ class Parse(IatiParser):
         self.register_model("RecipientCountryBudget", recipient_country_budget)
         return element
 
-    def iati_organistions__iati_organisation__recipient_country_budget__recipient_country__narrative(  # NOQA: E501
+    def iati_organisations__iati_organisation__recipient_country_budget__recipient_country__narrative(  # NOQA: E501
             self, element):
         recipient_country_budget = self.get_model('RecipientCountryBudget')
         self.add_narrative(element, recipient_country_budget)
