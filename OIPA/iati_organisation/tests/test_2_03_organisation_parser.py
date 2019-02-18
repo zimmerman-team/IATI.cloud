@@ -3,6 +3,8 @@ import datetime
 from django.test import TestCase as DjangoTestCase
 from lxml.builder import E
 
+from geodata import models as codelist_model
+from geodata.factory.geodata_factory import RegionFactory
 from iati.factory import iati_factory
 from iati.parser.exceptions import (
     FieldValidationError, ParserError, RequiredFieldError
@@ -10,6 +12,7 @@ from iati.parser.exceptions import (
 from iati.parser.parse_manager import ParseManager
 from iati_codelists.factory import codelist_factory
 from iati_synchroniser.factory import synchroniser_factory
+from iati_vocabulary.factory.vocabulary_factory import RegionVocabularyFactory
 
 
 class OrganisationsOrganisationTestCase(DjangoTestCase):
@@ -828,7 +831,7 @@ class OrganisationsOrganisationRecipientOrgBudgetTestCase(DjangoTestCase):
             "status": "2000",
         }
         recipient_org_budget_XML_element = E(
-            "recipient_org-budget",
+            "recipient-org-budget",
             E("recipient-org", E("narrative", "text"), {"ref": "123"}),
             E("period-start", {"iso-date": "2014-04-06"}),
             E("period-end", {"iso-date": "2015-03-05"}),
@@ -1254,3 +1257,355 @@ class OrganisationsOrganisationRecipientOrgBudgetBudgetLineTestCase(
         self.assertEqual(self.currency, budget_line.currency)
         self.assertEqual(value, budget_line.value)
         self.assertEqual(value_date, budget_line.value_date)
+# ============================================================================
+
+
+class OrganisationsOrganisationRecipientRegionBudgetTestCase(DjangoTestCase):
+    def setUp(self):
+        # 'Main' XML file for instantiating parser:
+        xml_file_attrs = {
+            "generated-datetime": datetime.datetime.now().isoformat(),
+            "version": '2.03',
+        }
+        self.iati_203_XML_file = E("iati-organisations", **xml_file_attrs)
+
+        dummy_source = synchroniser_factory.DatasetFactory(filetype=2)
+
+        self.organisation_parser_203 = ParseManager(
+            dataset=dummy_source,
+            root=self.iati_203_XML_file,
+        ).get_parser()
+
+        # related objects.
+        self.organisation = iati_factory.OrganisationFactory()
+        self.organisation_parser_203.register_model(
+            "Organisation", self.organisation)
+        self.budget_status = codelist_factory.BudgetStatusFactory()
+        self.currency = codelist_factory.CurrencyFactory()
+        if codelist_model.Region.objects.filter(code=689).exists():
+            self.region = codelist_model.Region.objects.get(code=689)
+        else:
+            self.region = RegionFactory()
+        self.region_vocabulary = RegionVocabularyFactory()
+
+    def test_organisations_organisation_recipient_region_budget(self):
+        # case 1: "status" is not in the codelist.
+        recipient_region_budget_attrib = {
+            "status": "2000",
+        }
+        recipient_region_budget_XML_element = E(
+            "recipient-region-budget",
+            E("recipient-region", E("narrative", "text"),
+              {"vocabulary": "1",
+               "vocabulary-uri": "http://example.com/vocab.html",
+               "code": "689"}),
+            E("period-start", {"iso-date": "2014-04-06"}),
+            E("period-end", {"iso-date": "2015-03-05"}),
+            E("value", "3000", {"currency": "USD", "value-date":
+                                "2013-03-04"}),
+            **recipient_region_budget_attrib
+        )
+        try:
+            self.organisation_parser_203\
+                .iati_organisations__iati_organisation__recipient_region_budget(  # NOQA: E501
+                    recipient_region_budget_XML_element)
+        except FieldValidationError as inst:
+            self.assertEqual("status", inst.field)
+            self.assertEqual("not found on the accompanying codelist.",
+                             inst.message)
+
+        # case 2: when "period-start" element is missing.
+        recipient_region_budget_attrib = {
+            "status": "1",
+        }
+        recipient_region_budget_XML_element = E(
+            "recipient-region-budget",
+            E("recipient-region", E("narrative", "text"),
+              {"vocabulary": "1",
+               "vocabulary-uri": "http://example.com/vocab.html",
+               "code": "689"}),
+            # E("period-start", {"iso-date": "2014-04-06"}),
+            E("period-end", {"iso-date": "2015-03-05"}),
+            E("value", "2000", {"currency": "USD", "value-date":
+                                "2013-03-04"}),
+            **recipient_region_budget_attrib
+        )
+        try:
+            self.organisation_parser_203\
+                .iati_organisations__iati_organisation__recipient_region_budget(  # NOQA: E501
+                    recipient_region_budget_XML_element)
+        except ParserError as inst:
+            self.assertEqual("period-start", inst.field)
+            self.assertEqual("must occur once and only once.", inst.message)
+
+        # case 3: when "period-start" element is present but "iso-date"
+        # attribute is absent.
+        recipient_region_budget_attrib = {
+            "status": "1",
+        }
+        recipient_region_budget_XML_element = E(
+            "recipient-region-budget",
+            E("recipient-region", E("narrative", "text"),
+              {"vocabulary": "1",
+               "vocabulary-uri": "http://example.com/vocab.html",
+               "code": "689"}),
+            E("period-start", {}),  # iso-date is missing.
+            E("period-end", {"iso-date": "2015-03-05"}),
+            E("value", "4000", {"currency": "USD", "value-date":
+                                "2013-03-04"}),
+            **recipient_region_budget_attrib
+        )
+        try:
+            self.organisation_parser_203\
+                .iati_organisations__iati_organisation__recipient_region_budget(  # NOQA: E501
+                    recipient_region_budget_XML_element)
+        except RequiredFieldError as inst:
+            self.assertEqual("iso-date", inst.field)
+            self.assertEqual("required field missing.", inst.message)
+
+        # case 4: "iso-date"in "period-start"element is not in the correct
+        # range.
+        recipient_region_budget_attrib = {
+            "status": "1",
+        }
+        recipient_region_budget_XML_element = E(
+            "recipient-region-budget",
+            E("recipient-region", E("narrative", "text"),
+              {"vocabulary": "1",
+               "vocabulary-uri": "http://example.com/vocab.html",
+               "code": "689"}),
+            E("period-start", {"iso-date": "1000-03-05"}),  # not in range.
+            E("period-end", {"iso-date": "2015-03-05"}),
+            E("value", "4999", {"currency": "USD", "value-date":
+                                "2013-03-04"}),
+            **recipient_region_budget_attrib
+        )
+        try:
+            self.organisation_parser_203 \
+                .iati_organisations__iati_organisation__recipient_region_budget(  # NOQA: E501
+                    recipient_region_budget_XML_element)
+        except FieldValidationError as inst:
+            self.assertEqual("iso-date", inst.field)
+            self.assertEqual("is not in correct range.", inst.message)
+
+        # case 5: when "period-end" element is missing.
+        recipient_region_budget_attrib = {
+            "status": "1",
+        }
+        recipient_region_budget_XML_element = E(
+            "recipient-region-budget",
+            E("recipient-region", E("narrative", "text"),
+              {"vocabulary": "1",
+               "vocabulary-uri": "http://example.com/vocab.html",
+               "code": "689"}),
+            E("period-start", {"iso-date": "2014-04-06"}),
+            # E("period-end", {"iso-date": "2015-03-05"}),
+            E("value", "3000", {"currency": "USD", "value-date":
+                                "2013-03-04"}),
+            **recipient_region_budget_attrib
+        )
+        try:
+            self.organisation_parser_203 \
+                .iati_organisations__iati_organisation__recipient_region_budget(  # NOQA: E501
+                    recipient_region_budget_XML_element)
+        except ParserError as inst:
+            self.assertEqual("period-end", inst.field)
+            self.assertEqual("must occur once and only once.", inst.message)
+
+        # case 6: when "period-end" element is present but "iso-date"attrib
+        # is missing.
+        recipient_region_budget_attrib = {
+            "status": "1",
+        }
+        recipient_region_budget_XML_element = E(
+            "recipient-region-budget",
+            E("recipient-region", E("narrative", "text"),
+              {"vocabulary": "1",
+               "vocabulary-uri": "http://example.com/vocab.html",
+               "code": "689"}),
+            E("period-start", {"iso-date": "2013-04-02"}),
+            E("period-end", {}),  # iso-date is missing.
+            E("value", "3999", {"currency": "USD", "value-date":
+                                "2013-03-04"}),
+            **recipient_region_budget_attrib
+        )
+        try:
+            self.organisation_parser_203 \
+                .iati_organisations__iati_organisation__recipient_region_budget(  # NOQA: E501
+                    recipient_region_budget_XML_element)
+        except RequiredFieldError as inst:
+            self.assertEqual("iso-date", inst.field)
+            self.assertEqual("required field missing.", inst.message)
+
+        # case 7: when "iso-date"is not in the correct range.
+        recipient_region_budget_attrib = {
+            "status": "1",
+        }
+        recipient_region_budget_XML_element = E(
+            "recipient-region-budget",
+            E("recipient-region", E("narrative", "text"),
+              {"vocabulary": "1",
+               "vocabulary-uri": "http://example.com/vocab.html",
+               "code": "689"}),
+            E("period-start", {"iso-date": "2013-03-05"}),
+            E("period-end", {"iso-date": "1000-03-05"}),  # not in range.
+            E("value", "3000", {"currency": "USD", "value-date":
+                                "2013-03-04"}),
+            **recipient_region_budget_attrib
+        )
+        try:
+            self.organisation_parser_203 \
+                .iati_organisations__iati_organisation__recipient_region_budget(  # NOQA: E501
+                    recipient_region_budget_XML_element)
+        except FieldValidationError as inst:
+            self.assertEqual("iso-date", inst.field)
+            self.assertEqual("is not in correct range.", inst.message)
+
+        # case 8: "value"element occurs more than once.
+        recipient_region_budget_attrib = {
+            "status": "1",
+        }
+        recipient_region_budget_XML_element = E(
+            "recipient-region-budget",
+            E("recipient-region", E("narrative", "text"),
+              {"vocabulary": "1",
+               "vocabulary-uri": "http://example.com/vocab.html",
+               "code": "689"}),
+            E("period-start", {"iso-date": "2013-04-02"}),
+            E("period-end", {"iso-date": "2015-03-05"}),
+            E("value", "3999", {"currency": "USD", "value-date":
+                                "2013-03-04"}),
+            E("value", "2000", {"currency": "EUR", "value-date":
+                                "2013-03-04"}),
+            **recipient_region_budget_attrib
+        )
+
+        try:
+            self.organisation_parser_203\
+                .iati_organisations__iati_organisation__recipient_region_budget(  # NOQA: E501
+                    recipient_region_budget_XML_element)
+        except ParserError as inst:
+            self.assertEqual("value", inst.field)
+            self.assertEqual("must occur once and only once.", inst.message)
+
+        # case 9: when "currency" is not in the codelist.
+        recipient_region_budget_attrib = {
+            "status": "1",
+        }
+        recipient_region_budget_XML_element = E(
+            "recipient-region-budget",
+            E("recipient-region", E("narrative", "text"),
+              {"vocabulary": "1",
+               "vocabulary-uri": "http://example.com/vocab.html",
+               "code": "689"}),
+            E("period-start", {"iso-date": "2013-04-02"}),
+            E("period-end", {"iso-date": "2015-03-05"}),
+            E("value", "3999", {"currency": "MMK", "value-date":
+                                "2013-03-04"}),
+            **recipient_region_budget_attrib
+        )
+
+        try:
+            self.organisation_parser_203\
+                .iati_organisations__iati_organisation__recipient_region_budget(  # NOQA: E501
+                    recipient_region_budget_XML_element)
+        except FieldValidationError as inst:
+            self.assertEqual("currency", inst.field)
+            self.assertEqual("not found on the accompanying codelist.",
+                             inst.message)
+
+        # case 10: "value-date"attirbute is absent.
+        recipient_region_budget_attrib = {
+            "status": "1",
+        }
+        recipient_region_budget_XML_element = E(
+            "recipient-region-budget",
+            E("recipient-region", E("narrative", "text"),
+              {"vocabulary": "1",
+               "vocabulary-uri": "http://example.com/vocab.html",
+               "code": "689"}),
+            E("period-start", {"iso-date": "2013-04-02"}),
+            E("period-end", {"iso-date": "2015-03-05"}),
+            E("value", "3999", {"currency": "USD", }),  # value-date is
+            # absent.
+            **recipient_region_budget_attrib
+        )
+
+        try:
+            self.organisation_parser_203 \
+                .iati_organisations__iati_organisation__recipient_region_budget(  # NOQA: E501
+                    recipient_region_budget_XML_element)
+        except RequiredFieldError as inst:
+            self.assertEqual("value-date", inst.field)
+            self.assertEqual("required field missing.",
+                             inst.message)
+
+        # case 11: "value-date"is not in the correct range.
+        recipient_region_budget_attrib = {
+            "status": "1",
+        }
+        recipient_region_budget_XML_element = E(
+            "recipient-region-budget",
+            E("recipient-region", E("narrative", "text"),
+              {"vocabulary": "1",
+               "vocabulary-uri": "http://example.com/vocab.html",
+               "code": "689"}),
+            E("period-start", {"iso-date": "2013-03-05"}),
+            E("period-end", {"iso-date": "2012-03-05"}),
+            E("value", "3000", {"currency": "USD", "value-date":
+                                "5000-03-04"}),  # is not in correct range.
+            **recipient_region_budget_attrib
+        )
+        try:
+            self.organisation_parser_203 \
+                .iati_organisations__iati_organisation__recipient_region_budget(  # NOQA: E501
+                    recipient_region_budget_XML_element)
+        except FieldValidationError as inst:
+            self.assertEqual("value-date", inst.field)
+            self.assertEqual("not in the correct range.", inst.message)
+
+        # case 12: when all is good.
+        recipient_region_budget_attrib = {
+            "status": "1",
+        }
+        recipient_region_budget_XML_element = E(
+            "recipient-region-budget",
+            E("recipient-region", E("narrative", "text"),
+              {"vocabulary": "1",
+               "vocabulary-uri": "http://example.com/vocab.html",
+               "code": "689"}),
+            E("period-start", {"iso-date": "2013-03-05"}),
+            E("period-end", {"iso-date": "2012-03-05"}),
+            E("value", "3000", {"currency": "USD", "value-date":
+                                "2013-03-04"}),
+            **recipient_region_budget_attrib
+        )
+        self.organisation_parser_203\
+            .iati_organisations__iati_organisation__recipient_region_budget(
+                recipient_region_budget_XML_element)
+
+        # get "TotalBudget" object to check its fields.
+
+        recipient_region_budget = self.organisation_parser_203.get_model(
+            "RecipientRegionBudget")
+        period_start_date = self.organisation_parser_203.validate_date(
+            "2013-03-05")
+        period_end_date = self.organisation_parser_203.validate_date(
+            "2012-03-05")
+        value = 3000
+        value_date = self.organisation_parser_203.validate_date("2013-03-04")
+
+        # checking.
+
+        self.assertEqual(self.organisation,
+                         recipient_region_budget.organisation)
+        self.assertEqual(self.budget_status, recipient_region_budget.status)
+        self.assertEqual(self.region_vocabulary,
+                         recipient_region_budget.vocabulary)
+        self.assertEqual(self.region, recipient_region_budget.region)
+        self.assertEqual(period_start_date,
+                         recipient_region_budget.period_start)
+        self.assertEqual(period_end_date, recipient_region_budget.period_end)
+        self.assertEqual(value, recipient_region_budget.value)
+        self.assertEqual(self.currency, recipient_region_budget.currency)
+        self.assertEqual(value_date, recipient_region_budget.value_date)
