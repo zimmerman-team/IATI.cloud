@@ -8,8 +8,14 @@ from common.util import findnth_occurence_in_string
 
 def validate(iati_parser, xml_etree):
     base = os.path.dirname(os.path.abspath(__file__))
-    location = base + "/../schemas/" + iati_parser.VERSION \
-        + "/iati-activities-schema.xsd"
+
+    if iati_parser.dataset.filetype == 1:  # Activity file
+        location = base + "/../schemas/" + iati_parser.VERSION \
+            + "/iati-activities-schema.xsd"
+    else:  # Organisation file (2)
+        location = base + "/../schemas/" + iati_parser.VERSION \
+            + "/iati-organisations-schema.xsd"
+
     xsd_data = open(location)
     xmlschema_doc = etree.parse(xsd_data)
     xsd_data.close()
