@@ -102,17 +102,23 @@ class DatasetSyncer():
 
         return obj
 
-    def update_or_create_dataset(self, dataset):
-        """
-
-        """
+    def get_dataset_filetype(self, dataset_data):
         filetype_name = self.get_val_in_list_of_dicts(
-            'filetype', dataset['extras'])
+            'filetype', dataset_data['extras'])
 
         if filetype_name and filetype_name.get('value') == 'organisation':
             filetype = 2
         else:
             filetype = 1
+
+        return filetype
+
+    def update_or_create_dataset(self, dataset):
+        """
+
+        """
+
+        filetype = self.get_dataset_filetype(dataset)
 
         iati_version = self.get_iati_version(dataset)
 
