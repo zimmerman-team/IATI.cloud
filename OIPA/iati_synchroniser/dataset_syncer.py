@@ -194,6 +194,8 @@ class DatasetSyncer():
             if '/' in publisher_iati_id:
                 publisher_iati_id = publisher_iati_id.replace('/', '-')
 
+            # Download directory without prepending path from root dir to
+            # static folder:
             main_download_dir = os.path.join(
                 'datasets',
                 publisher_iati_id,
@@ -201,12 +203,14 @@ class DatasetSyncer():
                 iati_version
             )
 
-            if not os.path.exists(main_download_dir):
-                os.makedirs(os.path.dirname(
-                    os.path.join(
-                        static_dir,
-                        main_download_dir
-                    )), exist_ok=True)
+            # Full directory from root till folder (w/o file name):
+            full_download_dir = os.path.join(
+                static_dir,
+                main_download_dir
+            )
+
+            if not os.path.exists(full_download_dir):
+                os.makedirs(full_download_dir, exist_ok=True)
                 try:
                     os.makedirs(main_download_dir)
 
@@ -218,8 +222,9 @@ class DatasetSyncer():
                     if exc.errno != errno.EEXIST:
                         raise
 
+            # Full directory from root to filename:
             download_dir_with_filename = os.path.join(
-                main_download_dir,
+                full_download_dir,
                 filename
             )
 
