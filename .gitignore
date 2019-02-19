@@ -13,7 +13,6 @@ OIPA/indicators/data_backup/wdi_data/*
 OIPA/media/*
 OIPA/media/csv_files/*
 OIPA/static_served/*
-OIPA/static/datasets/*
 OIPA/supervisord.log*
 OIPA/supervisord.pid
 OIPA/.coverage
