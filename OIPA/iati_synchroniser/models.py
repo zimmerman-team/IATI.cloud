@@ -43,6 +43,8 @@ class Dataset(models.Model):
     filetype = models.IntegerField(choices=filetype_choices, default=1)
     publisher = models.ForeignKey(Publisher, on_delete=models.CASCADE)
     source_url = models.URLField(max_length=255)  # resource.url
+    # internal URL where we are storing the file:
+    internal_url = models.URLField(max_length=255)
     iati_version = models.CharField(max_length=10, default="2.02")
 
     # OIPA related fields
