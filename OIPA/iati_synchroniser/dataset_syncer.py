@@ -182,8 +182,9 @@ class DatasetSyncer():
             filetype = self.get_dataset_filetype(dataset_data)
             normalized_filetype = dict(filetype_choices)[filetype]
 
-            # DOWNLOAD:
-            static_dir = settings.BASE_DIR + '/static/'
+            # DOWNLOAD files directly to the static dir (so they're served
+            # directly w/o Django's 'colectstatic' command):
+            static_dir = settings.STATIC_ROOT
 
             filename = dataset_url.split('/')[-1]
 
@@ -236,7 +237,8 @@ class DatasetSyncer():
             except urllib.request.HTTPError:  # 403 errors
                 pass
 
-            return download_dir_with_filename
+            # URL string to save as a Dataset attribute:
+            return os.path.join(main_download_dir, filename)
 
     def remove_deprecated(self):
         """
