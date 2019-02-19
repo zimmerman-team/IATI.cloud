@@ -1,5 +1,6 @@
 import datetime
 
+from django.conf import settings
 from django.db import models
 
 from iati_organisation.models import Organisation
@@ -101,6 +102,14 @@ class Dataset(models.Model):
         from iati.parser.parse_manager import ParseManager
         parser = ParseManager(self)
         parser.parse_activity(activity_id)
+
+    def get_internal_url(self):
+        """Constructs and returns internal URL for the Dataset
+        """
+        if self.internal_url:
+            return settings.STATIC_URL + self.internal_url
+
+        return None
 
     def save(self, process=False, *args, **kwargs):
         super(Dataset, self).save()
