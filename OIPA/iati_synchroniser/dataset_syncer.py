@@ -69,7 +69,6 @@ class DatasetSyncer():
             # update dataset
             for dataset in results['result']['results']:
                 self.update_or_create_dataset(dataset)
-                self.download_dataset(dataset)
 
             # check if done
             if len(results['result']['results']) == 0:
@@ -126,6 +125,8 @@ class DatasetSyncer():
 
     def update_or_create_dataset(self, dataset):
         """
+        Updates or creates a Dataset AND downloads it locally. Returns internal
+        URL for the Dataset
 
         """
 
@@ -154,6 +155,10 @@ class DatasetSyncer():
             }
         )
 
+        # this also returns internal URL for the Dataset:
+        obj.internal_url = self.download_dataset(dataset)
+        obj.save()
+
     def download_dataset(self, dataset_data):
         """Based on dataset URL, downloads and saves it in the server, creates
         error log (DatasetNote) object if the URL is not reachable
@@ -178,7 +183,7 @@ class DatasetSyncer():
             normalized_filetype = dict(filetype_choices)[filetype]
 
             # DOWNLOAD:
-            base_download_dir = settings.BASE_DIR + '/static/'
+            static_dir = settings.BASE_DIR + '/static/'
 
             filename = dataset_url.split('/')[-1]
 
@@ -190,7 +195,6 @@ class DatasetSyncer():
                 publisher_iati_id = publisher_iati_id.replace('/', '-')
 
             main_download_dir = os.path.join(
-                base_download_dir,
                 'datasets',
                 publisher_iati_id,
                 normalized_filetype,
@@ -198,7 +202,11 @@ class DatasetSyncer():
             )
 
             if not os.path.exists(main_download_dir):
-                os.makedirs(os.path.dirname(main_download_dir), exist_ok=True)
+                os.makedirs(os.path.dirname(
+                    os.path.join(
+                        static_dir,
+                        main_download_dir
+                    )), exist_ok=True)
                 try:
                     os.makedirs(main_download_dir)
 
@@ -210,13 +218,20 @@ class DatasetSyncer():
                     if exc.errno != errno.EEXIST:
                         raise
 
+            download_dir_with_filename = os.path.join(
+                main_download_dir,
+                filename
+            )
+
             try:
                 urllib.request.urlretrieve(
                     dataset_url,
-                    os.path.join(main_download_dir, filename)
+                    download_dir_with_filename
                 )
             except urllib.request.HTTPError:  # 403 errors
                 pass
+
+            return download_dir_with_filename
 
     def remove_deprecated(self):
         """
