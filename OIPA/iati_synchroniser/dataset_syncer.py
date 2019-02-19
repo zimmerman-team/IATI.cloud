@@ -1,12 +1,17 @@
 import datetime
+import errno
 import json
+import os
+import ssl
 import urllib
+
+from django.conf import settings
 
 from iati_organisation.models import Organisation
 from iati_synchroniser.create_publisher_organisation import (
     create_publisher_organisation
 )
-from iati_synchroniser.models import Dataset, Publisher
+from iati_synchroniser.models import Dataset, Publisher, filetype_choices
 
 DATASET_URL = 'https://iatiregistry.org/api/action/package_search?rows=200&{options}'  # NOQA: E501
 PUBLISHER_URL = 'https://iatiregistry.org/api/action/organization_list?all_fields=true&include_extras=true&limit=200&{options}'  # NOQA: E501
@@ -57,9 +62,15 @@ class DatasetSyncer():
             offset += 200
             page_url = DATASET_URL.format(options=options)
             results = self.get_data(page_url)
+
+            # do not verify SSL (for downloading dataset):
+            ssl._create_default_https_context = ssl._create_unverified_context
+
             # update dataset
             for dataset in results['result']['results']:
                 self.update_or_create_dataset(dataset)
+                self.download_dataset(dataset)
+
             # check if done
             if len(results['result']['results']) == 0:
                 break
@@ -142,6 +153,70 @@ class DatasetSyncer():
                 'added_manually': False
             }
         )
+
+    def download_dataset(self, dataset_data):
+        """Based on dataset URL, downloads and saves it in the server, creates
+        error log (DatasetNote) object if the URL is not reachable
+        """
+
+        if settings.DOWNLOAD_DATASETS:
+
+            # URL:
+            dataset_url = dataset_data['resources'][0]['url']
+
+            # IATI_VERSION:
+            iati_version = self.get_iati_version(dataset_data)
+
+            # PUBLISHER_IATI_ID:
+            publisher_iati_id = self.get_val_in_list_of_dicts(
+                'publisher_iati_id',
+                dataset_data['extras']
+            ).get('value')
+
+            # FILETYPE:
+            filetype = self.get_dataset_filetype(dataset_data)
+            normalized_filetype = dict(filetype_choices)[filetype]
+
+            # DOWNLOAD:
+            base_download_dir = settings.BASE_DIR + '/static/'
+
+            filename = dataset_url.split('/')[-1]
+
+            # sometimes URL is not 'example.com/blah.xml':
+            if '.xml' not in filename:
+                filename += '.xml'
+
+            if '/' in publisher_iati_id:
+                publisher_iati_id = publisher_iati_id.replace('/', '-')
+
+            main_download_dir = os.path.join(
+                base_download_dir,
+                'datasets',
+                publisher_iati_id,
+                normalized_filetype,
+                iati_version
+            )
+
+            if not os.path.exists(main_download_dir):
+                os.makedirs(os.path.dirname(main_download_dir), exist_ok=True)
+                try:
+                    os.makedirs(main_download_dir)
+
+                # The reason to add the try-except block is to handle the
+                # case when the directory was created between the
+                # os.path.exists and the os.makedirs calls, so that to
+                # protect us from race conditions:
+                except OSError as exc:
+                    if exc.errno != errno.EEXIST:
+                        raise
+
+            try:
+                urllib.request.urlretrieve(
+                    dataset_url,
+                    os.path.join(main_download_dir, filename)
+                )
+            except urllib.request.HTTPError:  # 403 errors
+                pass
 
     def remove_deprecated(self):
         """
