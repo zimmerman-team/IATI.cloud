@@ -67,6 +67,17 @@ class DatasetSyncer():
         # remove deprecated publishers / datasets
         self.remove_deprecated()
 
+    def get_iati_version(self, dataset_data):
+
+        iati_version = self.get_val_in_list_of_dicts(
+            'iati_version', dataset_data['extras'])
+        if iati_version:
+            iati_version = iati_version.get('value')
+        else:
+            iati_version = ''
+
+        return iati_version
+
     def update_or_create_publisher(self, publisher):
         """
 
@@ -103,12 +114,7 @@ class DatasetSyncer():
         else:
             filetype = 1
 
-        iati_version = self.get_val_in_list_of_dicts(
-            'iati_version', dataset['extras'])
-        if iati_version:
-            iati_version = iati_version.get('value')
-        else:
-            iati_version = ''
+        iati_version = self.get_iati_version(dataset)
 
         # trololo edge cases
         if not len(dataset['resources']) or not dataset['organization']:
