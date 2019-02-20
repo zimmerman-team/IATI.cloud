@@ -160,8 +160,10 @@ class DatasetSyncer():
         obj.save()
 
     def download_dataset(self, dataset_data):
-        """Based on dataset URL, downloads and saves it in the server, creates
-        error log (DatasetNote) object if the URL is not reachable
+        """Based on dataset URL, downloads and saves it in the server
+
+        TODO: create error log (DatasetNote) object if the URL is not
+        reachable (requires broader implementation of error logs)
         """
 
         if settings.DOWNLOAD_DATASETS:
@@ -237,6 +239,7 @@ class DatasetSyncer():
             except (
                 urllib.request.HTTPError,  # 403
                 urllib.request.URLError,  # timeouts
+                ConnectionResetError,
             ):
                 pass
 
