@@ -234,7 +234,10 @@ class DatasetSyncer():
                     dataset_url,
                     download_dir_with_filename
                 )
-            except urllib.request.HTTPError:  # 403 errors
+            except (
+                urllib.request.HTTPError,  # 403
+                urllib.request.URLError,  # timeouts
+            ):
                 pass
 
             # URL string to save as a Dataset attribute:
