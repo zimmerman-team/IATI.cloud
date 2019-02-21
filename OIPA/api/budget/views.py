@@ -94,7 +94,7 @@ class BudgetAggregations(AggregationView):
     - `budget_period_end_quarter`
     - `budget_period_start_month`
     - `budget_period_end_month`
-    - `type`
+    - `budget_type`
 
     ## Aggregation options
 
