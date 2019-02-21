@@ -156,7 +156,7 @@ class DatasetSyncer():
         )
 
         # this also returns internal URL for the Dataset:
-        obj.internal_url = self.download_dataset(dataset)
+        obj.internal_url = self.download_dataset(dataset) or ''
         obj.save()
 
     def download_dataset(self, dataset_data):
