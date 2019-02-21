@@ -89,6 +89,7 @@ class DatasetAdmin(admin.ModelAdmin):
         'publisher',
         'title',
         'show_source_url',
+        'show_internal_url',
         'date_created',
         'export_btn',
         'get_parse_status',
@@ -105,6 +106,18 @@ class DatasetAdmin(admin.ModelAdmin):
         )
     show_source_url.allow_tags = True
     show_source_url.short_description = "URL"
+
+    def show_internal_url(self, obj):
+        if obj.internal_url:
+            return format_html(
+                '<a target="_blank" href="{url}">Open file in new window</a>',
+                url=obj.get_internal_url()
+            )
+        else:
+            return None
+
+    show_internal_url.allow_tags = True
+    show_internal_url.short_description = "INTERNAL URL"
 
     def export_btn(self, obj):
         return format_html(

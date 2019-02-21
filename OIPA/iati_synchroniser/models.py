@@ -1,5 +1,6 @@
 import datetime
 
+from django.conf import settings
 from django.db import models
 
 from iati_organisation.models import Organisation
@@ -42,9 +43,13 @@ class Dataset(models.Model):
     title = models.CharField(max_length=255, default="")
     filetype = models.IntegerField(choices=filetype_choices, default=1)
     publisher = models.ForeignKey(Publisher, on_delete=models.CASCADE)
-    source_url = models.URLField(max_length=255)  # resource.url
-    iati_version = models.CharField(max_length=10, default="2.02")
 
+    source_url = models.URLField(max_length=255)  # resource.url
+    # Internal URL where we are storing the file.
+    # This can be blank because sometimes the URL might not be reachable.
+    internal_url = models.URLField(max_length=255, blank=True)
+
+    iati_version = models.CharField(max_length=10, default="2.02")
     # OIPA related fields
     date_created = models.DateTimeField(
         default=datetime.datetime.now, editable=False)
@@ -99,6 +104,14 @@ class Dataset(models.Model):
         from iati.parser.parse_manager import ParseManager
         parser = ParseManager(self)
         parser.parse_activity(activity_id)
+
+    def get_internal_url(self):
+        """Constructs and returns internal URL for the Dataset
+        """
+        if self.internal_url:
+            return settings.STATIC_URL + self.internal_url
+
+        return None
 
     def save(self, process=False, *args, **kwargs):
         super(Dataset, self).save()
