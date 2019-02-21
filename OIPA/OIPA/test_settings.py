@@ -7,7 +7,7 @@ from OIPA.production_settings import *  # noqa: F401, F403
 # See:https://docs.djangoproject.com/en/2.0/ref/contrib/gis/install/spatialite/
 SPATIALITE_LIBRARY_PATH = os.getenv(
     'SPATIALITE_LIBRARY_PATH',
-    'mod_spatialite.so',
+    'mod_spatialite',
 )
 
 DATABASES = {
