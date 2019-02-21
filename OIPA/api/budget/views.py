@@ -10,6 +10,7 @@ from api.organisation.serializers import OrganisationSerializer
 from api.region.serializers import RegionSerializer
 from api.sector.serializers import SectorSerializer
 from geodata.models import Country, Region
+from iati_codelists.models import BudgetType
 from iati.models import (
     ActivityParticipatingOrganisation, ActivityStatus, Budget,
     CollaborationType, DocumentCategory, Organisation, OrganisationType,
@@ -93,6 +94,7 @@ class BudgetAggregations(AggregationView):
     - `budget_period_end_quarter`
     - `budget_period_start_month`
     - `budget_period_end_month`
+    - `type`
 
     ## Aggregation options
 
@@ -227,6 +229,12 @@ class BudgetAggregations(AggregationView):
             serializer=CodelistSerializer,
             name_search_field="activity__collaboration_type__name",
             renamed_name_search_field="collaboration_type_name"
+        ),
+        GroupBy(
+            query_param="budget_type",
+            fields=("type"),
+            queryset=BudgetType.objects.all(),
+            serializer=CodelistSerializer,
         ),
         GroupBy(
             query_param="budget_period_start_year",
