@@ -236,7 +236,7 @@ RQ_REDIS_URL = env.get('OIPA_RQ_REDIS_URL', 'redis://localhost:6379/0')
 RQ_QUEUES = {
     'default': {
         'URL': RQ_REDIS_URL,
-        'DEFAULT_TIMEOUT': 3600,
+        'DEFAULT_TIMEOUT': 10800,  # 3 hours
     },
     'parser': {
         'URL': RQ_REDIS_URL,
@@ -364,6 +364,10 @@ CRONJOBS = [
 #     }
 # }
 DATA_PLUGINS = {}
+
+# A setting indicating whether to save XML datasets (files) to local machine or
+# not:
+DOWNLOAD_DATASETS = False
 
 try:
     from .local_settings import *  # noqa: F401, F403

@@ -1,4 +1,6 @@
-__pycache__
+**/__pycache__
+**/.pytest_cache
+
 .cache
 .coverage
 .data
@@ -6,10 +8,16 @@ __pycache__
 .idea
 .vagrant
 .vscode
+**/.env
+
 *.pyc
 *.swp
+**/*.sql
+
 docker-compose*
+
 local_settings.py
+
 OIPA/docstore/*
 OIPA/indicators/data_backup/wdi_data/*
 OIPA/media/*
@@ -17,6 +25,7 @@ OIPA/media/csv_files/*
 OIPA/static_served/*
 OIPA/supervisord.log*
 OIPA/supervisord.pid
+
 parse.log
 session.vim
 tags
