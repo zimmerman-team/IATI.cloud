@@ -324,7 +324,19 @@ class TransactionAggregation(AggregationView):
             field='disbursement_expenditure',
             annotate=annotate_currency,
             extra_filter=Q(transaction_type__in=[3, 4]),
-        )
+        ),
+        Aggregation(
+            query_param='outgoing_pledge',
+            field='outgoing_pledge',
+            annotate=annotate_currency,
+            extra_filter=Q(transaction_type=12),
+        ),
+        Aggregation(
+            query_param='incoming_pledge',
+            field='incoming_pledge',
+            annotate=annotate_currency,
+            extra_filter=Q(transaction_type=13),
+        ),
     )
 
     allowed_groupings = (
