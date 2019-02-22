@@ -84,3 +84,7 @@ CACHES = {
         'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
     },
 }
+
+# A setting indicating whether to save XML datasets (files) to local machine or
+# not:
+DOWNLOAD_DATASETS = True

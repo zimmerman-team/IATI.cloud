@@ -1,0 +1,37 @@
+version: "3"
+services:
+
+  db:
+    #See https://hub.docker.com/r/kartoza/postgis for version info
+    image: kartoza/postgis:9.6-2.4
+    environment:
+      POSTGRES_DB: oipa
+      POSTGRES_USER: oipa
+      POSTGRES_PASSWORD: oipa
+
+  oipa-redis:
+    image: redis:4.0.10
+
+  oipa:
+    build: .
+    #this starts 'db' service:
+    depends_on:
+      - db
+      - oipa-redis
+    #see: https://docs.docker.com/compose/startup-order/
+    command: ["/app/src/docker-entrypoint.sh", "python3.6", "/app/src/OIPA/manage.py", "runserver", "0.0.0.0:8000"]
+    ports:
+      - "8000:8000"
+    environment:
+      DJANGO_SETTINGS_MODULE: OIPA.docker_settings
+      POSTGRES_DB: oipa
+      # XXX: this has to match database service name, because this is passed to
+      # the docker-entrypoint script:
+      POSTGRES_HOST: db
+      POSTGRES_USER: oipa
+      POSTGRES_PASSWORD: oipa
+      #These settings are passed to the docker-entrypoint script for creating a
+      #super user:
+      SUPERUSER_USERNAME: oipa
+      SUPERUSER_EMAIL: oipa
+      SUPERUSER_PASSWORD: oipa
