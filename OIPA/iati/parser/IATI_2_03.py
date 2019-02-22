@@ -123,6 +123,9 @@ class Parse(IatiParser):
         last_updated_datetime = self.validate_date(
             element.attrib.get('last-updated-datetime'))
         linked_data_uri = element.attrib.get('linked-data-uri')
+        budget_not_provided = self.get_or_none(
+            codelist_models.BudgetNotProvided, code=element.attrib.get(
+                'budget-not-provided'))
         default_currency = self.get_or_none(
             models.Currency, code=element.attrib.get('default-currency'))
 
@@ -204,6 +207,7 @@ class Parse(IatiParser):
         activity.last_updated_datetime = last_updated_datetime
         activity.linked_data_uri = linked_data_uri
         activity.default_currency = default_currency
+        activity.budget_not_provided = budget_not_provided
         activity.iati_standard_version_id = self.VERSION
 
         activity.published = True
@@ -4882,13 +4886,372 @@ class Parse(IatiParser):
         activity_tag = self.get_model('ActivityTag')
         self.add_narrative(element, activity_tag)
 
+    def iati_activities__iati_activity__crs_add(self, element):
+        """New (optional) <crs-add> element inside
+          <iati-activities/iati-activity> element in 2.03
+        """
+        # FIXME: should database relation be changed to OnetoOne?? see #981
+        # we need to check if this element occurs more than once in  the
+        # parent element, which is <iati-activity>
+        activity = self.get_model('Activity')
+        if 'CrsAdd' in self.model_store:
+            for crs_add in self.model_store['CrsAdd']:
+                if crs_add.activity == activity:
+                    raise ParserError("Activity", "CrsAdd", "must occur no "
+                                                            "more than once")
+
+        # 'channel-code' must not occur no more than once within each parent
+        # element.
+        channel_code_list = element.xpath('channel-code')
+
+        if len(channel_code_list) > 1:
+            raise ParserError(
+                "crs-add",
+                "channel-code",
+                "must occur no more than once")
+        elif len(channel_code_list) == 1:
+            channel_code = self.get_or_none(codelist_models.CRSChannelCode,
+                                            code=channel_code_list[0].text)
+            if not channel_code:
+                raise FieldValidationError(
+                    "iati-activities/iati-activity/crs-add",
+                    "channel-code",
+                    "not found on the accompanying code list",
+                    None,
+                    None,
+                    channel_code)
+        else:
+            channel_code = None  # 'channel-code'is optional.
+
+        crs_add = models.CrsAdd()
+        crs_add.activity = activity
+        crs_add.channel_code = channel_code
+        self.register_model('CrsAdd', crs_add)
+        return element
+
+    def iati_activities__iati_activity__crs_add__loan_terms(self, element):
+        '''New (optional) <loan-terms> element for <crs-add> element
+           inside <iati-activity> element in 2.03
+        '''
+
+        rate_1 = element.attrib.get('rate-1')
+        rate_2 = element.attrib.get('rate-2')
+
+        # repayment_type_code is of type list.
+        repayment_type_code = element.xpath('repayment-type')
+        if len(repayment_type_code) > 1:
+            raise ParserError("loan-terms", "repayment-type",
+                              "must occur no more than once.")
+        elif len(repayment_type_code) == 1:
+            # repayment_type_code is of type string.
+            repayment_type_code = repayment_type_code[
+                    0].attrib.get('code')
+            if not repayment_type_code:  # 'code'is required.
+                raise RequiredFieldError(
+                    "repayment-type",
+                    "code",
+                    "required attribute missing."
+                )
+
+            # repayment_type_code is of type LoanRepaymentType object.
+            repayment_type_code = self.get_or_none(
+                codelist_models.LoanRepaymentType, code=repayment_type_code)
+            if repayment_type_code is None:
+                raise FieldValidationError(
+                    "repayment-type",
+                    "code",
+                    "not found on the accompanying codelist",
+                    None,
+                    None,
+                    repayment_type_code)
+
+        # repayment_plan_code is of type list.
+        repayment_plan_code = element.xpath('repayment-plan')
+        if len(repayment_plan_code) > 1:
+            raise ParserError("loan-terms", "repayment-plan",
+                              "must occur no more than once.")
+        elif len(repayment_plan_code) == 1:
+            # repayment_plan_code is of type string.
+            repayment_plan_code = repayment_plan_code[0].attrib.get('code')
+            if not repayment_plan_code:
+                raise RequiredFieldError(
+                    "repayment-plan",
+                    "code",
+                    "required attribute missing."
+                )
+            # repayment_plan_code is of type LoanRepaymentPeriod object.
+            repayment_plan_code = self.get_or_none(
+                codelist_models.LoanRepaymentPeriod,
+                code=repayment_plan_code)
+            if repayment_plan_code is None:
+                raise FieldValidationError(
+                    "repayment-plan",
+                    "code",
+                    "not found on the accompanying codelist.",
+                    None,
+                    None,
+                    repayment_plan_code)
+
+        # commitment_iso_date is of type list.
+        commitment_iso_date = element.xpath('commitment-date')
+        if len(commitment_iso_date) > 1:
+            raise ParserError("loan-terms", "commitment-date",
+                              "must occur no more than once.")
+        elif len(commitment_iso_date) == 1:
+            # commitment_iso_date is of type string.
+            commitment_iso_date = commitment_iso_date[0].attrib.get(
+                'iso-date')
+            if not commitment_iso_date:
+                raise RequiredFieldError(
+                    "commitment-date",
+                    "iso-date",
+                    "required attribute missing."
+                )
+            # commitment_iso_date  is of type datetime.datetime
+            commitment_iso_date = self.validate_date(commitment_iso_date)
+            if commitment_iso_date is None:
+                raise FieldValidationError(
+                    "commitment-date",
+                    "iso-date",
+                    "iso-date is not in correct range.",
+                    None,
+                    None,
+                    )
+
+        # repayment_firs_iso_date is of type list.
+        repayment_first_iso_date = element.xpath('repayment-first-date')
+        if len(repayment_first_iso_date) > 1:
+            raise ParserError("loan-terms", "repayment-first-date",
+                              "must occur no more than once.")
+        elif len(repayment_first_iso_date) == 1:
+            # repayment_first_iso_date is of type string.
+            repayment_first_iso_date = repayment_first_iso_date[0].attrib.get(
+                'iso-date')
+            if not repayment_first_iso_date:
+                raise RequiredFieldError(
+                    "repayment-first-date",
+                    "iso-date",
+                    "required attribute missing."
+                )
+            # repayment_first_iso_date is of type datetime.datetime
+            repayment_first_iso_date = self.validate_date(
+                repayment_first_iso_date)
+            if repayment_first_iso_date is None:
+                raise FieldValidationError(
+                    "repayment-first-date",
+                    "iso-date",
+                    "iso-date is not in correct range.",
+                    None,
+                    None,
+                    )
+
+        # repayment_final_iso_date is of type list.
+        repayment_final_iso_date = element.xpath('repayment-final-date')
+        if len(repayment_final_iso_date) > 1:
+            raise ParserError("loan-terms", "repayment-final-date",
+                              "must occur no more than once.")
+        elif len(repayment_final_iso_date) == 1:
+            # repayment_final_iso_date is of type string.
+            repayment_final_iso_date = repayment_final_iso_date[0].attrib.get(
+                'iso-date')
+            if not repayment_final_iso_date:
+                raise RequiredFieldError(
+                    "repayment-final-date",
+                    "iso-date",
+                    "required attribute missing."
+                )
+            # repayment_final_iso_date is of type datetime.datetime.
+            repayment_final_iso_date = self.validate_date(
+                repayment_final_iso_date)
+            if repayment_final_iso_date is None:
+                raise FieldValidationError(
+                    "repayment-final-date",
+                    "iso-date",
+                    "iso-date is not in correct range.",
+                    None,
+                    None,
+                    )
+
+        crs_add = self.get_model('CrsAdd')
+        crs_add_loan_terms = models.CrsAddLoanTerms()
+        crs_add_loan_terms.crs_add = crs_add
+        crs_add_loan_terms.rate_1 = self.guess_number('loan-terms', rate_1)
+        crs_add_loan_terms.rate_2 = self.guess_number('loan-terms', rate_2)
+        crs_add_loan_terms.repayment_type = repayment_type_code
+        crs_add_loan_terms.repayment_plan = repayment_plan_code
+        crs_add_loan_terms.commitment_date = commitment_iso_date
+        crs_add_loan_terms.repayment_first_date = repayment_first_iso_date
+        crs_add_loan_terms.repayment_final_date = repayment_final_iso_date
+        self.register_model('CrsAddLoanTerms', crs_add_loan_terms)
+        return element
+
+    def iati_activities__iati_activity__crs_add__other_flags(self, element):
+        """"A method to save (optional) <other-flags> element and its
+        attributes inside <crs-add> element in 2.03
+        """
+        code = element.attrib.get('code')
+        significance = element.attrib.get('significance')
+        if not code:
+            raise RequiredFieldError(
+                "crs-add/other-flags",
+                "code",
+                "required attribute missing."
+            )
+        if not significance:
+            raise RequiredFieldError(
+                "crs-add/other-flags",
+                "significance",
+                "required attribute missing."
+            )
+        code_in_codelist = self.get_or_none(codelist_models.OtherFlags,
+                                            code=code)
+        if code_in_codelist is None:
+            raise FieldValidationError(
+                "crs-add/other-flags",
+                "code",
+                "not found on the accompanying code list.",
+                None,
+                None,
+                code)
+        crs_add = self.get_model('CrsAdd')
+        other_flags = models.CrsAddOtherFlags()
+        other_flags.other_flags = code_in_codelist
+        other_flags.significance = self.makeBool(significance)
+        other_flags.crs_add = crs_add
+        self.register_model('CrsAddOtherFlags', other_flags)
+        return element
+
+    def iati_activities__iati_activity__crs_add__loan_status(self, element):
+
+        year = element.attrib.get('year')
+        currency = self.get_or_none(codelist_models.Currency,
+                                    code=element.attrib.get('currency'))
+        value_date = element.attrib.get('value-date')
+
+        # @year is required field.
+        if not year:
+            raise RequiredFieldError(
+                "CrsAddLoanStatus", "year", "required field missing.")
+
+        # @year is must be of type xsd:decimal but here it is checked if
+        # integer as it is a year.
+        if not self.isInt(year):
+            raise FieldValidationError(
+                "CrsAddLoanStatus",
+                "year",
+                "year not of type xsd:decimal",
+                None,
+                None,
+                element.attrib.get('year'))
+
+        # @currency is required unless the iati-activity/@default-currency
+        # is present and applies. This value must be on the Currency codelist.
+        if currency is None:
+            currency = self._get_currency_or_raise(
+                "CrsAddLoanStatus", currency)
+
+        # @value-date is required field.
+        if not value_date:
+            raise RequiredFieldError(
+                "CrsAddLoanStatus", "value-date", "required field missing.")
+
+        # @value-date must be of type xsd:date and in the correct range.
+        value_date = self.validate_date(value_date)
+        if value_date is None:
+            raise FieldValidationError(
+                "CrsAddLoanStatus",
+                "value-date",
+                "is not in correct range.",
+                None,
+                None,
+                )
+
+        # interest-received must occur no more than once. The text in this
+        # element must be of type xsd:decimal.
+        interest_received = element.xpath('interest-received')
+        if len(interest_received) > 1:
+            raise ParserError("CrsAddLoanStatus", "interest-received",
+                              "must occur no more than once.")
+        elif len(interest_received) == 1:
+            # interest_received is of type string.
+            interest_received = interest_received[0].text
+            # text is optional so we check if it is decimal only when it
+            # presents.
+            if interest_received:
+                # interest_received is of type decimal. Otherwise
+                # guess_number() method would raise an error.
+                interest_received = self.guess_number(
+                    "CrsAddLoanStatus", interest_received)
+
+        # principal-outstanding must occur no more than once. The text in
+        # this element must be of type xsd:decimal.
+        principal_outstanding = element.xpath('principal-outstanding')
+        if len(principal_outstanding) > 1:
+            raise ParserError("CrsAddLoanStatus", "principal-outstanding",
+                              "must occur no more than once.")
+        elif len(principal_outstanding) == 1:
+            # principal-outstanding is of type string.
+            principal_outstanding = principal_outstanding[0].text
+            # text is optional so we check if it is decimal only when it
+            # presents.
+            if principal_outstanding:
+                # principal-outstanding must be of type decimal. Otherwise
+                # guess_number() method would raise error.
+                principal_outstanding = self.guess_number(
+                    "CrsAddLoanStatus", principal_outstanding)
+
+        # principal-arrears must occur no more than once. The text in this
+        # element must be of type xsd:decimal.
+        principal_arrears = element.xpath('principal-arrears')
+        if len(principal_arrears) > 1:
+            raise ParserError("CrsAddLoanStatus", "principal-arrears",
+                              "must occur no more than once.")
+        elif len(principal_arrears) == 1:
+            # Here principal-arrears is of type string.
+            principal_arrears = principal_arrears[0].text
+            # text is optional so we check if it is decimal only when it
+            # presents.
+            if principal_arrears:
+                # principal-arrears is of type decimal. Otherwise
+                # guess_number() method would raise error.
+                principal_arrears = self.guess_number(
+                    "CrsAddLoanStatus", principal_arrears)
+
+        # interest-arrears must occur no more than once. The text in this
+        # element must be of type xsd:decimal.
+        interest_arrears = element.xpath('interest-arrears')
+        if len(interest_arrears) > 1:
+            raise ParserError("CrsAddLoanStatus", "interest-arrears",
+                              "must occur no more than once.")
+        elif len(interest_arrears) == 1:
+            # Here interest-arrears is of type string.
+            interest_arrears = interest_arrears[0].text
+            # text is optional so we check if it is decimal only when it
+            # presents.
+            if interest_arrears:
+                # interest-arrears is of type decimal. Otherwise
+                # guess_number() method would raise error.
+                interest_arrears = self.guess_number(
+                    "CrsAddLoanStatus", interest_arrears)
+
+        crs_add = self.get_model("CrsAdd")
+        crs_add_loan_status = models.CrsAddLoanStatus()
+        crs_add_loan_status.crs_add = crs_add
+        crs_add_loan_status.year = year
+        crs_add_loan_status.currency = currency
+        crs_add_loan_status.value_date = value_date
+        crs_add_loan_status.interest_received = interest_received
+        crs_add_loan_status.principal_outstanding = principal_outstanding
+        crs_add_loan_status.principal_arrears = principal_arrears
+        crs_add_loan_status.interest_arrears = interest_arrears
+
+        self.register_model("CrsAddLoanStatus", crs_add_loan_status)
+        return element
+
     def iati_activities__iati_activity__fss(self, element):
         """"(optional) <fss> element inside <iati-activities/iati-activity>
         element in 2.03
         """
-        # we need to check if this element occurs more than once in  the
-        # parent element, which is <iati-activity>
-
         # FIXME: should database relation be changed to OnetoOne?? see #964
         activity = self.get_model('Activity')
         if 'Fss' in self.model_store:

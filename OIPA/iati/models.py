@@ -13,14 +13,14 @@ from djorm_pgfulltext.fields import VectorField
 from geodata.models import Country, Region
 from iati_codelists.models import (
     ActivityDateType, ActivityScope, ActivityStatus, AidType, BudgetIdentifier,
-    BudgetStatus, BudgetType, CollaborationType, ConditionType, ContactType,
-    CRSChannelCode, Currency, DescriptionType, DocumentCategory, FileFormat,
-    FinanceType, FlowType, GeographicExactness, GeographicLocationClass,
-    GeographicLocationReach, HumanitarianScopeType, IndicatorMeasure, Language,
-    LoanRepaymentPeriod, LoanRepaymentType, LocationType, OrganisationRole,
-    OrganisationType, OtherFlags, OtherIdentifierType, PolicyMarker,
-    PolicySignificance, RelatedActivityType, ResultType, Sector, TiedStatus,
-    Version
+    BudgetNotProvided, BudgetStatus, BudgetType, CollaborationType,
+    ConditionType, ContactType, CRSChannelCode, Currency, DescriptionType,
+    DocumentCategory, FileFormat, FinanceType, FlowType, GeographicExactness,
+    GeographicLocationClass, GeographicLocationReach, HumanitarianScopeType,
+    IndicatorMeasure, Language, LoanRepaymentPeriod, LoanRepaymentType,
+    LocationType, OrganisationRole, OrganisationType, OtherFlags,
+    OtherIdentifierType, PolicyMarker, PolicySignificance, RelatedActivityType,
+    ResultType, Sector, TiedStatus, Version
 )
 from iati_organisation.models import Organisation
 from iati_synchroniser.models import Dataset, Publisher
@@ -118,6 +118,9 @@ class Activity(models.Model):
                                      default=None, on_delete=models.CASCADE)
     linked_data_uri = models.CharField(
         max_length=100, blank=True, null=True, default="")
+    budget_not_provided = models.ForeignKey(BudgetNotProvided, null=True,
+                                            default=None,
+                                            on_delete=models.CASCADE)
 
     planned_start = models.DateField(
         null=True, blank=True, default=None, db_index=True)
@@ -1734,7 +1737,6 @@ class CrsAddLoanTerms(models.Model):
         null=True,
         blank=True,
         default=None, on_delete=models.CASCADE)
-    repayment_plan_text = models.TextField(null=True, blank=True, default="")
     commitment_date = models.DateField(null=True, blank=True, default=None)
     repayment_first_date = models.DateField(
         null=True, blank=True, default=None)
