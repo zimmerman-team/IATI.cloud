@@ -15,6 +15,7 @@ from iati.models import (
     CollaborationType, DocumentCategory, Organisation, OrganisationType,
     Sector
 )
+from iati_codelists.models import BudgetType
 
 # These are the accepted currencies
 currencies = [
@@ -93,6 +94,7 @@ class BudgetAggregations(AggregationView):
     - `budget_period_end_quarter`
     - `budget_period_start_month`
     - `budget_period_end_month`
+    - `budget_type`
 
     ## Aggregation options
 
@@ -227,6 +229,12 @@ class BudgetAggregations(AggregationView):
             serializer=CodelistSerializer,
             name_search_field="activity__collaboration_type__name",
             renamed_name_search_field="collaboration_type_name"
+        ),
+        GroupBy(
+            query_param="budget_type",
+            fields=("type"),
+            queryset=BudgetType.objects.all(),
+            serializer=CodelistSerializer,
         ),
         GroupBy(
             query_param="budget_period_start_year",
