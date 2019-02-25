@@ -24,6 +24,16 @@ IATI is a global aid transparency standard and it makes information about aid sp
 
 ## Quick start
 
+If you have Docker installed and want to be able to use OIPA right away, run:
+
+```
+docker-compose up
+```
+
+this will start a containerised (development) environment using Django's development server. Visit `0.0.0.0:8000` on your local browser. The superuser login credentials are `oipa` / `oipa`.
+
+If you don't have Docker:
+
 1. Go to your OIPA folder.
 2. Run ```virtualenv <name> -p python3``` to create a virtual environment
 3. Run ```source env/bin/activate``` to activate the virtual environment
