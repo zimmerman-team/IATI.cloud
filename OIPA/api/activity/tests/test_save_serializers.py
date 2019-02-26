@@ -3058,7 +3058,10 @@ class ResultIndicatorSaveTestCase(TestCase):
 
         instance2 = iati_models.ResultIndicatorTitle.objects.get(
             result_indicator_id=res.json()['id'])
-        narratives2 = instance2.narratives.all()
+
+        # order by creation time ('id')
+        narratives2 = instance2.narratives.all().order_by('id')
+
         self.assertEqual(narratives2[0].content,
                          data['title']['narratives'][0]['text'])
         self.assertEqual(narratives2[1].content,
@@ -3141,7 +3144,10 @@ class ResultIndicatorSaveTestCase(TestCase):
 
         instance2 = iati_models.ResultIndicatorTitle.objects.get(
             result_indicator_id=res.json()['id'])
-        narratives2 = instance2.narratives.all()
+
+        # order by creation time ('id')
+        narratives2 = instance2.narratives.all().order_by('id')
+
         self.assertEqual(narratives2[0].content,
                          data['title']['narratives'][0]['text'])
         self.assertEqual(narratives2[1].content,
@@ -3382,7 +3388,9 @@ class OtherIdentifierSaveTestCase(TestCase):
         self.assertEqual(instance.type.code, str(data['type']['code']))
         self.assertEqual(instance.owner_ref, data['owner_org']['ref'])
 
-        narratives = instance.narratives.all()
+        # order by creation time ('id')
+        narratives = instance.narratives.all().order_by('id')
+
         self.assertEqual(narratives[0].content,
                          data['owner_org']['narratives'][0]['text'])
         self.assertEqual(narratives[1].content,
@@ -3391,7 +3399,7 @@ class OtherIdentifierSaveTestCase(TestCase):
     def test_update_other_identifier(self):
         other_identifier = OtherIdentifierFactory.create()
         other_identifier_type = codelist_factory.OtherIdentifierTypeFactory\
-            .create(code="A100")
+            .create(code="A10")
 
         data = {
             "activity": other_identifier.activity.id,
@@ -3432,7 +3440,9 @@ class OtherIdentifierSaveTestCase(TestCase):
         self.assertEqual(instance.type.code, str(data['type']['code']))
         self.assertEqual(instance.owner_ref, data['owner_org']['ref'])
 
-        narratives = instance.narratives.all()
+        # order by creation time ('id')
+        narratives = instance.narratives.all().order_by('id')
+
         self.assertEqual(narratives[0].content,
                          data['owner_org']['narratives'][0]['text'])
         self.assertEqual(narratives[1].content,
@@ -3593,7 +3603,9 @@ class BudgetItemSaveTestCase(TestCase):
                          data['country_budget_item'])
         self.assertEqual(instance.code.code, data['budget_identifier']['code'])
 
-        narratives = instance.description.narratives.all()
+        # order by creation time ('id')
+        narratives = instance.description.narratives.all().order_by('id')
+
         self.assertEqual(narratives[0].content,
                          data['description']['narratives'][0]['text'])
         self.assertEqual(narratives[1].content,
@@ -3637,7 +3649,9 @@ class BudgetItemSaveTestCase(TestCase):
                          data['country_budget_item'])
         self.assertEqual(instance.code.code, data['budget_identifier']['code'])
 
-        narratives = instance.description.narratives.all()
+        # order by creation time ('id')
+        narratives = instance.description.narratives.all().order_by('id')
+
         self.assertEqual(narratives[0].content,
                          data['description']['narratives'][0]['text'])
         self.assertEqual(narratives[1].content,
@@ -3856,7 +3870,9 @@ class ConditionSaveTestCase(TestCase):
         self.assertEqual(instance.conditions.id, data['conditions'])
         self.assertEqual(instance.type.code, data['type']['code'])
 
-        narratives = instance.narratives.all()
+        # order by creation time ('id')
+        narratives = instance.narratives.all().order_by('id')
+
         self.assertEqual(narratives[0].content, data['narratives'][0]['text'])
         self.assertEqual(narratives[1].content, data['narratives'][1]['text'])
 
@@ -3897,7 +3913,9 @@ class ConditionSaveTestCase(TestCase):
         self.assertEqual(instance.conditions.id, data['conditions'])
         self.assertEqual(instance.type.code, data['type']['code'])
 
-        narratives = instance.narratives.all()
+        # order by creation time ('id')
+        narratives = instance.narratives.all().order_by('id')
+
         self.assertEqual(narratives[0].content, data['narratives'][0]['text'])
         self.assertEqual(narratives[1].content, data['narratives'][1]['text'])
 
@@ -4535,7 +4553,10 @@ class DocumentLinkSaveTestCase(TestCase):
 
         instance2 = iati_models.DocumentLinkTitle.objects.get(
             document_link_id=res.json()['id'])
-        narratives2 = instance2.narratives.all()
+
+        # order by creation time ('id')
+        narratives2 = instance2.narratives.all().order_by('id')
+
         self.assertEqual(narratives2[0].content,
                          data['title']['narratives'][0]['text'])
         self.assertEqual(narratives2[1].content,
@@ -4590,7 +4611,10 @@ class DocumentLinkSaveTestCase(TestCase):
 
         instance2 = iati_models.DocumentLinkTitle.objects.get(
             document_link_id=res.json()['id'])
-        narratives2 = instance2.narratives.all()
+
+        # order by creation time ('id')
+        narratives2 = instance2.narratives.all().order_by('id')
+
         self.assertEqual(narratives2[0].content,
                          data['title']['narratives'][0]['text'])
         self.assertEqual(narratives2[1].content,
