@@ -41,8 +41,6 @@ RUN apt-get -y install \
     unrar \
     unrtf \
     unzip \
-    libsqlite3-dev  \
-    libsqlite3-mod-spatialite \
     sqlite3 \
     libpq-dev \
     python-psycopg2 \
@@ -50,8 +48,7 @@ RUN apt-get -y install \
     uwsgi-plugin-python \
     python3-pip \
     vim \
-    locales \
-    libsqlite3-mod-spatialite
+    locales
 
 RUN mkdir /app
 
