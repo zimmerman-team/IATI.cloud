@@ -4,6 +4,7 @@ from mock import MagicMock
 from geodata.factory.geodata_factory import CountryFactory, RegionFactory
 from geodata.importer.country import CountryImport
 from geodata.models import Country
+from iati_vocabulary.factory import vocabulary_factory
 
 
 class CountryImportTestCase(TestCase):
@@ -47,7 +48,9 @@ class CountryImportTestCase(TestCase):
         self.assertEqual(country.center_longlat.x, 1.3)
 
     def test_update_regions(self):
-        region = RegionFactory.create(code='689')
+        rv = vocabulary_factory.RegionVocabularyFactory()
+
+        region = RegionFactory.create(code='689', region_vocabulary=rv)
         data = [{
             "country_name": "Afghanistan",
             "iso2": "AF",

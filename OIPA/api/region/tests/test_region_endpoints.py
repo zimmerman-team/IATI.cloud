@@ -3,6 +3,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from geodata.factory import geodata_factory
+from iati_vocabulary.factory import vocabulary_factory
 
 
 class TestRegionEndpoints(APITestCase):
@@ -17,7 +18,12 @@ class TestRegionEndpoints(APITestCase):
         self.assertTrue(status.is_success(response.status_code))
 
     def test_region_detail_endpoint(self):
-        geodata_factory.RegionFactory.create(code='998')
+        rv = vocabulary_factory.RegionVocabularyFactory()
+
+        geodata_factory.RegionFactory.create(
+            code='998',
+            region_vocabulary=rv,
+        )
         url = reverse('regions:region-detail', args={'998'})
 
         msg = 'region detail endpoint should be localed at {0}'
