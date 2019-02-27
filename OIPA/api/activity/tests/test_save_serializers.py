@@ -4194,7 +4194,7 @@ class CrsAddOtherFlagsSaveTestCase(TestCase):
             "/api/publishers/{}/activities/{}/crs_add/{}/other_flags/{}?format=json".format(  # NOQA: E501
                 self.publisher.id,
                 crs_add_other_flags.crs_add.activity.id,
-                crs_add_other_flags.crs_add.id,
+                crs_add_other_flags.id,
                 crs_add_other_flags.id),
             data,
             format='json'
@@ -4216,7 +4216,7 @@ class CrsAddOtherFlagsSaveTestCase(TestCase):
             "/api/publishers/{}/activities/{}/crs_add/{}/other_flags/{}?format=json".format(  # NOQA: E501
                 self.publisher.id,
                 crs_add_other_flags.crs_add.activity.id,
-                crs_add_other_flags.crs_add.id,
+                crs_add_other_flags.id,
                 crs_add_other_flags.id),
             format='json'
         )
