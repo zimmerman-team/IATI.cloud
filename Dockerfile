@@ -41,7 +41,6 @@ RUN apt-get -y install \
     unrar \
     unrtf \
     unzip \
-    sqlite3 \
     libpq-dev \
     python-psycopg2 \
     uwsgi \
