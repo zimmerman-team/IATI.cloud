@@ -71,9 +71,10 @@ class TransactionAggregationTestCase(TestCase):
             vocabulary=transaction_sector.vocabulary
         )
 
-        country = iati_factory.CountryFactory.build(code="AD", name="Andorra")
-        second_country = iati_factory.CountryFactory.build(
-            code="KE", name="Kenya")
+        country = iati_factory.CountryFactory(code="AD", name="Andorra")
+        second_country = iati_factory.CountryFactory(
+            code="KE", name="Kenya"
+        )
 
         transaction_factory.TransactionRecipientCountryFactory.create(
             transaction=first_transaction,
