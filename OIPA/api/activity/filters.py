@@ -592,16 +592,18 @@ class ActivityFilter(TogetherFilterSet):
 
     def filter_recipient_location(self, queryset, name, value):
         if value == 'countries':
-            return queryset.filter(Q(activityrecipientcountry__isnull=False))
+            return queryset.filter(
+                Q(activityrecipientcountry__isnull=False)
+            ).distinct()
         elif value == 'regions':
             return queryset.filter(
                 Q(activityrecipientregion__isnull=False) &
                 ~Q(activityrecipientregion__region__code='99')
-            )
+            ).distinct()
         elif value == 'global':
             return queryset.filter(
                 Q(activityrecipientregion__region__code='99')
-            )
+            ).distinct()
     recipient_location = CharFilter(method='filter_recipient_location')
 
     class Meta:
