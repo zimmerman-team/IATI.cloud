@@ -11,6 +11,7 @@ from iati.parser.exceptions import (
 )
 from iati.parser.parse_manager import ParseManager
 from iati_codelists.factory import codelist_factory
+from iati_codelists.factory.codelist_factory import VersionFactory
 from iati_synchroniser.factory import synchroniser_factory
 from iati_vocabulary.factory.vocabulary_factory import RegionVocabularyFactory
 
@@ -35,6 +36,8 @@ class OrganisationsOrganisationTestCase(DjangoTestCase):
 
         self.default_currency = codelist_factory.CurrencyFactory()
         self.default_language = codelist_factory.LanguageFactory()
+
+        VersionFactory(code='2.03')
 
     def test_iati_organisations__iati_organisation(self):
 

@@ -570,7 +570,7 @@ class RecipientCountryTestCase(TestCase):
         # 'percentage' attr is wrong:
 
         # let's create Country object so parser doesn't complain anymore:
-        country = iati_factory.CountryFactory(code='LTU')
+        country = iati_factory.CountryFactory(code='LT')
 
         # Clear cache (from memory):
         self.parser_203.codelist_cache = {}

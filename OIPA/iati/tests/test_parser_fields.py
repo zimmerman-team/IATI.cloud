@@ -2252,11 +2252,16 @@ class BudgetTestCase(ParserSetupTestCase):
         convert.currency_from_to = MagicMock(return_value=xdr_value)
 
         value = E('value', text, **attrs)
+
+        # Register model for parser, because the method that will try to access
+        # it wont fail:
+        self.parser_202.register_model('Budget', iati_factory.BudgetFactory(
+            activity=self.activity
+        ))
+
         self.parser_202.iati_activities__iati_activity__budget__value(value)
+
         budget = self.parser_202.get_model('Budget')
-        budget.activity.save()
-        budget.activity = budget.activity
-        budget.save()
 
         self.assertEqual(budget.value, Decimal('2000.2'))
         self.assertEqual(str(budget.value_date), attrs['value-date'])
@@ -2379,13 +2384,20 @@ class PlannedDisbursementTestCase(ParserSetupTestCase):
         text = "2000.2"
 
         value = E('value', text, **attrs)
+
+        # Register model for parser, because the method that will try to access
+        # it wont fail:
+        self.parser_202.register_model(
+            'PlannedDisbursement',
+            iati_factory.PlannedDisbursementFactory(
+                activity=self.activity
+            )
+        )
+
         self.parser_202\
             .iati_activities__iati_activity__planned_disbursement__value(
                 value)
         planned_disbursement = self.parser_202.get_model('PlannedDisbursement')
-        planned_disbursement.activity.save()
-        planned_disbursement.activity = planned_disbursement.activity
-        planned_disbursement.save()
 
         self.assertEqual(planned_disbursement.value, Decimal('2000.2'))
         self.assertEqual(str(planned_disbursement.value_date),

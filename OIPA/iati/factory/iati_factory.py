@@ -127,6 +127,7 @@ class CountryFactory(NoDatabaseFactory):
     code = 'AD'
     name = 'andorra'
     iso3 = 'and'
+    center_longlat = Point(1, 3)
 
 
 class ActivityDummyFactory(NoDatabaseFactory):

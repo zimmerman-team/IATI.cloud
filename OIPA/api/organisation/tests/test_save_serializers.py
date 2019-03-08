@@ -6,6 +6,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.test import RequestFactory, TestCase
 from rest_framework.test import APIClient
 
+from geodata.factory.geodata_factory import RegionFactory
 from iati import models as iati_models
 from iati.factory import iati_factory
 from iati.permissions.factories import (
@@ -13,6 +14,7 @@ from iati.permissions.factories import (
 )
 from iati_codelists.factory import codelist_factory
 from iati_organisation import models as org_models
+from iati_vocabulary.factory.vocabulary_factory import RegionVocabularyFactory
 
 
 class OrganisationSaveTestCase(TestCase):
@@ -74,7 +76,10 @@ class OrganisationSaveTestCase(TestCase):
         self.assertEqual(instance.default_currency.code, currency.code)
 
         name = instance.name
-        name_narratives = name.narratives.all()
+
+        # order by creation time ('id')
+        name_narratives = name.narratives.all().order_by('id')
+
         self.assertEqual(
             name_narratives[0].content, data['name']['narratives'][0]['text'])
         self.assertEqual(
@@ -125,7 +130,10 @@ class OrganisationSaveTestCase(TestCase):
         self.assertEqual(instance.default_currency.code, currency.code)
 
         name = instance.name
-        name_narratives = name.narratives.all().order_by('pk')
+
+        # order by creation time ('id')
+        name_narratives = name.narratives.all().order_by('pk').order_by('id')
+
         self.assertEqual(
             name_narratives[0].content, data['name']['narratives'][0]['text'])
         self.assertEqual(
@@ -959,10 +967,16 @@ class OrganisationRecipientRegionBudgetSaveTestCase(TestCase):
 
         self.c.force_authenticate(user.user)
 
+        self.region_vocabulary = RegionVocabularyFactory()
+
     def test_create_recipient_region_budget(self):
 
         organisation = iati_factory.OrganisationFactory.create()
-        region = iati_factory.RegionFactory.create()
+
+        region = iati_factory.RegionFactory.create(
+            region_vocabulary=self.region_vocabulary
+        )
+
         status = iati_factory.BudgetStatusFactory.create()
         currency = iati_factory.CurrencyFactory.create()
 
@@ -1100,10 +1114,16 @@ class OrganisationRecipientRegionBudgetLineSaveTestCase(TestCase):
 
         self.c.force_authenticate(user.user)
 
+        self.region_vocabulary = RegionVocabularyFactory()
+        self.region = RegionFactory(region_vocabulary=self.region_vocabulary)
+
     def test_create_recipient_region_budget_line(self):
 
         recipient_region_budget = iati_factory\
-                .OrganisationRecipientRegionBudgetFactory.create()
+            .OrganisationRecipientRegionBudgetFactory.create(
+                region=self.region
+            )
+
         currency = iati_factory.CurrencyFactory.create()
 
         data = {
@@ -1519,7 +1539,10 @@ class DocumentLinkSaveTestCase(TestCase):
 
         instance2 = org_models.DocumentLinkTitle.objects.get(
             document_link_id=res.json()['id'])
-        narratives2 = instance2.narratives.all()
+
+        # order by creation time ('id')
+        narratives2 = instance2.narratives.all().order_by('id')
+
         self.assertEqual(narratives2[0].content,
                          data['title']['narratives'][0]['text'])
         self.assertEqual(narratives2[1].content,
@@ -1574,7 +1597,10 @@ class DocumentLinkSaveTestCase(TestCase):
 
         instance2 = org_models.DocumentLinkTitle.objects.get(
             document_link_id=res.json()['id'])
-        narratives2 = instance2.narratives.all()
+
+        # order by creation time ('id')
+        narratives2 = instance2.narratives.all().order_by('id')
+
         self.assertEqual(narratives2[0].content,
                          data['title']['narratives'][0]['text'])
         self.assertEqual(narratives2[1].content,

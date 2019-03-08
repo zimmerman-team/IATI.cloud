@@ -209,7 +209,9 @@ class ActivitySaveTestCase(TestCase):
                          data['secondary_reporter'])
 
         title = instance.title
-        title_narratives = title.narratives.all()
+
+        # order by creation time ('id')
+        title_narratives = title.narratives.all().order_by('id')
         self.assertEqual(
             title_narratives[0].content,
             data['title']['narratives'][0]['text']
@@ -318,7 +320,10 @@ class ActivitySaveTestCase(TestCase):
                          data['secondary_reporter'])
 
         title = instance.title
-        title_narratives = title.narratives.all()
+
+        # order by creation time ('id')
+        title_narratives = title.narratives.all().order_by('id')
+
         self.assertEqual(
             title_narratives[0].content,
             data['title']['narratives'][0]['text']
@@ -392,7 +397,9 @@ class DescriptionSaveTestCase(TestCase):
         self.assertEqual(instance.activity.id, data['activity'])
         self.assertEqual(instance.type.code, data['type']['code'])
 
-        narratives = instance.narratives.all()
+        # order by creation time ('id')
+        narratives = instance.narratives.all().order_by('id')
+
         self.assertEqual(narratives[0].content, data['narratives'][0]['text'])
         self.assertEqual(narratives[1].content, data['narratives'][1]['text'])
 
@@ -431,7 +438,9 @@ class DescriptionSaveTestCase(TestCase):
         self.assertEqual(instance.activity.id, data['activity'])
         self.assertEqual(instance.type.code, str(data['type']['code']))
 
-        narratives = instance.narratives.all()
+        # order by creation time ('id')
+        narratives = instance.narratives.all().order_by('id')
+
         self.assertEqual(narratives[0].content, data['narratives'][0]['text'])
         self.assertEqual(narratives[1].content, data['narratives'][1]['text'])
 
@@ -513,7 +522,9 @@ class ParticipatingOrganisationSaveTestCase(TestCase):
         self.assertEqual(instance.type.code, str(data['type']['code']))
         self.assertEqual(instance.role.code, str(data['role']['code']))
 
-        narratives = instance.narratives.all()
+        # order by creation time ('id')
+        narratives = instance.narratives.all().order_by('id')
+
         self.assertEqual(narratives[0].content, data['narratives'][0]['text'])
         self.assertEqual(narratives[1].content, data['narratives'][1]['text'])
 
@@ -570,7 +581,9 @@ class ParticipatingOrganisationSaveTestCase(TestCase):
         self.assertEqual(instance.type.code, str(data['type']['code']))
         self.assertEqual(instance.role.code, str(data['role']['code']))
 
-        narratives = instance.narratives.all()
+        # order by creation time ('id')
+        narratives = instance.narratives.all().order_by('id')
+
         self.assertEqual(narratives[0].content, data['narratives'][0]['text'])
         self.assertEqual(narratives[1].content, data['narratives'][1]['text'])
 
@@ -777,7 +790,10 @@ class ContactInfoSaveTestCase(TestCase):
         self.assertEqual(instance.activity.id, data['activity'])
         self.assertEqual(instance.type.code, data['type']['code'])
 
-        organisation_narratives = instance.organisation.narratives.all()
+        # order by creation time ('id')
+        organisation_narratives = instance.organisation.narratives.all()\
+            .order_by('id')
+
         self.assertEqual(
             organisation_narratives[0].content,
             data['organisation']['narratives'][0]['text'])
@@ -785,7 +801,10 @@ class ContactInfoSaveTestCase(TestCase):
             organisation_narratives[1].content,
             data['organisation']['narratives'][1]['text'])
 
-        department_narratives = instance.department.narratives.all()
+        # order by creation time ('id')
+        department_narratives = instance.department.narratives.all()\
+            .order_by('id')
+
         self.assertEqual(
             department_narratives[0].content,
             data['department']['narratives'][0]['text'])
@@ -793,7 +812,10 @@ class ContactInfoSaveTestCase(TestCase):
             department_narratives[1].content,
             data['department']['narratives'][1]['text'])
 
-        person_name_narratives = instance.person_name.narratives.all()
+        # order by creation time ('id')
+        person_name_narratives = instance.person_name.narratives.all()\
+            .order_by('id')
+
         self.assertEqual(
             person_name_narratives[0].content,
             data['person_name']['narratives'][0]['text'])
@@ -801,7 +823,10 @@ class ContactInfoSaveTestCase(TestCase):
             person_name_narratives[1].content,
             data['person_name']['narratives'][1]['text'])
 
-        job_title_narratives = instance.job_title.narratives.all()
+        # order by creation time ('id')
+        job_title_narratives = instance.job_title.narratives.all()\
+            .order_by('id')
+
         self.assertEqual(
             job_title_narratives[0].content,
             data['job_title']['narratives'][0]['text'])
@@ -809,7 +834,10 @@ class ContactInfoSaveTestCase(TestCase):
             job_title_narratives[1].content,
             data['job_title']['narratives'][1]['text'])
 
-        mailing_address_narratives = instance.mailing_address.narratives.all()
+        # order by creation time ('id')
+        mailing_address_narratives = instance.mailing_address.narratives.all()\
+            .order_by('id')
+
         self.assertEqual(
             mailing_address_narratives[0].content,
             data['mailing_address']['narratives'][0]['text'])
@@ -896,7 +924,10 @@ class ContactInfoSaveTestCase(TestCase):
         self.assertEqual(instance.activity.id, data['activity'])
         self.assertEqual(instance.type.code, data['type']['code'])
 
-        organisation_narratives = instance.organisation.narratives.all()
+        # order by creation time ('id')
+        organisation_narratives = instance.organisation.narratives.all()\
+            .order_by('id')
+
         self.assertEqual(
             organisation_narratives[0].content,
             data['organisation']['narratives'][0]['text'])
@@ -904,7 +935,10 @@ class ContactInfoSaveTestCase(TestCase):
             organisation_narratives[1].content,
             data['organisation']['narratives'][1]['text'])
 
-        department_narratives = instance.department.narratives.all()
+        # order by creation time ('id')
+        department_narratives = instance.department.narratives.all()\
+            .order_by('id')
+
         self.assertEqual(
             department_narratives[0].content,
             data['department']['narratives'][0]['text'])
@@ -912,7 +946,10 @@ class ContactInfoSaveTestCase(TestCase):
             department_narratives[1].content,
             data['department']['narratives'][1]['text'])
 
-        person_name_narratives = instance.person_name.narratives.all()
+        # order by creation time ('id')
+        person_name_narratives = instance.person_name.narratives.all()\
+            .order_by('id')
+
         self.assertEqual(
             person_name_narratives[0].content,
             data['person_name']['narratives'][0]['text'])
@@ -920,7 +957,10 @@ class ContactInfoSaveTestCase(TestCase):
             person_name_narratives[1].content,
             data['person_name']['narratives'][1]['text'])
 
-        job_title_narratives = instance.job_title.narratives.all()
+        # order by creation time ('id')
+        job_title_narratives = instance.job_title.narratives.all()\
+            .order_by('id')
+
         self.assertEqual(
             job_title_narratives[0].content,
             data['job_title']['narratives'][0]['text'])
@@ -928,7 +968,10 @@ class ContactInfoSaveTestCase(TestCase):
             job_title_narratives[1].content,
             data['job_title']['narratives'][1]['text'])
 
-        mailing_address_narratives = instance.mailing_address.narratives.all()
+        # order by creation time ('id')
+        mailing_address_narratives = instance.mailing_address.narratives.all()\
+            .order_by('id')
+
         self.assertEqual(
             mailing_address_narratives[0].content,
             data['mailing_address']['narratives'][0]['text'])
@@ -1383,13 +1426,18 @@ class LocationSaveTestCase(TestCase):
         self.assertEqual(
             str(instance.point_pos[1]), data['point']['pos']['latitude'])
 
-        name_narratives = instance.name.narratives.all()
+        # order by creation time ('id')
+        name_narratives = instance.name.narratives.all().order_by('id')
+
         self.assertEqual(
             name_narratives[0].content, data['name']['narratives'][0]['text'])
         self.assertEqual(
             name_narratives[1].content, data['name']['narratives'][1]['text'])
 
-        description_narratives = instance.description.narratives.all()
+        # order by creation time ('id')
+        description_narratives = instance.description.narratives.all()\
+            .order_by('id')
+
         self.assertEqual(
             description_narratives[0].content,
             data['description']['narratives'][0]['text'])
@@ -1397,8 +1445,10 @@ class LocationSaveTestCase(TestCase):
             description_narratives[1].content,
             data['description']['narratives'][1]['text'])
 
+        # order by creation time ('id')
         activity_description_narratives = instance.activity_description.\
-            narratives.all()
+            narratives.all().order_by('id')
+
         self.assertEqual(
             activity_description_narratives[0].content,
             data['activity_description']['narratives'][0]['text'])
@@ -1519,13 +1569,18 @@ class LocationSaveTestCase(TestCase):
         self.assertEqual(
             str(instance.point_pos[1]), data['point']['pos']['latitude'])
 
-        name_narratives = instance.name.narratives.all()
+        # order by creation time ('id')
+        name_narratives = instance.name.narratives.all().order_by('id')
+
         self.assertEqual(
             name_narratives[0].content, data['name']['narratives'][0]['text'])
         self.assertEqual(
             name_narratives[1].content, data['name']['narratives'][1]['text'])
 
-        description_narratives = instance.description.narratives.all()
+        # order by creation time ('id')
+        description_narratives = instance.description.narratives.all()\
+            .order_by('id')
+
         self.assertEqual(
             description_narratives[0].content,
             data['description']['narratives'][0]['text'])
@@ -1533,8 +1588,10 @@ class LocationSaveTestCase(TestCase):
             description_narratives[1].content,
             data['description']['narratives'][1]['text'])
 
+        # order by creation time ('id')
         activity_description_narratives = instance.activity_description.\
-            narratives.all()
+            narratives.all().order_by('id')
+
         self.assertEqual(
             activity_description_narratives[0].content,
             data['activity_description']['narratives'][0]['text'])
@@ -1733,7 +1790,9 @@ class PolicyMarkerSaveTestCase(TestCase):
         self.assertEqual(instance.significance.code,
                          str(data['significance']['code']))
 
-        narratives = instance.narratives.all()
+        # order by creation time ('id')
+        narratives = instance.narratives.all().order_by('id')
+
         self.assertEqual(narratives[0].content, data['narratives'][0]['text'])
         self.assertEqual(narratives[1].content, data['narratives'][1]['text'])
 
@@ -1792,7 +1851,9 @@ class PolicyMarkerSaveTestCase(TestCase):
         self.assertEqual(instance.significance.code,
                          str(data['significance']['code']))
 
-        narratives = instance.narratives.all()
+        # order by creation time ('id')
+        narratives = instance.narratives.all().order_by('id')
+
         self.assertEqual(narratives[0].content, data['narratives'][0]['text'])
         self.assertEqual(narratives[1].content, data['narratives'][1]['text'])
 
@@ -2055,7 +2116,9 @@ class PlannedDisbursementSaveTestCase(TestCase):
             data['provider_organisation']['type']['code']))
         self.assertEqual(instance2.provider_activity.id, activity.id)
 
-        narratives2 = instance2.narratives.all()
+        # order by creation time ('id')
+        narratives2 = instance2.narratives.all().order_by('id')
+
         self.assertEqual(
             narratives2[0].content,
             data['provider_organisation']['narratives'][0]['text']
@@ -2078,7 +2141,9 @@ class PlannedDisbursementSaveTestCase(TestCase):
         self.assertEqual(instance3.receiver_activity.id,
                          data['receiver_organisation']['receiver_activity'])
 
-        narratives3 = instance3.narratives.all()
+        # order by creation time ('id')
+        narratives3 = instance3.narratives.all().order_by('id')
+
         self.assertEqual(
             narratives3[0].content,
             data['receiver_organisation']['narratives'][0]['text']
@@ -2185,7 +2250,9 @@ class PlannedDisbursementSaveTestCase(TestCase):
         self.assertEqual(instance2.provider_activity.id,
                          planned_disbursement.activity.id)
 
-        narratives2 = instance2.narratives.all()
+        # order by creation time ('id')
+        narratives2 = instance2.narratives.all().order_by('id')
+
         self.assertEqual(
             narratives2[0].content,
             data['provider_organisation']['narratives'][0]['text']
@@ -2208,7 +2275,9 @@ class PlannedDisbursementSaveTestCase(TestCase):
         self.assertEqual(instance3.receiver_activity.id,
                          data['receiver_organisation']['receiver_activity'])
 
-        narratives3 = instance3.narratives.all()
+        # order by creation time ('id')
+        narratives3 = instance3.narratives.all().order_by('id')
+
         self.assertEqual(
             narratives3[0].content,
             data['receiver_organisation']['narratives'][0]['text']
@@ -2441,7 +2510,9 @@ class TransactionSaveTestCase(TestCase):
             data['provider_organisation']['type']['code']))
         self.assertEqual(instance2.provider_activity.id, activity.id)
 
-        narratives2 = instance2.narratives.all()
+        # order by creation time ('id')
+        narratives2 = instance2.narratives.all().order_by('id')
+
         self.assertEqual(
             narratives2[0].content,
             data['provider_organisation']['narratives'][0]['text']
@@ -2465,7 +2536,9 @@ class TransactionSaveTestCase(TestCase):
             instance3.receiver_activity.iati_identifier,
             data['receiver_organisation']['receiver_activity_id'])
 
-        narratives3 = instance3.narratives.all()
+        # order by creation time ('id')
+        narratives3 = instance3.narratives.all().order_by('id')
+
         self.assertEqual(
             narratives3[0].content,
             data['receiver_organisation']['narratives'][0]['text']
@@ -2688,7 +2761,9 @@ class TransactionSaveTestCase(TestCase):
             data['provider_organisation']['type']['code']))
         self.assertEqual(instance2.provider_activity.id, instance.activity.id)
 
-        narratives2 = instance2.narratives.all()
+        # order by creation time ('id')
+        narratives2 = instance2.narratives.all().order_by('id')
+
         self.assertEqual(
             narratives2[0].content,
             data['provider_organisation']['narratives'][0]['text']
@@ -2707,7 +2782,9 @@ class TransactionSaveTestCase(TestCase):
         self.assertEqual(instance3.receiver_activity.id,
                          data['receiver_organisation']['receiver_activity_id'])
 
-        narratives3 = instance3.narratives.all()
+        # order by creation time ('id')
+        narratives3 = instance3.narratives.all().order_by('id')
+
         self.assertEqual(
             narratives3[0].content,
             data['receiver_organisation']['narratives'][0]['text']
@@ -2798,7 +2875,10 @@ class ResultSaveTestCase(TestCase):
 
         instance2 = iati_models.ResultTitle.objects.get(
             result_id=res.json()['id'])
-        narratives2 = instance2.narratives.all()
+
+        # order by creation time ('id')
+        narratives2 = instance2.narratives.all().order_by('id')
+
         self.assertEqual(narratives2[0].content,
                          data['title']['narratives'][0]['text'])
         self.assertEqual(narratives2[1].content,
@@ -2806,7 +2886,10 @@ class ResultSaveTestCase(TestCase):
 
         instance2 = iati_models.ResultDescription.objects.get(
             result_id=res.json()['id'])
-        narratives2 = instance2.narratives.all()
+
+        # order by creation time ('id')
+        narratives2 = instance2.narratives.all().order_by('id')
+
         self.assertEqual(narratives2[0].content,
                          data['description']['narratives'][0]['text'])
         self.assertEqual(narratives2[1].content,
@@ -2861,7 +2944,10 @@ class ResultSaveTestCase(TestCase):
 
         instance2 = iati_models.ResultTitle.objects.get(
             result_id=res.json()['id'])
-        narratives2 = instance2.narratives.all()
+
+        # order by creation time ('id')
+        narratives2 = instance2.narratives.all().order_by('id')
+
         self.assertEqual(narratives2[0].content,
                          data['title']['narratives'][0]['text'])
         self.assertEqual(narratives2[1].content,
@@ -2869,7 +2955,10 @@ class ResultSaveTestCase(TestCase):
 
         instance2 = iati_models.ResultDescription.objects.get(
             result_id=res.json()['id'])
-        narratives2 = instance2.narratives.all()
+
+        # order by creation time ('id')
+        narratives2 = instance2.narratives.all().order_by('id')
+
         self.assertEqual(narratives2[0].content,
                          data['description']['narratives'][0]['text'])
         self.assertEqual(narratives2[1].content,
@@ -2969,7 +3058,10 @@ class ResultIndicatorSaveTestCase(TestCase):
 
         instance2 = iati_models.ResultIndicatorTitle.objects.get(
             result_indicator_id=res.json()['id'])
-        narratives2 = instance2.narratives.all()
+
+        # order by creation time ('id')
+        narratives2 = instance2.narratives.all().order_by('id')
+
         self.assertEqual(narratives2[0].content,
                          data['title']['narratives'][0]['text'])
         self.assertEqual(narratives2[1].content,
@@ -2977,7 +3069,10 @@ class ResultIndicatorSaveTestCase(TestCase):
 
         instance2 = iati_models.ResultIndicatorDescription.objects.get(
             result_indicator_id=res.json()['id'])
-        narratives2 = instance2.narratives.all()
+
+        # order by creation time ('id')
+        narratives2 = instance2.narratives.all().order_by('id')
+
         self.assertEqual(narratives2[0].content,
                          data['description']['narratives'][0]['text'])
         self.assertEqual(narratives2[1].content,
@@ -3049,7 +3144,10 @@ class ResultIndicatorSaveTestCase(TestCase):
 
         instance2 = iati_models.ResultIndicatorTitle.objects.get(
             result_indicator_id=res.json()['id'])
-        narratives2 = instance2.narratives.all()
+
+        # order by creation time ('id')
+        narratives2 = instance2.narratives.all().order_by('id')
+
         self.assertEqual(narratives2[0].content,
                          data['title']['narratives'][0]['text'])
         self.assertEqual(narratives2[1].content,
@@ -3057,7 +3155,10 @@ class ResultIndicatorSaveTestCase(TestCase):
 
         instance2 = iati_models.ResultIndicatorDescription.objects.get(
             result_indicator_id=res.json()['id'])
-        narratives2 = instance2.narratives.all()
+
+        # order by creation time ('id')
+        narratives2 = instance2.narratives.all().order_by('id')
+
         self.assertEqual(narratives2[0].content,
                          data['description']['narratives'][0]['text'])
         self.assertEqual(narratives2[1].content,
@@ -3287,7 +3388,9 @@ class OtherIdentifierSaveTestCase(TestCase):
         self.assertEqual(instance.type.code, str(data['type']['code']))
         self.assertEqual(instance.owner_ref, data['owner_org']['ref'])
 
-        narratives = instance.narratives.all()
+        # order by creation time ('id')
+        narratives = instance.narratives.all().order_by('id')
+
         self.assertEqual(narratives[0].content,
                          data['owner_org']['narratives'][0]['text'])
         self.assertEqual(narratives[1].content,
@@ -3296,7 +3399,7 @@ class OtherIdentifierSaveTestCase(TestCase):
     def test_update_other_identifier(self):
         other_identifier = OtherIdentifierFactory.create()
         other_identifier_type = codelist_factory.OtherIdentifierTypeFactory\
-            .create(code="A100")
+            .create(code="A10")
 
         data = {
             "activity": other_identifier.activity.id,
@@ -3337,7 +3440,9 @@ class OtherIdentifierSaveTestCase(TestCase):
         self.assertEqual(instance.type.code, str(data['type']['code']))
         self.assertEqual(instance.owner_ref, data['owner_org']['ref'])
 
-        narratives = instance.narratives.all()
+        # order by creation time ('id')
+        narratives = instance.narratives.all().order_by('id')
+
         self.assertEqual(narratives[0].content,
                          data['owner_org']['narratives'][0]['text'])
         self.assertEqual(narratives[1].content,
@@ -3498,7 +3603,9 @@ class BudgetItemSaveTestCase(TestCase):
                          data['country_budget_item'])
         self.assertEqual(instance.code.code, data['budget_identifier']['code'])
 
-        narratives = instance.description.narratives.all()
+        # order by creation time ('id')
+        narratives = instance.description.narratives.all().order_by('id')
+
         self.assertEqual(narratives[0].content,
                          data['description']['narratives'][0]['text'])
         self.assertEqual(narratives[1].content,
@@ -3542,7 +3649,9 @@ class BudgetItemSaveTestCase(TestCase):
                          data['country_budget_item'])
         self.assertEqual(instance.code.code, data['budget_identifier']['code'])
 
-        narratives = instance.description.narratives.all()
+        # order by creation time ('id')
+        narratives = instance.description.narratives.all().order_by('id')
+
         self.assertEqual(narratives[0].content,
                          data['description']['narratives'][0]['text'])
         self.assertEqual(narratives[1].content,
@@ -3761,7 +3870,9 @@ class ConditionSaveTestCase(TestCase):
         self.assertEqual(instance.conditions.id, data['conditions'])
         self.assertEqual(instance.type.code, data['type']['code'])
 
-        narratives = instance.narratives.all()
+        # order by creation time ('id')
+        narratives = instance.narratives.all().order_by('id')
+
         self.assertEqual(narratives[0].content, data['narratives'][0]['text'])
         self.assertEqual(narratives[1].content, data['narratives'][1]['text'])
 
@@ -3802,7 +3913,9 @@ class ConditionSaveTestCase(TestCase):
         self.assertEqual(instance.conditions.id, data['conditions'])
         self.assertEqual(instance.type.code, data['type']['code'])
 
-        narratives = instance.narratives.all()
+        # order by creation time ('id')
+        narratives = instance.narratives.all().order_by('id')
+
         self.assertEqual(narratives[0].content, data['narratives'][0]['text'])
         self.assertEqual(narratives[1].content, data['narratives'][1]['text'])
 
@@ -4081,7 +4194,7 @@ class CrsAddOtherFlagsSaveTestCase(TestCase):
             "/api/publishers/{}/activities/{}/crs_add/{}/other_flags/{}?format=json".format(  # NOQA: E501
                 self.publisher.id,
                 crs_add_other_flags.crs_add.activity.id,
-                crs_add_other_flags.crs_add.id,
+                crs_add_other_flags.id,
                 crs_add_other_flags.id),
             data,
             format='json'
@@ -4103,7 +4216,7 @@ class CrsAddOtherFlagsSaveTestCase(TestCase):
             "/api/publishers/{}/activities/{}/crs_add/{}/other_flags/{}?format=json".format(  # NOQA: E501
                 self.publisher.id,
                 crs_add_other_flags.crs_add.activity.id,
-                crs_add_other_flags.crs_add.id,
+                crs_add_other_flags.id,
                 crs_add_other_flags.id),
             format='json'
         )
@@ -4440,7 +4553,10 @@ class DocumentLinkSaveTestCase(TestCase):
 
         instance2 = iati_models.DocumentLinkTitle.objects.get(
             document_link_id=res.json()['id'])
-        narratives2 = instance2.narratives.all()
+
+        # order by creation time ('id')
+        narratives2 = instance2.narratives.all().order_by('id')
+
         self.assertEqual(narratives2[0].content,
                          data['title']['narratives'][0]['text'])
         self.assertEqual(narratives2[1].content,
@@ -4495,7 +4611,10 @@ class DocumentLinkSaveTestCase(TestCase):
 
         instance2 = iati_models.DocumentLinkTitle.objects.get(
             document_link_id=res.json()['id'])
-        narratives2 = instance2.narratives.all()
+
+        # order by creation time ('id')
+        narratives2 = instance2.narratives.all().order_by('id')
+
         self.assertEqual(narratives2[0].content,
                          data['title']['narratives'][0]['text'])
         self.assertEqual(narratives2[1].content,
