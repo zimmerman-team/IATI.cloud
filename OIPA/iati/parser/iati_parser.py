@@ -112,6 +112,10 @@ class IatiParser(object):
             return True
         elif text == '0':
             return False
+        elif text.lower() == 'true':
+            return True
+        elif text.lower() == 'false':
+            return False
 
         return None
 
