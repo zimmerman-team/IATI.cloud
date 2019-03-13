@@ -1,0 +1,247 @@
+<iati-activities version="2.03" generated-datetime="2019-02-28T18:30:31">
+<iati-activity last-updated-datetime="2015-06-30T00:00:00" xml:lang="en" default-currency="GBP" humanitarian="true" hierarchy="2">
+<iati-identifier>GB-1-201638-101</iati-identifier>
+<reporting-org ref="GB-GOV-1" type="10">
+<narrative>Department for International Development</narrative>
+</reporting-org>
+<title>
+<narrative>
+UK Core Support to World Food Programme 2011 - 2015
+</narrative>
+</title>
+<description>
+<narrative>
+This activity (UK Core Support to World Food Programme 2011 - 2015) is a component of UK Core Support to World Food Programme 2011 - 2015 reported by DFID, with a funding type of 'Multilateral organisation' and a budget of £100,000,000. This component benefits Developing countries, unspecified, and works in the following sector(s): Sectors not specified. , with the following implementing partners: World Food Programme (WFP), World Food Programme (WFP), World Food Programme (WFP), World Food Programme (WFP), World Food Programme (WFP), World Food Programme (WFP), World Food Programme (WFP), World Food Programme (WFP), World Food Programme (WFP), World Food Programme (WFP), World Food Programme (WFP), World Food Programme (WFP). The start date is 01-10-2011 and the end date is 31-03-2015.
+</narrative>
+</description>
+<participating-org ref="GB-GOV-1" type="10" role="1">
+<narrative>Department for International Development</narrative>
+</participating-org>
+<participating-org ref="GB-GOV-1" type="10" role="2">
+<narrative>Department for International Development</narrative>
+</participating-org>
+<participating-org ref="GB-GOV-1" type="10" role="3">
+<narrative>Department for International Development</narrative>
+</participating-org>
+<participating-org ref="XM-DAC-41140" type="40" role="4">
+<narrative>World Food Programme (WFP)</narrative>
+</participating-org>
+<other-identifier ref="201638-101" type="A1">
+<owner-org ref="GB-GOV-1">
+<narrative>DFID</narrative>
+</owner-org>
+</other-identifier>
+<other-identifier ref="GB-1" type="B1">
+<owner-org ref="GB-GOV-1">
+<narrative>DFID previous reporting-org identifier</narrative>
+</owner-org>
+</other-identifier>
+<activity-status code="4"/>
+<activity-date type="1" iso-date="2011-10-01"/>
+<activity-date type="2" iso-date="2011-10-01"/>
+<activity-date type="3" iso-date="2015-03-31"/>
+<activity-date type="4" iso-date="2015-03-31"/>
+<contact-info type="1">
+<organisation>
+<narrative>Department for International Development</narrative>
+</organisation>
+<telephone>+44 (0) 1355 84 3132</telephone>
+<email>enquiry@dfid.gov.uk</email>
+<mailing-address>
+<narrative>
+Public Enquiry Point, Abercrombie House, Eaglesham Road, East Kilbride, Glasgow G75 8EA
+</narrative>
+</mailing-address>
+</contact-info>
+<recipient-region code="998"/>
+<sector code="99810">
+<narrative>Sectors not specified</narrative>
+</sector>
+<policy-marker vocabulary="1" code="1" significance="0">
+<narrative>Gender Equality</narrative>
+</policy-marker>
+<policy-marker vocabulary="1" code="2" significance="0">
+<narrative>Aid to Environment</narrative>
+</policy-marker>
+<policy-marker vocabulary="1" code="3" significance="0">
+<narrative>Participatory Development/Good Governance</narrative>
+</policy-marker>
+<policy-marker vocabulary="1" code="4" significance="0">
+<narrative>Trade Development</narrative>
+</policy-marker>
+<policy-marker vocabulary="1" code="5" significance="0">
+<narrative>
+Aid Targeting the Objectives of the Convention on Biological Diversity
+</narrative>
+</policy-marker>
+<policy-marker vocabulary="1" code="6" significance="0">
+<narrative>
+Aid Targeting the Objectives of the Framework Convention on Climate Change - Mitigation
+</narrative>
+</policy-marker>
+<policy-marker vocabulary="1" code="7" significance="0">
+<narrative>
+Aid Targeting the Objectives of the Framework Convention on Climate Change - Adaptation
+</narrative>
+</policy-marker>
+<policy-marker vocabulary="1" code="8" significance="0">
+<narrative>
+Aid Targeting the Objectives of the Convention to Combat Desertification
+</narrative>
+</policy-marker>
+<collaboration-type code="2"/>
+<default-flow-type code="10"/>
+<default-finance-type code="110"/>
+<default-aid-type code="B02"/>
+<default-tied-status code="5"/>
+<budget type="2">
+<period-start iso-date="2011-04-01"/>
+<period-end iso-date="2011-06-30"/>
+<value value-date="2011-10-01" currency="GBP">35000000</value>
+</budget>
+<budget type="2">
+<period-start iso-date="2012-10-01"/>
+<period-end iso-date="2012-12-31"/>
+<value value-date="2011-10-01" currency="GBP">5000000</value>
+</budget>
+<budget type="2">
+<period-start iso-date="2013-04-01"/>
+<period-end iso-date="2013-06-30"/>
+<value value-date="2011-10-01" currency="GBP">10000000</value>
+</budget>
+<budget type="2">
+<period-start iso-date="2013-10-01"/>
+<period-end iso-date="2013-12-31"/>
+<value value-date="2011-10-01" currency="GBP">10000000</value>
+</budget>
+<budget type="2">
+<period-start iso-date="2014-04-01"/>
+<period-end iso-date="2014-06-30"/>
+<value value-date="2011-10-01" currency="GBP">20000000</value>
+</budget>
+<budget type="2">
+<period-start iso-date="2014-10-01"/>
+<period-end iso-date="2014-12-31"/>
+<value value-date="2011-10-01" currency="GBP">20000000</value>
+</budget>
+<capital-spend percentage="0"/>
+<transaction>
+<transaction-type code="2"/>
+<transaction-date iso-date="2011-10-01"/>
+<value value-date="2011-10-01">100000000</value>
+</transaction>
+<transaction ref="4569660">
+<transaction-type code="3"/>
+<transaction-date iso-date="2011-11-29"/>
+<value currency="GBP" value-date="2011-11-29">20000000</value>
+<description>
+<narrative>Aid to international organisations</narrative>
+</description>
+<provider-org ref="GB-GOV-1">
+<narrative>Department for International Development</narrative>
+</provider-org>
+<receiver-org ref="XM-DAC-41140">
+<narrative>World Food Programme (WFP)</narrative>
+</receiver-org>
+</transaction>
+<transaction ref="4605799">
+<transaction-type code="3"/>
+<transaction-date iso-date="2011-12-30"/>
+<value currency="GBP" value-date="2011-12-30">10000000</value>
+<description>
+<narrative>Aid to international organisations</narrative>
+</description>
+<provider-org ref="GB-GOV-1">
+<narrative>Department for International Development</narrative>
+</provider-org>
+<receiver-org ref="XM-DAC-41140">
+<narrative>World Food Programme (WFP)</narrative>
+</receiver-org>
+</transaction>
+<transaction ref="4714479">
+<transaction-type code="3"/>
+<transaction-date iso-date="2012-03-26"/>
+<value currency="GBP" value-date="2012-03-26">5000000</value>
+<description>
+<narrative>Aid to international organisations</narrative>
+</description>
+<provider-org ref="GB-GOV-1">
+<narrative>Department for International Development</narrative>
+</provider-org>
+<receiver-org ref="XM-DAC-41140">
+<narrative>World Food Programme (WFP)</narrative>
+</receiver-org>
+</transaction>
+<transaction ref="5084855">
+<transaction-type code="3"/>
+<transaction-date iso-date="2012-11-28"/>
+<value currency="GBP" value-date="2012-11-28">5000000</value>
+<description>
+<narrative>Aid to international organisations</narrative>
+</description>
+<provider-org ref="GB-GOV-1">
+<narrative>Department for International Development</narrative>
+</provider-org>
+<receiver-org ref="XM-DAC-41140">
+<narrative>World Food Programme (WFP)</narrative>
+</receiver-org>
+</transaction>
+<transaction ref="5283530">
+<transaction-type code="3"/>
+<transaction-date iso-date="2013-04-24"/>
+<value currency="GBP" value-date="2013-04-24">10000000</value>
+<description>
+<narrative>Aid to international organisations</narrative>
+</description>
+<provider-org ref="GB-GOV-1">
+<narrative>Department for International Development</narrative>
+</provider-org>
+<receiver-org ref="XM-DAC-41140">
+<narrative>World Food Programme (WFP)</narrative>
+</receiver-org>
+</transaction>
+<transaction ref="5547425">
+<transaction-type code="3"/>
+<transaction-date iso-date="2013-10-22"/>
+<value currency="GBP" value-date="2013-10-22">10000000</value>
+<description>
+<narrative>Aid to international organisations</narrative>
+</description>
+<provider-org ref="GB-GOV-1">
+<narrative>Department for International Development</narrative>
+</provider-org>
+<receiver-org ref="XM-DAC-41140">
+<narrative>World Food Programme (WFP)</narrative>
+</receiver-org>
+</transaction>
+<transaction ref="5816138">
+<transaction-type code="3"/>
+<transaction-date iso-date="2014-04-29"/>
+<value currency="GBP" value-date="2014-04-29">20000000</value>
+<description>
+<narrative>Aid to international organisations</narrative>
+</description>
+<provider-org ref="GB-GOV-1">
+<narrative>Department for International Development</narrative>
+</provider-org>
+<receiver-org ref="XM-DAC-41140">
+<narrative>World Food Programme (WFP)</narrative>
+</receiver-org>
+</transaction>
+<transaction ref="6096671">
+<transaction-type code="3"/>
+<transaction-date iso-date="2014-10-10"/>
+<value currency="GBP" value-date="2014-10-10">20000000</value>
+<description>
+<narrative>Aid to international organisations</narrative>
+</description>
+<provider-org ref="GB-GOV-1">
+<narrative>Department for International Development</narrative>
+</provider-org>
+<receiver-org ref="XM-DAC-41140">
+<narrative>World Food Programme (WFP)</narrative>
+</receiver-org>
+</transaction>
+<related-activity ref="GB-1-201638" type="1"/>
+</iati-activity>
+</iati-activities>

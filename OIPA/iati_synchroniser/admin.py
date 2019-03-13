@@ -180,6 +180,9 @@ class DatasetAdmin(admin.ModelAdmin):
         queue.enqueue(force_parse_source_by_url, args=(
             obj.source_url, True), timeout=7200)
 
+        # This is needed for direct debugging
+        # force_parse_source_by_url(obj.source_url, True)
+
         return HttpResponse('Success')
 
     def parse_activity_view(self, request, activity_id):
