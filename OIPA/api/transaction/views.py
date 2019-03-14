@@ -337,6 +337,12 @@ class TransactionAggregation(AggregationView):
             annotate=annotate_currency,
             extra_filter=Q(transaction_type=13),
         ),
+        Aggregation(
+            query_param='purchase_of_equity',
+            field='purchase_of_equity',
+            annotate=annotate_currency,
+            extra_filter=Q(transaction_type=8),
+        ),
     )
 
     allowed_groupings = (
