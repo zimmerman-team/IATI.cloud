@@ -74,12 +74,11 @@ class ActivitySearch(models.Model):
     other_identifier = models.TextField(null=True)
     contact_info = models.TextField(null=True)
     location = models.TextField(null=True)
-    tag = models.TextField(null=True)
     country_budget_items = models.TextField(null=True)
     policy_marker = models.TextField(null=True)
     transaction = models.TextField(null=True)
     related_activity = models.TextField(null=True)
-    condition = models.TextField(null=True)
+    conditions = models.TextField(null=True)
     result = models.TextField(null=True)
 
     search_vector_text = SearchVectorField(null=True)
