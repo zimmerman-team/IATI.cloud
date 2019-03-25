@@ -25,6 +25,9 @@ from iati.transaction.models import (
     TransactionReceiver
 )
 
+from iati_synchroniser.models import Publisher
+from iati_organisation.models import Organisation, OrganisationName
+
 
 # TODO: prefetches - 2016-01-07
 def reindex_activity(activity):
@@ -56,6 +59,16 @@ def reindex_activity(activity):
         reporting_org_text.append(reporting_org.normalized_ref)
         for narrative in reporting_org.narratives.all():
             reporting_org_text.append(narrative.content)
+
+    # The Publisher of the activity is a Reporting Organisation
+    try:
+        for narrative in activity.publisher.organisation.name.narratives.all():
+            reporting_org_text.append(narrative.content)
+    except (
+        Publisher.DoesNotExist, Organisation.DoesNotExist,
+        OrganisationName.DoesNotExist
+    ):
+        pass
 
     participating_org_text = []
     for participating_org in activity.participating_organisations.all():
