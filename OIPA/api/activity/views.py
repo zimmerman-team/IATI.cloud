@@ -311,15 +311,18 @@ class ActivityList(CacheResponseMixin, DynamicListView):
     - `sector` sector code and name
     - `document_link` url, category and title narratives
     - `participating_org` ref and narratives
+    - `other_identifier` owner ref and narratives
+    - `contact_info` all narratives for organisation, department, person name, job title & mailing address
+    - `location` ref of location
+    - `country_budget_items` narrative of budget item description 
+    - `policy_marker` narratives of policy marker
+    - `transaction` ref and narratives of description, provider organisation, receiver organisation
+    - `related_activity` ref of related activity
+    - `conditions` narratives of condition
+    - `result` narratives for result title, result description, result indicator title, result indicator description, result indicator period target comment, result indicator perioda ctual comment
 
     To search on subset of these fields the `q_fields` parameter can be used, like so;
     `q_fields=iati_identifier,title,description`
-
-    By default, search only return results if the hit resembles a full word.
-    This can be altered through the `q_lookup` parameter. Options for this parameter are:
-
-    - `exact` (default): Only return results when the query hit is a full word.
-    - `startswith`: Also returns results when the word stars with the query.
 
     ## Ordering
 

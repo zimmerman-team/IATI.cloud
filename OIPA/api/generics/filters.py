@@ -7,6 +7,7 @@ from django.contrib.gis.measure import D
 from django.db.models import Q
 from django.db.models.sql.constants import QUERY_TERMS
 from django_filters import BooleanFilter, CharFilter, Filter, FilterSet
+from django.contrib.postgres.search import SearchVector
 from rest_framework import filters
 
 from iati.models import Activity, Location
@@ -89,25 +90,16 @@ class SearchFilter(filters.BaseFilterBackend):
 
             # if root organisations set, only query searchable activities
             if settings.ROOT_ORGANISATIONS:
-                queryset = queryset.filter(
-                    **{'{0}is_searchable'.format(model_prefix): True})
+                queryset = queryset.filter(**{'{0}is_searchable'.format(model_prefix): True})  # NOQA: E501
 
             if query_fields:
                 query_fields = query_fields.split(',')
-
                 if isinstance(query_fields, list):
-                    filters = ([{'{0}activitysearch__{1}__{2}'.format(
-                        model_prefix, field, lookup_expr): query}for field in query_fields])  # NOQA: E501
-                    temp = Q(**filters.pop())
-
-                    for f in filters:
-                        temp |= Q(**f)
-                    return queryset.filter(temp)
+                    return queryset.annotate(
+                        search=SearchVector(*['{0}activitysearch__{1}'.format(model_prefix, field) for field in query_fields])  # NOQA: E501
+                    ).filter(search=query)
             else:
-                return queryset.filter(
-                    **{'{0}activitysearch__search_vector_text__{1}'.format(
-                        model_prefix, lookup_expr
-                    ): query})
+                return queryset.filter(**{'{0}activitysearch__search_vector_text'.format(model_prefix): query})  # NOQA: E501
 
         return queryset
 
