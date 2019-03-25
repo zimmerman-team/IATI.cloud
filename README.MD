@@ -20,6 +20,7 @@ IATI is a global aid transparency standard and it makes information about aid sp
 | Redis                  | 4.0.x     |
 | PostGIS                | See: <a href="https://docs.djangoproject.com/en/2.0/ref/contrib/gis/install/postgis/">installing PostGIS</a> |
 | SpaciaLite (for tests) | See: <a href="https://docs.djangoproject.com/en/2.0/ref/contrib/gis/install/spatialite/">installing SpatiaLite</a> |
+| Diskspace                 | 80GB minumum |
 
 
 ## Quick start
