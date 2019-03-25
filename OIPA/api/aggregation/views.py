@@ -88,6 +88,13 @@ class AggregationView(GenericAPIView):
         result['results'] = \
             self.apply_limit_offset_filters(result['results'], page_size, page)
 
+        # prevent on the Response
+        # so can not direct to Response(result) if format apa oor None
+        if self.request.GET.get('format', None) in ['api', None]:
+            return Response(
+                {'count': result['count'], 'result': result['results']}
+            )
+
         return Response(result)
 
 
