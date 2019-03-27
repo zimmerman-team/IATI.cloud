@@ -13,11 +13,15 @@ from iati.models import (
     ContactInfoPersonName,
     ContactInfoJobTitle,
     ContactInfoMailingAddress,
+    ContactInfoOrganisation,
     CountryBudgetItem,
     BudgetItemDescription,
     ResultTitle,
     ResultDescription,
-    Conditions
+    ResultIndicatorTitle,
+    ResultIndicatorDescription,
+    Conditions,
+    DocumentLinkTitle
 )
 from iati.transaction.models import (
     TransactionDescription,
@@ -102,7 +106,7 @@ def reindex_activity(activity):
             title = document_link.documentlinktitle
             for narrative in title.narratives.all():
                 document_link_text.append(narrative.content)
-        except ObjectDoesNotExist as e:
+        except DocumentLinkTitle.DoesNotExist as e:
             pass
 
     other_identifier_text = []
@@ -115,23 +119,26 @@ def reindex_activity(activity):
     for contact_info in activity.contactinfo_set.all():
         # iati-activities/iati-activity/contact-info/organisation/narrative
         try:
-            for narrative in contact_info.organisation.narratives.all():
+            organisation = ContactInfoOrganisation.objects.get(
+                contact_info=contact_info
+            )
+            for narrative in organisation.narratives.all():
                 contact_info_text.append(narrative.content)
-        except contact_info.DoesNotExist:
+        except ContactInfoOrganisation.DoesNotExist as e:
             pass
 
         # iati-activities/iati-activity/contact-info/department/narrative
         try:
             for narrative in contact_info.department.narratives.all():
                 contact_info_text.append(narrative.content)
-        except ContactInfoDepartment.DoesNotExist:
+        except ContactInfoDepartment.DoesNotExist as e:
             pass
 
         # iati-activities/iati-activity/contact-info/person-name/narrative
         try:
             for narrative in contact_info.person_name.narratives.all():
                 contact_info_text.append(narrative.content)
-        except ContactInfoPersonName.DoesNotExist:
+        except ContactInfoPersonName.DoesNotExist as e:
             pass
 
         # iati-activities/iati-activity/contact-info/job-title/narrative
@@ -145,7 +152,7 @@ def reindex_activity(activity):
         try:
             for narrative in contact_info.mailing_address.narratives.all():
                 contact_info_text.append(narrative.content)
-        except ContactInfoMailingAddress.DoesNotExist:
+        except ContactInfoMailingAddress.DoesNotExist as e:
             pass
 
     location_text = []
@@ -160,9 +167,9 @@ def reindex_activity(activity):
             try:
                 for narrative in budget_item.description.narratives.all():
                     country_budget_items_text.append(narrative.content)
-            except BudgetItemDescription.DoesNotExist:
+            except BudgetItemDescription.DoesNotExist as e:
                 pass
-    except CountryBudgetItem.DoesNotExist:
+    except CountryBudgetItem.DoesNotExist as e:
         pass
 
     # iati-activities/iati-activity/policy-marker/narrative
@@ -180,7 +187,7 @@ def reindex_activity(activity):
         try:
             for narrative in transaction.description.narratives.all():
                 transaction_text.append(narrative.content)
-        except TransactionDescription.DoesNotExist:
+        except TransactionDescription.DoesNotExist as e:
             pass
 
         # iati-activities/iati-activity/transaction/provider-org/
@@ -188,7 +195,7 @@ def reindex_activity(activity):
             transaction_text.append(transaction.provider_organisation.ref)
             for narrative in transaction.provider_organisation.narratives.all():
                 transaction_text.append(narrative.content)
-        except TransactionProvider.DoesNotExist:
+        except TransactionProvider.DoesNotExist as e:
             pass
 
         # iati-activities/iati-activity/transaction/receiver-org/
@@ -196,7 +203,7 @@ def reindex_activity(activity):
             transaction_text.append(transaction.receiver_organisation.ref)
             for narrative in transaction.receiver_organisation.narratives.all():  # NOQA: E501
                 transaction_text.append(narrative.content)
-        except TransactionReceiver.DoesNotExist:
+        except TransactionReceiver.DoesNotExist as e:
             pass
 
     related_activity_text = []
@@ -209,7 +216,7 @@ def reindex_activity(activity):
         for condition in activity.conditions.condition_set.all():
             for narrative in condition.narratives.all():
                 conditions_text.append(narrative.content)
-    except Conditions.DoesNotExist:
+    except Conditions.DoesNotExist as e:
         pass
 
     result_text = []
@@ -218,14 +225,14 @@ def reindex_activity(activity):
         try:
             for narrative in result.resulttitle.narratives.all():
                 result_text.append(narrative.content)
-        except ResultTitle.DoesNotExist:
+        except ResultTitle.DoesNotExist as e:
             pass
 
         # iati-activities/iati-activity/result/description/narrative
         try:
             for narrative in result.resultdescription.narratives.all():
                 result_text.append(narrative.content)
-        except ResultDescription.DoesNotExist:
+        except ResultDescription.DoesNotExist as e:
             pass
 
         for result_indicator in result.resultindicator_set.all():
@@ -234,14 +241,14 @@ def reindex_activity(activity):
                 for narrative in \
                         result_indicator.resultindicatortitle.narratives.all():
                     result_text.append(narrative.content)
-            except result_indicator.resultindicatortitle.DoesNotExist:
+            except ResultIndicatorTitle.DoesNotExist as e:
                 pass
 
             # iati-activities/iati-activity/result/indicator/description/narrative
             try:
                 for narrative in result_indicator.resultindicatordescription.narratives.all():  # NOQA: E501
                     result_text.append(narrative.content)
-            except result_indicator.resultindicatordescription.DoesNotExist:
+            except ResultIndicatorDescription.DoesNotExist as e:
                 pass
 
             for result_indicator_period in result_indicator.resultindicatorperiod_set.all():  # NOQA: E501
