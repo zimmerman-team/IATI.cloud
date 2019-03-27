@@ -75,7 +75,7 @@ jobs:
           environment:
             # Environment variable to be able to send test coverage to
             # Codacy:
-            CODACY_PROJECT_TOKEN: 3ea587a799264a99a57a4f3512b5383a
+            CODACY_PROJECT_TOKEN: d7c7adcab2da4f148b388456fbcd17e3
 
       - store_artifacts:
           path: test-reports
