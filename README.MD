@@ -53,8 +53,6 @@ If you don't have Docker:
 12. Follow instructions for signing-in: <a href="http://docs.oipa.nl/en/latest/admin_interface/" target="_blank">http://docs.oipa.nl/en/latest/admin_interface</a>
 13. Finally, follow the instructions from here: <a href="http://docs.oipa.nl/en/latest/where_to_start/" target="_blank">http://docs.oipa.nl/en/latest/where_to_start</a>
 
-Happy Hunting!
-
 For more detailed information, see the [install documentation](http://docs.oipa.nl/en/latest/installing/)
 
 
