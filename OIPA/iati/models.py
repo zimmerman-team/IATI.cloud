@@ -1801,6 +1801,11 @@ class CrsAddLoanStatus(models.Model):
 
 
 class ActivityDate(models.Model):
+    """
+    Reference:
+    http://reference.iatistandard.org/201/activity-standard/iati-activities/iati-activity/activity-date/
+    """
+    # TODO: activity-date should have narratives
     activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
     iso_date = models.DateField()
     type = models.ForeignKey(ActivityDateType, on_delete=models.CASCADE)

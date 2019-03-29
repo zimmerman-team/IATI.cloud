@@ -216,6 +216,7 @@ REST_FRAMEWORK = {
         'rest_framework.renderers.JSONRenderer',
         'api.renderers.PaginatedCSVRenderer',
         'api.renderers.XlsRenderer',
+        'api.renderers.IATIXMLRenderer',
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.BasicAuthentication',
