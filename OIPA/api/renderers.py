@@ -750,6 +750,24 @@ class TransactionReference(ElementReference):
             'attr': 'code'
         }
     }
+    # Aid type
+    aid_type = {
+        'element': 'aid-type',
+        'key': 'aid_type',
+        'code': {
+            'key': 'code',
+            'attr': 'code'
+        }
+    }
+    # tied_status
+    tied_status = {
+        'element': 'tied-status',
+        'key': 'tied_status',
+        'code': {
+            'key': 'code',
+            'attr': 'code'
+        }
+    }
     # Provider Organisation
     provider_organisation = {
         'element': 'provider-org',
@@ -882,6 +900,46 @@ class TransactionReference(ElementReference):
             if code:
                 finance_type_element.set(
                     self.flow_type.get('code').get('attr'),
+                    code
+                )
+
+        # Aid type
+        aid_type_dict = self.data.get(
+            self.aid_type.get('key')
+        )
+        if aid_type_dict:
+            aid_type_element = etree.SubElement(
+                transaction_element, self.aid_type.get('element')
+            )
+
+            # Attributes
+            # Code
+            code = aid_type_dict.get(
+                self.aid_type.get('code').get('key')
+            )
+            if code:
+                aid_type_element.set(
+                    self.aid_type.get('code').get('attr'),
+                    code
+                )
+
+        # Tied status
+        tied_status_dict = self.data.get(
+            self.tied_status.get('key')
+        )
+        if tied_status_dict:
+            tied_status_element = etree.SubElement(
+                transaction_element, self.tied_status.get('element')
+            )
+
+            # Attributes
+            # Code
+            code = tied_status_dict.get(
+                self.tied_status.get('code').get('key')
+            )
+            if code:
+                tied_status_element.set(
+                    self.tied_status.get('code').get('attr'),
                     code
                 )
 
