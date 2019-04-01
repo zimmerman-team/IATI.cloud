@@ -38,6 +38,11 @@ from iati.models import (
     ResultIndicatorReference, ResultIndicatorTitle, ResultTitle, ResultType,
     Title
 )
+from iati.transaction.models import (
+    Transaction, TransactionProvider, TransactionReceiver,
+    TransactionRecipientCountry, TransactionRecipientRegion,
+    TransactionSector
+)
 from iati.parser import validators
 from iati_organisation import models as organisation_models
 
@@ -2720,6 +2725,142 @@ class ActivityAggregationContainerSerializer(DynamicFieldsSerializer):
         source='activity_plus_child_aggregation')
 
 
+class TransactionProviderSerializer(serializers.ModelSerializer):
+    ref = serializers.CharField()
+    type = CodelistSerializer()
+    narratives = NarrativeSerializer(many=True)
+    provider_activity = serializers.HyperlinkedRelatedField(
+        read_only=True,
+        view_name='activities:activity-detail')
+    provider_activity_id = serializers.CharField(
+        source="provider_activity_ref", required=False)
+
+    class Meta:
+        model = TransactionProvider
+        fields = (
+            'ref',
+            'type',
+            'provider_activity',
+            'provider_activity_id',
+            'narratives'
+        )
+
+
+class TransactionReceiverSerializer(serializers.ModelSerializer):
+    ref = serializers.CharField()
+    type = CodelistSerializer()
+    narratives = NarrativeSerializer(many=True)
+    receiver_activity = serializers.HyperlinkedRelatedField(
+        read_only=True,
+        view_name='activities:activity-detail')
+    receiver_activity_id = serializers.CharField(
+        source="receiver_activity_ref"
+    )
+
+    class Meta:
+        model = TransactionReceiver
+        fields = (
+            'ref',
+            'type',
+            'receiver_activity',
+            'receiver_activity_id',
+            'narratives'
+        )
+
+
+class TransactionRecipientCountrySerializer(serializers.ModelSerializer):
+    country = CountrySerializer(fields=('code', ))
+
+    class Meta:
+        model = TransactionRecipientCountry
+        fields = (
+            'country',
+            'percentage'
+        )
+
+
+class TransactionRecipientRegionSerializer(serializers.ModelSerializer):
+    region = BasicRegionSerializer(
+        fields=('code', ),
+    )
+    vocabulary = VocabularySerializer()
+
+    class Meta:
+        model = TransactionRecipientRegion
+        fields = (
+            'region',
+            'vocabulary',
+        )
+
+
+class TransactionSectorSerializer(serializers.ModelSerializer):
+    sector = SectorSerializer(fields=('code'))
+    vocabulary = VocabularySerializer()
+
+    class Meta:
+        model = TransactionSector
+        fields = (
+            'sector',
+            'vocabulary',
+        )
+
+
+class TransactionSerializer(serializers.ModelSerializer):
+    """
+    Transaction serializer class
+    """
+    transaction_date = serializers.CharField()
+    value_date = serializers.CharField()
+    aid_type = CodelistSerializer()
+    disbursement_channel = CodelistSerializer()
+    finance_type = CodelistSerializer()
+    flow_type = CodelistSerializer()
+    tied_status = CodelistSerializer()
+    transaction_type = CodelistSerializer()
+    currency = CodelistSerializer()
+    humanitarian = serializers.BooleanField()
+    provider_organisation = TransactionProviderSerializer(required=False)
+    receiver_organisation = TransactionReceiverSerializer(required=False)
+    recipient_countries = TransactionRecipientCountrySerializer(
+        many=True,
+        source='transactionrecipientcountry_set',
+        read_only=True
+    )
+    recipient_regions = TransactionRecipientRegionSerializer(
+        many=True,
+        source='transactionrecipientregion_set',
+        read_only=True
+    )
+    sectors = TransactionSectorSerializer(
+        many=True,
+        source='transactionsector_set',
+        read_only=True
+    )
+
+    class Meta:
+        model = Transaction
+        fields = (
+            'ref',
+            'humanitarian',
+            'transaction_type',
+            'transaction_date',
+            'value',
+            'value_date',
+            'currency',
+            'description',
+            'disbursement_channel',
+            'flow_type',
+            'finance_type',
+            'aid_type',
+            'tied_status',
+            'provider_organisation',
+            'receiver_organisation',
+            'recipient_countries',
+            'recipient_regions',
+            'sectors'
+        )
+
+
 class ActivitySerializer(DynamicFieldsModelSerializer):
     url = serializers.HyperlinkedIdentityField(
         view_name='activities:activity-detail', read_only=True)
@@ -2838,6 +2979,12 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
     transactions = serializers.HyperlinkedIdentityField(
         read_only=True,
         view_name='activities:activity-transactions',
+    )
+
+    related_transactions = TransactionSerializer(
+        many=True,
+        source='transaction_set',
+        read_only=True
     )
 
     document_links = DocumentLinkSerializer(
@@ -3061,6 +3208,7 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
             'dataset',
             'publisher',
             'published_state',
+            'related_transactions'
         )
 
         validators = []
