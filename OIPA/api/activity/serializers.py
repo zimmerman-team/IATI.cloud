@@ -2794,7 +2794,7 @@ class TransactionRecipientRegionSerializer(serializers.ModelSerializer):
 
 
 class TransactionSectorSerializer(serializers.ModelSerializer):
-    sector = SectorSerializer(fields=('code'))
+    sector = SectorSerializer(fields=('code', ))
     vocabulary = VocabularySerializer()
 
     class Meta:
