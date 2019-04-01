@@ -383,9 +383,12 @@ class ElementReference(object):
     parent_element = None
     data = None
 
-    def __init__(self, parent_element, data):
+    def __init__(self, parent_element, data, element=None):
         self.parent_element = parent_element
         self.data = data
+
+        if element:
+            self.element = element
 
     def create(self):
         pass
@@ -686,6 +689,258 @@ class ContactInfoReference(ElementReference):
             job_title_narrative.create()
 
 
+class TransactionReference(ElementReference):
+    """
+    http://reference.iatistandard.org/202/activity-standard/iati-activities/iati-activity/transaction/
+    """
+    element = 'transaction'
+    # Ref
+    ref = {
+        'key': 'ref',
+        'attr': 'ref'
+    }
+    # Transaction type
+    transaction_type = {
+        'element': 'transaction-type',
+        'key': 'transaction_type',
+        # Attributes
+        'code': {
+            'key': 'code',
+            'attr': 'code'
+        }
+    }
+    # Transaction date
+    transaction_date = {
+        'element': 'transaction-date',
+        'key': 'transaction_date',
+        'attr': 'iso-date'
+    }
+    # Value
+    value = {
+        'element': 'value',
+        'key': 'value',
+        # Attributes
+        'currency': {
+            'key': 'currency',
+            'code': {
+                'key': 'code',
+                'attr': 'currency'
+            }
+        },
+        'date': {
+            'key': 'value_date',
+            'attr': 'value-date'
+        }
+    }
+    # Flow type
+    flow_type = {
+        'element': 'flow-type',
+        'key': 'flow_type',
+        'code': {
+            'key': 'code',
+            'attr': 'code'
+        }
+    }
+    # Finance type
+    finance_type = {
+        'element': 'finance-type',
+        'key': 'finance_type',
+        'code': {
+            'key': 'code',
+            'attr': 'code'
+        }
+    }
+    # Provider Organisation
+    provider_organisation = {
+        'element': 'provider-org',
+        'key': 'provider_organisation',
+        # Attributes
+        'ref': {
+            'key': 'ref',
+            'attr': 'ref'
+        },
+        'provider_activity_id': {
+            'key': 'provider_activity_id',
+            'attr': 'provider-activity-id'
+        },
+        'type': {
+            'key': 'type',
+            'attr': 'type'
+        },
+        'narratives': {
+            'element': 'narrative',
+            'key': 'narratives',
+        }
+    }
+
+    def create(self):
+        transaction_element = etree.SubElement(
+            self.parent_element, self.element
+        )
+
+        # Ref
+        ref_value = self.data.get(self.ref.get('key'))
+        if ref_value:
+            transaction_element.set(self.ref.get('attr'), ref_value)
+
+        # Transaction type
+        transaction_dict = self.data.get(
+            self.transaction_type.get('key')
+        )
+        if transaction_dict:
+            transaction_type_element = etree.SubElement(
+                transaction_element, self.transaction_type.get('element')
+            )
+
+            # Transaction type element: code attribute
+            code_value = transaction_dict.get(
+                self.transaction_type.get('code').get('key')
+            )
+            if code_value:
+                transaction_type_element.set(
+                    self.transaction_type.get('code').get('attr'),
+                    code_value
+                )
+
+        # Transaction date
+        transaction_date_value = self.data.get(
+            self.transaction_date.get('key')
+        )
+        if transaction_date_value:
+            transaction_date_element = etree.SubElement(
+                transaction_element, self.transaction_date.get('element')
+            )
+            transaction_date_element.set(
+                self.transaction_date.get('attr'),
+                transaction_date_value
+            )
+
+        # Value
+        value = self.data.get(self.value.get('key'))
+        if value:
+            value_element = etree.SubElement(
+                transaction_element, self.value.get('element')
+            )
+            value_element.text = value
+
+            # Attributes
+            # Currency
+            currency_dict = self.data.get(
+                self.value.get('currency').get('key')
+            )
+            if currency_dict:
+                code_value = currency_dict.get(
+                    self.value.get('currency').get('code').get('key')
+                )
+                if code_value:
+                    value_element.set(
+                        self.value.get('currency').get('code').get('attr'),
+                        code_value
+                    )
+
+            # Attributes
+            # Value date
+            value_date = self.data.get(self.value.get('date').get('key'))
+            if value_date:
+                value_element.set(
+                    self.value.get('date').get('attr'),
+                    value_date
+                )
+
+        # Flow type
+        flow_type_dict = self.data.get(
+            self.flow_type.get('key')
+        )
+        if flow_type_dict:
+            flow_type_element = etree.SubElement(
+                transaction_element, self.flow_type.get('element')
+            )
+
+            # Attributes
+            # Code
+            code = flow_type_dict.get(self.flow_type.get('code').get('key'))
+            if code:
+                flow_type_element.set(
+                    self.flow_type.get('code').get('attr'),
+                    code
+                )
+
+        # Finance type
+        finance_type_dict = self.data.get(
+            self.finance_type.get('key')
+        )
+        if finance_type_dict:
+            finance_type_element = etree.SubElement(
+                transaction_element, self.finance_type.get('element')
+            )
+
+            # Attributes
+            # Code
+            code = finance_type_dict.get(
+                self.finance_type.get('code').get('key')
+            )
+            if code:
+                finance_type_element.set(
+                    self.flow_type.get('code').get('attr'),
+                    code
+                )
+
+        # Provider Organisation
+        provider_organisation_dict = self.data.get(
+            self.provider_organisation.get('key')
+        )
+        if provider_organisation_dict:
+            provider_organisation_element = etree.SubElement(
+                transaction_element, self.provider_organisation.get('element')
+            )
+
+            # Attributes
+            # Ref
+            ref_value = provider_organisation_dict.get(
+                self.provider_organisation.get('ref').get('key')
+            )
+            if ref_value:
+                provider_organisation_element.set(
+                    self.provider_organisation.get('ref').get('attr'),
+                    ref_value
+                )
+
+            # Attributes
+            # Provider activity id
+            provider_activity_id_value = provider_organisation_dict.get(
+                self.provider_organisation.get(
+                    'provider_activity_id'
+                ).get('key')
+            )
+            if provider_activity_id_value:
+                provider_organisation_element.set(
+                    self.provider_organisation.get(
+                        'provider_activity_id'
+                    ).get('attr'),
+                    provider_activity_id_value
+                )
+
+            # Attributes
+            # Type
+            type_value = provider_organisation_dict.get(
+                self.provider_organisation.get('type').get('key')
+            )
+            if type_value:
+                provider_organisation_element.set(
+                    self.provider_organisation.get('type').get('attr'),
+                    type_value
+                )
+
+            # Narrative
+            provider_organisation_narrative = ElementWithNarrativeReference(
+                parent_element=None,
+                data=provider_organisation_dict
+            )
+            provider_organisation_narrative.create_narrative(
+                parent_element=provider_organisation_element
+            )
+
+
 class IATIXMLRenderer(BaseRenderer):
     """
     Renderer which serializes to XML.
@@ -704,7 +959,8 @@ class IATIXMLRenderer(BaseRenderer):
         'activity_dates': ActivityDateReference,
         'reporting_organisation': ReportingOrgReference,
         'participating_organisations': ParticipatingOrgReference,
-        'contact_info': ContactInfoReference
+        'contact_info': ContactInfoReference,
+        'related_transactions': TransactionReference
     }
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
