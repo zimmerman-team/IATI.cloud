@@ -272,7 +272,7 @@ REST_AUTH_REGISTER_SERIALIZERS = {
     'REGISTER_SERIALIZER': 'api.permissions.serializers.RegistrationSerializer'
 }
 
-EXPORT_COMMENT = 'Published using the IATI Studio publisher'
+EXPORT_COMMENT = 'Published with tools developed by Zimmerman & Zimmerman'
 
 FIXTURE_DIRS = (
     os.path.join(BASE_DIR, '../fixtures/'),

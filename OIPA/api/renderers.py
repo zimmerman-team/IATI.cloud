@@ -790,6 +790,57 @@ class TransactionReference(ElementReference):
             'key': 'narratives',
         }
     }
+    # Recipient country
+    recipient_countries = {
+        'element': 'recipient-country',
+        'key': 'recipient_countries',
+        'country': {
+            'key': 'country',
+            'code': {
+                'key': 'code',
+                'attr': 'code'
+            }
+        },
+        'percentage': {
+            'key': 'percentage',
+            'attr': 'percentage'
+        }
+    }
+    # Recipient region
+    recipient_regions = {
+        'element': 'recipient-region',
+        'key': 'recipient_regions',
+        'region': {
+            'key': 'region',
+            'code': {
+                'key': 'code',
+                'attr': 'code'
+            }
+        },
+        'vocabulary': {
+            'key': 'vocabulary',
+            'attr': 'vocabulary'
+        }
+    }
+    # Sector
+    sectors = {
+        'element': 'sector',
+        'key': 'sectors',
+        'sector': {
+            'key': 'sector',
+            'code': {
+                'key': 'code',
+                'attr': 'code'
+            },
+        },
+        'vocabulary': {
+            'key': 'vocabulary',
+            'code': {
+                'key': 'code',
+                'attr': 'vocabulary'
+            },
+        }
+    }
 
     def create(self):
         transaction_element = etree.SubElement(
@@ -997,6 +1048,141 @@ class TransactionReference(ElementReference):
             provider_organisation_narrative.create_narrative(
                 parent_element=provider_organisation_element
             )
+
+        # Recipient country
+        recipient_countries_list = self.data.get(
+            self.recipient_countries.get('key')
+        )
+        if recipient_countries_list:
+            for recipient_country in recipient_countries_list:
+                recipient_country_element = etree.SubElement(
+                    transaction_element,
+                    self.recipient_countries.get('element')
+                )
+
+                # Attribute
+                # Code
+                country = recipient_country.get(
+                    self.recipient_countries.get('country').get('key')
+                )
+                if country:
+                    code = country.get(
+                        self.recipient_countries.get(
+                            'country'
+                        ).get('code').get('key')
+                    )
+
+                    if code:
+                        recipient_country_element.set(
+                            self.recipient_countries.get(
+                                'country'
+                            ).get('code').get('attr'),
+                            code
+                        )
+
+                # Attribute
+                # Percentage
+                percentage_value = recipient_country.get(
+                    self.recipient_countries.get('percentage').get('key')
+                )
+                if percentage_value:
+                    recipient_country_element.set(
+                        self.recipient_countries.get('percentage').get('attr'),
+                        percentage_value
+                    )
+
+        # Recipient region
+        recipient_regions_list = self.data.get(
+            self.recipient_regions.get('key')
+        )
+        if recipient_regions_list:
+            for recipient_region in recipient_regions_list:
+                recipient_region_element = etree.SubElement(
+                    transaction_element,
+                    self.recipient_regions.get('element')
+                )
+
+                # Attribute
+                # Code
+                region = recipient_region.get(
+                    self.recipient_regions.get('region').get('key')
+                )
+                if region:
+                    code = region.get(
+                        self.recipient_regions.get(
+                            'region'
+                        ).get('code').get('key')
+                    )
+
+                    if code:
+                        recipient_region_element.set(
+                            self.recipient_regions.get(
+                                'region'
+                            ).get('code').get('attr'),
+                            code
+                        )
+
+                # Attribute
+                # Vocabulary
+                vocabulary_value = recipient_region.get(
+                    self.recipient_countries.get('vocabulary').get('key')
+                )
+                if vocabulary_value:
+                    recipient_region_element.set(
+                        self.recipient_regions.get('vocabulary').get('attr'),
+                        vocabulary_value
+                    )
+
+        # Sector
+        sectors_list = self.data.get(
+            self.sectors.get('key')
+        )
+        if sectors_list:
+            for sector_dict in sectors_list:
+                sector_element = etree.SubElement(
+                    transaction_element,
+                    self.sectors.get('element')
+                )
+
+                # Attribute
+                # Code
+                sector = sector_dict.get(
+                    self.sectors.get('sector').get('key')
+                )
+                if sector:
+                    code = sector.get(
+                        self.sectors.get(
+                            'sector'
+                        ).get('code').get('key')
+                    )
+
+                    if code:
+                        sector_element.set(
+                            self.sectors.get(
+                                'sector'
+                            ).get('code').get('attr'),
+                            code
+                        )
+
+                # Attribute
+                # Vocabulary
+                vocabulary = sector_dict.get(
+                    self.sectors.get('vocabulary').get('key')
+                )
+                if vocabulary:
+                    code = vocabulary.get(
+                        self.sectors.get(
+                            'vocabulary'
+                        ).get('code').get('key')
+                    )
+
+                    if code:
+                        sector_element.set(
+                            self.sectors.get(
+                                'vocabulary'
+                            ).get('code').get('attr'),
+                            code
+                        )
 
 
 class IATIXMLRenderer(BaseRenderer):
