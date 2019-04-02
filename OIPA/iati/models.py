@@ -656,6 +656,10 @@ class ActivitySector(models.Model):
         null=True,
         blank=True,
         default=None)
+    narratives = GenericRelation(
+        Narrative,
+        content_type_field='related_content_type',
+        object_id_field='related_object_id')
 
     def __unicode__(self,):
         return "name: %s" % self.sector.name
