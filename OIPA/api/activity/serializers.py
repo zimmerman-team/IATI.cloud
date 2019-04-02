@@ -1079,6 +1079,7 @@ class ActivitySectorSerializer(ModelSerializerNoValidation):
     vocabulary_uri = serializers.URLField()
 
     activity = serializers.CharField(write_only=True)
+    narratives = NarrativeSerializer(many=True)
 
     class Meta:
         model = ActivitySector
@@ -1089,6 +1090,7 @@ class ActivitySectorSerializer(ModelSerializerNoValidation):
             'percentage',
             'vocabulary',
             'vocabulary_uri',
+            'narratives',
         )
 
     def validate(self, data):
