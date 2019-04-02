@@ -1185,6 +1185,96 @@ class TransactionReference(ElementReference):
                         )
 
 
+class SectorReference(ElementReference):
+    """
+    http://reference.iatistandard.org/202/activity-standard/iati-activities/iati-activity/transaction/sector/
+    """
+    element = 'sector'
+    # @code
+    code = {
+        'sector': {
+            'key': 'sector',
+            'code': {
+                'key': 'code',
+                'attr': 'code'
+            },
+        }
+    }
+    # @vocabulary
+    vocabulary = {
+        'vocabulary': {
+            'key': 'vocabulary',
+            'code': {
+                'key': 'code',
+                'attr': 'vocabulary'
+            },
+        }
+    }
+    # @vocabulary-uri
+    vocabulary_uri = {
+        'key': 'vocabulary_uri',
+        'attr': 'vocabulary-uri'
+    }
+    # @percentage
+    percentage = {
+        'key': 'percentage',
+        'attr': 'percentage'
+    }
+
+    def create(self):
+        sector_element = etree.SubElement(
+            self.parent_element, self.element
+        )
+
+        # @code
+        sector_dict = self.data.get(self.code.get('sector').get('key'))
+        if sector_dict:
+            code_value = sector_dict.get(
+                self.code.get('sector').get('code').get('key')
+            )
+
+            if code_value:
+                sector_element.set(
+                    self.code.get('sector').get('code').get('attr'),
+                    code_value
+                )
+
+        # @vocabulary
+        vocabulary_dict = self.data.get(
+            self.vocabulary.get('vocabulary').get('key')
+        )
+        if vocabulary_dict:
+            code_value = vocabulary_dict.get(
+                self.vocabulary.get('vocabulary').get('code').get('key')
+            )
+
+            if code_value:
+                sector_element.set(
+                    self.vocabulary.get('vocabulary').get('code').get('attr'),
+                    code_value
+                )
+
+        # @vocabulary-uri
+        vocabulary_uri_value = self.data.get(
+            self.vocabulary_uri.get('key')
+        )
+        if vocabulary_uri_value:
+            sector_element.set(
+                self.vocabulary_uri.get('attr'),
+                vocabulary_uri_value
+            )
+
+        # @percentage
+        percentage_value = self.data.get(
+            self.percentage.get('key')
+        )
+        if percentage_value:
+            sector_element.set(
+                self.percentage.get('attr'),
+                percentage_value
+            )
+
+
 class IATIXMLRenderer(BaseRenderer):
     """
     Renderer which serializes to XML.
@@ -1204,7 +1294,8 @@ class IATIXMLRenderer(BaseRenderer):
         'reporting_organisation': ReportingOrgReference,
         'participating_organisations': ParticipatingOrgReference,
         'contact_info': ContactInfoReference,
-        'related_transactions': TransactionReference
+        'related_transactions': TransactionReference,
+        'sectors': SectorReference,
     }
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
