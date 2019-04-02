@@ -1185,7 +1185,7 @@ class TransactionReference(ElementReference):
                         )
 
 
-class SectorReference(ElementReference):
+class SectorReference(ElementWithNarrativeReference):
     """
     http://reference.iatistandard.org/202/activity-standard/iati-activities/iati-activity/transaction/sector/
     """
@@ -1273,6 +1273,9 @@ class SectorReference(ElementReference):
                 self.percentage.get('attr'),
                 percentage_value
             )
+
+        # Narrative
+        self.create_narrative(sector_element)
 
 
 class IATIXMLRenderer(BaseRenderer):
