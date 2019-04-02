@@ -1278,6 +1278,102 @@ class SectorReference(ElementWithNarrativeReference):
         self.create_narrative(sector_element)
 
 
+class BudgetReference(ElementReference):
+    """
+    http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/budget/
+    """
+    # <budget/>
+    element = 'budget'
+    # @type
+    _type = {
+        'type': {
+            'key': 'type',
+            'code': {
+                'key': 'code',
+                'attr': 'type'
+            }
+        }
+    }
+    # @status
+    status = {
+        'status': {
+            'key': 'status',
+            'code': {
+                'key': 'code',
+                'attr': 'status'
+            }
+        }
+    }
+    # <period-start/>
+    period_start = {
+        'element': 'period-start',
+        'key': 'period_start',
+        'attr': 'iso-date'
+    }
+    # <period-end/>
+    period_end = {
+        'element': 'period-end',
+        'key': 'period_end',
+        'attr': 'iso-date'
+    }
+
+    def create(self):
+        budget_element = etree.SubElement(
+            self.parent_element, self.element
+        )
+
+        # @type
+        type_dict = self.data.get(self._type.get('type').get('key'))
+        if type_dict:
+            code_value = type_dict.get(
+                self._type.get('type').get('code').get('key')
+            )
+
+            if code_value:
+                budget_element.set(
+                    self._type.get('type').get('code').get('attr'),
+                    code_value
+                )
+
+        # @status
+        status_dict = self.data.get(self.status.get('status').get('key'))
+        if status_dict:
+            code_value = status_dict.get(
+                self.status.get('status').get('code').get('key')
+            )
+
+            if code_value:
+                budget_element.set(
+                    self.status.get('status').get('code').get('attr'),
+                    code_value
+                )
+
+        # <period-start/>
+        period_start_value = self.data.get(self.period_start.get('key'))
+        if period_start_value:
+            period_start_element = etree.SubElement(
+                budget_element, self.period_start.get('element')
+            )
+            # Attribute
+            period_start_element.set(
+                self.period_start.get('attr'),
+                period_start_value
+            )
+
+        # <period-end/>
+        period_end_value = self.data.get(self.period_end.get('key'))
+        if period_end_value:
+            period_end_element = etree.SubElement(
+                budget_element, self.period_end.get('element')
+            )
+            # Attribute
+            period_end_element.set(
+                self.period_end.get('attr'),
+                period_end_value
+            )
+
+
+
 class IATIXMLRenderer(BaseRenderer):
     """
     Renderer which serializes to XML.
@@ -1299,6 +1395,7 @@ class IATIXMLRenderer(BaseRenderer):
         'contact_info': ContactInfoReference,
         'related_transactions': TransactionReference,
         'sectors': SectorReference,
+        'budgets': BudgetReference,
     }
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
