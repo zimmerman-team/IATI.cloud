@@ -819,7 +819,10 @@ class TransactionReference(ElementReference):
         },
         'vocabulary': {
             'key': 'vocabulary',
-            'attr': 'vocabulary'
+            'code': {
+                'key': 'code',
+                'attr': 'vocabulary',
+            }
         }
     }
     # Sector
@@ -1124,12 +1127,19 @@ class TransactionReference(ElementReference):
 
                 # Attribute
                 # Vocabulary
-                vocabulary_value = recipient_region.get(
-                    self.recipient_countries.get('vocabulary').get('key')
+                vocabulary_dict = recipient_region.get(
+                    self.recipient_regions.get('vocabulary').get('key')
                 )
-                if vocabulary_value:
+                if vocabulary_dict:
+                    vocabulary_value = vocabulary_dict.get(
+                        self.recipient_regions.get(
+                            'vocabulary'
+                        ).get('code').get('key')
+                    )
                     recipient_region_element.set(
-                        self.recipient_regions.get('vocabulary').get('attr'),
+                        self.recipient_regions.get(
+                            'vocabulary'
+                        ).get('code').get('attr'),
                         vocabulary_value
                     )
 
