@@ -1292,7 +1292,7 @@ class BudgetReference(ElementReference):
     """
     http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/budget/
     """
-    # <budget/>
+    # <budget
     element = 'budget'
     # @type
     _type = {
@@ -1314,18 +1314,48 @@ class BudgetReference(ElementReference):
             }
         }
     }
-    # <period-start/>
+    # >
+    # <period-start
     period_start = {
         'element': 'period-start',
         'key': 'period_start',
+        # @iso-date
         'attr': 'iso-date'
     }
-    # <period-end/>
+    # />
+    # <period-end
     period_end = {
         'element': 'period-end',
         'key': 'period_end',
+        # @iso-date
         'attr': 'iso-date'
     }
+    # />
+    # <value
+    value = {
+        'element': 'value',
+        'key': 'value',
+        # @currency
+        'currency': {
+            'key': 'currency',
+            'code': {
+                'key': 'code',
+                'attr': 'currency'
+            }
+        },
+        # @value-date
+        'date': {
+            'key': 'date',
+            'attr': 'value-date'
+        },
+        # >
+        # Content
+        'value': {
+            'key': 'value'
+        }
+    }
+    # </value>
+    # </budget>
 
     def create(self):
         budget_element = etree.SubElement(
@@ -1358,30 +1388,70 @@ class BudgetReference(ElementReference):
                     code_value
                 )
 
-        # <period-start/>
+        # <period-start
         period_start_value = self.data.get(self.period_start.get('key'))
         if period_start_value:
             period_start_element = etree.SubElement(
                 budget_element, self.period_start.get('element')
             )
-            # Attribute
+            # @iso-date
             period_start_element.set(
                 self.period_start.get('attr'),
                 period_start_value
             )
+        # />
 
-        # <period-end/>
+        # <period-end
         period_end_value = self.data.get(self.period_end.get('key'))
         if period_end_value:
             period_end_element = etree.SubElement(
                 budget_element, self.period_end.get('element')
             )
-            # Attribute
+            # @iso-date
             period_end_element.set(
                 self.period_end.get('attr'),
                 period_end_value
             )
+        # />
 
+        # <value
+        value_dict = self.data.get(self.value.get('key'))
+        if value_dict:
+            value_element = etree.SubElement(
+                budget_element, self.value.get('element')
+            )
+
+            # @currency
+            currency_dict = value_dict.get(
+                self.value.get('currency').get('key')
+            )
+            if currency_dict:
+                code_value = currency_dict.get(
+                    self.value.get('currency').get('code').get('key')
+                )
+
+                if code_value:
+                    value_element.set(
+                        self.value.get('currency').get('code').get('attr'),
+                        code_value
+                    )
+
+            # @value-date
+            value_date = value_dict.get(
+                self.value.get('date').get('key')
+            )
+            if value_date:
+                value_element.set(
+                    self.value.get('date').get('attr'),
+                    value_date
+                )
+            # >
+
+            # Content
+            value = value_dict.get(self.value.get('value').get('key'))
+            if value:
+                # Value type is {Decimal}, then convert it to string
+                value_element.text = str(value)
 
 
 class IATIXMLRenderer(BaseRenderer):
