@@ -1090,7 +1090,6 @@ class OtherIdentifierReference(ElementReference):
     """
     # <other-identifier
     element = 'other-identifier'
-    # >
     # @ref
     ref = {
         'key': 'ref',
@@ -1104,7 +1103,7 @@ class OtherIdentifierReference(ElementReference):
             'attr': 'type'
         }
     }
-    # />
+    # >
     # <owner-org
     owner_org = {
         'element': 'owner-org',
@@ -1200,7 +1199,7 @@ class ActivityStatusReference(ElementReference):
         # />
 
 
-class RecipientCountryElement(ElementReference):
+class RecipientCountryReference(ElementReference):
     """
     http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/recipient-country/
     """
@@ -1246,7 +1245,7 @@ class RecipientCountryElement(ElementReference):
             )
 
 
-class RecipientRegionElement(ElementReference):
+class RecipientRegionReference(ElementReference):
     """
     http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/recipient-region/
     """
@@ -1325,3 +1324,60 @@ class RecipientRegionElement(ElementReference):
                 vocabulary_uri_value
             )
         # />
+
+
+class LocationReference(ElementReference):
+    """
+    http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/location/
+    """
+    # <location
+    element = 'location'
+    # @ref
+    ref = {
+        'key': 'ref',
+        'attr': 'ref'
+    }
+    # >
+    # <location-reach
+    location_reach = {
+        'element': 'location-reach',
+        'key': 'location_reach',
+        # @code
+        'code': {
+            'key': 'code',
+            'attr': 'code'
+        }
+    }
+    # />
+    # </location>
+
+    def create(self):
+        # <location
+        location_element = etree.SubElement(
+            self.parent_element, self.element
+        )
+
+        # @ref
+        ref_value = self.data.get(self.ref.get('key'))
+        if ref_value:
+            location_element.set(self.ref.get('attr'), ref_value)
+        # >
+
+        # <location-reach
+        location_reach_dict = self.data.get(self.location_reach.get('key'))
+        if location_reach_dict:
+            location_reach_element = etree.SubElement(
+                location_element, self.location_reach.get('element')
+            )
+            # @code
+            code_value = location_reach_dict.get(
+                self.location_reach.get('code').get('key')
+            )
+            if code_value:
+                location_reach_element.set(
+                    self.location_reach.get('code').get('attr'),
+                    code_value
+                )
+        # />
+
+        # </location>

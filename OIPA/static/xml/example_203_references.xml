@@ -40,6 +40,26 @@
     <activity-scope code="3" />
     <recipient-country code="SS" percentage="100" />
     <recipient-region code="298" vocabulary="1" percentage="100" vocabulary-uri="http://example.com/vocab.html" />
+    <location ref="AF-KAN">
+      <location-reach code="1" />
+      <location-id vocabulary="G1" code="1453782" />
+      <name>
+        <narrative>Location name</narrative>
+      </name>
+      <description>
+        <narrative>Location description</narrative>
+      </description>
+      <activity-description>
+        <narrative>A description that qualifies the activity taking place at the location.</narrative>
+      </activity-description>
+      <administrative vocabulary="G1" level="1" code="1453782" />
+      <point srsName="http://www.opengis.net/def/crs/EPSG/0/4326">
+        <pos>31.616944 65.716944</pos>
+      </point>
+      <exactness code="1"/>
+      <location-class code="2"/>
+      <feature-designation code="ADMF"/>
+    </location>
     <sector code="CC" vocabulary="99" vocabulary-uri="https://data.iom.int/codelist/sector.pdf">
       <narrative>CCCM</narrative>
     </sector>
