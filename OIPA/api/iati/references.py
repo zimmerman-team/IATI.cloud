@@ -1368,6 +1368,24 @@ class LocationReference(ElementReference):
         }
     }
     # />
+    # <name>
+    name = {
+        'element': 'name',
+        'key': 'name'
+    }
+    # <narrative>
+    # Location name
+    # </narrative>
+    # </name>
+    # <description>
+    description = {
+        'element': 'description',
+        'key': 'description'
+    }
+    # <narrative>
+    # Location description
+    # </narrative>
+    # </description>
     # </location>
 
     def create(self):
@@ -1432,5 +1450,27 @@ class LocationReference(ElementReference):
                     code_value
                 )
         # / >
+
+        # <name>
+        name_dict = self.data.get(self.name.get('key'))
+        if name_dict:
+            # <narrative>
+            ElementWithNarrativeReference(
+                location_element, name_dict, self.name.get('element')
+            ).create()
+            # </narrative>
+        # </name>
+
+        # <description>
+        description_dict = self.data.get(self.description.get('key'))
+        if description_dict:
+            # <narrative>
+            ElementWithNarrativeReference(
+                location_element,
+                description_dict,
+                self.description.get('element')
+            ).create()
+            # </narrative>
+        # </description>
 
         # </location>
