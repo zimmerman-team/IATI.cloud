@@ -1419,6 +1419,41 @@ class LocationReference(ElementReference):
         },
     }
     # />
+    # <point
+    point = {
+        'element': 'point',
+        'key': 'point',
+        # @srsName
+        'srsName': {
+            'key': 'srsName',
+            'attr': 'srsName'
+        },
+        # <pos>
+        'pos': {
+            'element': 'pos',
+            'key': 'pos',
+            'latitude': {
+                'key': 'latitude'
+            },
+            'longitude': {
+                'key': 'longitude'
+            }
+        }
+        # </pos
+    }
+    # >
+    # </pos>
+    # <exactness
+    exactness = {
+        'element': 'exactness',
+        'key': 'exactness',
+        # @code
+        'code': {
+            'key': 'code',
+            'attr': 'code'
+        }
+    }
+    # />
     # </location>
 
     def create(self):
@@ -1565,6 +1600,65 @@ class LocationReference(ElementReference):
                         self.location_id.get('code').get('attr'),
                         code_value
                     )
-            # />
+                # />
+
+        # <point
+        point_dict = self.data.get(self.point.get('key'))
+        if point_dict:
+            point_element = etree.SubElement(
+                location_element, self.point.get('element')
+            )
+
+            # @srsName
+            srs_name_value = point_dict.get(
+                self.point.get('srsName').get('key')
+            )
+            if srs_name_value:
+                point_element.set(
+                    self.point.get('srsName').get('attr'),
+                    srs_name_value
+                )
+            # >
+
+            # <pos>
+            pos_dict = point_dict.get(self.point.get('pos').get('key'))
+            if pos_dict:
+                pos_element = etree.SubElement(
+                    point_element, self.point.get('pos').get('element')
+                )
+
+                latitude_value = pos_dict.get(
+                    self.point.get('pos').get('latitude').get('key')
+                )
+
+                longitude_value = pos_dict.get(
+                    self.point.get('pos').get('longitude').get('key')
+                )
+
+                if latitude_value and longitude_value:
+                    pos_element.text = '{latitude} {longitude}'.format(
+                        latitude=latitude_value,
+                        longitude=longitude_value
+                    )
+            # </pos>
+        # </point>
+
+        # <exactness
+        exactness_dict = self.data.get(self.exactness.get('key'))
+        if exactness_dict:
+            exactness_element = etree.SubElement(
+                location_element, self.exactness.get('element')
+            )
+
+            # @code
+            code_value = location_reach_dict.get(
+                self.exactness.get('code').get('key')
+            )
+            if code_value:
+                exactness_element.set(
+                    self.exactness.get('code').get('attr'),
+                    code_value
+                )
+        # />
 
         # </location>
