@@ -1198,3 +1198,49 @@ class ActivityStatusReference(ElementReference):
             )
 
         # />
+
+
+class RecipientCountryElement(ElementReference):
+    """
+    http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/recipient-country/
+    """
+    # <recipient-country
+    element = 'recipient-country'
+    # @code
+    country = {
+        'key': 'country',
+        'code': {
+            'key': 'code',
+            'attr': 'code'
+        }
+    }
+    # @percentage
+    percentage = {
+        'key': 'percentage',
+        'attr': 'percentage'
+    }
+
+    def create(self):
+        # <recipient-country
+        recipient_country_element = etree.SubElement(
+            self.parent_element, self.element
+        )
+
+        # @code
+        country_dict = self.data.get(self.country.get('key'))
+        if country_dict:
+            code_value = country_dict.get(self.country.get('code').get('key'))
+            if code_value:
+                recipient_country_element.set(
+                    self.country.get('code').get('attr'),
+                    code_value
+                )
+
+        # @percentage
+        percentage_value = self.data.get(self.percentage.get('key'))
+        if percentage_value:
+            recipient_country_element.set(
+                self.percentage.get('attr'),
+                # Percentage value type is {Decimal}, then convert it to string
+                str(percentage_value)
+            )

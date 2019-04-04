@@ -38,7 +38,7 @@
       </mailing-address>
     </contact-info>
     <activity-scope code="3" />
-    <recipient-country code="SS" />
+    <recipient-country code="SS" percentage="100" />
     <sector code="CC" vocabulary="99" vocabulary-uri="https://data.iom.int/codelist/sector.pdf">
       <narrative>CCCM</narrative>
     </sector>
