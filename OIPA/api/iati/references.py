@@ -1170,7 +1170,31 @@ class OtherIdentifierReference(ElementReference):
             # </narrative>
 
 
-class ActivityStatusRefrence(ElementReference):
+class ActivityStatusReference(ElementReference):
     """
     http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/activity-status/
     """
+    # <activity-status
+    element = 'activity-status'
+    # @code
+    code = {
+        'key': 'code',
+        'attr': 'code'
+    }
+    # />
+
+    def create(self):
+        # <activity-status
+        activity_status_element = etree.SubElement(
+            self.parent_element, self.element
+        )
+
+        # @code
+        code_value = self.data.get(self.code.get('key'))
+        if code_value:
+            activity_status_element.set(
+                self.code.get('attr'),
+                code_value
+            )
+
+        # />

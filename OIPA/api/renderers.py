@@ -22,7 +22,8 @@ from api.iati.references import (
     ActivityDateReference, ReportingOrgReference,
     ParticipatingOrgReference, ContactInfoReference,
     TransactionReference, SectorReference,
-    BudgetReference, OtherIdentifierReference
+    BudgetReference, OtherIdentifierReference,
+    ActivityStatusReference
 )
 
 # TODO: Make this more generic - 2016-01-21
@@ -406,6 +407,7 @@ class IATIXMLRenderer(BaseRenderer):
         'sectors': SectorReference,
         'budgets': BudgetReference,
         'other_identifier': OtherIdentifierReference,
+        'activity_status': ActivityStatusReference,
     }
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
