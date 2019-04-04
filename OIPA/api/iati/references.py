@@ -1386,6 +1386,15 @@ class LocationReference(ElementReference):
     # Location description
     # </narrative>
     # </description>
+    # <activity-description>
+    activity_description = {
+        'element': 'activity-description',
+        'key': 'activity_description'
+    }
+    # <narrative>
+    # A description that qualifies the activity taking place at the location.
+    # </narrative>
+    # </activity-description>
     # </location>
 
     def create(self):
@@ -1472,5 +1481,19 @@ class LocationReference(ElementReference):
             ).create()
             # </narrative>
         # </description>
+
+        # <activity-description>
+        activity_description_dict = self.data.get(
+            self.activity_description.get('key')
+        )
+        if activity_description_dict:
+            # <narrative>
+            ElementWithNarrativeReference(
+                location_element,
+                activity_description_dict,
+                self.activity_description.get('element')
+            ).create()
+            # </narrative>
+        # </activity-description>
 
         # </location>
