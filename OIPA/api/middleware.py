@@ -23,7 +23,7 @@ class FileExportMiddleware:
             if 'format' in request.GET:
                 formatz = request.GET['format']
 
-                if formatz == 'csv' or formatz == 'xls':
+                if formatz in ['csv', 'xls', 'xml']:
                     current_url = resolve(request.path_info).url_name
 
                     if 'export_name' in request.GET:
