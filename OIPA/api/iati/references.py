@@ -1395,6 +1395,30 @@ class LocationReference(ElementReference):
     # A description that qualifies the activity taking place at the location.
     # </narrative>
     # </activity-description>
+    # <administrative
+    administrative = {
+        'element': 'administrative',
+        'key': 'administrative',
+        # @vocabulary
+        'vocabulary': {
+            'key': 'vocabulary',
+            'code': {
+                'key': 'code',
+                'attr': 'vocabulary'
+            }
+        },
+        # @code
+        'code': {
+            'key': 'code',
+            'attr': 'code'
+        },
+        # @level
+        'level': {
+            'key': 'level',
+            'attr': 'level'
+        },
+    }
+    # />
     # </location>
 
     def create(self):
@@ -1495,5 +1519,52 @@ class LocationReference(ElementReference):
             ).create()
             # </narrative>
         # </activity-description>
+
+        administrative_list = self.data.get(self.administrative.get('key'))
+        if administrative_list:
+            for administrative_dict in administrative_list:
+                # <administrative
+                administrative_element = etree.SubElement(
+                    location_element, self.administrative.get('element')
+                )
+
+                # @vocabulary
+                vocabulary_dict = administrative_dict.get(
+                    self.administrative.get('vocabulary').get('key')
+                )
+                if vocabulary_dict:
+                    code_value = vocabulary_dict.get(
+                        self.administrative.get(
+                            'vocabulary'
+                        ).get('code').get('key')
+                    )
+                    if code_value:
+                        administrative_element.set(
+                            self.administrative.get(
+                                'vocabulary'
+                            ).get('code').get('attr'),
+                            code_value
+                        )
+
+                # @level
+                level_value = administrative_dict.get(
+                    self.administrative.get('level').get('key')
+                )
+                if level_value:
+                    administrative_element.set(
+                        self.administrative.get('level').get('attr'),
+                        str(level_value)
+                    )
+
+                # @code
+                code_value = administrative_dict.get(
+                    self.administrative.get('code').get('key')
+                )
+                if code_value:
+                    administrative_element.set(
+                        self.location_id.get('code').get('attr'),
+                        code_value
+                    )
+            # />
 
         # </location>
