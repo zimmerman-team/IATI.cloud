@@ -23,7 +23,8 @@ from api.iati.references import (
     ParticipatingOrgReference, ContactInfoReference,
     TransactionReference, SectorReference,
     BudgetReference, OtherIdentifierReference,
-    ActivityStatusReference, RecipientCountryElement
+    ActivityStatusReference, RecipientCountryElement,
+    RecipientRegionElement
 )
 
 # TODO: Make this more generic - 2016-01-21
@@ -409,6 +410,7 @@ class IATIXMLRenderer(BaseRenderer):
         'other_identifier': OtherIdentifierReference,
         'activity_status': ActivityStatusReference,
         'recipient_countries': RecipientCountryElement,
+        'recipient_regions': RecipientRegionElement,
     }
 
     def render(self, data, accepted_media_type=None, renderer_context=None):

@@ -1244,3 +1244,84 @@ class RecipientCountryElement(ElementReference):
                 # Percentage value type is {Decimal}, then convert it to string
                 str(percentage_value)
             )
+
+
+class RecipientRegionElement(ElementReference):
+    """
+    http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/recipient-region/
+    """
+    # <recipient-region
+    element = 'recipient-region'
+    # @code
+    region = {
+        'key': 'region',
+        'code': {
+            'key': 'code',
+            'attr': 'code'
+        }
+    }
+    # @percentage
+    percentage = {
+        'key': 'percentage',
+        'attr': 'percentage'
+    }
+    # @vocabulary
+    vocabulary = {
+        'key': 'vocabulary',
+        'code': {
+            'key': 'code',
+            'attr': 'vocabulary'
+        }
+    }
+    # @vocabulary-uri
+    vocabulary_uri = {
+        'key': 'vocabulary_uri',
+        'attr': 'vocabulary-uri'
+    }
+    # />
+
+    def create(self):
+        # <recipient-country
+        recipient_region_element = etree.SubElement(
+            self.parent_element, self.element
+        )
+
+        # @code
+        region_dict = self.data.get(self.region.get('key'))
+        if region_dict:
+            code_value = region_dict.get(self.region.get('code').get('key'))
+            if code_value:
+                recipient_region_element.set(
+                    self.region.get('code').get('attr'),
+                    code_value
+                )
+
+        # @percentage
+        percentage_value = self.data.get(self.percentage.get('key'))
+        if percentage_value:
+            recipient_region_element.set(
+                self.percentage.get('attr'),
+                # Percentage value type is {Decimal}, then convert it to string
+                str(percentage_value)
+            )
+
+        # @vocabulary
+        vocabulary_dict = self.data.get(self.vocabulary.get('key'))
+        if vocabulary_dict:
+            code_value = vocabulary_dict.get(
+                self.vocabulary.get('code').get('key')
+            )
+            if code_value:
+                recipient_region_element.set(
+                    self.vocabulary.get('code').get('attr'),
+                    code_value
+                )
+
+        # @vocabulary-uri
+        vocabulary_uri_value = self.data.get(self.vocabulary_uri.get('key'))
+        if vocabulary_uri_value:
+            recipient_region_element.set(
+                self.vocabulary_uri.get('attr'),
+                vocabulary_uri_value
+            )
+        # />
