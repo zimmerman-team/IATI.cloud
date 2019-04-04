@@ -1454,6 +1454,29 @@ class LocationReference(ElementReference):
         }
     }
     # />
+    # <location-class
+    location_class = {
+        'element': 'location-class',
+        'key': 'location_class',
+        # @code
+        'code': {
+            'key': 'code',
+            'attr': 'code'
+        }
+    }
+    # />
+    # <feature-designation
+    feature_designation = {
+        'element': 'feature-designation',
+        'key': 'feature_designation',
+        # @code
+        'code': {
+            'key': 'code',
+            'attr': 'code'
+        }
+    }
+
+    # />
     # </location>
 
     def create(self):
@@ -1657,6 +1680,44 @@ class LocationReference(ElementReference):
             if code_value:
                 exactness_element.set(
                     self.exactness.get('code').get('attr'),
+                    code_value
+                )
+        # />
+
+        # <location-class
+        location_class_dict = self.data.get(self.location_class.get('key'))
+        if location_class_dict:
+            location_class_element = etree.SubElement(
+                location_element, self.location_class.get('element')
+            )
+
+            # @code
+            code_value = location_class_dict.get(
+                self.location_class.get('code').get('key')
+            )
+            if code_value:
+                location_class_element.set(
+                    self.location_class.get('code').get('attr'),
+                    code_value
+                )
+        # />
+
+        # <feature-designation
+        feature_designation_dict = self.data.get(
+            self.feature_designation.get('key')
+        )
+        if feature_designation_dict:
+            feature_designation_element = etree.SubElement(
+                location_element, self.feature_designation.get('element')
+            )
+
+            # @code
+            code_value = feature_designation_dict.get(
+                self.feature_designation.get('code').get('key')
+            )
+            if code_value:
+                feature_designation_element.set(
+                    self.feature_designation.get('code').get('attr'),
                     code_value
                 )
         # />
