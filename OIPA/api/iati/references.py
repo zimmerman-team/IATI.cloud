@@ -1169,3 +1169,8 @@ class OtherIdentifierReference(ElementReference):
             narrative_element.create_narrative(owner_org_element)
             # </narrative>
 
+
+class ActivityStatusRefrence(ElementReference):
+    """
+    http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/activity-status/
+    """
