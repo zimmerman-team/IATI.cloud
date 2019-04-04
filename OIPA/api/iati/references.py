@@ -1349,6 +1349,25 @@ class LocationReference(ElementReference):
         }
     }
     # />
+    # <location-id
+    location_id = {
+        'element': 'location-id',
+        'key': 'location_id',
+        # @vocabulary
+        'vocabulary': {
+            'key': 'vocabulary',
+            'code': {
+                'key': 'code',
+                'attr': 'vocabulary'
+            }
+        },
+        # @code
+        'code': {
+            'key': 'code',
+            'attr': 'code'
+        }
+    }
+    # />
     # </location>
 
     def create(self):
@@ -1379,5 +1398,39 @@ class LocationReference(ElementReference):
                     code_value
                 )
         # />
+
+        # <location-id
+        location_id_dict = self.data.get(self.location_id.get('key'))
+        if location_id_dict:
+            location_id_element = etree.SubElement(
+                location_element, self.location_id.get('element')
+            )
+
+            # @vocabulary
+            vocabulary_dict = location_id_dict.get(
+                self.location_id.get('vocabulary').get('key')
+            )
+            if vocabulary_dict:
+                code_value = vocabulary_dict.get(
+                    self.location_id.get('vocabulary').get('code').get('key')
+                )
+                if code_value:
+                    location_id_element.set(
+                        self.location_id.get(
+                            'vocabulary'
+                        ).get('code').get('attr'),
+                        code_value
+                    )
+
+            # @code
+            code_value = location_id_dict.get(
+                self.location_id.get('code').get('key')
+            )
+            if code_value:
+                location_id_element.set(
+                    self.location_id.get('code').get('attr'),
+                    code_value
+                )
+        # / >
 
         # </location>
