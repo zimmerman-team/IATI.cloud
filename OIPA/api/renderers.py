@@ -1454,6 +1454,92 @@ class BudgetReference(ElementReference):
                 value_element.text = str(value)
 
 
+class OtherIdentifierReference(ElementReference):
+    """
+    http://reference.iatistandard.org/202/activity-standard/iati-activities/iati-activity/other-identifier/
+    """
+    # <other-identifier
+    element = 'other-identifier'
+    # >
+    # @ref
+    ref = {
+        'key': 'ref',
+        'attr': 'ref'
+    }
+    # @type
+    _type = {
+        'key': 'type',
+        'code': {
+            'key': 'code',
+            'attr': 'type'
+        }
+    }
+    # />
+    # <owner-org
+    owner_org = {
+        'element': 'owner-org',
+        'key': 'owner_org',
+        # @type
+        'ref': {
+            'key': 'ref',
+            'attr': 'ref'
+        }
+        # />
+        # <narrative>
+        # </narrative>
+    }
+    # </owner-org>
+    # </other-identifier>
+
+    def create(self):
+        other_identifier_element = etree.SubElement(
+            self.parent_element, self.element
+        )
+
+        # @ref
+        ref_value = self.data.get(self.ref.get('key'))
+        if ref_value:
+            other_identifier_element.set(self.ref.get('attr'), ref_value)
+
+        # @type
+        type_dict = self.data.get(self._type.get('key'))
+        if type_dict:
+            code_value = type_dict.get(
+                self._type.get('code').get('key')
+            )
+
+            if code_value:
+                other_identifier_element.set(
+                    self._type.get('code').get('attr'),
+                    code_value
+                )
+
+        # <owner-org
+        owner_org_dict = self.data.get(self.owner_org.get('key'))
+        if owner_org_dict:
+            owner_org_element = etree.SubElement(
+                other_identifier_element,
+                self.owner_org.get('element')
+            )
+
+            # @ref
+            ref_value = owner_org_dict.get(
+                self.owner_org.get('ref').get('key')
+            )
+            if ref_value:
+                owner_org_element.set(
+                    self.owner_org.get('ref').get('attr'),
+                    ref_value
+                )
+
+            # <narrative>
+            narrative_element = ElementWithNarrativeReference(
+                None, owner_org_dict
+            )
+            narrative_element.create_narrative(owner_org_element)
+            # </narrative>
+
+
 class IATIXMLRenderer(BaseRenderer):
     """
     Renderer which serializes to XML.
@@ -1476,6 +1562,7 @@ class IATIXMLRenderer(BaseRenderer):
         'related_transactions': TransactionReference,
         'sectors': SectorReference,
         'budgets': BudgetReference,
+        'other_identifier': OtherIdentifierReference,
     }
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
