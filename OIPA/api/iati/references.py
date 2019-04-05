@@ -1723,3 +1723,108 @@ class LocationReference(ElementReference):
         # />
 
         # </location>
+
+
+class PolicyMarkerReference(ElementReference):
+    """
+    http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/policy-marker/
+    """
+    # <policy-marker
+    element = 'policy-marker'
+    # @vocabulary
+    vocabulary = {
+        'key': 'vocabulary',
+        'code': {
+            'key': 'code',
+            'attr': 'vocabulary'
+        }
+    }
+    # @vocabulary-uri
+    vocabulary_uri = {
+        'key': 'vocabulary_uri',
+        'attr': 'vocabulary-uri'
+    }
+    # @code
+    code = {
+        'key': 'policy_marker',
+        'code': {
+            'key': 'code',
+            'attr': 'code'
+        }
+    }
+    # @significance
+    significance = {
+        'key': 'significance',
+        'code': {
+            'key': 'code',
+            'attr': 'significance'
+        }
+    }
+    # >
+    # <narrative>
+    # A policy marker description
+    # </narrative>
+    # </policy-marker>
+
+    def create(self):
+        # <policy-marker
+        policy_marker_element = etree.SubElement(
+            self.parent_element, self.element
+        )
+
+        # @vocabulary
+        vocabulary_dict = self.data.get(self.vocabulary.get('key'))
+        if vocabulary_dict:
+            code_value = vocabulary_dict.get(
+                self.vocabulary.get('code').get('key')
+            )
+
+            if code_value:
+                policy_marker_element.set(
+                    self.vocabulary.get('code').get('attr'),
+                    code_value
+                )
+
+        # @vocabulary-uri
+        vocabulary_uri_value = self.data.get(self.vocabulary_uri.get('key'))
+        if vocabulary_uri_value:
+            policy_marker_element.set(
+                self.vocabulary_uri.get('attr'),
+                vocabulary_uri_value
+            )
+
+        # @code
+        code_dict = self.data.get(self.code.get('key'))
+        if code_dict:
+            code_value = code_dict.get(
+                self.code.get('code').get('key')
+            )
+
+            if code_value:
+                policy_marker_element.set(
+                    self.code.get('code').get('attr'),
+                    code_value
+                )
+
+        # @significance
+        significance_dict = self.data.get(self.significance.get('key'))
+        if significance_dict:
+            code_value = significance_dict.get(
+                self.significance.get('code').get('key')
+            )
+
+            if code_value:
+                policy_marker_element.set(
+                    self.significance.get('code').get('attr'),
+                    code_value
+                )
+        # >
+
+        # <narrative>
+        ElementWithNarrativeReference(
+            None,
+            self.data
+        ).create_narrative(policy_marker_element)
+        # </narrative>
+
+        # </policy-marker>
