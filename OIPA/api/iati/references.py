@@ -1090,7 +1090,6 @@ class OtherIdentifierReference(ElementReference):
     """
     # <other-identifier
     element = 'other-identifier'
-    # >
     # @ref
     ref = {
         'key': 'ref',
@@ -1104,7 +1103,7 @@ class OtherIdentifierReference(ElementReference):
             'attr': 'type'
         }
     }
-    # />
+    # >
     # <owner-org
     owner_org = {
         'element': 'owner-org',
@@ -1169,3 +1168,558 @@ class OtherIdentifierReference(ElementReference):
             narrative_element.create_narrative(owner_org_element)
             # </narrative>
 
+
+class ActivityStatusReference(ElementReference):
+    """
+    http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/activity-status/
+    """
+    # <activity-status
+    element = 'activity-status'
+    # @code
+    code = {
+        'key': 'code',
+        'attr': 'code'
+    }
+    # />
+
+    def create(self):
+        # <activity-status
+        activity_status_element = etree.SubElement(
+            self.parent_element, self.element
+        )
+
+        # @code
+        code_value = self.data.get(self.code.get('key'))
+        if code_value:
+            activity_status_element.set(
+                self.code.get('attr'),
+                code_value
+            )
+
+        # />
+
+
+class RecipientCountryReference(ElementReference):
+    """
+    http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/recipient-country/
+    """
+    # <recipient-country
+    element = 'recipient-country'
+    # @code
+    country = {
+        'key': 'country',
+        'code': {
+            'key': 'code',
+            'attr': 'code'
+        }
+    }
+    # @percentage
+    percentage = {
+        'key': 'percentage',
+        'attr': 'percentage'
+    }
+
+    def create(self):
+        # <recipient-country
+        recipient_country_element = etree.SubElement(
+            self.parent_element, self.element
+        )
+
+        # @code
+        country_dict = self.data.get(self.country.get('key'))
+        if country_dict:
+            code_value = country_dict.get(self.country.get('code').get('key'))
+            if code_value:
+                recipient_country_element.set(
+                    self.country.get('code').get('attr'),
+                    code_value
+                )
+
+        # @percentage
+        percentage_value = self.data.get(self.percentage.get('key'))
+        if percentage_value:
+            recipient_country_element.set(
+                self.percentage.get('attr'),
+                # Percentage value type is {Decimal}, then convert it to string
+                str(percentage_value)
+            )
+
+
+class RecipientRegionReference(ElementReference):
+    """
+    http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/recipient-region/
+    """
+    # <recipient-region
+    element = 'recipient-region'
+    # @code
+    region = {
+        'key': 'region',
+        'code': {
+            'key': 'code',
+            'attr': 'code'
+        }
+    }
+    # @percentage
+    percentage = {
+        'key': 'percentage',
+        'attr': 'percentage'
+    }
+    # @vocabulary
+    vocabulary = {
+        'key': 'vocabulary',
+        'code': {
+            'key': 'code',
+            'attr': 'vocabulary'
+        }
+    }
+    # @vocabulary-uri
+    vocabulary_uri = {
+        'key': 'vocabulary_uri',
+        'attr': 'vocabulary-uri'
+    }
+    # />
+
+    def create(self):
+        # <recipient-country
+        recipient_region_element = etree.SubElement(
+            self.parent_element, self.element
+        )
+
+        # @code
+        region_dict = self.data.get(self.region.get('key'))
+        if region_dict:
+            code_value = region_dict.get(self.region.get('code').get('key'))
+            if code_value:
+                recipient_region_element.set(
+                    self.region.get('code').get('attr'),
+                    code_value
+                )
+
+        # @percentage
+        percentage_value = self.data.get(self.percentage.get('key'))
+        if percentage_value:
+            recipient_region_element.set(
+                self.percentage.get('attr'),
+                # Percentage value type is {Decimal}, then convert it to string
+                str(percentage_value)
+            )
+
+        # @vocabulary
+        vocabulary_dict = self.data.get(self.vocabulary.get('key'))
+        if vocabulary_dict:
+            code_value = vocabulary_dict.get(
+                self.vocabulary.get('code').get('key')
+            )
+            if code_value:
+                recipient_region_element.set(
+                    self.vocabulary.get('code').get('attr'),
+                    code_value
+                )
+
+        # @vocabulary-uri
+        vocabulary_uri_value = self.data.get(self.vocabulary_uri.get('key'))
+        if vocabulary_uri_value:
+            recipient_region_element.set(
+                self.vocabulary_uri.get('attr'),
+                vocabulary_uri_value
+            )
+        # />
+
+
+class LocationReference(ElementReference):
+    """
+    http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/location/
+    """
+    # <location
+    element = 'location'
+    # @ref
+    ref = {
+        'key': 'ref',
+        'attr': 'ref'
+    }
+    # >
+    # <location-reach
+    location_reach = {
+        'element': 'location-reach',
+        'key': 'location_reach',
+        # @code
+        'code': {
+            'key': 'code',
+            'attr': 'code'
+        }
+    }
+    # />
+    # <location-id
+    location_id = {
+        'element': 'location-id',
+        'key': 'location_id',
+        # @vocabulary
+        'vocabulary': {
+            'key': 'vocabulary',
+            'code': {
+                'key': 'code',
+                'attr': 'vocabulary'
+            }
+        },
+        # @code
+        'code': {
+            'key': 'code',
+            'attr': 'code'
+        }
+    }
+    # />
+    # <name>
+    name = {
+        'element': 'name',
+        'key': 'name'
+    }
+    # <narrative>
+    # Location name
+    # </narrative>
+    # </name>
+    # <description>
+    description = {
+        'element': 'description',
+        'key': 'description'
+    }
+    # <narrative>
+    # Location description
+    # </narrative>
+    # </description>
+    # <activity-description>
+    activity_description = {
+        'element': 'activity-description',
+        'key': 'activity_description'
+    }
+    # <narrative>
+    # A description that qualifies the activity taking place at the location.
+    # </narrative>
+    # </activity-description>
+    # <administrative
+    administrative = {
+        'element': 'administrative',
+        'key': 'administrative',
+        # @vocabulary
+        'vocabulary': {
+            'key': 'vocabulary',
+            'code': {
+                'key': 'code',
+                'attr': 'vocabulary'
+            }
+        },
+        # @code
+        'code': {
+            'key': 'code',
+            'attr': 'code'
+        },
+        # @level
+        'level': {
+            'key': 'level',
+            'attr': 'level'
+        },
+    }
+    # />
+    # <point
+    point = {
+        'element': 'point',
+        'key': 'point',
+        # @srsName
+        'srsName': {
+            'key': 'srsName',
+            'attr': 'srsName'
+        },
+        # <pos>
+        'pos': {
+            'element': 'pos',
+            'key': 'pos',
+            'latitude': {
+                'key': 'latitude'
+            },
+            'longitude': {
+                'key': 'longitude'
+            }
+        }
+        # </pos
+    }
+    # >
+    # </pos>
+    # <exactness
+    exactness = {
+        'element': 'exactness',
+        'key': 'exactness',
+        # @code
+        'code': {
+            'key': 'code',
+            'attr': 'code'
+        }
+    }
+    # />
+    # <location-class
+    location_class = {
+        'element': 'location-class',
+        'key': 'location_class',
+        # @code
+        'code': {
+            'key': 'code',
+            'attr': 'code'
+        }
+    }
+    # />
+    # <feature-designation
+    feature_designation = {
+        'element': 'feature-designation',
+        'key': 'feature_designation',
+        # @code
+        'code': {
+            'key': 'code',
+            'attr': 'code'
+        }
+    }
+
+    # />
+    # </location>
+
+    def create(self):
+        # <location
+        location_element = etree.SubElement(
+            self.parent_element, self.element
+        )
+
+        # @ref
+        ref_value = self.data.get(self.ref.get('key'))
+        if ref_value:
+            location_element.set(self.ref.get('attr'), ref_value)
+        # >
+
+        # <location-reach
+        location_reach_dict = self.data.get(self.location_reach.get('key'))
+        if location_reach_dict:
+            location_reach_element = etree.SubElement(
+                location_element, self.location_reach.get('element')
+            )
+            # @code
+            code_value = location_reach_dict.get(
+                self.location_reach.get('code').get('key')
+            )
+            if code_value:
+                location_reach_element.set(
+                    self.location_reach.get('code').get('attr'),
+                    code_value
+                )
+        # />
+
+        # <location-id
+        location_id_dict = self.data.get(self.location_id.get('key'))
+        if location_id_dict:
+            location_id_element = etree.SubElement(
+                location_element, self.location_id.get('element')
+            )
+
+            # @vocabulary
+            vocabulary_dict = location_id_dict.get(
+                self.location_id.get('vocabulary').get('key')
+            )
+            if vocabulary_dict:
+                code_value = vocabulary_dict.get(
+                    self.location_id.get('vocabulary').get('code').get('key')
+                )
+                if code_value:
+                    location_id_element.set(
+                        self.location_id.get(
+                            'vocabulary'
+                        ).get('code').get('attr'),
+                        code_value
+                    )
+
+            # @code
+            code_value = location_id_dict.get(
+                self.location_id.get('code').get('key')
+            )
+            if code_value:
+                location_id_element.set(
+                    self.location_id.get('code').get('attr'),
+                    code_value
+                )
+        # / >
+
+        # <name>
+        name_dict = self.data.get(self.name.get('key'))
+        if name_dict:
+            # <narrative>
+            ElementWithNarrativeReference(
+                location_element, name_dict, self.name.get('element')
+            ).create()
+            # </narrative>
+        # </name>
+
+        # <description>
+        description_dict = self.data.get(self.description.get('key'))
+        if description_dict:
+            # <narrative>
+            ElementWithNarrativeReference(
+                location_element,
+                description_dict,
+                self.description.get('element')
+            ).create()
+            # </narrative>
+        # </description>
+
+        # <activity-description>
+        activity_description_dict = self.data.get(
+            self.activity_description.get('key')
+        )
+        if activity_description_dict:
+            # <narrative>
+            ElementWithNarrativeReference(
+                location_element,
+                activity_description_dict,
+                self.activity_description.get('element')
+            ).create()
+            # </narrative>
+        # </activity-description>
+
+        administrative_list = self.data.get(self.administrative.get('key'))
+        if administrative_list:
+            for administrative_dict in administrative_list:
+                # <administrative
+                administrative_element = etree.SubElement(
+                    location_element, self.administrative.get('element')
+                )
+
+                # @vocabulary
+                vocabulary_dict = administrative_dict.get(
+                    self.administrative.get('vocabulary').get('key')
+                )
+                if vocabulary_dict:
+                    code_value = vocabulary_dict.get(
+                        self.administrative.get(
+                            'vocabulary'
+                        ).get('code').get('key')
+                    )
+                    if code_value:
+                        administrative_element.set(
+                            self.administrative.get(
+                                'vocabulary'
+                            ).get('code').get('attr'),
+                            code_value
+                        )
+
+                # @level
+                level_value = administrative_dict.get(
+                    self.administrative.get('level').get('key')
+                )
+                if level_value:
+                    administrative_element.set(
+                        self.administrative.get('level').get('attr'),
+                        str(level_value)
+                    )
+
+                # @code
+                code_value = administrative_dict.get(
+                    self.administrative.get('code').get('key')
+                )
+                if code_value:
+                    administrative_element.set(
+                        self.location_id.get('code').get('attr'),
+                        code_value
+                    )
+                # />
+
+        # <point
+        point_dict = self.data.get(self.point.get('key'))
+        if point_dict:
+            point_element = etree.SubElement(
+                location_element, self.point.get('element')
+            )
+
+            # @srsName
+            srs_name_value = point_dict.get(
+                self.point.get('srsName').get('key')
+            )
+            if srs_name_value:
+                point_element.set(
+                    self.point.get('srsName').get('attr'),
+                    srs_name_value
+                )
+            # >
+
+            # <pos>
+            pos_dict = point_dict.get(self.point.get('pos').get('key'))
+            if pos_dict:
+                pos_element = etree.SubElement(
+                    point_element, self.point.get('pos').get('element')
+                )
+
+                latitude_value = pos_dict.get(
+                    self.point.get('pos').get('latitude').get('key')
+                )
+
+                longitude_value = pos_dict.get(
+                    self.point.get('pos').get('longitude').get('key')
+                )
+
+                if latitude_value and longitude_value:
+                    pos_element.text = '{latitude} {longitude}'.format(
+                        latitude=latitude_value,
+                        longitude=longitude_value
+                    )
+            # </pos>
+        # </point>
+
+        # <exactness
+        exactness_dict = self.data.get(self.exactness.get('key'))
+        if exactness_dict:
+            exactness_element = etree.SubElement(
+                location_element, self.exactness.get('element')
+            )
+
+            # @code
+            code_value = location_reach_dict.get(
+                self.exactness.get('code').get('key')
+            )
+            if code_value:
+                exactness_element.set(
+                    self.exactness.get('code').get('attr'),
+                    code_value
+                )
+        # />
+
+        # <location-class
+        location_class_dict = self.data.get(self.location_class.get('key'))
+        if location_class_dict:
+            location_class_element = etree.SubElement(
+                location_element, self.location_class.get('element')
+            )
+
+            # @code
+            code_value = location_class_dict.get(
+                self.location_class.get('code').get('key')
+            )
+            if code_value:
+                location_class_element.set(
+                    self.location_class.get('code').get('attr'),
+                    code_value
+                )
+        # />
+
+        # <feature-designation
+        feature_designation_dict = self.data.get(
+            self.feature_designation.get('key')
+        )
+        if feature_designation_dict:
+            feature_designation_element = etree.SubElement(
+                location_element, self.feature_designation.get('element')
+            )
+
+            # @code
+            code_value = feature_designation_dict.get(
+                self.feature_designation.get('code').get('key')
+            )
+            if code_value:
+                feature_designation_element.set(
+                    self.feature_designation.get('code').get('attr'),
+                    code_value
+                )
+        # />
+
+        # </location>
