@@ -1904,3 +1904,11 @@ class DefaultFinanceTypeReference(CodeReference):
     # />
 
 
+class DefaultTiedStatusReference(CodeReference):
+    """
+    http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/default-tied-status/
+    """
+    # <collaboration-type
+    element = 'default-tied-status'
+    # />
+
