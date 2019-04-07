@@ -1840,12 +1840,9 @@ class PolicyMarkerReference(ElementReference):
         # </policy-marker>
 
 
-class CollaborationTypeReference(ElementReference):
-    """
-    http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/collaboration-type/
-    """
-    # <collaboration-type
-    element = 'collaboration-type'
+class CoderReference(ElementReference):
+    # <element
+    element = 'element'
     # @code
     code = {
         'key': 'code',
@@ -1854,16 +1851,34 @@ class CollaborationTypeReference(ElementReference):
     # />
 
     def create(self):
-        # <collaboration-type
-        collaboration_type_element = etree.SubElement(
+        # <element
+        code_element = etree.SubElement(
             self.parent_element, self.element
         )
 
         # @code
         DataAttribute(
-            collaboration_type_element,
+            code_element,
             self.code.get('attr'),
             self.data,
             self.code.get('key')
         ).set()
         # />
+
+
+class CollaborationTypeReference(CoderReference):
+    """
+    http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/collaboration-type/
+    """
+    # <collaboration-type
+    element = 'collaboration-type'
+    # />
+
+
+class DefaultFlowTypeReference(CoderReference):
+    """
+    http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/default-flow-type/
+    """
+    # <collaboration-type
+    element = 'default-flow-type'
+    # />
