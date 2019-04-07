@@ -424,7 +424,10 @@ class TransactionReference(ElementReference):
         },
         'type': {
             'key': 'type',
-            'attr': 'type'
+            'code': {
+                'key': 'code',
+                'attr': 'type'
+            }
         },
         'narratives': {
             'element': 'narrative',
@@ -675,12 +678,19 @@ class TransactionReference(ElementReference):
 
             # Attributes
             # Type
-            type_value = provider_organisation_dict.get(
+            type_dict = provider_organisation_dict.get(
                 self.provider_organisation.get('type').get('key')
             )
-            if type_value:
+            if type_dict:
+                type_value = type_dict.get(
+                    self.provider_organisation.get(
+                        'type'
+                    ).get('code').get('key')
+                )
                 provider_organisation_element.set(
-                    self.provider_organisation.get('type').get('attr'),
+                    self.provider_organisation.get(
+                        'type'
+                    ).get('code').get('attr'),
                     type_value
                 )
 
