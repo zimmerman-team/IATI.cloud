@@ -1840,33 +1840,44 @@ class PolicyMarkerReference(ElementReference):
         # </policy-marker>
 
 
-class CoderReference(ElementReference):
+class AttributeReference(ElementReference):
     # <element
     element = 'element'
-    # @code
-    code = {
-        'key': 'code',
-        'attr': 'code'
+    # @attr
+    attr = {
+        'key': 'attr',
+        'attr': 'attr'
     }
     # />
 
     def create(self):
         # <element
-        code_element = etree.SubElement(
+        attr_element = etree.SubElement(
             self.parent_element, self.element
         )
 
         # @code
         DataAttribute(
-            code_element,
-            self.code.get('attr'),
+            attr_element,
+            self.attr.get('attr'),
             self.data,
-            self.code.get('key')
+            self.attr.get('key')
         ).set()
         # />
 
 
-class CollaborationTypeReference(CoderReference):
+class CodeReference(AttributeReference):
+    # <element
+    element = 'element'
+    # @code
+    attr = {
+        'key': 'code',
+        'attr': 'code'
+    }
+    # />
+
+
+class CollaborationTypeReference(CodeReference):
     """
     http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/collaboration-type/
     """
@@ -1875,10 +1886,21 @@ class CollaborationTypeReference(CoderReference):
     # />
 
 
-class DefaultFlowTypeReference(CoderReference):
+class DefaultFlowTypeReference(CodeReference):
     """
     http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/default-flow-type/
     """
     # <collaboration-type
     element = 'default-flow-type'
     # />
+
+
+class DefaultFinanceTypeReference(CodeReference):
+    """
+    http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/default-finance-type/
+    """
+    # <collaboration-type
+    element = 'default-finance-type'
+    # />
+
+
