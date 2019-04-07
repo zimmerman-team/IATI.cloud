@@ -2049,3 +2049,30 @@ class PlannedDisbursementReference(ElementReference):
                 # Value type is {Decimal}, then convert it to string
                 value_element.text = str(value)
         # </planned-disbursement>
+
+
+class CapitalSpendReference(ElementReference):
+    """
+    http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/capital-spend/
+    """
+    # <capital-spend
+    element = 'capital-spend'
+    # @percentage
+    percentage = {
+        'attr': 'percentage'
+    }
+    # />
+
+    def create(self):
+        # <capital-spend
+        capital_spend_element = etree.SubElement(
+            self.parent_element, self.element
+        )
+
+        # @percentage
+        if self.data:
+            capital_spend_element.set(
+                self.percentage.get('attr'),
+                str(self.data)
+            )
+        # />
