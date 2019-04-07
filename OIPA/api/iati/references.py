@@ -1912,3 +1912,140 @@ class DefaultTiedStatusReference(CodeReference):
     element = 'default-tied-status'
     # />
 
+
+class PlannedDisbursementReference(ElementReference):
+    """
+    http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/planned-disbursement/
+    """
+    # <planned-disbursement
+    element = 'planned-disbursement'
+    # @type
+    _type = {
+        'key': 'type',
+        'code': {
+            'key': 'code',
+            'attr': 'type'
+        }
+    }
+    # <period-start
+    period_start = {
+        'element': 'period-start',
+        'key': 'period_start',
+        # @iso-date
+        'attr': 'iso-date'
+    }
+    # />
+    # <period-end
+    period_end = {
+        'element': 'period-end',
+        'key': 'period_end',
+        # @iso-date
+        'attr': 'iso-date'
+    }
+    # />
+    # <value
+    value = {
+        'element': 'value',
+        'key': 'value',
+        # @currency
+        'currency': {
+            'key': 'currency',
+            'code': {
+                'key': 'code',
+                'attr': 'currency'
+            }
+        },
+        # @value-date
+        'date': {
+            'key': 'date',
+            'attr': 'value-date'
+        },
+        # >
+        # Content
+        'value': {
+            'key': 'value'
+        }
+    }
+    # </value>
+    # </budget>
+
+    def create(self):
+        # <planned-disbursement
+        planned_disbursement_element = etree.SubElement(
+            self.parent_element, self.element
+        )
+
+        # @type
+        DataAttribute(
+            planned_disbursement_element,
+            self._type.get('code').get('attr'),
+            self.data,
+            self._type.get('code').get('key'),
+            self._type.get('key')
+        ).set()
+
+        # <period-start
+        period_start_value = self.data.get(self.period_start.get('key'))
+        if period_start_value:
+            period_start_element = etree.SubElement(
+                planned_disbursement_element, self.period_start.get('element')
+            )
+            # @iso-date
+            period_start_element.set(
+                self.period_start.get('attr'),
+                period_start_value
+            )
+        # />
+
+        # <period-end
+        period_end_value = self.data.get(self.period_end.get('key'))
+        if period_end_value:
+            period_end_element = etree.SubElement(
+                planned_disbursement_element, self.period_end.get('element')
+            )
+            # @iso-date
+            period_end_element.set(
+                self.period_end.get('attr'),
+                period_end_value
+            )
+        # />
+
+        # <value
+        value_dict = self.data.get(self.value.get('key'))
+        if value_dict:
+            value_element = etree.SubElement(
+                planned_disbursement_element, self.value.get('element')
+            )
+
+            # @currency
+            currency_dict = value_dict.get(
+                self.value.get('currency').get('key')
+            )
+            if currency_dict:
+                code_value = currency_dict.get(
+                    self.value.get('currency').get('code').get('key')
+                )
+
+                if code_value:
+                    value_element.set(
+                        self.value.get('currency').get('code').get('attr'),
+                        code_value
+                    )
+
+            # @value-date
+            value_date = value_dict.get(
+                self.value.get('date').get('key')
+            )
+            if value_date:
+                value_element.set(
+                    self.value.get('date').get('attr'),
+                    value_date
+                )
+            # >
+
+            # Content
+            value = value_dict.get(self.value.get('value').get('key'))
+            if value:
+                # Value type is {Decimal}, then convert it to string
+                value_element.text = str(value)
+        # </planned-disbursement>

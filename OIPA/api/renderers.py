@@ -27,7 +27,7 @@ from api.iati.references import (
     RecipientRegionReference, LocationReference,
     PolicyMarkerReference, CollaborationTypeReference,
     DefaultFlowTypeReference, DefaultFinanceTypeReference,
-    DefaultTiedStatusReference
+    DefaultTiedStatusReference, PlannedDisbursementReference
 )
 
 # TODO: Make this more generic - 2016-01-21
@@ -420,6 +420,7 @@ class IATIXMLRenderer(BaseRenderer):
         'default_flow_type': DefaultFlowTypeReference,
         'default_finance_type': DefaultFinanceTypeReference,
         'default_tied_status': DefaultTiedStatusReference,
+        'planned_disbursements': PlannedDisbursementReference,
     }
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
