@@ -3,6 +3,7 @@ This module reletated to IATI Standard version 2.03
 http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/
 """
 from lxml import etree
+from .attributes import DataAttribute
 
 
 class ElementReference(object):
@@ -80,8 +81,14 @@ class DescriptionReference(ElementWithNarrativeReference):
     http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/description/
     """
     element = 'description'
-    description_type_key = 'type'
-    attribute_type_name = 'type'
+    # @type
+    _type = {
+        'key': 'type',
+        'code': {
+            'key': 'code',
+            'attr': 'type'
+        }
+    }
 
     def create(self):
         description_element = etree.SubElement(
@@ -89,9 +96,13 @@ class DescriptionReference(ElementWithNarrativeReference):
         )
 
         # Set attribute type
-        description_type = self.data.get(self.description_type_key)
-        if description_type:
-            description_element.set(self.attribute_type_name, description_type)
+        type_dict = self.data.get(self._type.get('key'))
+        if type_dict:
+            type_value = type_dict.get(self._type.get('code').get('key'))
+            description_element.set(
+                self._type.get('code').get('attr'),
+                type_value
+            )
 
         self.create_narrative(description_element)
 
@@ -911,7 +922,7 @@ class SectorReference(ElementWithNarrativeReference):
         if percentage_value:
             sector_element.set(
                 self.percentage.get('attr'),
-                percentage_value
+                str(percentage_value)
             )
 
         # Narrative
@@ -1826,5 +1837,33 @@ class PolicyMarkerReference(ElementReference):
             self.data
         ).create_narrative(policy_marker_element)
         # </narrative>
-
         # </policy-marker>
+
+
+class CollaborationTypeReference(ElementReference):
+    """
+    http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/collaboration-type/
+    """
+    # <collaboration-type
+    element = 'collaboration-type'
+    # @code
+    code = {
+        'key': 'code',
+        'attr': 'code'
+    }
+    # />
+
+    def create(self):
+        # <collaboration-type
+        collaboration_type_element = etree.SubElement(
+            self.parent_element, self.element
+        )
+
+        # @code
+        DataAttribute(
+            collaboration_type_element,
+            self.code.get('attr'),
+            self.data,
+            self.code.get('key')
+        ).set()
+        # />
