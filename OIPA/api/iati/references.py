@@ -2071,6 +2071,17 @@ class DocumentLinkReference(ElementReference):
         }
     }
     # />
+    # <document-date
+    document_date = {
+        'element': 'document-date',
+        'key': 'document_date',
+        # @iso-date
+        'iso_date': {
+            'key': 'iso_date',
+            'attr': 'iso-date'
+        }
+    }
+    # />
 
     def create(self):
         # <document-link
@@ -2115,3 +2126,19 @@ class DocumentLinkReference(ElementReference):
                     self.category.get('code').get('key')
                 ).set()
                 # />
+
+        # <document-date
+        document_date_dict = self.data.get(self.document_date.get('key'))
+        if document_date_dict:
+            document_date_element = etree.SubElement(
+                document_link_element, self.document_date.get('element')
+            )
+
+            # @iso-date
+            DataAttribute(
+                document_date_element,
+                self.document_date.get('iso_date').get('attr'),
+                document_date_dict,
+                self.document_date.get('iso_date').get('key')
+            ).set()
+        # />
