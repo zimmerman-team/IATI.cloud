@@ -3,70 +3,8 @@ This module reletated to IATI Standard version 2.03
 http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/
 """
 from lxml import etree
-from .attributes import DataAttribute
-
-
-class ElementReference(object):
-    """
-    http://reference.iatistandard.org/203/activity-standard/elements/
-    """
-    element = None
-    parent_element = None
-    data = None
-
-    def __init__(self, parent_element, data, element=None):
-        self.parent_element = parent_element
-        self.data = data
-
-        if element:
-            self.element = element
-
-    def create(self):
-        pass
-
-
-class NarrativeReference(ElementReference):
-    """
-    http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/title/narrative/
-    """
-    element = 'narrative'
-    text_key = 'text'
-    lang_key = 'en'
-    language_key = 'language'
-    language_code_key = 'code'
-    default_language_code = 'en'
-
-    def create(self):
-        narrative_element = etree.SubElement(self.parent_element, self.element)
-        narrative_element.text = self.data.get(self.text_key)
-
-        language = self.data.get('language')
-        if language:
-            language_code = language.get(self.language_code_key)
-            if language_code not in [self.default_language_code, None]:
-                narrative_element.set(
-                    '{http://www.w3.org/XML/1998/namespace}lang',
-                    language_code
-                )
-
-
-class ElementWithNarrativeReference(ElementReference):
-    narrative_element = 'narrative'
-    narratives_key = 'narratives'
-
-    def create_narrative(self, parent_element):
-        if self.narratives_key in self.data:
-            for narrative in self.data.get(self.narratives_key):
-                narrative_reference = NarrativeReference(
-                    parent_element=parent_element,
-                    data=narrative
-                )
-                narrative_reference.create()
-
-    def create(self):
-        self.create_narrative(
-            etree.SubElement(self.parent_element, self.element)
-        )
+from api.iati.attributes import DataAttribute
+from api.iati.elements import ElementReference, ElementWithNarrativeReference
 
 
 class TitleReference(ElementWithNarrativeReference):
@@ -2086,3 +2024,94 @@ class CapitalSpendReference(ElementReference):
                 str(self.data)
             )
         # />
+
+
+class DocumentLinkReference(ElementReference):
+    """
+    http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/document-link/
+    """
+    # <document-link
+    element = 'document-link'
+    # @url
+    url = {
+        'key': 'url',
+        'attr': 'url'
+    }
+    # <title>
+    title = {
+        'element': 'title',
+        'key': 'title'
+    }
+    # <narrative>
+    # Title narrative
+    # </narrative>
+    # </title>
+    # TODO: <description></description>
+    # <category>
+    category = {
+        # category data in list
+        'list': 'categories',
+        'element': 'category',
+        'key': 'category',
+        'code': {
+            'key': 'code',
+            'attr': 'code'
+        }
+    }
+    # />
+    # <language
+    language = {
+        # category data in list
+        'list': 'languages',
+        'element': 'language',
+        'key': 'language',
+        'code': {
+            'key': 'code',
+            'attr': 'code'
+        }
+    }
+    # />
+
+    def create(self):
+        # <document-link
+        document_link_element = etree.SubElement(
+            self.parent_element, self.element
+        )
+
+        # @url
+        DataAttribute(
+            document_link_element,
+            self.url.get('attr'),
+            self.data,
+            self.url.get('key')
+        ).set()
+
+        # <title>
+        # <narrative>
+        ElementWithNarrativeReference(
+            parent_element=document_link_element,
+            data=self.data.get(self.title.get('key')),
+            element=self.title.get('element')
+        ).create()
+        # </narrative>
+        # </title>
+
+        categories = self.data.get(self.category.get('list'))
+        for category in categories:
+            category_dict = category.get(
+                self.category.get('key')
+            )
+            if category_dict:
+                # <category
+                category_element = etree.SubElement(
+                    document_link_element,
+                    self.category.get('element')
+                )
+                # @code
+                DataAttribute(
+                    category_element,
+                    self.category.get('code').get('attr'),
+                    category_dict,
+                    self.category.get('code').get('key')
+                ).set()
+                # />
