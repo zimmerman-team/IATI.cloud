@@ -67,6 +67,26 @@
       <narrative>Movement, Emergency and Post-Crisis Migration Management</narrative>
     </sector>
     <sector code="72050" vocabulary="1" />
+    <tag vocabulary="1" code="1">
+      <narrative>A description of the tag</narrative>
+    </tag>
+    <tag vocabulary="99" vocabulary-uri="http://example.com/vocab.html" code="T1">
+      <narrative>A description of the tag</narrative>
+    </tag>
+    <country-budget-items vocabulary="2">
+        <budget-item code="1.1.1">
+            <description>
+                <narrative>Description text</narrative>
+            </description>
+        </budget-item>
+    </country-budget-items>
+    <humanitarian-scope type="1" vocabulary="99" vocabulary-uri="http://example.com/vocab.html" code="5">
+        <narrative>Nepal Earthquake (April 2015)</narrative>
+    </humanitarian-scope>
+    <policy-marker vocabulary="1" code="2" significance="3" vocabulary-uri="http://example.com/vocab.html">
+        <narrative>Nepal Earthquake (April 2015)</narrative>
+    </policy-marker>
+    <collaboration-type code="1" />
     <budget status="2" type="1">
       <period-start iso-date="2018-03-13" />
       <period-end iso-date="2019-03-12" />

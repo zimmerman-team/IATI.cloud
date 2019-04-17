@@ -3,69 +3,8 @@ This module reletated to IATI Standard version 2.03
 http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/
 """
 from lxml import etree
-
-
-class ElementReference(object):
-    """
-    http://reference.iatistandard.org/203/activity-standard/elements/
-    """
-    element = None
-    parent_element = None
-    data = None
-
-    def __init__(self, parent_element, data, element=None):
-        self.parent_element = parent_element
-        self.data = data
-
-        if element:
-            self.element = element
-
-    def create(self):
-        pass
-
-
-class NarrativeReference(ElementReference):
-    """
-    http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/title/narrative/
-    """
-    element = 'narrative'
-    text_key = 'text'
-    lang_key = 'en'
-    language_key = 'language'
-    language_code_key = 'code'
-    default_language_code = 'en'
-
-    def create(self):
-        narrative_element = etree.SubElement(self.parent_element, self.element)
-        narrative_element.text = self.data.get(self.text_key)
-
-        language = self.data.get('language')
-        if language:
-            language_code = language.get(self.language_code_key)
-            if language_code not in [self.default_language_code, None]:
-                narrative_element.set(
-                    '{http://www.w3.org/XML/1998/namespace}lang',
-                    language_code
-                )
-
-
-class ElementWithNarrativeReference(ElementReference):
-    narrative_element = 'narrative'
-    narratives_key = 'narratives'
-
-    def create_narrative(self, parent_element):
-        if self.narratives_key in self.data:
-            for narrative in self.data.get(self.narratives_key):
-                narrative_reference = NarrativeReference(
-                    parent_element=parent_element,
-                    data=narrative
-                )
-                narrative_reference.create()
-
-    def create(self):
-        self.create_narrative(
-            etree.SubElement(self.parent_element, self.element)
-        )
+from api.iati.attributes import DataAttribute
+from api.iati.elements import ElementReference, ElementWithNarrativeReference
 
 
 class TitleReference(ElementWithNarrativeReference):
@@ -80,8 +19,14 @@ class DescriptionReference(ElementWithNarrativeReference):
     http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/description/
     """
     element = 'description'
-    description_type_key = 'type'
-    attribute_type_name = 'type'
+    # @type
+    _type = {
+        'key': 'type',
+        'code': {
+            'key': 'code',
+            'attr': 'type'
+        }
+    }
 
     def create(self):
         description_element = etree.SubElement(
@@ -89,9 +34,13 @@ class DescriptionReference(ElementWithNarrativeReference):
         )
 
         # Set attribute type
-        description_type = self.data.get(self.description_type_key)
-        if description_type:
-            description_element.set(self.attribute_type_name, description_type)
+        type_dict = self.data.get(self._type.get('key'))
+        if type_dict:
+            type_value = type_dict.get(self._type.get('code').get('key'))
+            description_element.set(
+                self._type.get('code').get('attr'),
+                type_value
+            )
 
         self.create_narrative(description_element)
 
@@ -413,7 +362,10 @@ class TransactionReference(ElementReference):
         },
         'type': {
             'key': 'type',
-            'attr': 'type'
+            'code': {
+                'key': 'code',
+                'attr': 'type'
+            }
         },
         'narratives': {
             'element': 'narrative',
@@ -664,12 +616,19 @@ class TransactionReference(ElementReference):
 
             # Attributes
             # Type
-            type_value = provider_organisation_dict.get(
+            type_dict = provider_organisation_dict.get(
                 self.provider_organisation.get('type').get('key')
             )
-            if type_value:
+            if type_dict:
+                type_value = type_dict.get(
+                    self.provider_organisation.get(
+                        'type'
+                    ).get('code').get('key')
+                )
                 provider_organisation_element.set(
-                    self.provider_organisation.get('type').get('attr'),
+                    self.provider_organisation.get(
+                        'type'
+                    ).get('code').get('attr'),
                     type_value
                 )
 
@@ -911,7 +870,7 @@ class SectorReference(ElementWithNarrativeReference):
         if percentage_value:
             sector_element.set(
                 self.percentage.get('attr'),
-                percentage_value
+                str(percentage_value)
             )
 
         # Narrative
@@ -1723,3 +1682,463 @@ class LocationReference(ElementReference):
         # />
 
         # </location>
+
+
+class PolicyMarkerReference(ElementReference):
+    """
+    http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/policy-marker/
+    """
+    # <policy-marker
+    element = 'policy-marker'
+    # @vocabulary
+    vocabulary = {
+        'key': 'vocabulary',
+        'code': {
+            'key': 'code',
+            'attr': 'vocabulary'
+        }
+    }
+    # @vocabulary-uri
+    vocabulary_uri = {
+        'key': 'vocabulary_uri',
+        'attr': 'vocabulary-uri'
+    }
+    # @code
+    code = {
+        'key': 'policy_marker',
+        'code': {
+            'key': 'code',
+            'attr': 'code'
+        }
+    }
+    # @significance
+    significance = {
+        'key': 'significance',
+        'code': {
+            'key': 'code',
+            'attr': 'significance'
+        }
+    }
+    # >
+    # <narrative>
+    # A policy marker description
+    # </narrative>
+    # </policy-marker>
+
+    def create(self):
+        # <policy-marker
+        policy_marker_element = etree.SubElement(
+            self.parent_element, self.element
+        )
+
+        # @vocabulary
+        vocabulary_dict = self.data.get(self.vocabulary.get('key'))
+        if vocabulary_dict:
+            code_value = vocabulary_dict.get(
+                self.vocabulary.get('code').get('key')
+            )
+
+            if code_value:
+                policy_marker_element.set(
+                    self.vocabulary.get('code').get('attr'),
+                    code_value
+                )
+
+        # @vocabulary-uri
+        vocabulary_uri_value = self.data.get(self.vocabulary_uri.get('key'))
+        if vocabulary_uri_value:
+            policy_marker_element.set(
+                self.vocabulary_uri.get('attr'),
+                vocabulary_uri_value
+            )
+
+        # @code
+        code_dict = self.data.get(self.code.get('key'))
+        if code_dict:
+            code_value = code_dict.get(
+                self.code.get('code').get('key')
+            )
+
+            if code_value:
+                policy_marker_element.set(
+                    self.code.get('code').get('attr'),
+                    code_value
+                )
+
+        # @significance
+        significance_dict = self.data.get(self.significance.get('key'))
+        if significance_dict:
+            code_value = significance_dict.get(
+                self.significance.get('code').get('key')
+            )
+
+            if code_value:
+                policy_marker_element.set(
+                    self.significance.get('code').get('attr'),
+                    code_value
+                )
+        # >
+
+        # <narrative>
+        ElementWithNarrativeReference(
+            None,
+            self.data
+        ).create_narrative(policy_marker_element)
+        # </narrative>
+        # </policy-marker>
+
+
+class AttributeReference(ElementReference):
+    # <element
+    element = 'element'
+    # @attr
+    attr = {
+        'key': 'attr',
+        'attr': 'attr'
+    }
+    # />
+
+    def create(self):
+        # <element
+        attr_element = etree.SubElement(
+            self.parent_element, self.element
+        )
+
+        # @code
+        DataAttribute(
+            attr_element,
+            self.attr.get('attr'),
+            self.data,
+            self.attr.get('key')
+        ).set()
+        # />
+
+
+class CodeReference(AttributeReference):
+    # <element
+    element = 'element'
+    # @code
+    attr = {
+        'key': 'code',
+        'attr': 'code'
+    }
+    # />
+
+
+class CollaborationTypeReference(CodeReference):
+    """
+    http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/collaboration-type/
+    """
+    # <collaboration-type
+    element = 'collaboration-type'
+    # />
+
+
+class DefaultFlowTypeReference(CodeReference):
+    """
+    http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/default-flow-type/
+    """
+    # <collaboration-type
+    element = 'default-flow-type'
+    # />
+
+
+class DefaultFinanceTypeReference(CodeReference):
+    """
+    http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/default-finance-type/
+    """
+    # <collaboration-type
+    element = 'default-finance-type'
+    # />
+
+
+class DefaultTiedStatusReference(CodeReference):
+    """
+    http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/default-tied-status/
+    """
+    # <collaboration-type
+    element = 'default-tied-status'
+    # />
+
+
+class PlannedDisbursementReference(ElementReference):
+    """
+    http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/planned-disbursement/
+    """
+    # <planned-disbursement
+    element = 'planned-disbursement'
+    # @type
+    _type = {
+        'key': 'type',
+        'code': {
+            'key': 'code',
+            'attr': 'type'
+        }
+    }
+    # <period-start
+    period_start = {
+        'element': 'period-start',
+        'key': 'period_start',
+        # @iso-date
+        'attr': 'iso-date'
+    }
+    # />
+    # <period-end
+    period_end = {
+        'element': 'period-end',
+        'key': 'period_end',
+        # @iso-date
+        'attr': 'iso-date'
+    }
+    # />
+    # <value
+    value = {
+        'element': 'value',
+        'key': 'value',
+        # @currency
+        'currency': {
+            'key': 'currency',
+            'code': {
+                'key': 'code',
+                'attr': 'currency'
+            }
+        },
+        # @value-date
+        'date': {
+            'key': 'date',
+            'attr': 'value-date'
+        },
+        # >
+        # Content
+        'value': {
+            'key': 'value'
+        }
+    }
+    # </value>
+    # </budget>
+
+    def create(self):
+        # <planned-disbursement
+        planned_disbursement_element = etree.SubElement(
+            self.parent_element, self.element
+        )
+
+        # @type
+        DataAttribute(
+            planned_disbursement_element,
+            self._type.get('code').get('attr'),
+            self.data,
+            self._type.get('code').get('key'),
+            self._type.get('key')
+        ).set()
+
+        # <period-start
+        period_start_value = self.data.get(self.period_start.get('key'))
+        if period_start_value:
+            period_start_element = etree.SubElement(
+                planned_disbursement_element, self.period_start.get('element')
+            )
+            # @iso-date
+            period_start_element.set(
+                self.period_start.get('attr'),
+                period_start_value
+            )
+        # />
+
+        # <period-end
+        period_end_value = self.data.get(self.period_end.get('key'))
+        if period_end_value:
+            period_end_element = etree.SubElement(
+                planned_disbursement_element, self.period_end.get('element')
+            )
+            # @iso-date
+            period_end_element.set(
+                self.period_end.get('attr'),
+                period_end_value
+            )
+        # />
+
+        # <value
+        value_dict = self.data.get(self.value.get('key'))
+        if value_dict:
+            value_element = etree.SubElement(
+                planned_disbursement_element, self.value.get('element')
+            )
+
+            # @currency
+            currency_dict = value_dict.get(
+                self.value.get('currency').get('key')
+            )
+            if currency_dict:
+                code_value = currency_dict.get(
+                    self.value.get('currency').get('code').get('key')
+                )
+
+                if code_value:
+                    value_element.set(
+                        self.value.get('currency').get('code').get('attr'),
+                        code_value
+                    )
+
+            # @value-date
+            value_date = value_dict.get(
+                self.value.get('date').get('key')
+            )
+            if value_date:
+                value_element.set(
+                    self.value.get('date').get('attr'),
+                    value_date
+                )
+            # >
+
+            # Content
+            value = value_dict.get(self.value.get('value').get('key'))
+            if value:
+                # Value type is {Decimal}, then convert it to string
+                value_element.text = str(value)
+        # </planned-disbursement>
+
+
+class CapitalSpendReference(ElementReference):
+    """
+    http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/capital-spend/
+    """
+    # <capital-spend
+    element = 'capital-spend'
+    # @percentage
+    percentage = {
+        'attr': 'percentage'
+    }
+    # />
+
+    def create(self):
+        # <capital-spend
+        capital_spend_element = etree.SubElement(
+            self.parent_element, self.element
+        )
+
+        # @percentage
+        if self.data:
+            capital_spend_element.set(
+                self.percentage.get('attr'),
+                str(self.data)
+            )
+        # />
+
+
+class DocumentLinkReference(ElementReference):
+    """
+    http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/document-link/
+    """
+    # <document-link
+    element = 'document-link'
+    # @url
+    url = {
+        'key': 'url',
+        'attr': 'url'
+    }
+    # <title>
+    title = {
+        'element': 'title',
+        'key': 'title'
+    }
+    # <narrative>
+    # Title narrative
+    # </narrative>
+    # </title>
+    # TODO: <description></description>
+    # <category>
+    category = {
+        # category data in list
+        'list': 'categories',
+        'element': 'category',
+        'key': 'category',
+        'code': {
+            'key': 'code',
+            'attr': 'code'
+        }
+    }
+    # />
+    # <language
+    language = {
+        # category data in list
+        'list': 'languages',
+        'element': 'language',
+        'key': 'language',
+        'code': {
+            'key': 'code',
+            'attr': 'code'
+        }
+    }
+    # />
+    # <document-date
+    document_date = {
+        'element': 'document-date',
+        'key': 'document_date',
+        # @iso-date
+        'iso_date': {
+            'key': 'iso_date',
+            'attr': 'iso-date'
+        }
+    }
+    # />
+
+    def create(self):
+        # <document-link
+        document_link_element = etree.SubElement(
+            self.parent_element, self.element
+        )
+
+        # @url
+        DataAttribute(
+            document_link_element,
+            self.url.get('attr'),
+            self.data,
+            self.url.get('key')
+        ).set()
+
+        # <title>
+        # <narrative>
+        ElementWithNarrativeReference(
+            parent_element=document_link_element,
+            data=self.data.get(self.title.get('key')),
+            element=self.title.get('element')
+        ).create()
+        # </narrative>
+        # </title>
+
+        categories = self.data.get(self.category.get('list'))
+        for category in categories:
+            category_dict = category.get(
+                self.category.get('key')
+            )
+            if category_dict:
+                # <category
+                category_element = etree.SubElement(
+                    document_link_element,
+                    self.category.get('element')
+                )
+                # @code
+                DataAttribute(
+                    category_element,
+                    self.category.get('code').get('attr'),
+                    category_dict,
+                    self.category.get('code').get('key')
+                ).set()
+                # />
+
+        # <document-date
+        document_date_dict = self.data.get(self.document_date.get('key'))
+        if document_date_dict:
+            document_date_element = etree.SubElement(
+                document_link_element, self.document_date.get('element')
+            )
+
+            # @iso-date
+            DataAttribute(
+                document_date_element,
+                self.document_date.get('iso_date').get('attr'),
+                document_date_dict,
+                self.document_date.get('iso_date').get('key')
+            ).set()
+        # />
