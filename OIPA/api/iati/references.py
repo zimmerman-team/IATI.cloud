@@ -1799,19 +1799,20 @@ class AttributeReference(ElementReference):
     # />
 
     def create(self):
-        # <element
-        attr_element = etree.SubElement(
-            self.parent_element, self.element
-        )
+        if self.data:
+            # <element
+            attr_element = etree.SubElement(
+                self.parent_element, self.element
+            )
 
-        # @code
-        DataAttribute(
-            attr_element,
-            self.attr.get('attr'),
-            self.data,
-            self.attr.get('key')
-        ).set()
-        # />
+            # @code
+            DataAttribute(
+                attr_element,
+                self.attr.get('attr'),
+                self.data,
+                self.attr.get('key')
+            ).set()
+            # />
 
 
 class CodeReference(AttributeReference):
@@ -2012,18 +2013,18 @@ class CapitalSpendReference(ElementReference):
     # />
 
     def create(self):
-        # <capital-spend
-        capital_spend_element = etree.SubElement(
-            self.parent_element, self.element
-        )
-
-        # @percentage
         if self.data:
+            # <capital-spend
+            capital_spend_element = etree.SubElement(
+                self.parent_element, self.element
+            )
+
+            # @percentage
             capital_spend_element.set(
                 self.percentage.get('attr'),
                 str(self.data)
             )
-        # />
+            # />
 
 
 class DocumentLinkReference(ElementReference):
@@ -2141,4 +2142,64 @@ class DocumentLinkReference(ElementReference):
                 document_date_dict,
                 self.document_date.get('iso_date').get('key')
             ).set()
+        # />
+
+
+class LegacyDataReference(ElementReference):
+    """
+    http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/legacy-data/
+    """
+    # <document-link
+    element = 'legacy-data'
+    legacy_data = {
+        'list': 'legacy_data',
+        'key': 'legacy_data',
+        # @name
+        'name': {
+            'key': 'name',
+            'attr': 'name'
+        },
+        # @value
+        'value': {
+            'key': 'value',
+            'attr': 'value'
+        },
+        # @iati-equivalent
+        'iati_equivalent': {
+            'key': 'iati_equivalent',
+            'attr': 'iati-equivalent'
+        }
+    }
+    # />
+
+    def create(self):
+        # <document-link
+        legacy_data_element = etree.SubElement(
+            self.parent_element, self.element
+        )
+
+        # @name
+        DataAttribute(
+            legacy_data_element,
+            self.legacy_data.get('name').get('attr'),
+            self.data,
+            self.legacy_data.get('name').get('key')
+        ).set()
+
+        # @value
+        DataAttribute(
+            legacy_data_element,
+            self.legacy_data.get('value').get('attr'),
+            self.data,
+            self.legacy_data.get('value').get('key')
+        ).set()
+
+        # @iati-equivalent
+        DataAttribute(
+            legacy_data_element,
+            self.legacy_data.get('iati_equivalent').get('attr'),
+            self.data,
+            self.legacy_data.get('iati_equivalent').get('key')
+        ).set()
+
         # />

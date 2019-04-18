@@ -11,10 +11,11 @@ class Attribute(object):
         self.value = value
 
     def set(self):
-        self.element.set(
-            self.name,
-            self.value
-        )
+        if self.value:
+            self.element.set(
+                self.name,
+                self.value
+            )
 
 
 class DataAttribute(Attribute):
@@ -27,6 +28,4 @@ class DataAttribute(Attribute):
             else:
                 value = data.get(key)
 
-            super(DataAttribute, self).__init__(element, name, value)
-        else:
-            raise TypeError('Data should be dict type')
+        super(DataAttribute, self).__init__(element, name, value)
