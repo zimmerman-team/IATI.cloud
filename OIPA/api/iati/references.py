@@ -2203,3 +2203,363 @@ class LegacyDataReference(ElementReference):
         ).set()
 
         # />
+
+
+class CrsAddReference(ElementReference):
+    """
+    http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/crs-add/
+    """
+    # <crs-add>
+    element = 'crs-add'
+    # <other-flags
+    other_flags = {
+        'element': 'other-flags',
+        'list': 'other_flags',
+        # @code
+        'code': {
+            'dict': 'other_flags',
+            'key': 'code',
+            'attr': 'code'
+        },
+        # @significance
+        'significance': {
+            'key': 'significance',
+            'attr': 'significance'
+        }
+    }
+    # />
+    # <loan-terms
+    loan_terms = {
+        'element': 'loan-terms',
+        'key': 'loan_terms',
+        # @rate-1
+        'rate_1': {
+            'key': 'rate_1',
+            'attr': 'rate-1'
+        },
+        # @rate-2
+        'rate_2': {
+            'key': 'rate_2',
+            'attr': 'rate-2'
+        },
+        # />
+        # <repayment-type
+        'repayment_type': {
+            'element': 'repayment-type',
+            'key': 'repayment_type',
+            # @code
+            'code': {
+                'key': 'code',
+                'attr': 'code'
+            }
+        },
+        # />
+        # <repayment-plan
+        'repayment_plan': {
+            'element': 'repayment-plan',
+            'key': 'repayment_plan',
+            # @code
+            'code': {
+                'key': 'code',
+                'attr': 'code'
+            }
+        },
+        # />
+        # <commitment-date
+        'commitment_date': {
+            'element': 'commitment-date',
+            'key': 'commitment_date',
+            # @iso-date
+            'attr': 'iso-date'
+        },
+        # />
+        # <repayment-first-date
+        'repayment_first_date': {
+            'element': 'repayment-first-date',
+            'key': 'repayment_first_date',
+            # @iso-date
+            'attr': 'iso-date'
+        },
+        # />
+        # <repayment-final-date
+        'repayment_final_date': {
+            'element': 'repayment-final-date',
+            'key': 'repayment_final_date',
+            # @iso-date
+            'attr': 'iso-date'
+        }
+        # />
+    }
+    # </loan-terms>
+    # <loan-status
+    loan_status = {
+        'element': 'loan-status',
+        'key': 'loan_status',
+        # @year
+        'year': {
+            'key': 'year',
+            'attr': 'year'
+        },
+        # @currency
+        'currency': {
+            'dict': 'currency',
+            'key': 'code',
+            'attr': 'currency'
+        },
+        # @value-date
+        'value_date': {
+            'key': 'value_date',
+            'attr': 'value-date'
+        },
+        # <interest-received>
+        'interest_received': {
+            'element': 'interest-received',
+            'key': 'interest_received'
+        },
+        # </interest-received>
+        # <principal-outstanding>
+        'principal_outstanding': {
+            'element': 'principal-outstanding',
+            'key': 'principal_outstanding'
+        },
+        # </principal-outstanding>
+        # <principal-arrears>
+        'principal_arrears': {
+            'element': 'principal-arrears',
+            'key': 'principal_arrears'
+        },
+        # </principal-arrears>
+        # <interest-arrears>
+        'interest_arrears': {
+            'element': 'interest-arrears',
+            'key': 'interest_arrears'
+        }
+        # </interest-arrears>
+    }
+    # </loan-status>
+    # TODO: No Channel code
+    # <channel-code>
+    # </channel-code>
+    # <crs-add/>
+
+    def create(self):
+        # <crs-add>
+        crs_add_element = etree.SubElement(
+            self.parent_element, self.element
+        )
+
+        other_flags_list = self.data.get(self.other_flags.get('list'))
+        for other_flags_dict in other_flags_list:
+            # <other-flags
+            other_flags_element = etree.SubElement(
+                crs_add_element, self.other_flags.get('element')
+            )
+
+            code_dict = other_flags_dict.get(
+                self.other_flags.get('code').get('dict')
+            )
+            if code_dict:
+                # @code
+                DataAttribute(
+                    other_flags_element,
+                    self.other_flags.get('code').get('attr'),
+                    code_dict,
+                    self.other_flags.get('code').get('key')
+                ).set()
+
+            # @significance
+            value = other_flags_dict.get(
+                self.other_flags.get('significance').get('key')
+            )
+            other_flags_element.set(
+                self.other_flags.get('significance').get('attr'),
+                '1' if value == 'True' else '0'
+            )
+            # />
+
+        loan_terms_dict = self.data.get(self.loan_terms.get('key'))
+        if loan_terms_dict:
+            # <loan-terms
+            loan_terms_element = etree.SubElement(
+                crs_add_element, self.loan_terms.get('element')
+            )
+
+            # @rate-1
+            DataAttribute(
+                loan_terms_element,
+                self.loan_terms.get('rate_1').get('attr'),
+                loan_terms_dict,
+                self.loan_terms.get('rate_1').get('key')
+            ).set()
+
+            # @rate-2
+            DataAttribute(
+                loan_terms_element,
+                self.loan_terms.get('rate_2').get('attr'),
+                loan_terms_dict,
+                self.loan_terms.get('rate_2').get('key')
+            ).set()
+            # >
+
+            # <repayment-type
+            CodeReference(
+                loan_terms_element,
+                loan_terms_dict.get(
+                    self.loan_terms.get('repayment_type').get('key')
+                ),
+                self.loan_terms.get('repayment_type').get('element')
+            ).create()
+            # />
+
+            # <repayment-plan
+            CodeReference(
+                loan_terms_element,
+                loan_terms_dict.get(
+                    self.loan_terms.get('repayment_plan').get('key')
+                ),
+                self.loan_terms.get('repayment_plan').get('element')
+            ).create()
+            # />
+
+            # <commitment-date
+            commitment_date_element = etree.SubElement(
+                loan_terms_element,
+                self.loan_terms.get('commitment_date').get('element')
+            )
+            commitment_date_element.set(
+                self.loan_terms.get('commitment_date').get('attr'),
+                loan_terms_dict.get(
+                    self.loan_terms.get('commitment_date').get('key')
+                )
+            )
+            # />
+
+            # <repayment-first-date
+            repayment_first_date_value = loan_terms_dict.get(
+                self.loan_terms.get('repayment_first_date').get('key')
+            )
+            if repayment_first_date_value:
+                repayment_first_date_element = etree.SubElement(
+                    loan_terms_element,
+                    self.loan_terms.get('repayment_first_date').get('element')
+                )
+                repayment_first_date_element.set(
+                    self.loan_terms.get('repayment_first_date').get('attr'),
+                    repayment_first_date_value
+                )
+            # />
+
+            # <repayment-final-date
+            repayment_final_date_value = loan_terms_dict.get(
+                self.loan_terms.get('repayment_final_date').get('key')
+            )
+            if repayment_final_date_value:
+                repayment_final_date_element = etree.SubElement(
+                    loan_terms_element,
+                    self.loan_terms.get('repayment_final_date').get('element')
+                )
+                repayment_final_date_element.set(
+                    self.loan_terms.get('repayment_final_date').get('attr'),
+                    repayment_final_date_value
+                )
+            # />
+            # </loan-terms>
+
+        loan_status_dict = self.data.get(self.loan_status.get('key'))
+        if loan_status_dict:
+            # <loan-status
+            loan_status_element = etree.SubElement(
+                crs_add_element, self.loan_status.get('element')
+            )
+
+            # @year
+            year_value = loan_status_dict.get(
+                self.loan_status.get('year').get('key')
+            )
+            if year_value:
+                loan_status_element.set(
+                    self.loan_status.get('year').get('attr'),
+                    str(year_value)
+                )
+
+            # @currency
+            currency_dict = loan_status_dict.get(
+                self.loan_status.get('currency').get('dict')
+            )
+            if currency_dict:
+                currency_value = currency_dict.get(
+                    self.loan_status.get('currency').get('key')
+                )
+                
+                if currency_value:
+                    loan_status_element.set(
+                        self.loan_status.get('currency').get('attr'),
+                        str(currency_value)
+                    )
+
+            value_date_value = loan_status_dict.get(
+                self.loan_status.get('value_date').get('key')
+            )
+            if value_date_value:
+                loan_status_element.set(
+                    self.loan_status.get('value_date').get('attr'),
+                    str(value_date_value)
+                )
+            # >
+
+            # <interest-received>
+            interest_received_value = loan_status_dict.get(
+                self.loan_status.get('interest_received').get('key')
+            )
+            if interest_received_value:
+                interest_received_element = etree.SubElement(
+                    loan_status_element,
+                    self.loan_status.get('interest_received').get('element')
+                )
+                interest_received_element.text = interest_received_value
+            # </interest-received>
+
+            # <principal-outstanding>
+            principal_outstanding_value = loan_status_dict.get(
+                self.loan_status.get('principal_outstanding').get('key')
+            )
+            if principal_outstanding_value:
+                principal_outstanding_element = etree.SubElement(
+                    loan_status_element,
+                    self.loan_status.get(
+                        'principal_outstanding'
+                    ).get('element')
+                )
+                principal_outstanding_element.text = \
+                    principal_outstanding_value
+            # </principal-outstanding>
+
+            # <principal-arrears>
+            principal_arrears_value = loan_status_dict.get(
+                self.loan_status.get('principal_arrears').get('key')
+            )
+            if principal_arrears_value:
+                principal_arrears_value_element = etree.SubElement(
+                    loan_status_element,
+                    self.loan_status.get(
+                        'principal_arrears'
+                    ).get('element')
+                )
+                principal_arrears_value_element.text = principal_arrears_value
+            # </principal-arrears>
+
+            # <interest-arrears>
+            interest_arrears_value = loan_status_dict.get(
+                self.loan_status.get('interest_arrears').get('key')
+            )
+            if interest_arrears_value:
+                principal_arrears_value_element = etree.SubElement(
+                    loan_status_element,
+                    self.loan_status.get(
+                        'interest_arrears'
+                    ).get('element')
+                )
+                principal_arrears_value_element.text = interest_arrears_value
+            # </interest-arrears>
+
+        # </crs-add>
