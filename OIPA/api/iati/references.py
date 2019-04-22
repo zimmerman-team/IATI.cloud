@@ -2568,7 +2568,30 @@ class CrsAddReference(ElementReference):
         # </crs-add>
 
 
-class ResultReference(ElementReference):
+class BaseReference(ElementReference):
+    """
+    Base of reference
+    """
+    # <element>
+    attributes = []
+    children = []
+    element_record = ElementRecord(
+        name='element'
+    )
+    # </element>
+
+    def create(self):
+        # <element>
+        element_base = ElementBase(
+            element_record=self.element_record,
+            parent_element=self.parent_element,
+            data=self.data
+        )
+        element_base.create()
+        # </element>
+
+
+class ResultReference(BaseReference):
     """
     http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/result/
     """
@@ -2800,12 +2823,32 @@ class ResultReference(ElementReference):
     )
     # </result>
 
-    def create(self):
-        # <result>
-        element_base = ElementBase(
-            element_record=self.element_record,
-            parent_element=self.parent_element,
-            data=self.data
+
+class FssReference(BaseReference):
+    """
+    http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/fss/
+    """
+
+    # <fss>
+    attributes = [
+        # @extraction-date
+        AttributeRecord(
+            name='extraction-date',
+            key='extraction_date'
+        ),
+        # @priority
+        AttributeRecord(
+            name='priority',
+            key='priority'
+        ),
+        # @phaseout-year
+        AttributeRecord(
+            name='phaseout-year',
+            key='phaseout_year'
         )
-        element_base.create()
-        # </result>
+    ]
+    element_record = ElementRecord(
+        name='fss',
+        attributes=attributes
+    )
+    # </fss>
