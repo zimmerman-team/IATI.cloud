@@ -2889,3 +2889,29 @@ class HumanitarianScopeReference(BaseReference):
         attributes=attributes
     )
     # </humanitarian-scope>
+
+
+class RelatedActivityReference(BaseReference):
+    """
+    http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/related-activity/
+    """
+
+    # <related-activity>
+    attributes = [
+        # @ref
+        AttributeRecord(
+            name='ref',
+            key='ref'
+        ),
+        # @type
+        AttributeRecord(
+            name='type',
+            key='code',
+            dict_key='type'
+        )
+    ]
+    element_record = ElementRecord(
+        name='related-activity',
+        attributes=attributes
+    )
+    # </related-activity>
