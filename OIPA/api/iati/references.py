@@ -2930,9 +2930,34 @@ class ConditionsReference(BaseReference):
             key='attached'
         ),
     ]
+    children = [
+        # <condition>
+        ElementRecord(
+            name='condition',
+            key='condition',
+            attributes=[
+                # @type
+                AttributeRecord(
+                    name='type',
+                    key='code',
+                    dict_key='type'
+                ),
+            ],
+            children=[
+                # <narrative>
+                ElementRecord(
+                    name=None,
+                    element_type=ElementWithNarrativeReference
+                ),
+                # </narrative>
+            ]
+        ),
+        # </condition>
+    ]
     element_record = ElementRecord(
         name='conditions',
-        attributes=attributes
+        attributes=attributes,
+        children=children
     )
     # </conditions>
 
