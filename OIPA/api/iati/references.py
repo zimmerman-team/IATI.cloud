@@ -2619,8 +2619,8 @@ class ResultReference(BaseReference):
             key='title',
             element_type=ElementWithNarrativeReference
         ),
-        # </title>
         # </narrative>
+        # </title>
         # <description>
         # <narrative>
         ElementRecord(
@@ -2628,8 +2628,8 @@ class ResultReference(BaseReference):
             key='description',
             element_type=ElementWithNarrativeReference
         ),
-        # </description>
         # </narrative>
+        # </description>
         # <indicator>
         ElementRecord(
             name='indicator',
@@ -2956,3 +2956,38 @@ class CountryBudgetItemsReference(BaseReference):
         attributes=attributes
     )
     # </country-budget-items>
+
+
+class TagReference(BaseReference):
+    """
+    http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/tag/
+    """
+
+    # <tag>
+    attributes = [
+        # @vocabulary
+        AttributeRecord(
+            name='vocabulary',
+            key='code',
+            dict_key='vocabulary'
+        ),
+        # @code
+        AttributeRecord(
+            name='code',
+            key='code'
+        ),
+    ]
+    children = [
+        # <narrative>
+        ElementRecord(
+            name=None,
+            element_type=ElementWithNarrativeReference
+        ),
+        # </narrative>
+    ]
+    element_record = ElementRecord(
+        name='tag',
+        attributes=attributes,
+        children=children
+    )
+    # </tag>

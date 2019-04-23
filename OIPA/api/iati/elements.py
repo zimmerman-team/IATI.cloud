@@ -59,9 +59,14 @@ class ElementWithNarrativeReference(ElementReference):
                 narrative_reference.create()
 
     def create(self):
-        self.create_narrative(
-            etree.SubElement(self.parent_element, self.element)
-        )
+        # Narrative can be inside of the new element or
+        # inside of the parent element
+        if self.element:
+            self.create_narrative(
+                etree.SubElement(self.parent_element, self.element)
+            )
+        else:
+            self.create_narrative(self.parent_element)
 
 
 class DataElement(object):
@@ -71,11 +76,11 @@ class DataElement(object):
     data = None
 
     def __init__(self, data, key):
-        if isinstance(data, dict):
+        if isinstance(data, (dict, list)) and key:
             self.data = data.get(key)
-        elif isinstance(data, list):
-            self.data = data.get(key)
-            self._type = list
+        elif not key:
+            # The root data
+            self.data = data
         else:
             self.data = str(data)
 
@@ -217,8 +222,8 @@ class ElementBase(object):
             data = data_element.data
 
             # Set content on the element without children
-            if data:
-                self.element.text = data
+            if data and not isinstance(data, (list, dict)):
+                self.element.text = str(data)
 
     def get(self):
         return self.element
