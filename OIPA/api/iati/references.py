@@ -2915,3 +2915,23 @@ class RelatedActivityReference(BaseReference):
         attributes=attributes
     )
     # </related-activity>
+
+
+class ConditionsReference(BaseReference):
+    """
+    http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/conditions/
+    """
+
+    # <conditions>
+    attributes = [
+        # @attached
+        AttributeRecord(
+            name='attached',
+            key='attached'
+        ),
+    ]
+    element_record = ElementRecord(
+        name='conditions',
+        attributes=attributes
+    )
+    # </conditions>

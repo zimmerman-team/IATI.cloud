@@ -92,17 +92,21 @@ class DataAttribute(object):
         # if type data is dict then use the dict key
         if dict_key and isinstance(data, dict):
             d_data = data.get(dict_key)
-            value = str(d_data.get(key))
+            value = self.convert_to_string(d_data.get(key))
         elif not dict_key and isinstance(data, dict):
-            value = data.get(key)
-            if isinstance(value, bool):
-                value = '1' if value else '0'
-            else:
-                value = str(value)
+            value = self.convert_to_string(data.get(key))
         elif not isinstance(data, list):
             value = data
 
         self.value = value
+
+    def convert_to_string(self, value):
+        if isinstance(value, bool):
+            return '1' if value else '0'
+        elif value in ['True', 'False']:
+            return '1' if value == 'True' else '0'
+        else:
+            return str(value)
 
 
 class AttributeRecord(object):
