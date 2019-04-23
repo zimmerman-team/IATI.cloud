@@ -4,7 +4,10 @@ http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-act
 """
 from lxml import etree
 from api.iati.attributes import DataAttribute
-from api.iati.elements import ElementReference, ElementWithNarrativeReference
+from api.iati.elements import (
+    ElementReference, ElementWithNarrativeReference,
+    ElementRecord, AttributeRecord, ElementBase
+)
 
 
 class TitleReference(ElementWithNarrativeReference):
@@ -2563,3 +2566,246 @@ class CrsAddReference(ElementReference):
             # </interest-arrears>
 
         # </crs-add>
+
+
+class ResultReference(ElementReference):
+    """
+    http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/result/
+    """
+
+    # <result>
+    attributes = [
+        # @type
+        # Dict type
+        AttributeRecord(
+            name='type',
+            key='code',
+            dict_key='type'
+        ),
+        # @aggregation-status
+        AttributeRecord(
+            name='aggregation-status',
+            key='aggregation_status'
+        )
+    ]
+    children = [
+        # <title>
+        # <narrative>
+        ElementRecord(
+            name='title',
+            key='title',
+            element_type=ElementWithNarrativeReference
+        ),
+        # </title>
+        # </narrative>
+        # <description>
+        # <narrative>
+        ElementRecord(
+            name='description',
+            key='description',
+            element_type=ElementWithNarrativeReference
+        ),
+        # </description>
+        # </narrative>
+        # <indicator>
+        ElementRecord(
+            name='indicator',
+            key='indicators',
+            attributes=[
+                # @measure
+                # Dict type
+                AttributeRecord(
+                    name='type',
+                    key='code',
+                    dict_key='measure'
+                ),
+                # @ascending
+                AttributeRecord(
+                    name='ascending',
+                    key='ascending'
+                )
+                # TODO: add @aggregation-status
+            ],
+            children=[
+                # <title>
+                # <narrative>
+                ElementRecord(
+                    name='title',
+                    key='title',
+                    element_type=ElementWithNarrativeReference
+                ),
+                # </narrative>
+                # </title>
+                # <description>
+                # <narrative>
+                ElementRecord(
+                    name='description',
+                    key='description',
+                    element_type=ElementWithNarrativeReference
+                ),
+                # </narrative>
+                # </description>
+                # <reference>
+                ElementRecord(
+                    name='reference',
+                    key='references',
+                    attributes=[
+                        # @vocabulary
+                        # Dict type
+                        AttributeRecord(
+                            name='vocabulary',
+                            key='code',
+                            dict_key='vocabulary'
+                        ),
+                        # @code
+                        AttributeRecord(
+                            name='code',
+                            key='code'
+                        )
+                    ],
+                ),
+                # </reference>
+                # TODO: add <baseline></baseline>
+                # <period>
+                ElementRecord(
+                    name='period',
+                    key='periods',
+                    children=[
+                        # <period-start>
+                        ElementRecord(
+                            name='period-start',
+                            key='period_start'
+                        ),
+                        # </period-start>
+                        # <period-end>
+                        ElementRecord(
+                            name='period-end',
+                            key='period_end'
+                        ),
+                        # </period-end>
+                        # <target>
+                        ElementRecord(
+                            name='target',
+                            key='targets',
+                            attributes=[
+                                # @value
+                                AttributeRecord(
+                                    name='value',
+                                    key='value'
+                                )
+                            ],
+                            children=[
+                                # <comment>
+                                # <narrative>
+                                ElementRecord(
+                                    name='comment',
+                                    key='comment',
+                                    element_type=ElementWithNarrativeReference
+                                ),
+                                # </narrative>
+                                # </comment>
+                                # <location>
+                                ElementRecord(
+                                    name='location',
+                                    key='locations',
+                                    attributes=[
+                                        # @ref
+                                        AttributeRecord(
+                                            name='ref',
+                                            key='ref'
+                                        )
+                                    ],
+                                ),
+                                # </location>
+                                # <location>
+                                ElementRecord(
+                                    name='dimension',
+                                    key='dimensions',
+                                    attributes=[
+                                        # @name
+                                        AttributeRecord(
+                                            name='name',
+                                            key='name'
+                                        ),
+                                        # @value
+                                        AttributeRecord(
+                                            name='value',
+                                            key='value'
+                                        )
+                                    ],
+                                ),
+                                # </location>
+                                # TODO: add <document-link></document-link>
+                            ]
+                        ),
+                        # </target>
+                        # <actual>
+                        ElementRecord(
+                            name='actual',
+                            key='actuals',
+                            attributes=[
+                                # @value
+                                AttributeRecord(
+                                    name='value',
+                                    key='value'
+                                )
+                            ],
+                            children=[
+                                # TODO: add <comment></comment>
+                                ElementRecord(
+                                    name='location',
+                                    key='locations',
+                                    attributes=[
+                                        # @ref
+                                        AttributeRecord(
+                                            name='ref',
+                                            key='ref'
+                                        )
+                                    ],
+                                ),
+                                # </location>
+                                # <location>
+                                ElementRecord(
+                                    name='dimension',
+                                    key='dimensions',
+                                    attributes=[
+                                        # @name
+                                        AttributeRecord(
+                                            name='name',
+                                            key='name'
+                                        ),
+                                        # @value
+                                        AttributeRecord(
+                                            name='value',
+                                            key='value'
+                                        )
+                                    ],
+                                ),
+                                # </location>
+                                # TODO: add <document-link></document-link>
+                            ]
+                        )
+                        # </actual>
+                    ]
+                ),
+                # </period>
+            ]
+        )
+        # </indicator>
+    ]
+    element_record = ElementRecord(
+        name='result',
+        attributes=attributes,
+        children=children
+    )
+    # </result>
+
+    def create(self):
+        # <result>
+        element_base = ElementBase(
+            element_record=self.element_record,
+            parent_element=self.parent_element,
+            data=self.data
+        )
+        element_base.create()
+        # </result>
