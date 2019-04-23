@@ -31,7 +31,7 @@ from api.iati.references import (
     CapitalSpendReference, DocumentLinkReference,
     LegacyDataReference, CrsAddReference,
     ResultReference, FssReference,
-    HumanitarianScopeReference
+    HumanitarianScopeReference, RelatedActivityReference,
 )
 
 # TODO: Make this more generic - 2016-01-21
@@ -431,7 +431,8 @@ class IATIXMLRenderer(BaseRenderer):
         'crs_add': CrsAddReference,
         'results': ResultReference,
         'fss': FssReference,
-        'humanitarian_scope': HumanitarianScopeReference
+        'humanitarian_scope': HumanitarianScopeReference,
+        'related_activities': RelatedActivityReference,
     }
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
