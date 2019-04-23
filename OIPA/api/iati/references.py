@@ -2935,3 +2935,24 @@ class ConditionsReference(BaseReference):
         attributes=attributes
     )
     # </conditions>
+
+
+class CountryBudgetItemsReference(BaseReference):
+    """
+    http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/country-budget-items/
+    """
+
+    # <country-budget-items>
+    attributes = [
+        # @vocabulary
+        AttributeRecord(
+            name='vocabulary',
+            key='code',
+            dict_key='vocabulary'
+        ),
+    ]
+    element_record = ElementRecord(
+        name='country-budget-items',
+        attributes=attributes
+    )
+    # </country-budget-items>
