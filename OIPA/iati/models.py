@@ -1855,5 +1855,11 @@ class ActivityTag(models.Model):
     )
     vocabulary_uri = models.URLField(blank=True)
 
+    narratives = GenericRelation(
+        Narrative,
+        content_type_field='related_content_type',
+        object_id_field='related_object_id'
+    )
+
     def __str__(self):
         return "tag for %s" % self.activity
