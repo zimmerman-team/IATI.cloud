@@ -30,7 +30,7 @@ from api.iati.references import (
     DefaultTiedStatusReference, PlannedDisbursementReference,
     CapitalSpendReference, DocumentLinkReference,
     LegacyDataReference, CrsAddReference,
-    ResultReference
+    ResultReference, FssReference
 )
 
 # TODO: Make this more generic - 2016-01-21
@@ -428,7 +428,8 @@ class IATIXMLRenderer(BaseRenderer):
         'document_links': DocumentLinkReference,
         'legacy_data': LegacyDataReference,
         'crs_add': CrsAddReference,
-        'results': ResultReference
+        'results': ResultReference,
+        'fss': FssReference,
     }
 
     def render(self, data, accepted_media_type=None, renderer_context=None):

@@ -95,12 +95,12 @@ class DataAttribute(object):
             value = str(d_data.get(key))
         elif not dict_key and isinstance(data, dict):
             value = data.get(key)
+            if isinstance(value, bool):
+                value = '1' if value else '0'
+            else:
+                value = str(value)
         elif not isinstance(data, list):
-            value = str(data)
-
-        # Convert the boolean to '1' or '0'
-        if isinstance(value, bool):
-            value = '1' if value  else '0'
+            value = data
 
         self.value = value
 
