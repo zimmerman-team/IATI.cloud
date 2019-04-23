@@ -36,7 +36,7 @@ from iati.models import (
     ResultIndicatorPeriodActualLocation, ResultIndicatorPeriodTarget,
     ResultIndicatorPeriodTargetDimension, ResultIndicatorPeriodTargetLocation,
     ResultIndicatorReference, ResultIndicatorTitle, ResultTitle, ResultType,
-    Title
+    Title, ActivityTag
 )
 from iati.transaction.models import (
     Transaction, TransactionProvider, TransactionReceiver,
@@ -2863,6 +2863,22 @@ class TransactionSerializer(serializers.ModelSerializer):
         )
 
 
+class ActivityTagSerializer(ModelSerializerNoValidation):
+    vocabulary = VocabularySerializer()
+    narratives = NarrativeSerializer(many=True)
+
+    class Meta:
+        model = ActivityTag
+        fields = (
+            'id',
+            'code',
+            'vocabulary_uri',
+            'activity',
+            'vocabulary',
+            'narratives'
+        )
+
+
 class ActivitySerializer(DynamicFieldsModelSerializer):
     url = serializers.HyperlinkedIdentityField(
         view_name='activities:activity-detail', read_only=True)
@@ -2929,6 +2945,13 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
     sectors = ActivitySectorSerializer(
         many=True,
         source='activitysector_set',
+        read_only=True,
+        required=False,
+    )
+
+    tags = ActivityTagSerializer(
+        many=True,
+        source='activitytag_set',
         read_only=True,
         required=False,
     )
@@ -3179,6 +3202,7 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
             'recipient_regions',
             'locations',
             'sectors',
+            'tags',
             'country_budget_items',
             'humanitarian',
             'humanitarian_scope',
