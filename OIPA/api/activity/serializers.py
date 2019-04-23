@@ -1311,7 +1311,12 @@ class ConditionSerializer(ModelSerializerNoValidation):
 
 
 class ConditionsSerializer(ModelSerializerNoValidation):
-    # conditions = ConditionSerializer(source="condition_set", required=False)
+    condition = ConditionSerializer(
+        many=True,
+        read_only=True,
+        source="condition_set",
+        required=False
+    )
     attached = serializers.CharField()
     activity = serializers.CharField(write_only=True)
 
@@ -1321,7 +1326,7 @@ class ConditionsSerializer(ModelSerializerNoValidation):
             'id',
             'activity',
             'attached',
-            # 'conditions',
+            'condition',
         )
 
     def validate(self, data):
