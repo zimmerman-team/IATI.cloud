@@ -110,8 +110,11 @@ class DataAttribute(object):
             return '1' if value else '0'
         elif value in ['True', 'False']:
             return '1' if value == 'True' else '0'
-        else:
+        elif value:
             return str(value)
+        else:
+            # Otherwise the data is None
+            return value
 
 
 class AttributeRecord(object):
