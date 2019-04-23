@@ -2852,3 +2852,40 @@ class FssReference(BaseReference):
         attributes=attributes
     )
     # </fss>
+
+
+class HumanitarianScopeReference(BaseReference):
+    """
+    http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/humanitarian-scope/
+    """
+
+    # <humanitarian-scope>
+    attributes = [
+        # @type
+        AttributeRecord(
+            name='type',
+            key='code',
+            dict_key='type'
+        ),
+        # @vocabulary
+        AttributeRecord(
+            name='vocabulary',
+            key='code',
+            dict_key='vocabulary'
+        ),
+        # @vocabulary-uri
+        AttributeRecord(
+            name='vocabulary-uri',
+            key='vocabulary_uri'
+        ),
+        # @code
+        AttributeRecord(
+            name='code',
+            key='code'
+        )
+    ]
+    element_record = ElementRecord(
+        name='humanitarian-scope',
+        attributes=attributes
+    )
+    # </humanitarian-scope>
