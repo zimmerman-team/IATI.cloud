@@ -169,10 +169,11 @@ class ElementBase(object):
 
     def create(self):
         if not self.element_record.element_type:
-            self.element = etree.SubElement(
-                self.parent_element,
-                self.element_record.name
-            )
+            if self.element_record.name:
+                self.element = etree.SubElement(
+                    self.parent_element,
+                    self.element_record.name
+                )
         elif self.element_record.element_type == ElementWithNarrativeReference:
             # Narrative element
             ElementWithNarrativeReference(
@@ -218,15 +219,20 @@ class ElementBase(object):
                     )
                     element_base.create()
         elif not self.element_record.element_type:
+            # TODO: very complicated please find more simple then this
             data_element = DataElement(
                 data=self.data,
                 key=self.element_record.key
             )
             data = data_element.data
-
-            # Set content on the element without children
-            if data and not isinstance(data, (list, dict)):
-                self.element.text = str(data)
+            if self.element_record.name:
+                # Set content on the element without children
+                if data and not isinstance(data, (list, dict)):
+                    self.element.text = str(data)
+            else:
+                # The parent element should embed on current data
+                if data and not isinstance(data, (list, dict)):
+                    self.parent_element.text = str(data)
 
     def get(self):
         return self.element

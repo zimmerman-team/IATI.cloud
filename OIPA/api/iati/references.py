@@ -2847,9 +2847,43 @@ class FssReference(BaseReference):
             key='phaseout_year'
         )
     ]
+    children = [
+        # <condition>
+        ElementRecord(
+            name='forecast',
+            key='forecasts',
+            attributes=[
+                # @year
+                AttributeRecord(
+                    name='year',
+                    key='year'
+                ),
+                # @value-date
+                AttributeRecord(
+                    name='value-date',
+                    key='value_date'
+                ),
+                # @currency
+                AttributeRecord(
+                    name='currency',
+                    key='code',
+                    dict_key='currency'
+                ),
+            ],
+            children=[
+                ElementRecord(
+                    name=None,
+                    key='value'
+                )
+            ]
+        ),
+        # </condition>
+
+    ]
     element_record = ElementRecord(
         name='fss',
-        attributes=attributes
+        attributes=attributes,
+        children=children
     )
     # </fss>
 
