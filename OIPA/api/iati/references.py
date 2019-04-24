@@ -2573,11 +2573,6 @@ class BaseReference(ElementReference):
     Base of reference
     """
     # <element>
-    attributes = []
-    children = []
-    element_record = ElementRecord(
-        name='element'
-    )
     # </element>
 
     def create(self):
@@ -2589,6 +2584,88 @@ class BaseReference(ElementReference):
         )
         element_base.create()
         # </element>
+
+
+class DocumentLinkBaseReference(BaseReference):
+    """
+    The base of the document link element
+    """
+    # <document-link>
+    attributes = [
+        # @url
+        AttributeRecord(
+            name='url',
+            key='url'
+        ),
+        # @format
+        # Dict type
+        AttributeRecord(
+            name='format',
+            key='code',
+            dict_key='format'
+        )
+    ]
+    children = [
+        # <title>
+        # <narrative>
+        ElementRecord(
+            name='title',
+            key='title',
+            element_type=ElementWithNarrativeReference
+        ),
+        # </narrative>
+        # </title>
+        # <category
+        ElementRecord(
+            name='category',
+            key='categories',
+            attributes=[
+                # @code
+                # Dict type
+                AttributeRecord(
+                    name='code',
+                    key='code',
+                    dict_key='category'
+                )
+            ]
+        ),
+        # />
+        # <language
+        ElementRecord(
+            name='language',
+            key='languages',
+            attributes=[
+                # @code
+                # Dict type
+                AttributeRecord(
+                    name='code',
+                    key='code',
+                    dict_key='language'
+                )
+            ]
+        ),
+        # />
+        # <document-date
+        ElementRecord(
+            name='document-date',
+            key='document_date',
+            attributes=[
+                # @iso-date
+                AttributeRecord(
+                    name='iso-date',
+                    key='iso_date',
+                )
+            ]
+        ),
+        # />
+    ]
+    element_record = ElementRecord(
+        name='document-link',
+        key='document_links',
+        attributes=attributes,
+        children=children
+    )
+    # <document-link>
 
 
 class ResultReference(BaseReference):
@@ -2631,6 +2708,13 @@ class ResultReference(BaseReference):
         # </narrative>
         # </description>
         # <indicator>
+        # <document-link>
+        DocumentLinkBaseReference(
+            parent_element=None,
+            data=None,
+            element=DocumentLinkBaseReference.element_record
+        ),
+        # <document-link>
         ElementRecord(
             name='indicator',
             key='indicators',

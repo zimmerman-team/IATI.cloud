@@ -8,6 +8,9 @@ class ElementReference(object):
     element = None
     parent_element = None
     data = None
+    attributes = []
+    children = []
+    element_record = None
 
     def __init__(self, parent_element, data, element=None):
         self.parent_element = parent_element
@@ -59,14 +62,15 @@ class ElementWithNarrativeReference(ElementReference):
                 narrative_reference.create()
 
     def create(self):
-        # Narrative can be inside of the new element or
-        # inside of the parent element
-        if self.element:
-            self.create_narrative(
-                etree.SubElement(self.parent_element, self.element)
-            )
-        else:
-            self.create_narrative(self.parent_element)
+        if self.data:
+            # Narrative can be inside of the new element or
+            # inside of the parent element
+            if self.element:
+                self.create_narrative(
+                    etree.SubElement(self.parent_element, self.element)
+                )
+            else:
+                self.create_narrative(self.parent_element)
 
 
 class DataElement(object):
@@ -76,7 +80,7 @@ class DataElement(object):
     data = None
 
     def __init__(self, data, key):
-        if isinstance(data, (dict, list)) and key:
+        if isinstance(data, dict) and key:
             self.data = data.get(key)
         elif not key:
             # The root data
@@ -199,25 +203,44 @@ class ElementBase(object):
         # Create children element
         if self.element_record.children:
             for element_record in self.element_record.children:
-                data_element = DataElement(
-                    data=self.data,
-                    key=element_record.key
-                )
-                if isinstance(data_element.data, list):
-                    for data in data_element.data:
+                if isinstance(element_record, ElementRecord):
+                    data_element = DataElement(
+                        data=self.data,
+                        key=element_record.key
+                    )
+                    if isinstance(data_element.data, list):
+                        for data in data_element.data:
+                            element_base = ElementBase(
+                                element_record=element_record,
+                                parent_element=self.element,
+                                data=data
+                            )
+                            element_base.create()
+                    else:
                         element_base = ElementBase(
                             element_record=element_record,
                             parent_element=self.element,
-                            data=data
+                            data=data_element.data
                         )
                         element_base.create()
-                else:
-                    element_base = ElementBase(
-                        element_record=element_record,
-                        parent_element=self.element,
-                        data=data_element.data
+
+                elif isinstance(element_record, ElementReference) \
+                        and isinstance(self.data, dict):
+                    # TODO: this is needed more simple
+                    # This is instance of the ElementReference
+                    data = self.data.get(
+                        element_record.element_record.key
                     )
-                    element_base.create()
+                    if isinstance(data, list):
+                        for item in data:
+                            element_record.parent_element = self.element
+                            element_record.data = item
+                            element_record.create()
+                    else:
+                        element_record.parent_element = self.element
+                        element_record.data = data
+                        element_record.create()
+
         elif not self.element_record.element_type:
             # TODO: very complicated please find more simple then this
             data_element = DataElement(
