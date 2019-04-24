@@ -36,7 +36,8 @@ from iati.models import (
     ResultIndicatorPeriodActualLocation, ResultIndicatorPeriodTarget,
     ResultIndicatorPeriodTargetDimension, ResultIndicatorPeriodTargetLocation,
     ResultIndicatorReference, ResultIndicatorTitle, ResultTitle, ResultType,
-    Title, ActivityTag, ResultIndicatorBaseline
+    Title, ActivityTag, ResultIndicatorBaseline,
+    ResultIndicatorBaselineDimension
 )
 from iati.transaction.models import (
     Transaction, TransactionProvider, TransactionReceiver,
@@ -1866,6 +1867,20 @@ class ResultIndicatorPeriodSerializer(ModelSerializerNoValidation):
         raise NotImplementedError("This action is not implemented")
 
 
+class ResultIndicatorBaselineDimensionSerializer(ModelSerializerNoValidation):  # NOQA: E501
+    name = serializers.CharField()
+    value = serializers.CharField()
+
+    class Meta:
+        model = ResultIndicatorBaselineDimension
+        fields = (
+
+            'id',
+            'name',
+            'value',
+        )
+
+
 class ResultIndicatorBaselineSerializer(ModelSerializerNoValidation):
     # year = serializers.CharField(
         # source='baseline_year', required=False, allow_null=True)
@@ -1878,7 +1893,14 @@ class ResultIndicatorBaselineSerializer(ModelSerializerNoValidation):
     value = serializers.CharField(
         required=False, allow_null=True)
     comment = NarrativeContainerSerializer(
-        source="resultindicatorbaselinecomment")
+        source='resultindicatorbaselinecomment'
+    )
+
+    dimensions = ResultIndicatorBaselineDimensionSerializer(
+        many=True,
+        source='resultindicatorbaselinedimension_set',
+        read_only=True
+    )
 
     document_links = DocumentLinkSerializer(
         many=True,
@@ -1892,6 +1914,7 @@ class ResultIndicatorBaselineSerializer(ModelSerializerNoValidation):
             'year',
             'value',
             'comment',
+            'dimensions',
             'document_links',
         )
 
