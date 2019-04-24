@@ -2789,7 +2789,78 @@ class ResultReference(BaseReference):
                     ],
                 ),
                 # </reference>
-                # TODO: add <baseline></baseline>
+                # <baseline>
+                ElementRecord(
+                    name='baseline',
+                    key='baseline',
+                    attributes=[
+                        # @year
+                        AttributeRecord(
+                            name='year',
+                            key='year'
+                        ),
+                        # @value
+                        AttributeRecord(
+                            name='value',
+                            key='value'
+                        ),
+                        # @iso-date
+                        AttributeRecord(
+                            name='iso-date',
+                            key='iso_date'
+                        )
+                    ],
+                    children=[
+                        # <location>
+                        ElementRecord(
+                            name='location',
+                            key='locations',
+                            attributes=[
+                                # @ref
+                                AttributeRecord(
+                                    name='ref',
+                                    key='ref'
+                                )
+                            ]
+                        ),
+                        # />
+                        # <dimension>
+                        ElementRecord(
+                            name='dimension',
+                            key='dimensions',
+                            attributes=[
+                                # @name
+                                AttributeRecord(
+                                    name='name',
+                                    key='name'
+                                ),
+                                # @value
+                                AttributeRecord(
+                                    name='value',
+                                    key='value'
+                                )
+                            ],
+                        ),
+                        # </dimension>
+                        # <document-link>
+                        DocumentLinkBaseReference(
+                            parent_element=None,
+                            data=None,
+                            element=DocumentLinkBaseReference.element_record
+                        ),
+                        # <document-link>
+                        # <comment>
+                        # <narrative>
+                        ElementRecord(
+                            name='comment',
+                            key='comment',
+                            element_type=ElementWithNarrativeReference
+                        ),
+                        # </narrative>
+                        # </comment>
+                    ]
+                ),
+                # </baseline>
                 # <period>
                 ElementRecord(
                     name='period',
@@ -2841,7 +2912,7 @@ class ResultReference(BaseReference):
                                     ],
                                 ),
                                 # </location>
-                                # <location>
+                                # <dimension>
                                 ElementRecord(
                                     name='dimension',
                                     key='dimensions',
@@ -2858,7 +2929,7 @@ class ResultReference(BaseReference):
                                         )
                                     ],
                                 ),
-                                # </location>
+                                # </dimension>
                                 # TODO: add <document-link></document-link>
                             ]
                         ),
