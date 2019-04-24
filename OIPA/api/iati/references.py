@@ -2918,9 +2918,19 @@ class HumanitarianScopeReference(BaseReference):
             key='code'
         )
     ]
+    children = [
+        # <narrative>
+        ElementRecord(
+            name=None,
+            element_type=ElementWithNarrativeReference
+        ),
+        # </narrative>
+    ]
     element_record = ElementRecord(
         name='humanitarian-scope',
-        attributes=attributes
+        attributes=attributes,
+        children=children
+
     )
     # </humanitarian-scope>
 
