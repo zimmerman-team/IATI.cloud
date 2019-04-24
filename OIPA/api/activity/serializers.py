@@ -215,6 +215,10 @@ class DocumentLinkSerializer(ModelSerializerNoValidation):
 
     activity = serializers.CharField(write_only=True)
 
+    description = NarrativeContainerSerializer(
+        source='documentlinkdescription'
+    )
+
     class Meta:
         model = DocumentLink
         fields = (
@@ -226,6 +230,7 @@ class DocumentLinkSerializer(ModelSerializerNoValidation):
             'languages',
             'title',
             'document_date',
+            'description'
         )
 
     def validate(self, data):

@@ -2616,6 +2616,16 @@ class DocumentLinkBaseReference(BaseReference):
         # </narrative>
         # </title>
         # <category
+        # <description>
+        # <narrative>
+        ElementRecord(
+            name='description',
+            key='description',
+            element_type=ElementWithNarrativeReference
+        ),
+        # </narrative>
+        # </description>
+        # <category
         ElementRecord(
             name='category',
             key='categories',
@@ -2752,6 +2762,13 @@ class ResultReference(BaseReference):
                 ),
                 # </narrative>
                 # </description>
+                # <document-link>
+                DocumentLinkBaseReference(
+                    parent_element=None,
+                    data=None,
+                    element=DocumentLinkBaseReference.element_record
+                ),
+                # <document-link>
                 # <reference>
                 ElementRecord(
                     name='reference',
