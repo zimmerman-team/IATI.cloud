@@ -2930,7 +2930,13 @@ class ResultReference(BaseReference):
                                     ],
                                 ),
                                 # </dimension>
-                                # TODO: add <document-link></document-link>
+                                # <document-link>
+                                DocumentLinkBaseReference(
+                                    parent_element=None,
+                                    data=None,
+                                    element=DocumentLinkBaseReference.element_record  # NOQA: E501
+                                ),
+                                # <document-link>
                             ]
                         ),
                         # </target>
