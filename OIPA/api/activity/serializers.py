@@ -1834,6 +1834,11 @@ class ResultIndicatorPeriodActualSerializer(SerializerNoValidation):
         source="resultindicatorperiodactualdimension_set",
         read_only=True
     )
+    document_links = DocumentLinkSerializer(
+        many=True,
+        read_only=True,
+        source='period_actual_document_links'
+    )
 
 
 class ResultIndicatorPeriodSerializer(ModelSerializerNoValidation):
