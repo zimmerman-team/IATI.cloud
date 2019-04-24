@@ -36,7 +36,7 @@ from iati.models import (
     ResultIndicatorPeriodActualLocation, ResultIndicatorPeriodTarget,
     ResultIndicatorPeriodTargetDimension, ResultIndicatorPeriodTargetLocation,
     ResultIndicatorReference, ResultIndicatorTitle, ResultTitle, ResultType,
-    Title, ActivityTag
+    Title, ActivityTag, ResultIndicatorBaseline
 )
 from iati.transaction.models import (
     Transaction, TransactionProvider, TransactionReceiver,
@@ -1866,7 +1866,7 @@ class ResultIndicatorPeriodSerializer(ModelSerializerNoValidation):
         raise NotImplementedError("This action is not implemented")
 
 
-class ResultIndicatorBaselineSerializer(SerializerNoValidation):
+class ResultIndicatorBaselineSerializer(ModelSerializerNoValidation):
     # year = serializers.CharField(
         # source='baseline_year', required=False, allow_null=True)
     # value = serializers.CharField(
@@ -1879,6 +1879,21 @@ class ResultIndicatorBaselineSerializer(SerializerNoValidation):
         required=False, allow_null=True)
     comment = NarrativeContainerSerializer(
         source="resultindicatorbaselinecomment")
+
+    document_links = DocumentLinkSerializer(
+        many=True,
+        read_only=True,
+        source='baseline_document_links'
+    )
+
+    class Meta:
+        model = ResultIndicatorBaseline
+        fields = (
+            'year',
+            'value',
+            'comment',
+            'document_links',
+        )
 
 
 class ResultIndicatorReferenceSerializer(ModelSerializerNoValidation):
@@ -1942,7 +1957,11 @@ class ResultIndicatorSerializer(ModelSerializerNoValidation):
     #  TODO 2.02 reference = ?
     references = ResultIndicatorReferenceSerializer(
         source='resultindicatorreference_set', many=True, read_only=True)
-    baseline = ResultIndicatorBaselineSerializer(source="*")
+    baseline = ResultIndicatorBaselineSerializer(
+        source='resultindicatorbaseline_set',
+        many=True,
+        read_only=True
+    )
     periods = ResultIndicatorPeriodSerializer(
         source='resultindicatorperiod_set', many=True, read_only=True)
     measure = CodelistSerializer()
