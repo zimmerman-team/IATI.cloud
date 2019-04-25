@@ -3245,3 +3245,23 @@ class TagReference(BaseReference):
         children=children
     )
     # </tag>
+
+
+class ActivityScopeReference(BaseReference):
+    """
+    http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/activity-scope/
+    """
+
+    # <activity-scope>
+    attributes = [
+        # @code
+        AttributeRecord(
+            name='code',
+            key='code'
+        ),
+    ]
+    element_record = ElementRecord(
+        name='activity-scope',
+        attributes=attributes
+    )
+    # </activity-scope>
