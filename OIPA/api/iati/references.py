@@ -206,40 +206,6 @@ class ContactInfoReference(ElementReference):
             organisation_narrative.element = self.organisation_element
             organisation_narrative.create()
 
-        # Email element
-        email_value = self.data.get(self.email_key)
-        if email_value:
-            email_element = etree.SubElement(
-                contact_info_element, self.email_element
-            )
-            email_element.text = email_value
-
-        # Mailing address element
-        mailing_address_dict = self.data.get(self.mailing_address_dict_key)
-        if mailing_address_dict:
-            mailing_address_narrative = ElementWithNarrativeReference(
-                parent_element=contact_info_element,
-                data=mailing_address_dict
-            )
-            mailing_address_narrative.element = self.mailing_address_element
-            mailing_address_narrative.create()
-
-        # Telephone element
-        telephone_value = self.data.get(self.telephone_key)
-        if telephone_value:
-            telephone_element = etree.SubElement(
-                contact_info_element, self.telephone_element
-            )
-            telephone_element.text = telephone_value
-
-        # Website element
-        website_value = self.data.get(self.website_key)
-        if website_value:
-            website_element = etree.SubElement(
-                contact_info_element, self.website_element
-            )
-            website_element.text = website_value
-
         # Department element
         department_dict = self.data.get(self.department_dict_key)
         if department_dict:
@@ -247,7 +213,7 @@ class ContactInfoReference(ElementReference):
                 parent_element=contact_info_element,
                 data=department_dict
             )
-            department_narrative.element = self.mailing_address_element
+            department_narrative.element = self.department_element
             department_narrative.create()
 
         # Person name element
@@ -269,6 +235,40 @@ class ContactInfoReference(ElementReference):
             )
             job_title_narrative.element = self.job_title_element
             job_title_narrative.create()
+
+        # Telephone element
+        telephone_value = self.data.get(self.telephone_key)
+        if telephone_value:
+            telephone_element = etree.SubElement(
+                contact_info_element, self.telephone_element
+            )
+            telephone_element.text = telephone_value
+
+        # Email element
+        email_value = self.data.get(self.email_key)
+        if email_value:
+            email_element = etree.SubElement(
+                contact_info_element, self.email_element
+            )
+            email_element.text = email_value
+
+        # Website element
+        website_value = self.data.get(self.website_key)
+        if website_value:
+            website_element = etree.SubElement(
+                contact_info_element, self.website_element
+            )
+            website_element.text = website_value
+
+        # Mailing address element
+        mailing_address_dict = self.data.get(self.mailing_address_dict_key)
+        if mailing_address_dict:
+            mailing_address_narrative = ElementWithNarrativeReference(
+                parent_element=contact_info_element,
+                data=mailing_address_dict
+            )
+            mailing_address_narrative.element = self.mailing_address_element
+            mailing_address_narrative.create()
 
 
 class TransactionReference(ElementReference):
