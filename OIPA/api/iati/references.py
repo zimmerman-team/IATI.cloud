@@ -385,10 +385,6 @@ class TransactionReference(ElementReference):
                 'key': 'code',
                 'attr': 'code'
             }
-        },
-        'percentage': {
-            'key': 'percentage',
-            'attr': 'percentage'
         }
     }
     # Recipient region
@@ -647,17 +643,6 @@ class TransactionReference(ElementReference):
                             ).get('code').get('attr'),
                             code
                         )
-
-                # Attribute
-                # Percentage
-                percentage_value = recipient_country.get(
-                    self.recipient_countries.get('percentage').get('key')
-                )
-                if percentage_value:
-                    recipient_country_element.set(
-                        self.recipient_countries.get('percentage').get('attr'),
-                        percentage_value
-                    )
 
         # Recipient region
         recipient_regions_list = self.data.get(
