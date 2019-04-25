@@ -2948,16 +2948,16 @@ class TransactionSerializer(serializers.ModelSerializer):
             'value_date',
             'currency',
             'description',
+            'provider_organisation',
+            'receiver_organisation',
             'disbursement_channel',
+            'sectors',
+            'recipient_countries',
+            'recipient_regions',
             'flow_type',
             'finance_type',
             'aid_type',
             'tied_status',
-            'provider_organisation',
-            'receiver_organisation',
-            'recipient_countries',
-            'recipient_regions',
-            'sectors'
         )
 
 
@@ -3314,6 +3314,7 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
             'planned_disbursements',
             'capital_spend',
             'transactions',
+            'related_transactions',
             'document_links',
             'related_activities',
             'legacy_data',
@@ -3331,8 +3332,7 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
             'aggregations',
             'dataset',
             'publisher',
-            'published_state',
-            'related_transactions'
+            'published_state'
         )
 
         validators = []
