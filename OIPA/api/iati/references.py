@@ -2750,7 +2750,7 @@ class ResultReference(BaseReference):
                 # @measure
                 # Dict type
                 AttributeRecord(
-                    name='type',
+                    name='measure',
                     key='code',
                     dict_key='measure'
                 ),
