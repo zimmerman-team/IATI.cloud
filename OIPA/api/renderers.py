@@ -33,7 +33,7 @@ from api.iati.references import (
     ResultReference, FssReference,
     HumanitarianScopeReference, RelatedActivityReference,
     ConditionsReference, CountryBudgetItemsReference,
-    TagReference
+    TagReference, ActivityScopeReference
 )
 
 # TODO: Make this more generic - 2016-01-21
@@ -408,7 +408,6 @@ class IATIXMLRenderer(BaseRenderer):
 
     default_references = {
         'iati_identifier': None,
-        'activity_scope': None,
     }
 
     element_references = {
@@ -418,6 +417,7 @@ class IATIXMLRenderer(BaseRenderer):
         'reporting_organisation': ReportingOrgReference,
         'participating_organisations': ParticipatingOrgReference,
         'contact_info': ContactInfoReference,
+        'activity_scope': ActivityScopeReference,
         'related_transactions': TransactionReference,
         'sectors': SectorReference,
         'budgets': BudgetReference,
