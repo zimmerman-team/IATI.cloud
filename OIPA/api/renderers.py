@@ -406,6 +406,11 @@ class IATIXMLRenderer(BaseRenderer):
     item_tag_name = 'iati-activity'
     version = '2.03'
 
+    default_references = {
+        'iati_identifier': None,
+        'activity_scope': None,
+    }
+
     element_references = {
         'title': TitleReference,
         'descriptions': DescriptionReference,
@@ -499,7 +504,13 @@ class IATIXMLRenderer(BaseRenderer):
 
             for key, value in six.iteritems(data):
 
-                if key in attributes:
+                if key in attributes or key not in {**self.element_references, **self.default_references}:  # NOQA: E501
+                    # TODO: we have some bugs data here,
+                    # I don't know where they come from please check them.
+                    # How to produce it:
+                    # - run debugging
+                    # - stop debug line on below "continue"
+                    # - check key and value you should get some OrderDict
                     continue
 
                 if key == 'text':
