@@ -1314,7 +1314,7 @@ class ConditionsSerializer(ModelSerializerNoValidation):
     condition = ConditionSerializer(
         many=True,
         read_only=True,
-        source="condition_set",
+        source='condition_set',
         required=False
     )
     attached = serializers.CharField()
@@ -2532,7 +2532,11 @@ class FssForecastSerializer(ModelSerializerNoValidation):
 
 class FssSerializer(ModelSerializerNoValidation):
     extraction_date = serializers.CharField()
-    forecasts = FssForecastSerializer(many=True, required=False)
+    forecasts = FssForecastSerializer(
+        many=True,
+        source='fssforecast_set',
+        required=False
+    )
 
     activity = serializers.CharField(write_only=True)
 
