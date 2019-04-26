@@ -1897,6 +1897,14 @@ class ResultIndicatorBaselineDimensionSerializer(ModelSerializerNoValidation):  
 
 
 class ResultIndicatorBaselineSerializer(ModelSerializerNoValidation):
+
+    class LocationSerializer(ModelSerializerNoValidation):
+        class Meta:
+            model = Location
+            fields = (
+                'ref',
+            )
+
     # year = serializers.CharField(
         # source='baseline_year', required=False, allow_null=True)
     # value = serializers.CharField(
@@ -1923,6 +1931,14 @@ class ResultIndicatorBaselineSerializer(ModelSerializerNoValidation):
         source='baseline_document_links'
     )
 
+    iso_date = serializers.DateField()
+
+    locations = LocationSerializer(
+        many=True,
+        read_only=True,
+        source='location_set'
+    )
+
     class Meta:
         model = ResultIndicatorBaseline
         fields = (
@@ -1931,6 +1947,8 @@ class ResultIndicatorBaselineSerializer(ModelSerializerNoValidation):
             'comment',
             'dimensions',
             'document_links',
+            'iso_date',
+            'locations'
         )
 
 
