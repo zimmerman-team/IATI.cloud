@@ -712,6 +712,12 @@ class HumanitarianScope(models.Model):
     vocabulary_uri = models.URLField(null=True, blank=True)
     type = models.ForeignKey(HumanitarianScopeType, on_delete=models.CASCADE)
 
+    narratives = GenericRelation(
+        Narrative,
+        content_type_field='related_content_type',
+        object_id_field='related_object_id'
+    )
+
     def get_activity(self):
         return self.activity
 

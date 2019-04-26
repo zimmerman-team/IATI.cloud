@@ -1438,10 +1438,9 @@ class HumanitarianScopeSerializer(DynamicFieldsModelSerializer):
     type = CodelistSerializer()
     vocabulary = VocabularySerializer()
     vocabulary_uri = serializers.URLField()
-    # code = CodelistSerializer()
     code = serializers.CharField()
-
     activity = serializers.CharField(write_only=True)
+    narratives = NarrativeSerializer(many=True, required=False)
 
     class Meta:
         model = HumanitarianScope
@@ -1452,6 +1451,7 @@ class HumanitarianScopeSerializer(DynamicFieldsModelSerializer):
             'vocabulary',
             'vocabulary_uri',
             'code',
+            'narratives'
         )
 
     def validate(self, data):
