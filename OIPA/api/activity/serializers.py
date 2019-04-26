@@ -1949,6 +1949,12 @@ class ResultIndicatorSerializer(ModelSerializerNoValidation):
 
     result = serializers.CharField(write_only=True)
 
+    document_links = DocumentLinkSerializer(
+        many=True,
+        read_only=True,
+        source='result_indicator_document_links'
+    )
+
     class Meta:
         model = ResultIndicator
         fields = (
@@ -1960,7 +1966,8 @@ class ResultIndicatorSerializer(ModelSerializerNoValidation):
             'baseline',
             'periods',
             'measure',
-            'ascending'
+            'ascending',
+            'document_links'
         )
 
     def validate(self, data):
