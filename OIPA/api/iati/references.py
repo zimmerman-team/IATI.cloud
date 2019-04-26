@@ -2041,6 +2041,14 @@ class DocumentLinkReference(ElementReference):
         'key': 'url',
         'attr': 'url'
     }
+    # @format
+    format = {
+        'key': 'format',
+        'code': {
+            'key': 'code',
+            'attr': 'format'
+        }
+    }
     # <title>
     title = {
         'element': 'title',
@@ -2100,6 +2108,16 @@ class DocumentLinkReference(ElementReference):
             self.data,
             self.url.get('key')
         ).set()
+
+        # @format
+        format_dict = self.data.get(self.format.get('key'))
+        if format_dict:
+            DataAttribute(
+                document_link_element,
+                self.format.get('code').get('attr'),
+                format_dict,
+                self.format.get('code').get('key')
+            ).set()
 
         # <title>
         # <narrative>
