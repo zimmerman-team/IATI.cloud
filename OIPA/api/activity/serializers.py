@@ -2229,6 +2229,12 @@ class ResultSerializer(ModelSerializerNoValidation):
 
     activity = serializers.CharField(write_only=True)
 
+    document_links = DocumentLinkSerializer(
+        many=True,
+        read_only=True,
+        source='documentlink_set'
+    )
+
     class Meta:
         model = Result
         fields = (
@@ -2239,6 +2245,7 @@ class ResultSerializer(ModelSerializerNoValidation):
             'indicators',
             'type',
             'aggregation_status',
+            'document_links'
         )
 
     def validate(self, data):
