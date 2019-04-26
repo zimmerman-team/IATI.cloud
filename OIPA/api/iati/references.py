@@ -504,84 +504,6 @@ class TransactionReference(ElementReference):
                     value_date
                 )
 
-        # Flow type
-        flow_type_dict = self.data.get(
-            self.flow_type.get('key')
-        )
-        if flow_type_dict:
-            flow_type_element = etree.SubElement(
-                transaction_element, self.flow_type.get('element')
-            )
-
-            # Attributes
-            # Code
-            code = flow_type_dict.get(self.flow_type.get('code').get('key'))
-            if code:
-                flow_type_element.set(
-                    self.flow_type.get('code').get('attr'),
-                    code
-                )
-
-        # Finance type
-        finance_type_dict = self.data.get(
-            self.finance_type.get('key')
-        )
-        if finance_type_dict:
-            finance_type_element = etree.SubElement(
-                transaction_element, self.finance_type.get('element')
-            )
-
-            # Attributes
-            # Code
-            code = finance_type_dict.get(
-                self.finance_type.get('code').get('key')
-            )
-            if code:
-                finance_type_element.set(
-                    self.flow_type.get('code').get('attr'),
-                    code
-                )
-
-        # Aid type
-        aid_type_dict = self.data.get(
-            self.aid_type.get('key')
-        )
-        if aid_type_dict:
-            aid_type_element = etree.SubElement(
-                transaction_element, self.aid_type.get('element')
-            )
-
-            # Attributes
-            # Code
-            code = aid_type_dict.get(
-                self.aid_type.get('code').get('key')
-            )
-            if code:
-                aid_type_element.set(
-                    self.aid_type.get('code').get('attr'),
-                    code
-                )
-
-        # Tied status
-        tied_status_dict = self.data.get(
-            self.tied_status.get('key')
-        )
-        if tied_status_dict:
-            tied_status_element = etree.SubElement(
-                transaction_element, self.tied_status.get('element')
-            )
-
-            # Attributes
-            # Code
-            code = tied_status_dict.get(
-                self.tied_status.get('code').get('key')
-            )
-            if code:
-                tied_status_element.set(
-                    self.tied_status.get('code').get('attr'),
-                    code
-                )
-
         # Provider Organisation
         provider_organisation_dict = self.data.get(
             self.provider_organisation.get('key')
@@ -643,6 +565,57 @@ class TransactionReference(ElementReference):
             provider_organisation_narrative.create_narrative(
                 parent_element=provider_organisation_element
             )
+
+        # Sector
+        sectors_list = self.data.get(
+            self.sectors.get('key')
+        )
+        if sectors_list:
+            for sector_dict in sectors_list:
+                sector_element = etree.SubElement(
+                    transaction_element,
+                    self.sectors.get('element')
+                )
+
+                # Attribute
+                # Code
+                sector = sector_dict.get(
+                    self.sectors.get('sector').get('key')
+                )
+                if sector:
+                    code = sector.get(
+                        self.sectors.get(
+                            'sector'
+                        ).get('code').get('key')
+                    )
+
+                    if code:
+                        sector_element.set(
+                            self.sectors.get(
+                                'sector'
+                            ).get('code').get('attr'),
+                            code
+                        )
+
+                # Attribute
+                # Vocabulary
+                vocabulary = sector_dict.get(
+                    self.sectors.get('vocabulary').get('key')
+                )
+                if vocabulary:
+                    code = vocabulary.get(
+                        self.sectors.get(
+                            'vocabulary'
+                        ).get('code').get('key')
+                    )
+
+                    if code:
+                        sector_element.set(
+                            self.sectors.get(
+                                'vocabulary'
+                            ).get('code').get('attr'),
+                            code
+                        )
 
         # Recipient country
         recipient_countries_list = self.data.get(
@@ -735,56 +708,83 @@ class TransactionReference(ElementReference):
                         vocabulary_value
                     )
 
-        # Sector
-        sectors_list = self.data.get(
-            self.sectors.get('key')
+        # Flow type
+        flow_type_dict = self.data.get(
+            self.flow_type.get('key')
         )
-        if sectors_list:
-            for sector_dict in sectors_list:
-                sector_element = etree.SubElement(
-                    transaction_element,
-                    self.sectors.get('element')
+        if flow_type_dict:
+            flow_type_element = etree.SubElement(
+                transaction_element, self.flow_type.get('element')
+            )
+
+            # Attributes
+            # Code
+            code = flow_type_dict.get(self.flow_type.get('code').get('key'))
+            if code:
+                flow_type_element.set(
+                    self.flow_type.get('code').get('attr'),
+                    code
                 )
 
-                # Attribute
-                # Code
-                sector = sector_dict.get(
-                    self.sectors.get('sector').get('key')
+        # Finance type
+        finance_type_dict = self.data.get(
+            self.finance_type.get('key')
+        )
+        if finance_type_dict:
+            finance_type_element = etree.SubElement(
+                transaction_element, self.finance_type.get('element')
+            )
+
+            # Attributes
+            # Code
+            code = finance_type_dict.get(
+                self.finance_type.get('code').get('key')
+            )
+            if code:
+                finance_type_element.set(
+                    self.flow_type.get('code').get('attr'),
+                    code
                 )
-                if sector:
-                    code = sector.get(
-                        self.sectors.get(
-                            'sector'
-                        ).get('code').get('key')
-                    )
 
-                    if code:
-                        sector_element.set(
-                            self.sectors.get(
-                                'sector'
-                            ).get('code').get('attr'),
-                            code
-                        )
+        # Aid type
+        aid_type_dict = self.data.get(
+            self.aid_type.get('key')
+        )
+        if aid_type_dict:
+            aid_type_element = etree.SubElement(
+                transaction_element, self.aid_type.get('element')
+            )
 
-                # Attribute
-                # Vocabulary
-                vocabulary = sector_dict.get(
-                    self.sectors.get('vocabulary').get('key')
+            # Attributes
+            # Code
+            code = aid_type_dict.get(
+                self.aid_type.get('code').get('key')
+            )
+            if code:
+                aid_type_element.set(
+                    self.aid_type.get('code').get('attr'),
+                    code
                 )
-                if vocabulary:
-                    code = vocabulary.get(
-                        self.sectors.get(
-                            'vocabulary'
-                        ).get('code').get('key')
-                    )
 
-                    if code:
-                        sector_element.set(
-                            self.sectors.get(
-                                'vocabulary'
-                            ).get('code').get('attr'),
-                            code
-                        )
+        # Tied status
+        tied_status_dict = self.data.get(
+            self.tied_status.get('key')
+        )
+        if tied_status_dict:
+            tied_status_element = etree.SubElement(
+                transaction_element, self.tied_status.get('element')
+            )
+
+            # Attributes
+            # Code
+            code = tied_status_dict.get(
+                self.tied_status.get('code').get('key')
+            )
+            if code:
+                tied_status_element.set(
+                    self.tied_status.get('code').get('attr'),
+                    code
+                )
 
 
 class SectorReference(ElementWithNarrativeReference):
@@ -2920,15 +2920,6 @@ class ResultReference(BaseReference):
                                 )
                             ],
                             children=[
-                                # <comment>
-                                # <narrative>
-                                ElementRecord(
-                                    name='comment',
-                                    key='comment',
-                                    element_type=ElementWithNarrativeReference
-                                ),
-                                # </narrative>
-                                # </comment>
                                 # <location>
                                 ElementRecord(
                                     name='location',
@@ -2960,6 +2951,15 @@ class ResultReference(BaseReference):
                                     ],
                                 ),
                                 # </dimension>
+                                # <comment>
+                                # <narrative>
+                                ElementRecord(
+                                    name='comment',
+                                    key='comment',
+                                    element_type=ElementWithNarrativeReference
+                                ),
+                                # </narrative>
+                                # </comment>
                                 # <document-link>
                                 DocumentLinkBaseReference(
                                     parent_element=None,
