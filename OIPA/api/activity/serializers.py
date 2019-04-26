@@ -1811,6 +1811,11 @@ class ResultIndicatorPeriodTargetSerializer(SerializerNoValidation):
         source="resultindicatorperiodtargetdimension_set",
         read_only=True
     )
+    document_links = DocumentLinkSerializer(
+        many=True,
+        read_only=True,
+        source='period_target_document_links'
+    )
 
 
 class ResultIndicatorPeriodActualSerializer(SerializerNoValidation):
