@@ -2887,13 +2887,25 @@ class ResultReference(BaseReference):
                         # <period-start>
                         ElementRecord(
                             name='period-start',
-                            key='period_start'
+                            attributes=[
+                                # @iso-date
+                                AttributeRecord(
+                                    name='iso-date',
+                                    key='period_start'
+                                )
+                            ],
                         ),
                         # </period-start>
                         # <period-end>
                         ElementRecord(
                             name='period-end',
-                            key='period_end'
+                            attributes=[
+                                # @iso-date
+                                AttributeRecord(
+                                    name='iso-date',
+                                    key='period_end'
+                                )
+                            ],
                         ),
                         # </period-end>
                         # <target>
