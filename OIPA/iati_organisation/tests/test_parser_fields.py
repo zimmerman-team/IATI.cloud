@@ -2,9 +2,9 @@
     Unit tests for all fields in the parser, for multiple IATI versions.
 """
 
-from unittest import skip
 import copy
 import datetime
+from unittest import skip
 
 import pytest
 from django.core import management

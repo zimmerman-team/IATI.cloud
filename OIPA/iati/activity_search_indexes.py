@@ -7,30 +7,17 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from common.util import print_progress, setInterval
 from iati.models import (
-    Activity,
-    ActivitySearch,
-    ContactInfoDepartment,
-    ContactInfoPersonName,
-    ContactInfoJobTitle,
-    ContactInfoMailingAddress,
-    ContactInfoOrganisation,
-    CountryBudgetItem,
-    BudgetItemDescription,
-    ResultTitle,
-    ResultDescription,
-    ResultIndicatorTitle,
-    ResultIndicatorDescription,
-    Conditions,
-    DocumentLinkTitle
+    Activity, ActivitySearch, BudgetItemDescription, Conditions,
+    ContactInfoDepartment, ContactInfoJobTitle, ContactInfoMailingAddress,
+    ContactInfoOrganisation, ContactInfoPersonName, CountryBudgetItem,
+    DocumentLinkTitle, ResultDescription, ResultIndicatorDescription,
+    ResultIndicatorTitle, ResultTitle
 )
 from iati.transaction.models import (
-    TransactionDescription,
-    TransactionProvider,
-    TransactionReceiver
+    TransactionDescription, TransactionProvider, TransactionReceiver
 )
-
-from iati_synchroniser.models import Publisher
 from iati_organisation.models import Organisation, OrganisationName
+from iati_synchroniser.models import Publisher
 
 
 # TODO: prefetches - 2016-01-07
@@ -193,7 +180,7 @@ def reindex_activity(activity):
         # iati-activities/iati-activity/transaction/provider-org/
         try:
             transaction_text.append(transaction.provider_organisation.ref)
-            for narrative in transaction.provider_organisation.narratives.all():
+            for narrative in transaction.provider_organisation.narratives.all():  # NOQA: E501
                 transaction_text.append(narrative.content)
         except TransactionProvider.DoesNotExist as e:
             pass

@@ -2,9 +2,9 @@
 # serializer in once along with the code and vocabulary fields. Or is
 # testing the fields separately preferable?
 
-from unittest import skip
 import datetime
 from decimal import Decimal
+from unittest import skip
 
 from django.core.exceptions import ObjectDoesNotExist
 # Runs each test in a transaction and flushes database
