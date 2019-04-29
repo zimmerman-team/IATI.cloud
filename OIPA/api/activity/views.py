@@ -314,7 +314,7 @@ class ActivityList(CacheResponseMixin, DynamicListView):
     - `other_identifier` owner ref and narratives
     - `contact_info` all narratives for organisation, department, person name, job title & mailing address
     - `location` ref of location
-    - `country_budget_items` narrative of budget item description 
+    - `country_budget_items` narrative of budget item description
     - `policy_marker` narratives of policy marker
     - `transaction` ref and narratives of description, provider organisation, receiver organisation
     - `related_activity` ref of related activity

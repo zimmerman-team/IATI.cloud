@@ -18,22 +18,17 @@ from rest_framework.utils.serializer_helpers import ReturnDict, ReturnList
 from rest_framework_csv.renderers import CSVRenderer
 
 from api.iati.references import (
-    TitleReference, DescriptionReference,
-    ActivityDateReference, ReportingOrgReference,
-    ParticipatingOrgReference, ContactInfoReference,
-    TransactionReference, SectorReference,
-    BudgetReference, OtherIdentifierReference,
-    ActivityStatusReference, RecipientCountryReference,
-    RecipientRegionReference, LocationReference,
-    PolicyMarkerReference, CollaborationTypeReference,
-    DefaultFlowTypeReference, DefaultFinanceTypeReference,
-    DefaultTiedStatusReference, PlannedDisbursementReference,
-    CapitalSpendReference, DocumentLinkReference,
-    LegacyDataReference, CrsAddReference,
-    ResultReference, FssReference,
-    HumanitarianScopeReference, RelatedActivityReference,
-    ConditionsReference, CountryBudgetItemsReference,
-    TagReference, ActivityScopeReference
+    ActivityDateReference, ActivityScopeReference, ActivityStatusReference,
+    BudgetReference, CapitalSpendReference, CollaborationTypeReference,
+    ConditionsReference, ContactInfoReference, CountryBudgetItemsReference,
+    CrsAddReference, DefaultFinanceTypeReference, DefaultFlowTypeReference,
+    DefaultTiedStatusReference, DescriptionReference, DocumentLinkReference,
+    FssReference, HumanitarianScopeReference, LegacyDataReference,
+    LocationReference, OtherIdentifierReference, ParticipatingOrgReference,
+    PlannedDisbursementReference, PolicyMarkerReference,
+    RecipientCountryReference, RecipientRegionReference,
+    RelatedActivityReference, ReportingOrgReference, ResultReference,
+    SectorReference, TagReference, TitleReference, TransactionReference
 )
 
 # TODO: Make this more generic - 2016-01-21

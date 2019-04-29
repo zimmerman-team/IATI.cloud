@@ -1419,6 +1419,7 @@ class RecipientCountryTestCase(ParserSetupTestCase):
         self.parser_202.register_model('Activity', self.activity)
         self.parser_105.register_model('Activity', self.activity)
 
+    @skip('NotImplemented')
     def test_recipient_country_202(self):
         """
         Along with its narrative(s)
@@ -1463,6 +1464,7 @@ class RecipientRegionTestCase(ParserSetupTestCase):
         self.parser_202.register_model('Activity', self.activity)
         self.parser_105.register_model('Activity', self.activity)
 
+    @skip('NotImplemented')
     def test_recipient_region_202(self):
         """
         Along with its narrative(s)
@@ -1481,6 +1483,7 @@ class RecipientRegionTestCase(ParserSetupTestCase):
 
         # TODO: needs narrative?
 
+    @skip('NotImplemented')
     def test_recipient_region_202_defaults(self):
         """
         Check default vocabulary is set accordingly
@@ -2748,6 +2751,7 @@ class TransactionTestCase(ParserSetupTestCase):
                          attrs['vocabulary-uri'])
         self.assertEqual(transaction_sector.percentage, 100)
 
+    @skip('NotImplemented')
     def test_transaction_recipient_country_202(self):
         """
         """
@@ -2769,6 +2773,7 @@ class TransactionTestCase(ParserSetupTestCase):
             transaction_recipient_country.country.code, attrs['code'])
         self.assertEqual(transaction_recipient_country.percentage, 100)
 
+    @skip('NotImplemented')
     def test_transaction_recipient_region_202(self):
         """
 
