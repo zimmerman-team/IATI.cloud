@@ -76,15 +76,12 @@ class SearchFilter(filters.BaseFilterBackend):
         query = request.query_params.get('q', None)
 
         # TODO: Why not using query_lookup & lookup_expr anymore
-        """
-        query_lookup = request.query_params.get('q_lookup', None)
-        lookup_expr = 'exact'  # 'ft'
-        if query_lookup:
-            lookup_expr = query_lookup
-        """
+        # query_lookup = request.query_params.get('q_lookup', None)
+        # lookup_expr = 'exact'  # 'ft'
+        # if query_lookup:
+        #    lookup_expr = query_lookup
 
         if query:
-
             query_fields = request.query_params.get('q_fields')
             model_prefix = ''
 
