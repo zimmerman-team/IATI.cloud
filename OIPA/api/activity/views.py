@@ -64,7 +64,7 @@ from iati.models import (
     ResultIndicatorReference, Sector
 )
 from iati.transaction.models import Transaction
-from iati_codelists.models import FileFormat
+from iati_codelists.models import FileFormat, TransactionType
 
 
 class FilterPublisherMixin(object):
@@ -371,13 +371,48 @@ class ActivityList(CacheResponseMixin, DynamicListView):
     filter_class = ActivityFilter
     serializer_class = ActivitySerializer
 
+    # make sure we can always have info about selectable fields,
+    # stored into dict. This dict is populated in the DynamicView class using
+    # _get_query_fields methods.
+    selectable_fields = ()
+
+    # Required fields for the serialisation defined by the
+    # specification document
     fields = (
-        'url',
         'iati_identifier',
-        'title',
-        'descriptions',
-        'transactions',
-        'reporting_organisations')
+        'sectors',
+        'recipient_regions',
+        'recipient_countries'
+        )
+
+    ''' '''
+    # column headers with paths to the json property value.
+    # reference to the field name made by the first term in the path
+    # example: for recipient_countries.country.code path
+    # reference field name is first term, meaning recipient_countries.
+    csv_headers = \
+              {
+                   'activity_id': 'iati_identifier',
+                   'sector_code': 'sectors.sector.code',
+                   'sectors_percentage': 'sectors.percentage',
+                   'country': 'recipient_countries.country.code',
+                   'region': 'recipient_regions.region.code',
+                   'title': 'title.narratives.text',
+                   'description': 'descriptions.narratives.text',
+                   'transaction_types': 'transaction_types.dsum'
+              }
+
+    # Get all transaction type
+    transaction_types = []
+    for transaction_type in list(TransactionType.objects.all()):
+        transaction_types.append(transaction_type.code)
+
+    # Activity break down column
+    break_down_by = 'sectors'
+    # selectable fields which required different render logic.
+    # Instead merging values using the delimiter, this fields will generate
+    # additional columns for the different values, based on defined criteria.
+    exceptional_fields = [{'transaction_types.transaction_type': transaction_types}]  # NOQA: E501
 
     always_ordering = 'id'
 

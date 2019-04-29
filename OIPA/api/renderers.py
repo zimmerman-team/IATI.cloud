@@ -4,7 +4,7 @@
 from __future__ import unicode_literals
 
 import ast
-import csv
+import unicodecsv as csv
 import io
 from collections import OrderedDict
 
@@ -142,6 +142,13 @@ class PaginatedCSVRenderer(CSVRenderer):
             'quotechar': '"',
             'delimiter': ';'
         }
+        #
+        self.rows = []
+        self.row = []
+        self.paths = {}
+        self.headers = {}
+        self.break_down_by = None
+        self.exceptional_fields = None
 
     def render(self, data, *args, **kwargs):
         # TODO: this is probably a bug in DRF, might get fixed later then
@@ -162,7 +169,146 @@ class PaginatedCSVRenderer(CSVRenderer):
                 'transactions' in args[1]['request']._request.path:
             data = data.get(self.results_field, [])
 
-        return super(PaginatedCSVRenderer, self).render(data, *args, **kwargs)
+        # these lines is just for internal testing purposes
+        # to transforms current json object
+        # into format suitable for testing majority of cases.
+        # data[0]['transaction_types'].append({'transaction_type':'12', 'dsum': 300000.00}) # NOQA: E501
+        # data[0]['recipient_countries'].append({'id': 5, 'country': {'url': 'test url', 'code': 'IQ', 'name': 'test name'}, 'percentage': 50}) # NOQA: E501
+
+        # Get the reference view
+        view = args[1].get('view', {})
+
+        # Check if it's the instance of view type
+        if not isinstance(view, dict):
+
+            # for exceptional fields we should perform different logic
+            # then for other selectable fields
+            self.exceptional_fields = view.exceptional_fields
+
+            # Get headers with their paths
+            self.headers = self._get_headers(view.csv_headers, view.fields)
+
+            # Break down Activity by defined column in ActivityList class
+            self.break_down_by = view.break_down_by
+
+            # iterate trough all Activities
+            for item in data:
+
+                # Get a number of repeated rows caused by breaking down
+                # activity with the defined column.
+                repeated_rows = len(item[self.break_down_by])
+
+                self.paths = {}
+                # recursive function to get all json paths
+                # together with the corresponded values
+                self.paths = self._go_deeper(item, '', self.paths)
+
+                self.adjust_paths()
+
+                # iterate trough activity data and make appropriate row values
+                # with the respect to the headers and breaking down column
+                for i in range(repeated_rows):
+                    self.row = []
+                    for header_key, header_value in self.headers.items():
+                        # in case that we did not find the value
+                        # for the particular json path, set empty string
+                        # for the column value.
+                        if header_value not in list(self.paths.keys()):
+                            self.row.append('')
+                            continue
+                        else:
+                            value = self.paths[header_value]
+                            if isinstance(value, list):
+                                if self.break_down_by in header_value:
+                                    self.row.append(value[i])
+                                else:
+                                    self.row.append(';'. join(value))
+
+                            # In case we did find the value for the particular
+                            # json path and this property value has not related
+                            # to breaking down column.
+                            else:
+                                self.row.append(value)
+                    self.rows.append(self.row)
+
+        # writing to the csv file using unicodecsv library
+        output = io.BytesIO()
+        writer = csv.writer(output, delimiter=';', encoding=settings.DEFAULT_CHARSET)  # NOQA: E501
+        writer.writerow(list(self.headers.keys()))
+        writer.writerows(self.rows)
+        return output.getvalue()
+        # this is old render call.
+        # return super(PaginatedCSVRenderer, self).render(rows, renderer_context={'header':['aaaa','sssss','ddddd','fffff','gggggg']}, **kwargs) # NOQA: E501
+
+    def _go_deeper(self, node, path='', paths={}):
+
+        if isinstance(node, dict):
+            for key, value in node.items():
+                current_path = path + key + '.'
+                paths = self._go_deeper(value, current_path, paths)
+
+        elif isinstance(node, list):
+            for value in node:
+                paths = self._go_deeper(value, path, paths)
+        else:
+            path = path[:-1]
+            if path in paths:
+                if not isinstance(paths[path], list):
+                    paths[path] = [paths[path]]
+                    paths[path].append(0 if node is None else node)
+            else:
+                paths[path] = 0 if node is None else node
+
+        return paths
+
+    def _get_headers(self, available_headers, fields):
+
+        headers = {}
+        for field in fields:
+            for header, path in available_headers.items():
+                # field name should be first term in path string
+                if field in path.split('.')[0]:
+                    headers[header] = path
+
+        # adjust headers with the possibility of having exceptional fields
+        for exceptional_field in self.exceptional_fields:
+            for key, value in exceptional_field.items():
+                field_name = key.split('.')[0]
+                if field_name in list(headers.keys()):
+                    path = headers[field_name]
+                    headers.pop(field_name, None)
+                    for exceptional_header_suffix in value:
+                        headers[field_name + '_' + str(exceptional_header_suffix)] = path + '_' + str(exceptional_header_suffix)  # NOQA: E501
+
+        return headers
+
+    def adjust_paths(self):
+
+        for exceptional_field in self.exceptional_fields:
+            tmp_paths = {}
+            for key, value in exceptional_field.items():
+                if key in self.paths:
+                    field_name = key.split('.')[0]
+                    if not isinstance(self.paths[key], list):
+
+                        field_value = self.paths[key]
+                        tmp_paths = self._make_column_value(tmp_paths, field_name, field_value, None)  # NOQA: E501
+
+                    else:
+                        for index, item in enumerate(self.paths[key]):
+                            field_value = item
+                            tmp_paths = self._make_column_value(tmp_paths, field_name, field_value, index)  # NOQA: E501
+
+            self.paths = tmp_paths
+
+    def _make_column_value(self, data, field_name, field_value, index=None):
+        for path, path_value in self.paths.items():
+            if field_name in path.split('.')[0]:
+                data[path + '_' + str(field_value)] = \
+                    path_value[index] if index is not None else path_value
+            else:
+                data[path] = path_value
+        return data
 
 
 class OrganisationXMLRenderer(XMLRenderer):

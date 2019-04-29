@@ -46,6 +46,7 @@ from iati.transaction.models import (
 )
 from iati.parser import validators
 from iati_organisation import models as organisation_models
+from django.db.models import Sum
 
 
 def save_narratives(instance, data, activity_instance):
@@ -3170,6 +3171,13 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
 
     published_state = PublishedStateSerializer(source="*", read_only=True)
 
+    transaction_types = serializers.SerializerMethodField()
+
+    def get_transaction_types(self, obj):
+        return list(Transaction.objects.filter(activity=obj).values('transaction_type').annotate(dsum=Sum('value')))
+
+        #return Transaction.objects.filter(activity=obj).aggregate(Sum('value'))
+
     def validate(self, data):
         validated = validators.activity(
             data.get('iati_identifier'),
@@ -3332,7 +3340,8 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
             'aggregations',
             'dataset',
             'publisher',
-            'published_state'
+            'published_state',
+            'transaction_types'
         )
 
         validators = []
