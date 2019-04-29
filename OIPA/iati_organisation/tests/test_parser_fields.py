@@ -4,6 +4,7 @@
 
 import copy
 import datetime
+from unittest import skip
 
 import pytest
 from django.core import management
@@ -677,6 +678,7 @@ class OrganisationTestCase(ParserSetupTestCase):
             )
         self.parser_202.get_model('RecipientRegionBudget')
 
+    @skip('NotImplemented')
     def test_iati_organisations__iati_organisation__recipient_region_budget__recipient_region(  # NOQA: E501
             self):
         """attributes:
