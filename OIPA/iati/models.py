@@ -712,6 +712,12 @@ class HumanitarianScope(models.Model):
     vocabulary_uri = models.URLField(null=True, blank=True)
     type = models.ForeignKey(HumanitarianScopeType, on_delete=models.CASCADE)
 
+    narratives = GenericRelation(
+        Narrative,
+        content_type_field='related_content_type',
+        object_id_field='related_object_id'
+    )
+
     def get_activity(self):
         return self.activity
 
@@ -1854,6 +1860,12 @@ class ActivityTag(models.Model):
         TagVocabulary, on_delete=models.CASCADE
     )
     vocabulary_uri = models.URLField(blank=True)
+
+    narratives = GenericRelation(
+        Narrative,
+        content_type_field='related_content_type',
+        object_id_field='related_object_id'
+    )
 
     def __str__(self):
         return "tag for %s" % self.activity

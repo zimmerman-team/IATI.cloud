@@ -30,7 +30,11 @@ from api.iati.references import (
     DefaultFlowTypeReference, DefaultFinanceTypeReference,
     DefaultTiedStatusReference, PlannedDisbursementReference,
     CapitalSpendReference, DocumentLinkReference,
-    LegacyDataReference, CrsAddReference
+    LegacyDataReference, CrsAddReference,
+    ResultReference, FssReference,
+    HumanitarianScopeReference, RelatedActivityReference,
+    ConditionsReference, CountryBudgetItemsReference,
+    TagReference, ActivityScopeReference
 )
 
 from iati_codelists.models import TransactionType
@@ -551,6 +555,10 @@ class IATIXMLRenderer(BaseRenderer):
     item_tag_name = 'iati-activity'
     version = '2.03'
 
+    default_references = {
+        'iati_identifier': None,
+    }
+
     element_references = {
         'title': TitleReference,
         'descriptions': DescriptionReference,
@@ -558,6 +566,7 @@ class IATIXMLRenderer(BaseRenderer):
         'reporting_organisation': ReportingOrgReference,
         'participating_organisations': ParticipatingOrgReference,
         'contact_info': ContactInfoReference,
+        'activity_scope': ActivityScopeReference,
         'related_transactions': TransactionReference,
         'sectors': SectorReference,
         'budgets': BudgetReference,
@@ -575,7 +584,14 @@ class IATIXMLRenderer(BaseRenderer):
         'capital_spend': CapitalSpendReference,
         'document_links': DocumentLinkReference,
         'legacy_data': LegacyDataReference,
-        'crs_add': CrsAddReference
+        'crs_add': CrsAddReference,
+        'results': ResultReference,
+        'fss': FssReference,
+        'humanitarian_scope': HumanitarianScopeReference,
+        'related_activities': RelatedActivityReference,
+        'conditions': ConditionsReference,
+        'country_budget_items': CountryBudgetItemsReference,
+        'tags': TagReference
     }
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
@@ -637,7 +653,13 @@ class IATIXMLRenderer(BaseRenderer):
 
             for key, value in six.iteritems(data):
 
-                if key in attributes:
+                if key in attributes or key not in {**self.element_references, **self.default_references}:  # NOQA: E501
+                    # TODO: we have some bugs data here,
+                    # I don't know where they come from please check them.
+                    # How to produce it:
+                    # - run debugging
+                    # - stop debug line on below "continue"
+                    # - check key and value you should get some OrderDict
                     continue
 
                 if key == 'text':

@@ -4,7 +4,10 @@ http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-act
 """
 from lxml import etree
 from api.iati.attributes import DataAttribute
-from api.iati.elements import ElementReference, ElementWithNarrativeReference
+from api.iati.elements import (
+    ElementReference, ElementWithNarrativeReference,
+    ElementRecord, AttributeRecord, ElementBase
+)
 
 
 class TitleReference(ElementWithNarrativeReference):
@@ -203,40 +206,6 @@ class ContactInfoReference(ElementReference):
             organisation_narrative.element = self.organisation_element
             organisation_narrative.create()
 
-        # Email element
-        email_value = self.data.get(self.email_key)
-        if email_value:
-            email_element = etree.SubElement(
-                contact_info_element, self.email_element
-            )
-            email_element.text = email_value
-
-        # Mailing address element
-        mailing_address_dict = self.data.get(self.mailing_address_dict_key)
-        if mailing_address_dict:
-            mailing_address_narrative = ElementWithNarrativeReference(
-                parent_element=contact_info_element,
-                data=mailing_address_dict
-            )
-            mailing_address_narrative.element = self.mailing_address_element
-            mailing_address_narrative.create()
-
-        # Telephone element
-        telephone_value = self.data.get(self.telephone_key)
-        if telephone_value:
-            telephone_element = etree.SubElement(
-                contact_info_element, self.telephone_element
-            )
-            telephone_element.text = telephone_value
-
-        # Website element
-        website_value = self.data.get(self.website_key)
-        if website_value:
-            website_element = etree.SubElement(
-                contact_info_element, self.website_element
-            )
-            website_element.text = website_value
-
         # Department element
         department_dict = self.data.get(self.department_dict_key)
         if department_dict:
@@ -244,7 +213,7 @@ class ContactInfoReference(ElementReference):
                 parent_element=contact_info_element,
                 data=department_dict
             )
-            department_narrative.element = self.mailing_address_element
+            department_narrative.element = self.department_element
             department_narrative.create()
 
         # Person name element
@@ -266,6 +235,40 @@ class ContactInfoReference(ElementReference):
             )
             job_title_narrative.element = self.job_title_element
             job_title_narrative.create()
+
+        # Telephone element
+        telephone_value = self.data.get(self.telephone_key)
+        if telephone_value:
+            telephone_element = etree.SubElement(
+                contact_info_element, self.telephone_element
+            )
+            telephone_element.text = telephone_value
+
+        # Email element
+        email_value = self.data.get(self.email_key)
+        if email_value:
+            email_element = etree.SubElement(
+                contact_info_element, self.email_element
+            )
+            email_element.text = email_value
+
+        # Website element
+        website_value = self.data.get(self.website_key)
+        if website_value:
+            website_element = etree.SubElement(
+                contact_info_element, self.website_element
+            )
+            website_element.text = website_value
+
+        # Mailing address element
+        mailing_address_dict = self.data.get(self.mailing_address_dict_key)
+        if mailing_address_dict:
+            mailing_address_narrative = ElementWithNarrativeReference(
+                parent_element=contact_info_element,
+                data=mailing_address_dict
+            )
+            mailing_address_narrative.element = self.mailing_address_element
+            mailing_address_narrative.create()
 
 
 class TransactionReference(ElementReference):
@@ -382,10 +385,6 @@ class TransactionReference(ElementReference):
                 'key': 'code',
                 'attr': 'code'
             }
-        },
-        'percentage': {
-            'key': 'percentage',
-            'attr': 'percentage'
         }
     }
     # Recipient region
@@ -501,6 +500,199 @@ class TransactionReference(ElementReference):
                     value_date
                 )
 
+        # Provider Organisation
+        provider_organisation_dict = self.data.get(
+            self.provider_organisation.get('key')
+        )
+        if provider_organisation_dict:
+            provider_organisation_element = etree.SubElement(
+                transaction_element, self.provider_organisation.get('element')
+            )
+
+            # Attributes
+            # Ref
+            ref_value = provider_organisation_dict.get(
+                self.provider_organisation.get('ref').get('key')
+            )
+            if ref_value:
+                provider_organisation_element.set(
+                    self.provider_organisation.get('ref').get('attr'),
+                    ref_value
+                )
+
+            # Attributes
+            # Provider activity id
+            provider_activity_id_value = provider_organisation_dict.get(
+                self.provider_organisation.get(
+                    'provider_activity_id'
+                ).get('key')
+            )
+            if provider_activity_id_value:
+                provider_organisation_element.set(
+                    self.provider_organisation.get(
+                        'provider_activity_id'
+                    ).get('attr'),
+                    provider_activity_id_value
+                )
+
+            # Attributes
+            # Type
+            type_dict = provider_organisation_dict.get(
+                self.provider_organisation.get('type').get('key')
+            )
+            if type_dict:
+                type_value = type_dict.get(
+                    self.provider_organisation.get(
+                        'type'
+                    ).get('code').get('key')
+                )
+                provider_organisation_element.set(
+                    self.provider_organisation.get(
+                        'type'
+                    ).get('code').get('attr'),
+                    type_value
+                )
+
+            # Narrative
+            provider_organisation_narrative = ElementWithNarrativeReference(
+                parent_element=None,
+                data=provider_organisation_dict
+            )
+            provider_organisation_narrative.create_narrative(
+                parent_element=provider_organisation_element
+            )
+
+        # Sector
+        sectors_list = self.data.get(
+            self.sectors.get('key')
+        )
+        if sectors_list:
+            for sector_dict in sectors_list:
+                sector_element = etree.SubElement(
+                    transaction_element,
+                    self.sectors.get('element')
+                )
+
+                # Attribute
+                # Code
+                sector = sector_dict.get(
+                    self.sectors.get('sector').get('key')
+                )
+                if sector:
+                    code = sector.get(
+                        self.sectors.get(
+                            'sector'
+                        ).get('code').get('key')
+                    )
+
+                    if code:
+                        sector_element.set(
+                            self.sectors.get(
+                                'sector'
+                            ).get('code').get('attr'),
+                            code
+                        )
+
+                # Attribute
+                # Vocabulary
+                vocabulary = sector_dict.get(
+                    self.sectors.get('vocabulary').get('key')
+                )
+                if vocabulary:
+                    code = vocabulary.get(
+                        self.sectors.get(
+                            'vocabulary'
+                        ).get('code').get('key')
+                    )
+
+                    if code:
+                        sector_element.set(
+                            self.sectors.get(
+                                'vocabulary'
+                            ).get('code').get('attr'),
+                            code
+                        )
+
+        # Recipient country
+        recipient_countries_list = self.data.get(
+            self.recipient_countries.get('key')
+        )
+        if recipient_countries_list:
+            for recipient_country in recipient_countries_list:
+                recipient_country_element = etree.SubElement(
+                    transaction_element,
+                    self.recipient_countries.get('element')
+                )
+
+                # Attribute
+                # Code
+                country = recipient_country.get(
+                    self.recipient_countries.get('country').get('key')
+                )
+                if country:
+                    code = country.get(
+                        self.recipient_countries.get(
+                            'country'
+                        ).get('code').get('key')
+                    )
+
+                    if code:
+                        recipient_country_element.set(
+                            self.recipient_countries.get(
+                                'country'
+                            ).get('code').get('attr'),
+                            code
+                        )
+
+        # Recipient region
+        recipient_regions_list = self.data.get(
+            self.recipient_regions.get('key')
+        )
+        if recipient_regions_list:
+            for recipient_region in recipient_regions_list:
+                recipient_region_element = etree.SubElement(
+                    transaction_element,
+                    self.recipient_regions.get('element')
+                )
+
+                # Attribute
+                # Code
+                region = recipient_region.get(
+                    self.recipient_regions.get('region').get('key')
+                )
+                if region:
+                    code = region.get(
+                        self.recipient_regions.get(
+                            'region'
+                        ).get('code').get('key')
+                    )
+
+                    if code:
+                        recipient_region_element.set(
+                            self.recipient_regions.get(
+                                'region'
+                            ).get('code').get('attr'),
+                            code
+                        )
+
+                # Attribute
+                # Vocabulary
+                vocabulary_dict = recipient_region.get(
+                    self.recipient_regions.get('vocabulary').get('key')
+                )
+                if vocabulary_dict:
+                    vocabulary_value = vocabulary_dict.get(
+                        self.recipient_regions.get(
+                            'vocabulary'
+                        ).get('code').get('key')
+                    )
+                    recipient_region_element.set(
+                        self.recipient_regions.get(
+                            'vocabulary'
+                        ).get('code').get('attr'),
+                        vocabulary_value
+                    )
+
         # Flow type
         flow_type_dict = self.data.get(
             self.flow_type.get('key')
@@ -578,210 +770,6 @@ class TransactionReference(ElementReference):
                     self.tied_status.get('code').get('attr'),
                     code
                 )
-
-        # Provider Organisation
-        provider_organisation_dict = self.data.get(
-            self.provider_organisation.get('key')
-        )
-        if provider_organisation_dict:
-            provider_organisation_element = etree.SubElement(
-                transaction_element, self.provider_organisation.get('element')
-            )
-
-            # Attributes
-            # Ref
-            ref_value = provider_organisation_dict.get(
-                self.provider_organisation.get('ref').get('key')
-            )
-            if ref_value:
-                provider_organisation_element.set(
-                    self.provider_organisation.get('ref').get('attr'),
-                    ref_value
-                )
-
-            # Attributes
-            # Provider activity id
-            provider_activity_id_value = provider_organisation_dict.get(
-                self.provider_organisation.get(
-                    'provider_activity_id'
-                ).get('key')
-            )
-            if provider_activity_id_value:
-                provider_organisation_element.set(
-                    self.provider_organisation.get(
-                        'provider_activity_id'
-                    ).get('attr'),
-                    provider_activity_id_value
-                )
-
-            # Attributes
-            # Type
-            type_dict = provider_organisation_dict.get(
-                self.provider_organisation.get('type').get('key')
-            )
-            if type_dict:
-                type_value = type_dict.get(
-                    self.provider_organisation.get(
-                        'type'
-                    ).get('code').get('key')
-                )
-                provider_organisation_element.set(
-                    self.provider_organisation.get(
-                        'type'
-                    ).get('code').get('attr'),
-                    type_value
-                )
-
-            # Narrative
-            provider_organisation_narrative = ElementWithNarrativeReference(
-                parent_element=None,
-                data=provider_organisation_dict
-            )
-            provider_organisation_narrative.create_narrative(
-                parent_element=provider_organisation_element
-            )
-
-        # Recipient country
-        recipient_countries_list = self.data.get(
-            self.recipient_countries.get('key')
-        )
-        if recipient_countries_list:
-            for recipient_country in recipient_countries_list:
-                recipient_country_element = etree.SubElement(
-                    transaction_element,
-                    self.recipient_countries.get('element')
-                )
-
-                # Attribute
-                # Code
-                country = recipient_country.get(
-                    self.recipient_countries.get('country').get('key')
-                )
-                if country:
-                    code = country.get(
-                        self.recipient_countries.get(
-                            'country'
-                        ).get('code').get('key')
-                    )
-
-                    if code:
-                        recipient_country_element.set(
-                            self.recipient_countries.get(
-                                'country'
-                            ).get('code').get('attr'),
-                            code
-                        )
-
-                # Attribute
-                # Percentage
-                percentage_value = recipient_country.get(
-                    self.recipient_countries.get('percentage').get('key')
-                )
-                if percentage_value:
-                    recipient_country_element.set(
-                        self.recipient_countries.get('percentage').get('attr'),
-                        percentage_value
-                    )
-
-        # Recipient region
-        recipient_regions_list = self.data.get(
-            self.recipient_regions.get('key')
-        )
-        if recipient_regions_list:
-            for recipient_region in recipient_regions_list:
-                recipient_region_element = etree.SubElement(
-                    transaction_element,
-                    self.recipient_regions.get('element')
-                )
-
-                # Attribute
-                # Code
-                region = recipient_region.get(
-                    self.recipient_regions.get('region').get('key')
-                )
-                if region:
-                    code = region.get(
-                        self.recipient_regions.get(
-                            'region'
-                        ).get('code').get('key')
-                    )
-
-                    if code:
-                        recipient_region_element.set(
-                            self.recipient_regions.get(
-                                'region'
-                            ).get('code').get('attr'),
-                            code
-                        )
-
-                # Attribute
-                # Vocabulary
-                vocabulary_dict = recipient_region.get(
-                    self.recipient_regions.get('vocabulary').get('key')
-                )
-                if vocabulary_dict:
-                    vocabulary_value = vocabulary_dict.get(
-                        self.recipient_regions.get(
-                            'vocabulary'
-                        ).get('code').get('key')
-                    )
-                    recipient_region_element.set(
-                        self.recipient_regions.get(
-                            'vocabulary'
-                        ).get('code').get('attr'),
-                        vocabulary_value
-                    )
-
-        # Sector
-        sectors_list = self.data.get(
-            self.sectors.get('key')
-        )
-        if sectors_list:
-            for sector_dict in sectors_list:
-                sector_element = etree.SubElement(
-                    transaction_element,
-                    self.sectors.get('element')
-                )
-
-                # Attribute
-                # Code
-                sector = sector_dict.get(
-                    self.sectors.get('sector').get('key')
-                )
-                if sector:
-                    code = sector.get(
-                        self.sectors.get(
-                            'sector'
-                        ).get('code').get('key')
-                    )
-
-                    if code:
-                        sector_element.set(
-                            self.sectors.get(
-                                'sector'
-                            ).get('code').get('attr'),
-                            code
-                        )
-
-                # Attribute
-                # Vocabulary
-                vocabulary = sector_dict.get(
-                    self.sectors.get('vocabulary').get('key')
-                )
-                if vocabulary:
-                    code = vocabulary.get(
-                        self.sectors.get(
-                            'vocabulary'
-                        ).get('code').get('key')
-                    )
-
-                    if code:
-                        sector_element.set(
-                            self.sectors.get(
-                                'vocabulary'
-                            ).get('code').get('attr'),
-                            code
-                        )
 
 
 class SectorReference(ElementWithNarrativeReference):
@@ -2038,6 +2026,14 @@ class DocumentLinkReference(ElementReference):
         'key': 'url',
         'attr': 'url'
     }
+    # @format
+    format = {
+        'key': 'format',
+        'code': {
+            'key': 'code',
+            'attr': 'format'
+        }
+    }
     # <title>
     title = {
         'element': 'title',
@@ -2097,6 +2093,16 @@ class DocumentLinkReference(ElementReference):
             self.data,
             self.url.get('key')
         ).set()
+
+        # @format
+        format_dict = self.data.get(self.format.get('key'))
+        if format_dict:
+            DataAttribute(
+                document_link_element,
+                self.format.get('code').get('attr'),
+                format_dict,
+                self.format.get('code').get('key')
+            ).set()
 
         # <title>
         # <narrative>
@@ -2563,3 +2569,714 @@ class CrsAddReference(ElementReference):
             # </interest-arrears>
 
         # </crs-add>
+
+
+class BaseReference(ElementReference):
+    """
+    Base of reference
+    """
+    # <element>
+    # </element>
+
+    def create(self):
+        # <element>
+        element_base = ElementBase(
+            element_record=self.element_record,
+            parent_element=self.parent_element,
+            data=self.data
+        )
+        element_base.create()
+        # </element>
+
+
+class DocumentLinkBaseReference(BaseReference):
+    """
+    The base of the document link element
+    """
+    # <document-link>
+    attributes = [
+        # @url
+        AttributeRecord(
+            name='url',
+            key='url'
+        ),
+        # @format
+        # Dict type
+        AttributeRecord(
+            name='format',
+            key='code',
+            dict_key='format'
+        )
+    ]
+    children = [
+        # <title>
+        # <narrative>
+        ElementRecord(
+            name='title',
+            key='title',
+            element_type=ElementWithNarrativeReference
+        ),
+        # </narrative>
+        # </title>
+        # <category
+        # <description>
+        # <narrative>
+        ElementRecord(
+            name='description',
+            key='description',
+            element_type=ElementWithNarrativeReference
+        ),
+        # </narrative>
+        # </description>
+        # <category
+        ElementRecord(
+            name='category',
+            key='categories',
+            attributes=[
+                # @code
+                # Dict type
+                AttributeRecord(
+                    name='code',
+                    key='code',
+                    dict_key='category'
+                )
+            ]
+        ),
+        # />
+        # <language
+        ElementRecord(
+            name='language',
+            key='languages',
+            attributes=[
+                # @code
+                # Dict type
+                AttributeRecord(
+                    name='code',
+                    key='code',
+                    dict_key='language'
+                )
+            ]
+        ),
+        # />
+        # <document-date
+        ElementRecord(
+            name='document-date',
+            key='document_date',
+            attributes=[
+                # @iso-date
+                AttributeRecord(
+                    name='iso-date',
+                    key='iso_date',
+                )
+            ]
+        ),
+        # />
+    ]
+    element_record = ElementRecord(
+        name='document-link',
+        key='document_links',
+        attributes=attributes,
+        children=children
+    )
+    # <document-link>
+
+
+class ResultReference(BaseReference):
+    """
+    http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/result/
+    """
+
+    # <result>
+    attributes = [
+        # @type
+        # Dict type
+        AttributeRecord(
+            name='type',
+            key='code',
+            dict_key='type'
+        ),
+        # @aggregation-status
+        AttributeRecord(
+            name='aggregation-status',
+            key='aggregation_status'
+        )
+    ]
+    children = [
+        # <title>
+        # <narrative>
+        ElementRecord(
+            name='title',
+            key='title',
+            element_type=ElementWithNarrativeReference
+        ),
+        # </narrative>
+        # </title>
+        # <description>
+        # <narrative>
+        ElementRecord(
+            name='description',
+            key='description',
+            element_type=ElementWithNarrativeReference
+        ),
+        # </narrative>
+        # </description>
+        # <indicator>
+        # <document-link>
+        DocumentLinkBaseReference(
+            parent_element=None,
+            data=None,
+            element=DocumentLinkBaseReference.element_record
+        ),
+        # <document-link>
+        ElementRecord(
+            name='indicator',
+            key='indicators',
+            attributes=[
+                # @measure
+                # Dict type
+                AttributeRecord(
+                    name='measure',
+                    key='code',
+                    dict_key='measure'
+                ),
+                # @ascending
+                AttributeRecord(
+                    name='ascending',
+                    key='ascending'
+                )
+                # TODO: add @aggregation-status
+            ],
+            children=[
+                # <title>
+                # <narrative>
+                ElementRecord(
+                    name='title',
+                    key='title',
+                    element_type=ElementWithNarrativeReference
+                ),
+                # </narrative>
+                # </title>
+                # <description>
+                # <narrative>
+                ElementRecord(
+                    name='description',
+                    key='description',
+                    element_type=ElementWithNarrativeReference
+                ),
+                # </narrative>
+                # </description>
+                # <document-link>
+                DocumentLinkBaseReference(
+                    parent_element=None,
+                    data=None,
+                    element=DocumentLinkBaseReference.element_record
+                ),
+                # <document-link>
+                # <reference>
+                ElementRecord(
+                    name='reference',
+                    key='references',
+                    attributes=[
+                        # @vocabulary
+                        # Dict type
+                        AttributeRecord(
+                            name='vocabulary',
+                            key='code',
+                            dict_key='vocabulary'
+                        ),
+                        # @code
+                        AttributeRecord(
+                            name='code',
+                            key='code'
+                        )
+                    ],
+                ),
+                # </reference>
+                # <baseline>
+                ElementRecord(
+                    name='baseline',
+                    key='baseline',
+                    attributes=[
+                        # @year
+                        AttributeRecord(
+                            name='year',
+                            key='year'
+                        ),
+                        # @value
+                        AttributeRecord(
+                            name='value',
+                            key='value'
+                        ),
+                        # @iso-date
+                        AttributeRecord(
+                            name='iso-date',
+                            key='iso_date'
+                        )
+                    ],
+                    children=[
+                        # <location>
+                        ElementRecord(
+                            name='location',
+                            key='locations',
+                            attributes=[
+                                # @ref
+                                AttributeRecord(
+                                    name='ref',
+                                    key='ref'
+                                )
+                            ]
+                        ),
+                        # />
+                        # <dimension>
+                        ElementRecord(
+                            name='dimension',
+                            key='dimensions',
+                            attributes=[
+                                # @name
+                                AttributeRecord(
+                                    name='name',
+                                    key='name'
+                                ),
+                                # @value
+                                AttributeRecord(
+                                    name='value',
+                                    key='value'
+                                )
+                            ],
+                        ),
+                        # </dimension>
+                        # <document-link>
+                        DocumentLinkBaseReference(
+                            parent_element=None,
+                            data=None,
+                            element=DocumentLinkBaseReference.element_record
+                        ),
+                        # <document-link>
+                        # <comment>
+                        # <narrative>
+                        ElementRecord(
+                            name='comment',
+                            key='comment',
+                            element_type=ElementWithNarrativeReference
+                        ),
+                        # </narrative>
+                        # </comment>
+                    ]
+                ),
+                # </baseline>
+                # <period>
+                ElementRecord(
+                    name='period',
+                    key='periods',
+                    children=[
+                        # <period-start>
+                        ElementRecord(
+                            name='period-start',
+                            attributes=[
+                                # @iso-date
+                                AttributeRecord(
+                                    name='iso-date',
+                                    key='period_start'
+                                )
+                            ],
+                        ),
+                        # </period-start>
+                        # <period-end>
+                        ElementRecord(
+                            name='period-end',
+                            attributes=[
+                                # @iso-date
+                                AttributeRecord(
+                                    name='iso-date',
+                                    key='period_end'
+                                )
+                            ],
+                        ),
+                        # </period-end>
+                        # <target>
+                        ElementRecord(
+                            name='target',
+                            key='targets',
+                            attributes=[
+                                # @value
+                                AttributeRecord(
+                                    name='value',
+                                    key='value'
+                                )
+                            ],
+                            children=[
+                                # <location>
+                                ElementRecord(
+                                    name='location',
+                                    key='locations',
+                                    attributes=[
+                                        # @ref
+                                        AttributeRecord(
+                                            name='ref',
+                                            key='ref'
+                                        )
+                                    ],
+                                ),
+                                # </location>
+                                # <dimension>
+                                ElementRecord(
+                                    name='dimension',
+                                    key='dimensions',
+                                    attributes=[
+                                        # @name
+                                        AttributeRecord(
+                                            name='name',
+                                            key='name'
+                                        ),
+                                        # @value
+                                        AttributeRecord(
+                                            name='value',
+                                            key='value'
+                                        )
+                                    ],
+                                ),
+                                # </dimension>
+                                # <comment>
+                                # <narrative>
+                                ElementRecord(
+                                    name='comment',
+                                    key='comment',
+                                    element_type=ElementWithNarrativeReference
+                                ),
+                                # </narrative>
+                                # </comment>
+                                # <document-link>
+                                DocumentLinkBaseReference(
+                                    parent_element=None,
+                                    data=None,
+                                    element=DocumentLinkBaseReference.element_record  # NOQA: E501
+                                ),
+                                # <document-link>
+                            ]
+                        ),
+                        # </target>
+                        # <actual>
+                        ElementRecord(
+                            name='actual',
+                            key='actuals',
+                            attributes=[
+                                # @value
+                                AttributeRecord(
+                                    name='value',
+                                    key='value'
+                                )
+                            ],
+                            children=[
+                                # TODO: add <comment></comment>
+                                ElementRecord(
+                                    name='location',
+                                    key='locations',
+                                    attributes=[
+                                        # @ref
+                                        AttributeRecord(
+                                            name='ref',
+                                            key='ref'
+                                        )
+                                    ],
+                                ),
+                                # </location>
+                                # <location>
+                                ElementRecord(
+                                    name='dimension',
+                                    key='dimensions',
+                                    attributes=[
+                                        # @name
+                                        AttributeRecord(
+                                            name='name',
+                                            key='name'
+                                        ),
+                                        # @value
+                                        AttributeRecord(
+                                            name='value',
+                                            key='value'
+                                        )
+                                    ],
+                                ),
+                                # </location>
+                                # <document-link>
+                                DocumentLinkBaseReference(
+                                    parent_element=None,
+                                    data=None,
+                                    element=DocumentLinkBaseReference.element_record
+                                    # NOQA: E501
+                                ),
+                                # <document-link>
+                            ]
+                        )
+                        # </actual>
+                    ]
+                ),
+                # </period>
+            ]
+        )
+        # </indicator>
+    ]
+    element_record = ElementRecord(
+        name='result',
+        attributes=attributes,
+        children=children
+    )
+    # </result>
+
+
+class FssReference(BaseReference):
+    """
+    http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/fss/
+    """
+
+    # <fss>
+    attributes = [
+        # @extraction-date
+        AttributeRecord(
+            name='extraction-date',
+            key='extraction_date'
+        ),
+        # @priority
+        AttributeRecord(
+            name='priority',
+            key='priority'
+        ),
+        # @phaseout-year
+        AttributeRecord(
+            name='phaseout-year',
+            key='phaseout_year'
+        )
+    ]
+    children = [
+        # <condition>
+        ElementRecord(
+            name='forecast',
+            key='forecasts',
+            attributes=[
+                # @year
+                AttributeRecord(
+                    name='year',
+                    key='year'
+                ),
+                # @value-date
+                AttributeRecord(
+                    name='value-date',
+                    key='value_date'
+                ),
+                # @currency
+                AttributeRecord(
+                    name='currency',
+                    key='code',
+                    dict_key='currency'
+                ),
+            ],
+            children=[
+                ElementRecord(
+                    name=None,
+                    key='value'
+                )
+            ]
+        ),
+        # </condition>
+
+    ]
+    element_record = ElementRecord(
+        name='fss',
+        attributes=attributes,
+        children=children
+    )
+    # </fss>
+
+
+class HumanitarianScopeReference(BaseReference):
+    """
+    http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/humanitarian-scope/
+    """
+
+    # <humanitarian-scope>
+    attributes = [
+        # @type
+        AttributeRecord(
+            name='type',
+            key='code',
+            dict_key='type'
+        ),
+        # @vocabulary
+        AttributeRecord(
+            name='vocabulary',
+            key='code',
+            dict_key='vocabulary'
+        ),
+        # @vocabulary-uri
+        AttributeRecord(
+            name='vocabulary-uri',
+            key='vocabulary_uri'
+        ),
+        # @code
+        AttributeRecord(
+            name='code',
+            key='code'
+        )
+    ]
+    children = [
+        # <narrative>
+        ElementRecord(
+            name=None,
+            element_type=ElementWithNarrativeReference
+        ),
+        # </narrative>
+    ]
+    element_record = ElementRecord(
+        name='humanitarian-scope',
+        attributes=attributes,
+        children=children
+
+    )
+    # </humanitarian-scope>
+
+
+class RelatedActivityReference(BaseReference):
+    """
+    http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/related-activity/
+    """
+
+    # <related-activity>
+    attributes = [
+        # @ref
+        AttributeRecord(
+            name='ref',
+            key='ref'
+        ),
+        # @type
+        AttributeRecord(
+            name='type',
+            key='code',
+            dict_key='type'
+        )
+    ]
+    element_record = ElementRecord(
+        name='related-activity',
+        attributes=attributes
+    )
+    # </related-activity>
+
+
+class ConditionsReference(BaseReference):
+    """
+    http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/conditions/
+    """
+
+    # <conditions>
+    attributes = [
+        # @attached
+        AttributeRecord(
+            name='attached',
+            key='attached'
+        ),
+    ]
+    children = [
+        # <condition>
+        ElementRecord(
+            name='condition',
+            key='condition',
+            attributes=[
+                # @type
+                AttributeRecord(
+                    name='type',
+                    key='code',
+                    dict_key='type'
+                ),
+            ],
+            children=[
+                # <narrative>
+                ElementRecord(
+                    name=None,
+                    element_type=ElementWithNarrativeReference
+                ),
+                # </narrative>
+            ]
+        ),
+        # </condition>
+    ]
+    element_record = ElementRecord(
+        name='conditions',
+        attributes=attributes,
+        children=children
+    )
+    # </conditions>
+
+
+class CountryBudgetItemsReference(BaseReference):
+    """
+    http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/country-budget-items/
+    """
+
+    # <country-budget-items>
+    attributes = [
+        # @vocabulary
+        AttributeRecord(
+            name='vocabulary',
+            key='code',
+            dict_key='vocabulary'
+        ),
+    ]
+    element_record = ElementRecord(
+        name='country-budget-items',
+        attributes=attributes
+    )
+    # </country-budget-items>
+
+
+class TagReference(BaseReference):
+    """
+    http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/tag/
+    """
+
+    # <tag>
+    attributes = [
+        # @vocabulary
+        AttributeRecord(
+            name='vocabulary',
+            key='code',
+            dict_key='vocabulary'
+        ),
+        # @code
+        AttributeRecord(
+            name='code',
+            key='code'
+        ),
+    ]
+    children = [
+        # <narrative>
+        ElementRecord(
+            name=None,
+            element_type=ElementWithNarrativeReference
+        ),
+        # </narrative>
+    ]
+    element_record = ElementRecord(
+        name='tag',
+        attributes=attributes,
+        children=children
+    )
+    # </tag>
+
+
+class ActivityScopeReference(BaseReference):
+    """
+    http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/activity-scope/
+    """
+
+    # <activity-scope>
+    attributes = [
+        # @code
+        AttributeRecord(
+            name='code',
+            key='code'
+        ),
+    ]
+    element_record = ElementRecord(
+        name='activity-scope',
+        attributes=attributes
+    )
+    # </activity-scope>
