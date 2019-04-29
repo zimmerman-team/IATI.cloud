@@ -2497,7 +2497,6 @@ class CrsAddReference(ElementReference):
                 currency_value = currency_dict.get(
                     self.loan_status.get('currency').get('key')
                 )
-                
                 if currency_value:
                     loan_status_element.set(
                         self.loan_status.get('currency').get('attr'),
@@ -3003,8 +3002,7 @@ class ResultReference(BaseReference):
                                 DocumentLinkBaseReference(
                                     parent_element=None,
                                     data=None,
-                                    element=DocumentLinkBaseReference.element_record
-                                    # NOQA: E501
+                                    element=DocumentLinkBaseReference.element_record  # NOQA: E501
                                 ),
                                 # <document-link>
                             ]

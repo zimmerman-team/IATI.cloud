@@ -319,7 +319,7 @@ def reindex_activity(activity):
         'transaction',
 
         config=_config
-    )+ SearchVector(
+    ) + SearchVector(
         'related_activity',
         config=_config
     ) + SearchVector(
