@@ -18,6 +18,9 @@ jobs:
       # CircleCI maintains a library of pre-built images
       # documented at https://circleci.com/docs/2.0/circleci-images/
       # - image: circleci/postgres:9.4
+      - image: mdillon/postgis:9.6
+        environment:
+          POSTGRES_DB: test
 
     working_directory: ~/OIPA
 
@@ -37,10 +40,6 @@ jobs:
       - run:
           name: Install spacialite dependencies
           command: sudo apt-get install libsqlite3-mod-spatialite
-
-      - run:
-          name: Install PostgreSQL
-          command: sudo apt-get install postgresql postgresql-contrib
 
       - run:
           name: Install Flake8 style guide checker
