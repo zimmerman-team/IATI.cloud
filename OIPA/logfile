@@ -1,0 +1,2 @@
+2019-04-15 16:14:12.193 CEST [65484] FATAL:  database files are incompatible with server
+2019-04-15 16:14:12.193 CEST [65484] DETAIL:  The data directory was initialized by PostgreSQL version 10, which is not compatible with this version 11.2.

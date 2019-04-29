@@ -1,0 +1,77 @@
+Metadata-Version: 2.0
+Name: django-grappelli
+Version: 2.11.1
+Summary: A jazzy skin for the Django Admin-Interface.
+Home-page: http://django-grappelli.readthedocs.org
+Author: Patrick Kranzlmueller, Axel Swoboda (vonautomatisch)
+Author-email: office@vonautomatisch.at
+License: BSD
+Description-Content-Type: UNKNOWN
+Platform: UNKNOWN
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Environment :: Web Environment
+Classifier: Framework :: Django
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 2
+Classifier: Programming Language :: Python :: 2.6
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.1
+Classifier: Programming Language :: Python :: 3.2
+Classifier: Programming Language :: Python :: 3.3
+
+Django Grappelli
+================
+.. image:: https://api.travis-ci.org/sehmaschine/django-grappelli.svg
+    :target: https://travis-ci.org/sehmaschine/django-grappelli
+
+.. image:: https://readthedocs.org/projects/django-grappelli/badge/?version=latest
+    :target: http://django-grappelli.readthedocs.org/en/latest/?badge=latest
+
+.. image:: https://img.shields.io/pypi/v/django-grappelli.svg
+    :target: https://pypi.python.org/pypi/django-grappelli
+
+.. image:: https://img.shields.io/pypi/l/django-grappelli.svg
+    :target: https://pypi.python.org/pypi/django-grappelli
+
+**A jazzy skin for the Django admin interface**.
+
+Grappelli is a grid-based alternative/extension to the `Django <http://www.djangoproject.com>`_ administration interface.
+
+Code
+----
+
+https://github.com/sehmaschine/django-grappelli
+
+Website
+-------
+
+http://www.grappelliproject.com
+
+Documentation
+-------------
+
+http://readthedocs.org/docs/django-grappelli/
+
+Releases
+--------
+
+**Grappelli is always developed against the latest stable Django release and is NOT tested with Django's master branch.**
+
+* Grappelli 2.11.1 (January 27th, 2018): Compatible with Django 2.0
+* Grappelli 2.10.2 (January 27th, 2018): Compatible with Django 1.11
+* Grappelli 2.9.1 (November 8th, 2016): Compatible with Django 1.10
+
+Current development branches:
+
+* Grappelli 2.11.2 (Development version for Django 2.0, see branch Stable/2.11.x)
+* Grappelli 2.10.3 (Development version for Django 1.11, see branch Stable/2.10.x)
+* Grappelli 2.9.2 (Development version for Django 1.10, see branch Stable/2.9.x)
+
+Older versions are available at GitHub, but are not supported anymore.
+Support for 2.10.x and 2.9.x is limited to security issues and very important bugfixes.
+
+

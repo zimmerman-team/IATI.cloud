@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.reverse import reverse
+from django.db.models import Sum,Count
 
 from api.activity.filters import RelatedActivityFilter
 from api.codelist.serializers import (
@@ -647,6 +648,7 @@ class ActivityAggregationSerializer(DynamicFieldsSerializer):
         decimal_places=2,
         coerce_to_string=False)
     incoming_commitment_currency = serializers.CharField()
+
 
 
 class CustomReportingOrganisationURLSerializer(
@@ -3049,6 +3051,13 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
 
     published_state = PublishedStateSerializer(source="*", read_only=True)
 
+    transaction_types = serializers.SerializerMethodField()
+
+    def get_transaction_types(self, obj):
+        return list(Transaction.objects.filter(activity=obj).values('transaction_type').annotate(dsum=Sum('value')))
+
+        #return Transaction.objects.filter(activity=obj).aggregate(Sum('value'))
+
     def validate(self, data):
         validated = validators.activity(
             data.get('iati_identifier'),
@@ -3210,7 +3219,8 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
             'dataset',
             'publisher',
             'published_state',
-            'related_transactions'
+            'related_transactions',
+            'transaction_types'
         )
 
         validators = []
