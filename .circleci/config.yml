@@ -39,6 +39,10 @@ jobs:
           command: sudo apt-get install libsqlite3-mod-spatialite
 
       - run:
+          name: Install PostgreSQL
+          command: sudo apt-get install postgresql postgresql-contrib
+
+      - run:
           name: Install Flake8 style guide checker
           command: sudo apt-get install flake8
 
