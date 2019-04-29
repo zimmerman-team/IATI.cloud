@@ -2,6 +2,7 @@
     Unit tests for all fields in the parser, for multiple IATI versions.
 """
 
+from unittest import skip
 import copy
 import datetime
 
@@ -677,6 +678,7 @@ class OrganisationTestCase(ParserSetupTestCase):
             )
         self.parser_202.get_model('RecipientRegionBudget')
 
+    @skip('NotImplemented')
     def test_iati_organisations__iati_organisation__recipient_region_budget__recipient_region(  # NOQA: E501
             self):
         """attributes:
