@@ -391,7 +391,7 @@ class ActivityList(CacheResponseMixin, DynamicListView):
     # example: for recipient_countries.country.code path
     # reference field name is first term, meaning recipient_countries.
     csv_headers = \
-              {
+        {
                    'activity_id': 'iati_identifier',
                    'sector_code': 'sectors.sector.code',
                    'sectors_percentage': 'sectors.percentage',
@@ -400,7 +400,7 @@ class ActivityList(CacheResponseMixin, DynamicListView):
                    'title': 'title.narratives.text',
                    'description': 'descriptions.narratives.text',
                    'transaction_types': 'transaction_types.dsum'
-              }
+        }
 
     # Get all transaction type
     transaction_types = []

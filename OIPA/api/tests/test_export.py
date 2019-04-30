@@ -1,9 +1,10 @@
+from unittest import skip
+
 import xlrd
 from django.test import Client, TestCase
 from rest_framework.reverse import reverse
 
 from iati.factory.iati_factory import ActivityFactory
-from unittest import skip
 
 
 class TestFilter(TestCase):

@@ -4,10 +4,10 @@
 from __future__ import unicode_literals
 
 import ast
-import unicodecsv as csv
 import io
 from collections import OrderedDict
 
+import unicodecsv as csv
 import xlsxwriter
 from django.conf import settings
 from django.utils import six

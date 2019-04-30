@@ -65,7 +65,7 @@ class DynamicView(GenericAPIView):
                     self.fields = self.fields + (request_field,)
                     # just in case if you want to know which of fields
                     # we get as selectable field
-                    self.selectable_fields = self.selectable_fields+(request_field,) # NOQA: E501
+                    self.selectable_fields = self.selectable_fields+(request_field,)  # NOQA: E501
 
         return getattr(self, 'fields', ())
 
