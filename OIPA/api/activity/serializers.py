@@ -1,3 +1,4 @@
+from django.db.models import Sum
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.reverse import reverse
@@ -3169,6 +3170,13 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
 
     published_state = PublishedStateSerializer(source="*", read_only=True)
 
+    transaction_types = serializers.SerializerMethodField()
+
+    @classmethod
+    def get_transaction_types(cls, obj):
+        return list(Transaction.objects.filter(activity=obj).values('transaction_type').annotate(dsum=Sum('value')))  # NOQA: E501
+        # return Transaction.objects.filter(activity=obj).aggregate(Sum('value'))  # NOQA: E501
+
     def validate(self, data):
         validated = validators.activity(
             data.get('iati_identifier'),
@@ -3331,7 +3339,8 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
             'aggregations',
             'dataset',
             'publisher',
-            'published_state'
+            'published_state',
+            'transaction_types'
         )
 
         validators = []

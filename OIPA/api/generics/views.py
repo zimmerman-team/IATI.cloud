@@ -16,6 +16,7 @@ class DynamicView(GenericAPIView):
     select_related_fields = []
     serializer_fields = []
     field_source_mapping = {}
+    fields = []
 
     def __init__(self, *args, **kwargs):
         """
@@ -58,9 +59,16 @@ class DynamicView(GenericAPIView):
         request_fields = self.request.query_params.get('fields')
 
         if request_fields:
-            return request_fields.split(',')
-        else:
-            return getattr(self, 'fields', ())
+            for request_field in request_fields.split(','):
+                if request_field not in list(self.fields):
+                    # put selectable fields together with required fields
+                    # defined in the class
+                    self.fields = self.fields + (request_field,)
+                    # just in case if you want to know which of fields
+                    # we get as selectable field
+                    self.selectable_fields = self.selectable_fields+(request_field,)  # NOQA: E501
+
+        return getattr(self, 'fields', ())
 
     def filter_queryset(self, queryset, *args, **kwargs):
         """
