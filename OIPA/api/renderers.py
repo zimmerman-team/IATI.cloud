@@ -204,7 +204,7 @@ class PaginatedCSVRenderer(CSVRenderer):
                 # with the respect to the headers and breaking down column
                 for i in range(repeated_rows):
                     self.row = []
-                    for header_key, header_value in self.headers.items():
+                    for header_value in list(self.headers.values()):
                         # in case that we did not find the value
                         # for the particular json path, set empty string
                         # for the column value.
@@ -281,7 +281,7 @@ class PaginatedCSVRenderer(CSVRenderer):
 
         for exceptional_field in self.exceptional_fields:
             tmp_paths = {}
-            for key, value in exceptional_field.items():
+            for key in list(exceptional_field.keys()):
                 if key in self.paths:
                     field_name = key.split('.')[0]
                     if not isinstance(self.paths[key], list):

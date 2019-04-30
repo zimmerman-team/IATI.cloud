@@ -3172,7 +3172,8 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
 
     transaction_types = serializers.SerializerMethodField()
 
-    def get_transaction_types(self, obj):
+    @classmethod
+    def get_transaction_types(cls, obj):
         return list(Transaction.objects.filter(activity=obj).values('transaction_type').annotate(dsum=Sum('value')))  # NOQA: E501
         # return Transaction.objects.filter(activity=obj).aggregate(Sum('value'))  # NOQA: E501
 
