@@ -3174,7 +3174,6 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
 
     def get_transaction_types(self, obj):
         return list(Transaction.objects.filter(activity=obj).values('transaction_type').annotate(dsum=Sum('value')))
-
         #return Transaction.objects.filter(activity=obj).aggregate(Sum('value'))
 
     def validate(self, data):

@@ -67,7 +67,7 @@ class DynamicView(GenericAPIView):
                     # we get as selectable field
                     self.selectable_fields = self.selectable_fields+(request_field,) # NOQA: E501
 
-            return getattr(self, 'fields', ())
+        return getattr(self, 'fields', ())
 
     def filter_queryset(self, queryset, *args, **kwargs):
         """
