@@ -249,7 +249,7 @@ class PaginatedCSVRenderer(CSVRenderer):
             path = path[:-1]
             if path in paths:
                 if not isinstance(paths[path], list):
-                    paths[path] = [paths[path]]
+                    pas[path] = [paths[path]]
                     paths[path].append(0 if node is None else node)
             else:
                 paths[path] = 0 if node is None else node
@@ -294,7 +294,8 @@ class PaginatedCSVRenderer(CSVRenderer):
                             field_value = item
                             tmp_paths = self._make_column_value(tmp_paths, field_name, field_value, index)  # NOQA: E501
 
-            self.paths = tmp_paths
+            if len(tmp_paths) > 0:
+                self.paths = tmp_paths
 
     def _make_column_value(self, data, field_name, field_value, index=None):
         for path, path_value in self.paths.items():
