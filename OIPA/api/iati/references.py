@@ -3239,6 +3239,11 @@ class TagReference(BaseReference):
             key='code',
             dict_key='vocabulary'
         ),
+        # @vocabulary-uri
+        AttributeRecord(
+            name='vocabulary-uri',
+            key='vocabulary_uri'
+        ),
         # @code
         AttributeRecord(
             name='code',
