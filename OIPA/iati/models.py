@@ -656,6 +656,10 @@ class ActivitySector(models.Model):
         null=True,
         blank=True,
         default=None)
+    narratives = GenericRelation(
+        Narrative,
+        content_type_field='related_content_type',
+        object_id_field='related_object_id')
 
     def __unicode__(self,):
         return "name: %s" % self.sector.name
@@ -707,6 +711,12 @@ class HumanitarianScope(models.Model):
                                    on_delete=models.CASCADE)
     vocabulary_uri = models.URLField(null=True, blank=True)
     type = models.ForeignKey(HumanitarianScopeType, on_delete=models.CASCADE)
+
+    narratives = GenericRelation(
+        Narrative,
+        content_type_field='related_content_type',
+        object_id_field='related_object_id'
+    )
 
     def get_activity(self):
         return self.activity
@@ -1801,6 +1811,11 @@ class CrsAddLoanStatus(models.Model):
 
 
 class ActivityDate(models.Model):
+    """
+    Reference:
+    http://reference.iatistandard.org/201/activity-standard/iati-activities/iati-activity/activity-date/
+    """
+    # TODO: activity-date should have narratives
     activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
     iso_date = models.DateField()
     type = models.ForeignKey(ActivityDateType, on_delete=models.CASCADE)
@@ -1845,6 +1860,12 @@ class ActivityTag(models.Model):
         TagVocabulary, on_delete=models.CASCADE
     )
     vocabulary_uri = models.URLField(blank=True)
+
+    narratives = GenericRelation(
+        Narrative,
+        content_type_field='related_content_type',
+        object_id_field='related_object_id'
+    )
 
     def __str__(self):
         return "tag for %s" % self.activity

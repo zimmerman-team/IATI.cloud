@@ -21,24 +21,29 @@ from api.sector.serializers import SectorSerializer
 from iati.models import (
     Activity, ActivityDate, ActivityParticipatingOrganisation,
     ActivityPolicyMarker, ActivityRecipientCountry, ActivityRecipientRegion,
-    ActivitySector, Budget, BudgetItem, BudgetItemDescription, Condition,
-    Conditions, ContactInfo, ContactInfoDepartment, ContactInfoJobTitle,
-    ContactInfoMailingAddress, ContactInfoOrganisation, ContactInfoPersonName,
-    CountryBudgetItem, CrsAdd, CrsAddLoanStatus, CrsAddLoanTerms,
-    CrsAddOtherFlags, Description, DocumentLink, DocumentLinkCategory,
-    DocumentLinkLanguage, DocumentLinkTitle, Fss, FssForecast,
-    HumanitarianScope, LegacyData, Location, LocationActivityDescription,
-    LocationAdministrative, LocationDescription, LocationName, Narrative,
-    Organisation, OtherIdentifier, PlannedDisbursement,
-    PlannedDisbursementProvider, PlannedDisbursementReceiver, RelatedActivity,
-    Result, ResultDescription, ResultIndicator, ResultIndicatorDescription,
-    ResultIndicatorPeriod, ResultIndicatorPeriodActualDimension,
-    ResultIndicatorPeriodActualLocation, ResultIndicatorPeriodTarget,
-    ResultIndicatorPeriodTargetDimension, ResultIndicatorPeriodTargetLocation,
-    ResultIndicatorReference, ResultIndicatorTitle, ResultTitle, ResultType,
-    Title
+    ActivitySector, ActivityTag, Budget, BudgetItem, BudgetItemDescription,
+    Condition, Conditions, ContactInfo, ContactInfoDepartment,
+    ContactInfoJobTitle, ContactInfoMailingAddress, ContactInfoOrganisation,
+    ContactInfoPersonName, CountryBudgetItem, CrsAdd, CrsAddLoanStatus,
+    CrsAddLoanTerms, CrsAddOtherFlags, Description, DocumentLink,
+    DocumentLinkCategory, DocumentLinkLanguage, DocumentLinkTitle, Fss,
+    FssForecast, HumanitarianScope, LegacyData, Location,
+    LocationActivityDescription, LocationAdministrative, LocationDescription,
+    LocationName, Narrative, Organisation, OtherIdentifier,
+    PlannedDisbursement, PlannedDisbursementProvider,
+    PlannedDisbursementReceiver, RelatedActivity, Result, ResultDescription,
+    ResultIndicator, ResultIndicatorBaseline, ResultIndicatorBaselineDimension,
+    ResultIndicatorDescription, ResultIndicatorPeriod,
+    ResultIndicatorPeriodActualDimension, ResultIndicatorPeriodActualLocation,
+    ResultIndicatorPeriodTarget, ResultIndicatorPeriodTargetDimension,
+    ResultIndicatorPeriodTargetLocation, ResultIndicatorReference,
+    ResultIndicatorTitle, ResultTitle, ResultType, Title
 )
 from iati.parser import validators
+from iati.transaction.models import (
+    Transaction, TransactionProvider, TransactionReceiver,
+    TransactionRecipientCountry, TransactionRecipientRegion, TransactionSector
+)
 from iati_organisation import models as organisation_models
 
 
@@ -209,6 +214,10 @@ class DocumentLinkSerializer(ModelSerializerNoValidation):
 
     activity = serializers.CharField(write_only=True)
 
+    description = NarrativeContainerSerializer(
+        source='documentlinkdescription'
+    )
+
     class Meta:
         model = DocumentLink
         fields = (
@@ -220,6 +229,7 @@ class DocumentLinkSerializer(ModelSerializerNoValidation):
             'languages',
             'title',
             'document_date',
+            'description'
         )
 
     def validate(self, data):
@@ -1074,6 +1084,7 @@ class ActivitySectorSerializer(ModelSerializerNoValidation):
     vocabulary_uri = serializers.URLField()
 
     activity = serializers.CharField(write_only=True)
+    narratives = NarrativeSerializer(many=True)
 
     class Meta:
         model = ActivitySector
@@ -1084,6 +1095,7 @@ class ActivitySectorSerializer(ModelSerializerNoValidation):
             'percentage',
             'vocabulary',
             'vocabulary_uri',
+            'narratives',
         )
 
     def validate(self, data):
@@ -1304,7 +1316,12 @@ class ConditionSerializer(ModelSerializerNoValidation):
 
 
 class ConditionsSerializer(ModelSerializerNoValidation):
-    # conditions = ConditionSerializer(source="condition_set", required=False)
+    condition = ConditionSerializer(
+        many=True,
+        read_only=True,
+        source='condition_set',
+        required=False
+    )
     attached = serializers.CharField()
     activity = serializers.CharField(write_only=True)
 
@@ -1314,7 +1331,7 @@ class ConditionsSerializer(ModelSerializerNoValidation):
             'id',
             'activity',
             'attached',
-            # 'conditions',
+            'condition',
         )
 
     def validate(self, data):
@@ -1425,10 +1442,9 @@ class HumanitarianScopeSerializer(DynamicFieldsModelSerializer):
     type = CodelistSerializer()
     vocabulary = VocabularySerializer()
     vocabulary_uri = serializers.URLField()
-    # code = CodelistSerializer()
     code = serializers.CharField()
-
     activity = serializers.CharField(write_only=True)
+    narratives = NarrativeSerializer(many=True, required=False)
 
     class Meta:
         model = HumanitarianScope
@@ -1439,6 +1455,7 @@ class HumanitarianScopeSerializer(DynamicFieldsModelSerializer):
             'vocabulary',
             'vocabulary_uri',
             'code',
+            'narratives'
         )
 
     def validate(self, data):
@@ -1798,6 +1815,11 @@ class ResultIndicatorPeriodTargetSerializer(SerializerNoValidation):
         source="resultindicatorperiodtargetdimension_set",
         read_only=True
     )
+    document_links = DocumentLinkSerializer(
+        many=True,
+        read_only=True,
+        source='period_target_document_links'
+    )
 
 
 class ResultIndicatorPeriodActualSerializer(SerializerNoValidation):
@@ -1815,6 +1837,11 @@ class ResultIndicatorPeriodActualSerializer(SerializerNoValidation):
         many=True,
         source="resultindicatorperiodactualdimension_set",
         read_only=True
+    )
+    document_links = DocumentLinkSerializer(
+        many=True,
+        read_only=True,
+        source='period_actual_document_links'
     )
 
 
@@ -1854,7 +1881,29 @@ class ResultIndicatorPeriodSerializer(ModelSerializerNoValidation):
         raise NotImplementedError("This action is not implemented")
 
 
-class ResultIndicatorBaselineSerializer(SerializerNoValidation):
+class ResultIndicatorBaselineDimensionSerializer(ModelSerializerNoValidation):  # NOQA: E501
+    name = serializers.CharField()
+    value = serializers.CharField()
+
+    class Meta:
+        model = ResultIndicatorBaselineDimension
+        fields = (
+
+            'id',
+            'name',
+            'value',
+        )
+
+
+class ResultIndicatorBaselineSerializer(ModelSerializerNoValidation):
+
+    class LocationSerializer(ModelSerializerNoValidation):
+        class Meta:
+            model = Location
+            fields = (
+                'ref',
+            )
+
     # year = serializers.CharField(
         # source='baseline_year', required=False, allow_null=True)
     # value = serializers.CharField(
@@ -1866,7 +1915,40 @@ class ResultIndicatorBaselineSerializer(SerializerNoValidation):
     value = serializers.CharField(
         required=False, allow_null=True)
     comment = NarrativeContainerSerializer(
-        source="resultindicatorbaselinecomment")
+        source='resultindicatorbaselinecomment'
+    )
+
+    dimensions = ResultIndicatorBaselineDimensionSerializer(
+        many=True,
+        source='resultindicatorbaselinedimension_set',
+        read_only=True
+    )
+
+    document_links = DocumentLinkSerializer(
+        many=True,
+        read_only=True,
+        source='baseline_document_links'
+    )
+
+    iso_date = serializers.DateField()
+
+    locations = LocationSerializer(
+        many=True,
+        read_only=True,
+        source='location_set'
+    )
+
+    class Meta:
+        model = ResultIndicatorBaseline
+        fields = (
+            'year',
+            'value',
+            'comment',
+            'dimensions',
+            'document_links',
+            'iso_date',
+            'locations'
+        )
 
 
 class ResultIndicatorReferenceSerializer(ModelSerializerNoValidation):
@@ -1930,12 +2012,22 @@ class ResultIndicatorSerializer(ModelSerializerNoValidation):
     #  TODO 2.02 reference = ?
     references = ResultIndicatorReferenceSerializer(
         source='resultindicatorreference_set', many=True, read_only=True)
-    baseline = ResultIndicatorBaselineSerializer(source="*")
+    baseline = ResultIndicatorBaselineSerializer(
+        source='resultindicatorbaseline_set',
+        many=True,
+        read_only=True
+    )
     periods = ResultIndicatorPeriodSerializer(
         source='resultindicatorperiod_set', many=True, read_only=True)
     measure = CodelistSerializer()
 
     result = serializers.CharField(write_only=True)
+
+    document_links = DocumentLinkSerializer(
+        many=True,
+        read_only=True,
+        source='result_indicator_document_links'
+    )
 
     class Meta:
         model = ResultIndicator
@@ -1948,7 +2040,8 @@ class ResultIndicatorSerializer(ModelSerializerNoValidation):
             'baseline',
             'periods',
             'measure',
-            'ascending'
+            'ascending',
+            'document_links'
         )
 
     def validate(self, data):
@@ -2217,6 +2310,12 @@ class ResultSerializer(ModelSerializerNoValidation):
 
     activity = serializers.CharField(write_only=True)
 
+    document_links = DocumentLinkSerializer(
+        many=True,
+        read_only=True,
+        source='documentlink_set'
+    )
+
     class Meta:
         model = Result
         fields = (
@@ -2227,6 +2326,7 @@ class ResultSerializer(ModelSerializerNoValidation):
             'indicators',
             'type',
             'aggregation_status',
+            'document_links'
         )
 
     def validate(self, data):
@@ -2520,7 +2620,11 @@ class FssForecastSerializer(ModelSerializerNoValidation):
 
 class FssSerializer(ModelSerializerNoValidation):
     extraction_date = serializers.CharField()
-    forecasts = FssForecastSerializer(many=True, required=False)
+    forecasts = FssForecastSerializer(
+        many=True,
+        source='fssforecast_set',
+        required=False
+    )
 
     activity = serializers.CharField(write_only=True)
 
@@ -2720,6 +2824,158 @@ class ActivityAggregationContainerSerializer(DynamicFieldsSerializer):
         source='activity_plus_child_aggregation')
 
 
+class TransactionProviderSerializer(serializers.ModelSerializer):
+    ref = serializers.CharField()
+    type = CodelistSerializer()
+    narratives = NarrativeSerializer(many=True)
+    provider_activity = serializers.HyperlinkedRelatedField(
+        read_only=True,
+        view_name='activities:activity-detail')
+    provider_activity_id = serializers.CharField(
+        source="provider_activity_ref", required=False)
+
+    class Meta:
+        model = TransactionProvider
+        fields = (
+            'ref',
+            'type',
+            'provider_activity',
+            'provider_activity_id',
+            'narratives'
+        )
+
+
+class TransactionReceiverSerializer(serializers.ModelSerializer):
+    ref = serializers.CharField()
+    type = CodelistSerializer()
+    narratives = NarrativeSerializer(many=True)
+    receiver_activity = serializers.HyperlinkedRelatedField(
+        read_only=True,
+        view_name='activities:activity-detail')
+    receiver_activity_id = serializers.CharField(
+        source="receiver_activity_ref"
+    )
+
+    class Meta:
+        model = TransactionReceiver
+        fields = (
+            'ref',
+            'type',
+            'receiver_activity',
+            'receiver_activity_id',
+            'narratives'
+        )
+
+
+class TransactionRecipientCountrySerializer(serializers.ModelSerializer):
+    country = CountrySerializer(fields=('code', ))
+
+    class Meta:
+        model = TransactionRecipientCountry
+        fields = (
+            'country',
+            'percentage'
+        )
+
+
+class TransactionRecipientRegionSerializer(serializers.ModelSerializer):
+    region = BasicRegionSerializer(
+        fields=('code', ),
+    )
+    vocabulary = VocabularySerializer()
+
+    class Meta:
+        model = TransactionRecipientRegion
+        fields = (
+            'region',
+            'vocabulary',
+        )
+
+
+class TransactionSectorSerializer(serializers.ModelSerializer):
+    sector = SectorSerializer(fields=('code', ))
+    vocabulary = VocabularySerializer()
+
+    class Meta:
+        model = TransactionSector
+        fields = (
+            'sector',
+            'vocabulary',
+        )
+
+
+class TransactionSerializer(serializers.ModelSerializer):
+    """
+    Transaction serializer class
+    """
+    transaction_date = serializers.CharField()
+    value_date = serializers.CharField()
+    aid_type = CodelistSerializer()
+    disbursement_channel = CodelistSerializer()
+    finance_type = CodelistSerializer()
+    flow_type = CodelistSerializer()
+    tied_status = CodelistSerializer()
+    transaction_type = CodelistSerializer()
+    currency = CodelistSerializer()
+    humanitarian = serializers.BooleanField()
+    provider_organisation = TransactionProviderSerializer(required=False)
+    receiver_organisation = TransactionReceiverSerializer(required=False)
+    recipient_countries = TransactionRecipientCountrySerializer(
+        many=True,
+        source='transactionrecipientcountry_set',
+        read_only=True
+    )
+    recipient_regions = TransactionRecipientRegionSerializer(
+        many=True,
+        source='transactionrecipientregion_set',
+        read_only=True
+    )
+    sectors = TransactionSectorSerializer(
+        many=True,
+        source='transactionsector_set',
+        read_only=True
+    )
+
+    class Meta:
+        model = Transaction
+        fields = (
+            'ref',
+            'humanitarian',
+            'transaction_type',
+            'transaction_date',
+            'value',
+            'value_date',
+            'currency',
+            'description',
+            'provider_organisation',
+            'receiver_organisation',
+            'disbursement_channel',
+            'sectors',
+            'recipient_countries',
+            'recipient_regions',
+            'flow_type',
+            'finance_type',
+            'aid_type',
+            'tied_status',
+        )
+
+
+class ActivityTagSerializer(ModelSerializerNoValidation):
+    vocabulary = VocabularySerializer()
+    narratives = NarrativeSerializer(many=True)
+
+    class Meta:
+        model = ActivityTag
+        fields = (
+            'id',
+            'code',
+            'vocabulary_uri',
+            'activity',
+            'vocabulary',
+            'narratives'
+        )
+
+
 class ActivitySerializer(DynamicFieldsModelSerializer):
     url = serializers.HyperlinkedIdentityField(
         view_name='activities:activity-detail', read_only=True)
@@ -2790,6 +3046,13 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
         required=False,
     )
 
+    tags = ActivityTagSerializer(
+        many=True,
+        source='activitytag_set',
+        read_only=True,
+        required=False,
+    )
+
     # TODO ; add country-budget-items serializer
     country_budget_items = CountryBudgetItemsSerializer(required=False)
 
@@ -2838,6 +3101,12 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
     transactions = serializers.HyperlinkedIdentityField(
         read_only=True,
         view_name='activities:activity-transactions',
+    )
+
+    related_transactions = TransactionSerializer(
+        many=True,
+        source='transaction_set',
+        read_only=True
     )
 
     document_links = DocumentLinkSerializer(
@@ -3030,6 +3299,7 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
             'recipient_regions',
             'locations',
             'sectors',
+            'tags',
             'country_budget_items',
             'humanitarian',
             'humanitarian_scope',
@@ -3039,10 +3309,11 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
             'default_finance_type',
             'default_aid_type',
             'default_tied_status',
-            'planned_disbursements',
             'budgets',
+            'planned_disbursements',
             'capital_spend',
             'transactions',
+            'related_transactions',
             'document_links',
             'related_activities',
             'legacy_data',
@@ -3060,7 +3331,7 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
             'aggregations',
             'dataset',
             'publisher',
-            'published_state',
+            'published_state'
         )
 
         validators = []
