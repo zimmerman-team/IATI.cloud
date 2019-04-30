@@ -249,7 +249,7 @@ class PaginatedCSVRenderer(CSVRenderer):
             path = path[:-1]
             if path in paths:
                 if not isinstance(paths[path], list):
-                    pas[path] = [paths[path]]
+                    paths[path] = [paths[path]]
                     paths[path].append(0 if node is None else node)
             else:
                 paths[path] = 0 if node is None else node
