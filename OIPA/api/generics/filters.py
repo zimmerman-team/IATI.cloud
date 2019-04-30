@@ -4,10 +4,10 @@ from functools import reduce
 from django.conf import settings
 from django.contrib.gis.geos import GEOSGeometry
 from django.contrib.gis.measure import D
+from django.contrib.postgres.search import SearchVector
 from django.db.models import Q
 from django.db.models.sql.constants import QUERY_TERMS
 from django_filters import BooleanFilter, CharFilter, Filter, FilterSet
-from django.contrib.postgres.search import SearchVector
 from rest_framework import filters
 
 from iati.models import Activity, Location
@@ -70,16 +70,18 @@ class DistanceFilter(filters.BaseFilterBackend):
 
 
 class SearchFilter(filters.BaseFilterBackend):
+
     def filter_queryset(self, request, queryset, view):
 
         query = request.query_params.get('q', None)
-        query_lookup = request.query_params.get('q_lookup', None)
-        lookup_expr = 'exact'  # 'ft'
-        if query_lookup:
-            lookup_expr = query_lookup
+
+        # TODO: Why not using query_lookup & lookup_expr anymore
+        # query_lookup = request.query_params.get('q_lookup', None)
+        # lookup_expr = 'exact'  # 'ft'
+        # if query_lookup:
+        #    lookup_expr = query_lookup
 
         if query:
-
             query_fields = request.query_params.get('q_fields')
             model_prefix = ''
 

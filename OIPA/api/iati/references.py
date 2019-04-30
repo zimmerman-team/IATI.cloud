@@ -3,10 +3,11 @@ This module reletated to IATI Standard version 2.03
 http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/
 """
 from lxml import etree
+
 from api.iati.attributes import DataAttribute
 from api.iati.elements import (
-    ElementReference, ElementWithNarrativeReference,
-    ElementRecord, AttributeRecord, ElementBase
+    AttributeRecord, ElementBase, ElementRecord, ElementReference,
+    ElementWithNarrativeReference
 )
 
 
@@ -2496,7 +2497,6 @@ class CrsAddReference(ElementReference):
                 currency_value = currency_dict.get(
                     self.loan_status.get('currency').get('key')
                 )
-                
                 if currency_value:
                     loan_status_element.set(
                         self.loan_status.get('currency').get('attr'),
@@ -3002,8 +3002,7 @@ class ResultReference(BaseReference):
                                 DocumentLinkBaseReference(
                                     parent_element=None,
                                     data=None,
-                                    element=DocumentLinkBaseReference.element_record
-                                    # NOQA: E501
+                                    element=DocumentLinkBaseReference.element_record  # NOQA: E501
                                 ),
                                 # <document-link>
                             ]
