@@ -235,7 +235,7 @@ class PaginatedCSVRenderer(CSVRenderer):
         # this is old render call.
         # return super(PaginatedCSVRenderer, self).render(rows, renderer_context={'header':['aaaa','sssss','ddddd','fffff','gggggg']}, **kwargs) # NOQA: E501
 
-    def _go_deeper(self, node, path='', paths={}):
+    def _go_deeper(self, node, path, paths):
 
         if isinstance(node, dict):
             for key, value in node.items():
