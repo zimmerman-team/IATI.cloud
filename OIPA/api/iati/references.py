@@ -3219,9 +3219,42 @@ class CountryBudgetItemsReference(BaseReference):
             dict_key='vocabulary'
         ),
     ]
+    children = [
+        # <budget-item>
+        ElementRecord(
+            name='budget-item',
+            key='budget_items',
+            attributes=[
+                # @code
+                AttributeRecord(
+                    name='code',
+                    key='code',
+                    dict_key='budget_identifier'
+                ),
+                # @percentage
+                AttributeRecord(
+                    name='percentage',
+                    key='percentage'
+                ),
+            ],
+            children=[
+                # <description>
+                # <narrative>
+                ElementRecord(
+                    name='description',
+                    key='description',
+                    element_type=ElementWithNarrativeReference
+                ),
+                # </narrative>
+                # </description>
+            ]
+        ),
+        # </budget-item>
+    ]
     element_record = ElementRecord(
         name='country-budget-items',
-        attributes=attributes
+        attributes=attributes,
+        children=children
     )
     # </country-budget-items>
 
