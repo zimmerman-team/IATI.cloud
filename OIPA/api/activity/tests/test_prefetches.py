@@ -254,9 +254,16 @@ class ActivitySaveTestCase(TestCase):
         Here we expect 2 queries:
         1. Fetch Activity objects
         2. Fetch CountryBudgetItem objects
+        4. vocabulary
+        3. Fetch BudgetItem object
+        4. code
+        5. narratives
+        ... etc.
+        17. ....
         """
 
-        with self.assertNumQueries(2):
+        # TODO: write above with 17 objects should be on this prefetch
+        with self.assertNumQueries(17):
             queryset = Activity.objects.all().prefetch_country_budget_items()
             serializer = ActivitySerializer(
                 queryset,
