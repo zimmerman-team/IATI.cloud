@@ -1210,12 +1210,19 @@ class CountryBudgetItemsSerializer(ModelSerializerNoValidation):
 
     activity = serializers.CharField(write_only=True)
 
+    budget_items = BudgetItemSerializer(
+        many=True,
+        source='budgetitem_set',
+        read_only=True,
+    )
+
     class Meta:
         model = CountryBudgetItem
         fields = (
             'id',
             'activity',
             'vocabulary',
+            'budget_items'
         )
 
     def validate(self, data):
