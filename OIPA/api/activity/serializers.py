@@ -2042,6 +2042,7 @@ class ResultIndicatorSerializer(ModelSerializerNoValidation):
             'periods',
             'measure',
             'ascending',
+            'aggregation_status',
             'document_links'
         )
 

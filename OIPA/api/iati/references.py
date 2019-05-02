@@ -2760,8 +2760,12 @@ class ResultReference(BaseReference):
                 AttributeRecord(
                     name='ascending',
                     key='ascending'
+                ),
+                # @aggregation-status
+                AttributeRecord(
+                    name='aggregation-status',
+                    key='aggregation_status'
                 )
-                # TODO: add @aggregation-status
             ],
             children=[
                 # <title>
