@@ -322,7 +322,7 @@ class CodeListImporter():
             + version.replace('.', '') +
             "/codelists/downloads/clv1/codelist.xml")
 
-        response = self._get_xml(codelist_file_url)
+        response = self.get_xml(codelist_file_url)
         context = etree.iterparse(response, tag='codelist')
 
         # This updates / creates new Codelist objects (name argument is not
@@ -344,7 +344,7 @@ class CodeListImporter():
         M49RegionsImporter()
 
     @staticmethod
-    def _get_xml(file_url):
+    def get_xml(file_url):
         try:
             user_agent = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.7) Gecko/2009021910 Firefox/3.0.7'  # NOQA: E501
             headers = {'User-Agent': user_agent, }
@@ -353,7 +353,11 @@ class CodeListImporter():
                 file_url, None,
                 headers
             )  # The assembled request
+
+            # TODO: please update this code releted to the below refrence
+            # https://docs.openstack.org/bandit/latest/api/bandit.blacklists.html#b310-urllib-urlopen  # NOQA: E501
             response = urllib.request.urlopen(request)  # noqa: B310
+
         except urllib.error.HTTPError:
             raise Exception(
                 'Codelist URL not found: {0}'.format(file_url)
