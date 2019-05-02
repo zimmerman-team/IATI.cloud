@@ -343,7 +343,8 @@ class CodeListImporter():
         # Added M49 Regions if available
         M49RegionsImporter()
 
-    def _get_xml(self, file_url):
+    @staticmethod
+    def _get_xml(file_url):
         try:
             user_agent = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.7) Gecko/2009021910 Firefox/3.0.7'  # NOQA: E501
             headers = {'User-Agent': user_agent, }
@@ -352,12 +353,10 @@ class CodeListImporter():
                 file_url, None,
                 headers
             )  # The assembled request
-            response = urllib.request.urlopen(request)
+            response = urllib.request.urlopen(request)  # NOQA: B310
         except urllib.error.HTTPError:
             raise Exception(
                 'Codelist URL not found: {0}'.format(file_url)
             )
 
         return response
-
-
