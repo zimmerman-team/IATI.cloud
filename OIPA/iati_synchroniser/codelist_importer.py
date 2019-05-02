@@ -353,7 +353,7 @@ class CodeListImporter():
                 file_url, None,
                 headers
             )  # The assembled request
-            response = urllib.request.urlopen(request)  # NOQA: B310
+            response = urllib.request.urlopen(request)  # noqa: B310
         except urllib.error.HTTPError:
             raise Exception(
                 'Codelist URL not found: {0}'.format(file_url)
