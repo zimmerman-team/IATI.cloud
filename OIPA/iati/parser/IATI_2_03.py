@@ -1468,6 +1468,9 @@ class Parse(IatiParser):
             codelist_models.BudgetIdentifier, code=code)
         percentage = element.attrib.get('percentage')
 
+        # CountryBudgetItem is parent of this record
+        country_budget_item = self.get_model('CountryBudgetItem')
+
         if not code:
             raise RequiredFieldError(
                 "country-budget-items/budget-item",
@@ -1475,15 +1478,30 @@ class Parse(IatiParser):
                 "required attribute missing")
 
         if not budget_identifier:
+            # Check if the vocabulary of the country budget items is 4 or 5,
+            # if related to these then we create a new code of
+            # the budget identifier if not available
+            # otherwise use a existing one
+            # ref. http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/country-budget-items/budget-item/  # NOQA: E501
+
+            if country_budget_item:
+                if country_budget_item.vocabulary.code in ['4', '5']:
+                    budget_identifier = codelist_models.BudgetIdentifier()
+                    budget_identifier.code = code
+                    budget_identifier.name = 'Vocabulary 4 or 5'
+                    budget_identifier.save()
+
+        # if still no the budget identifier then should be errorr
+        if not budget_identifier:
             raise FieldValidationError(
                 "country-budget-items/budget-item",
                 "code",
                 "not found on the accompanying code list",
                 None,
                 None,
-                code)
+                code
+            )
 
-        country_budget_item = self.get_model('CountryBudgetItem')
         budget_item = models.BudgetItem()
         budget_item.country_budget_item = country_budget_item
         budget_item.code = budget_identifier
