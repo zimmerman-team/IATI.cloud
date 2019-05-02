@@ -310,7 +310,7 @@ class CodeListImporter():
                              "/codelists/downloads/clv1/"
                              "codelist/" + smart_text(name) + ".xml")
 
-        response = self._get_xml(codelist_file_url)
+        response = self.get_xml(codelist_file_url)
 
         context2 = etree.iterparse(response, tag=name)
 
