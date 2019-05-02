@@ -404,8 +404,6 @@ class ActivityList(CacheResponseMixin, DynamicListView):
 
     # Get all transaction type
     transaction_types = []
-    for transaction_type in list(TransactionType.objects.all()):
-        transaction_types.append(transaction_type.code)
 
     # Activity break down column
     break_down_by = 'sectors'
@@ -432,6 +430,12 @@ class ActivityList(CacheResponseMixin, DynamicListView):
         'activity_plus_child_budget_value')
 
     list_cache_key_func = QueryParamsKeyConstructor()
+
+    def __init__(self, *args, **kwargs):
+        super(ActivityList, self).__init__(*args, **kwargs)
+
+        for transaction_type in list(TransactionType.objects.all()):
+            self.transaction_types.append(transaction_type.code)
 
 
 class ActivityMarkReadyToPublish(APIView, FilterPublisherMixin):
