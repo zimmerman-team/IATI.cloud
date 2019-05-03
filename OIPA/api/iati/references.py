@@ -376,6 +376,15 @@ class TransactionReference(ElementReference):
             'key': 'narratives',
         }
     }
+    disbursement_channel = {
+        'element': 'disbursement-channel',
+        'key': 'disbursement_channel',
+        # Attributes,
+        'code': {
+            'key': 'code',
+            'attr': 'code'
+        }
+    }
     # Recipient country
     recipient_countries = {
         'element': 'recipient-country',
@@ -562,6 +571,26 @@ class TransactionReference(ElementReference):
             provider_organisation_narrative.create_narrative(
                 parent_element=provider_organisation_element
             )
+
+        # Disbursement channel
+        disbursement_channel_dict = self.data.get(
+            self.disbursement_channel.get('key')
+        )
+        if disbursement_channel_dict:
+            disbursement_channel_element = etree.SubElement(
+                transaction_element, self.disbursement_channel.get('element')
+            )
+
+            # Attributes
+            # Code
+            code_value = disbursement_channel_dict.get(
+                self.disbursement_channel_dict.get('code').get('key')
+            )
+            if ref_value:
+                disbursement_channel_element.set(
+                    self.provider_organisation.get('code').get('attr'),
+                    code_value
+                )
 
         # Sector
         sectors_list = self.data.get(
