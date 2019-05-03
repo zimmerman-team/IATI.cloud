@@ -584,11 +584,11 @@ class TransactionReference(ElementReference):
             # Attributes
             # Code
             code_value = disbursement_channel_dict.get(
-                self.disbursement_channel_dict.get('code').get('key')
+                self.disbursement_channel.get('code').get('key')
             )
             if ref_value:
                 disbursement_channel_element.set(
-                    self.provider_organisation.get('code').get('attr'),
+                    self.disbursement_channel.get('code').get('attr'),
                     code_value
                 )
 
