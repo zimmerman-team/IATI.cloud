@@ -302,7 +302,7 @@ class BudgetSerializer(ModelSerializerNoValidation):
     type = CodelistSerializer()
     status = CodelistSerializer()
 
-    # activity = serializers.CharField(write_only=True)
+    activity = serializers.CharField(write_only=True)
 
     # because we want to validate in the validator instead
     period_start = serializers.CharField()
@@ -317,7 +317,7 @@ class BudgetSerializer(ModelSerializerNoValidation):
         model = Budget
         # filter_class = BudgetFilter
         fields = (
-            # 'activity',
+            'activity',
             'id',
             'type',
             'status',
