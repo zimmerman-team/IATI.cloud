@@ -1,7 +1,7 @@
 from django.db.models import Count, F, Sum
 from django_filters.rest_framework import DjangoFilterBackend
 
-from api.activity.serializers import CodelistSerializer, BudgetSerializer
+from api.activity.serializers import BudgetSerializer, CodelistSerializer
 from api.aggregation.views import Aggregation, AggregationView, GroupBy
 from api.budget import filters
 from api.country.serializers import CountrySerializer
