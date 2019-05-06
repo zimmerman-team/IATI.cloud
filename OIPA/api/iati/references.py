@@ -376,6 +376,32 @@ class TransactionReference(ElementReference):
             'key': 'narratives',
         }
     }
+    # Receiver Organisation
+    receiver_organisation = {
+        'element': 'receiver-org',
+        'key': 'receiver_organisation',
+        # Attributes
+        'ref': {
+            'key': 'ref',
+            'attr': 'ref'
+        },
+        'receiver_activity_id': {
+            'key': 'receiver_activity_id',
+            'attr': 'receiver-activity-id'
+        },
+        'type': {
+            'key': 'type',
+            'code': {
+                'key': 'code',
+                'attr': 'type'
+            }
+        },
+        'narratives': {
+            'element': 'narrative',
+            'key': 'narratives',
+        }
+
+    }
     # Recipient country
     recipient_countries = {
         'element': 'recipient-country',
@@ -561,6 +587,69 @@ class TransactionReference(ElementReference):
             )
             provider_organisation_narrative.create_narrative(
                 parent_element=provider_organisation_element
+            )
+
+        # Receiver Organisation
+        receiver_organisation_dict = self.data.get(
+            self.receiver_organisation.get('key')
+        )
+        if receiver_organisation_dict:
+            receiver_organisation_element = etree.SubElement(
+                transaction_element,
+                self.receiver_organisation.get('element')
+            )
+
+            # Attributes
+            # Ref
+            ref_value = receiver_organisation_dict.get(
+                self.receiver_organisation.get('ref').get('key')
+            )
+            if ref_value:
+                receiver_organisation_element.set(
+                    self.receiver_organisation.get('ref').get('attr'),
+                    ref_value
+                )
+
+            # Attributes
+            # Receiver activity id
+            receiver_activity_id_value = receiver_organisation_dict.get(
+                self.receiver_organisation.get(
+                    'receiver_activity_id'
+                ).get('key')
+            )
+            if receiver_activity_id_value:
+                receiver_organisation_element.set(
+                    self.receiver_organisation.get(
+                        'receiver_activity_id'
+                    ).get('attr'),
+                    receiver_activity_id_value
+                )
+
+            # Attributes
+            # Type
+            type_dict = receiver_organisation_dict.get(
+                self.provider_organisation.get('type').get('key')
+            )
+            if type_dict:
+                type_value = type_dict.get(
+                    self.receiver_organisation.get(
+                        'type'
+                    ).get('code').get('key')
+                )
+                receiver_organisation_element.set(
+                    self.receiver_organisation.get(
+                        'type'
+                    ).get('code').get('attr'),
+                    type_value
+                )
+
+            # Narrative
+            receiver_organisation_narrative = ElementWithNarrativeReference(
+                parent_element=None,
+                data=receiver_organisation_dict
+            )
+            receiver_organisation_narrative.create_narrative(
+                parent_element=receiver_organisation_element
             )
 
         # Sector

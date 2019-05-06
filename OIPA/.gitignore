@@ -4,3 +4,4 @@ local_settings.py
 .pytest_cache/
 .env
 .coverage
+static/datasets
