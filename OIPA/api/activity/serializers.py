@@ -302,17 +302,22 @@ class BudgetSerializer(ModelSerializerNoValidation):
     type = CodelistSerializer()
     status = CodelistSerializer()
 
-    activity = serializers.CharField(write_only=True)
+    # activity = serializers.CharField(write_only=True)
 
     # because we want to validate in the validator instead
     period_start = serializers.CharField()
     period_end = serializers.CharField()
 
+    activity_id = serializers.CharField(
+        source='activity.iati_identifier',
+        read_only=True
+    )
+
     class Meta:
         model = Budget
         # filter_class = BudgetFilter
         fields = (
-            'activity',
+            # 'activity',
             'id',
             'type',
             'status',
@@ -326,6 +331,7 @@ class BudgetSerializer(ModelSerializerNoValidation):
             'gbp_value',
             'jpy_value',
             'cad_value',
+            'activity_id'
         )
 
     def validate(self, data):
