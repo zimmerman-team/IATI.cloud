@@ -1,8 +1,8 @@
 import datetime
 
 from django.conf import settings
-from django.db import models
 from django.contrib.staticfiles import finders
+from django.db import models
 
 from iati_organisation.models import Organisation
 
