@@ -14,6 +14,9 @@ from api.sector.serializers import SectorSerializer
 from iati import models as iati_models
 from iati.parser import validators
 from iati.transaction import models
+from iati.transaction.models import (
+    Transaction)
+from django.db.models import Sum
 
 
 class TransactionProviderSerializer(serializers.ModelSerializer):
@@ -158,6 +161,8 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
     activity_id = serializers.CharField(write_only=True)
 
     iati_identifier = serializers.CharField(source='activity.iati_identifier', required=False)  # NOQA: E501
+
+
 
     class Meta:
         model = models.Transaction

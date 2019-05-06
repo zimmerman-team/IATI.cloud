@@ -176,55 +176,75 @@ class PaginatedCSVRenderer(CSVRenderer):
         # Check if it's the instance of view type
         if not isinstance(view, dict):
 
+            view_class_name = type(view).__name__
+
             # for exceptional fields we should perform different logic
             # then for other selectable fields
             self.exceptional_fields = view.exceptional_fields
-
             # Get headers with their paths
-            self.headers = self._get_headers(view.csv_headers, view.fields)
 
             # Break down Activity by defined column in ActivityList class
             self.break_down_by = view.break_down_by
 
-            # iterate trough all Activities
-            for item in data:
+            if view_class_name in ['ActivityList']:
 
-                # Get a number of repeated rows caused by breaking down
-                # activity with the defined column.
-                repeated_rows = len(item[self.break_down_by])
+                self.headers = self._get_headers(view.csv_headers, view.fields)
 
-                self.paths = {}
-                # recursive function to get all json paths
-                # together with the corresponded values
-                self.paths = self._go_deeper(item, '', self.paths)
+                # iterate trough all Activities
+                for item in data:
+                    # Get a number of repeated rows caused by breaking down
+                    # activity with the defined column.
+                    repeated_rows = len(item[self.break_down_by])
 
-                self.adjust_paths()
+                    self.paths = {}
+                    # recursive function to get all json paths
+                    # together with the corresponded values
+                    self.paths = self._go_deeper(item, '', self.paths)
 
-                # iterate trough activity data and make appropriate row values
-                # with the respect to the headers and breaking down column
-                for i in range(repeated_rows):
-                    self.row = []
-                    for header_value in list(self.headers.values()):
-                        # in case that we did not find the value
-                        # for the particular json path, set empty string
-                        # for the column value.
-                        if header_value not in list(self.paths.keys()):
-                            self.row.append('')
-                            continue
-                        else:
-                            value = self.paths[header_value]
-                            if isinstance(value, list):
-                                if self.break_down_by in header_value:
-                                    self.row.append(value[i])
-                                else:
-                                    self.row.append(';'. join(value))
+                    self.adjust_paths()
 
-                            # In case we did find the value for the particular
-                            # json path and this property value has not related
-                            # to breaking down column.
-                            else:
-                                self.row.append(value)
-                    self.rows.append(self.row)
+                    self._render(repeated_rows)
+
+            elif view_class_name in ['TransactionList']:
+
+                transactions_data = {}
+                default_fields = list(set(view.fields)-set(view.selectable_fields))
+                # iterate trough all Activities
+                for item in data:
+                    # activity with the defined column.
+
+                    group_by_value = item['iati_identifier']
+                    tmp_transaction = {}
+                    if group_by_value not in transactions_data:
+                        transactions_data[group_by_value] = {}
+                        transactions_data[group_by_value]['transactions'] = []
+                        for field in default_fields:
+                            transactions_data[group_by_value][field] = list() if field not in item else item[field]
+
+                    for field in list(view.selectable_fields):
+                        tmp_transaction[field] = item[field]
+
+                    transactions_data[group_by_value]['transactions'].append(tmp_transaction)
+
+                transactions_count = []
+                for item in list(transactions_data.values()):
+                    transactions_count.append(len(item['transactions']))
+
+                self.exceptional_fields[0]['transactions'] = list(range(1, max(transactions_count)+1))
+                self.headers = self._get_headers(view.csv_headers, view.fields)
+
+                for item in list(transactions_data.values()):
+
+                    repeated_rows = len(item[self.break_down_by])
+                    repeated_rows = 1 if repeated_rows == 0 else repeated_rows
+
+                    item = self._adjust_transactions(item, view.transaction_value)
+
+                    self.paths = {}
+                    # recursive function to get all json paths
+                    # together with the corresponded values
+                    self.paths = self._go_deeper(item, '', self.paths)
+                    self._render(repeated_rows)
 
         # writing to the csv file using unicodecsv library
         output = io.BytesIO()
@@ -234,6 +254,34 @@ class PaginatedCSVRenderer(CSVRenderer):
         return output.getvalue()
         # this is old render call.
         # return super(PaginatedCSVRenderer, self).render(rows, renderer_context={'header':['aaaa','sssss','ddddd','fffff','gggggg']}, **kwargs) # NOQA: E501
+
+    def _render(self, repeated_rows):
+
+        # iterate trough activity data and make appropriate row values
+        # with the respect to the headers and breaking down column
+        for i in range(repeated_rows):
+            self.row = []
+            for header_value in list(self.headers.values()):
+                # in case that we did not find the value
+                # for the particular json path, set empty string
+                # for the column value.
+                if header_value not in list(self.paths.keys()):
+                    self.row.append('')
+                    continue
+                else:
+                    value = self.paths[header_value]
+                    if isinstance(value, list):
+                        if self.break_down_by in header_value:
+                            self.row.append(value[i])
+                        else:
+                            self.row.append(';'.join(value))
+
+                    # In case we did find the value for the particular
+                    # json path and this property value has not related
+                    # to breaking down column.
+                    else:
+                        self.row.append(value)
+            self.rows.append(self.row)
 
     def _go_deeper(self, node, path, paths):
 
@@ -250,7 +298,7 @@ class PaginatedCSVRenderer(CSVRenderer):
             if path in paths:
                 if not isinstance(paths[path], list):
                     paths[path] = [paths[path]]
-                    paths[path].append(0 if node is None else node)
+                paths[path].append(0 if node is None else node)
             else:
                 paths[path] = 0 if node is None else node
 
@@ -276,6 +324,26 @@ class PaginatedCSVRenderer(CSVRenderer):
                         headers[field_name + '_' + str(exceptional_header_suffix)] = path + '_' + str(exceptional_header_suffix)  # NOQA: E501
 
         return headers
+
+    def _adjust_transactions(self,item, transaction_value):
+
+        # import json
+
+        for index, transaction in enumerate(item['transactions']):
+            tmp_paths = {}
+            tmp_value = ''
+            tmp_paths = self._go_deeper(transaction, '', tmp_paths)
+
+            for path in transaction_value:
+                for tmp_path in tmp_paths:
+                    if path in tmp_path:
+                        tmp_value = tmp_value + str(tmp_paths[path]) + ';'
+
+            # tmp_value = json.dumps(transaction)
+            item['transactions'+'_'+str(index+1)] = tmp_value
+
+        item.pop('transactions', None)
+        return item
 
     def adjust_paths(self):
 

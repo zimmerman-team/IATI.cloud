@@ -16,7 +16,7 @@ from api.pagination import CustomTransactionPagination
 from api.region.serializers import RegionSerializer
 from api.sector.serializers import SectorSerializer
 from api.transaction.filters import (
-    TransactionAggregationFilter, TransactionFilter
+    TransactionAggregationFilter, TransactionFilter, RelatedOrderingFilter
 )
 from api.transaction.serializers import (
     TransactionSectorSerializer, TransactionSerializer
@@ -58,17 +58,21 @@ class TransactionList(CacheResponseMixin, DynamicListView):
     ## Result details
 
     Each result item contains short information about transaction including
-    URI to transaction details.
+    URI to transaction details.?fields=transaction_types
 
     URI is constructed as follows: `/api/transactions/{transaction_id}`
 
     """
     queryset = Transaction.objects.all().order_by('id')
     serializer_class = TransactionSerializer
+    filter_backends = (
+        DjangoFilterBackend,
+        RelatedOrderingFilter
+    )
     filter_class = TransactionFilter
     pagination_class = CustomTransactionPagination
     ordering_fields = '__all__'
-    ordering = ('id',)
+    ordering = ('id', 'activity__iati_identifier',)
 
     # make sure we can always have info about selectable fields,
     # stored into dict. This dict is populated in the DynamicView class using
@@ -81,7 +85,9 @@ class TransactionList(CacheResponseMixin, DynamicListView):
         'iati_identifier',
         'sectors',
         'recipient_regions',
-        'recipient_countries'
+        'recipient_countries',
+        'transactions'
+
     )
 
     # column headers with paths to the json property value.
@@ -95,11 +101,19 @@ class TransactionList(CacheResponseMixin, DynamicListView):
             'sectors_percentage': 'sectors.percentage',
             'country': 'recipient_countries.country.code',
             'region': 'recipient_regions.region.code',
-            'title': 'title.narratives.text',
-            'description': 'descriptions.narratives.text',
-            'transaction_types': 'transaction_types.dsum'
+            'transactions': 'transactions'
         }
 
+    transaction_value = \
+        {
+             'currency.code',
+             'finance_type.code',
+             'transaction_type.code',
+             'value_date',
+             'value',
+             'descriptions.narratives.text',
+             'provider_organisation.type.code'
+        }
     # Get all transaction type
     transaction_types = []
     # for transaction_type in list(TransactionType.objects.all()):
@@ -110,7 +124,7 @@ class TransactionList(CacheResponseMixin, DynamicListView):
     # selectable fields which required different render logic.
     # Instead merging values using the delimiter, this fields will generate
     # additional columns for the different values, based on defined criteria.
-    exceptional_fields = [{'transaction_types.transaction_type': transaction_types}]  # NOQA: E501
+    exceptional_fields = [{'transactions': transaction_types}]  # NOQA: E501
 
     '''
     fields = (
@@ -132,10 +146,10 @@ class TransactionList(CacheResponseMixin, DynamicListView):
 
     list_cache_key_func = QueryParamsKeyConstructor()
 
-    def __init__(self, *args, **kwargs):
-        super(TransactionList, self).__init__(*args, **kwargs)
-        for transaction_type in list(TransactionType.objects.all()):
-            self.transaction_types.append(transaction_type.code)
+    # def __init__(self, *args, **kwargs):
+    #    super(TransactionList, self).__init__(*args, **kwargs)
+    #    for transaction_type in list(TransactionType.objects.all()):
+    #        self.transaction_types.append(transaction_type.code)
 
 
 class TransactionDetail(CacheResponseMixin, DynamicDetailView):
