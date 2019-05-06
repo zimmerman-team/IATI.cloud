@@ -118,5 +118,10 @@ class DatasetSerializer(DynamicFieldsModelSerializer):
 
     def get_internal_url(self, obj):
         request = self.context.get('request')
-        url = request.build_absolute_uri(obj.get_internal_url())
-        return url
+
+        # Get internal url from the XML file in the local static folder
+        internal_url = obj.get_internal_url()
+        if internal_url:
+            return request.build_absolute_uri(internal_url)
+
+        return None
