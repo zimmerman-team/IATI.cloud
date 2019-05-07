@@ -1386,6 +1386,16 @@ class Parse(IatiParser):
                 None,
                 code)
 
+        elif not sector and vocabulary.code in ['99', '98']:
+            # This is needed to create a new sector if related to vocabulary 99 or 98  # NOQA: E501
+            # ref. http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/sector/  # NOQA: E501
+
+            sector = models.Sector()
+            sector.code = code
+            sector.name = 'Vocabulary 99 or 98'
+            sector.description = 'The sector reported corresponds to a sector vocabulary maintained by the reporting organisation for this activity'  # NOQA: E501
+            sector.save()
+
         elif not sector:
             raise IgnoredVocabularyError(
                 "sector",

@@ -2044,7 +2044,15 @@ class DocumentLinkReference(ElementReference):
     # Title narrative
     # </narrative>
     # </title>
-    # TODO: <description></description>
+    # <title>
+    description = {
+        'element': 'description',
+        'key': 'description'
+    }
+    # <narrative>
+    # Title narrative
+    # </narrative>
+    # </title>
     # <category>
     category = {
         # category data in list
@@ -2114,6 +2122,16 @@ class DocumentLinkReference(ElementReference):
         ).create()
         # </narrative>
         # </title>
+
+        # <description>
+        # <narrative>
+        ElementWithNarrativeReference(
+            parent_element=document_link_element,
+            data=self.data.get(self.description.get('key')),
+            element=self.description.get('element')
+        ).create()
+        # </narrative>
+        # </description>
 
         categories = self.data.get(self.category.get('list'))
         for category in categories:
@@ -2618,7 +2636,6 @@ class DocumentLinkBaseReference(BaseReference):
         ),
         # </narrative>
         # </title>
-        # <category
         # <description>
         # <narrative>
         ElementRecord(
@@ -2743,8 +2760,12 @@ class ResultReference(BaseReference):
                 AttributeRecord(
                     name='ascending',
                     key='ascending'
+                ),
+                # @aggregation-status
+                AttributeRecord(
+                    name='aggregation-status',
+                    key='aggregation_status'
                 )
-                # TODO: add @aggregation-status
             ],
             children=[
                 # <title>
