@@ -282,6 +282,10 @@ class TransactionReference(ElementReference):
         'key': 'ref',
         'attr': 'ref'
     }
+    humanitarian = {
+        'key': 'humanitarian',
+        'attr': 'humanitarian'
+    }
     # Transaction type
     transaction_type = {
         'element': 'transaction-type',
@@ -437,17 +441,27 @@ class TransactionReference(ElementReference):
         if ref_value:
             transaction_element.set(self.ref.get('attr'), ref_value)
 
+        # Humanitarian
+        humanitarian_value = self.data.get(
+            self.humanitarian.get('key')
+        )
+        if humanitarian_value in [True, False, 1, 0]:
+            transaction_element.set(
+                self.humanitarian.get('attr'),
+                '1' if humanitarian_value else '0'
+            )
+
         # Transaction type
-        transaction_dict = self.data.get(
+        transaction_type_dict = self.data.get(
             self.transaction_type.get('key')
         )
-        if transaction_dict:
+        if transaction_type_dict:
             transaction_type_element = etree.SubElement(
                 transaction_element, self.transaction_type.get('element')
             )
 
             # Transaction type element: code attribute
-            code_value = transaction_dict.get(
+            code_value = transaction_type_dict.get(
                 self.transaction_type.get('code').get('key')
             )
             if code_value:
