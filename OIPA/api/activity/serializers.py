@@ -42,9 +42,8 @@ from iati.models import (
 )
 from iati.parser import validators
 from iati.transaction.models import (
-    Transaction, TransactionProvider, TransactionReceiver,
-    TransactionRecipientCountry, TransactionRecipientRegion,
-    TransactionSector, TransactionAidType
+    Transaction, TransactionAidType, TransactionProvider, TransactionReceiver,
+    TransactionRecipientCountry, TransactionRecipientRegion, TransactionSector
 )
 from iati_organisation import models as organisation_models
 
