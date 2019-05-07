@@ -2716,7 +2716,7 @@ class LocationSerializer(DynamicFieldsModelSerializer):
     location_class = CodelistSerializer()
     feature_designation = CodelistSerializer()
 
-    #activity = serializers.CharField(write_only=True)
+    activity = serializers.CharField(write_only=True)
 
     sectors = ActivitySectorSerializer(
         many=True,
@@ -2820,6 +2820,7 @@ class LocationSerializer(DynamicFieldsModelSerializer):
         model = Location
         fields = (
             'id',
+            'activity',
             'iati_identifier',
             'ref',
             'location_reach',
