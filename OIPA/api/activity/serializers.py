@@ -43,7 +43,8 @@ from iati.models import (
 from iati.parser import validators
 from iati.transaction.models import (
     Transaction, TransactionProvider, TransactionReceiver,
-    TransactionRecipientCountry, TransactionRecipientRegion, TransactionSector
+    TransactionRecipientCountry, TransactionRecipientRegion, TransactionSector,
+    TransactionDescription
 )
 from iati_organisation import models as organisation_models
 
@@ -2932,6 +2933,16 @@ class TransactionSectorSerializer(serializers.ModelSerializer):
         )
 
 
+class TransactionDescriptionSerializer(serializers.ModelSerializer):
+    narratives = NarrativeSerializer(many=True)
+
+    class Meta:
+        model = TransactionDescription
+        fields = (
+            'narratives',
+        )
+
+
 class TransactionSerializer(serializers.ModelSerializer):
     """
     Transaction serializer class
@@ -2961,6 +2972,9 @@ class TransactionSerializer(serializers.ModelSerializer):
     sectors = TransactionSectorSerializer(
         many=True,
         source='transactionsector_set',
+        read_only=True
+    )
+    description = TransactionDescriptionSerializer(
         read_only=True
     )
 
