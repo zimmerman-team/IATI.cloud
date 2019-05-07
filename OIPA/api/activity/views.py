@@ -404,7 +404,14 @@ class ActivityList(CacheResponseMixin, DynamicListView):
 
     # Get all transaction type
     transaction_types = []
-
+    # paths to the value
+    path_value = \
+        {
+             'title.narratives.text',
+             'descriptions.narratives.text',
+             'transaction_types.transaction_type',
+             'transaction_types.dsum'
+        }
     # Activity break down column
     break_down_by = 'sectors'
     # selectable fields which required different render logic.

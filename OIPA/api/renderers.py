@@ -189,16 +189,17 @@ class PaginatedCSVRenderer(CSVRenderer):
 
             if view_class_name in ['ActivityList']:
 
+                activity_data = self._adjust_transaction_types(data, 'transaction_types')
                 self.headers = self._get_headers(view.csv_headers, view.fields)
 
                 # iterate trough all Activities
-                for item in data:
+                for item in activity_data:
                     # Get a number of repeated rows caused by breaking down
                     # activity with the defined column.
                     repeated_rows = len(item[self.break_down_by])
                     repeated_rows = 1 if repeated_rows == 0 else repeated_rows
 
-                    item = self._adjust_transaction_types(item, 'transaction_types')
+                    # item = self._adjust_transaction_types(item, 'transaction_types')
 
                     self.paths = {}
                     # recursive function to get all json paths
@@ -209,31 +210,7 @@ class PaginatedCSVRenderer(CSVRenderer):
 
             elif view_class_name in ['TransactionList']:
 
-                transactions_data = {}
-                default_fields = list(set(view.fields)-set(view.selectable_fields))
-                # iterate trough all Activities
-                for item in data:
-                    # activity with the defined column.
-
-                    group_by_value = item['iati_identifier']
-                    tmp_transaction = {}
-                    if group_by_value not in transactions_data:
-                        transactions_data[group_by_value] = {}
-                        transactions_data[group_by_value]['transactions'] = []
-                        for field in default_fields:
-                            transactions_data[group_by_value][field] = list() if field not in item else item[field]
-
-                    for field in list(view.selectable_fields):
-                        tmp_transaction[field] = item[field]
-
-                    transactions_data[group_by_value]['transactions'].append(tmp_transaction)
-
-                transactions_count = []
-                for item in list(transactions_data.values()):
-                    transactions_count.append(len(item['transactions']))
-                    transactions_data[group_by_value] = self._adjust_item(item, view.transaction_value, 'transactions')
-
-                self.exceptional_fields[0]['transactions'] = list(range(1, max(transactions_count)+1))
+                transactions_data = self._group_data(data, view, 'iati_identifier', 'transactions')
                 self.headers = self._get_headers(view.csv_headers, view.fields)
 
                 for item in list(transactions_data.values()):
@@ -249,33 +226,6 @@ class PaginatedCSVRenderer(CSVRenderer):
                     self._render(repeated_rows)
 
             elif view_class_name in ['LocationList']:
-
-                # location_data = {}
-                # default_fields = list(set(view.fields)-set(view.selectable_fields))
-                # # iterate trough all Activities
-                # for item in data:
-                #     # activity with the defined column.
-                #
-                #     group_by_value = item['iati_identifier']
-                #     tmp_transaction = {}
-                #     if group_by_value not in location_data:
-                #         location_data[group_by_value] = {}
-                #         location_data[group_by_value]['locations'] = []
-                #         for field in default_fields:
-                #             location_data[group_by_value][field] = list() if field not in item else item[field]
-                #
-                #     for field in list(view.selectable_fields):
-                #         tmp_transaction[field] = item[field]
-                #
-                #     if len(tmp_transaction) > 0:
-                #         location_data[group_by_value]['locations'].append(tmp_transaction)
-                #
-                # transactions_count = []
-                # for item in list(location_data.values()):
-                #     transactions_count.append(len(item['locations']))
-                #     location_data[group_by_value] = self._adjust_item(item, view.path_value, 'locations')
-                #
-                # self.exceptional_fields[0]['locations'] = list(range(1, max(transactions_count)+1))
 
                 location_data = self._group_data(data,view, 'iati_identifier', 'locations')
                 self.headers = self._get_headers(view.csv_headers, view.fields)
@@ -326,7 +276,8 @@ class PaginatedCSVRenderer(CSVRenderer):
             data_count.append(len(item[transform_field]))
             group_data[group_by_value] = self._adjust_item(item, view.path_value, transform_field)
 
-        self.exceptional_fields[0][transform_field] = list(range(1, max(data_count) + 1))
+        if transform_field in self.exceptional_fields[0]:
+            self.exceptional_fields[0][transform_field] = list(range(1, max(data_count) + 1))
 
         return group_data
 
@@ -417,13 +368,14 @@ class PaginatedCSVRenderer(CSVRenderer):
         item.pop(item_key, None)
         return item
 
-    def _adjust_transaction_types(self, item, item_key):
+    def _adjust_transaction_types(self, data, item_key):
 
-        for index, transaction in enumerate(item[item_key]):
-            item[item_key + '_' + str(transaction['transaction_type'])] = transaction['dsum']
+        for item in data:
+            for index, transaction in enumerate(item[item_key]):
+                item[item_key + '_' + str(transaction['transaction_type'])] = transaction['dsum']
 
-        item.pop(item_key, None)
-        return item
+            item.pop(item_key, None)
+        return data
 
     def adjust_paths(self):
 
