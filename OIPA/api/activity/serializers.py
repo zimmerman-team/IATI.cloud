@@ -308,6 +308,11 @@ class BudgetSerializer(ModelSerializerNoValidation):
     period_start = serializers.CharField()
     period_end = serializers.CharField()
 
+    activity_id = serializers.CharField(
+        source='activity.iati_identifier',
+        read_only=True
+    )
+
     class Meta:
         model = Budget
         # filter_class = BudgetFilter
@@ -326,6 +331,7 @@ class BudgetSerializer(ModelSerializerNoValidation):
             'gbp_value',
             'jpy_value',
             'cad_value',
+            'activity_id'
         )
 
     def validate(self, data):

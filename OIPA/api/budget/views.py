@@ -1,11 +1,12 @@
 from django.db.models import Count, F, Sum
 from django_filters.rest_framework import DjangoFilterBackend
 
-from api.activity.serializers import CodelistSerializer
+from api.activity.serializers import BudgetSerializer, CodelistSerializer
 from api.aggregation.views import Aggregation, AggregationView, GroupBy
 from api.budget import filters
 from api.country.serializers import CountrySerializer
 from api.generics.filters import SearchFilter
+from api.generics.views import DynamicListView
 from api.organisation.serializers import OrganisationSerializer
 from api.region.serializers import RegionSerializer
 from api.sector.serializers import SectorSerializer
@@ -326,4 +327,38 @@ class BudgetAggregations(AggregationView):
             },
             fields=("budget_period_end_year", "budget_period_end_month")
         ),
+    )
+
+
+class BudgetList(DynamicListView):
+    """
+    Returns a list of IATI Budget stored in OIPA.
+
+    ## Filter parameters
+    - `activity_id` (*optional*): Comma separated list of activity id's.
+    - `type` (*optional*): Comma separated list of activity id's.
+    """
+
+    queryset = Budget.objects.all()
+    filter_backends = (
+        SearchFilter,
+        DjangoFilterBackend,
+    )
+    filter_class = filters.BudgetFilter
+    serializer_class = BudgetSerializer
+
+    # make sure we can always have info about selectable fields,
+    # stored into dict. This dict is populated in the DynamicView class using
+    # _get_query_fields methods.
+    selectable_fields = ()
+
+    # Required fields for the serialisation defined by the
+    # specification document
+    fields = (
+        'activity_id',
+        'type',
+        'status',
+        'period_start',
+        'period_end',
+        'value',
     )
