@@ -104,7 +104,8 @@ class TransactionList(CacheResponseMixin, DynamicListView):
             'transactions': 'transactions'
         }
 
-    transaction_value = \
+    # paths to the value
+    path_value = \
         {
              'currency.code',
              'finance_type.code',

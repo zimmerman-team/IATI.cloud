@@ -176,6 +176,7 @@ class PaginatedCSVRenderer(CSVRenderer):
         # Check if it's the instance of view type
         if not isinstance(view, dict):
 
+            # Get a view's class name
             view_class_name = type(view).__name__
 
             # for exceptional fields we should perform different logic
@@ -195,13 +196,14 @@ class PaginatedCSVRenderer(CSVRenderer):
                     # Get a number of repeated rows caused by breaking down
                     # activity with the defined column.
                     repeated_rows = len(item[self.break_down_by])
+                    repeated_rows = 1 if repeated_rows == 0 else repeated_rows
+
+                    item = self._adjust_transaction_types(item, 'transaction_types')
 
                     self.paths = {}
                     # recursive function to get all json paths
                     # together with the corresponded values
                     self.paths = self._go_deeper(item, '', self.paths)
-
-                    self.adjust_paths()
 
                     self._render(repeated_rows)
 
@@ -229,6 +231,7 @@ class PaginatedCSVRenderer(CSVRenderer):
                 transactions_count = []
                 for item in list(transactions_data.values()):
                     transactions_count.append(len(item['transactions']))
+                    transactions_data[group_by_value] = self._adjust_item(item, view.transaction_value, 'transactions')
 
                 self.exceptional_fields[0]['transactions'] = list(range(1, max(transactions_count)+1))
                 self.headers = self._get_headers(view.csv_headers, view.fields)
@@ -238,12 +241,55 @@ class PaginatedCSVRenderer(CSVRenderer):
                     repeated_rows = len(item[self.break_down_by])
                     repeated_rows = 1 if repeated_rows == 0 else repeated_rows
 
-                    item = self._adjust_transactions(item, view.transaction_value)
+                    self.paths = {}
+                    # recursive function to get all json paths
+                    # together with the corresponded values
+                    self.paths = self._go_deeper(item, '', self.paths)
+
+                    self._render(repeated_rows)
+
+            elif view_class_name in ['LocationList']:
+
+                # location_data = {}
+                # default_fields = list(set(view.fields)-set(view.selectable_fields))
+                # # iterate trough all Activities
+                # for item in data:
+                #     # activity with the defined column.
+                #
+                #     group_by_value = item['iati_identifier']
+                #     tmp_transaction = {}
+                #     if group_by_value not in location_data:
+                #         location_data[group_by_value] = {}
+                #         location_data[group_by_value]['locations'] = []
+                #         for field in default_fields:
+                #             location_data[group_by_value][field] = list() if field not in item else item[field]
+                #
+                #     for field in list(view.selectable_fields):
+                #         tmp_transaction[field] = item[field]
+                #
+                #     if len(tmp_transaction) > 0:
+                #         location_data[group_by_value]['locations'].append(tmp_transaction)
+                #
+                # transactions_count = []
+                # for item in list(location_data.values()):
+                #     transactions_count.append(len(item['locations']))
+                #     location_data[group_by_value] = self._adjust_item(item, view.path_value, 'locations')
+                #
+                # self.exceptional_fields[0]['locations'] = list(range(1, max(transactions_count)+1))
+
+                location_data = self._group_data(data,view, 'iati_identifier', 'locations')
+                self.headers = self._get_headers(view.csv_headers, view.fields)
+
+                for item in list(location_data.values()):
+
+                    repeated_rows = len(item[self.break_down_by])
+                    repeated_rows = 1 if repeated_rows == 0 else repeated_rows
 
                     self.paths = {}
                     # recursive function to get all json paths
                     # together with the corresponded values
                     self.paths = self._go_deeper(item, '', self.paths)
+
                     self._render(repeated_rows)
 
         # writing to the csv file using unicodecsv library
@@ -254,6 +300,35 @@ class PaginatedCSVRenderer(CSVRenderer):
         return output.getvalue()
         # this is old render call.
         # return super(PaginatedCSVRenderer, self).render(rows, renderer_context={'header':['aaaa','sssss','ddddd','fffff','gggggg']}, **kwargs) # NOQA: E501
+
+    def _group_data(self, data, view, group_by_field, transform_field):
+
+        group_data = {}
+        default_fields = list(set(view.fields) - set(view.selectable_fields))
+        # iterate trough all Activities
+        for item in data:
+            # activity with the defined column.
+            group_by_value = item[group_by_field]
+            tmp_data = {}
+            if group_by_value not in group_data:
+                group_data[group_by_value] = {}
+                group_data[group_by_value][transform_field] = []
+                for field in default_fields:
+                    group_data[group_by_value][field] = list() if field not in item else item[field]
+
+            for field in list(view.selectable_fields):
+                tmp_data[field] = item[field]
+
+            group_data[group_by_value][transform_field].append(tmp_data)
+
+        data_count = []
+        for item in list(group_data.values()):
+            data_count.append(len(item[transform_field]))
+            group_data[group_by_value] = self._adjust_item(item, view.path_value, transform_field)
+
+        self.exceptional_fields[0][transform_field] = list(range(1, max(data_count) + 1))
+
+        return group_data
 
     def _render(self, repeated_rows):
 
@@ -321,15 +396,13 @@ class PaginatedCSVRenderer(CSVRenderer):
                     path = headers[field_name]
                     headers.pop(field_name, None)
                     for exceptional_header_suffix in value:
-                        headers[field_name + '_' + str(exceptional_header_suffix)] = path + '_' + str(exceptional_header_suffix)  # NOQA: E501
+                        headers[field_name + '_' + str(exceptional_header_suffix)] = field_name + '_' + str(exceptional_header_suffix)  # path + '_' + str(exceptional_header_suffix)  # NOQA: E501
 
         return headers
 
-    def _adjust_transactions(self,item, transaction_value):
+    def _adjust_item(self,item, transaction_value, item_key):
 
-        # import json
-
-        for index, transaction in enumerate(item['transactions']):
+        for index, transaction in enumerate(item[item_key]):
             tmp_paths = {}
             tmp_value = ''
             tmp_paths = self._go_deeper(transaction, '', tmp_paths)
@@ -339,10 +412,17 @@ class PaginatedCSVRenderer(CSVRenderer):
                     if path in tmp_path:
                         tmp_value = tmp_value + str(tmp_paths[path]) + ';'
 
-            # tmp_value = json.dumps(transaction)
-            item['transactions'+'_'+str(index+1)] = tmp_value
+            item[item_key + '_' + str(index+1)] = tmp_value
 
-        item.pop('transactions', None)
+        item.pop(item_key, None)
+        return item
+
+    def _adjust_transaction_types(self, item, item_key):
+
+        for index, transaction in enumerate(item[item_key]):
+            item[item_key + '_' + str(transaction['transaction_type'])] = transaction['dsum']
+
+        item.pop(item_key, None)
         return item
 
     def adjust_paths(self):

@@ -34,16 +34,46 @@ class LocationList(CacheResponseMixin, DynamicListView):
     # selectable fields which required different render logic.
     # Instead merging values using the delimiter, this fields will generate
     # additional columns for the different values, based on defined criteria.
-    exceptional_fields = [{'transactions': transaction_types}]  # NOQA: E501
+    exceptional_fields = [{'locations': transaction_types}]  # NOQA: E501
 
     fields = (
         'iati_identifier',
         'sectors',
         'recipient_regions',
         'recipient_countries',
-        'transactions'
+        'locations'
 
     )
+    # column headers with paths to the json property value.
+    # reference to the field name made by the first term in the path
+    # example: for recipient_countries.country.code path
+    # reference field name is first term, meaning recipient_countries.
+    csv_headers = \
+        {
+            'activity_id': 'iati_identifier',
+            'sector_code': 'sectors.sector.code',
+            'sectors_percentage': 'sectors.percentage',
+            'country': 'recipient_countries.country.code',
+            'region': 'recipient_regions.region.code',
+            'locations': 'locations'
+        }
+
+    path_value = \
+        {
+             'location_reach.code',
+             'location_id.code',
+             'administrative.code',
+             'exactness.code',
+             'point.pos.latitude',
+             'point.pos.longitude',
+             'location_class.code',
+             'feature_designation.code',
+             'ref',
+             'descriptions.narratives.text',
+             'title.narratives.text',
+             'activity_description.narratives.text',
+             'name.narratives.text'
+        }
     ''' 
     fields = (
         'id',
