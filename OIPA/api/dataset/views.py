@@ -97,6 +97,7 @@ class DatasetList(CacheResponseMixin, DynamicListView):
         'iati_version',
         'note_count',
         'added_manually',
+        'sha1'
     )
 
 
