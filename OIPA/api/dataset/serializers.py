@@ -100,7 +100,6 @@ class DatasetSerializer(DynamicFieldsModelSerializer):
             'is_parsed',
             'export_in_progress',
             'parse_in_progress',
-            'sha1'
         )
 
     def get_filetype(self, obj):
