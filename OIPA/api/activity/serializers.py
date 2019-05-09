@@ -2324,6 +2324,28 @@ class ResultSerializer(ModelSerializerNoValidation):
         source='documentlink_set'
     )
 
+    sectors = ActivitySectorSerializer(
+        many=True,
+        source='activity.activitysector_set',
+        read_only=True,
+        required=False,
+    )
+
+    recipient_countries = RecipientCountrySerializer(
+        many=True,
+        source='activity.activityrecipientcountry_set',
+        read_only=True,
+        required=False,
+    )
+    recipient_regions = ActivityRecipientRegionSerializer(
+        many=True,
+        source='activity.activityrecipientregion_set',
+        read_only=True,
+        required=False,
+    )
+
+    iati_identifier = serializers.CharField(source='activity.iati_identifier', required=False)  # NOQA: E501
+
     class Meta:
         model = Result
         fields = (
@@ -2334,7 +2356,11 @@ class ResultSerializer(ModelSerializerNoValidation):
             'indicators',
             'type',
             'aggregation_status',
-            'document_links'
+            'document_links',
+            'sectors',
+            'recipient_countries',
+            'recipient_regions',
+            'iati_identifier'
         )
 
     def validate(self, data):

@@ -96,25 +96,15 @@ class TransactionList(CacheResponseMixin, DynamicListView):
     # reference field name is first term, meaning recipient_countries.
     csv_headers = \
         {
-            'activity_id': 'iati_identifier',
-            'sector_code': 'sectors.sector.code',
-            'sectors_percentage': 'sectors.percentage',
-            'country': 'recipient_countries.country.code',
-            'region': 'recipient_regions.region.code',
-            'transactions': 'transactions'
+                   'iati_identifier': {'header': 'activity_id'},
+                   'sectors.sector.code': {'header': 'sector_code'},
+                   'sectors.percentage':  {'header': 'sectors_percentage'},
+                   'recipient_countries.country.code': {'header': 'country'},
+                   'recipient_regions.region.code': {'header': 'region'},
+                   'transactions': {'header': 'transactions'},
+                   'value': {'header': None},
         }
 
-    # paths to the value
-    path_value = \
-        {
-             'currency.code',
-             'finance_type.code',
-             'transaction_type.code',
-             'value_date',
-             'value',
-             'descriptions.narratives.text',
-             'provider_organisation.type.code'
-        }
     # Get all transaction type
     transaction_types = []
     # for transaction_type in list(TransactionType.objects.all()):

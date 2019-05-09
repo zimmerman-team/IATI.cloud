@@ -7,6 +7,7 @@ from api.generics.filters import SearchFilter
 from api.generics.views import DynamicListView
 from api.result.filters import ResultFilter
 from iati.models import Result
+from api.result.filters import RelatedOrderingFilter
 
 
 class ResultAggregations(AggregationView):
@@ -88,6 +89,7 @@ class ResultList(DynamicListView):
     filter_backends = (
         SearchFilter,
         DjangoFilterBackend,
+        RelatedOrderingFilter,
     )
     filter_class = ResultFilter
     serializer_class = ResultSerializer
@@ -97,6 +99,39 @@ class ResultList(DynamicListView):
     # _get_query_fields methods.
     selectable_fields = ()
 
+    break_down_by = 'sectors'
+
+    # Required fields for the serialisation defined by the
+    # specification document
+    fields = (
+        'iati_identifier',
+        'sectors',
+        'recipient_regions',
+        'recipient_countries',
+        'results'
+
+    )
+    # column headers with paths to the json property value.
+    # reference to the field name made by the first term in the path
+    # example: for recipient_countries.country.code path
+    # reference field name is first term, meaning recipient_countries.
+    csv_headers = \
+        {
+                   'iati_identifier': {'header': 'activity_id'},
+                   'sectors.sector.code': {'header': 'sector_code'},
+                   'sectors.percentage':  {'header': 'sectors_percentage'},
+                   'recipient_countries.country.code': {'header': 'country'},
+                   'recipient_regions.region.code': {'header': 'region'},
+                   'results': {'header': 'results'},
+                   'type.code': {'header': None},
+                   'title.narratives.text': {'header': None},
+                   'description.narratives.text': {'header': None},
+                   'indicators.references.code': {'header': None},
+                   'document_links.url': {'header': None},
+        }
+    exceptional_fields = [{'results': []}]
+
+    ''' 
     # Required fields for the serialisation defined by the
     # specification document
     fields = (
@@ -106,3 +141,4 @@ class ResultList(DynamicListView):
         'indicators',
         'document_links',
     )
+    '''

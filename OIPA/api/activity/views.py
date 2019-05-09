@@ -392,32 +392,24 @@ class ActivityList(CacheResponseMixin, DynamicListView):
     # reference field name is first term, meaning recipient_countries.
     csv_headers = \
         {
-                   'activity_id': 'iati_identifier',
-                   'sector_code': 'sectors.sector.code',
-                   'sectors_percentage': 'sectors.percentage',
-                   'country': 'recipient_countries.country.code',
-                   'region': 'recipient_regions.region.code',
-                   'title': 'title.narratives.text',
-                   'description': 'descriptions.narratives.text',
-                   'transaction_types': 'transaction_types.dsum'
+                   'iati_identifier': {'header': 'activity_id'},
+                   'sectors.sector.code': {'header': 'sector_code'},
+                   'sectors.percentage':  {'header': 'sectors_percentage'},
+                   'recipient_countries.country.code': {'header': 'country'},
+                   'recipient_regions.region.code': {'header': 'region'},
+                   'title.narratives.text': {'header': 'title'},
+                   'descriptions.narratives.text':  {'header': 'description'},
+                   'transaction_types.dsum': {'header': 'transaction_types'},
+                   'reporting_organisation.type.code': {'header': 'reporting_organisation'}
         }
-
     # Get all transaction type
     transaction_types = []
-    # paths to the value
-    path_value = \
-        {
-             'title.narratives.text',
-             'descriptions.narratives.text',
-             'transaction_types.transaction_type',
-             'transaction_types.dsum'
-        }
     # Activity break down column
     break_down_by = 'sectors'
     # selectable fields which required different render logic.
     # Instead merging values using the delimiter, this fields will generate
     # additional columns for the different values, based on defined criteria.
-    exceptional_fields = [{'transaction_types.transaction_type': transaction_types}]  # NOQA: E501
+    exceptional_fields = [{'transaction_types': transaction_types}]  # NOQA: E501
 
     always_ordering = 'id'
 

@@ -144,6 +144,7 @@ class PaginatedCSVRenderer(CSVRenderer):
         self.headers = {}
         self.break_down_by = None
         self.exceptional_fields = None
+        self.selectable_fields = ()
 
     def render(self, data, *args, **kwargs):
         # TODO: this is probably a bug in DRF, might get fixed later then
@@ -187,8 +188,9 @@ class PaginatedCSVRenderer(CSVRenderer):
             # Break down Activity by defined column in ActivityList class
             self.break_down_by = view.break_down_by
 
-            if view_class_name in ['ActivityList']:
+            self.selectable_fields = view.selectable_fields
 
+            if view_class_name in ['ActivityList']:
                 activity_data = self._adjust_transaction_types(data, 'transaction_types')
                 self.headers = self._get_headers(view.csv_headers, view.fields)
 
@@ -227,10 +229,45 @@ class PaginatedCSVRenderer(CSVRenderer):
 
             elif view_class_name in ['LocationList']:
 
-                location_data = self._group_data(data,view, 'iati_identifier', 'locations')
-                self.headers = self._get_headers(view.csv_headers, view.fields)
+                location_data = self._group_data(data, view, 'iati_identifier', 'locations')
+                self.headers = self._get_headers(view.csv_headers, view.fields, location_data['locations'])
 
                 for item in list(location_data.values()):
+
+                    repeated_rows = len(item[self.break_down_by])
+                    repeated_rows = 1 if repeated_rows == 0 else repeated_rows
+
+                    self.paths = {}
+                    # recursive function to get all json paths
+                    # together with the corresponded values
+                    self.paths = self._go_deeper(item, '', self.paths)
+
+                    self._render(repeated_rows)
+
+            elif view_class_name in ['BudgetList']:
+
+                budget_data = self._group_data(data,view, 'iati_identifier', 'budgets')
+                self.headers = self._get_headers(view.csv_headers, view.fields)
+
+
+                for item in list(budget_data.values()):
+
+                    repeated_rows = len(item[self.break_down_by])
+                    repeated_rows = 1 if repeated_rows == 0 else repeated_rows
+
+                    self.paths = {}
+                    # recursive function to get all json paths
+                    # together with the corresponded values
+                    self.paths = self._go_deeper(item, '', self.paths)
+
+                    self._render(repeated_rows)
+
+            elif view_class_name in ['ResultList']:
+
+                result_data = self._group_data(data, view, 'iati_identifier', 'results')
+                self.headers = self._get_headers(view.csv_headers, view.fields)
+
+                for item in list(result_data.values()):
 
                     repeated_rows = len(item[self.break_down_by])
                     repeated_rows = 1 if repeated_rows == 0 else repeated_rows
@@ -274,7 +311,7 @@ class PaginatedCSVRenderer(CSVRenderer):
         data_count = []
         for item in list(group_data.values()):
             data_count.append(len(item[transform_field]))
-            group_data[group_by_value] = self._adjust_item(item, view.path_value, transform_field)
+            #group_data[group_by_value] = self._adjust_item(item, view.csv_headers, transform_field)
 
         if transform_field in self.exceptional_fields[0]:
             self.exceptional_fields[0][transform_field] = list(range(1, max(data_count) + 1))
@@ -330,14 +367,14 @@ class PaginatedCSVRenderer(CSVRenderer):
 
         return paths
 
-    def _get_headers(self, available_headers, fields):
+    def _get_headers(self, available_headers, fields, item):
 
         headers = {}
         for field in fields:
-            for header, path in available_headers.items():
+            for path, header  in available_headers.items():
                 # field name should be first term in path string
-                if field in path.split('.')[0]:
-                    headers[header] = path
+                if field in path.split('.')[0] and header['header'] is not None:
+                    headers[header['header']] = path
 
         # adjust headers with the possibility of having exceptional fields
         for exceptional_field in self.exceptional_fields:
@@ -347,23 +384,29 @@ class PaginatedCSVRenderer(CSVRenderer):
                     path = headers[field_name]
                     headers.pop(field_name, None)
                     for exceptional_header_suffix in value:
-                        headers[field_name + '_' + str(exceptional_header_suffix)] = field_name + '_' + str(exceptional_header_suffix)  # path + '_' + str(exceptional_header_suffix)  # NOQA: E501
-
+                        if len(self.selectable_fields) > 0:
+                            headers[field_name + '_' + str(exceptional_header_suffix)] = field_name + '_' + str(exceptional_header_suffix)  # path + '_' + str(exceptional_header_suffix)  # NOQA: E501
+                            tmp_paths = {}
+                            tmp_paths = self._go_deeper(item, '', tmp_paths)
         return headers
 
-    def _adjust_item(self,item, transaction_value, item_key):
+    def _adjust_item(self, item, csv_headers, item_key):
 
         for index, transaction in enumerate(item[item_key]):
             tmp_paths = {}
             tmp_value = ''
             tmp_paths = self._go_deeper(transaction, '', tmp_paths)
 
-            for path in transaction_value:
+            for path in list(csv_headers.keys()):
                 for tmp_path in tmp_paths:
-                    if path in tmp_path:
+                    if path == tmp_path:
                         tmp_value = tmp_value + str(tmp_paths[path]) + ';'
+                        if csv_headers[path]['header'] is None:
+                            item[item_key + '_' + str(index + 1)] = tmp_value
+                        else:
+                            item[path] = tmp_value
 
-            item[item_key + '_' + str(index+1)] = tmp_value
+            #item[item_key + '_' + str(index+1)] = tmp_value
 
         item.pop(item_key, None)
         return item
@@ -371,10 +414,11 @@ class PaginatedCSVRenderer(CSVRenderer):
     def _adjust_transaction_types(self, data, item_key):
 
         for item in data:
-            for index, transaction in enumerate(item[item_key]):
-                item[item_key + '_' + str(transaction['transaction_type'])] = transaction['dsum']
+            if item_key in item:
+                for index, transaction in enumerate(item[item_key]):
+                    item[item_key + '_' + str(transaction['transaction_type'])] = transaction['dsum']
 
-            item.pop(item_key, None)
+                item.pop(item_key, None)
         return data
 
     def adjust_paths(self):
