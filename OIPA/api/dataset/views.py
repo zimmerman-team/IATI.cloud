@@ -98,6 +98,7 @@ class DatasetList(CacheResponseMixin, DynamicListView):
         'note_count',
         'added_manually',
         'internal_url'
+        'sha1'
     )
 
 
