@@ -159,9 +159,11 @@
   <!--location-additional ends-->
 
   <!--sector starts-->
-  <sector vocabulary="2" code="1" percentage="50" />
-  <sector vocabulary="2" code="2" percentage="50" />
-  <sector vocabulary="98" vocabulary-uri="http://example.com/vocab.html" code="3" percentage="100" />
+  <sector vocabulary="2" code="111" percentage="50" />
+  <sector vocabulary="2" code="112" percentage="50" />
+  <sector vocabulary="98" vocabulary-uri="http://example.com/vocab.html" code="A1" percentage="100">
+    <narrative>Formal and non-formal primary education for children</narrative>
+  </sector>
   <!--sector ends-->
 
   <!--tag starts-->

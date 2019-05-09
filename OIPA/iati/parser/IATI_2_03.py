@@ -1386,6 +1386,16 @@ class Parse(IatiParser):
                 None,
                 code)
 
+        elif not sector and vocabulary.code in ['99', '98']:
+            # This is needed to create a new sector if related to vocabulary 99 or 98  # NOQA: E501
+            # ref. http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/sector/  # NOQA: E501
+
+            sector = models.Sector()
+            sector.code = code
+            sector.name = 'Vocabulary 99 or 98'
+            sector.description = 'The sector reported corresponds to a sector vocabulary maintained by the reporting organisation for this activity'  # NOQA: E501
+            sector.save()
+
         elif not sector:
             raise IgnoredVocabularyError(
                 "sector",
@@ -1468,6 +1478,9 @@ class Parse(IatiParser):
             codelist_models.BudgetIdentifier, code=code)
         percentage = element.attrib.get('percentage')
 
+        # CountryBudgetItem is parent of this record
+        country_budget_item = self.get_model('CountryBudgetItem')
+
         if not code:
             raise RequiredFieldError(
                 "country-budget-items/budget-item",
@@ -1475,15 +1488,30 @@ class Parse(IatiParser):
                 "required attribute missing")
 
         if not budget_identifier:
+            # Check if the vocabulary of the country budget items is 4 or 5,
+            # if related to these then we create a new code of
+            # the budget identifier if not available
+            # otherwise use a existing one
+            # ref. http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/country-budget-items/budget-item/  # NOQA: E501
+
+            if country_budget_item:
+                if country_budget_item.vocabulary.code in ['4', '5']:
+                    budget_identifier = codelist_models.BudgetIdentifier()
+                    budget_identifier.code = code
+                    budget_identifier.name = 'Vocabulary 4 or 5'
+                    budget_identifier.save()
+
+        # if still no the budget identifier then should be errorr
+        if not budget_identifier:
             raise FieldValidationError(
                 "country-budget-items/budget-item",
                 "code",
                 "not found on the accompanying code list",
                 None,
                 None,
-                code)
+                code
+            )
 
-        country_budget_item = self.get_model('CountryBudgetItem')
         budget_item = models.BudgetItem()
         budget_item.country_budget_item = country_budget_item
         budget_item.code = budget_identifier
@@ -3790,11 +3818,11 @@ class Parse(IatiParser):
 
     def iati_activities__iati_activity__result__indicator__baseline__location(
             self, element):
-        '''A new, optional element in v. 2.03:
-
+        """
+        A new, optional element in v. 2.03:
         A location already defined and described in the iati-activity/location
         element.
-        '''
+        """
         ref = element.attrib.get('ref')
 
         if not ref:
@@ -3806,9 +3834,13 @@ class Parse(IatiParser):
                 "iati-activity/location/@ref, so leaving it blank makes no "
                 "sense")
 
-        referenced_location = self.get_model('Location')
+        locations = self.get_model_list('Location')
+        location = []
 
-        if not referenced_location.ref == ref:
+        if locations:
+            location = list(filter(lambda x: x.ref == ref, locations))
+
+        if not len(location):
             raise FieldValidationError(
                 "iati-activity/result/indicator/baseline/location",
                 "ref",
@@ -3816,6 +3848,8 @@ class Parse(IatiParser):
                 None,
                 None,
                 ref)
+
+        referenced_location = location[0]
 
         activity = self.get_model('Activity')
         result_indicator_baseline = self.get_model('ResultIndicatorBaseline')

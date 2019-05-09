@@ -402,6 +402,15 @@ class TransactionReference(ElementReference):
         }
 
     }
+    disbursement_channel = {
+        'element': 'disbursement-channel',
+        'key': 'disbursement_channel',
+        # Attributes,
+        'code': {
+            'key': 'code',
+            'attr': 'code'
+        }
+    }
     # Recipient country
     recipient_countries = {
         'element': 'recipient-country',
@@ -651,6 +660,26 @@ class TransactionReference(ElementReference):
             receiver_organisation_narrative.create_narrative(
                 parent_element=receiver_organisation_element
             )
+
+        # Disbursement channel
+        disbursement_channel_dict = self.data.get(
+            self.disbursement_channel.get('key')
+        )
+        if disbursement_channel_dict:
+            disbursement_channel_element = etree.SubElement(
+                transaction_element, self.disbursement_channel.get('element')
+            )
+
+            # Attributes
+            # Code
+            code_value = disbursement_channel_dict.get(
+                self.disbursement_channel.get('code').get('key')
+            )
+            if ref_value:
+                disbursement_channel_element.set(
+                    self.disbursement_channel.get('code').get('attr'),
+                    code_value
+                )
 
         # Sector
         sectors_list = self.data.get(
@@ -3329,9 +3358,42 @@ class CountryBudgetItemsReference(BaseReference):
             dict_key='vocabulary'
         ),
     ]
+    children = [
+        # <budget-item>
+        ElementRecord(
+            name='budget-item',
+            key='budget_items',
+            attributes=[
+                # @code
+                AttributeRecord(
+                    name='code',
+                    key='code',
+                    dict_key='budget_identifier'
+                ),
+                # @percentage
+                AttributeRecord(
+                    name='percentage',
+                    key='percentage'
+                ),
+            ],
+            children=[
+                # <description>
+                # <narrative>
+                ElementRecord(
+                    name='description',
+                    key='description',
+                    element_type=ElementWithNarrativeReference
+                ),
+                # </narrative>
+                # </description>
+            ]
+        ),
+        # </budget-item>
+    ]
     element_record = ElementRecord(
         name='country-budget-items',
-        attributes=attributes
+        attributes=attributes,
+        children=children
     )
     # </country-budget-items>
 
@@ -3348,6 +3410,11 @@ class TagReference(BaseReference):
             name='vocabulary',
             key='code',
             dict_key='vocabulary'
+        ),
+        # @vocabulary-uri
+        AttributeRecord(
+            name='vocabulary-uri',
+            key='vocabulary_uri'
         ),
         # @code
         AttributeRecord(
