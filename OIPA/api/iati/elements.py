@@ -172,90 +172,92 @@ class ElementBase(object):
         self.data = data
 
     def create(self):
-        if not self.element_record.element_type:
-            if self.element_record.name:
-                self.element = etree.SubElement(
-                    self.parent_element,
-                    self.element_record.name
-                )
-        elif self.element_record.element_type == ElementWithNarrativeReference:
-            # Narrative element
-            ElementWithNarrativeReference(
-                parent_element=self.parent_element,
-                data=self.data,
-                element=self.element_record.name
-            ).create()
-
-        # Create attribute
-        if self.element_record.attributes:
-            for attribute in self.element_record.attributes:
-                data_attribute = DataAttribute(
+        if self.data:
+            if not self.element_record.element_type:
+                if self.element_record.name:
+                    self.element = etree.SubElement(
+                        self.parent_element,
+                        self.element_record.name
+                    )
+            elif self.element_record.element_type \
+                    == ElementWithNarrativeReference:
+                # Narrative element
+                ElementWithNarrativeReference(
+                    parent_element=self.parent_element,
                     data=self.data,
-                    key=attribute.key,
-                    dict_key=attribute.dict_key
-                )
-                if data_attribute.value:
-                    self.element.set(
-                        attribute.name,
-                        data_attribute.value
-                    )
+                    element=self.element_record.name
+                ).create()
 
-        # Create children element
-        if self.element_record.children:
-            for element_record in self.element_record.children:
-                if isinstance(element_record, ElementRecord):
-                    data_element = DataElement(
+            # Create attribute
+            if self.element_record.attributes:
+                for attribute in self.element_record.attributes:
+                    data_attribute = DataAttribute(
                         data=self.data,
-                        key=element_record.key
+                        key=attribute.key,
+                        dict_key=attribute.dict_key
                     )
-                    if isinstance(data_element.data, list):
-                        for data in data_element.data:
+                    if data_attribute.value:
+                        self.element.set(
+                            attribute.name,
+                            data_attribute.value
+                        )
+
+            # Create children element
+            if self.element_record.children:
+                for element_record in self.element_record.children:
+                    if isinstance(element_record, ElementRecord):
+                        data_element = DataElement(
+                            data=self.data,
+                            key=element_record.key
+                        )
+                        if isinstance(data_element.data, list):
+                            for data in data_element.data:
+                                element_base = ElementBase(
+                                    element_record=element_record,
+                                    parent_element=self.element,
+                                    data=data
+                                )
+                                element_base.create()
+                        else:
                             element_base = ElementBase(
                                 element_record=element_record,
                                 parent_element=self.element,
-                                data=data
+                                data=data_element.data
                             )
                             element_base.create()
-                    else:
-                        element_base = ElementBase(
-                            element_record=element_record,
-                            parent_element=self.element,
-                            data=data_element.data
+
+                    elif isinstance(element_record, ElementReference) \
+                            and isinstance(self.data, dict):
+                        # TODO: this is needed more simple
+                        # This is instance of the ElementReference
+                        data = self.data.get(
+                            element_record.element_record.key
                         )
-                        element_base.create()
-
-                elif isinstance(element_record, ElementReference) \
-                        and isinstance(self.data, dict):
-                    # TODO: this is needed more simple
-                    # This is instance of the ElementReference
-                    data = self.data.get(
-                        element_record.element_record.key
-                    )
-                    if isinstance(data, list):
-                        for item in data:
+                        if isinstance(data, list):
+                            for item in data:
+                                element_record.parent_element = self.element
+                                element_record.data = item
+                                element_record.create()
+                        else:
                             element_record.parent_element = self.element
-                            element_record.data = item
+                            element_record.data = data
                             element_record.create()
-                    else:
-                        element_record.parent_element = self.element
-                        element_record.data = data
-                        element_record.create()
 
-        elif not self.element_record.element_type:
-            # TODO: very complicated please find more simple then this
-            data_element = DataElement(
-                data=self.data,
-                key=self.element_record.key
-            )
-            data = data_element.data
-            if self.element_record.name:
-                # Set content on the element without children
-                if data and not isinstance(data, (list, dict)):
-                    self.element.text = str(data)
-            else:
-                # The parent element should embed on current data
-                if data and not isinstance(data, (list, dict)):
-                    self.parent_element.text = str(data)
+            elif not self.element_record.element_type:
+                # TODO: very complicated please find more simple then this
+                data_element = DataElement(
+                    data=self.data,
+                    key=self.element_record.key
+                )
+                data = data_element.data
+                if self.element_record.name:
+                    # Set content on the element without children
+                    if data and not isinstance(data, (list, dict)):
+                        self.element.text = str(data)
+                else:
+                    # The parent element should embed on current data
+                    if data and not isinstance(data, (list, dict)):
+                        self.parent_element.text = str(data)
 
     def get(self):
         return self.element

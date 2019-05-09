@@ -11,7 +11,8 @@ from lxml import etree
 from geodata.models import Country, Region
 from iati_codelists.models import (
     AidType, AidTypeVocabulary, FileFormat, FinanceTypeCategory,
-    OrganisationIdentifier, OrganisationRegistrationAgency, Sector
+    OrganisationIdentifier, OrganisationRegistrationAgency, Sector,
+    SectorCategory
 )
 from iati_synchroniser.dac_sector_importer import DacSectorImporter
 from iati_synchroniser.m49_regions_importer import M49RegionsImporter
@@ -69,6 +70,14 @@ class CodeListImporter():
         for version in self.iati_versions:
             self.looping_through_version = version
             self.loop_through_codelists(version)
+
+        # Create sector from the the sector category
+        # The sector category can use as a sector code in the XML activity
+        for sector_category in SectorCategory.objects.all():
+            Sector.objects.get_or_create(
+                code=sector_category.code,
+                name=sector_category.name
+            )
 
     @staticmethod
     def fast_iter(context, func):
