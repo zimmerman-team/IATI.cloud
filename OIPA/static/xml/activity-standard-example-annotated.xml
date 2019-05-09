@@ -177,12 +177,12 @@
 
   <!--country-budget-items starts-->
   <country-budget-items vocabulary="4">
-   <budget-item code="1844" percentage="50">
+   <budget-item code="4.1.1" percentage="50">
     <description>
      <narrative>Description text</narrative>
     </description>
    </budget-item>
-   <budget-item code="1900" percentage="50">
+   <budget-item code="4.2.1" percentage="50">
     <description>
      <narrative>Description text</narrative>
     </description>
