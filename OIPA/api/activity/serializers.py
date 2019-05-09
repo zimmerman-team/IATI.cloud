@@ -42,8 +42,8 @@ from iati.models import (
 )
 from iati.parser import validators
 from iati.transaction.models import (
-    Transaction, TransactionDescription, TransactionProvider,
-    TransactionReceiver, TransactionRecipientCountry,
+    Transaction, TransactionAidType, TransactionDescription,
+    TransactionProvider, TransactionReceiver, TransactionRecipientCountry,
     TransactionRecipientRegion, TransactionSector
 )
 from iati_organisation import models as organisation_models
@@ -2956,13 +2956,27 @@ class TransactionDescriptionSerializer(serializers.ModelSerializer):
         )
 
 
+class TransactionAidTypeSerializer(serializers.ModelSerializer):
+    aid_type = CodelistSerializer()
+
+    class Meta:
+        model = TransactionAidType
+        fields = (
+            'aid_type',
+        )
+
+
 class TransactionSerializer(serializers.ModelSerializer):
     """
     Transaction serializer class
     """
     transaction_date = serializers.CharField()
     value_date = serializers.CharField()
-    aid_type = CodelistSerializer()
+    transaction_aid_types = TransactionAidTypeSerializer(
+        many=True,
+        source='transactionaidtype_set',
+        read_only=True
+    )
     disbursement_channel = CodelistSerializer()
     finance_type = CodelistSerializer()
     flow_type = CodelistSerializer()
@@ -3010,7 +3024,7 @@ class TransactionSerializer(serializers.ModelSerializer):
             'recipient_regions',
             'flow_type',
             'finance_type',
-            'aid_type',
+            'transaction_aid_types',
             'tied_status',
         )
 
