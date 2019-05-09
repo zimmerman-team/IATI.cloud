@@ -1386,6 +1386,16 @@ class Parse(IatiParser):
                 None,
                 code)
 
+        elif not sector and vocabulary.code in ['99', '98']:
+            # This is needed to create a new sector if related to vocabulary 99 or 98  # NOQA: E501
+            # ref. http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/sector/  # NOQA: E501
+
+            sector = models.Sector()
+            sector.code = code
+            sector.name = 'Vocabulary 99 or 98'
+            sector.description = 'The sector reported corresponds to a sector vocabulary maintained by the reporting organisation for this activity'  # NOQA: E501
+            sector.save()
+
         elif not sector:
             raise IgnoredVocabularyError(
                 "sector",
@@ -3808,11 +3818,11 @@ class Parse(IatiParser):
 
     def iati_activities__iati_activity__result__indicator__baseline__location(
             self, element):
-        '''A new, optional element in v. 2.03:
-
+        """
+        A new, optional element in v. 2.03:
         A location already defined and described in the iati-activity/location
         element.
-        '''
+        """
         ref = element.attrib.get('ref')
 
         if not ref:
@@ -3824,9 +3834,13 @@ class Parse(IatiParser):
                 "iati-activity/location/@ref, so leaving it blank makes no "
                 "sense")
 
-        referenced_location = self.get_model('Location')
+        locations = self.get_model_list('Location')
+        location = []
 
-        if not referenced_location.ref == ref:
+        if locations:
+            location = list(filter(lambda x: x.ref == ref, locations))
+
+        if not len(location):
             raise FieldValidationError(
                 "iati-activity/result/indicator/baseline/location",
                 "ref",
@@ -3834,6 +3848,8 @@ class Parse(IatiParser):
                 None,
                 None,
                 ref)
+
+        referenced_location = location[0]
 
         activity = self.get_model('Activity')
         result_indicator_baseline = self.get_model('ResultIndicatorBaseline')

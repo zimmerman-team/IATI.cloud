@@ -308,6 +308,11 @@ class BudgetSerializer(ModelSerializerNoValidation):
     period_start = serializers.CharField()
     period_end = serializers.CharField()
 
+    activity_id = serializers.CharField(
+        source='activity.iati_identifier',
+        read_only=True
+    )
+
     class Meta:
         model = Budget
         # filter_class = BudgetFilter
@@ -326,6 +331,7 @@ class BudgetSerializer(ModelSerializerNoValidation):
             'gbp_value',
             'jpy_value',
             'cad_value',
+            'activity_id'
         )
 
     def validate(self, data):
@@ -1210,12 +1216,19 @@ class CountryBudgetItemsSerializer(ModelSerializerNoValidation):
 
     activity = serializers.CharField(write_only=True)
 
+    budget_items = BudgetItemSerializer(
+        many=True,
+        source='budgetitem_set',
+        read_only=True,
+    )
+
     class Meta:
         model = CountryBudgetItem
         fields = (
             'id',
             'activity',
             'vocabulary',
+            'budget_items'
         )
 
     def validate(self, data):
@@ -2042,6 +2055,7 @@ class ResultIndicatorSerializer(ModelSerializerNoValidation):
             'periods',
             'measure',
             'ascending',
+            'aggregation_status',
             'document_links'
         )
 
@@ -2717,6 +2731,28 @@ class LocationSerializer(DynamicFieldsModelSerializer):
 
     activity = serializers.CharField(write_only=True)
 
+    sectors = ActivitySectorSerializer(
+        many=True,
+        source='activity.activitysector_set',
+        read_only=True,
+        required=False,
+    )
+
+    recipient_countries = RecipientCountrySerializer(
+        many=True,
+        source='activity.activityrecipientcountry_set',
+        read_only=True,
+        required=False,
+    )
+    recipient_regions = ActivityRecipientRegionSerializer(
+        many=True,
+        source='activity.activityrecipientregion_set',
+        read_only=True,
+        required=False,
+    )
+
+    iati_identifier = serializers.CharField(source='activity.iati_identifier', required=False)  # NOQA: E501
+
     def validate(self, data):
         activity = get_or_raise(Activity, data, 'activity')
 
@@ -2798,6 +2834,7 @@ class LocationSerializer(DynamicFieldsModelSerializer):
         fields = (
             'id',
             'activity',
+            'iati_identifier',
             'ref',
             'location_reach',
             'location_id',
@@ -2809,6 +2846,9 @@ class LocationSerializer(DynamicFieldsModelSerializer):
             'exactness',
             'location_class',
             'feature_designation',
+            'sectors',
+            'recipient_countries',
+            'recipient_regions'
         )
 
 
