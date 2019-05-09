@@ -42,8 +42,10 @@ from iati.models import (
 )
 from iati.parser import validators
 from iati.transaction.models import (
-    Transaction, TransactionAidType, TransactionProvider, TransactionReceiver,
-    TransactionRecipientCountry, TransactionRecipientRegion, TransactionSector
+    Transaction, TransactionDescription, TransactionProvider,
+    TransactionReceiver, TransactionRecipientCountry,
+    TransactionRecipientRegion, TransactionSector,
+    TransactionAidType
 )
 from iati_organisation import models as organisation_models
 
@@ -308,6 +310,11 @@ class BudgetSerializer(ModelSerializerNoValidation):
     period_start = serializers.CharField()
     period_end = serializers.CharField()
 
+    activity_id = serializers.CharField(
+        source='activity.iati_identifier',
+        read_only=True
+    )
+
     class Meta:
         model = Budget
         # filter_class = BudgetFilter
@@ -326,6 +333,7 @@ class BudgetSerializer(ModelSerializerNoValidation):
             'gbp_value',
             'jpy_value',
             'cad_value',
+            'activity_id'
         )
 
     def validate(self, data):
@@ -1210,12 +1218,19 @@ class CountryBudgetItemsSerializer(ModelSerializerNoValidation):
 
     activity = serializers.CharField(write_only=True)
 
+    budget_items = BudgetItemSerializer(
+        many=True,
+        source='budgetitem_set',
+        read_only=True,
+    )
+
     class Meta:
         model = CountryBudgetItem
         fields = (
             'id',
             'activity',
             'vocabulary',
+            'budget_items'
         )
 
     def validate(self, data):
@@ -2932,6 +2947,16 @@ class TransactionSectorSerializer(serializers.ModelSerializer):
         )
 
 
+class TransactionDescriptionSerializer(serializers.ModelSerializer):
+    narratives = NarrativeSerializer(many=True)
+
+    class Meta:
+        model = TransactionDescription
+        fields = (
+            'narratives',
+        )
+
+
 class TransactionAidTypeSerializer(serializers.ModelSerializer):
     aid_type = CodelistSerializer()
 
@@ -2975,6 +3000,9 @@ class TransactionSerializer(serializers.ModelSerializer):
     sectors = TransactionSectorSerializer(
         many=True,
         source='transactionsector_set',
+        read_only=True
+    )
+    description = TransactionDescriptionSerializer(
         read_only=True
     )
 

@@ -1,6 +1,7 @@
 import datetime
 
 from django.conf import settings
+from django.contrib.staticfiles import finders
 from django.db import models
 
 from iati_organisation.models import Organisation
@@ -106,9 +107,12 @@ class Dataset(models.Model):
         parser.parse_activity(activity_id)
 
     def get_internal_url(self):
-        """Constructs and returns internal URL for the Dataset
         """
-        if self.internal_url:
+        Constructs and returns internal URL for the Dataset
+        """
+        # Serve only the XML file is exists on the DataSet static folder
+        result = finders.find(self.internal_url)
+        if self.internal_url and result:
             return settings.STATIC_URL + self.internal_url
 
         return None
