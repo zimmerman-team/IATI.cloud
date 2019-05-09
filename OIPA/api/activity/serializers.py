@@ -22,16 +22,16 @@ from api.sector.serializers import SectorSerializer
 from iati.models import (
     Activity, ActivityDate, ActivityParticipatingOrganisation,
     ActivityPolicyMarker, ActivityRecipientCountry, ActivityRecipientRegion,
-    ActivitySector, ActivityTag, Budget, BudgetItem, BudgetItemDescription,
-    Condition, Conditions, ContactInfo, ContactInfoDepartment,
-    ContactInfoJobTitle, ContactInfoMailingAddress, ContactInfoOrganisation,
-    ContactInfoPersonName, CountryBudgetItem, CrsAdd, CrsAddLoanStatus,
-    CrsAddLoanTerms, CrsAddOtherFlags, Description, DocumentLink,
-    DocumentLinkCategory, DocumentLinkLanguage, DocumentLinkTitle, Fss,
-    FssForecast, HumanitarianScope, LegacyData, Location,
-    LocationActivityDescription, LocationAdministrative, LocationDescription,
-    LocationName, Narrative, Organisation, OtherIdentifier,
-    PlannedDisbursement, PlannedDisbursementProvider,
+    ActivityReportingOrganisation, ActivitySector, ActivityTag, Budget,
+    BudgetItem, BudgetItemDescription, Condition, Conditions, ContactInfo,
+    ContactInfoDepartment, ContactInfoJobTitle, ContactInfoMailingAddress,
+    ContactInfoOrganisation, ContactInfoPersonName, CountryBudgetItem, CrsAdd,
+    CrsAddLoanStatus, CrsAddLoanTerms, CrsAddOtherFlags, Description,
+    DocumentLink, DocumentLinkCategory, DocumentLinkLanguage,
+    DocumentLinkTitle, Fss, FssForecast, HumanitarianScope, LegacyData,
+    Location, LocationActivityDescription, LocationAdministrative,
+    LocationDescription, LocationName, Narrative, Organisation,
+    OtherIdentifier, PlannedDisbursement, PlannedDisbursementProvider,
     PlannedDisbursementReceiver, RelatedActivity, Result, ResultDescription,
     ResultIndicator, ResultIndicatorBaseline, ResultIndicatorBaselineDimension,
     ResultIndicatorDescription, ResultIndicatorPeriod,
@@ -697,6 +697,56 @@ class ReportingOrganisationSerializer(DynamicFieldsModelSerializer):
 
     class Meta:
         model = organisation_models.Organisation
+        fields = (
+            'id',
+            'ref',
+            'url',
+            'type',
+            'secondary_reporter',
+            'narratives',
+            'activity',
+        )
+
+
+class CustomReportingOrganisationDataURLSerializer(
+        serializers.HyperlinkedIdentityField):
+    """A custom serializer to allow to use different argument for
+       HyperlinkedIdentityField for ReportingOrganisation serializer
+    """
+
+    def get_url(self, obj, view_name, request, format):
+        url_kwargs = {
+            'pk': obj.organisation.organisation_identifier
+        }
+        return reverse(
+            view_name, kwargs=url_kwargs, request=request, format=format)
+
+
+class ReportingOrganisationDataSerializer(DynamicFieldsModelSerializer):  # NOQA: E501
+    """
+    Why the is ReportingOrganisationDataSerializer
+    Because this class is directly to data of Reporting Organisation data
+    Otherwise ReportingOrganisationSerializer is using a publisher data
+    """
+    ref = serializers.CharField()
+    url = CustomReportingOrganisationDataURLSerializer(
+        view_name='organisations:organisation-detail',
+    )
+    type = CodelistSerializer()
+    secondary_reporter = serializers.BooleanField(required=False)
+
+    activity = serializers.CharField(write_only=True)
+
+    # TODO: please check this why in narrative in Reporting org is empty
+    # So to get narratives should be from organisation
+    narratives = OrganisationNarrativeSerializer(
+        source="organisation.name.narratives",
+        many=True,
+        required=False
+    )
+
+    class Meta:
+        model = ActivityReportingOrganisation
         fields = (
             'id',
             'ref',
@@ -3052,10 +3102,11 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
     id = serializers.CharField(required=False)
     iati_identifier = serializers.CharField()
 
-    reporting_organisation = ReportingOrganisationSerializer(
+    reporting_organisation = ReportingOrganisationDataSerializer(
         read_only=True,
-        source="*"
+        source="reporting_organisations.first"
     )
+
     title = TitleSerializer(required=False)
 
     descriptions = DescriptionSerializer(

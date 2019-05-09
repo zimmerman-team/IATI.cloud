@@ -973,6 +973,21 @@ class Parse(IatiParser):
                 None,
                 None,
                 code)
+        elif not region and vocabulary.code == '99':
+            try:
+                region_vocabulary = \
+                    vocabulary_models.RegionVocabulary.objects.get(code='99')
+            except vocabulary_models.RegionVocabulary.DoesNotExist:
+                raise IgnoredVocabularyError(
+                    "recipient-region",
+                    "code",
+                    "code is unspecified or invalid")
+
+            region = Region()
+            region.code = code
+            region.name = 'Vocabulary 99'
+            region.region_vocabulary = region_vocabulary
+            region.save()
 
         elif not region:
             raise IgnoredVocabularyError(
@@ -5426,7 +5441,12 @@ class Parse(IatiParser):
         post_save.set_activity_aggregations(activity)
         post_save.update_activity_search_index(activity)
         post_save.set_country_region_transaction(activity)
-        post_save.set_sector_transaction(activity)
+
+        # TODO: This is right related to this documnetation
+        # http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/transaction/sector/  # NOQA: E501
+        # For now we skip to make the automatically make a new sector in the transaction  # NOQA: E501
+        # post_save.set_sector_transaction(activity)
+
         post_save.set_sector_budget(activity)
 
     def post_save_file(self, dataset):
