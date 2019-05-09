@@ -973,6 +973,21 @@ class Parse(IatiParser):
                 None,
                 None,
                 code)
+        elif not region and vocabulary.code == '99':
+            try:
+                region_vocabulary = \
+                    vocabulary_models.RegionVocabulary.objects.get(code='99')
+            except vocabulary_models.RegionVocabulary.DoesNotExist:
+                raise IgnoredVocabularyError(
+                    "recipient-region",
+                    "code",
+                    "code is unspecified or invalid")
+
+            region = Region()
+            region.code = code
+            region.name = 'Vocabulary 99'
+            region.region_vocabulary = region_vocabulary
+            region.save()
 
         elif not region:
             raise IgnoredVocabularyError(
