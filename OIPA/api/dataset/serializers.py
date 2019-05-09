@@ -76,6 +76,8 @@ class DatasetSerializer(DynamicFieldsModelSerializer):
 
     DatasetNoteSerializer(many=True, source="datasetnote_set")
 
+    internal_url = SerializerMethodField()
+
     class Meta:
         model = Dataset
         fields = (
@@ -100,6 +102,7 @@ class DatasetSerializer(DynamicFieldsModelSerializer):
             'is_parsed',
             'export_in_progress',
             'parse_in_progress',
+            'internal_url'
         )
 
     def get_filetype(self, obj):
@@ -112,3 +115,13 @@ class DatasetSerializer(DynamicFieldsModelSerializer):
 
     def get_activity_count(self, obj):
         return Activity.objects.filter(dataset=obj.id).count()
+
+    def get_internal_url(self, obj):
+        request = self.context.get('request')
+
+        # Get internal url from the XML file in the local static folder
+        internal_url = obj.get_internal_url()
+        if internal_url:
+            return request.build_absolute_uri(internal_url)
+
+        return None
