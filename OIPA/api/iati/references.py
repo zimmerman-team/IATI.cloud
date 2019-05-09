@@ -346,11 +346,14 @@ class TransactionReference(ElementReference):
             'code': {
                 'key': 'code',
                 'attr': 'code'
-            },
-            'vocabulary': {
-                'key': 'vocabulary',
-                'attr': 'vocabulary'
             }
+        },
+        'vocabulary': {
+            'key': 'vocabulary',
+            'code': {
+                'key': 'code',
+                'attr': 'vocabulary'
+            },
         }
     }
     # tied_status
@@ -898,18 +901,23 @@ class TransactionReference(ElementReference):
                             code
                         )
 
-                    # vocabulary
-                    vocabulary = aid_type.get(
-                        self.aid_types.get('aid_type').get(
+                # Vocabulary
+                vocabulary = aid_type_dict.get(
+                    self.aid_types.get('vocabulary').get('key')
+                )
+                if vocabulary:
+                    code = vocabulary.get(
+                        self.aid_types.get(
                             'vocabulary'
-                        ).get('key')
+                        ).get('code').get('key')
                     )
-                    if vocabulary:
+
+                    if code:
                         aid_type_element.set(
-                            self.aid_types.get('aid_type').get(
+                            self.aid_types.get(
                                 'vocabulary'
-                            ).get('attr'),
-                            vocabulary
+                            ).get('code').get('attr'),
+                            code
                         )
 
         # Tied status
