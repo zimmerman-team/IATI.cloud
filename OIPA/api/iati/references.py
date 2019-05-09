@@ -338,12 +338,19 @@ class TransactionReference(ElementReference):
         }
     }
     # Aid type
-    aid_type = {
+    aid_types = {
+        'key': 'transaction_aid_types',
         'element': 'aid-type',
-        'key': 'aid_type',
-        'code': {
-            'key': 'code',
-            'attr': 'code'
+        'aid_type': {
+            'key': 'aid_type',
+            'code': {
+                'key': 'code',
+                'attr': 'code'
+            },
+            'vocabulary': {
+                'key': 'vocabulary',
+                'attr': 'vocabulary'
+            }
         }
     }
     # tied_status
@@ -865,24 +872,45 @@ class TransactionReference(ElementReference):
                 )
 
         # Aid type
-        aid_type_dict = self.data.get(
-            self.aid_type.get('key')
+        aid_type_list = self.data.get(
+            self.aid_types.get('key')
         )
-        if aid_type_dict:
-            aid_type_element = etree.SubElement(
-                transaction_element, self.aid_type.get('element')
-            )
-
-            # Attributes
-            # Code
-            code = aid_type_dict.get(
-                self.aid_type.get('code').get('key')
-            )
-            if code:
-                aid_type_element.set(
-                    self.aid_type.get('code').get('attr'),
-                    code
+        if aid_type_list:
+            for aid_type_dict in aid_type_list:
+                aid_type_element = etree.SubElement(
+                    transaction_element, self.aid_types.get('element')
                 )
+
+                aid_type = aid_type_dict.get(
+                    self.aid_types.get('aid_type').get('key')
+                )
+                if aid_type:
+                    # Attributes
+                    # Code
+                    code = aid_type.get(
+                        self.aid_types.get('aid_type').get('code').get('key')
+                    )
+                    if code:
+                        aid_type_element.set(
+                            self.aid_types.get('aid_type').get(
+                                'code'
+                            ).get('attr'),
+                            code
+                        )
+
+                    # vocabulary
+                    vocabulary = aid_type.get(
+                        self.aid_types.get('aid_type').get(
+                            'vocabulary'
+                        ).get('key')
+                    )
+                    if vocabulary:
+                        aid_type_element.set(
+                            self.aid_types.get('aid_type').get(
+                                'vocabulary'
+                            ).get('attr'),
+                            vocabulary
+                        )
 
         # Tied status
         tied_status_dict = self.data.get(
