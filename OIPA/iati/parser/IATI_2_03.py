@@ -3800,11 +3800,11 @@ class Parse(IatiParser):
 
     def iati_activities__iati_activity__result__indicator__baseline__location(
             self, element):
-        '''A new, optional element in v. 2.03:
-
+        """
+        A new, optional element in v. 2.03:
         A location already defined and described in the iati-activity/location
         element.
-        '''
+        """
         ref = element.attrib.get('ref')
 
         if not ref:
@@ -3816,9 +3816,13 @@ class Parse(IatiParser):
                 "iati-activity/location/@ref, so leaving it blank makes no "
                 "sense")
 
-        referenced_location = self.get_model('Location')
+        locations = self.get_model_list('Location')
+        location = []
 
-        if not referenced_location.ref == ref:
+        if locations:
+            location = list(filter(lambda x: x.ref == ref, locations))
+
+        if not len(location):
             raise FieldValidationError(
                 "iati-activity/result/indicator/baseline/location",
                 "ref",
@@ -3826,6 +3830,8 @@ class Parse(IatiParser):
                 None,
                 None,
                 ref)
+
+        referenced_location = location[0]
 
         activity = self.get_model('Activity')
         result_indicator_baseline = self.get_model('ResultIndicatorBaseline')
