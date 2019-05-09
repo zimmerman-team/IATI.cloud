@@ -279,7 +279,7 @@
    <sector vocabulary="2" code="111" />
    <!--Note: only a recipient-region OR a recipient-country is expected-->
    <recipient-country code="TM" />
-   <recipient-region code="616" vocabulary="1" />
+   <recipient-region code="619" vocabulary="1" />
    <flow-type code="10" />
    <finance-type code="110" />
    <aid-type code="A01" vocabulary="1" />
