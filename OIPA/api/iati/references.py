@@ -319,6 +319,11 @@ class TransactionReference(ElementReference):
             'attr': 'value-date'
         }
     }
+    # Descripion
+    description = {
+        'element': 'description',
+        'key': 'description'
+    }
     # Flow type
     flow_type = {
         'element': 'flow-type',
@@ -549,6 +554,18 @@ class TransactionReference(ElementReference):
                     self.value.get('date').get('attr'),
                     value_date
                 )
+
+        # Description element
+        description_dict = self.data.get(self.description.get('key'))
+        if description_dict:
+            description_narrative = ElementWithNarrativeReference(
+                parent_element=transaction_element,
+                data=description_dict
+            )
+            description_narrative.element = self.description.get(
+                'element'
+            )
+            description_narrative.create()
 
         # Provider Organisation
         provider_organisation_dict = self.data.get(
