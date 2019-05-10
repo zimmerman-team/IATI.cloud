@@ -5,8 +5,8 @@ from rest_framework.reverse import reverse
 
 from api.activity.filters import RelatedActivityFilter
 from api.codelist.serializers import (
-    CodelistSerializer, NarrativeContainerSerializer, NarrativeSerializer,
-    OrganisationNarrativeSerializer, VocabularySerializer
+    AidTypeSerializer, CodelistSerializer, NarrativeContainerSerializer,
+    NarrativeSerializer, OrganisationNarrativeSerializer, VocabularySerializer
 )
 from api.country.serializers import CountrySerializer
 from api.dataset.serializers import SimpleDatasetSerializer
@@ -3007,7 +3007,7 @@ class TransactionDescriptionSerializer(serializers.ModelSerializer):
 
 
 class TransactionAidTypeSerializer(serializers.ModelSerializer):
-    aid_type = CodelistSerializer()
+    aid_type = AidTypeSerializer()
 
     class Meta:
         model = TransactionAidType
