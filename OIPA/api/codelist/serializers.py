@@ -8,6 +8,7 @@ from api.generics.serializers import (
 from iati.models import DocumentCategory, Narrative
 from iati_organisation.models import OrganisationNarrative
 from iati_synchroniser.models import Codelist
+from iati_codelists.models import AidType
 
 
 class VocabularySerializer(SerializerNoValidation):
@@ -96,3 +97,17 @@ class CodelistMetaSerializer(DynamicFieldsModelSerializer):
     class Meta:
         model = Codelist
         fields = ('name', 'items')
+
+
+class AidTypeSerializer(serializers.ModelSerializer):
+    code = serializers.CharField(required=False, allow_null=True)
+    name = serializers.CharField(required=False, allow_null=True)
+    vocabulary = VocabularySerializer()
+
+    class Meta:
+        model = AidType
+        fields = (
+            'code',
+            'name',
+            'vocabulary'
+        )
