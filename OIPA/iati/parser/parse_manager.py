@@ -61,7 +61,10 @@ class ParseManager():
             )
             note.save()
             self.dataset.note_count = 1
-            self.dataset.sha1 = 'none'
+
+            # If not a XML file them sha1 should blank
+            self.dataset.sha1 = ''
+
             self.dataset.save()
             return
 
@@ -83,6 +86,9 @@ class ParseManager():
             self.hash_changed = False
         else:
             dataset.sha1 = sha1
+
+            # Save a sha1 in the first time of the process parse
+            dataset.save()
 
         try:
             self.root = etree.fromstring(response.content)
@@ -108,6 +114,10 @@ class ParseManager():
             )
             note.save()
             self.dataset.note_count = 1
+
+            # If not the XML should not have a sha1
+            self.dataset.sha1 = ''
+
             self.dataset.save()
             return
 

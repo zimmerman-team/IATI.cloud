@@ -1,8 +1,10 @@
 from django.db.models import Count, F, Func, Sum
 from django_filters.rest_framework import DjangoFilterBackend
 
+from api.activity.serializers import ResultSerializer
 from api.aggregation.views import Aggregation, AggregationView, GroupBy
 from api.generics.filters import SearchFilter
+from api.generics.views import DynamicListView
 from api.result.filters import ResultFilter
 from iati.models import Result
 
@@ -78,4 +80,29 @@ class ResultAggregations(AggregationView):
             fields=("resulttitle__narratives__content"),
             renamed_fields="result_title"
         ),
+    )
+
+
+class ResultList(DynamicListView):
+    queryset = Result.objects.all()
+    filter_backends = (
+        SearchFilter,
+        DjangoFilterBackend,
+    )
+    filter_class = ResultFilter
+    serializer_class = ResultSerializer
+
+    # make sure we can always have info about selectable fields,
+    # stored into dict. This dict is populated in the DynamicView class using
+    # _get_query_fields methods.
+    selectable_fields = ()
+
+    # Required fields for the serialisation defined by the
+    # specification document
+    fields = (
+        'type',
+        'title',
+        'description',
+        'indicators',
+        'document_links',
     )

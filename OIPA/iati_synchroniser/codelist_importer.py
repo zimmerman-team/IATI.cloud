@@ -11,7 +11,8 @@ from lxml import etree
 from geodata.models import Country, Region
 from iati_codelists.models import (
     AidType, AidTypeVocabulary, FileFormat, FinanceTypeCategory,
-    OrganisationIdentifier, OrganisationRegistrationAgency, Sector
+    OrganisationIdentifier, OrganisationRegistrationAgency, Sector,
+    SectorCategory
 )
 from iati_synchroniser.dac_sector_importer import DacSectorImporter
 from iati_synchroniser.m49_regions_importer import M49RegionsImporter
@@ -69,6 +70,14 @@ class CodeListImporter():
         for version in self.iati_versions:
             self.looping_through_version = version
             self.loop_through_codelists(version)
+
+        # Create sector from the the sector category
+        # The sector category can use as a sector code in the XML activity
+        for sector_category in SectorCategory.objects.all():
+            Sector.objects.get_or_create(
+                code=sector_category.code,
+                name=sector_category.name
+            )
 
     @staticmethod
     def fast_iter(context, func):
@@ -310,30 +319,21 @@ class CodeListImporter():
                              "/codelists/downloads/clv1/"
                              "codelist/" + smart_text(name) + ".xml")
 
-        cur_file_opener = urllib.request.build_opener()
+        response = self.get_xml(codelist_file_url)
 
-        try:
-            cur_xml_file = cur_file_opener.open(codelist_file_url)
+        context2 = etree.iterparse(response, tag=name)
 
-            context2 = etree.iterparse(cur_xml_file, tag=name)
-            self.fast_iter(context2, self.add_code_list_item)
-
-        # FIXME: log this error!:
-        # TODO: present 404s to frontend
-        except urllib.error.HTTPError:
-            raise Exception(
-                'Codelist URL not found: {0}'.format(codelist_file_url)
-            )
+        self.fast_iter(context2, self.add_code_list_item)
 
     def loop_through_codelists(self, version):
-        downloaded_xml = urllib.request.Request(
+        codelist_file_url = (
             "http://reference.iatistandard.org/"
             + version.replace('.', '') +
             "/codelists/downloads/clv1/codelist.xml")
 
-        file_opener = urllib.request.build_opener()
-        xml_file = file_opener.open(downloaded_xml)
-        context = etree.iterparse(xml_file, tag='codelist')
+        response = self.get_xml(codelist_file_url)
+        context = etree.iterparse(response, tag='codelist')
+
         # This updates / creates new Codelist objects (name argument is not
         # passed to 'get_codelist_data') AND adds Codelist items:
         self.fast_iter(context, self.get_codelist_data)
@@ -351,3 +351,25 @@ class CodeListImporter():
 
         # Added M49 Regions if available
         M49RegionsImporter()
+
+    @staticmethod
+    def get_xml(file_url):
+        try:
+            user_agent = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.7) Gecko/2009021910 Firefox/3.0.7'  # NOQA: E501
+            headers = {'User-Agent': user_agent, }
+
+            request = urllib.request.Request(
+                file_url, None,
+                headers
+            )  # The assembled request
+
+            # TODO: please update this code releted to the below refrence
+            # https://docs.openstack.org/bandit/latest/api/bandit.blacklists.html#b310-urllib-urlopen  # NOQA: E501
+            response = urllib.request.urlopen(request)  # noqa: B310
+
+        except urllib.error.HTTPError:
+            raise Exception(
+                'Codelist URL not found: {0}'.format(file_url)
+            )
+
+        return response

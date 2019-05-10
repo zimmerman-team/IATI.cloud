@@ -436,8 +436,11 @@ class BudgetIdentifier(models.Model):
     code = models.CharField(primary_key=True, max_length=20)
     name = models.CharField(max_length=200)
     description = models.TextField(default="")
-    category = models.ForeignKey(BudgetIdentifierSector,
-                                 on_delete=models.CASCADE)
+    category = models.ForeignKey(
+        BudgetIdentifierSector,
+        on_delete=models.CASCADE,
+        null=True
+    )
     vocabulary = models.ForeignKey(BudgetIdentifierVocabulary, null=True,
                                    default=None, on_delete=models.CASCADE)
 
