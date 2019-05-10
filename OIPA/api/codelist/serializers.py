@@ -6,9 +6,9 @@ from api.generics.serializers import (
     SerializerNoValidation
 )
 from iati.models import DocumentCategory, Narrative
+from iati_codelists.models import AidType
 from iati_organisation.models import OrganisationNarrative
 from iati_synchroniser.models import Codelist
-from iati_codelists.models import AidType
 
 
 class VocabularySerializer(SerializerNoValidation):
