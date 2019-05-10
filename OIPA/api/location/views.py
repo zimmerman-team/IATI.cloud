@@ -35,6 +35,7 @@ class LocationList(CacheResponseMixin, DynamicListView):
     # Instead merging values using the delimiter, this fields will generate
     # additional columns for the different values, based on defined criteria.
     exceptional_fields = [{'locations': transaction_types}]  # NOQA: E501
+    #exceptional_fields = []  # NOQA: E501
 
     fields = (
         'iati_identifier',
@@ -50,25 +51,25 @@ class LocationList(CacheResponseMixin, DynamicListView):
     # reference field name is first term, meaning recipient_countries.
     csv_headers = \
         {
-            'iati_identifier': {'header': 'activity_id', 'field_name':'iati_identifier'},
-            'sectors.sector.code': {'header': 'sector_code', 'field_name':'iati_identifier'},
-            'sectors.percentage': {'header': 'sectors_percentage', 'field_name':'iati_identifier'},
-            'recipient_countries.country.code': {'header': 'country', 'field_name':'iati_identifier'},
-            'recipient_regions.region.code': {'header': 'region', 'field_name':'iati_identifier'},
-            'locations': {'header': 'locations', 'field_name':'iati_identifier'},
-            'locations.location_reach.code': {'header': None, 'field_name':'iati_identifier'},
-            'location_id.code': {'header': None, 'field_name':'iati_identifier'},
-            'administrative.code': {'header': None, 'field_name':'iati_identifier'},
-            'exactness.code': {'header': None, 'field_name': 'exactness'},
-            'point.pos.latitude': {'header': None, 'field_name': 'point'},
-            'point.pos.longitude': {'header': None, 'field_name': 'point'},
-            'location_class.code': {'header': None, 'field_name':' location_class'},
-            'feature_designation.code': {'header': None, 'field_name':'feature_designation'},
-            'ref': {'header': None, 'field_name': 'ref'},
-            'descriptions.narratives.text': {'header': None, 'field_name': 'descriptions'},
-            'title.narratives.text': {'header': None, 'field_name':'title'},
-            'activity_description.narratives.text': {'header': None, 'field_name':'activity_description'},
-            'name.narratives.text': {'header': None, 'field_name':'name'},
+            'iati_identifier': {'header': 'activity_id'},
+            'sectors.sector.code': {'header': 'sector_code'},
+            'sectors.percentage': {'header': 'sectors_percentage'},
+            'recipient_countries.country.code': {'header': 'country'},
+            'recipient_regions.region.code': {'header': 'region'},
+            # 'locations': {'header': 'locations'},
+            # 'location_reach.code': {'header': 'location_reach'},
+            # 'location_id.code': {'header': None},
+            # 'administrative.code': {'header': None},
+            # 'exactness.code': {'header': None},
+            # 'point.pos.latitude': {'header': None},
+            # 'point.pos.longitude': {'header': None},
+            # 'location_class.code': {'header': None},
+            # 'feature_designation.code': {'header': None},
+            # 'ref': {'header': None},
+            # 'descriptions.narratives.text': {'header': None},
+            # 'title.narratives.text': {'header': None},
+            # 'activity_description.narratives.text': {'header': None},
+            # 'name.narratives.text': {'header': None},
         }
     ''' 
     fields = (

@@ -378,9 +378,9 @@ class BudgetList(DynamicListView):
                    'sectors.percentage':  {'header': 'sectors_percentage'},
                    'recipient_countries.country.code': {'header': 'country'},
                    'recipient_regions.region.code': {'header': 'region'},
-                   'budgets': {'header': 'budgets'},
-                   'type.code': {'header': None},
-                   'status.code': {'header': None},
+                   # 'budgets': {'header': 'budgets'},
+                   # 'type.code': {'header': None},
+                   # 'status.code': {'header': None},
         }
     exceptional_fields = [{'budgets': []}]  # NOQA: E501
 

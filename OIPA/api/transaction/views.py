@@ -101,8 +101,8 @@ class TransactionList(CacheResponseMixin, DynamicListView):
                    'sectors.percentage':  {'header': 'sectors_percentage'},
                    'recipient_countries.country.code': {'header': 'country'},
                    'recipient_regions.region.code': {'header': 'region'},
-                   'transactions': {'header': 'transactions'},
-                   'value': {'header': None},
+                   #'transactions': {'header': 'transactions'},
+                   #'value': {'header': None},
         }
 
     # Get all transaction type

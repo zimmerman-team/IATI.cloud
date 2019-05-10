@@ -382,9 +382,8 @@ class ActivityList(CacheResponseMixin, DynamicListView):
         'iati_identifier',
         'sectors',
         'recipient_regions',
-        'recipient_countries'
+        'recipient_countries',
         )
-
     ''' '''
     # column headers with paths to the json property value.
     # reference to the field name made by the first term in the path
@@ -397,10 +396,11 @@ class ActivityList(CacheResponseMixin, DynamicListView):
                    'sectors.percentage':  {'header': 'sectors_percentage'},
                    'recipient_countries.country.code': {'header': 'country'},
                    'recipient_regions.region.code': {'header': 'region'},
-                   'title.narratives.text': {'header': 'title'},
-                   'descriptions.narratives.text':  {'header': 'description'},
-                   'transaction_types.dsum': {'header': 'transaction_types'},
-                   'reporting_organisation.type.code': {'header': 'reporting_organisation'}
+                   #'transaction_types': {'header': 'transaction_types'},
+                   #'title.narratives.text': {'header': 'title'},
+                   # 'descriptions.narratives.text':  {'header': 'description'},
+                   # 'transaction_types.dsum': {'header': 'transaction_types'},
+                   # 'reporting_organisation.type.code': {'header': 'reporting_organisation'}
         }
     # Get all transaction type
     transaction_types = []
