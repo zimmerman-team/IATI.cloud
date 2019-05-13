@@ -141,7 +141,7 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
         many=True, read_only=True, required=False, source="transactionrecipientcountry_set")  # NOQA: E501
 
     recipient_regions = TransactionRecipientRegionSerializer(
-        many=True, read_only=True, required=False, source="transactionrecipientregion_set")
+        many=True, read_only=True, required=False, source="transactionrecipientregion_set") # NOQA: E501
 
     recipient_country = TransactionRecipientCountrySerializer(
         required=False, source="transaction_recipient_country")
@@ -158,8 +158,6 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
     activity_id = serializers.CharField(write_only=True)
 
     iati_identifier = serializers.CharField(source='activity.iati_identifier', required=False)  # NOQA: E501
-
-
 
     class Meta:
         model = models.Transaction

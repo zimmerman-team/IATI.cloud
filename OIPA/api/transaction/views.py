@@ -4,7 +4,6 @@ from rest_framework.generics import (
     ListCreateAPIView, RetrieveUpdateDestroyAPIView
 )
 from rest_framework_extensions.cache.mixins import CacheResponseMixin
-
 from api.activity.serializers import CodelistSerializer
 from api.aggregation.views import Aggregation, AggregationView, GroupBy
 from api.cache import QueryParamsKeyConstructor
@@ -101,8 +100,6 @@ class TransactionList(CacheResponseMixin, DynamicListView):
                    'sectors.percentage':  {'header': 'sectors_percentage'},
                    'recipient_countries.country.code': {'header': 'country'},
                    'recipient_regions.region.code': {'header': 'region'},
-                   #'transactions': {'header': 'transactions'},
-                   #'value': {'header': None},
         }
 
     # Get all transaction type

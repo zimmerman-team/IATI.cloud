@@ -1,5 +1,4 @@
 from django_filters import BooleanFilter, DateFilter, NumberFilter
-
 from api.generics.filters import (
     CommaSeparatedCharFilter, TogetherFilterSet, ToManyFilter
 )

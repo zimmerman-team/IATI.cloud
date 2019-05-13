@@ -19,7 +19,7 @@ class LocationList(CacheResponseMixin, DynamicListView):
     """
 
     queryset = Location.objects.all().order_by('id')
-    filter_backends = (DjangoFilterBackend, DistanceFilter, RelatedOrderingFilter)
+    filter_backends = (DjangoFilterBackend, DistanceFilter, RelatedOrderingFilter)  # NOQA: E501
     filter_class = LocationFilter
     serializer_class = LocationSerializer
 
@@ -35,7 +35,7 @@ class LocationList(CacheResponseMixin, DynamicListView):
     # Instead merging values using the delimiter, this fields will generate
     # additional columns for the different values, based on defined criteria.
     exceptional_fields = [{'locations': transaction_types}]  # NOQA: E501
-    #exceptional_fields = []  # NOQA: E501
+    # exceptional_fields = []  # NOQA: E501
 
     fields = (
         'iati_identifier',
