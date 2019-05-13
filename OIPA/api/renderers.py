@@ -592,7 +592,7 @@ class XlsRenderer(BaseRenderer):
 
             elif view_class_name in ['BudgetList']:
 
-                budget_data = utils.group_data(data,view, 'iati_identifier', 'budgets')  # NOQA: E501
+                budget_data = utils.group_data(data, view, 'iati_identifier', 'budgets')  # NOQA: E501
                 selectable_headers = budget_data['selectable_headers']
                 budget_data.pop('selectable_headers', None)
                 self.rows, self.headers = utils.create_rows_headers(list(budget_data.values()), view.csv_headers, selectable_headers, view.fields, True)  # NOQA: E501

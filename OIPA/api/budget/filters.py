@@ -1,4 +1,8 @@
+from django.db.models.fields import FieldDoesNotExist
+from django.db.models.fields.related import ForeignObjectRel, OneToOneRel
 from django_filters import BooleanFilter, DateFilter, NumberFilter
+from rest_framework import filters
+
 from api.generics.filters import (
     CommaSeparatedCharFilter, TogetherFilterSet, ToManyFilter
 )
@@ -8,9 +12,6 @@ from iati.models import (
     Budget, RelatedActivity, ResultIndicatorTitle
 )
 from iati.transaction.models import Transaction
-from rest_framework import filters
-from django.db.models.fields.related import ForeignObjectRel, OneToOneRel
-from django.db.models.fields import FieldDoesNotExist
 
 
 class BudgetFilter(TogetherFilterSet):

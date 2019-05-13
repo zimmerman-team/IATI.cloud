@@ -1,4 +1,8 @@
+from django.db.models.fields import FieldDoesNotExist
+from django.db.models.fields.related import ForeignObjectRel, OneToOneRel
 from django_filters import BooleanFilter, DateFilter, FilterSet, NumberFilter
+from rest_framework import filters
+
 from api.generics.filters import (
     CommaSeparatedCharFilter, CommaSeparatedStickyCharFilter, ToManyFilter,
     ToManyNotInFilter
@@ -12,9 +16,6 @@ from iati.transaction.models import (
     Transaction, TransactionProvider, TransactionReceiver,
     TransactionRecipientCountry, TransactionRecipientRegion, TransactionSector
 )
-from rest_framework import filters
-from django.db.models.fields.related import ForeignObjectRel, OneToOneRel
-from django.db.models.fields import FieldDoesNotExist
 
 
 class TransactionFilter(FilterSet):

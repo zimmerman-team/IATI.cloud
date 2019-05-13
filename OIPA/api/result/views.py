@@ -5,9 +5,8 @@ from api.activity.serializers import ResultSerializer
 from api.aggregation.views import Aggregation, AggregationView, GroupBy
 from api.generics.filters import SearchFilter
 from api.generics.views import DynamicListView
-from api.result.filters import ResultFilter
+from api.result.filters import RelatedOrderingFilter, ResultFilter
 from iati.models import Result
-from api.result.filters import RelatedOrderingFilter
 
 
 class ResultAggregations(AggregationView):

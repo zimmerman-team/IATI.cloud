@@ -4,6 +4,7 @@ from rest_framework.generics import (
     ListCreateAPIView, RetrieveUpdateDestroyAPIView
 )
 from rest_framework_extensions.cache.mixins import CacheResponseMixin
+
 from api.activity.serializers import CodelistSerializer
 from api.aggregation.views import Aggregation, AggregationView, GroupBy
 from api.cache import QueryParamsKeyConstructor
@@ -15,7 +16,7 @@ from api.pagination import CustomTransactionPagination
 from api.region.serializers import RegionSerializer
 from api.sector.serializers import SectorSerializer
 from api.transaction.filters import (
-    TransactionAggregationFilter, TransactionFilter, RelatedOrderingFilter
+    RelatedOrderingFilter, TransactionAggregationFilter, TransactionFilter
 )
 from api.transaction.serializers import (
     TransactionSectorSerializer, TransactionSerializer

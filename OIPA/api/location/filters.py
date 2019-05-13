@@ -1,8 +1,9 @@
+from django.db.models.fields import FieldDoesNotExist
+from django.db.models.fields.related import ForeignObjectRel, OneToOneRel
+from rest_framework import filters
+
 from api.generics.filters import CommaSeparatedCharFilter, TogetherFilterSet
 from iati.models import Location
-from rest_framework import filters
-from django.db.models.fields.related import ForeignObjectRel, OneToOneRel
-from django.db.models.fields import FieldDoesNotExist
 
 
 class LocationFilter(TogetherFilterSet):

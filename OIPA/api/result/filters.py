@@ -1,4 +1,7 @@
+from django.db.models.fields import FieldDoesNotExist
+from django.db.models.fields.related import ForeignObjectRel, OneToOneRel
 from django_filters import BooleanFilter, DateFilter, NumberFilter
+from rest_framework import filters
 
 from api.generics.filters import (
     CommaSeparatedCharFilter, CommaSeparatedStickyCharFilter,
@@ -9,10 +12,6 @@ from iati.models import (
     ActivityRecipientRegion, ActivityReportingOrganisation, ActivitySector,
     DocumentLink, RelatedActivity, Result
 )
-
-from rest_framework import filters
-from django.db.models.fields.related import ForeignObjectRel, OneToOneRel
-from django.db.models.fields import FieldDoesNotExist
 
 
 class ResultFilter(TogetherFilterSet):
