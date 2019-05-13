@@ -523,6 +523,7 @@ class ActivityDetail(CacheResponseMixin, DynamicDetailView):
     # Activity break down column
     break_down_by = 'sectors'
 
+
     exceptional_fields = [{'transaction_types': []}]  # NOQA: E501
 
 # TODO separate endpoints for expensive fields like ActivityLocations &
