@@ -141,6 +141,21 @@ class TotalBudgetBudgetLineSerializer(ModelSerializerNoValidation):
         return update_instance
 
 
+class TotalBudgetSerializer(ModelSerializerNoValidation):
+    currency = CodelistSerializer(required=False)
+
+    class Meta:
+        model = org_models.TotalBudget
+        fields = (
+            'status',
+            'period_start',
+            'period_end',
+            'value_date',
+            'currency',
+            'value',
+        )
+
+
 class OrganisationTotalBudgetSerializer(ModelSerializerNoValidation):
 
     organisation = serializers.CharField(write_only=True)
@@ -1047,6 +1062,8 @@ class OrganisationSerializer(DynamicFieldsModelSerializer):
 
     reporting_org = OrganisationReportingOrganisationSerializer(read_only=True)
 
+    total_budgets = TotalBudgetSerializer(many=True, read_only=True)
+
     class Meta:
         model = org_models.Organisation
         fields = (
@@ -1058,6 +1075,7 @@ class OrganisationSerializer(DynamicFieldsModelSerializer):
             'default_currency',
             'name',
             'reporting_org',
+            'total_budgets',
             'published_state',
             'primary_name',
         )
