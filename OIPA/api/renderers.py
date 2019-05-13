@@ -137,15 +137,15 @@ class PaginatedCSVRenderer(CSVRenderer):
             'quotechar': '"',
             'delimiter': ';'
         }
-        #
-        self.rows = []
-        self.row = []
-        self.paths = {}
-        self.headers = {}
-        self.break_down_by = None
-        self.exceptional_fields = None
-        self.selectable_fields = ()
-        self.default_fields = ()
+
+        # self.rows = []
+        # self.row = []
+        # self.paths = {}
+        # self.headers = {}
+        # self.break_down_by = None
+        # self.exceptional_fields = None
+        # self.selectable_fields = ()
+        # self.default_fields = ()
 
     def render(self, data, *args, **kwargs):
         # TODO: this is probably a bug in DRF, might get fixed later then
@@ -195,148 +195,46 @@ class PaginatedCSVRenderer(CSVRenderer):
 
             if view_class_name in ['ActivityList']:
 
-                add_index = False
                 activity_data = self._adjust_transaction_types(data, 'transaction_types')
-                # available_headers = list(set(view.csv_headers.keys())) + list(set(view.csv_headers.keys()) - set(activity_data['selectable_headers']))
+                data = activity_data['data']
+                selectable_headers = activity_data['selectable_headers']
+                if 'selectable_headers' in activity_data:
+                    activity_data.pop('selectable_headers', None)
 
-                available_headers = list(view.csv_headers.keys()) + list(set(activity_data['selectable_headers']) - set(list(view.csv_headers.keys()) ))
-                headers = {}
-                for header in available_headers:
-                    if header in list(view.csv_headers.keys()):
-                        headers[header] = view.csv_headers[header]['header']
-                    else:
-                        headers[header] = header.split('.')[0]
-
-                self.headers = self._get_headers(headers, view.fields, add_index)
-
-                # iterate trough all Activities
-                for item in activity_data['data']:
-                    # Get a number of repeated rows caused by breaking down
-                    # activity with the defined column.
-                    repeated_rows = len(item[self.break_down_by])
-                    repeated_rows = 1 if repeated_rows == 0 else repeated_rows
-
-                    # item = self._adjust_transaction_types(item, 'transaction_types')
-
-                    self.paths = {}
-                    # recursive function to get all json paths
-                    # together with the corresponded values
-                    self.paths = self._go_deeper(item, '', self.paths)
-
-                    self._render(repeated_rows, add_index)
+                self._create_rows_headers(data, view.csv_headers, selectable_headers, view.fields, False)
 
             elif view_class_name in ['TransactionList']:
 
-                add_index = True
                 transactions_data = self._group_data(data, view, 'iati_identifier', 'transactions')
-
-                available_headers = list(view.csv_headers.keys()) + list(
-                    set(transactions_data['selectable_headers']) - set(list(view.csv_headers.keys())))
-                headers = {}
-                for header in available_headers:
-                    if header in list(view.csv_headers.keys()):
-                        headers[header] = view.csv_headers[header]['header']
-                    else:
-                        headers[header] = header.split('.')[0]
-
-                self.headers = self._get_headers(headers, view.fields, add_index)
-                transactions_data.pop('selectable_headers', None)
-                for item in list(transactions_data.values()):
-
-                    repeated_rows = len(item[self.break_down_by])
-                    repeated_rows = 1 if repeated_rows == 0 else repeated_rows
-
-                    self.paths = {}
-                    # recursive function to get all json paths
-                    # together with the corresponded values
-                    self.paths = self._go_deeper(item, '', self.paths)
-
-                    self._render(repeated_rows, add_index)
+                if 'selectable_headers' in transactions_data:
+                    selectable_headers = transactions_data['selectable_headers']
+                    transactions_data.pop('selectable_headers', None)
+                self._create_rows_headers(transactions_data.values(), view.csv_headers, selectable_headers, view.fields, True)
 
             elif view_class_name in ['LocationList']:
 
-                add_index = True
                 location_data = self._group_data(data, view, 'iati_identifier', 'locations')
+                if 'selectable_headers' in location_data:
+                    selectable_headers = location_data['selectable_headers']
+                    location_data.pop('selectable_headers', None)
 
-                available_headers = list(view.csv_headers.keys()) + list(
-                    set(location_data['selectable_headers']) - set(list(view.csv_headers.keys())))
-                headers = {}
-                for header in available_headers:
-                    if header in list(view.csv_headers.keys()):
-                        headers[header] = view.csv_headers[header]['header']
-                    else:
-                        headers[header] = header.split('.')[0]
-
-                self.headers = self._get_headers(headers, view.fields, add_index)
-                location_data.pop('selectable_headers', None)
-                for item in list(location_data.values()):
-
-                    repeated_rows = len(item[self.break_down_by])
-                    repeated_rows = 1 if repeated_rows == 0 else repeated_rows
-
-                    self.paths = {}
-                    # recursive function to get all json paths
-                    # together with the corresponded values
-                    self.paths = self._go_deeper(item, '', self.paths)
-
-                    self._render(repeated_rows, add_index)
+                self._create_rows_headers(location_data.values(), view.csv_headers, selectable_headers, view.fields, True)
 
             elif view_class_name in ['BudgetList']:
 
-                add_index = True
                 budget_data = self._group_data(data,view, 'iati_identifier', 'budgets')
-
-                available_headers = list(view.csv_headers.keys()) + list(
-                    set(budget_data['selectable_headers']) - set(list(view.csv_headers.keys())))
-                headers = {}
-                for header in available_headers:
-                    if header in list(view.csv_headers.keys()):
-                        headers[header] = view.csv_headers[header]['header']
-                    else:
-                        headers[header] = header.split('.')[0]
-
-                self.headers = self._get_headers(headers, view.fields, add_index)
-                budget_data.pop('selectable_headers', None)
-                for item in list(budget_data.values()):
-
-                    repeated_rows = len(item[self.break_down_by])
-                    repeated_rows = 1 if repeated_rows == 0 else repeated_rows
-
-                    self.paths = {}
-                    # recursive function to get all json paths
-                    # together with the corresponded values
-                    self.paths = self._go_deeper(item, '', self.paths)
-
-                    self._render(repeated_rows, add_index)
+                if 'selectable_headers' in budget_data:
+                    selectable_headers = budget_data['selectable_headers']
+                    budget_data.pop('selectable_headers', None)
+                self._create_rows_headers(budget_data.values(), view.csv_headers, selectable_headers, view.fields, True)
 
             elif view_class_name in ['ResultList']:
 
-                add_index = True
                 result_data = self._group_data(data, view, 'iati_identifier', 'results')
-
-                available_headers = list(view.csv_headers.keys()) + list(
-                    set(result_data['selectable_headers']) - set(list(view.csv_headers.keys())))
-                headers = {}
-                for header in available_headers:
-                    if header in list(view.csv_headers.keys()):
-                        headers[header] = view.csv_headers[header]['header']
-                    else:
-                        headers[header] = header.split('.')[0]
-
-                self.headers = self._get_headers(headers, view.fields, add_index)
-                result_data.pop('selectable_headers', None)
-
-                for item in list(result_data.values()):
-
-                    repeated_rows = len(item[self.break_down_by])
-                    repeated_rows = 1 if repeated_rows == 0 else repeated_rows
-
-                    self.paths = {}
-                    # recursive function to get all json paths
-                    # together with the corresponded values
-                    self.paths = self._go_deeper(item, '', self.paths)
-
-                    self._render(repeated_rows, add_index)
+                if 'selectable_headers' in result_data:
+                    selectable_headers = result_data['selectable_headers']
+                    result_data.pop('selectable_headers', None)
+                self._create_rows_headers(result_data.values(), view.csv_headers,selectable_headers, view.fields, True)
 
         # writing to the csv file using unicodecsv library
         output = io.BytesIO()
@@ -347,179 +245,7 @@ class PaginatedCSVRenderer(CSVRenderer):
         # this is old render call.
         # return super(PaginatedCSVRenderer, self).render(rows, renderer_context={'header':['aaaa','sssss','ddddd','fffff','gggggg']}, **kwargs) # NOQA: E501
 
-    def _group_data(self, data, view, group_by_field, transform_field):
 
-        group_data = {}
-        default_fields = list(set(view.fields) - set(view.selectable_fields))
-        # iterate trough all Activities
-        for item in data:
-            # activity with the defined column.
-            group_by_value = item[group_by_field]
-            tmp_data = {}
-            if group_by_value not in group_data:
-                group_data[group_by_value] = {}
-                group_data[group_by_value][transform_field] = []
-                for field in default_fields:
-                    group_data[group_by_value][field] = list() if field not in item else item[field]
-
-            for field in list(view.selectable_fields):
-                tmp_data[field] = item[field]
-
-            group_data[group_by_value][transform_field].append(tmp_data)
-
-        data_count = []
-        tmp_data = []
-        for item in list(group_data.values()):
-            data_count.append(len(item[transform_field]))
-            for value in list(item[transform_field]):
-
-                tmp_paths = {}
-                tmp_item = {transform_field: value}
-                tmp_paths = self._go_deeper(tmp_item, '', tmp_paths)
-                tmp_data = tmp_data + list(set(tmp_paths.keys()) - set(tmp_data))
-
-            # group_data[group_by_value] = self._adjust_item(item, view.csv_headers, transform_field)
-
-        group_data['selectable_headers'] = tmp_data
-        if len(self.exceptional_fields) > 0 and transform_field in self.exceptional_fields[0]:
-            self.exceptional_fields[0][transform_field] = list(range(1, max(data_count) + 1))
-
-        return group_data
-
-    def _render(self, repeated_rows, add_index=False):
-
-        # iterate trough activity data and make appropriate row values
-        # with the respect to the headers and breaking down column
-        for i in range(repeated_rows):
-            self.row = []
-            for header_key in list(self.headers.keys()):
-                header_values = self.headers[header_key]
-                value = ''
-                for header_value in header_values:
-                    # in case that we did not find the value
-                    # for the particular json path, set empty string
-                    # for the column value.
-                    if header_value not in list(self.paths.keys()):
-                        # self.row.append('')
-                        continue
-                    else:
-                        #value = self.paths[header_value]
-                        tmp_value = self.paths[header_value]
-                        if isinstance(tmp_value, list):
-
-                            index = int(header_key.split('.')[1]) if len(header_key.split('.')) == 2 else -1
-                            if self.break_down_by in header_value:
-                                value = value + str(tmp_value[i]) + ';'
-                                #self.row.append(value[i])
-                            elif index < 0: # not add_index or header_key in self.default_fields: # len(header_values) == 1:
-                                value = value + str(';'.join(tmp_value)) + ';'
-                            else:
-                                # index = int(header_key.split('.')[1])
-                                if len(tmp_value) >= index + 1:
-                                    value = value + str(tmp_value[index]) + ';'
-
-                                #self.row.append(';'.join(value))
-
-                        # In case we did find the value for the particular
-                        # json path and this property value has not related
-                        # to breaking down column.
-                        else:
-                            value = value + str(tmp_value) + ';'
-                            #self.row.append(value)
-                self.row.append(value)
-            self.rows.append(self.row)
-
-    def _go_deeper(self, node, path, paths):
-
-        if isinstance(node, dict):
-            for key, value in node.items():
-                current_path = path + key + '.'
-                paths = self._go_deeper(value, current_path, paths)
-
-        elif isinstance(node, list):
-            for value in node:
-                paths = self._go_deeper(value, path, paths)
-        else:
-            path = path[:-1]
-            if path in paths:
-                if not isinstance(paths[path], list):
-                    paths[path] = [paths[path]]
-                paths[path].append(0 if node is None else node)
-            else:
-                paths[path] = 0 if node is None else node
-
-        return paths
-
-    def _get_headers(self, available_headers, fields, add_index=True):
-        headers = {}
-
-        for field in fields:
-            #for path, header in available_headers.items():
-            for path, header_name in available_headers.items():
-                # field name should be first term in path string
-                if field in path.split('.')[0]:# and header['header'] is not None:
-                    #headers[header['header']] = [path] if not isinstance(path, list) else path
-                    if header_name not in headers:
-                        headers[header_name] = list()
-                    #headers[field] = [path] if not isinstance(path, list) else path
-                    headers[header_name].append(path)
-
-
-        # adjust headers with the possibility of having exceptional fields
-        for exceptional_field in self.exceptional_fields:
-            for key, value in exceptional_field.items():
-                field_name = key.split('.')[0]
-                if field_name in list(headers.keys()):
-                    path = headers[field_name]
-                    headers.pop(field_name, None)
-                    for index, exceptional_header_suffix in enumerate(value):
-                        if len(self.selectable_fields) > 0:
-                            # headers[field_name + '_' + str(exceptional_header_suffix) + ('.' + str(index) if len(item) > 0 else '')] = item if len(item) > 0 else [field_name + '_' + str(exceptional_header_suffix)] # path + '_' + str(exceptional_header_suffix)  # NOQA: E501
-                            header_name = field_name + '_' + str(exceptional_header_suffix) + ('.' + str(index) if add_index else '')
-                            tmp_path = path if add_index else [field_name + '_' + str(exceptional_header_suffix)]
-                            headers[header_name] = tmp_path
-        return headers
-
-    def _adjust_item(self, item, csv_headers, item_key):
-
-        for index, transaction in enumerate(item[item_key]):
-            tmp_paths = {}
-            tmp_value = ''
-            tmp_paths = self._go_deeper(transaction, '', tmp_paths)
-
-            for path in list(csv_headers.keys()):
-                for tmp_path in tmp_paths:
-                    if path == tmp_path:
-                        tmp_value = tmp_value + str(tmp_paths[path]) + ';'
-                        if csv_headers[path]['header'] is None:
-                            item[item_key + '_' + str(index + 1)] = tmp_value
-                        else:
-                            item[path] = tmp_value
-
-            #item[item_key + '_' + str(index+1)] = tmp_value
-
-        item.pop(item_key, None)
-        return item
-
-    def _adjust_transaction_types(self, data, item_key):
-
-        tmp_data = []
-        for item in data:
-
-            if item_key in item:
-                for index, transaction in enumerate(item[item_key]):
-                    item[item_key + '_' + str(transaction['transaction_type'])] = transaction['dsum']
-
-            for field in self.selectable_fields:
-                tmp_paths = {}
-                tmp_item = {field: item[field]}
-                tmp_paths = self._go_deeper(tmp_item, '', tmp_paths)
-                tmp_data = tmp_data + list(set(tmp_paths.keys()) - set(tmp_data))
-
-            item.pop(item_key, None)
-            item['selectable_headers'] = tmp_data
-
-        return {'data': data, 'selectable_headers': tmp_data}
 
 
 class OrganisationXMLRenderer(XMLRenderer):
@@ -542,6 +268,15 @@ class XlsRenderer(BaseRenderer):
         self.cell_style = None
         self.column_width = 0
         self.requested_fields = None
+
+        self.rows = []
+        self.row = []
+        self.paths = {}
+        self.headers = {}
+        self.break_down_by = None
+        self.exceptional_fields = None
+        self.selectable_fields = ()
+        self.default_fields = ()
 
         # So we gonna store the columns seperately
         # Index is the column number, value the column name
@@ -599,7 +334,83 @@ class XlsRenderer(BaseRenderer):
 
         self.ws = self.wb.add_worksheet('Data Sheet')
 
-        self._write_to_excel(data)
+        bold = self.wb.add_format({'bold': 1})
+
+        # Get the reference view
+        view = renderer_context.get('view', {})
+
+        # Check if it's the instance of view type
+        if not isinstance(view, dict):
+
+            # Get a view's class name
+            view_class_name = type(view).__name__
+
+            # for exceptional fields we should perform different logic
+            # then for other selectable fields
+            self.exceptional_fields = view.exceptional_fields
+            # Break down Activity by defined column in ActivityList class
+            self.break_down_by = view.break_down_by
+
+            self.selectable_fields = view.selectable_fields
+
+            self.default_fields = list(set(view.fields) - set(self.selectable_fields))
+
+            if view_class_name in ['ActivityList']:
+
+                activity_data = self._adjust_transaction_types(data, 'transaction_types')
+                data = activity_data['data']
+                selectable_headers = activity_data['selectable_headers']
+                activity_data.pop('selectable_headers', None)
+                self._create_rows_headers(data, view.csv_headers, selectable_headers, view.fields, False)
+
+            elif view_class_name in ['TransactionList']:
+
+                transactions_data = self._group_data(data, view, 'iati_identifier', 'transactions')
+                selectable_headers = transactions_data['selectable_headers']
+                transactions_data.pop('selectable_headers', None)
+                self._create_rows_headers(transactions_data.values(), view.csv_headers, selectable_headers, view.fields, True)
+
+            elif view_class_name in ['LocationList']:
+
+                location_data = self._group_data(data, view, 'iati_identifier', 'locations')
+                selectable_headers = location_data['selectable_headers']
+                location_data.pop('selectable_headers', None)
+                self._create_rows_headers(location_data.values(), view.csv_headers, selectable_headers, view.fields, True)
+
+            elif view_class_name in ['BudgetList']:
+
+                budget_data = self._group_data(data,view, 'iati_identifier', 'budgets')
+                selectable_headers = budget_data['selectable_headers']
+                budget_data.pop('selectable_headers', None)
+                self._create_rows_headers(budget_data.values(), view.csv_headers, selectable_headers, view.fields, True)
+
+            elif view_class_name in ['ResultList']:
+
+                result_data = self._group_data(data, view, 'iati_identifier', 'results')
+                selectable_headers = result_data['selectable_headers']
+                result_data.pop('selectable_headers', None)
+                self._create_rows_headers(result_data.values(), view.csv_headers,selectable_headers, view.fields, True)
+
+        row_index = 0
+        column_width = {}
+
+        for index, header in enumerate(self.headers.keys()):
+            self.ws.write(row_index, index, header, bold)
+            if index not in column_width:
+                column_width[index] = len(header)
+
+        for row in self.rows:
+            row_index += 1
+            for column_index, header in enumerate(self.headers):
+                self.ws.write(row_index, column_index, row[column_index])
+                if column_width[column_index] < len(row[column_index]):
+                    column_width[column_index] = len(row[column_index])
+
+        for index, width in column_width.items():
+            # Adjust the column width.
+            self.ws.set_column(index, index, width)
+
+        # self._write_to_excel(data)
 
         # Close the workbook before sending the data.
         self.wb.close()

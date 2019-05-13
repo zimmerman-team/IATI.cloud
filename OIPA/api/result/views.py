@@ -122,12 +122,6 @@ class ResultList(DynamicListView):
                    'sectors.percentage':  {'header': 'sectors_percentage'},
                    'recipient_countries.country.code': {'header': 'country'},
                    'recipient_regions.region.code': {'header': 'region'},
-                   'results': {'header': 'results'},
-                   'type.code': {'header': None},
-                   'title.narratives.text': {'header': None},
-                   'description.narratives.text': {'header': None},
-                   'indicators.references.code': {'header': None},
-                   'document_links.url': {'header': None},
         }
     exceptional_fields = [{'results': []}]
 
