@@ -355,7 +355,7 @@ class XlsRenderer(BaseRenderer):
 
             self.default_fields = list(set(view.fields) - set(self.selectable_fields))
 
-            if view_class_name in ['ActivityList']:
+            if view_class_name in ['ActivityList', 'ActivityDetail']:
 
                 activity_data = self._adjust_transaction_types(data, 'transaction_types')
                 data = activity_data['data']

@@ -6,7 +6,6 @@ from rest_framework.reverse import reverse
 
 from iati.factory.iati_factory import ActivityFactory
 
-
 class TestFilter(TestCase):
 
     def setUp(self):
@@ -16,7 +15,12 @@ class TestFilter(TestCase):
         self.export_fields = {
             "title.narratives.0.text": "Project title",
             "title.id": "Project id",
-            "iati_identifier": "IATI Identifier"
+            "iati_identifier": "IATI Identifier",
+            "activity_id": "activity_id",
+            'sectors.sector.code': 'sector_code',
+            'sectors.percentage': 'sectors_percentage',
+            'recipient_countries.country.code': 'country',
+            'recipient_regions.region.code': 'region'
         }
 
         self.xls_export_field_params = 'export_fields=' \
