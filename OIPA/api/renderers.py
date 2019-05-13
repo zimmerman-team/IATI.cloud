@@ -213,7 +213,7 @@ class PaginatedCSVRenderer(CSVRenderer):
 
                 transactions_data = utils.group_data(data, view, 'iati_identifier', 'transactions')  # NOQA: E501
                 if 'selectable_headers' in transactions_data:
-                    selectable_headers = transactions_data['selectable_headers']
+                    selectable_headers = transactions_data['selectable_headers']  # NOQA: E501
                     transactions_data.pop('selectable_headers', None)
                 self.rows, self.headers = utils.create_rows_headers(list(transactions_data.values()), view.csv_headers, selectable_headers, view.fields, True)  # NOQA: E501
 
@@ -228,7 +228,7 @@ class PaginatedCSVRenderer(CSVRenderer):
 
             elif view_class_name in ['BudgetList']:
 
-                budget_data = utils.group_data(data,view, 'iati_identifier', 'budgets')  # NOQA: E501
+                budget_data = utils.group_data(data, view, 'iati_identifier', 'budgets')  # NOQA: E501
                 if 'selectable_headers' in budget_data:
                     selectable_headers = budget_data['selectable_headers']
                     budget_data.pop('selectable_headers', None)

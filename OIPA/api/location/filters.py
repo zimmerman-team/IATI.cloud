@@ -1,4 +1,3 @@
-
 from api.generics.filters import CommaSeparatedCharFilter, TogetherFilterSet
 from iati.models import Location
 from rest_framework import filters
