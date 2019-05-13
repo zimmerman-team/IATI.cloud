@@ -1013,7 +1013,7 @@ class OrganisationReportingOrganisationSerializer(ModelSerializerNoValidation):
     xml_meta = {'attributes': ('ref', 'type', 'secondary_reporter')}
 
     ref = serializers.CharField(source="reporting_org_identifier")
-    type = serializers.CharField(source="org_type")
+    type = CodelistSerializer(source="org_type")
     secondary_reporter = BoolToNumField()
 
     narratives = OrganisationNarrativeSerializer(many=True)
