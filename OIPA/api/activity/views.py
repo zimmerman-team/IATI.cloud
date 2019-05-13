@@ -497,6 +497,7 @@ class ActivityDetail(CacheResponseMixin, DynamicDetailView):
     queryset = Activity.objects.all()
     filter_class = ActivityFilter
     serializer_class = ActivitySerializer
+    selectable_fields = ()
 
     # specification document
     fields = (
