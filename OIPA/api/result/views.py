@@ -124,15 +124,3 @@ class ResultList(DynamicListView):
                    'recipient_regions.region.code': {'header': 'region'},
         }
     exceptional_fields = [{'results': []}]
-
-    ''' 
-    # Required fields for the serialisation defined by the
-    # specification document
-    fields = (
-        'type',
-        'title',
-        'description',
-        'indicators',
-        'document_links',
-    )
-    '''

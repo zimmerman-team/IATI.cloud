@@ -71,24 +71,7 @@ class LocationList(CacheResponseMixin, DynamicListView):
             # 'activity_description.narratives.text': {'header': None},
             # 'name.narratives.text': {'header': None},
         }
-    ''' 
-    fields = (
-        'id',
-        'url',
-        'activity',
-        'ref',
-        'location_reach',
-        'location_id',
-        'name',
-        'description',
-        'activity_description',
-        'administrative',
-        'point',
-        'exactness',
-        'location_class',
-        'feature_designation',
-    )
-    '''
+
     always_ordering = 'id'
 
     ordering_fields = ()

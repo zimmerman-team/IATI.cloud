@@ -14,9 +14,6 @@ from api.sector.serializers import SectorSerializer
 from iati import models as iati_models
 from iati.parser import validators
 from iati.transaction import models
-from iati.transaction.models import (
-    Transaction)
-from django.db.models import Sum
 
 
 class TransactionProviderSerializer(serializers.ModelSerializer):

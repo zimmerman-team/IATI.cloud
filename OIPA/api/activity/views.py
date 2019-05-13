@@ -384,7 +384,6 @@ class ActivityList(CacheResponseMixin, DynamicListView):
         'recipient_regions',
         'recipient_countries',
         )
-    ''' '''
     # column headers with paths to the json property value.
     # reference to the field name made by the first term in the path
     # example: for recipient_countries.country.code path
@@ -498,6 +497,32 @@ class ActivityDetail(CacheResponseMixin, DynamicDetailView):
     queryset = Activity.objects.all()
     filter_class = ActivityFilter
     serializer_class = ActivitySerializer
+
+    # specification document
+    fields = (
+        'iati_identifier',
+        'sectors',
+        'recipient_regions',
+        'recipient_countries',
+        )
+
+    # column headers with paths to the json property value.
+    # reference to the field name made by the first term in the path
+    # example: for recipient_countries.country.code path
+    # reference field name is first term, meaning recipient_countries.
+    csv_headers = \
+        {
+                   'iati_identifier': {'header': 'activity_id'},
+                   'sectors.sector.code': {'header': 'sector_code'},
+                   'sectors.percentage':  {'header': 'sectors_percentage'},
+                   'recipient_countries.country.code': {'header': 'country'},
+                   'recipient_regions.region.code': {'header': 'region'},
+        }
+
+    # Activity break down column
+    break_down_by = 'sectors'
+
+    exceptional_fields = [{'transaction_types': []}]  # NOQA: E501
 
 # TODO separate endpoints for expensive fields like ActivityLocations &
 # ActivityResults 08-07-2016
