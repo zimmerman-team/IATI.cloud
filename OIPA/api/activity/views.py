@@ -383,6 +383,7 @@ class ActivityList(CacheResponseMixin, DynamicListView):
         'sectors',
         'recipient_regions',
         'recipient_countries',
+        # 'transaction_types' # uncomment if it has to be default and add the same key to selectable_fields tuple (selectable_fields = (transaction_types))  # NOQA: E501
         )
     # column headers with paths to the json property value.
     # reference to the field name made by the first term in the path

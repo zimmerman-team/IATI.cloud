@@ -4,7 +4,7 @@ from rest_framework_extensions.cache.mixins import CacheResponseMixin
 
 from api.activity.serializers import LocationSerializer
 from api.generics.filters import DistanceFilter
-from api.generics.views import DynamicListView
+from api.generics.views import DynamicListView, DynamicDetailView
 from api.location.filters import LocationFilter, RelatedOrderingFilter
 from iati.models import Location
 
@@ -77,7 +77,7 @@ class LocationList(CacheResponseMixin, DynamicListView):
     ordering_fields = ()
 
 
-class LocationDetail(CacheResponseMixin, RetrieveAPIView):
+class LocationDetail(CacheResponseMixin, DynamicDetailView):
     """
     Returns detailed information about a Location.
 
@@ -94,3 +94,39 @@ class LocationDetail(CacheResponseMixin, RetrieveAPIView):
     """
     queryset = Location.objects.all()
     serializer_class = LocationSerializer
+    filter_backends = (DjangoFilterBackend, DistanceFilter, RelatedOrderingFilter)  # NOQA: E501
+    filter_class = LocationFilter
+
+    selectable_fields = ()
+
+    # for transaction_type in list(TransactionType.objects.all()):
+    #    transaction_types.append(transaction_type.code)
+
+    # Activity break down column
+    break_down_by = 'sectors'
+    # selectable fields which required different render logic.
+    # Instead merging values using the delimiter, this fields will generate
+    # additional columns for the different values, based on defined criteria.
+    exceptional_fields = [{'locations': []}]  # NOQA: E501
+    # exceptional_fields = []  # NOQA: E501
+
+    fields = (
+        'iati_identifier',
+        'sectors',
+        'recipient_regions',
+        'recipient_countries',
+        'locations'
+
+    )
+    # column headers with paths to the json property value.
+    # reference to the field name made by the first term in the path
+    # example: for recipient_countries.country.code path
+    # reference field name is first term, meaning recipient_countries.
+    csv_headers = \
+        {
+            'iati_identifier': {'header': 'activity_id'},
+            'sectors.sector.code': {'header': 'sector_code'},
+            'sectors.percentage': {'header': 'sectors_percentage'},
+            'recipient_countries.country.code': {'header': 'country'},
+            'recipient_regions.region.code': {'header': 'region'},
+        }

@@ -163,7 +163,7 @@ class PaginatedCSVRenderer(CSVRenderer):
         if 'pk' not in actual_kwargs \
             and 'iati_identifier' not in actual_kwargs or \
             'pk' in actual_kwargs and \
-                'transactions' in args[1]['request']._request.path:
+                'transactions' in args[1]['request']._request.path and 'activity' in args[1]['request']._request.path:  # NOQA: E501
             data = data.get(self.results_field, [])
 
         # these lines is just for internal testing purposes
@@ -204,42 +204,35 @@ class PaginatedCSVRenderer(CSVRenderer):
                 activity_data = utils.adjust_transaction_types(data, 'transaction_types')  # NOQA: E501
                 data = activity_data['data']
                 selectable_headers = activity_data['selectable_headers']
-                if 'selectable_headers' in activity_data:
-                    activity_data.pop('selectable_headers', None)
-
+                activity_data.pop('selectable_headers', None)
                 self.rows, self.headers = utils.create_rows_headers(data, view.csv_headers, selectable_headers, view.fields, False)  # NOQA: E501
 
-            elif view_class_name in ['TransactionList']:
+            elif view_class_name in ['TransactionList', 'TransactionDetail']:
 
                 transactions_data = utils.group_data(data, view, 'iati_identifier', 'transactions')  # NOQA: E501
-                if 'selectable_headers' in transactions_data:
-                    selectable_headers = transactions_data['selectable_headers']  # NOQA: E501
-                    transactions_data.pop('selectable_headers', None)
+                selectable_headers = transactions_data['selectable_headers']  # NOQA: E501
+                transactions_data.pop('selectable_headers', None)
                 self.rows, self.headers = utils.create_rows_headers(list(transactions_data.values()), view.csv_headers, selectable_headers, view.fields, True)  # NOQA: E501
 
-            elif view_class_name in ['LocationList']:
+            elif view_class_name in ['LocationList', 'LocationDetail']:
 
                 location_data = utils.group_data(data, view, 'iati_identifier', 'locations')  # NOQA: E501
-                if 'selectable_headers' in location_data:
-                    selectable_headers = location_data['selectable_headers']
-                    location_data.pop('selectable_headers', None)
-
+                selectable_headers = location_data['selectable_headers']
+                location_data.pop('selectable_headers', None)
                 self.rows, self.headers = utils.create_rows_headers(list(location_data.values()), view.csv_headers, selectable_headers, view.fields, True)  # NOQA: E501
 
-            elif view_class_name in ['BudgetList']:
+            elif view_class_name in ['BudgetList', 'BudgetDetail']:
 
                 budget_data = utils.group_data(data, view, 'iati_identifier', 'budgets')  # NOQA: E501
-                if 'selectable_headers' in budget_data:
-                    selectable_headers = budget_data['selectable_headers']
-                    budget_data.pop('selectable_headers', None)
+                selectable_headers = budget_data['selectable_headers']
+                budget_data.pop('selectable_headers', None)
                 self.rows, self.headers = utils.create_rows_headers(list(budget_data.values()), view.csv_headers, selectable_headers, view.fields, True)  # NOQA: E501
 
-            elif view_class_name in ['ResultList']:
+            elif view_class_name in ['ResultList', 'ResultDetail']:
 
                 result_data = utils.group_data(data, view, 'iati_identifier', 'results')  # NOQA: E501
-                if 'selectable_headers' in result_data:
-                    selectable_headers = result_data['selectable_headers']
-                    result_data.pop('selectable_headers', None)
+                selectable_headers = result_data['selectable_headers']
+                result_data.pop('selectable_headers', None)
                 self.rows, self.headers = utils.create_rows_headers(list(result_data.values()), view.csv_headers, selectable_headers, view.fields, True)  # NOQA: E501
 
         # writing to the csv file using unicodecsv library
@@ -279,7 +272,6 @@ class UtilRenderer(object):
                 headers[header] = csv_headers[header]['header']
             else:
                 headers[header] = header.split('.')[0]
-
         # Get headers with their paths
         self.headers = self._get_headers(headers, fields, add_index)
 
@@ -303,6 +295,9 @@ class UtilRenderer(object):
 
     def group_data(self, data, view, group_by_field, transform_field):
 
+        if not isinstance(data, list):
+            data = [data]
+
         group_data = {}
         default_fields = list(set(view.fields) - set(view.selectable_fields))
         # iterate trough all Activities
@@ -321,7 +316,7 @@ class UtilRenderer(object):
 
             group_data[group_by_value][transform_field].append(tmp_data)
 
-        data_count = []
+        data_count = [0]
         tmp_data = []
         for item in list(group_data.values()):
             data_count.append(len(item[transform_field]))
@@ -523,7 +518,7 @@ class XlsRenderer(BaseRenderer):
         if 'pk' not in actual_kwargs \
                 and 'iati_identifier' not in actual_kwargs or\
                 'pk' in actual_kwargs and \
-                'transactions' in renderer_context['request']._request.path:
+                'transactions' in renderer_context['request']._request.path and 'activity' in renderer_context['request']._request.path:  # NOQA: E501
             data = data.get(self.results_field, [])
 
         # Create an in-memory output file for the new workbook.
@@ -576,28 +571,28 @@ class XlsRenderer(BaseRenderer):
                 activity_data.pop('selectable_headers', None)
                 self.rows, self.headers = utils.create_rows_headers(data, view.csv_headers, selectable_headers, view.fields, False)  # NOQA: E501
 
-            elif view_class_name in ['TransactionList']:
+            elif view_class_name in ['TransactionList', 'TransactionDetail']:
 
                 transactions_data = utils.group_data(data, view, 'iati_identifier', 'transactions')  # NOQA: E501
                 selectable_headers = transactions_data['selectable_headers']
                 transactions_data.pop('selectable_headers', None)
                 self.rows, self.headers = utils.create_rows_headers(list(transactions_data.values()), view.csv_headers, selectable_headers, view.fields, True)  # NOQA: E501
 
-            elif view_class_name in ['LocationList']:
+            elif view_class_name in ['LocationList', 'LocationDetail']:
 
                 location_data = utils.group_data(data, view, 'iati_identifier', 'locations')  # NOQA: E501
                 selectable_headers = location_data['selectable_headers']
                 location_data.pop('selectable_headers', None)
                 self.rows, self.headers = utils.create_rows_headers(list(location_data.values()), view.csv_headers, selectable_headers, view.fields, True)  # NOQA: E501
 
-            elif view_class_name in ['BudgetList']:
+            elif view_class_name in ['BudgetList', 'BudgetDetail']:
 
                 budget_data = utils.group_data(data, view, 'iati_identifier', 'budgets')  # NOQA: E501
                 selectable_headers = budget_data['selectable_headers']
                 budget_data.pop('selectable_headers', None)
                 self.rows, self.headers = utils.create_rows_headers(list(budget_data.values()), view.csv_headers, selectable_headers, view.fields, True)  # NOQA: E501
 
-            elif view_class_name in ['ResultList']:
+            elif view_class_name in ['ResultList', 'ResultDetail']:
 
                 result_data = utils.group_data(data, view, 'iati_identifier', 'results')  # NOQA: E501
                 selectable_headers = result_data['selectable_headers']
