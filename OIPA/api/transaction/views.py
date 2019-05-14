@@ -198,7 +198,6 @@ class TransactionDetail(CacheResponseMixin, DynamicDetailView):
             'recipient_regions.region.code': {'header': 'region'},
         }
 
-
     # Activity break down column
     break_down_by = 'sectors'
     # selectable fields which required different render logic.
