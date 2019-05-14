@@ -282,6 +282,10 @@ class TransactionReference(ElementReference):
         'key': 'ref',
         'attr': 'ref'
     }
+    humanitarian = {
+        'key': 'humanitarian',
+        'attr': 'humanitarian'
+    }
     # Transaction type
     transaction_type = {
         'element': 'transaction-type',
@@ -315,6 +319,11 @@ class TransactionReference(ElementReference):
             'attr': 'value-date'
         }
     }
+    # Descripion
+    description = {
+        'element': 'description',
+        'key': 'description'
+    }
     # Flow type
     flow_type = {
         'element': 'flow-type',
@@ -334,13 +343,23 @@ class TransactionReference(ElementReference):
         }
     }
     # Aid type
-    aid_type = {
+    aid_types = {
+        'key': 'transaction_aid_types',
         'element': 'aid-type',
-        'key': 'aid_type',
-        'code': {
-            'key': 'code',
-            'attr': 'code'
-        }
+        'aid_type': {
+            'key': 'aid_type',
+            'code': {
+                'key': 'code',
+                'attr': 'code'
+            },
+            'vocabulary': {
+                'key': 'vocabulary',
+                'code': {
+                    'key': 'code',
+                    'attr': 'vocabulary'
+                },
+            }
+        },
     }
     # tied_status
     tied_status = {
@@ -374,6 +393,41 @@ class TransactionReference(ElementReference):
         'narratives': {
             'element': 'narrative',
             'key': 'narratives',
+        }
+    }
+    # Receiver Organisation
+    receiver_organisation = {
+        'element': 'receiver-org',
+        'key': 'receiver_organisation',
+        # Attributes
+        'ref': {
+            'key': 'ref',
+            'attr': 'ref'
+        },
+        'receiver_activity_id': {
+            'key': 'receiver_activity_id',
+            'attr': 'receiver-activity-id'
+        },
+        'type': {
+            'key': 'type',
+            'code': {
+                'key': 'code',
+                'attr': 'type'
+            }
+        },
+        'narratives': {
+            'element': 'narrative',
+            'key': 'narratives',
+        }
+
+    }
+    disbursement_channel = {
+        'element': 'disbursement-channel',
+        'key': 'disbursement_channel',
+        # Attributes,
+        'code': {
+            'key': 'code',
+            'attr': 'code'
         }
     }
     # Recipient country
@@ -437,17 +491,27 @@ class TransactionReference(ElementReference):
         if ref_value:
             transaction_element.set(self.ref.get('attr'), ref_value)
 
+        # Humanitarian
+        humanitarian_value = self.data.get(
+            self.humanitarian.get('key')
+        )
+        if humanitarian_value in [True, False, 1, 0]:
+            transaction_element.set(
+                self.humanitarian.get('attr'),
+                '1' if humanitarian_value else '0'
+            )
+
         # Transaction type
-        transaction_dict = self.data.get(
+        transaction_type_dict = self.data.get(
             self.transaction_type.get('key')
         )
-        if transaction_dict:
+        if transaction_type_dict:
             transaction_type_element = etree.SubElement(
                 transaction_element, self.transaction_type.get('element')
             )
 
             # Transaction type element: code attribute
-            code_value = transaction_dict.get(
+            code_value = transaction_type_dict.get(
                 self.transaction_type.get('code').get('key')
             )
             if code_value:
@@ -500,6 +564,18 @@ class TransactionReference(ElementReference):
                     self.value.get('date').get('attr'),
                     value_date
                 )
+
+        # Description element
+        description_dict = self.data.get(self.description.get('key'))
+        if description_dict:
+            description_narrative = ElementWithNarrativeReference(
+                parent_element=transaction_element,
+                data=description_dict
+            )
+            description_narrative.element = self.description.get(
+                'element'
+            )
+            description_narrative.create()
 
         # Provider Organisation
         provider_organisation_dict = self.data.get(
@@ -562,6 +638,89 @@ class TransactionReference(ElementReference):
             provider_organisation_narrative.create_narrative(
                 parent_element=provider_organisation_element
             )
+
+        # Receiver Organisation
+        receiver_organisation_dict = self.data.get(
+            self.receiver_organisation.get('key')
+        )
+        if receiver_organisation_dict:
+            receiver_organisation_element = etree.SubElement(
+                transaction_element,
+                self.receiver_organisation.get('element')
+            )
+
+            # Attributes
+            # Ref
+            ref_value = receiver_organisation_dict.get(
+                self.receiver_organisation.get('ref').get('key')
+            )
+            if ref_value:
+                receiver_organisation_element.set(
+                    self.receiver_organisation.get('ref').get('attr'),
+                    ref_value
+                )
+
+            # Attributes
+            # Receiver activity id
+            receiver_activity_id_value = receiver_organisation_dict.get(
+                self.receiver_organisation.get(
+                    'receiver_activity_id'
+                ).get('key')
+            )
+            if receiver_activity_id_value:
+                receiver_organisation_element.set(
+                    self.receiver_organisation.get(
+                        'receiver_activity_id'
+                    ).get('attr'),
+                    receiver_activity_id_value
+                )
+
+            # Attributes
+            # Type
+            type_dict = receiver_organisation_dict.get(
+                self.provider_organisation.get('type').get('key')
+            )
+            if type_dict:
+                type_value = type_dict.get(
+                    self.receiver_organisation.get(
+                        'type'
+                    ).get('code').get('key')
+                )
+                receiver_organisation_element.set(
+                    self.receiver_organisation.get(
+                        'type'
+                    ).get('code').get('attr'),
+                    type_value
+                )
+
+            # Narrative
+            receiver_organisation_narrative = ElementWithNarrativeReference(
+                parent_element=None,
+                data=receiver_organisation_dict
+            )
+            receiver_organisation_narrative.create_narrative(
+                parent_element=receiver_organisation_element
+            )
+
+        # Disbursement channel
+        disbursement_channel_dict = self.data.get(
+            self.disbursement_channel.get('key')
+        )
+        if disbursement_channel_dict:
+            disbursement_channel_element = etree.SubElement(
+                transaction_element, self.disbursement_channel.get('element')
+            )
+
+            # Attributes
+            # Code
+            code_value = disbursement_channel_dict.get(
+                self.disbursement_channel.get('code').get('key')
+            )
+            if ref_value:
+                disbursement_channel_element.set(
+                    self.disbursement_channel.get('code').get('attr'),
+                    code_value
+                )
 
         # Sector
         sectors_list = self.data.get(
@@ -733,24 +892,53 @@ class TransactionReference(ElementReference):
                 )
 
         # Aid type
-        aid_type_dict = self.data.get(
-            self.aid_type.get('key')
+        aid_type_list = self.data.get(
+            self.aid_types.get('key')
         )
-        if aid_type_dict:
-            aid_type_element = etree.SubElement(
-                transaction_element, self.aid_type.get('element')
-            )
-
-            # Attributes
-            # Code
-            code = aid_type_dict.get(
-                self.aid_type.get('code').get('key')
-            )
-            if code:
-                aid_type_element.set(
-                    self.aid_type.get('code').get('attr'),
-                    code
+        if aid_type_list:
+            for aid_type_dict in aid_type_list:
+                aid_type_element = etree.SubElement(
+                    transaction_element, self.aid_types.get('element')
                 )
+
+                aid_type = aid_type_dict.get(
+                    self.aid_types.get('aid_type').get('key')
+                )
+                if aid_type:
+                    # Attributes
+                    # Code
+                    code = aid_type.get(
+                        self.aid_types.get('aid_type').get('code').get('key')
+                    )
+                    if code:
+                        aid_type_element.set(
+                            self.aid_types.get('aid_type').get(
+                                'code'
+                            ).get('attr'),
+                            code
+                        )
+
+                    # Attributes
+                    # Vocabulary
+                    vocabulary = aid_type.get(
+                        self.aid_types.get('aid_type').get(
+                            'vocabulary'
+                        ).get('key')
+                    )
+                    if vocabulary:
+                        code = vocabulary.get(
+                            self.aid_types.get('aid_type').get(
+                                'vocabulary'
+                            ).get('code').get('key')
+                        )
+
+                        if code:
+                            aid_type_element.set(
+                                self.aid_types.get('aid_type').get(
+                                    'vocabulary'
+                                ).get('code').get('attr'),
+                                code
+                            )
 
         # Tied status
         tied_status_dict = self.data.get(
@@ -3240,9 +3428,42 @@ class CountryBudgetItemsReference(BaseReference):
             dict_key='vocabulary'
         ),
     ]
+    children = [
+        # <budget-item>
+        ElementRecord(
+            name='budget-item',
+            key='budget_items',
+            attributes=[
+                # @code
+                AttributeRecord(
+                    name='code',
+                    key='code',
+                    dict_key='budget_identifier'
+                ),
+                # @percentage
+                AttributeRecord(
+                    name='percentage',
+                    key='percentage'
+                ),
+            ],
+            children=[
+                # <description>
+                # <narrative>
+                ElementRecord(
+                    name='description',
+                    key='description',
+                    element_type=ElementWithNarrativeReference
+                ),
+                # </narrative>
+                # </description>
+            ]
+        ),
+        # </budget-item>
+    ]
     element_record = ElementRecord(
         name='country-budget-items',
-        attributes=attributes
+        attributes=attributes,
+        children=children
     )
     # </country-budget-items>
 
@@ -3259,6 +3480,11 @@ class TagReference(BaseReference):
             name='vocabulary',
             key='code',
             dict_key='vocabulary'
+        ),
+        # @vocabulary-uri
+        AttributeRecord(
+            name='vocabulary-uri',
+            key='vocabulary_uri'
         ),
         # @code
         AttributeRecord(

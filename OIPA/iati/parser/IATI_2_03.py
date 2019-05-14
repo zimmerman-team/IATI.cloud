@@ -973,6 +973,21 @@ class Parse(IatiParser):
                 None,
                 None,
                 code)
+        elif not region and vocabulary.code == '99':
+            try:
+                region_vocabulary = \
+                    vocabulary_models.RegionVocabulary.objects.get(code='99')
+            except vocabulary_models.RegionVocabulary.DoesNotExist:
+                raise IgnoredVocabularyError(
+                    "recipient-region",
+                    "code",
+                    "code is unspecified or invalid")
+
+            region = Region()
+            region.code = code
+            region.name = 'Vocabulary 99'
+            region.region_vocabulary = region_vocabulary
+            region.save()
 
         elif not region:
             raise IgnoredVocabularyError(
@@ -1478,6 +1493,9 @@ class Parse(IatiParser):
             codelist_models.BudgetIdentifier, code=code)
         percentage = element.attrib.get('percentage')
 
+        # CountryBudgetItem is parent of this record
+        country_budget_item = self.get_model('CountryBudgetItem')
+
         if not code:
             raise RequiredFieldError(
                 "country-budget-items/budget-item",
@@ -1485,15 +1503,30 @@ class Parse(IatiParser):
                 "required attribute missing")
 
         if not budget_identifier:
+            # Check if the vocabulary of the country budget items is 4 or 5,
+            # if related to these then we create a new code of
+            # the budget identifier if not available
+            # otherwise use a existing one
+            # ref. http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/country-budget-items/budget-item/  # NOQA: E501
+
+            if country_budget_item:
+                if country_budget_item.vocabulary.code in ['4', '5']:
+                    budget_identifier = codelist_models.BudgetIdentifier()
+                    budget_identifier.code = code
+                    budget_identifier.name = 'Vocabulary 4 or 5'
+                    budget_identifier.save()
+
+        # if still no the budget identifier then should be errorr
+        if not budget_identifier:
             raise FieldValidationError(
                 "country-budget-items/budget-item",
                 "code",
                 "not found on the accompanying code list",
                 None,
                 None,
-                code)
+                code
+            )
 
-        country_budget_item = self.get_model('CountryBudgetItem')
         budget_item = models.BudgetItem()
         budget_item.country_budget_item = country_budget_item
         budget_item.code = budget_identifier
@@ -1642,6 +1675,16 @@ class Parse(IatiParser):
                 "policy-marker",
                 "significance",
                 "significance is required when using OECD DAC CRS vocabulary")
+        elif not policy_marker_code and vocabulary.code in ['99', '98']:
+            # This is needed to create a new policy marker if related to vocabulary 99 or 98  # NOQA: E501
+            # ref. http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/policy-marker/  # NOQA: E501
+
+            policy_marker_code = models.PolicyMarker()
+            policy_marker_code.code = code
+            policy_marker_code.name = 'Vocabulary 99 or 98'
+            policy_marker_code.description = 'The policy marker is maintained by a reporting organisation'  # NOQA: E501
+            policy_marker_code.save()
+
         elif not policy_marker_code:
             raise IgnoredVocabularyError(
                 "policy-marker",
@@ -3800,11 +3843,11 @@ class Parse(IatiParser):
 
     def iati_activities__iati_activity__result__indicator__baseline__location(
             self, element):
-        '''A new, optional element in v. 2.03:
-
+        """
+        A new, optional element in v. 2.03:
         A location already defined and described in the iati-activity/location
         element.
-        '''
+        """
         ref = element.attrib.get('ref')
 
         if not ref:
@@ -3816,9 +3859,13 @@ class Parse(IatiParser):
                 "iati-activity/location/@ref, so leaving it blank makes no "
                 "sense")
 
-        referenced_location = self.get_model('Location')
+        locations = self.get_model_list('Location')
+        location = []
 
-        if not referenced_location.ref == ref:
+        if locations:
+            location = list(filter(lambda x: x.ref == ref, locations))
+
+        if not len(location):
             raise FieldValidationError(
                 "iati-activity/result/indicator/baseline/location",
                 "ref",
@@ -3826,6 +3873,8 @@ class Parse(IatiParser):
                 None,
                 None,
                 ref)
+
+        referenced_location = location[0]
 
         activity = self.get_model('Activity')
         result_indicator_baseline = self.get_model('ResultIndicatorBaseline')
@@ -5392,7 +5441,12 @@ class Parse(IatiParser):
         post_save.set_activity_aggregations(activity)
         post_save.update_activity_search_index(activity)
         post_save.set_country_region_transaction(activity)
-        post_save.set_sector_transaction(activity)
+
+        # TODO: This is right related to this documnetation
+        # http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/transaction/sector/  # NOQA: E501
+        # For now we skip to make the automatically make a new sector in the transaction  # NOQA: E501
+        # post_save.set_sector_transaction(activity)
+
         post_save.set_sector_budget(activity)
 
     def post_save_file(self, dataset):

@@ -5,8 +5,8 @@ from rest_framework.reverse import reverse
 
 from api.activity.filters import RelatedActivityFilter
 from api.codelist.serializers import (
-    CodelistSerializer, NarrativeContainerSerializer, NarrativeSerializer,
-    OrganisationNarrativeSerializer, VocabularySerializer
+    AidTypeSerializer, CodelistSerializer, NarrativeContainerSerializer,
+    NarrativeSerializer, OrganisationNarrativeSerializer, VocabularySerializer
 )
 from api.country.serializers import CountrySerializer
 from api.dataset.serializers import SimpleDatasetSerializer
@@ -22,16 +22,16 @@ from api.sector.serializers import SectorSerializer
 from iati.models import (
     Activity, ActivityDate, ActivityParticipatingOrganisation,
     ActivityPolicyMarker, ActivityRecipientCountry, ActivityRecipientRegion,
-    ActivitySector, ActivityTag, Budget, BudgetItem, BudgetItemDescription,
-    Condition, Conditions, ContactInfo, ContactInfoDepartment,
-    ContactInfoJobTitle, ContactInfoMailingAddress, ContactInfoOrganisation,
-    ContactInfoPersonName, CountryBudgetItem, CrsAdd, CrsAddLoanStatus,
-    CrsAddLoanTerms, CrsAddOtherFlags, Description, DocumentLink,
-    DocumentLinkCategory, DocumentLinkLanguage, DocumentLinkTitle, Fss,
-    FssForecast, HumanitarianScope, LegacyData, Location,
-    LocationActivityDescription, LocationAdministrative, LocationDescription,
-    LocationName, Narrative, Organisation, OtherIdentifier,
-    PlannedDisbursement, PlannedDisbursementProvider,
+    ActivityReportingOrganisation, ActivitySector, ActivityTag, Budget,
+    BudgetItem, BudgetItemDescription, Condition, Conditions, ContactInfo,
+    ContactInfoDepartment, ContactInfoJobTitle, ContactInfoMailingAddress,
+    ContactInfoOrganisation, ContactInfoPersonName, CountryBudgetItem, CrsAdd,
+    CrsAddLoanStatus, CrsAddLoanTerms, CrsAddOtherFlags, Description,
+    DocumentLink, DocumentLinkCategory, DocumentLinkLanguage,
+    DocumentLinkTitle, Fss, FssForecast, HumanitarianScope, LegacyData,
+    Location, LocationActivityDescription, LocationAdministrative,
+    LocationDescription, LocationName, Narrative, Organisation,
+    OtherIdentifier, PlannedDisbursement, PlannedDisbursementProvider,
     PlannedDisbursementReceiver, RelatedActivity, Result, ResultDescription,
     ResultIndicator, ResultIndicatorBaseline, ResultIndicatorBaselineDimension,
     ResultIndicatorDescription, ResultIndicatorPeriod,
@@ -42,8 +42,9 @@ from iati.models import (
 )
 from iati.parser import validators
 from iati.transaction.models import (
-    Transaction, TransactionProvider, TransactionReceiver,
-    TransactionRecipientCountry, TransactionRecipientRegion, TransactionSector
+    Transaction, TransactionAidType, TransactionDescription,
+    TransactionProvider, TransactionReceiver, TransactionRecipientCountry,
+    TransactionRecipientRegion, TransactionSector
 )
 from iati_organisation import models as organisation_models
 
@@ -707,6 +708,56 @@ class ReportingOrganisationSerializer(DynamicFieldsModelSerializer):
         )
 
 
+class CustomReportingOrganisationDataURLSerializer(
+        serializers.HyperlinkedIdentityField):
+    """A custom serializer to allow to use different argument for
+       HyperlinkedIdentityField for ReportingOrganisation serializer
+    """
+
+    def get_url(self, obj, view_name, request, format):
+        url_kwargs = {
+            'pk': obj.organisation.organisation_identifier
+        }
+        return reverse(
+            view_name, kwargs=url_kwargs, request=request, format=format)
+
+
+class ReportingOrganisationDataSerializer(DynamicFieldsModelSerializer):  # NOQA: E501
+    """
+    Why the is ReportingOrganisationDataSerializer
+    Because this class is directly to data of Reporting Organisation data
+    Otherwise ReportingOrganisationSerializer is using a publisher data
+    """
+    ref = serializers.CharField()
+    url = CustomReportingOrganisationDataURLSerializer(
+        view_name='organisations:organisation-detail',
+    )
+    type = CodelistSerializer()
+    secondary_reporter = serializers.BooleanField(required=False)
+
+    activity = serializers.CharField(write_only=True)
+
+    # TODO: please check this why in narrative in Reporting org is empty
+    # So to get narratives should be from organisation
+    narratives = OrganisationNarrativeSerializer(
+        source="organisation.name.narratives",
+        many=True,
+        required=False
+    )
+
+    class Meta:
+        model = ActivityReportingOrganisation
+        fields = (
+            'id',
+            'ref',
+            'url',
+            'type',
+            'secondary_reporter',
+            'narratives',
+            'activity',
+        )
+
+
 class ParticipatingOrganisationSerializer(ModelSerializerNoValidation):
     # TODO: Link to organisation standard (hyperlinked)
     ref = serializers.CharField(source='normalized_ref')
@@ -1216,12 +1267,19 @@ class CountryBudgetItemsSerializer(ModelSerializerNoValidation):
 
     activity = serializers.CharField(write_only=True)
 
+    budget_items = BudgetItemSerializer(
+        many=True,
+        source='budgetitem_set',
+        read_only=True,
+    )
+
     class Meta:
         model = CountryBudgetItem
         fields = (
             'id',
             'activity',
             'vocabulary',
+            'budget_items'
         )
 
     def validate(self, data):
@@ -2964,13 +3022,37 @@ class TransactionSectorSerializer(serializers.ModelSerializer):
         )
 
 
+class TransactionDescriptionSerializer(serializers.ModelSerializer):
+    narratives = NarrativeSerializer(many=True)
+
+    class Meta:
+        model = TransactionDescription
+        fields = (
+            'narratives',
+        )
+
+
+class TransactionAidTypeSerializer(serializers.ModelSerializer):
+    aid_type = AidTypeSerializer()
+
+    class Meta:
+        model = TransactionAidType
+        fields = (
+            'aid_type',
+        )
+
+
 class TransactionSerializer(serializers.ModelSerializer):
     """
     Transaction serializer class
     """
     transaction_date = serializers.CharField()
     value_date = serializers.CharField()
-    aid_type = CodelistSerializer()
+    transaction_aid_types = TransactionAidTypeSerializer(
+        many=True,
+        source='transactionaidtype_set',
+        read_only=True
+    )
     disbursement_channel = CodelistSerializer()
     finance_type = CodelistSerializer()
     flow_type = CodelistSerializer()
@@ -2995,6 +3077,9 @@ class TransactionSerializer(serializers.ModelSerializer):
         source='transactionsector_set',
         read_only=True
     )
+    description = TransactionDescriptionSerializer(
+        read_only=True
+    )
 
     class Meta:
         model = Transaction
@@ -3015,7 +3100,7 @@ class TransactionSerializer(serializers.ModelSerializer):
             'recipient_regions',
             'flow_type',
             'finance_type',
-            'aid_type',
+            'transaction_aid_types',
             'tied_status',
         )
 
@@ -3043,10 +3128,11 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
     id = serializers.CharField(required=False)
     iati_identifier = serializers.CharField()
 
-    reporting_organisation = ReportingOrganisationSerializer(
+    reporting_organisation = ReportingOrganisationDataSerializer(
         read_only=True,
-        source="*"
+        source="reporting_organisations.first"
     )
+
     title = TitleSerializer(required=False)
 
     descriptions = DescriptionSerializer(
