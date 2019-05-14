@@ -1057,8 +1057,12 @@ class OrganisationSerializer(DynamicFieldsModelSerializer):
         many=True,
         read_only=True
     )
-    recipient_regions_budgets = OrganisationRecipientRegionBudgetSerializer(
+    recipient_region_budgets = OrganisationRecipientRegionBudgetSerializer(
         source='recipient_region_budget',
+        many=True,
+        read_only=True
+    )
+    recipient_country_budgets = OrganisationRecipientCountryBudgetSerializer(
         many=True,
         read_only=True
     )
@@ -1078,7 +1082,8 @@ class OrganisationSerializer(DynamicFieldsModelSerializer):
             'reporting_org',
             'total_budgets',
             'recipient_org_budgets',
-            'recipient_regions_budgets'
+            'recipient_region_budgets',
+            'recipient_country_budgets'
         )
 
     def validate(self, data):
