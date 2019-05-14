@@ -16,7 +16,7 @@ from api.pagination import CustomTransactionPagination
 from api.region.serializers import RegionSerializer
 from api.sector.serializers import SectorSerializer
 from api.transaction.filters import (
-    TransactionAggregationFilter, TransactionFilter
+    RelatedOrderingFilter, TransactionAggregationFilter, TransactionFilter
 )
 from api.transaction.serializers import (
     TransactionSectorSerializer, TransactionSerializer
@@ -58,18 +58,64 @@ class TransactionList(CacheResponseMixin, DynamicListView):
     ## Result details
 
     Each result item contains short information about transaction including
-    URI to transaction details.
+    URI to transaction details.?fields=transaction_types
 
     URI is constructed as follows: `/api/transactions/{transaction_id}`
 
     """
     queryset = Transaction.objects.all().order_by('id')
     serializer_class = TransactionSerializer
+    filter_backends = (
+        DjangoFilterBackend,
+        RelatedOrderingFilter
+    )
     filter_class = TransactionFilter
     pagination_class = CustomTransactionPagination
     ordering_fields = '__all__'
-    ordering = ('id',)
+    ordering = ('id', 'activity__iati_identifier',)
 
+    # make sure we can always have info about selectable fields,
+    # stored into dict. This dict is populated in the DynamicView class using
+    # _get_query_fields methods.
+    selectable_fields = ()
+
+    # Required fields for the serialisation defined by the
+    # specification document
+    fields = (
+        'iati_identifier',
+        'sectors',
+        'recipient_regions',
+        'recipient_countries',
+        'transactions'
+
+    )
+
+    # column headers with paths to the json property value.
+    # reference to the field name made by the first term in the path
+    # example: for recipient_countries.country.code path
+    # reference field name is first term, meaning recipient_countries.
+    csv_headers = \
+        {
+                   'iati_identifier': {'header': 'activity_id'},
+                   'sectors.sector.code': {'header': 'sector_code'},
+                   'sectors.percentage':  {'header': 'sectors_percentage'},
+                   'recipient_countries.country.code': {'header': 'country'},
+                   'recipient_regions.region.code': {'header': 'region'},
+        }
+
+    # Get all transaction type
+    transaction_types = []
+    # for transaction_type in list(TransactionType.objects.all()):
+    #    transaction_types.append(transaction_type.code)
+
+    # Activity break down column
+    break_down_by = 'sectors'
+    # selectable fields which required different render logic.
+    # Instead merging values using the delimiter, this fields will generate
+    # additional columns for the different values, based on defined criteria.
+    exceptional_fields = [{'transactions': transaction_types}]  # NOQA: E501
+
+    '''
     fields = (
         'url',
         'activity',
@@ -80,7 +126,7 @@ class TransactionList(CacheResponseMixin, DynamicListView):
         'value_date',
         'value',
     )
-
+    '''
     search_fields = (
         'description',
         'provider_organisation',
@@ -88,6 +134,11 @@ class TransactionList(CacheResponseMixin, DynamicListView):
     )
 
     list_cache_key_func = QueryParamsKeyConstructor()
+
+    # def __init__(self, *args, **kwargs):
+    #    super(TransactionList, self).__init__(*args, **kwargs)
+    #    for transaction_type in list(TransactionType.objects.all()):
+    #        self.transaction_types.append(transaction_type.code)
 
 
 class TransactionDetail(CacheResponseMixin, DynamicDetailView):
@@ -111,6 +162,48 @@ class TransactionDetail(CacheResponseMixin, DynamicDetailView):
     """
     queryset = Transaction.objects.all()
     serializer_class = TransactionSerializer
+    filter_backends = (
+        DjangoFilterBackend,
+        RelatedOrderingFilter
+    )
+    filter_class = TransactionFilter
+    ordering_fields = '__all__'
+    ordering = ('id', 'activity__iati_identifier',)
+
+    # make sure we can always have info about selectable fields,
+    # stored into dict. This dict is populated in the DynamicView class using
+    # _get_query_fields methods.
+    selectable_fields = ()
+
+    # Required fields for the serialisation defined by the
+    # specification document
+    fields = (
+        'iati_identifier',
+        'sectors',
+        'recipient_regions',
+        'recipient_countries',
+        'transactions'
+    )
+
+    # column headers with paths to the json property value.
+    # reference to the field name made by the first term in the path
+    # example: for recipient_countries.country.code path
+    # reference field name is first term, meaning recipient_countries.
+    csv_headers = \
+        {
+            'iati_identifier': {'header': 'activity_id'},
+            'sectors.sector.code': {'header': 'sector_code'},
+            'sectors.percentage': {'header': 'sectors_percentage'},
+            'recipient_countries.country.code': {'header': 'country'},
+            'recipient_regions.region.code': {'header': 'region'},
+        }
+
+    # Activity break down column
+    break_down_by = 'sectors'
+    # selectable fields which required different render logic.
+    # Instead merging values using the delimiter, this fields will generate
+    # additional columns for the different values, based on defined criteria.
+    exceptional_fields = [{'transactions': []}]  # NOQA: E501
 
 
 class TransactionSectorList(ListCreateAPIView):

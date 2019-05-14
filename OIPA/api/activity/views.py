@@ -382,35 +382,29 @@ class ActivityList(CacheResponseMixin, DynamicListView):
         'iati_identifier',
         'sectors',
         'recipient_regions',
-        'recipient_countries'
+        'recipient_countries',
+        # 'transaction_types' # uncomment if it has to be default and add the same key to selectable_fields tuple (selectable_fields = (transaction_types))  # NOQA: E501
         )
-
-    ''' '''
     # column headers with paths to the json property value.
     # reference to the field name made by the first term in the path
     # example: for recipient_countries.country.code path
     # reference field name is first term, meaning recipient_countries.
     csv_headers = \
         {
-                   'activity_id': 'iati_identifier',
-                   'sector_code': 'sectors.sector.code',
-                   'sectors_percentage': 'sectors.percentage',
-                   'country': 'recipient_countries.country.code',
-                   'region': 'recipient_regions.region.code',
-                   'title': 'title.narratives.text',
-                   'description': 'descriptions.narratives.text',
-                   'transaction_types': 'transaction_types.dsum'
+                   'iati_identifier': {'header': 'activity_id'},
+                   'sectors.sector.code': {'header': 'sector_code'},
+                   'sectors.percentage':  {'header': 'sectors_percentage'},
+                   'recipient_countries.country.code': {'header': 'country'},
+                   'recipient_regions.region.code': {'header': 'region'},
         }
-
     # Get all transaction type
     transaction_types = []
-
     # Activity break down column
     break_down_by = 'sectors'
     # selectable fields which required different render logic.
     # Instead merging values using the delimiter, this fields will generate
     # additional columns for the different values, based on defined criteria.
-    exceptional_fields = [{'transaction_types.transaction_type': transaction_types}]  # NOQA: E501
+    exceptional_fields = [{'transaction_types': transaction_types}]  # NOQA: E501
 
     always_ordering = 'id'
 
@@ -499,6 +493,33 @@ class ActivityDetail(CacheResponseMixin, DynamicDetailView):
     queryset = Activity.objects.all()
     filter_class = ActivityFilter
     serializer_class = ActivitySerializer
+    selectable_fields = ()
+
+    # specification document
+    fields = (
+        'iati_identifier',
+        'sectors',
+        'recipient_regions',
+        'recipient_countries',
+        )
+
+    # column headers with paths to the json property value.
+    # reference to the field name made by the first term in the path
+    # example: for recipient_countries.country.code path
+    # reference field name is first term, meaning recipient_countries.
+    csv_headers = \
+        {
+                   'iati_identifier': {'header': 'activity_id'},
+                   'sectors.sector.code': {'header': 'sector_code'},
+                   'sectors.percentage':  {'header': 'sectors_percentage'},
+                   'recipient_countries.country.code': {'header': 'country'},
+                   'recipient_regions.region.code': {'header': 'region'},
+        }
+
+    # Activity break down column
+    break_down_by = 'sectors'
+
+    exceptional_fields = [{'transaction_types': []}]  # NOQA: E501
 
 # TODO separate endpoints for expensive fields like ActivityLocations &
 # ActivityResults 08-07-2016

@@ -133,6 +133,16 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
     disbursement_channel = CodelistSerializer()
     sector = TransactionSectorSerializer(
         required=False, source="transaction_sector")
+
+    sectors = TransactionSectorSerializer(
+        many=True, read_only=True, required=False, source="transactionsector_set")  # NOQA: E501
+
+    recipient_countries = TransactionRecipientCountrySerializer(
+        many=True, read_only=True, required=False, source="transactionrecipientcountry_set")  # NOQA: E501
+
+    recipient_regions = TransactionRecipientRegionSerializer(
+        many=True, read_only=True, required=False, source="transactionrecipientregion_set")  # NOQA: E501
+
     recipient_country = TransactionRecipientCountrySerializer(
         required=False, source="transaction_recipient_country")
     recipient_region = TransactionRecipientRegionSerializer(
@@ -146,6 +156,8 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
     activity = ActivitySerializer(read_only=True, fields=(
         'id', 'iati_identifier', 'url', 'title'))
     activity_id = serializers.CharField(write_only=True)
+
+    iati_identifier = serializers.CharField(source='activity.iati_identifier', required=False)  # NOQA: E501
 
     class Meta:
         model = models.Transaction
@@ -172,6 +184,11 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
             'finance_type',
             'aid_type',
             'tied_status',
+            'sectors',
+            'iati_identifier',
+            'recipient_countries',
+            'recipient_regions'
+
         )
 
     def validate(self, data):

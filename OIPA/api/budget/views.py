@@ -1,9 +1,12 @@
+
 from django.db.models import Count, F, Sum
 from django_filters.rest_framework import DjangoFilterBackend
 
-from api.activity.serializers import BudgetSerializer, CodelistSerializer
+from api.activity.serializers import CodelistSerializer
 from api.aggregation.views import Aggregation, AggregationView, GroupBy
 from api.budget import filters
+from api.budget.filters import RelatedOrderingFilter
+from api.budget.serializers import BudgetSerializer
 from api.country.serializers import CountrySerializer
 from api.generics.filters import SearchFilter
 from api.generics.views import DynamicListView
@@ -343,6 +346,7 @@ class BudgetList(DynamicListView):
     filter_backends = (
         SearchFilter,
         DjangoFilterBackend,
+        RelatedOrderingFilter,
     )
     filter_class = filters.BudgetFilter
     serializer_class = BudgetSerializer
@@ -351,7 +355,35 @@ class BudgetList(DynamicListView):
     # stored into dict. This dict is populated in the DynamicView class using
     # _get_query_fields methods.
     selectable_fields = ()
+    break_down_by = 'sectors'
 
+    # Required fields for the serialisation defined by the
+    # specification document
+    fields = (
+        'iati_identifier',
+        'sectors',
+        'recipient_regions',
+        'recipient_countries',
+        'budgets'
+
+    )
+
+    # column headers with paths to the json property value.
+    # reference to the field name made by the first term in the path
+    # example: for recipient_countries.country.code path
+    # reference field name is first term, meaning recipient_countries.
+    csv_headers = \
+        {
+                   'iati_identifier': {'header': 'activity_id'},
+                   'sectors.sector.code': {'header': 'sector_code'},
+                   'sectors.percentage':  {'header': 'sectors_percentage'},
+                   'recipient_countries.country.code': {'header': 'country'},
+                   'recipient_regions.region.code': {'header': 'region'},
+
+        }
+    exceptional_fields = [{'budgets': []}]  # NOQA: E501
+
+    '''
     # Required fields for the serialisation defined by the
     # specification document
     fields = (
@@ -361,4 +393,9 @@ class BudgetList(DynamicListView):
         'period_start',
         'period_end',
         'value',
+        'iati_identifier',
+        'sectors',
+        'recipient_countries',
+        'recipient_regions'
     )
+    '''
