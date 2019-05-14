@@ -147,9 +147,11 @@ class Parse(IatiParser):
             code=element.attrib.get('default-currency'))
 
         old_organisation = self.get_or_none(
-            Organisation, organisation_identifier=organisation_identifier)
+            Organisation,
+            organisation_identifier=organisation_identifier
+        )
         if old_organisation:
-            if old_organisation.last_updated_datetime < last_updated_datetime:
+            if old_organisation.last_updated_datetime < last_updated_datetime or self.force_reparse:  # NOQA: E501
 
                 OrganisationName.objects.filter(
                     organisation=old_organisation).delete()
@@ -709,8 +711,7 @@ class Parse(IatiParser):
         self.add_narrative(element, recipient_org_budget_line)
         return element
 
-    def iati_organisations__iati_organisation__recipient_region_budget(
-            self, element):
+    def iati_organisations__iati_organisation__recipient_region_budget(self, element):  # NOQA: E501
         status = element.attrib.get("status")
         if status:
             status = self.get_or_none(codelist_models.BudgetStatus,
@@ -725,6 +726,7 @@ class Parse(IatiParser):
                 )
         else:
             status = codelist_models.BudgetStatus.objects.get(code=1)
+
         recipient_region = element.xpath("recipient-region")
         if len(recipient_region) is not 1:
             raise ParserError("RecipientRegionBudget",
@@ -734,8 +736,10 @@ class Parse(IatiParser):
         recipient_region_vocabulary = recipient_region[0].attrib.get(
             "vocabulary")
         if recipient_region_vocabulary:
-            recipient_region_vocabulary = self.get_or_none(RegionVocabulary,
-                                                           code=recipient_region_vocabulary)  # NOQA: E501
+            recipient_region_vocabulary = self.get_or_none(
+                RegionVocabulary,
+                code=recipient_region_vocabulary
+            )
             if recipient_region_vocabulary is None:
                 raise FieldValidationError(
                     "RecipientRegionBudget",
@@ -761,18 +765,38 @@ class Parse(IatiParser):
                     None,
                     None,
                 )
+        elif recipient_region_vocabulary.code == '99':
+            # 99 vocabulary provide by reporting organisation
+            # if code region is not available the make a new one
+            code = region
+            region = self.get_or_none(Region, code=code)
+            if not region:
+                region = Region()
+                region.code = code
+                region.region_vocabulary = recipient_region_vocabulary
+                region.name = '{code}'.format(
+                    code=code
+                )
+                region.save()
         else:
-                region = None
+            region = None
 
         period_start = element.xpath("period-start")
         if len(period_start) is not 1:
-            raise ParserError("RecipientRegionBudget",
-                              "period-start",
-                              "must occur once and only once.")
+            raise ParserError(
+                "RecipientRegionBudget",
+                "period-start",
+                "must occur once and only once."
+            )
+
         period_start_date = period_start[0].attrib.get("iso-date")
         if period_start_date is None:
-            raise RequiredFieldError("RecipientRegionBudget", "iso-date",
-                                     "required field missing.")
+            raise RequiredFieldError(
+                "RecipientRegionBudget",
+                "iso-date",
+                "required field missing."
+            )
+
         period_start_date = self.validate_date(period_start_date)
         if not period_start_date:
             raise FieldValidationError(
@@ -782,15 +806,23 @@ class Parse(IatiParser):
                 None,
                 None,
             )
+
         period_end = element.xpath("period-end")
         if len(period_end) is not 1:
-            raise ParserError("RecipientRegionBudget",
-                              "period-end",
-                              "must occur once and only once.")
+            raise ParserError(
+                "RecipientRegionBudget",
+                "period-end",
+                "must occur once and only once."
+            )
+
         period_end_date = period_end[0].attrib.get("iso-date")
         if period_end_date is None:
-            raise RequiredFieldError("RecipientRegionBudget", "iso-date",
-                                     "required field missing.")
+            raise RequiredFieldError(
+                "RecipientRegionBudget",
+                "iso-date",
+                "required field missing."
+            )
+
         period_end_date = self.validate_date(period_end_date)
         if not period_end_date:
             raise FieldValidationError(
@@ -800,18 +832,25 @@ class Parse(IatiParser):
                 None,
                 None,
             )
+
         value_element = element.xpath("value")
         if len(value_element) is not 1:
-            raise ParserError("RecipientRegionBudget",
-                              "value",
-                              "must occur once and only once.")
-        value = self.guess_number("RecipientRegionBudget", value_element[
-            0].text)
+            raise ParserError(
+                "RecipientRegionBudget",
+                "value",
+                "must occur once and only once."
+            )
+
+        value = self.guess_number(
+            "RecipientRegionBudget", value_element[0].text
+        )
 
         currency = value_element[0].attrib.get("currency")
         if not currency:
-            currency = getattr(self.get_model("Organisation"),
-                               "default_currency")
+            currency = getattr(
+                self.get_model("Organisation"),
+                "default_currency"
+            )
             if not currency:
                 raise RequiredFieldError(
                     "RecipientRegionBudget",
@@ -820,8 +859,10 @@ class Parse(IatiParser):
                     "as currency on the element itself."
                 )
         else:
-            currency = self.get_or_none(codelist_models.Currency,
-                                        code=currency)
+            currency = self.get_or_none(
+                codelist_models.Currency,
+                code=currency
+            )
             if not currency:
                 raise FieldValidationError(
                     "RecipientRegionBudget",
@@ -833,8 +874,12 @@ class Parse(IatiParser):
 
         value_date = value_element[0].attrib.get("value-date")
         if value_date is None:
-            raise RequiredFieldError("RecipientRegionBudget", "value-date",
-                                     "required field missing.")
+            raise RequiredFieldError(
+                "RecipientRegionBudget",
+                "value-date",
+                "required field missing."
+            )
+
         value_date = self.validate_date(value_date)
         if not value_date:
             raise FieldValidationError(
@@ -844,7 +889,9 @@ class Parse(IatiParser):
                 None,
                 None,
             )
+
         organisation = self.get_model("Organisation")
+
         recipient_region_budget = RecipientRegionBudget()
         recipient_region_budget.organisation = organisation
         recipient_region_budget.status = status
@@ -858,6 +905,7 @@ class Parse(IatiParser):
         recipient_region_budget.value = value
 
         self.register_model("RecipientRegionBudget", recipient_region_budget)
+
         return element
 
     def iati_organistions__iati_organisation__recipient_region_budget__recipient_region__narrative(self, element):  # NOQA: E501

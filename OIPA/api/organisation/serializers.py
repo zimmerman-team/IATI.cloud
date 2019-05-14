@@ -1029,22 +1029,24 @@ class OrganisationReportingOrganisationSerializer(ModelSerializerNoValidation):
 
 
 class OrganisationSerializer(DynamicFieldsModelSerializer):
+
     class PublishedStateSerializer(DynamicFieldsSerializer):
         published = serializers.BooleanField()
         ready_to_publish = serializers.BooleanField()
         modified = serializers.BooleanField()
 
     url = EncodedHyperlinkedIdentityField(
-        view_name='organisations:organisation-detail', read_only=True)
-
+        view_name='organisations:organisation-detail',
+        read_only=True
+    )
     last_updated_datetime = serializers.DateTimeField(required=False)
     xml_lang = serializers.CharField(
-        source='default_lang.code', required=False)
+        source='default_lang.code',
+        required=False
+    )
     default_currency = CodelistSerializer(required=False)
     name = OrganisationNameSerializer(required=False)
-
     published_state = PublishedStateSerializer(source="*", read_only=True)
-
     reporting_org = OrganisationReportingOrganisationSerializer(read_only=True)
     total_budgets = OrganisationTotalBudgetSerializer(
         many=True,
