@@ -1057,12 +1057,19 @@ class OrganisationSerializer(DynamicFieldsModelSerializer):
         many=True,
         read_only=True
     )
+    recipient_regions_budgets = OrganisationRecipientRegionBudgetSerializer(
+        source='recipient_region_budget',
+        many=True,
+        read_only=True
+    )
 
     class Meta:
         model = org_models.Organisation
         fields = (
             'url',
             'id',
+            'published_state',
+            'primary_name',
             'organisation_identifier',
             'last_updated_datetime',
             'xml_lang',
@@ -1071,8 +1078,7 @@ class OrganisationSerializer(DynamicFieldsModelSerializer):
             'reporting_org',
             'total_budgets',
             'recipient_org_budgets',
-            'published_state',
-            'primary_name',
+            'recipient_regions_budgets'
         )
 
     def validate(self, data):
