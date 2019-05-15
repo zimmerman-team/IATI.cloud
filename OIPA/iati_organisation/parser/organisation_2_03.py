@@ -1,6 +1,6 @@
 from django.conf import settings
 
-from geodata.models import Region
+from geodata.models import Country, Region
 from iati.parser.exceptions import (
     FieldValidationError, ParserError, RequiredFieldError
 )
@@ -9,9 +9,9 @@ from iati_codelists import models as codelist_models
 from iati_organisation.models import (
     Organisation, OrganisationDocumentLink, OrganisationName,
     OrganisationNarrative, OrganisationReportingOrganisation,
-    RecipientCountryBudget, RecipientOrgBudget, RecipientOrgBudgetLine,
-    RecipientRegionBudget, RecipientRegionBudgetLine, TotalBudget,
-    TotalBudgetLine, TotalExpenditure
+    RecipientCountryBudget, RecipientCountryBudgetLine, RecipientOrgBudget,
+    RecipientOrgBudgetLine, RecipientRegionBudget, RecipientRegionBudgetLine,
+    TotalBudget, TotalBudgetLine, TotalExpenditure
 )
 from iati_organisation.parser import post_save
 from iati_vocabulary.models import RegionVocabulary
@@ -988,6 +988,268 @@ class Parse(IatiParser):
         recipient_region_budget_line = self.get_model(
             'RecipientRegionBudgetLine')
         self.add_narrative(element, recipient_region_budget_line)
+        return element
+
+    def iati_organisations__iati_organisation__recipient_country_budget(self, element):  # NOQA: E501
+        status = element.attrib.get("status")
+        if status:
+            status = self.get_or_none(codelist_models.BudgetStatus,
+                                      code=status)
+            if status is None:
+                raise FieldValidationError(
+                    "RecipientCountryBudget",
+                    "status",
+                    "not found on the accompanying codelist.",
+                    None,
+                    None,
+                )
+        else:
+            status = codelist_models.BudgetStatus.objects.get(code=1)
+
+        recipient_country = element.xpath("recipient-country")
+        if len(recipient_country) is not 1:
+            raise ParserError("RecipientCountryBudget",
+                              "recipient-region",
+                              "must occur once and only once.")
+
+        country = recipient_country[0].attrib.get("code")
+        if country is None:
+            raise RequiredFieldError(
+                "RecipientCountryBudget",
+                "code",
+                "required field missing."
+            )
+
+        country = self.get_or_none(Country, code=country)
+        if not country:
+            raise FieldValidationError(
+                "RecipientCountryBudget",
+                "country",
+                "not found on the accompanying codelist.",
+                None,
+                None,
+            )
+
+        period_start = element.xpath("period-start")
+        if len(period_start) is not 1:
+            raise ParserError(
+                "RecipientCountryBudget",
+                "period-start",
+                "must occur once and only once."
+            )
+
+        period_start_date = period_start[0].attrib.get("iso-date")
+        if period_start_date is None:
+            raise RequiredFieldError(
+                "RecipientCountryBudget",
+                "iso-date",
+                "required field missing."
+            )
+
+        period_start_date = self.validate_date(period_start_date)
+        if not period_start_date:
+            raise FieldValidationError(
+                "RecipientCountryBudget",
+                "iso-date",
+                "is not in correct range.",
+                None,
+                None,
+            )
+
+        period_end = element.xpath("period-end")
+        if len(period_end) is not 1:
+            raise ParserError(
+                "RecipientCountryBudget",
+                "period-end",
+                "must occur once and only once."
+            )
+
+        period_end_date = period_end[0].attrib.get("iso-date")
+        if period_end_date is None:
+            raise RequiredFieldError(
+                "RecipientCountryBudget",
+                "iso-date",
+                "required field missing."
+            )
+
+        period_end_date = self.validate_date(period_end_date)
+        if not period_end_date:
+            raise FieldValidationError(
+                "RecipientCountryBudget",
+                "iso-date",
+                "is not in correct range.",
+                None,
+                None,
+            )
+
+        value_element = element.xpath("value")
+        if len(value_element) is not 1:
+            raise ParserError(
+                "RecipientCountryBudget",
+                "value",
+                "must occur once and only once."
+            )
+
+        value = self.guess_number(
+            "RecipientCountryBudget", value_element[0].text
+        )
+
+        currency = value_element[0].attrib.get("currency")
+        if not currency:
+            currency = getattr(
+                self.get_model("Organisation"),
+                "default_currency"
+            )
+            if not currency:
+                raise RequiredFieldError(
+                    "RecipientCountryBudget",
+                    "currency",
+                    "must specify default-currency on iati-organisation or "
+                    "as currency on the element itself."
+                )
+        else:
+            currency = self.get_or_none(
+                codelist_models.Currency,
+                code=currency
+            )
+            if not currency:
+                raise FieldValidationError(
+                    "RecipientCountryBudget",
+                    "currency",
+                    "not found on the accompanying codelist.",
+                    None,
+                    None,
+                )
+
+        value_date = value_element[0].attrib.get("value-date")
+        if value_date is None:
+            raise RequiredFieldError(
+                "RecipientCountryBudget",
+                "value-date",
+                "required field missing."
+            )
+
+        value_date = self.validate_date(value_date)
+        if not value_date:
+            raise FieldValidationError(
+                "RecipientCountryBudget",
+                "value-date",
+                "not in the correct range.",
+                None,
+                None,
+            )
+
+        organisation = self.get_model("Organisation")
+
+        recipient_country_budget = RecipientCountryBudget()
+        recipient_country_budget.organisation = organisation
+        recipient_country_budget.status = status
+        recipient_country_budget.country = country
+        recipient_country_budget.period_start = period_start_date
+        recipient_country_budget.period_end = period_end_date
+        recipient_country_budget.value_date = value_date
+        recipient_country_budget.currency = currency
+        recipient_country_budget.value = value
+
+        self.register_model("RecipientCountryBudget", recipient_country_budget)
+
+        return element
+
+    def iati_organisations__iati_organisation__recipient_country_budget__budget_line(self, element):  # NOQA: E501
+        ref = element.attrib.get("ref")
+
+        narrative = element.xpath("narrative")
+        # "narrative" element must occur at least once.
+        if len(narrative) < 1:
+            raise ParserError(
+                "RecipientCountryBudgetLine",
+                "narrative",
+                "must occur at least once."
+            )
+
+        value_element = element.xpath("value")
+        # "value" element must occur once and only once.
+        if len(value_element) is not 1:
+            raise ParserError(
+                "RecipientCountryBudgetLine",
+                "value",
+                "must occur once and only once."
+            )
+
+        value = self.guess_number(
+            "RecipientCountryBudget",
+            value_element[0].text
+        )
+
+        currency = value_element[0].attrib.get("currency")
+        if not currency:
+            currency = getattr(
+                self.get_model("Organisation"),
+                "default_currency"
+            )
+            if not currency:
+                raise RequiredFieldError(
+                    "RecipientCountryBudgetLine",
+                    "currency",
+                    "must specify default-currency on iati-activity or as "
+                    "currency on the element itself."
+                )
+
+        else:
+            currency = self.get_or_none(
+                codelist_models.Currency,
+                code=currency
+            )
+            if currency is None:
+                raise FieldValidationError(
+                    "RecipientCountryBudgetLine",
+                    "currency",
+                    "not found on the accompanying codelist.",
+                    None,
+                    None,
+                )
+
+        value_date = value_element[0].attrib.get("value-date")
+        if value_date is None:
+            raise RequiredFieldError(
+                "RecipientCountryBudgetLine",
+                "value-date",
+                "required field missing."
+            )
+
+        value_date = self.validate_date(value_date)
+        if not value_date:
+            raise FieldValidationError(
+                "RecipientCountryBudgetLine",
+                "value-date",
+                "not in the correct range.",
+                None,
+                None,
+            )
+
+        recipient_country_budget = self.get_model("RecipientCountryBudget")
+
+        recipient_country_budget_line = RecipientCountryBudgetLine()
+        recipient_country_budget_line.recipient_country_budget = \
+            recipient_country_budget
+        recipient_country_budget_line.ref = ref
+        recipient_country_budget_line.currency = currency
+        recipient_country_budget_line.value = value
+        recipient_country_budget_line.value_date = value_date
+
+        self.register_model(
+            "RecipientCountryBudgetLine",
+            recipient_country_budget_line
+        )
+
+        return element
+
+    def iati_organisations__iati_organisation__recipient_country_budget__budget_line__narrative(self, element):  # NOQA: E501
+        recipient_country_budget_line = self.get_model(
+            'RecipientCountryBudgetLine'
+        )
+        self.add_narrative(element, recipient_country_budget_line)
+
         return element
 
     def post_save_models(self):
