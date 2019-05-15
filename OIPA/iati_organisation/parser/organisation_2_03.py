@@ -7,11 +7,13 @@ from iati.parser.exceptions import (
 from iati.parser.iati_parser import IatiParser
 from iati_codelists import models as codelist_models
 from iati_organisation.models import (
-    Organisation, OrganisationDocumentLink, OrganisationName,
-    OrganisationNarrative, OrganisationReportingOrganisation,
-    RecipientCountryBudget, RecipientCountryBudgetLine, RecipientOrgBudget,
-    RecipientOrgBudgetLine, RecipientRegionBudget, RecipientRegionBudgetLine,
-    TotalBudget, TotalBudgetLine, TotalExpenditure, TotalExpenditureLine
+    DocumentLinkRecipientCountry, DocumentLinkTitle, Organisation,
+    OrganisationDocumentLink, OrganisationDocumentLinkCategory,
+    OrganisationDocumentLinkLanguage, OrganisationName, OrganisationNarrative,
+    OrganisationReportingOrganisation, RecipientCountryBudget,
+    RecipientCountryBudgetLine, RecipientOrgBudget, RecipientOrgBudgetLine,
+    RecipientRegionBudget, RecipientRegionBudgetLine, TotalBudget,
+    TotalBudgetLine, TotalExpenditure, TotalExpenditureLine
 )
 from iati_organisation.parser import post_save
 from iati_vocabulary.models import RegionVocabulary
@@ -1457,6 +1459,168 @@ class Parse(IatiParser):
     def iati_organisations__iati_organisation__total_expenditure__expense_line__narrative(self, element):  # NOQA: E501
         expenditure_line = self.get_model("TotalExpenditureLine")
         self.add_narrative(element, expenditure_line)
+
+        return element
+
+    def iati_organisations__iati_organisation__document_link(self, element):
+        """atributes:
+        format:application/vnd.oasis.opendocument.text
+        url:http:www.example.org/docs/report_en.odt
+
+        tag:document-link"""
+        model = self.get_model('Organisation')
+        document_link = OrganisationDocumentLink()
+        document_link.organisation = model
+        document_link.url = element.attrib.get('url')
+        document_link.file_format = self.get_or_none(
+            codelist_models.FileFormat,
+            code=element.attrib.get('format')
+        )
+
+        self.organisation_document_link_current_index = self.register_model(
+            'OrganisationDocumentLink',
+            document_link
+        )
+
+        return element
+
+    def iati_organisations__iati_organisation__document_link__title(self, element):  # NOQA: E501
+        """
+        atributes:
+        tag:title
+        """
+
+        document_link_title = DocumentLinkTitle()
+        self.document_link_title_current_index = self.register_model(
+            'DocumentLinkTitle',
+            document_link_title
+        )
+
+        model = self.get_model(
+            'OrganisationDocumentLink',
+            self.organisation_document_link_current_index
+        )
+        document_link_title.document_link = model
+
+        return element
+
+    def iati_organisations__iati_organisation__document_link__title__narrative(self, element):  # NOQA: E501
+        """
+        atributes:
+        tag:narrative
+        """
+        model = self.get_model(
+            'DocumentLinkTitle',
+            self.document_link_title_current_index
+        )
+        self.add_narrative(element, model)
+
+        return element
+
+    def iati_organisations__iati_organisation__document_link__category(self, element):  # NOQA: E501
+        """
+        atributes:
+        code:B01
+        tag:category
+        """
+        model = self.get_model(
+            'OrganisationDocumentLink',
+            self.organisation_document_link_current_index
+        )
+        document_category = self.get_or_none(
+            codelist_models.DocumentCategory,
+            code=element.attrib.get('code')
+        )
+
+        document_link_category = OrganisationDocumentLinkCategory()
+        document_link_category.category = document_category
+        document_link_category.document_link = model
+
+        self.register_model(
+            'OrganisationDocumentLinkCategory',
+            document_link_category
+        )
+
+        return element
+
+    def iati_organisations__iati_organisation__document_link__language(self, element):  # NOQA: E501
+        """
+        atributes:
+        code:en
+        tag:language
+        """
+        organisation_document_link_language = \
+            OrganisationDocumentLinkLanguage()
+
+        organisation_document_link_language.language = self.get_or_none(
+            codelist_models.Language,
+            code=element.attrib.get('code')
+        )
+        model = self.get_model(
+            'OrganisationDocumentLink',
+            self.organisation_document_link_current_index
+        )
+        organisation_document_link_language.document_link = model
+
+        self.document_link_language_current_index = self.register_model(
+            'OrganisationDocumentLinkLanguage',
+            organisation_document_link_language
+        )
+
+        return element
+
+    def iati_organisations__iati_organisation__document_link__document_date(self, element):  # NOQA: E501
+        """
+        attributes:
+        format:application/vnd.oasis.opendocument.text
+        url:http:www.example.org/docs/report_en.odt
+        tag:document-link
+        """
+
+        iso_date = element.attrib.get('iso-date')
+        if not iso_date:
+            raise RequiredFieldError(
+                "document-link/document-date",
+                "iso-date",
+                "required attribute missing"
+            )
+
+        iso_date = self.validate_date(iso_date)
+        if not iso_date:
+            raise FieldValidationError(
+                "document-link/document-date",
+                "iso-date",
+                "iso-date not of type xsd:date"
+            )
+
+        document_link = self.get_model(
+            'OrganisationDocumentLink',
+            self.organisation_document_link_current_index
+        )
+        document_link.iso_date = iso_date
+
+        return element
+
+    def iati_organisations__iati_organisation__document_link__recipient_country(self, element):  # NOQA: E501
+        """
+        atributes:
+        code:AF
+        tag:recipient-country
+        """
+        model = self.get_model(
+            'OrganisationDocumentLink',
+            self.organisation_document_link_current_index
+        )
+        country = self.get_or_none(Country, code=element.attrib.get('code'))
+
+        document_link_recipient_country = DocumentLinkRecipientCountry()
+        document_link_recipient_country.recipient_country = country
+        document_link_recipient_country.document_link = model
+
+        self.register_model(
+            'DocumentLinkRecipientCountry',
+            document_link_recipient_country
+        )
 
         return element
 
