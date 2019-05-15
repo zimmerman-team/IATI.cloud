@@ -924,13 +924,13 @@ class OrganisationDocumentLinkSerializer(ModelSerializerNoValidation):
     categories = OrganisationDocumentLinkCategorySerializer(
         many=True,
         required=False,
-        source="documentlinkcategory_set"
+        source="organisationdocumentlinkcategory_set"
     )
 
     languages = OrganisationDocumentLinkLanguageSerializer(
         many=True,
         required=False,
-        source="documentlinklanguage_set"
+        source="organisationdocumentlinklanguage_set"
     )
 
     recipient_countries = OrganisationDocumentLinkRecipientCountrySerializer(
@@ -1071,6 +1071,11 @@ class OrganisationSerializer(DynamicFieldsModelSerializer):
         many=True,
         read_only=True
     )
+    document_links = OrganisationDocumentLinkSerializer(
+        source='organisationdocumentlink_set',
+        many=True,
+        read_only=True
+    )
 
     class Meta:
         model = org_models.Organisation
@@ -1089,7 +1094,8 @@ class OrganisationSerializer(DynamicFieldsModelSerializer):
             'recipient_org_budgets',
             'recipient_region_budgets',
             'recipient_country_budgets',
-            'total_expenditures'
+            'total_expenditures',
+            'document_links'
         )
 
     def validate(self, data):
