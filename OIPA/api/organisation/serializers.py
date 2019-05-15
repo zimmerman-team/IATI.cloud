@@ -1046,8 +1046,12 @@ class OrganisationSerializer(DynamicFieldsModelSerializer):
     published_state = PublishedStateSerializer(source="*", read_only=True)
 
     reporting_org = OrganisationReportingOrganisationSerializer(read_only=True)
-
     total_budgets = OrganisationTotalBudgetSerializer(
+        many=True,
+        read_only=True
+    )
+    recipient_org_budgets = OrganisationRecipientOrgBudgetSerializer(
+        source='recipientorgbudget_set',
         many=True,
         read_only=True
     )
@@ -1064,6 +1068,7 @@ class OrganisationSerializer(DynamicFieldsModelSerializer):
             'name',
             'reporting_org',
             'total_budgets',
+            'recipient_org_budgets',
             'published_state',
             'primary_name',
         )
