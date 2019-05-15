@@ -6,6 +6,7 @@ from api.codelist.serializers import (
 )
 from api.country.serializers import CountrySerializer
 from api.fields import EncodedHyperlinkedIdentityField
+from api.generics.fields import BoolToNumField
 from api.generics.serializers import (
     DynamicFieldsModelSerializer, DynamicFieldsSerializer,
     ModelSerializerNoValidation, SerializerNoValidation
@@ -1008,6 +1009,25 @@ class OrganisationDocumentLinkSerializer(ModelSerializerNoValidation):
         return update_instance
 
 
+class OrganisationReportingOrganisationSerializer(ModelSerializerNoValidation):
+    xml_meta = {'attributes': ('ref', 'type', 'secondary_reporter')}
+
+    ref = serializers.CharField(source="reporting_org_identifier")
+    type = CodelistSerializer(source="org_type")
+    secondary_reporter = BoolToNumField()
+
+    narratives = OrganisationNarrativeSerializer(many=True)
+
+    class Meta:
+        model = org_models.OrganisationReportingOrganisation
+        fields = (
+            'ref',
+            'type',
+            'secondary_reporter',
+            'narratives',
+        )
+
+
 class OrganisationSerializer(DynamicFieldsModelSerializer):
     class PublishedStateSerializer(DynamicFieldsSerializer):
         published = serializers.BooleanField()
@@ -1025,6 +1045,8 @@ class OrganisationSerializer(DynamicFieldsModelSerializer):
 
     published_state = PublishedStateSerializer(source="*", read_only=True)
 
+    reporting_org = OrganisationReportingOrganisationSerializer(read_only=True)
+
     class Meta:
         model = org_models.Organisation
         fields = (
@@ -1035,8 +1057,9 @@ class OrganisationSerializer(DynamicFieldsModelSerializer):
             'xml_lang',
             'default_currency',
             'name',
+            'reporting_org',
             'published_state',
-            'primary_name'
+            'primary_name',
         )
 
     def validate(self, data):
