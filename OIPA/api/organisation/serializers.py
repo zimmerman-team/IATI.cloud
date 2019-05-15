@@ -153,7 +153,7 @@ class OrganisationTotalBudgetSerializer(ModelSerializerNoValidation):
     period_end = serializers.CharField()
 
     budget_lines = TotalBudgetBudgetLineSerializer(
-        many=True, source="totalbudgetbudgetline_set", required=False)
+        many=True, source="totalbudgetline_set", required=False)
 
     class Meta:
         model = org_models.TotalBudget
@@ -1047,6 +1047,11 @@ class OrganisationSerializer(DynamicFieldsModelSerializer):
 
     reporting_org = OrganisationReportingOrganisationSerializer(read_only=True)
 
+    total_budgets = OrganisationTotalBudgetSerializer(
+        many=True,
+        read_only=True
+    )
+
     class Meta:
         model = org_models.Organisation
         fields = (
@@ -1058,6 +1063,7 @@ class OrganisationSerializer(DynamicFieldsModelSerializer):
             'default_currency',
             'name',
             'reporting_org',
+            'total_budgets',
             'published_state',
             'primary_name',
         )
