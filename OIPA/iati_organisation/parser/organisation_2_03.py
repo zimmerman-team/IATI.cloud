@@ -11,7 +11,7 @@ from iati_organisation.models import (
     OrganisationNarrative, OrganisationReportingOrganisation,
     RecipientCountryBudget, RecipientCountryBudgetLine, RecipientOrgBudget,
     RecipientOrgBudgetLine, RecipientRegionBudget, RecipientRegionBudgetLine,
-    TotalBudget, TotalBudgetLine, TotalExpenditure
+    TotalBudget, TotalBudgetLine, TotalExpenditure, TotalExpenditureLine
 )
 from iati_organisation.parser import post_save
 from iati_vocabulary.models import RegionVocabulary
@@ -1249,6 +1249,214 @@ class Parse(IatiParser):
             'RecipientCountryBudgetLine'
         )
         self.add_narrative(element, recipient_country_budget_line)
+
+        return element
+
+    def iati_organisations__iati_organisation__total_expenditure(self, element):  # NOQA: E501
+        period_start = element.xpath("period-start")
+        if len(period_start) is not 1:
+            raise ParserError(
+                "TotalExpenditure",
+                "period-start",
+                "must occur once and only once."
+            )
+
+        period_start_date = period_start[0].attrib.get("iso-date")
+        if period_start_date is None:
+            raise RequiredFieldError(
+                "TotalExpenditure",
+                "iso-date",
+                "required field missing."
+            )
+
+        period_start_date = self.validate_date(period_start_date)
+        if not period_start_date:
+            raise FieldValidationError(
+                "TotalExpenditure",
+                "iso-date",
+                "is not in correct range.",
+                None,
+                None,
+            )
+
+        period_end = element.xpath("period-end")
+        if len(period_end) is not 1:
+            raise ParserError(
+                "TotalExpenditure",
+                "period-end",
+                "must occur once and only once."
+            )
+
+        period_end_date = period_end[0].attrib.get("iso-date")
+        if period_end_date is None:
+            raise RequiredFieldError(
+                "TotalExpenditure",
+                "iso-date",
+                "required field missing."
+            )
+
+        period_end_date = self.validate_date(period_end_date)
+        if not period_end_date:
+            raise FieldValidationError(
+                "TotalExpenditure",
+                "iso-date",
+                "is not in correct range.",
+                None,
+                None,
+            )
+
+        value_element = element.xpath("value")
+        if len(value_element) is not 1:
+            raise ParserError(
+                "TotalExpenditure",
+                "value",
+                "must occur once and only once."
+            )
+
+        value = self.guess_number("TotalExpenditure", value_element[0].text)
+
+        currency = value_element[0].attrib.get("currency")
+        if not currency:
+            currency = getattr(
+                self.get_model("Organisation"),
+                "default_currency"
+            )
+            if not currency:
+                raise RequiredFieldError(
+                    "TotalExpenditure",
+                    "currency",
+                    "must specify default-currency on iati-activity or as "
+                    "currency on the element itself."
+                )
+        else:
+            currency = self.get_or_none(
+                codelist_models.Currency,
+                code=currency
+            )
+            if currency is None:
+                raise FieldValidationError(
+                    "TotalExpenditure",
+                    "currency",
+                    "not found on the accompanying codelist.",
+                    None,
+                    None,
+                )
+
+        value_date = value_element[0].attrib.get("value-date")
+        if value_date is None:
+            raise RequiredFieldError(
+                "TotalExpenditure",
+                "value-date",
+                "required field missing."
+            )
+
+        value_date = self.validate_date(value_date)
+        if not value_date:
+            raise FieldValidationError(
+                "TotalExpenditure",
+                "value-date",
+                "not in the correct range.",
+                None,
+                None,
+            )
+
+        organisation = self.get_model("Organisation")
+
+        total_expenditure = TotalExpenditure()
+        total_expenditure.organisation = organisation
+        total_expenditure.period_start = period_start_date
+        total_expenditure.period_end = period_end_date
+        total_expenditure.value_date = value_date
+        total_expenditure.currency = currency
+        total_expenditure.value = value
+
+        self.register_model("TotalExpenditure", total_expenditure)
+
+        return element
+
+    def iati_organisations__iati_organisation__total_expenditure__expense_line(self, element):  # NOQA: E501
+        ref = element.attrib.get("ref")
+
+        narrative = element.xpath("narrative")
+        if len(narrative) < 1:
+            raise ParserError(
+                "TotalExpenditureLine",
+                "narrative",
+                "must occur at least once."
+            )
+
+        value_element = element.xpath("value")
+        if len(value_element) is not 1:
+            raise ParserError(
+                "TotalExpenditureLine",
+                "value",
+                "must occur once and only once."
+            )
+
+        value = self.guess_number("TotalExpenditure", value_element[0].text)
+
+        currency = value_element[0].attrib.get("currency")
+        if not currency:
+            currency = getattr(
+                self.get_model("Organisation"),
+                "default_currency"
+            )
+            if not currency:
+                raise RequiredFieldError(
+                    "TotalExpenditureLine",
+                    "currency",
+                    "must specify default-currency on iati-activity or as "
+                    "currency on the element itself."
+                )
+
+        else:
+            currency = self.get_or_none(
+                codelist_models.Currency,
+                code=currency
+            )
+            if currency is None:
+                raise FieldValidationError(
+                    "TotalExpenditureLine",
+                    "currency",
+                    "not found on the accompanying codelist.",
+                    None,
+                    None,
+                )
+
+        value_date = value_element[0].attrib.get("value-date")
+        if value_date is None:
+            raise RequiredFieldError(
+                "TotalExpenditureLine",
+                "value-date",
+                "required field missing."
+            )
+
+        value_date = self.validate_date(value_date)
+        if not value_date:
+            raise FieldValidationError(
+                "TotalExpenditureLine",
+                "value-date",
+                "not in the correct range.",
+                None,
+                None,
+            )
+
+        total_expenditure = self.get_model("TotalExpenditure")
+
+        total_expenditure_line = TotalExpenditureLine()
+        total_expenditure_line.total_expenditure = total_expenditure
+        total_expenditure_line.ref = ref
+        total_expenditure_line.currency = currency
+        total_expenditure_line.value = value
+        total_expenditure_line.value_date = value_date
+
+        self.register_model("TotalExpenditureLine", total_expenditure_line)
+
+        return element
+
+    def iati_organisations__iati_organisation__total_expenditure__expense_line__narrative(self, element):  # NOQA: E501
+        expenditure_line = self.get_model("TotalExpenditureLine")
+        self.add_narrative(element, expenditure_line)
 
         return element
 
