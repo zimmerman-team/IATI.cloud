@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404
 from django.utils.http import urlunquote
 from django_filters.rest_framework import DjangoFilterBackend
+import rest_framework
 from rest_framework import authentication, status
 from rest_framework.generics import (
     ListAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
@@ -26,6 +27,7 @@ from iati_organisation.models import (
     RecipientOrgBudgetLine, RecipientRegionBudget, RecipientRegionBudgetLine,
     TotalBudget, TotalBudgetLine, TotalExpenditure, TotalExpenditureLine
 )
+from api.renderers import OrgasanitionIATIXMLRenderer
 
 
 def custom_get_object(self):
@@ -68,6 +70,11 @@ class OrganisationList(CacheResponseMixin, DynamicListView):
     URI is constructed as follows: `/api/organisations/{organisation_id}`
 
     """
+    renderer_classes = (
+        rest_framework.renderers.BrowsableAPIRenderer,
+        rest_framework.renderers.JSONRenderer,
+        OrgasanitionIATIXMLRenderer,
+    )
     queryset = Organisation.objects.all()
     serializer_class = serializers.OrganisationSerializer
     fields = ('url', 'organisation_identifier',
@@ -94,6 +101,11 @@ class OrganisationDetail(CacheResponseMixin, DynamicDetailView):
     - `fields` (*optional*): List of fields to display
 
     """
+    renderer_classes = (
+        rest_framework.renderers.BrowsableAPIRenderer,
+        rest_framework.renderers.JSONRenderer,
+        OrgasanitionIATIXMLRenderer,
+    )
     queryset = Organisation.objects.all()
     serializer_class = serializers.OrganisationSerializer
 
