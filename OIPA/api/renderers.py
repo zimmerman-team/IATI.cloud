@@ -931,7 +931,7 @@ class IATIXMLRenderer(BaseRenderer):
             pass
 
 
-class OrgasanitionIATIXMLRenderer(IATIXMLRenderer):
+class OrganisationIATIXMLRenderer(IATIXMLRenderer):
     """
     Renderer of the XML export for the organisation file
     """
