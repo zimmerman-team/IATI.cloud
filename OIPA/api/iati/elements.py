@@ -129,7 +129,7 @@ class AttributeRecord(object):
     dict_key = str
     key = str
 
-    def __init__(self, name,  key, dict_key=None):
+    def __init__(self, name,  key=None, dict_key=None):
         self.name = name
         self.key = key
         self.dict_key = dict_key
@@ -147,7 +147,7 @@ class ElementRecord(object):
     children = list
     element_type = None
 
-    def __init__(self, name, key=None, attributes=None, children=None, element_type=None):  # NOQA: E501
+    def __init__(self, name=None, key=None, attributes=None, children=None, element_type=None):  # NOQA: E501
         self.name = name
         self.key = key
         self.attributes = attributes
@@ -179,6 +179,9 @@ class ElementBase(object):
                         self.parent_element,
                         self.element_record.name
                     )
+                else:
+                    self.element = self.parent_element
+
             elif self.element_record.element_type \
                     == ElementWithNarrativeReference:
                 # Narrative element
@@ -191,16 +194,27 @@ class ElementBase(object):
             # Create attribute
             if self.element_record.attributes:
                 for attribute in self.element_record.attributes:
-                    data_attribute = DataAttribute(
-                        data=self.data,
-                        key=attribute.key,
-                        dict_key=attribute.dict_key
-                    )
-                    if data_attribute.value:
+                    if attribute.key:
+                        data_attribute = DataAttribute(
+                            data=self.data,
+                            key=attribute.key,
+                            dict_key=attribute.dict_key
+                        )
+                        if data_attribute.value:
+                            self.element.set(
+                                attribute.name,
+                                data_attribute.value
+                            )
+                    else:
+                        # This is only for the one attribute
+                        # in the one reference
+                        # So after done this process
+                        # then return the parent process
                         self.element.set(
                             attribute.name,
-                            data_attribute.value
+                            self.data
                         )
+                        return
 
             # Create children element
             if self.element_record.children:
@@ -243,7 +257,7 @@ class ElementBase(object):
                             element_record.data = data
                             element_record.create()
 
-            elif not self.element_record.element_type:
+            elif not self.element_record.element_type:  # NOQA: E501
                 # TODO: very complicated please find more simple then this
                 data_element = DataElement(
                     data=self.data,
@@ -255,7 +269,7 @@ class ElementBase(object):
                     if data and not isinstance(data, (list, dict)):
                         self.element.text = str(data)
                 else:
-                    # The parent element should embed on current data
+                    # The parent element should be embed of the current data
                     if data and not isinstance(data, (list, dict)):
                         self.parent_element.text = str(data)
 

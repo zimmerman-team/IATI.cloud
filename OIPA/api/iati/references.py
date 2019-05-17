@@ -3526,3 +3526,53 @@ class ActivityScopeReference(BaseReference):
         attributes=attributes
     )
     # </activity-scope>
+
+
+class DefaultCurrencyOrgReference(BaseReference):
+    """
+    http://reference.iatistandard.org/203/organisation-standard/iati-organisations/iati-organisation/
+    """
+
+    # <iati-organisation
+    attributes = [
+        # @code
+        AttributeRecord(
+            name='default-currency',
+            key='code'
+        ),
+    ]
+    element_record = ElementRecord(
+        attributes=attributes,
+    )
+    # />
+
+
+class LastUpdatedDatetimeOrgReference(BaseReference):
+    """
+    http://reference.iatistandard.org/203/organisation-standard/iati-organisations/iati-organisation/
+    """
+
+    # <iati-organisation
+    attributes = [
+        # @code
+        AttributeRecord(
+            name='last-updated-datetime'
+        ),
+    ]
+    element_record = ElementRecord(
+        attributes=attributes,
+    )
+    # />
+
+
+class XmlLangReference(BaseReference):
+    """
+    http://reference.iatistandard.org/203/organisation-standard/iati-organisations/iati-organisation/
+    """
+
+    # <iati-organisation />
+
+    def create(self):
+        self.parent_element.set(
+            '{http://www.w3.org/XML/1998/namespace}lang', self.data.lower()
+        )
