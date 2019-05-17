@@ -25,7 +25,7 @@ from api.iati.references import (
     DefaultFlowTypeReference, DefaultTiedStatusReference, DescriptionReference,
     DocumentLinkReference, FssReference, HumanitarianScopeReference,
     LastUpdatedDatetimeOrgReference, LegacyDataReference, LocationReference,
-    OtherIdentifierReference, ParticipatingOrgReference,
+    NameOrgReference, OtherIdentifierReference, ParticipatingOrgReference,
     PlannedDisbursementReference, PolicyMarkerReference,
     RecipientCountryReference, RecipientRegionReference,
     RelatedActivityReference, ReportingOrgReference, ResultReference,
@@ -944,4 +944,5 @@ class OrganisationIATIXMLRenderer(IATIXMLRenderer):
         'default_currency': DefaultCurrencyOrgReference,
         'last_updated_datetime': LastUpdatedDatetimeOrgReference,
         'xml_lang': XmlLangReference,
+        'name': NameOrgReference
     }

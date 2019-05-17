@@ -3576,3 +3576,16 @@ class XmlLangReference(BaseReference):
         self.parent_element.set(
             '{http://www.w3.org/XML/1998/namespace}lang', self.data.lower()
         )
+
+
+class NameOrgReference(BaseReference):
+    """
+    http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/activity-scope/
+    """
+
+    # <name>
+    element_record = ElementRecord(
+        name='name',
+        element_type=ElementWithNarrativeReference
+    )
+    # </name>
