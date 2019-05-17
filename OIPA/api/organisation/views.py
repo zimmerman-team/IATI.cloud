@@ -19,7 +19,7 @@ from api.generics.views import (
 from api.organisation import serializers
 from api.organisation.validators import organisation_required_fields
 from api.publisher.permissions import PublisherPermissions
-from api.renderers import OrgasanitionIATIXMLRenderer
+from api.renderers import OrganisationIATIXMLRenderer
 from api.transaction.views import TransactionList
 from iati_organisation.models import (
     DocumentLinkRecipientCountry, Organisation, OrganisationDocumentLink,
@@ -73,7 +73,7 @@ class OrganisationList(CacheResponseMixin, DynamicListView):
     renderer_classes = (
         rest_framework.renderers.BrowsableAPIRenderer,
         rest_framework.renderers.JSONRenderer,
-        OrgasanitionIATIXMLRenderer,
+        OrganisationIATIXMLRenderer,
     )
     queryset = Organisation.objects.all()
     serializer_class = serializers.OrganisationSerializer
@@ -104,7 +104,7 @@ class OrganisationDetail(CacheResponseMixin, DynamicDetailView):
     renderer_classes = (
         rest_framework.renderers.BrowsableAPIRenderer,
         rest_framework.renderers.JSONRenderer,
-        OrgasanitionIATIXMLRenderer,
+        OrganisationIATIXMLRenderer,
     )
     queryset = Organisation.objects.all()
     serializer_class = serializers.OrganisationSerializer

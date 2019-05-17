@@ -21,16 +21,14 @@ from api.iati.references import (
     ActivityDateReference, ActivityScopeReference, ActivityStatusReference,
     BudgetReference, CapitalSpendReference, CollaborationTypeReference,
     ConditionsReference, ContactInfoReference, CountryBudgetItemsReference,
-    CrsAddReference, DefaultCurrencyOrgReference, DefaultFinanceTypeReference,
-    DefaultFlowTypeReference, DefaultTiedStatusReference, DescriptionReference,
-    DocumentLinkReference, FssReference, HumanitarianScopeReference,
-    LastUpdatedDatetimeOrgReference, LegacyDataReference, LocationReference,
-    OtherIdentifierReference, ParticipatingOrgReference,
+    CrsAddReference, DefaultFinanceTypeReference, DefaultFlowTypeReference,
+    DefaultTiedStatusReference, DescriptionReference, DocumentLinkReference,
+    FssReference, HumanitarianScopeReference, LegacyDataReference,
+    LocationReference, OtherIdentifierReference, ParticipatingOrgReference,
     PlannedDisbursementReference, PolicyMarkerReference,
     RecipientCountryReference, RecipientRegionReference,
     RelatedActivityReference, ReportingOrgReference, ResultReference,
-    SectorReference, TagReference, TitleReference, TransactionReference,
-    XmlLangReference
+    SectorReference, TagReference, TitleReference, TransactionReference
 )
 
 # TODO: Make this more generic - 2016-01-21
@@ -931,7 +929,7 @@ class IATIXMLRenderer(BaseRenderer):
             pass
 
 
-class OrgasanitionIATIXMLRenderer(IATIXMLRenderer):
+class OrganisationIATIXMLRenderer(IATIXMLRenderer):
     """
     Renderer of the XML export for the organisation file
     """
@@ -940,8 +938,4 @@ class OrgasanitionIATIXMLRenderer(IATIXMLRenderer):
     default_references = {
         'organisation_identifier': None,
     }
-    element_references = {
-        'default_currency': DefaultCurrencyOrgReference,
-        'last_updated_datetime': LastUpdatedDatetimeOrgReference,
-        'xml_lang': XmlLangReference,
-    }
+    element_references = {}
