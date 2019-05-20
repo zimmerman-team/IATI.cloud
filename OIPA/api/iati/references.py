@@ -3630,3 +3630,114 @@ class ReportingOrgOrgReference(BaseReference):
         children=children
     )
     # </reporting-org>
+
+
+class TotalBudgetOrgReference(BaseReference):
+    """
+    http://reference.iatistandard.org/203/organisation-standard/iati-organisations/iati-organisation/reporting-org/
+    """
+
+    # <total-budget
+    attributes = [
+        # @status
+        AttributeRecord(
+            name='status',
+            key='code',
+            dict_key='status'
+        )
+    ]
+    # >
+    children = [
+        # <period-start
+        ElementRecord(
+            name='period-start',
+            attributes=[
+                # @iso-date
+                AttributeRecord(
+                    name='iso-date',
+                    key='period_start',
+                )
+            ],
+        ),
+        # />
+        # <period-start
+        ElementRecord(
+            name='period-end',
+            attributes=[
+                # @iso-date
+                AttributeRecord(
+                    name='iso-date',
+                    key='period_end',
+                )
+            ],
+        ),
+        # />
+        # <value
+        ElementRecord(
+            name='value',
+            key='value',
+            attributes=[
+                # @currency
+                AttributeRecord(
+                    name='currency',
+                    key='code',
+                    dict_key='currency'
+                ),
+                # @value-date
+                AttributeRecord(
+                    name='value-date',
+                    key='date'
+                ),
+            ],
+            # />
+        ),
+        # </value>
+        # <budget-line
+        ElementRecord(
+            name='budget-line',
+            key='budget_lines',
+            attributes=[
+                # @ref
+                AttributeRecord(
+                    name='ref',
+                    key='ref'
+                ),
+            ],
+            # />
+            children=[
+                # <value
+                ElementRecord(
+                    name='value',
+                    key='value',
+                    attributes=[
+                        # @currency
+                        AttributeRecord(
+                            name='currency',
+                            key='code',
+                            dict_key='currency'
+                        ),
+                        # @value-date
+                        AttributeRecord(
+                            name='value-date',
+                            key='date'
+                        ),
+                    ],
+                    # />
+                ),
+                # </value>
+                # <narrative>
+                ElementRecord(
+                    name=None,
+                    element_type=ElementWithNarrativeReference
+                ),
+                # </narrative>
+            ]
+        ),
+        # </budget-line>
+    ]
+    element_record = ElementRecord(
+        name='reporting-org',
+        attributes=attributes,
+        children=children
+    )
+    # <total-budget/>
