@@ -4016,7 +4016,7 @@ class RecipientCountryBudgetOrgReference(BaseReference):
     http://reference.iatistandard.org/203/organisation-standard/iati-organisations/iati-organisation/recipient-country-budget/
     """
 
-    # <recipient-region-budget
+    # <recipient-country-budge
     attributes = [
         # @status
         AttributeRecord(
@@ -4132,4 +4132,105 @@ class RecipientCountryBudgetOrgReference(BaseReference):
         attributes=attributes,
         children=children
     )
-    # </recipient-region-budget>
+    # </recipient-country-budge>
+
+
+class TotalExpenditureOrgReference(BaseReference):
+    """
+    http://reference.iatistandard.org/203/organisation-standard/iati-organisations/iati-organisation/total-expenditure/
+    """
+
+    # <recipient-region-budget>
+    children = [
+        # <period-start
+        ElementRecord(
+            name='period-start',
+            attributes=[
+                # @iso-date
+                AttributeRecord(
+                    name='iso-date',
+                    key='period_start',
+                )
+            ],
+        ),
+        # />
+        # <period-start
+        ElementRecord(
+            name='period-end',
+            attributes=[
+                # @iso-date
+                AttributeRecord(
+                    name='iso-date',
+                    key='period_end',
+                )
+            ],
+        ),
+        # />
+        # <value
+        ElementRecord(
+            name='value',
+            key='value',
+            attributes=[
+                # @currency
+                AttributeRecord(
+                    name='currency',
+                    key='code',
+                    dict_key='currency'
+                ),
+                # @value-date
+                AttributeRecord(
+                    name='value-date',
+                    key='date'
+                ),
+            ],
+            # />
+        ),
+        # </value>
+        # <expense-line
+        ElementRecord(
+            name='expense-line',
+            key='expense_line',
+            attributes=[
+                # @ref
+                AttributeRecord(
+                    name='ref',
+                    key='ref'
+                ),
+            ],
+            # />
+            children=[
+                # <value
+                ElementRecord(
+                    name='value',
+                    key='value',
+                    attributes=[
+                        # @currency
+                        AttributeRecord(
+                            name='currency',
+                            key='code',
+                            dict_key='currency'
+                        ),
+                        # @value-date
+                        AttributeRecord(
+                            name='value-date',
+                            key='date'
+                        ),
+                    ],
+                    # />
+                ),
+                # </value>
+                # <narrative>
+                ElementRecord(
+                    name=None,
+                    element_type=ElementWithNarrativeReference
+                ),
+                # </narrative>
+            ]
+        ),
+        # </budget-line>
+    ]
+    element_record = ElementRecord(
+        name='total-expenditure',
+        children=children
+    )
+    # </total-expenditure>
