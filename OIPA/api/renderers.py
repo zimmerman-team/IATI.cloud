@@ -30,7 +30,7 @@ from api.iati.references import (
     RecipientCountryReference, RecipientRegionReference,
     RelatedActivityReference, ReportingOrgOrgReference, ReportingOrgReference,
     ResultReference, SectorReference, TagReference, TitleReference,
-    TransactionReference, XmlLangReference, TotalBudgetOrgReference
+    TotalBudgetOrgReference, TransactionReference, XmlLangReference
 )
 
 # TODO: Make this more generic - 2016-01-21
