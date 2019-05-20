@@ -28,10 +28,10 @@ from api.iati.references import (
     NameOrgReference, OtherIdentifierReference, ParticipatingOrgReference,
     PlannedDisbursementReference, PolicyMarkerReference,
     RecipientCountryReference, RecipientOrgBudgetOrgReference,
-    RecipientRegionReference, RelatedActivityReference,
-    ReportingOrgOrgReference, ReportingOrgReference, ResultReference,
-    SectorReference, TagReference, TitleReference, TotalBudgetOrgReference,
-    TransactionReference, XmlLangReference, RecipientRegionBudgetOrgReference
+    RecipientRegionBudgetOrgReference, RecipientRegionReference,
+    RelatedActivityReference, ReportingOrgOrgReference, ReportingOrgReference,
+    ResultReference, SectorReference, TagReference, TitleReference,
+    TotalBudgetOrgReference, TransactionReference, XmlLangReference
 )
 
 # TODO: Make this more generic - 2016-01-21
