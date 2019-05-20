@@ -18,7 +18,7 @@ class BasicRegionSerializer(DynamicFieldsModelSerializer):
     url = serializers.HyperlinkedIdentityField(
         view_name='regions:region-detail')
     code = serializers.CharField()
-    region_vocabulary = RegionVocabularySerializer()
+    region_vocabulary = RegionVocabularySerializer(required=False)
 
     class Meta:
         model = geodata.models.Region
