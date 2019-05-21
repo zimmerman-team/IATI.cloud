@@ -4234,3 +4234,101 @@ class TotalExpenditureOrgReference(BaseReference):
         children=children
     )
     # </total-expenditure>
+
+
+class DocumentLinkOrgReference(BaseReference):
+    """
+    http://reference.iatistandard.org/203/organisation-standard/iati-organisations/iati-organisation/document-link/
+    """
+    # <document-link
+    attributes = [
+        # @format
+        AttributeRecord(
+            name='format',
+            key='code',
+            dict_key='format'
+        ),
+        # @format
+        AttributeRecord(
+            name='url',
+            key='url',
+        ),
+    ]
+    # >
+    children = [
+        # <title>
+        ElementRecord(
+            name='title',
+            key='title',
+            element_type=ElementWithNarrativeReference
+        ),
+        # </title>
+        # TODO: check this, description is not available in the endpoint
+        # <description>
+        ElementRecord(
+            name='description',
+            key='description',
+            element_type=ElementWithNarrativeReference
+        ),
+        # </description>
+        # <category
+        ElementRecord(
+            name='category',
+            key='categories',
+            attributes=[
+                # @code
+                AttributeRecord(
+                    name='code',
+                    key='code',
+                    dict_key='category'
+                )
+            ],
+        ),
+        # />
+        # <language
+        ElementRecord(
+            name='language',
+            key='languages',
+            attributes=[
+                # @code
+                AttributeRecord(
+                    name='code',
+                    key='code',
+                    dict_key='language'
+                )
+            ],
+        ),
+        # />
+        # <document-date
+        ElementRecord(
+            name='document-date',
+            key='document_date',
+            attributes=[
+                # @code
+                AttributeRecord(
+                    name='iso-date',
+                    key='iso_date',
+                )
+            ],
+        ),
+        # />
+        # <recipient-country
+        ElementRecord(
+            name='recipient-country',
+            key='recipient_countries',
+            attributes=[
+                # @code
+                AttributeRecord(
+                    name='code',
+                    key='code',
+                    dict_key='recipient_country'
+                )
+            ],
+        ),
+        # />
+    ]
+    element_record = ElementRecord(
+        name='document-link',
+        attributes=attributes,
+        children=children
+    )

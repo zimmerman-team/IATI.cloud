@@ -23,9 +23,10 @@ from api.iati.references import (
     ConditionsReference, ContactInfoReference, CountryBudgetItemsReference,
     CrsAddReference, DefaultCurrencyOrgReference, DefaultFinanceTypeReference,
     DefaultFlowTypeReference, DefaultTiedStatusReference, DescriptionReference,
-    DocumentLinkReference, FssReference, HumanitarianScopeReference,
-    LastUpdatedDatetimeOrgReference, LegacyDataReference, LocationReference,
-    NameOrgReference, OtherIdentifierReference, ParticipatingOrgReference,
+    DocumentLinkOrgReference, DocumentLinkReference, FssReference,
+    HumanitarianScopeReference, LastUpdatedDatetimeOrgReference,
+    LegacyDataReference, LocationReference, NameOrgReference,
+    OtherIdentifierReference, ParticipatingOrgReference,
     PlannedDisbursementReference, PolicyMarkerReference,
     RecipientCountryBudgetOrgReference, RecipientCountryReference,
     RecipientOrgBudgetOrgReference, RecipientRegionBudgetOrgReference,
@@ -953,4 +954,5 @@ class OrganisationIATIXMLRenderer(IATIXMLRenderer):
         'recipient_region_budgets': RecipientRegionBudgetOrgReference,
         'recipient_country_budgets': RecipientCountryBudgetOrgReference,
         'total_expenditures': TotalExpenditureOrgReference,
+        'document_links': DocumentLinkOrgReference
     }
