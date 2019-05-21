@@ -17,7 +17,7 @@ class DacSectorImporter():
     def get_json_data(self, location_from_here):
         base = os.path.dirname(os.path.abspath(__file__))
         location = base + location_from_here
-        json_data = open(location)
+        json_data = open(location, encoding="utf-8")
         data = ujson.load(json_data)
         json_data.close()
         return data
