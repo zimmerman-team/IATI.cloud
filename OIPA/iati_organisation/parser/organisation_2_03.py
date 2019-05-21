@@ -7,8 +7,8 @@ from iati.parser.exceptions import (
 from iati.parser.iati_parser import IatiParser
 from iati_codelists import models as codelist_models
 from iati_organisation.models import (
-    DocumentLinkRecipientCountry, DocumentLinkTitle, Organisation,
-    OrganisationDocumentLink, OrganisationDocumentLinkCategory,
+    DocumentLinkDescription, DocumentLinkRecipientCountry, DocumentLinkTitle,
+    Organisation, OrganisationDocumentLink, OrganisationDocumentLinkCategory,
     OrganisationDocumentLinkLanguage, OrganisationName, OrganisationNarrative,
     OrganisationReportingOrganisation, RecipientCountryBudget,
     RecipientCountryBudgetLine, RecipientOrgBudget, RecipientOrgBudgetLine,
@@ -39,6 +39,7 @@ class Parse(IatiParser):
         # on the process parse
         self.organisation_document_link_current_index = 0
         self.document_link_title_current_index = 0
+        self.document_link_description_current_index = 0
         self.document_link_language_current_index = 0
         self.total_budget_current_index = 0
         self.total_budget_line_current_index = 0
@@ -1512,6 +1513,37 @@ class Parse(IatiParser):
         model = self.get_model(
             'DocumentLinkTitle',
             self.document_link_title_current_index
+        )
+        self.add_narrative(element, model)
+
+        return element
+
+    def iati_organisations__iati_organisation__document_link__description(self, element):  # NOQA: E501
+        """
+        http://reference.iatistandard.org/203/organisation-standard/iati-organisations/iati-organisation/document-link/description/
+        """
+
+        document_link_description = DocumentLinkDescription()
+        self.document_link_description_current_index = self.register_model(
+            'DocumentLinkDescription',
+            document_link_description
+        )
+
+        model = self.get_model(
+            'OrganisationDocumentLink',
+            self.organisation_document_link_current_index
+        )
+        document_link_description.document_link = model
+
+        return element
+
+    def iati_organisations__iati_organisation__document_link__description__narrative(self, element):  # NOQA: E501
+        """
+        http://reference.iatistandard.org/203/organisation-standard/iati-organisations/iati-organisation/document-link/description/narrative/
+        """
+        model = self.get_model(
+            'DocumentLinkDescription',
+            self.document_link_description_current_index
         )
         self.add_narrative(element, model)
 

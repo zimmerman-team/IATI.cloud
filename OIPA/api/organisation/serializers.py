@@ -922,30 +922,28 @@ class OrganisationDocumentLinkSerializer(ModelSerializerNoValidation):
         iso_date = serializers.CharField()
 
     format = CodelistSerializer(source='file_format')
-
     categories = OrganisationDocumentLinkCategorySerializer(
         many=True,
         required=False,
         source="organisationdocumentlinkcategory_set"
     )
-
     languages = OrganisationDocumentLinkLanguageSerializer(
         many=True,
         required=False,
         source="organisationdocumentlinklanguage_set"
     )
-
     recipient_countries = OrganisationDocumentLinkRecipientCountrySerializer(
         many=True,
         required=False,
         source="documentlinkrecipientcountry_set"
     )
-
     title = OrganisationNarrativeContainerSerializer(
-        source="documentlinktitle")
-
+        source="documentlinktitle"
+    )
+    description = OrganisationNarrativeContainerSerializer(
+        source='documentlinkdescription'
+    )
     document_date = DocumentDateSerializer(source="*")
-
     organisation = serializers.CharField(write_only=True)
 
     class Meta:
@@ -956,6 +954,7 @@ class OrganisationDocumentLinkSerializer(ModelSerializerNoValidation):
             'url',
             'format',
             'title',
+            'description',
             'categories',
             'languages',
             'document_date',
