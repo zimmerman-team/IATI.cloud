@@ -3621,7 +3621,7 @@ class ResultTestCase(ParserSetupTestCase):
             .iati_activities__iati_activity__result__indicator__baseline(
                 result_indicator_baseline_element)
 
-        result_indicator_baseline= self.parser_202.get_model(
+        result_indicator_baseline = self.parser_202.get_model(
             'ResultIndicatorBaseline')
         self.assertEqual(result_indicator_baseline.year, int(attrs['year']))
         self.assertEqual(result_indicator_baseline.value,
@@ -3632,7 +3632,8 @@ class ResultTestCase(ParserSetupTestCase):
         test for result_indicator_baseline_comment + accompanying narrative
         """
 
-        test_target_comment = iati_factory.ResultIndicatorBaselineFactory.build()
+        test_target_comment = \
+            iati_factory.ResultIndicatorBaselineFactory.build()
         self.parser_202.register_model('ResultIndicatorBaseline',
                                        test_target_comment)
 
