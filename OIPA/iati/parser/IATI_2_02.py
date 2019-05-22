@@ -3213,9 +3213,9 @@ class Parse(IatiParser):
                 None,
                 ref)
 
-        period = self.get_model('ResultIndicatorPeriod')
+        period_target = self.get_model('ResultIndicatorPeriodTarget')
         target_location = models.ResultIndicatorPeriodTargetLocation()
-        target_location.result_indicator_period = period
+        target_location.result_indicator_period_target = period_target
         target_location.ref = ref
         target_location.location = location[0]
 
