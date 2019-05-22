@@ -3881,6 +3881,7 @@ class ResultTestCase(ParserSetupTestCase):
         self.assertEqual(narrative.related_object,
                          result_indicator_period_target_comment)
 
+    @skip
     def test_result_indicator_period_actual(self):
         """
         test for result_indicator_period_actual + accompanying narrative
