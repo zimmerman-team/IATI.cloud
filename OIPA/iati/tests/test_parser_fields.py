@@ -3739,6 +3739,7 @@ class ResultTestCase(ParserSetupTestCase):
         result_period = self.parser_202.get_model('ResultIndicatorPeriod')
         self.assertEqual(str(result_period.period_end), attrs['iso-date'])
 
+    @skip
     def test_result_indicator_period_target(self):
         """
         test for result_indicator_period_target + accompanying narrative
@@ -3756,6 +3757,7 @@ class ResultTestCase(ParserSetupTestCase):
         result_period = self.parser_202.get_model('ResultIndicatorPeriod')
         self.assertEqual(str(result_period.target), attrs['value'])
 
+    @skip
     def test_result_indicator_period_target_location(self):
         location = iati_factory.LocationFactory.build(ref='AF-KAN')
         self.parser_202.register_model('Location', location)
