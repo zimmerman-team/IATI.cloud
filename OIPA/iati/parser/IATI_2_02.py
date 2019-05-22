@@ -3038,9 +3038,10 @@ class Parse(IatiParser):
         result_indicator_baseline.result_indicator = result_indicator
         result_indicator_baseline.iso_date = iso_date
         result_indicator_baseline.year = year
-        result_indicator_baseline.baseline_value = value or ''  #can be None
+        result_indicator_baseline.value = value or ''  # can be None
 
-        self.register_model('ResultIndicatorBaseline', result_indicator_baseline)
+        self.register_model('ResultIndicatorBaseline',
+                            result_indicator_baseline)
         return element
 
     # """attributes:
@@ -3048,9 +3049,11 @@ class Parse(IatiParser):
     # tag:comment"""
     def iati_activities__iati_activity__result__indicator__baseline__comment(
             self, element):
-        result_indicator_baseline= self.get_model('ResultIndicatorBaseline')
-        result_indicator_baseline_comment = models.ResultIndicatorBaselineComment()
-        result_indicator_baseline_comment.result_indicator_baseline = result_indicator_baseline
+        result_indicator_baseline = self.get_model('ResultIndicatorBaseline')
+        result_indicator_baseline_comment = \
+            models.ResultIndicatorBaselineComment()
+        result_indicator_baseline_comment.result_indicator_baseline = \
+            result_indicator_baseline
 
         self.register_model('ResultIndicatorBaselineComment',
                             result_indicator_baseline_comment)
@@ -3180,12 +3183,13 @@ class Parse(IatiParser):
                         xsd:decimal is used to check instead of xsd:string)")
 
         result_indicator_period = self.get_model('ResultIndicatorPeriod')
-
         result_indicator_period_target = models.ResultIndicatorPeriodTarget()
         result_indicator_period_target.value = value
-        result_indicator_period_target.result_indicator_period = result_indicator_period
+        result_indicator_period_target.result_indicator_period = \
+            result_indicator_period
 
-        self.register_model('ResultIndicatorPeriodTarget', result_indicator_period_target)
+        self.register_model('ResultIndicatorPeriodTarget',
+                            result_indicator_period_target)
         return element
 
     def iati_activities__iati_activity__result__indicator__period__target__location(self, element):  # NOQA: E501
@@ -3215,7 +3219,6 @@ class Parse(IatiParser):
                 ref)
 
         period_target = self.get_model('ResultIndicatorPeriodTarget')
-
         target_location = models.ResultIndicatorPeriodTargetLocation()
         target_location.result_indicator_period_target = period_target
         target_location.ref = ref
