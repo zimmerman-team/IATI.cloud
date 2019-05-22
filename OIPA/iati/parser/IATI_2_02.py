@@ -3179,10 +3179,12 @@ class Parse(IatiParser):
                 "required attribute missing (this error might be incorrect, \
                         xsd:decimal is used to check instead of xsd:string)")
 
-        result_indicator_period = self.pop_model('ResultIndicatorPeriod')
-        result_indicator_period.target = value
+        result_indicator_period = self.get_model('ResultIndicatorPeriod')
+        result_indicator_period_target = models.ResultIndicatorPeriodTarget()
+        result_indicator_period_target.value = value
+        result_indicator_period_target.result_indicator_period = result_indicator_period
 
-        self.register_model('ResultIndicatorPeriod', result_indicator_period)
+        self.register_model('ResultIndicatorPeriodTarget', result_indicator_period_target)
         return element
 
     def iati_activities__iati_activity__result__indicator__period__target__location(self, element):  # NOQA: E501
