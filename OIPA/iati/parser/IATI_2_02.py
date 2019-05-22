@@ -3038,9 +3038,10 @@ class Parse(IatiParser):
         result_indicator_baseline.result_indicator = result_indicator
         result_indicator_baseline.iso_date = iso_date
         result_indicator_baseline.year = year
-        result_indicator_baseline.value = value or ''  #can be None
+        result_indicator_baseline.value = value or ''  # can be None
 
-        self.register_model('ResultIndicatorBaseline', result_indicator_baseline)
+        self.register_model('ResultIndicatorBaseline',
+                            result_indicator_baseline)
         return element
 
     # """attributes:
@@ -3048,9 +3049,11 @@ class Parse(IatiParser):
     # tag:comment"""
     def iati_activities__iati_activity__result__indicator__baseline__comment(
             self, element):
-        result_indicator_baseline= self.get_model('ResultIndicatorBaseline')
-        result_indicator_baseline_comment = models.ResultIndicatorBaselineComment()
-        result_indicator_baseline_comment.result_indicator_baseline = result_indicator_baseline
+        result_indicator_baseline = self.get_model('ResultIndicatorBaseline')
+        result_indicator_baseline_comment = \
+            models.ResultIndicatorBaselineComment()
+        result_indicator_baseline_comment.result_indicator_baseline = \
+            result_indicator_baseline
 
         self.register_model('ResultIndicatorBaselineComment',
                             result_indicator_baseline_comment)
