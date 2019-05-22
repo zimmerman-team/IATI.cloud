@@ -3376,7 +3376,8 @@ class Parse(IatiParser):
         return element
 
     def iati_activities__iati_activity__result__indicator__period__actual__comment(self, element):  # NOQA: E501
-        result_indicator_period_actual = self.get_model('ResultIndicatorPeriodActual')
+        result_indicator_period_actual = \
+            self.get_model('ResultIndicatorPeriodActual')
         result_indicator_period_actual_comment = models\
             .ResultIndicatorPeriodActualComment()
         result_indicator_period_actual_comment\
