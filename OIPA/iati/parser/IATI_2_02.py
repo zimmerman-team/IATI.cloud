@@ -3038,7 +3038,7 @@ class Parse(IatiParser):
         result_indicator_baseline.result_indicator = result_indicator
         result_indicator_baseline.iso_date = iso_date
         result_indicator_baseline.year = year
-        result_indicator_baseline.baseline_value = value or ''  #can be None
+        result_indicator_baseline.value = value or ''  #can be None
 
         self.register_model('ResultIndicatorBaseline', result_indicator_baseline)
         return element
