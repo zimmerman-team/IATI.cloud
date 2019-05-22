@@ -3258,7 +3258,8 @@ class Parse(IatiParser):
         return element
 
     def iati_activities__iati_activity__result__indicator__period__target__comment(self, element):  # NOQA: E501
-        result_indicator_period_target = self.get_model('ResultIndicatorPeriodTarget')
+        result_indicator_period_target = \
+            self.get_model('ResultIndicatorPeriodTarget')
         result_indicator_period_target_comment = models\
             .ResultIndicatorPeriodTargetComment()
         result_indicator_period_target_comment\
