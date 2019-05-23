@@ -1039,12 +1039,12 @@ class OrganisationSerializer(DynamicFieldsModelSerializer):
         view_name='organisations:organisation-detail',
         read_only=True
     )
+    default_currency = CodelistSerializer(required=False)
     last_updated_datetime = serializers.DateTimeField(required=False)
     xml_lang = serializers.CharField(
         source='default_lang.code',
         required=False
     )
-    default_currency = CodelistSerializer(required=False)
     name = OrganisationNameSerializer(required=False)
     published_state = PublishedStateSerializer(source="*", read_only=True)
     reporting_org = OrganisationReportingOrganisationSerializer(read_only=True)
@@ -1084,10 +1084,10 @@ class OrganisationSerializer(DynamicFieldsModelSerializer):
             'id',
             'published_state',
             'primary_name',
-            'organisation_identifier',
+            'default_currency',
             'last_updated_datetime',
             'xml_lang',
-            'default_currency',
+            'organisation_identifier',
             'name',
             'reporting_org',
             'total_budgets',

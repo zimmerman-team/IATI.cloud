@@ -838,7 +838,12 @@ class IATIXMLRenderer(BaseRenderer):
         if hasattr(settings, 'EXPORT_COMMENT'):
             xml.append(etree.Comment(getattr(settings, 'EXPORT_COMMENT')))
 
-        self._to_xml(xml, data, parent_name=self.item_tag_name)
+        self._to_xml(
+            etree.SubElement(
+                xml,
+                self.item_tag_name.replace('_', '-')),
+            data
+        )
 
         return etree.tostring(xml, encoding=self.charset, pretty_print=True)
 
@@ -852,9 +857,11 @@ class IATIXMLRenderer(BaseRenderer):
                         data=item
                     )
                     element.create()
-                else:
+                elif parent_name:
                     self._to_xml(etree.SubElement(
                         xml, parent_name.replace('_', '-')), item)
+                else:
+                    self._to_xml(xml, item)
 
         elif isinstance(data, dict):
             attributes = []
@@ -920,3 +927,15 @@ class IATIXMLRenderer(BaseRenderer):
         else:
             xml.text = six.text_type(data)
             pass
+
+
+class OrganisationIATIXMLRenderer(IATIXMLRenderer):
+    """
+    Renderer of the XML export for the organisation file
+    """
+    root_tag_name = 'iati-organisations'
+    item_tag_name = 'iati-organisation'
+    default_references = {
+        'organisation_identifier': None,
+    }
+    element_references = {}

@@ -1,3 +1,4 @@
+import rest_framework
 from django.shortcuts import get_object_or_404
 from django.utils.http import urlunquote
 from django_filters.rest_framework import DjangoFilterBackend
@@ -18,6 +19,7 @@ from api.generics.views import (
 from api.organisation import serializers
 from api.organisation.validators import organisation_required_fields
 from api.publisher.permissions import PublisherPermissions
+from api.renderers import OrganisationIATIXMLRenderer
 from api.transaction.views import TransactionList
 from iati_organisation.models import (
     DocumentLinkRecipientCountry, Organisation, OrganisationDocumentLink,
@@ -68,6 +70,11 @@ class OrganisationList(CacheResponseMixin, DynamicListView):
     URI is constructed as follows: `/api/organisations/{organisation_id}`
 
     """
+    renderer_classes = (
+        rest_framework.renderers.BrowsableAPIRenderer,
+        rest_framework.renderers.JSONRenderer,
+        OrganisationIATIXMLRenderer,
+    )
     queryset = Organisation.objects.all()
     serializer_class = serializers.OrganisationSerializer
     fields = ('url', 'organisation_identifier',
@@ -94,6 +101,11 @@ class OrganisationDetail(CacheResponseMixin, DynamicDetailView):
     - `fields` (*optional*): List of fields to display
 
     """
+    renderer_classes = (
+        rest_framework.renderers.BrowsableAPIRenderer,
+        rest_framework.renderers.JSONRenderer,
+        OrganisationIATIXMLRenderer,
+    )
     queryset = Organisation.objects.all()
     serializer_class = serializers.OrganisationSerializer
 
