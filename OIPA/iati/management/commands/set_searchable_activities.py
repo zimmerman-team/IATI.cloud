@@ -3,6 +3,7 @@ from django.core.management.base import BaseCommand
 
 from iati.models import Activity
 from iati.transaction.models import Transaction
+from iati import activity_search_indexes
 
 
 class Command(BaseCommand):
@@ -12,6 +13,11 @@ class Command(BaseCommand):
         Set all activities to searchable if the reporting org is in the
         settings.ROOT_ORGANISATIONS list
         """
+
+        # Updated a full text search
+        for activity in Activity.objects.all():
+            activity_search_indexes.reindex_activity(activity)
+
         # set all activities as non searchable
         Activity.objects.filter(
             is_searchable=True
@@ -35,6 +41,8 @@ class Command(BaseCommand):
 
         for activity in activities:
             self.set_children_searchable(activity)
+
+            activity_search_indexes.reindex_activity(activity)
 
     def set_children_searchable(self, orig_activity):
         """
