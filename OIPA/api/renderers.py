@@ -28,9 +28,9 @@ from api.iati.references import (
     NameOrgReference, OtherIdentifierReference, ParticipatingOrgReference,
     PlannedDisbursementReference, PolicyMarkerReference,
     RecipientCountryReference, RecipientRegionReference,
-    RelatedActivityReference, ReportingOrgReference, ResultReference,
-    SectorReference, TagReference, TitleReference, TransactionReference,
-    XmlLangReference
+    RelatedActivityReference, ReportingOrgOrgReference, ReportingOrgReference,
+    ResultReference, SectorReference, TagReference, TitleReference,
+    TransactionReference, XmlLangReference
 )
 
 # TODO: Make this more generic - 2016-01-21
@@ -944,5 +944,6 @@ class OrganisationIATIXMLRenderer(IATIXMLRenderer):
         'default_currency': DefaultCurrencyOrgReference,
         'last_updated_datetime': LastUpdatedDatetimeOrgReference,
         'xml_lang': XmlLangReference,
-        'name': NameOrgReference
+        'name': NameOrgReference,
+        'reporting_org': ReportingOrgOrgReference,
     }

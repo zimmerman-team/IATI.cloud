@@ -3589,3 +3589,44 @@ class NameOrgReference(BaseReference):
         element_type=ElementWithNarrativeReference
     )
     # </name>
+
+
+class ReportingOrgOrgReference(BaseReference):
+    """
+    http://reference.iatistandard.org/203/organisation-standard/iati-organisations/iati-organisation/reporting-org/
+    """
+
+    # <reporting-org
+    attributes = [
+        # @ref
+        AttributeRecord(
+            name='ref',
+            key='ref'
+        ),
+        # @type
+        AttributeRecord(
+            name='type',
+            key='code',
+            dict_key='type'
+        ),
+        # @secondary-reporter
+        AttributeRecord(
+            name='secondary-reporter',
+            key='secondary_reporter'
+        ),
+    ]
+    # >
+    children = [
+        # <narrative>
+        ElementRecord(
+            name=None,
+            element_type=ElementWithNarrativeReference
+        ),
+        # </narrative>
+    ]
+    element_record = ElementRecord(
+        name='reporting-org',
+        attributes=attributes,
+        children=children
+    )
+    # </reporting-org>
