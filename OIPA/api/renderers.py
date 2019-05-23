@@ -21,6 +21,10 @@ from api.iati.references import (
     ActivityDateReference, ActivityScopeReference, ActivityStatusReference,
     BudgetReference, CapitalSpendReference, CollaborationTypeReference,
     ConditionsReference, ContactInfoReference, CountryBudgetItemsReference,
+    CrsAddReference, DefaultFinanceTypeReference, DefaultFlowTypeReference,
+    DefaultTiedStatusReference, DescriptionReference, DocumentLinkReference,
+    FssReference, HumanitarianScopeReference, LegacyDataReference,
+    LocationReference, OtherIdentifierReference, ParticipatingOrgReference,
     CrsAddReference, DefaultCurrencyOrgReference, DefaultFinanceTypeReference,
     DefaultFlowTypeReference, DefaultTiedStatusReference, DescriptionReference,
     DocumentLinkReference, FssReference, HumanitarianScopeReference,
@@ -29,8 +33,7 @@ from api.iati.references import (
     PlannedDisbursementReference, PolicyMarkerReference,
     RecipientCountryReference, RecipientRegionReference,
     RelatedActivityReference, ReportingOrgReference, ResultReference,
-    SectorReference, TagReference, TitleReference, TransactionReference,
-    XmlLangReference
+    SectorReference, TagReference, TitleReference, TransactionReference
 )
 
 # TODO: Make this more generic - 2016-01-21
@@ -940,6 +943,7 @@ class OrganisationIATIXMLRenderer(IATIXMLRenderer):
     default_references = {
         'organisation_identifier': None,
     }
+    element_references = {}
     element_references = {
         'default_currency': DefaultCurrencyOrgReference,
         'last_updated_datetime': LastUpdatedDatetimeOrgReference,
