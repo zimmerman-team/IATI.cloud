@@ -3736,7 +3736,7 @@ class TotalBudgetOrgReference(BaseReference):
         # </budget-line>
     ]
     element_record = ElementRecord(
-        name='reporting-org',
+        name='total-budget',
         attributes=attributes,
         children=children
     )
