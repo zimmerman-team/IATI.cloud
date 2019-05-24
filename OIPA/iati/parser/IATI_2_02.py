@@ -2435,7 +2435,7 @@ class Parse(IatiParser):
         tag: narrative"""
         model = self.get_model('TransactionSector')
         self.add_narrative(element, model)
-        return ele
+        return element
 
     def iati_activities__iati_activity__transaction__recipient_country(
             self, element):
