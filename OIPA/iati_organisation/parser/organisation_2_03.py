@@ -153,7 +153,7 @@ class Parse(IatiParser):
             organisation_identifier=organisation_identifier
         )
         if old_organisation:
-            if old_organisation.last_updated_datetime < last_updated_datetime or self.force_reparse:  # NOQA: E501
+            if (old_organisation.last_updated_datetime and (old_organisation.last_updated_datetime < last_updated_datetime)) or self.force_reparse:  # NOQA: E501
 
                 OrganisationName.objects.filter(
                     organisation=old_organisation).delete()
