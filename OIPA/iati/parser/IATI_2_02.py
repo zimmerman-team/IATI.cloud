@@ -3550,6 +3550,42 @@ class Parse(IatiParser):
         self.register_model('CrsAdd', crs_add)
         return element
 
+    def iati_activities__iati_activity__crs_add__other_flags(self, element):
+        """"A method to save (optional) <other-flags> element and its
+        attributes inside <crs-add> element in 2.03
+        """
+        code = element.attrib.get('code')
+        significance = element.attrib.get('significance')
+        if not code:
+            raise RequiredFieldError(
+                "crs-add/other-flags",
+                "code",
+                "required attribute missing."
+            )
+        if not significance:
+            raise RequiredFieldError(
+                "crs-add/other-flags",
+                "significance",
+                "required attribute missing."
+            )
+        code_in_codelist = self.get_or_none(codelist_models.OtherFlags,
+                                            code=code)
+        if code_in_codelist is None:
+            raise FieldValidationError(
+                "crs-add/other-flags",
+                "code",
+                "not found on the accompanying code list.",
+                None,
+                None,
+                code)
+        crs_add = self.get_model('CrsAdd')
+        other_flags = models.CrsAddOtherFlags()
+        other_flags.other_flags = code_in_codelist
+        other_flags.significance = self.makeBool(significance)
+        other_flags.crs_add = crs_add
+        self.register_model('CrsAddOtherFlags', other_flags)
+        return element
+
     def post_save_models(self):
         """Perform all actions that need to happen after a single activity's
         been parsed."""
