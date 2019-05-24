@@ -50,8 +50,7 @@ If you don't have Docker:
 9. Create a superuser account: `python manage.py createsuperuser`
 10. Start the process control centre (Supervisor): ```python manage.py supervisor```
 11. Open your browser at <a href="http://localhost:8000" target="_blank">localhost:8000</a>
-12. Follow instructions for signing-in: <a href="http://docs.oipa.nl/en/latest/admin_interface/" target="_blank">http://docs.oipa.nl/en/latest/admin_interface</a>
-13. Finally, follow the instructions from here: <a href="http://docs.oipa.nl/en/latest/where_to_start/" target="_blank">http://docs.oipa.nl/en/latest/where_to_start</a>
+12. Sign into the administrative UI at 0.0.0.0:8000/admin
 
 For more detailed information, see the [install documentation](http://docs.oipa.nl/en/latest/installing/)
 
@@ -100,10 +99,10 @@ Testing / code quality settings can be found in the `setup.cfg` file. Test cover
 
 ## Who makes use of OIPA?
 * Dutch Ministry of Foreign Affairs:         <a href="https://www.openaid.nl" target="_blank">www.openaid.nl</a>
-* IATI Studio:                               <a href="https://www.iatistudio.com/" target="_blank">www.iatistudio.com</a>
+* IATI Studio:                               <a href="https://www.iatistudio.com/" target="_blank">www.iatistudio.com</a> (decomissioned)
 * DFID Devtracker:                           <a href="https://devtracker.dfid.gov.uk/" target="_blank">devtracker.dfid.gov.uk</a>
 * UNESCO Transparency Portal:                <a href="https://opendata.unesco.org" target="_blank">opendata.unesco.org</a>
-* UN-Habitat:                                <a href="http://open.unhabitat.org" target="_blank">open.unhabitat.org</a>
+* UN-Habitat:                                <a href="http://open.unhabitat.org" target="_blank">open.unhabitat.org</a> (decomissioned)
 * Netherlands Enterprise Agency:             <a href="https://aiddata.rvo.nl/" target="_blank">aiddata.rvo.nl</a>
 * Mohinga AIMS:                              <a href="http://mohinga.info/en/" target="_blank">mohinga.info</a>
 * Overseas Development Institute:            <a href="https://transparency.odi.org/" target="_blank">ODI.org</a>
