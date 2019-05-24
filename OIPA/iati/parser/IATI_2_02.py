@@ -3869,6 +3869,63 @@ class Parse(IatiParser):
         self.register_model("CrsAddLoanStatus", crs_add_loan_status)
         return element
 
+    def iati_activities__iati_activity__fss(self, element):
+        """"(optional) <fss> element inside <iati-activities/iati-activity>
+        element in 2.02
+        """
+        # FIXME: should database relation be changed to OnetoOne?? see #964
+        activity = self.get_model('Activity')
+        if 'Fss' in self.model_store:
+            for fss in self.model_store['Fss']:
+                if fss.activity == activity:
+                    raise ParserError("Activity", "Fss", "must occur no more "
+                                                         "than once.")
+
+        extraction_date = element.attrib.get('extraction-date')
+        priority = element.attrib.get('priority')
+        phaseout_year = element.attrib.get('phaseout-year')
+
+        if not extraction_date:
+            raise RequiredFieldError(
+                "fss",
+                "extraction-date",
+                "required attribute missing"
+            )
+        extraction_date = self.validate_date(extraction_date)
+
+        if not extraction_date:
+            raise FieldValidationError(
+                "fss",
+                "extraction-date",
+                "extraction-date not of type xsd:date",
+                None,
+                None,
+                element.attrib.get('extraction-date'))
+
+        # phaseout_year must be of type xsd:decimal but here it is checked if
+        # it is integer as it is year.
+
+        if phaseout_year is not None:  # 'phasoutout_year' is an optional
+            # attribute.
+            if not self.isInt(phaseout_year):
+                raise FieldValidationError(
+                            "fss",
+                            "phaseout-year",
+                            "phaseout-year not of type xsd:decimal",
+                            None,
+                            None,
+                            element.attrib.get('phaseout-year'))
+
+        priority_bool = self.makeBool(priority)
+        fss = models.Fss()
+        fss.activity = activity
+        fss.extraction_date = extraction_date
+        fss.phaseout_year = phaseout_year
+        fss.priority = priority_bool
+
+        self.register_model('Fss', fss)
+        return element
+
     def post_save_models(self):
         """Perform all actions that need to happen after a single activity's
         been parsed."""
