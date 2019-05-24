@@ -3586,6 +3586,162 @@ class Parse(IatiParser):
         self.register_model('CrsAddOtherFlags', other_flags)
         return element
 
+    def iati_activities__iati_activity__crs_add__loan_terms(self, element):
+        '''New (optional) <loan-terms> element for <crs-add> element
+           inside <iati-activity> element in 2.02
+        '''
+
+        rate_1 = element.attrib.get('rate-1')
+        rate_2 = element.attrib.get('rate-2')
+
+        # repayment_type_code is of type list.
+        repayment_type_code = element.xpath('repayment-type')
+        if len(repayment_type_code) > 1:
+            raise ParserError("loan-terms", "repayment-type",
+                              "must occur no more than once.")
+        elif len(repayment_type_code) == 1:
+            # repayment_type_code is of type string.
+            repayment_type_code = repayment_type_code[
+                    0].attrib.get('code')
+            if not repayment_type_code:  # 'code'is required.
+                raise RequiredFieldError(
+                    "repayment-type",
+                    "code",
+                    "required attribute missing."
+                )
+
+            # repayment_type_code is of type LoanRepaymentType object.
+            repayment_type_code = self.get_or_none(
+                codelist_models.LoanRepaymentType, code=repayment_type_code)
+            if repayment_type_code is None:
+                raise FieldValidationError(
+                    "repayment-type",
+                    "code",
+                    "not found on the accompanying codelist",
+                    None,
+                    None,
+                    repayment_type_code)
+
+        # repayment_plan_code is of type list.
+        repayment_plan_code = element.xpath('repayment-plan')
+        if len(repayment_plan_code) > 1:
+            raise ParserError("loan-terms", "repayment-plan",
+                              "must occur no more than once.")
+        elif len(repayment_plan_code) == 1:
+            # repayment_plan_code is of type string.
+            repayment_plan_code = repayment_plan_code[0].attrib.get('code')
+            if not repayment_plan_code:
+                raise RequiredFieldError(
+                    "repayment-plan",
+                    "code",
+                    "required attribute missing."
+                )
+            # repayment_plan_code is of type LoanRepaymentPeriod object.
+            repayment_plan_code = self.get_or_none(
+                codelist_models.LoanRepaymentPeriod,
+                code=repayment_plan_code)
+            if repayment_plan_code is None:
+                raise FieldValidationError(
+                    "repayment-plan",
+                    "code",
+                    "not found on the accompanying codelist.",
+                    None,
+                    None,
+                    repayment_plan_code)
+
+        # commitment_iso_date is of type list.
+        commitment_iso_date = element.xpath('commitment-date')
+        if len(commitment_iso_date) > 1:
+            raise ParserError("loan-terms", "commitment-date",
+                              "must occur no more than once.")
+        elif len(commitment_iso_date) == 1:
+            # commitment_iso_date is of type string.
+            commitment_iso_date = commitment_iso_date[0].attrib.get(
+                'iso-date')
+            if not commitment_iso_date:
+                raise RequiredFieldError(
+                    "commitment-date",
+                    "iso-date",
+                    "required attribute missing."
+                )
+            # commitment_iso_date  is of type datetime.datetime
+            commitment_iso_date = self.validate_date(commitment_iso_date)
+            if commitment_iso_date is None:
+                raise FieldValidationError(
+                    "commitment-date",
+                    "iso-date",
+                    "iso-date is not in correct range.",
+                    None,
+                    None,
+                    )
+
+        # repayment_firs_iso_date is of type list.
+        repayment_first_iso_date = element.xpath('repayment-first-date')
+        if len(repayment_first_iso_date) > 1:
+            raise ParserError("loan-terms", "repayment-first-date",
+                              "must occur no more than once.")
+        elif len(repayment_first_iso_date) == 1:
+            # repayment_first_iso_date is of type string.
+            repayment_first_iso_date = repayment_first_iso_date[0].attrib.get(
+                'iso-date')
+            if not repayment_first_iso_date:
+                raise RequiredFieldError(
+                    "repayment-first-date",
+                    "iso-date",
+                    "required attribute missing."
+                )
+            # repayment_first_iso_date is of type datetime.datetime
+            repayment_first_iso_date = self.validate_date(
+                repayment_first_iso_date)
+            if repayment_first_iso_date is None:
+                raise FieldValidationError(
+                    "repayment-first-date",
+                    "iso-date",
+                    "iso-date is not in correct range.",
+                    None,
+                    None,
+                    )
+
+        # repayment_final_iso_date is of type list.
+        repayment_final_iso_date = element.xpath('repayment-final-date')
+        if len(repayment_final_iso_date) > 1:
+            raise ParserError("loan-terms", "repayment-final-date",
+                              "must occur no more than once.")
+        elif len(repayment_final_iso_date) == 1:
+            # repayment_final_iso_date is of type string.
+            repayment_final_iso_date = repayment_final_iso_date[0].attrib.get(
+                'iso-date')
+            if not repayment_final_iso_date:
+                raise RequiredFieldError(
+                    "repayment-final-date",
+                    "iso-date",
+                    "required attribute missing."
+                )
+            # repayment_final_iso_date is of type datetime.datetime.
+            repayment_final_iso_date = self.validate_date(
+                repayment_final_iso_date)
+            if repayment_final_iso_date is None:
+                raise FieldValidationError(
+                    "repayment-final-date",
+                    "iso-date",
+                    "iso-date is not in correct range.",
+                    None,
+                    None,
+                    )
+
+        crs_add = self.get_model('CrsAdd')
+        crs_add_loan_terms = models.CrsAddLoanTerms()
+        crs_add_loan_terms.crs_add = crs_add
+        crs_add_loan_terms.rate_1 = self.guess_number('loan-terms', rate_1)
+        crs_add_loan_terms.rate_2 = self.guess_number('loan-terms', rate_2)
+        crs_add_loan_terms.repayment_type = repayment_type_code
+        crs_add_loan_terms.repayment_plan = repayment_plan_code
+        crs_add_loan_terms.commitment_date = commitment_iso_date
+        crs_add_loan_terms.repayment_first_date = repayment_first_iso_date
+        crs_add_loan_terms.repayment_final_date = repayment_final_iso_date
+        self.register_model('CrsAddLoanTerms', crs_add_loan_terms)
+        return element
+
     def post_save_models(self):
         """Perform all actions that need to happen after a single activity's
         been parsed."""
