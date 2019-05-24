@@ -3552,7 +3552,7 @@ class Parse(IatiParser):
 
     def iati_activities__iati_activity__crs_add__other_flags(self, element):
         """"A method to save (optional) <other-flags> element and its
-        attributes inside <crs-add> element in 2.03
+        attributes inside <crs-add> element in 2.02
         """
         code = element.attrib.get('code')
         significance = element.attrib.get('significance')
