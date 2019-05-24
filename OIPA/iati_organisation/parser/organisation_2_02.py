@@ -494,9 +494,10 @@ class Parse(IatiParser):
         ref:1234
 
         tag:budget-line"""
-        self.get_model('RecipientOrgBudget')
+        org_budget = self.get_model('RecipientOrgBudget')
         budget_line = RecipientOrgBudgetLine()
         budget_line.ref = element.attrib.get('ref')
+        budget_line.recipient_org_budget = org_budget
         self.register_model('RecipientOrgBudgetLine', budget_line)
         # store element
         return element
@@ -592,7 +593,6 @@ class Parse(IatiParser):
             code=self._get_currency_or_raise(
                 'recipient-country-budget/value',
                 element.attrib.get('currency')))
-        value_date = element.attrib.get('value-date')
         model.value = element.text
         # store element
         return element
@@ -603,9 +603,10 @@ class Parse(IatiParser):
         ref:1234
 
         tag:budget-line"""
-        self.get_model('RecipientCountryBudget')
+        recipient_country_budget = self.get_model('RecipientCountryBudget')
         budget_line = RecipientCountryBudgetLine()
         budget_line.ref = element.attrib.get('ref', '-')
+        budget_line.recipient_country_budget = recipient_country_budget
         self.register_model('RecipientCountryBudgetLine', budget_line)
         # store element
         return element
@@ -724,9 +725,10 @@ class Parse(IatiParser):
         ref:1234
 
         tag:budget-line"""
-        self.get_model('RecipientRegionBudget')
+        recipient_region_budget = self.get_model('RecipientRegionBudget')
         budget_line = RecipientRegionBudgetLine()
         budget_line.ref = element.attrib.get('ref')
+        budget_line.recipient_region_budget = recipient_region_budget
         self.register_model('RecipientRegionBudgetLine', budget_line)
         # store element
         return element
