@@ -228,19 +228,53 @@ class Parse(IatiParser):
         return element
 
     def iati_organisations__iati_organisation__reporting_org(self, element):
-        model = self.get_model('Organisation')
+        # Although OrganisationReportingOrganisation and Organisation has
+        # One-to-One relation on the database level, we check here whether
+        # element 'reporting-org' occurs only once in the parent element
+        # 'organisation'.
+        organisation = self.get_model('Organisation')
+        if 'OrganisationReportingOrganisation' in self.model_store:
+            for reporting_org in self.model_store[
+                    'OrganisationReportingOrganisation']:
+                if reporting_org.organisation == organisation:
+                    raise ParserError("Organisation",
+                                      "OrganisationReportingOrganisation",
+                                      "must occur no more than once.")
+        # narrative is parsed in different method but as it is required
+        # sub-element in 'name' element so we check it here.
+        narrative = element.xpath("narrative")
+        if len(narrative) < 1:
+            raise RequiredFieldError("OrganisationName", "narrative",
+                                     "must occur at least once.")
+        reporting_org_identifier = element.attrib.get("ref")
+        if reporting_org_identifier is None:
+            raise RequiredFieldError("OrganisationReportingOrganisation",
+                                     "ref", "required field missing.")
+        org_type = element.attrib.get("type")
+        if org_type is None:
+            raise RequiredFieldError("OrganisationReportingOrganisation",
+                                     "type", "required field missing.")
+        # here org_type is OrganisationType object.
+        org_type = self.get_or_none(codelist_models.OrganisationType,
+                                    code=org_type)
+        if org_type is None:
+            raise FieldValidationError(
+                "OrganisationReportingOrganisation",
+                "type",
+                "not found on the accompanying codelist.",
+                None,
+                None,
+            )
+        secondary_reporter = self.makeBool(element.attrib.get(
+            "secondary-reporter"))
 
         reporting_org = OrganisationReportingOrganisation()
-        reporting_org.organisation = model
-        reporting_org.reporting_org_identifier = element.attrib.get('ref')
-        type_ref = element.attrib.get('type')
-        if self.isInt(type_ref) and self.get_or_none(
-                codelist_models.OrganisationType, code=type_ref) is not None:
-            org_type = self.get_or_none(
-                codelist_models.OrganisationType, code=type_ref)
-            reporting_org.org_type = org_type
-        self.register_model('OrganisationReportingOrganisation', reporting_org)
+        reporting_org.organisation = organisation
+        reporting_org.org_type = org_type
+        reporting_org.secondary_reporter = secondary_reporter
+        reporting_org.reporting_org_identifier = reporting_org_identifier
 
+        self.register_model("OrganisationReportingOrganisation", reporting_org)
         return element
 
     def iati_organisations__iati_organisation__reporting_org__narrative(
