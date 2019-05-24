@@ -682,6 +682,11 @@ class Parse(IatiParser):
         # store element
         return element
 
+    def iati_organistions__iati_organisation__recipient_region_budget__recipient_region__narrative(self, element):  # NOQA: E501
+        recipient_region_budget = self.get_model('RecipientRegionBudget')
+        self.add_narrative(element, recipient_region_budget)
+        return element
+
     def iati_organisations__iati_organisation__recipient_region_budget__period_start(  # NOQA: E501
             self, element):
         """atributes:
