@@ -3959,6 +3959,7 @@ class ResultTestCase(ParserSetupTestCase):
         self.assertEqual(dimension.name, attrs['name'])
         self.assertEqual(dimension.value, attrs['value'])
 
+    @skip
     def test_result_indicator_period_actual_comment_202(self):
         """
         test for result_indicator_period_actual_comment + accompanying
