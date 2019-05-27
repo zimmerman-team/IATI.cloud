@@ -2428,6 +2428,15 @@ class Parse(IatiParser):
         self.register_model('TransactionSector', transaction_sector)
         return element
 
+    def iati_activities__iati_activity__transaction__sector__narrative(
+            self, element):
+        """attributes:
+
+        tag: narrative"""
+        model = self.get_model('TransactionSector')
+        self.add_narrative(element, model)
+        return element
+
     def iati_activities__iati_activity__transaction__recipient_country(
             self, element):
         """attributes:
