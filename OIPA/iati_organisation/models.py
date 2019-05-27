@@ -303,3 +303,14 @@ class OrganisationDocumentLinkLanguage(models.Model):
         OrganisationDocumentLink, on_delete=models.CASCADE)
     language = models.ForeignKey(Language, null=True, blank=True, default=None,
                                  on_delete=models.CASCADE)
+
+
+class DocumentLinkDescription(models.Model):
+    """
+    http://reference.iatistandard.org/203/organisation-standard/iati-organisations/iati-organisation/document-link/description/
+    """
+    document_link = models.OneToOneField(
+        OrganisationDocumentLink,
+        on_delete=models.CASCADE
+    )
+    narratives = GenericRelation(OrganisationNarrative)
