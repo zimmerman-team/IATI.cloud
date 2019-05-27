@@ -579,7 +579,7 @@ class OrganisationRecipientRegionBudgetSerializer(ModelSerializerNoValidation):
     period_end = serializers.CharField()
 
     recipient_region = BasicRegionSerializer(
-        source="region", fields=('url', 'code', 'name'))
+        source="region", fields=('url', 'code', 'name', 'region_vocabulary'))
 
     budget_lines = RecipientRegionBudgetLineSerializer(
         many=True, source="recipientregionbudgetline_set", required=False)
