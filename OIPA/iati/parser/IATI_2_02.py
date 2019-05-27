@@ -2924,6 +2924,12 @@ class Parse(IatiParser):
         self.register_model('Condition', condition)
         return element
 
+    def iati_activities__iati_activity__conditions__condition__narrative(
+            self, element):
+        condition = self.get_model('Condition')
+        self.add_narrative(element, condition)
+        return element
+
     # tag:result"""
     def iati_activities__iati_activity__result(self, element):
         result_type_code = element.attrib.get('type')
