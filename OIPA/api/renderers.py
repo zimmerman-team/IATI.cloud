@@ -27,11 +27,12 @@ from api.iati.references import (
     LastUpdatedDatetimeOrgReference, LegacyDataReference, LocationReference,
     NameOrgReference, OtherIdentifierReference, ParticipatingOrgReference,
     PlannedDisbursementReference, PolicyMarkerReference,
-    RecipientCountryReference, RecipientOrgBudgetOrgReference,
-    RecipientRegionBudgetOrgReference, RecipientRegionReference,
-    RelatedActivityReference, ReportingOrgOrgReference, ReportingOrgReference,
-    ResultReference, SectorReference, TagReference, TitleReference,
-    TotalBudgetOrgReference, TransactionReference, XmlLangReference
+    RecipientCountryBudgetOrgReference, RecipientCountryReference,
+    RecipientOrgBudgetOrgReference, RecipientRegionBudgetOrgReference,
+    RecipientRegionReference, RelatedActivityReference,
+    ReportingOrgOrgReference, ReportingOrgReference, ResultReference,
+    SectorReference, TagReference, TitleReference, TotalBudgetOrgReference,
+    TransactionReference, XmlLangReference
 )
 
 # TODO: Make this more generic - 2016-01-21
@@ -950,4 +951,5 @@ class OrganisationIATIXMLRenderer(IATIXMLRenderer):
         'total_budgets': TotalBudgetOrgReference,
         'recipient_org_budgets': RecipientOrgBudgetOrgReference,
         'recipient_region_budgets': RecipientRegionBudgetOrgReference,
+        'recipient_country_budgets': RecipientCountryBudgetOrgReference,
     }
