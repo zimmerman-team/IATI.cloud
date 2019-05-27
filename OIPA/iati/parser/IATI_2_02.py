@@ -937,6 +937,15 @@ class Parse(IatiParser):
 
         return element
 
+    def iati_activities__iati_activity__recipient_region__narrative(self,
+                                                                    element):
+        """attributes:
+
+        tag: narrative"""
+        model = self.get_model('ActivityRecipientRegion')
+        self.add_narrative(element, model)
+        return element
+
     def iati_activities__iati_activity__location(self, element):
         """attributes:
         ref:AF-KAN
