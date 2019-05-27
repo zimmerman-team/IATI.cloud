@@ -276,10 +276,12 @@ class RecipientOrgBudgetLineSerializer(ModelSerializerNoValidation):
 class OrganisationRecipientOrgBudgetSerializer(ModelSerializerNoValidation):
     class RecipientOrganisationSerializer(SerializerNoValidation):
         ref = serializers.CharField(source="recipient_org_identifier")
+        narratives = OrganisationNarrativeSerializer(many=True, read_only=True)
 
         class Meta:
             fields = (
                 'ref',
+                'narratives',
             )
 
     organisation = serializers.CharField(write_only=True)
