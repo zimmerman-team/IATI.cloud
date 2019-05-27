@@ -3364,10 +3364,10 @@ class Parse(IatiParser):
                 "value",
                 "required attribute missing")
 
-        period = self.get_model('ResultIndicatorPeriod')
+        period_actual = self.get_model('ResultIndicatorPeriodActual')
 
         actual_dimension = models.ResultIndicatorPeriodActualDimension()
-        actual_dimension.result_indicator_period = period
+        actual_dimension.result_indicator_period_actual = period_actual
         actual_dimension.name = name
         actual_dimension.value = value
 
