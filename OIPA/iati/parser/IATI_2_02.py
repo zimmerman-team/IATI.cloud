@@ -1606,7 +1606,6 @@ class Parse(IatiParser):
         self.register_model('ActivityPolicyMarker', activity_policy_marker)
         return element
 
-
     def iati_activities__iati_activity__policy_marker__narrative(
             self, element):
         """attributes:
@@ -2681,7 +2680,6 @@ class Parse(IatiParser):
         transaction = self.get_model('Transaction')
         transaction.tied_status = tied_status
         return element
-
 
     def iati_activities__iati_activity__document_link(self, element):
         """attributes:
