@@ -551,7 +551,7 @@ class PlannedDisbursementSerializer(ModelSerializerNoValidation):
 class ActivityDateSerializer(ModelSerializerNoValidation):
     type = CodelistSerializer()
     iso_date = serializers.DateField()
-
+    narratives = NarrativeSerializer(many=True)
     activity = serializers.CharField(write_only=True)
 
     def validate(self, data):
@@ -589,7 +589,7 @@ class ActivityDateSerializer(ModelSerializerNoValidation):
 
     class Meta:
         model = ActivityDate
-        fields = ('id', 'activity', 'iso_date', 'type')
+        fields = ('id', 'activity', 'iso_date', 'type', 'narratives')
 
 
 class ActivityAggregationSerializer(DynamicFieldsSerializer):
