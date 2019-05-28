@@ -3604,7 +3604,11 @@ class ActivitySerializerByIatiIdentifier(DynamicFieldsModelSerializer):
         read_only=True,
         view_name='activities:activity-transactions',
     )
-
+    related_transactions = TransactionSerializer(
+        many=True,
+        source='transaction_set',
+        read_only=True
+    )
     document_links = DocumentLinkSerializer(
         many=True,
         read_only=True,
@@ -3694,6 +3698,7 @@ class ActivitySerializerByIatiIdentifier(DynamicFieldsModelSerializer):
             'budgets',
             'capital_spend',
             'transactions',
+            'related_transactions',
             'document_links',
             'related_activities',
             'legacy_data',
