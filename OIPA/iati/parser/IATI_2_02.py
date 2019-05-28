@@ -268,6 +268,7 @@ class Parse(IatiParser):
             organisation.last_updated_datetime = datetime.now()
             organisation.iati_standard_version_id = "2.02"
             organisation.reported_in_iati = False
+            organisation.type = org_type
 
             # TODO: is this right? - 2017-03-27
             organisation.published = False

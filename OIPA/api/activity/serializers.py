@@ -684,7 +684,7 @@ class ReportingOrganisationSerializer(DynamicFieldsModelSerializer):
     url = CustomReportingOrganisationURLSerializer(
         view_name='organisations:organisation-detail',
     )
-    type = CodelistSerializer(source="publisher.organisation.type")
+    type = serializers.CharField(source="publisher.organisation.type.code")
     secondary_reporter = serializers.BooleanField(required=False)
 
     activity = serializers.CharField(write_only=True)
