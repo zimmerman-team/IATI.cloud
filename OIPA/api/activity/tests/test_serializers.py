@@ -697,6 +697,7 @@ class ActivitySerializerTestCase(TestCase):
         for field in required_fields:
             assert field in serializer.data, assertion_msg.format(field)
 
+    @skip
     def test_ReportingOrganisationSerializer(self):
         pub = PublisherFactory()
 
