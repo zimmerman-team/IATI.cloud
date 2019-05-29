@@ -721,7 +721,24 @@ class Parse(IatiParser):
             code=self._get_currency_or_raise(
                 'recipient-region-budget/value',
                 element.attrib.get('currency')))
+        value_date = element.attrib.get('value-date')
+        if value_date is None:
+            raise RequiredFieldError(
+                "RecipientRegionBudget",
+                "value-date",
+                "required field missing."
+            )
+        value_date = self.validate_date(value_date)
+        if not value_date:
+            raise FieldValidationError(
+                "RecipientRegionBudget",
+                "value-date",
+                "not in the correct range.",
+                None,
+                None,
+            )
         model.value = element.text
+        model.value_date = value_date
         # store element
         return element
 
