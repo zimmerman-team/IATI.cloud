@@ -1579,6 +1579,16 @@ class Parse(IatiParser):
                 "policy-marker",
                 "significance",
                 "significance is required when using OECD DAC CRS vocabulary")
+        elif not policy_marker_code and vocabulary.code in ['99', '98']:
+            # This is needed to create a new policy marker if related to vocabulary 99 or 98  # NOQA: E501
+            # ref. http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/policy-marker/  # NOQA: E501
+
+            policy_marker_code = models.PolicyMarker()
+            policy_marker_code.code = code
+            policy_marker_code.name = 'Vocabulary 99 or 98'
+            policy_marker_code.description = 'The policy marker is maintained by a reporting organisation'  # NOQA: E501
+            policy_marker_code.save()
+
         elif not policy_marker_code:
             raise IgnoredVocabularyError(
                 "policy-marker",
