@@ -28,7 +28,8 @@ class Parse(IatiParser):
     - Organisation Document Link
 
     # TODO: Cover others element as The IATI Organisation File Standard
-    http://reference.iatistandard.org/202/organisation-standard/overview/organisation-file/
+    http://reference.iatistandard.org/201/organisation-standard/overview
+    /organisation-file/
     """
 
     organisation_identifier = ''
