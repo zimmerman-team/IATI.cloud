@@ -222,5 +222,9 @@
   {
     "code": "AD",
     "description":	"Administrative budget"
+  },
+  {
+    "code": "CD",
+    "description":	"Community Development and Empowerment"
   }
 ]
