@@ -3495,5 +3495,5 @@ class ActivitySerializerByIatiIdentifier(ActivitySerializer):
     url = serializers.HyperlinkedIdentityField(
         view_name='activities:activity-detail-by-iati-identifier',
         lookup_field='iati_identifier',
-        read_only=True)
-
+        read_only=True
+    )
