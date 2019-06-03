@@ -748,7 +748,7 @@ class Parse(IatiParser):
         post_save.set_activity_reporting_organisation(organisation)
         post_save.set_publisher_fk(organisation)
 
-    def post_save_file(self, xml_source):
+    def post_save_file(self, dataset):
         pass
 
     def post_save_validators(self, dataset):
