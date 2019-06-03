@@ -187,11 +187,6 @@ class Parse(IatiParser):
 
         return element
 
-    def iati_organisations__iati_organisation__organisation_identifier(
-            self, element):
-        # already set in iati_organisation
-        return element
-
     def iati_organisations__iati_organisation__name(self, element):
         name_list = self.get_model_list('OrganisationName')
 
