@@ -112,7 +112,7 @@ class Parse(IatiParser):
         return currency
 
     def iati_organisations__iati_organisation(self, element):
-        id = element.xpath('organisation-identifier/text()')[0]
+        org_id = element.xpath('organisation-identifier/text()')[0]
         normalized_id = self._normalize(id)
         last_updated_datetime = self.validate_date(
             element.attrib.get('last-updated-datetime'))
@@ -134,7 +134,7 @@ class Parse(IatiParser):
             codelist_models.Currency,
             code=element.attrib.get('default-currency'))
 
-        if not id:
+        if not org_id:
             raise RequiredFieldError(
                 "",
                 "id",
@@ -142,7 +142,7 @@ class Parse(IatiParser):
 
         # TODO: check for last-updated-datetime - 2017-03-27
         old_organisation = self.get_or_none(
-            Organisation, organisation_identifier=id)
+            Organisation, organisation_identifier=org_id)
 
         if old_organisation:
             OrganisationName.objects.filter(
@@ -166,7 +166,7 @@ class Parse(IatiParser):
         else:
             organisation = Organisation()
 
-        organisation.organisation_identifier = id
+        organisation.organisation_identifier = org_id
         organisation.normalized_organisation_identifier = normalized_id
         organisation.last_updated_datetime = last_updated_datetime
         organisation.default_lang = default_lang
