@@ -3048,7 +3048,7 @@ class TransactionSerializer(serializers.ModelSerializer):
     """
     transaction_date = serializers.CharField()
     value_date = serializers.CharField()
-    transaction_aid_types = TransactionAidTypeSerializer(
+    aid_types = TransactionAidTypeSerializer(
         many=True,
         source='transactionaidtype_set',
         read_only=True
@@ -3100,7 +3100,7 @@ class TransactionSerializer(serializers.ModelSerializer):
             'recipient_regions',
             'flow_type',
             'finance_type',
-            'transaction_aid_types',
+            'aid_types',
             'tied_status',
         )
 
