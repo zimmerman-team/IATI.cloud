@@ -344,7 +344,7 @@ class TransactionReference(ElementReference):
     }
     # Aid type
     aid_types = {
-        'key': 'transaction_aid_types',
+        'key': 'aid_types',
         'element': 'aid-type',
         'aid_type': {
             'key': 'aid_type',
