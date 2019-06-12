@@ -3048,11 +3048,14 @@ class TransactionSerializer(serializers.ModelSerializer):
     """
     transaction_date = serializers.CharField()
     value_date = serializers.CharField()
+    # Aid type for version 2.03
     aid_types = TransactionAidTypeSerializer(
         many=True,
         source='transactionaidtype_set',
         read_only=True
     )
+    # Aid type for version 2.02 or below
+    aid_type = CodelistSerializer()
     disbursement_channel = CodelistSerializer()
     finance_type = CodelistSerializer()
     flow_type = CodelistSerializer()
@@ -3101,6 +3104,7 @@ class TransactionSerializer(serializers.ModelSerializer):
             'flow_type',
             'finance_type',
             'aid_types',
+            'aid_type',
             'tied_status',
         )
 
