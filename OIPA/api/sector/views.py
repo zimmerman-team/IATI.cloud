@@ -31,7 +31,7 @@ class SectorList(CacheResponseMixin, DynamicListView):
     serializer_class = serializers.SectorSerializer
     fields = ('url', 'code', 'name')
     list_cache_key_func = QueryParamsKeyConstructor()
-
+    selectable_fields = ()
 
 class SectorDetail(CacheResponseMixin, RetrieveAPIView):
     """
