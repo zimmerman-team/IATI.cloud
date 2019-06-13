@@ -4571,6 +4571,15 @@ class Parse(IatiParser):
         # 3 - The @value must be a valid number for all non-qualitative
         # measures
         value = element.attrib.get('value')
+        try:
+            value = Decimal(value)
+        except Exception as e:
+            value = 0  # value could be None according to
+            # iati-specification but we should not add None to our database
+            # otherwise it would raise error in endpoint aggregation.
+            # Example API call:
+            # /api/results/aggregations/?group_by=result_indicator_title
+            # &aggregations=actuals&format=json
 
         result_indicator_period = self.get_model('ResultIndicatorPeriod')
 
