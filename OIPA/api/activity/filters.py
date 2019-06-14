@@ -17,8 +17,8 @@ from api.generics.filters import (
 from iati.models import (
     Activity, ActivityParticipatingOrganisation, ActivityPolicyMarker,
     ActivityRecipientCountry, ActivityRecipientRegion,
-    ActivityReportingOrganisation, ActivitySector, Budget, DocumentLink,
-    HumanitarianScope, OtherIdentifier, RelatedActivity, Result,
+    ActivityReportingOrganisation, ActivitySector, Budget, CrsAdd,
+    DocumentLink, HumanitarianScope, OtherIdentifier, RelatedActivity, Result,
     ResultIndicatorPeriod, ResultIndicatorTitle
 )
 from iati.transaction.models import Transaction
@@ -42,6 +42,13 @@ class ActivityFilter(TogetherFilterSet):
     budget_not_provided = CommaSeparatedCharFilter(
         name='budget_not_provided',
         lookup_expr='in',
+    )
+
+    crs_add = ToManyFilter(
+        qs=CrsAdd,
+        lookup_expr='in',
+        name='channel_code_id',
+        fk='activity',
     )
 
     document_link_category = ToManyFilter(
