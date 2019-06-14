@@ -3154,6 +3154,7 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
         many=True, source="otheridentifier_set", required=False)
 
     activity_status = CodelistSerializer(required=False)
+    budget_not_provided = CodelistSerializer(required=False)
     activity_dates = ActivityDateSerializer(
         many=True,
         source='activitydate_set',
@@ -3449,6 +3450,7 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
             'participating_organisations',
             'other_identifier',
             'activity_status',
+            'budget_not_provided',
             'activity_dates',
             'contact_info',
             'activity_scope',

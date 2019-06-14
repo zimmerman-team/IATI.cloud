@@ -39,6 +39,11 @@ class ActivityFilter(TogetherFilterSet):
         name='scope__code',
         lookup_expr='in',)
 
+    budget_not_provided = CommaSeparatedCharFilter(
+        name='budget_not_provided',
+        lookup_expr='in',
+    )
+
     document_link_category = ToManyFilter(
         qs=DocumentLink,
         lookup_expr='in',
