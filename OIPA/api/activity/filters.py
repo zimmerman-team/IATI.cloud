@@ -44,12 +44,7 @@ class ActivityFilter(TogetherFilterSet):
         lookup_expr='in',
     )
 
-    crs_add = ToManyFilter(
-        qs=CrsAdd,
-        lookup_expr='in',
-        name='channel_code_id',
-        fk='activity',
-    )
+    crs_add = BooleanFilter(name='crsadd', lookup_expr='isnull')
 
     document_link_category = ToManyFilter(
         qs=DocumentLink,
