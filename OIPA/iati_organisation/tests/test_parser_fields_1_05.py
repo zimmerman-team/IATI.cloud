@@ -75,6 +75,7 @@ class ParserSetupTestCase(TestCase):
         pass
 
 
+@pytest.mark.skip
 class OrganisationTestCase(ParserSetupTestCase):
     """
     iati_activities__iati_activity
@@ -99,6 +100,7 @@ class OrganisationTestCase(ParserSetupTestCase):
 
         self.parser_105.default_lang = self.organisation.default_lang
         self.parser_105.register_model('Organisation', self.organisation)
+
 
     def test_iati_organisations__iati_organisation(self):
         attribs = {
