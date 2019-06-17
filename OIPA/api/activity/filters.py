@@ -17,8 +17,8 @@ from api.generics.filters import (
 from iati.models import (
     Activity, ActivityParticipatingOrganisation, ActivityPolicyMarker,
     ActivityRecipientCountry, ActivityRecipientRegion,
-    ActivityReportingOrganisation, ActivitySector, Budget, CrsAdd,
-    DocumentLink, HumanitarianScope, OtherIdentifier, RelatedActivity, Result,
+    ActivityReportingOrganisation, ActivitySector, Budget, DocumentLink,
+    HumanitarianScope, OtherIdentifier, RelatedActivity, Result,
     ResultIndicatorPeriod, ResultIndicatorTitle
 )
 from iati.transaction.models import Transaction

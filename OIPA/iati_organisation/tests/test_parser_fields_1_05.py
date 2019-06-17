@@ -101,7 +101,6 @@ class OrganisationTestCase(ParserSetupTestCase):
         self.parser_105.default_lang = self.organisation.default_lang
         self.parser_105.register_model('Organisation', self.organisation)
 
-
     def test_iati_organisations__iati_organisation(self):
         attribs = {
             'default-currency': 'EUR',
