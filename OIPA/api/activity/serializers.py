@@ -2567,7 +2567,7 @@ class CrsAddSerializer(ModelSerializerNoValidation):
     other_flags = CrsAddOtherFlagsSerializer(many=True, required=False)
     loan_terms = CrsAddLoanTermsSerializer(required=False)
     loan_status = CrsAddLoanStatusSerializer(required=False)
-
+    channel_code = serializers.CharField(required=False)
     activity = serializers.CharField(write_only=True)
 
     class Meta:
@@ -2575,6 +2575,7 @@ class CrsAddSerializer(ModelSerializerNoValidation):
         fields = (
             'activity',
             'id',
+            'channel_code',
             'other_flags',
             'loan_terms',
             'loan_status',
@@ -3154,6 +3155,7 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
         many=True, source="otheridentifier_set", required=False)
 
     activity_status = CodelistSerializer(required=False)
+    budget_not_provided = CodelistSerializer(required=False)
     activity_dates = ActivityDateSerializer(
         many=True,
         source='activitydate_set',
@@ -3449,6 +3451,7 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
             'participating_organisations',
             'other_identifier',
             'activity_status',
+            'budget_not_provided',
             'activity_dates',
             'contact_info',
             'activity_scope',
