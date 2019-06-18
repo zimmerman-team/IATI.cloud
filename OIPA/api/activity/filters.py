@@ -44,7 +44,8 @@ class ActivityFilter(TogetherFilterSet):
         lookup_expr='in',
     )
 
-    crs_add__isnull = BooleanFilter(name='crsadd', lookup_expr='isnull')
+    is_crs_add = BooleanFilter(name='crsadd', exclude=True,
+                               lookup_expr='isnull')
 
     document_link_category = ToManyFilter(
         qs=DocumentLink,
