@@ -24,6 +24,11 @@ class PublisherFilter(FilterSet):
         field_name='dataset',
         distinct=True
     )
+    is_active = BooleanFilter(
+        lookup_expr='isnull',
+        exclude=True,
+        field_name='package_count'
+    )
 
     class Meta:
         model = Publisher

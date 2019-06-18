@@ -92,12 +92,17 @@ class DatasetSyncer():
         """
 
         """
+        if publisher['package_count'] == 0:
+            package_count = None
+        else:
+            package_count = publisher['package_count']
         obj, created = Publisher.objects.update_or_create(
             iati_id=publisher['id'],
             defaults={
                 'publisher_iati_id': publisher['publisher_iati_id'],
                 'name': publisher['name'],
-                'display_name': publisher['title']
+                'display_name': publisher['title'],
+                'package_count': package_count,
             }
         )
 
