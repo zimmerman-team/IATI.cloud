@@ -44,6 +44,7 @@ class RegionList(CacheResponseMixin, DynamicListView):
     list_cache_key_func = QueryParamsKeyConstructor()
     selectable_fields = ()
 
+
 class RegionDetail(CacheResponseMixin, RetrieveAPIView):
     """
     Returns detailed information about Region.
