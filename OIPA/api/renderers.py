@@ -356,12 +356,13 @@ class UtilRenderer(object):
                     else:
                         tmp_value = self.paths[header_value]
                         if isinstance(tmp_value, list):
-
+                            tmp_value = list(map(str, tmp_value))
                             index = int(header_key.split('.')[1]) if len(header_key.split('.')) == 2 else -1  # NOQA: E501
                             if self.break_down_by in header_value:
                                 value = value + str(tmp_value[i]) + ';'
                             elif index < 0:
-                                value = value + str(';'.join(tmp_value)) + ';'
+                                value = value + str(';'.join(tmp_value)) \
+                                        + ';'
                             else:
                                 if len(tmp_value) >= index + 1:
                                     value = value + str(tmp_value[index]) + ';'

@@ -83,6 +83,11 @@ class TransactionFilter(FilterSet):
         fk='transaction',
     )
 
+    aid_type = CommaSeparatedCharFilter(
+        lookup_expr='exact',
+        field_name='aid_type',
+    )
+
     provider_organisation_primary_name = ToManyFilter(
         qs=TransactionProvider,
         lookup_expr='in',

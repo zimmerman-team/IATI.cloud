@@ -39,6 +39,14 @@ class ActivityFilter(TogetherFilterSet):
         name='scope__code',
         lookup_expr='in',)
 
+    budget_not_provided = CommaSeparatedCharFilter(
+        name='budget_not_provided',
+        lookup_expr='in',
+    )
+
+    is_crs_add = BooleanFilter(name='crsadd', exclude=True,
+                               lookup_expr='isnull')
+
     document_link_category = ToManyFilter(
         qs=DocumentLink,
         lookup_expr='in',

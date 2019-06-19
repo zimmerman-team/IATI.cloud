@@ -42,6 +42,7 @@ class RegionList(CacheResponseMixin, DynamicListView):
     serializer_class = serializers.RegionSerializer
     fields = ('url', 'code', 'name')
     list_cache_key_func = QueryParamsKeyConstructor()
+    selectable_fields = ()
 
 
 class RegionDetail(CacheResponseMixin, RetrieveAPIView):

@@ -20,7 +20,7 @@ class Publisher(models.Model):
     # name given in the IR API
     name = models.CharField(max_length=55, default="")
     display_name = models.CharField(max_length=255)
-
+    package_count = models.CharField(max_length=10, default=None, null=True)
     organisation = models.OneToOneField(
         Organisation,
         default=None,

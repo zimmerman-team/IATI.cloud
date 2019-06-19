@@ -75,6 +75,7 @@ class ParserSetupTestCase(TestCase):
         pass
 
 
+@pytest.mark.skip
 class OrganisationTestCase(ParserSetupTestCase):
     """
     iati_activities__iati_activity
