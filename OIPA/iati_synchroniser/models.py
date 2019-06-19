@@ -1,10 +1,10 @@
 import datetime
-from lxml import etree
 import logging
 
 from django.conf import settings
 from django.contrib.staticfiles import finders
 from django.db import models
+from lxml import etree
 
 from iati.filegrabber import FileGrabber
 from iati_organisation.models import Organisation
