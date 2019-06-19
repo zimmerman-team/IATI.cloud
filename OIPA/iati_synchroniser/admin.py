@@ -97,7 +97,10 @@ class DatasetAdmin(admin.ModelAdmin):
         'date_updated',
         'last_found_in_registry',
         'is_parsed',
-        'time_to_parse']
+        'time_to_parse',
+        'activities_count_in_xml',
+        'activities_count_in_database'
+    ]
 
     def show_source_url(self, obj):
         return format_html(
