@@ -1,5 +1,6 @@
 import datetime
 from lxml import etree
+import logging
 
 from django.conf import settings
 from django.contrib.staticfiles import finders
@@ -7,6 +8,9 @@ from django.db import models
 
 from iati.filegrabber import FileGrabber
 from iati_organisation.models import Organisation
+
+# Get an instance of a logger
+logger = logging.getLogger(__name__)
 
 
 class Publisher(models.Model):
@@ -140,8 +144,8 @@ class Dataset(models.Model):
             self.activities_count_in_database = self.activity_set.all().count()
 
             self.save(process=False)
-        except Exception:
-            pass
+        except Exception as e:
+            logger.error(e)
 
     def save(self, process=False, *args, **kwargs):
         super(Dataset, self).save()
