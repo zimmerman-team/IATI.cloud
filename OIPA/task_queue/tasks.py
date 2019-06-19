@@ -485,3 +485,9 @@ def download_file(d):
         # print str(e)
         doc.document_content = document_content.decode("latin-1")
         doc.save()
+
+
+@job
+def update_activity_count():
+    for dataset in Dataset.objects.all():
+        dataset.update_activities_count()
