@@ -271,69 +271,33 @@ def reindex_activity(activity):
     activity_search.conditions = " ".join(conditions_text)
     activity_search.result = " ".join(result_text)
 
-    _config = 'english'
-
     combined_vector = SearchVector(
         'iati_identifier',
-        config=_config
-    ) + SearchVector(
         'title',
-        config=_config
-    ) + SearchVector(
         'description',
-        config=_config
-    ) + SearchVector(
         'reporting_org',
-        config=_config
-    ) + SearchVector(
         'participating_org',
-        config=_config
-    ) + SearchVector(
         'recipient_country',
-        config=_config
-    ) + SearchVector(
         'recipient_region',
-        config=_config
-    ) + SearchVector(
         'sector',
-        config=_config
-    ) + SearchVector(
         'document_link',
-        config=_config
-    ) + SearchVector(
         'other_identifier',
-        config=_config
-    ) + SearchVector(
         'contact_info',
-        config=_config
-    ) + SearchVector(
         'location',
-        config=_config
-    ) + SearchVector(
         'country_budget_items',
-        config=_config
-    ) + SearchVector(
         'policy_marker',
-        config=_config
-    ) + SearchVector(
         'transaction',
-
-        config=_config
-    ) + SearchVector(
         'related_activity',
-        config=_config
-    ) + SearchVector(
         'conditions',
-        config=_config
-    ) + SearchVector(
-        'result',
-        config=_config
+        'result'
     )
 
     activity_search.last_reindexed = datetime.now()
     activity_search.save()
+
     ActivitySearch.objects.filter(id=activity_search.id).update(
-        search_vector_text=combined_vector)
+        search_vector_text=combined_vector
+    )
 
 
 def reindex_all_activities():
