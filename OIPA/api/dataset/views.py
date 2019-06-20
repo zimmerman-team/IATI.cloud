@@ -77,6 +77,7 @@ class DatasetList(CacheResponseMixin, DynamicListView):
     queryset = Dataset.objects.all()
     serializer_class = DatasetSerializer
     filter_class = DatasetFilter
+    selectable_fields = ()
     filter_backends = (OrderingFilter, DjangoFilterBackend)
     ordering_fields = '__all__'
     pagination_class = DatasetPagination
