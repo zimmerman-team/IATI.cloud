@@ -1,5 +1,6 @@
 from django.db.models import Q
 from django_filters import BooleanFilter, Filter, FilterSet
+
 from api.generics.filters import CommaSeparatedCharFilter
 from iati_synchroniser.models import Publisher
 
