@@ -90,6 +90,6 @@ CACHES = {
 DOWNLOAD_DATASETS = True
 
 try:
-    from OIPA.local_settings import *
+    from .local_settings import *  # noqa: F401, F403
 except ImportError:
     pass
