@@ -88,3 +88,8 @@ CACHES = {
 # A setting indicating whether to save XML datasets (files) to local machine or
 # not:
 DOWNLOAD_DATASETS = True
+
+try:
+    from OIPA.local_settings import *
+except ImportError:
+    pass
