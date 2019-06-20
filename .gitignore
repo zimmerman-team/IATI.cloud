@@ -23,3 +23,4 @@ tags
 setup.cfg
 public
 .coverage
+logs
