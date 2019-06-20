@@ -77,6 +77,7 @@ class OrganisationList(CacheResponseMixin, DynamicListView):
     )
     queryset = Organisation.objects.all()
     serializer_class = serializers.OrganisationSerializer
+    selectable_fields = ()
     fields = ('url', 'organisation_identifier',
               'last_updated_datetime', 'name')
     list_cache_key_func = QueryParamsKeyConstructor()
