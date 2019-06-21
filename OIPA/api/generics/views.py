@@ -62,7 +62,6 @@ class DynamicView(GenericAPIView):
         # serializer fields defined in serialier class. Here we assign
         # `self.fields = ()` so that it will be assigned all serializer
         # fields in `filter_queryset` method.
-        
         if request_fields and request_fields == 'all':
             self.fields = ()
         elif request_fields:
