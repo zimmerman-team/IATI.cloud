@@ -59,7 +59,7 @@ class DynamicView(GenericAPIView):
         request_fields = self.request.query_params.get('fields')
 
         # if requested query fields is set to `all` we will return all
-        # serializer fields defined in serialier class. Here we assign
+        # serializer fields defined in serializer class. Here we assign
         # `self.fields = ()` so that it will be assigned all serializer
         # fields in `filter_queryset` method.
         if request_fields and request_fields == 'all':
