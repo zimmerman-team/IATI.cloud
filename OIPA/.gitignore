@@ -5,3 +5,4 @@ local_settings.py
 .env
 .coverage
 static/datasets
+logs

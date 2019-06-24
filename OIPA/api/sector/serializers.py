@@ -15,7 +15,10 @@ class SectorCategorySerializer(serializers.ModelSerializer):
 class SectorSerializer(DynamicFieldsSerializer):
     url = serializers.HyperlinkedIdentityField(
         view_name='sectors:sector-detail',
-        read_only=True
+        read_only=True,
+        source='code',
+        lookup_url_kwarg='code',
+        lookup_field='code'
     )
     category = SectorCategorySerializer(read_only=True)
 

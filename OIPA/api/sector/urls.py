@@ -6,7 +6,7 @@ app_name = 'api'
 urlpatterns = [
     url(r'^$', views.SectorList.as_view(), name='sector-list'),
     url(
-        r'^(?P<pk>[^@$&+,/:;=?]+)/$',
+        r'^(?P<code>[^@$&+,/:;=?]+)/$',
         views.SectorDetail.as_view(),
         name='sector-detail'
     ),
