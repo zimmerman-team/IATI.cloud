@@ -91,6 +91,8 @@ class DatasetSerializer(DynamicFieldsModelSerializer):
             'source_url',
             'activities',
             'activity_count',
+            'activities_count_in_xml',
+            'activities_count_in_database',
             'date_created',
             'date_updated',
             'last_found_in_registry',
