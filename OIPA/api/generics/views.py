@@ -16,7 +16,8 @@ class DynamicView(GenericAPIView):
     select_related_fields = []
     serializer_fields = []
     field_source_mapping = {}
-    fields = []
+    fields = ()
+    selectable_fields = ()
 
     def __init__(self, *args, **kwargs):
         """
