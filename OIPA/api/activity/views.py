@@ -1,9 +1,8 @@
+from django.conf import settings
 from django.db.models import Count
-from django_filters.rest_framework import DjangoFilterBackend
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
-from django.conf import settings
-
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import authentication, mixins, status
 from rest_framework.generics import (
     GenericAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
