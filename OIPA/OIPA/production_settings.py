@@ -82,6 +82,7 @@ CACHES = {
     },
     'default': {
         'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+        'TIMEOUT': 60 * 60 * 24 * 30,
     },
 }
 

@@ -1,5 +1,9 @@
 from django.db.models import Count
 from django_filters.rest_framework import DjangoFilterBackend
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
+from django.conf import settings
+
 from rest_framework import authentication, mixins, status
 from rest_framework.generics import (
     GenericAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
@@ -35,7 +39,6 @@ from api.activity.serializers import (
 )
 from api.activity.validators import activity_required_fields
 from api.aggregation.views import Aggregation, AggregationView, GroupBy
-from api.cache import QueryParamsKeyConstructor
 from api.country.serializers import CountrySerializer
 from api.generics.filters import DistanceFilter, SearchFilter
 from api.generics.views import (
@@ -258,7 +261,7 @@ class ActivityAggregations(AggregationView):
     )
 
 
-class ActivityList(CacheResponseMixin, DynamicListView):
+class ActivityList(DynamicListView):
 
     """
     Returns a list of IATI Activities stored in OIPA.
@@ -423,13 +426,17 @@ class ActivityList(CacheResponseMixin, DynamicListView):
         'activity_expenditure_value',
         'activity_plus_child_budget_value')
 
-    list_cache_key_func = QueryParamsKeyConstructor()
-
     def __init__(self, *args, **kwargs):
         super(ActivityList, self).__init__(*args, **kwargs)
 
         for transaction_type in list(TransactionType.objects.all()):
             self.transaction_types.append(transaction_type.code)
+
+    @method_decorator(
+        cache_page(settings.CACHES.get('default').get('TIMEOUT'))
+    )
+    def dispatch(self, *args, **kwargs):
+        return super(ActivityList, self).dispatch(*args, **kwargs)
 
 
 class ActivityMarkReadyToPublish(APIView, FilterPublisherMixin):
