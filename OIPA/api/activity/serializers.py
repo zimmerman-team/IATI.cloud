@@ -2824,6 +2824,15 @@ class LocationSerializer(DynamicFieldsModelSerializer):
         read_only=True,
         required=False,
     )
+
+    reporting_organisations = ReportingOrganisationDataSerializer(
+        many=True,
+        source='activity.reporting_organisations',
+        required=False,
+        read_only=True,
+
+    )
+
     recipient_regions = ActivityRecipientRegionSerializer(
         many=True,
         source='activity.activityrecipientregion_set',
@@ -2927,6 +2936,10 @@ class LocationSerializer(DynamicFieldsModelSerializer):
             'exactness',
             'location_class',
             'feature_designation',
+            'sectors',
+            'recipient_countries',
+            'recipient_regions',
+            'reporting_organisations',
             # TODO: slow fields so ignored them, until we have a good solution
             # 'sectors',
             # 'recipient_countries',
