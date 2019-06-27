@@ -12,6 +12,11 @@ class LocationFilter(TogetherFilterSet):
         lookup_expr='in',
         field_name='activity__activity_status',)
 
+    organisation_iati_identifier = CommaSeparatedCharFilter(
+        lookup_expr='in',
+        field_name='activity__reporting_organisations__ref'
+    )
+
     class Meta:
         model = Location
         fields = ['activity_status']
