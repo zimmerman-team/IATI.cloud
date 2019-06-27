@@ -39,9 +39,9 @@ class RegionSerializer(DynamicFieldsModelSerializer):
     url = serializers.HyperlinkedIdentityField(
         view_name='regions:region-detail',
         read_only=True,
-        source='code',
-        lookup_url_kwarg='code',
-        lookup_field='code'
+        source='pk',
+        lookup_url_kwarg='pk',
+        lookup_field='pk'
     )
     child_regions = BasicRegionSerializer(
         many=True, source='region_set', fields=('url', 'code', 'name'))

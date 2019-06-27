@@ -6,7 +6,7 @@ app_name = 'api'
 urlpatterns = [
     url(r'^$', views.RegionList.as_view(), name='region-list'),
     url(
-        r'^(?P<code>[^@$&+,/:;=?]+)/$',
+        r'^(?P<pk>[^@$&+,/:;=?]+)/$',
         views.RegionDetail.as_view(),
         name='region-detail'
     ),
