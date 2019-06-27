@@ -16,7 +16,12 @@ class RegionVocabularySerializer(serializers.ModelSerializer):
 
 class BasicRegionSerializer(DynamicFieldsModelSerializer):
     url = serializers.HyperlinkedIdentityField(
-        view_name='regions:region-detail')
+        view_name='regions:region-detail',
+        read_only=True,
+        source='code',
+        lookup_url_kwarg='code',
+        lookup_field='code'
+    )
     code = serializers.CharField()
     region_vocabulary = RegionVocabularySerializer(required=False)
 
@@ -32,7 +37,12 @@ class BasicRegionSerializer(DynamicFieldsModelSerializer):
 
 class RegionSerializer(DynamicFieldsModelSerializer):
     url = serializers.HyperlinkedIdentityField(
-        view_name='regions:region-detail')
+        view_name='regions:region-detail',
+        read_only=True,
+        source='code',
+        lookup_url_kwarg='code',
+        lookup_field='code'
+    )
     child_regions = BasicRegionSerializer(
         many=True, source='region_set', fields=('url', 'code', 'name'))
     parental_region = BasicRegionSerializer(fields=('url', 'code', 'name'))
