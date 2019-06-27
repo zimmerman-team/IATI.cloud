@@ -2809,6 +2809,8 @@ class LocationSerializer(DynamicFieldsModelSerializer):
 
     activity = serializers.CharField(write_only=True)
 
+    # TODO: slow fields so ignored them, until we have a good solution
+    """
     sectors = ActivitySectorSerializer(
         many=True,
         source='activity.activitysector_set',
@@ -2828,7 +2830,15 @@ class LocationSerializer(DynamicFieldsModelSerializer):
         read_only=True,
         required=False,
     )
+    """
 
+    reporting_organisations = ReportingOrganisationDataSerializer(
+        many=True,
+        source='activity.reporting_organisations',
+        required=False,
+        read_only=True,
+
+    )
     iati_identifier = serializers.CharField(source='activity.iati_identifier', required=False)  # NOQA: E501
 
     def validate(self, data):
@@ -2924,9 +2934,11 @@ class LocationSerializer(DynamicFieldsModelSerializer):
             'exactness',
             'location_class',
             'feature_designation',
-            'sectors',
-            'recipient_countries',
-            'recipient_regions'
+            # TODO: slow fields so ignored them, until we have a good solution
+            # 'sectors',
+            # 'recipient_countries',
+            # 'recipient_regions'
+            'reporting_organisations',
         )
 
 
