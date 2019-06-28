@@ -1029,6 +1029,22 @@ class OrganisationReportingOrganisationSerializer(ModelSerializerNoValidation):
         )
 
 
+class OrganisationAggregationSerializer(DynamicFieldsModelSerializer):
+    url = EncodedHyperlinkedIdentityField(
+        view_name='organisations:organisation-detail',
+        read_only=True
+    )
+
+    class Meta:
+        model = org_models.Organisation
+        fields = (
+            'url',
+            'id',
+            'primary_name',
+            'organisation_identifier',
+        )
+
+
 class OrganisationSerializer(DynamicFieldsModelSerializer):
 
     class PublishedStateSerializer(DynamicFieldsSerializer):
