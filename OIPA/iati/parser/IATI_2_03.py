@@ -4598,7 +4598,7 @@ class Parse(IatiParser):
 
         result_indicator_period_actual = models.ResultIndicatorPeriodActual()
         result_indicator_period_actual.result_indicator_period = result_indicator_period  # NOQA: E501
-        result_indicator_period_actual.value = value or ''  # can be None
+        result_indicator_period_actual.value = value
 
         self.register_model(
             'ResultIndicatorPeriodActual', result_indicator_period_actual)
