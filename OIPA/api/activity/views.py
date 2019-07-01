@@ -567,7 +567,9 @@ class ActivityDetailByIatiIdentifier(DynamicDetailView):
         cache_page(settings.CACHES.get('default').get('TIMEOUT'))
     )
     def dispatch(self, *args, **kwargs):
-        return super(ActivityDetailByIatiIdentifier, self).dispatch(*args, **kwargs)
+        return super(ActivityDetailByIatiIdentifier, self).dispatch(
+            *args, **kwargs
+        )
 
 
 class ActivityTransactionList(DynamicListView):
