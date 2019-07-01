@@ -11,7 +11,7 @@ from api.cache import QueryParamsKeyConstructor
 from api.country.serializers import CountrySerializer
 from api.generics.filters import SearchFilter
 from api.generics.views import DynamicDetailView, DynamicListView
-from api.organisation.serializers import OrganisationSerializer
+from api.organisation.serializers import OrganisationAggregationSerializer
 from api.pagination import CustomTransactionPagination
 from api.region.serializers import RegionSerializer
 from api.sector.serializers import SectorSerializer
@@ -487,7 +487,7 @@ class TransactionAggregation(AggregationView):
             fields="activity__reporting_organisations__organisation__id",
             renamed_fields="reporting_organisation",
             queryset=Organisation.objects.all(),
-            serializer=OrganisationSerializer,
+            serializer=OrganisationAggregationSerializer,
             serializer_main_field='id',
             name_search_field="activity__reporting_organisations__\
                     organisation__primary_name",
