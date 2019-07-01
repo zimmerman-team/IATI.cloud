@@ -84,7 +84,6 @@ class DefaultAidTypeReference(ElementReference):
     element = 'default-aid-type'
     code_key = 'code'
     code_attr = 'code'
-    vocabulary_key = 'name'
     vocabulary_attr = 'vocabulary'
 
     def create(self):
