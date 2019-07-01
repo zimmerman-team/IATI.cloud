@@ -9,6 +9,8 @@ from api.iati.elements import (
     AttributeRecord, ElementBase, ElementRecord, ElementReference,
     ElementWithNarrativeReference
 )
+from iati_codelists.models import AidType
+from iati_vocabulary.models import AidTypeVocabulary
 
 
 class TitleReference(ElementWithNarrativeReference):
@@ -76,6 +78,27 @@ class ActivityDateReference(ElementReference):
                 type_value = type_date.get(self.type_value_key)
                 if type_value:
                     iso_date_element.set(self.type_attr, type_value)
+
+
+class DefaultAidTypeReference(ElementReference):
+    element = 'default-aid-type'
+    code_key = 'code'
+    code_attr = 'code'
+    vocabulary_key = 'name'
+    vocabulary_attr = 'vocabulary'
+
+    def create(self):
+        code = self.data.get(self.code_key)
+        # We get vocabulary code from AidTypeVocabulary table.
+        vocabulary = AidTypeVocabulary.objects.get(code=AidType.objects.get(
+            code=code).vocabulary_id).code
+        if code:
+            default_aid_type_element = etree.SubElement(
+                self.parent_element, self.element
+            )
+        default_aid_type_element.set(self.code_attr, code)
+
+        default_aid_type_element.set(self.vocabulary_attr, vocabulary)
 
 
 class ReportingOrgReference(ElementWithNarrativeReference):

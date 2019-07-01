@@ -21,12 +21,12 @@ from api.iati.references import (
     ActivityDateReference, ActivityScopeReference, ActivityStatusReference,
     BudgetReference, CapitalSpendReference, CollaborationTypeReference,
     ConditionsReference, ContactInfoReference, CountryBudgetItemsReference,
-    CrsAddReference, DefaultCurrencyOrgReference, DefaultFinanceTypeReference,
-    DefaultFlowTypeReference, DefaultTiedStatusReference, DescriptionReference,
-    DocumentLinkOrgReference, DocumentLinkReference, FssReference,
-    HumanitarianScopeReference, LastUpdatedDatetimeOrgReference,
-    LegacyDataReference, LocationReference, NameOrgReference,
-    OtherIdentifierReference, ParticipatingOrgReference,
+    CrsAddReference, DefaultAidTypeReference, DefaultCurrencyOrgReference,
+    DefaultFinanceTypeReference, DefaultFlowTypeReference,
+    DefaultTiedStatusReference, DescriptionReference, DocumentLinkOrgReference,
+    DocumentLinkReference, FssReference, HumanitarianScopeReference,
+    LastUpdatedDatetimeOrgReference, LegacyDataReference, LocationReference,
+    NameOrgReference, OtherIdentifierReference, ParticipatingOrgReference,
     PlannedDisbursementReference, PolicyMarkerReference,
     RecipientCountryBudgetOrgReference, RecipientCountryReference,
     RecipientOrgBudgetOrgReference, RecipientRegionBudgetOrgReference,
@@ -824,7 +824,8 @@ class IATIXMLRenderer(BaseRenderer):
         'related_activities': RelatedActivityReference,
         'conditions': ConditionsReference,
         'country_budget_items': CountryBudgetItemsReference,
-        'tags': TagReference
+        'tags': TagReference,
+        'default_aid_type': DefaultAidTypeReference,
     }
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
