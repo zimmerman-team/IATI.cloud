@@ -465,7 +465,7 @@ class ActivityMarkReadyToPublish(APIView, FilterPublisherMixin):
         return Response(True)
 
 
-class ActivityDetail(CacheResponseMixin, DynamicDetailView):
+class ActivityDetail(DynamicDetailView):
 
     """
     Returns detailed information about Activity.
@@ -497,6 +497,8 @@ class ActivityDetail(CacheResponseMixin, DynamicDetailView):
     """
 
     queryset = Activity.objects.all()
+
+    # TODO: filter_class, selectable_fields, etc. Is needed for detail?
     filter_class = ActivityFilter
     serializer_class = ActivitySerializer
     selectable_fields = ()
@@ -527,11 +529,17 @@ class ActivityDetail(CacheResponseMixin, DynamicDetailView):
 
     exceptional_fields = [{'transaction_types': []}]  # NOQA: E501
 
+    @method_decorator(
+        cache_page(settings.CACHES.get('default').get('TIMEOUT'))
+    )
+    def dispatch(self, *args, **kwargs):
+        return super(ActivityDetail, self).dispatch(*args, **kwargs)
+
 # TODO separate endpoints for expensive fields like ActivityLocations &
 # ActivityResults 08-07-2016
 
 
-class ActivityDetailByIatiIdentifier(CacheResponseMixin, DynamicDetailView):
+class ActivityDetailByIatiIdentifier(DynamicDetailView):
     """
     Returns detailed information of the Activity.
 
@@ -552,9 +560,16 @@ class ActivityDetailByIatiIdentifier(CacheResponseMixin, DynamicDetailView):
     """
 
     queryset = Activity.objects.all()
-    filter_class = ActivityFilter
     serializer_class = ActivitySerializerByIatiIdentifier
     lookup_field = 'iati_identifier'
+
+    @method_decorator(
+        cache_page(settings.CACHES.get('default').get('TIMEOUT'))
+    )
+    def dispatch(self, *args, **kwargs):
+        return super(ActivityDetailByIatiIdentifier, self).dispatch(
+            *args, **kwargs
+        )
 
 
 class ActivityTransactionList(DynamicListView):
