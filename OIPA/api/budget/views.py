@@ -1,5 +1,7 @@
-
+from django.conf import settings
 from django.db.models import Count, F, Sum
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 from django_filters.rest_framework import DjangoFilterBackend
 
 from api.activity.serializers import CodelistSerializer
@@ -331,6 +333,12 @@ class BudgetAggregations(AggregationView):
             fields=("budget_period_end_year", "budget_period_end_month")
         ),
     )
+
+    @method_decorator(
+        cache_page(settings.CACHES.get('default').get('TIMEOUT'))
+    )
+    def dispatch(self, *args, **kwargs):
+        return super(BudgetAggregations, self).dispatch(*args, **kwargs)
 
 
 class BudgetList(DynamicListView):
