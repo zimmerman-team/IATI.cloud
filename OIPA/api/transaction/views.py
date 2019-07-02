@@ -470,6 +470,14 @@ class TransactionAggregation(AggregationView):
             renamed_name_search_field="sector_name",
         ),
         GroupBy(
+            query_param="sector_category",
+            fields="transactionsector__sector__category",
+            renamed_fields="sector_category",
+            queryset=Sector.objects.all(),
+            serializer=SectorSerializer,
+            serializer_fields=("code", "name"),
+        ),
+        GroupBy(
             query_param="related_activity",
             fields=(
                 "activity__relatedactivity__ref_activity__iati_identifier"
