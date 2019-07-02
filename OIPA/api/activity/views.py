@@ -618,17 +618,6 @@ class ActivityTransactionList(DynamicListView):
     serializer_class = TransactionSerializer
     filter_class = TransactionFilter
 
-    # TODO: Create cached logic for this class
-    """
-    This class has unique URL so not compatible the rest_framework_extensions
-    cached. We should make a Params Key Constructor function
-    then override the default below function and will be like below:
-
-    @cache_response(key_func=YourQueryParamsKeyConstructor())
-    def get(self, request, *args, **kwargs):
-        return self.list(request, *args, **kwargs)
-    """
-
     def get_queryset(self):
         # Override default get query to get transaction list by primary key of
         # the activity
@@ -638,6 +627,12 @@ class ActivityTransactionList(DynamicListView):
                 transaction_set.all().order_by('id')
         except Activity.DoesNotExist:
             return Transaction.objects.none().order_by('id')
+
+    @method_decorator(
+        cache_page(settings.CACHES.get('default').get('TIMEOUT'))
+    )
+    def dispatch(self, *args, **kwargs):
+        return super(ActivityTransactionList, self).dispatch(*args, **kwargs)
 
 
 class ActivityTransactionListByIatiIdentifier(DynamicListView):
@@ -686,17 +681,6 @@ class ActivityTransactionListByIatiIdentifier(DynamicListView):
     serializer_class = TransactionSerializer
     filter_class = TransactionFilter
 
-    # TODO: Create cached logic for this class
-    """
-    This class has unique URL so not compatible the rest_framework_extensions
-    cached. We should make a Params Key Constructor function
-    then override the default below function and will be like below:
-
-    @cache_response(key_func=YourQueryParamsKeyConstructor())
-    def get(self, request, *args, **kwargs):
-        return self.list(request, *args, **kwargs)
-    """
-
     def get_queryset(self):
         # Override default get query to get transaction list by primary key of
         # the activity
@@ -706,6 +690,14 @@ class ActivityTransactionListByIatiIdentifier(DynamicListView):
                 transaction_set.all().order_by('id')
         except Activity.DoesNotExist:
             return Transaction.objects.none().order_by('id')
+
+    @method_decorator(
+        cache_page(settings.CACHES.get('default').get('TIMEOUT'))
+    )
+    def dispatch(self, *args, **kwargs):
+        return super(ActivityTransactionListByIatiIdentifier, self).dispatch(
+            *args, **kwargs
+        )
 
 
 class ActivityTransactionDetail(CacheResponseMixin, DynamicDetailView):
