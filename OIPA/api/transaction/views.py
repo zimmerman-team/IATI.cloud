@@ -1,4 +1,7 @@
+from django.conf import settings
 from django.db.models import Count, F, Q, Sum
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.generics import (
     ListCreateAPIView, RetrieveUpdateDestroyAPIView
@@ -7,7 +10,6 @@ from rest_framework_extensions.cache.mixins import CacheResponseMixin
 
 from api.activity.serializers import CodelistSerializer
 from api.aggregation.views import Aggregation, AggregationView, GroupBy
-from api.cache import QueryParamsKeyConstructor
 from api.country.serializers import CountrySerializer
 from api.generics.filters import SearchFilter
 from api.generics.views import DynamicDetailView, DynamicListView
@@ -32,7 +34,7 @@ from iati.transaction.models import (
 )
 
 
-class TransactionList(CacheResponseMixin, DynamicListView):
+class TransactionList(DynamicListView):
     """
     Returns a list of IATI Transactions stored in OIPA.
 
@@ -133,12 +135,11 @@ class TransactionList(CacheResponseMixin, DynamicListView):
         'receiver_organisation',
     )
 
-    list_cache_key_func = QueryParamsKeyConstructor()
-
-    # def __init__(self, *args, **kwargs):
-    #    super(TransactionList, self).__init__(*args, **kwargs)
-    #    for transaction_type in list(TransactionType.objects.all()):
-    #        self.transaction_types.append(transaction_type.code)
+    @method_decorator(
+        cache_page(settings.CACHES.get('default').get('TIMEOUT'))
+    )
+    def dispatch(self, *args, **kwargs):
+        return super(TransactionList, self).dispatch(*args, **kwargs)
 
 
 class TransactionDetail(CacheResponseMixin, DynamicDetailView):
