@@ -651,3 +651,9 @@ class TransactionAggregation(AggregationView):
             fields=("transaction_date_year", "transaction_date_month")
         ),
     )
+
+    @method_decorator(
+        cache_page(settings.CACHES.get('default').get('TIMEOUT'))
+    )
+    def dispatch(self, *args, **kwargs):
+        return super(TransactionAggregation, self).dispatch(*args, **kwargs)
