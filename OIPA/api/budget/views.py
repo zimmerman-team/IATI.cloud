@@ -1,8 +1,7 @@
 from django.conf import settings
 from django.db.models import Count, F, Sum
-from django.views.decorators.cache import cache_page
 from django.utils.decorators import method_decorator
-
+from django.views.decorators.cache import cache_page
 from django_filters.rest_framework import DjangoFilterBackend
 
 from api.activity.serializers import CodelistSerializer
