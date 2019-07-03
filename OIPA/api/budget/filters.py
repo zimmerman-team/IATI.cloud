@@ -20,6 +20,10 @@ class BudgetFilter(TogetherFilterSet):
         field_name='activity__iati_identifier',
         lookup_expr='in')
 
+    iati_identifier = CommaSeparatedCharFilter(
+        name='activity__iati_identifier',
+        lookup_expr='in')
+
     activity_scope = CommaSeparatedCharFilter(
         field_name='activity__scope__code',
         lookup_expr='in',)
