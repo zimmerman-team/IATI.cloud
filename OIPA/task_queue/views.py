@@ -31,6 +31,7 @@ def add_task(request):
         queue.enqueue(func, args=([parameters]))
     else:
         queue.enqueue(func)
+
     return HttpResponse(json.dumps(True), content_type='application/json')
 
 
