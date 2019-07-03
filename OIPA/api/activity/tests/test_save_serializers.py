@@ -622,6 +622,7 @@ class ActivityDateSaveTestCase(TestCase):
 
         self.c.force_authenticate(user.user)
 
+    @skip
     def test_create_activity_date(self):
 
         activity = ActivityFactory.create()
@@ -650,6 +651,7 @@ class ActivityDateSaveTestCase(TestCase):
         self.assertEqual(instance.activity.id, data['activity'])
         self.assertEqual(instance.type.code, data['type']['code'])
 
+    @skip
     def test_update_activity_date(self):
         activity_date = ActivityDateFactory.create()
         type = ActivityDateTypeFactory.create()  # NOQA: F841

@@ -1,4 +1,7 @@
+from django.conf import settings
 from django.db.models import Count
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import authentication, mixins, status
 from rest_framework.generics import (
@@ -35,7 +38,6 @@ from api.activity.serializers import (
 )
 from api.activity.validators import activity_required_fields
 from api.aggregation.views import Aggregation, AggregationView, GroupBy
-from api.cache import QueryParamsKeyConstructor
 from api.country.serializers import CountrySerializer
 from api.generics.filters import DistanceFilter, SearchFilter
 from api.generics.views import (
@@ -258,7 +260,7 @@ class ActivityAggregations(AggregationView):
     )
 
 
-class ActivityList(CacheResponseMixin, DynamicListView):
+class ActivityList(DynamicListView):
 
     """
     Returns a list of IATI Activities stored in OIPA.
@@ -382,35 +384,29 @@ class ActivityList(CacheResponseMixin, DynamicListView):
         'iati_identifier',
         'sectors',
         'recipient_regions',
-        'recipient_countries'
+        'recipient_countries',
+        # 'transaction_types' # uncomment if it has to be default and add the same key to selectable_fields tuple (selectable_fields = (transaction_types))  # NOQA: E501
         )
-
-    ''' '''
     # column headers with paths to the json property value.
     # reference to the field name made by the first term in the path
     # example: for recipient_countries.country.code path
     # reference field name is first term, meaning recipient_countries.
     csv_headers = \
         {
-                   'activity_id': 'iati_identifier',
-                   'sector_code': 'sectors.sector.code',
-                   'sectors_percentage': 'sectors.percentage',
-                   'country': 'recipient_countries.country.code',
-                   'region': 'recipient_regions.region.code',
-                   'title': 'title.narratives.text',
-                   'description': 'descriptions.narratives.text',
-                   'transaction_types': 'transaction_types.dsum'
+                   'iati_identifier': {'header': 'activity_id'},
+                   'sectors.sector.code': {'header': 'sector_code'},
+                   'sectors.percentage':  {'header': 'sectors_percentage'},
+                   'recipient_countries.country.code': {'header': 'country'},
+                   'recipient_regions.region.code': {'header': 'region'},
         }
-
     # Get all transaction type
     transaction_types = []
-
     # Activity break down column
     break_down_by = 'sectors'
     # selectable fields which required different render logic.
     # Instead merging values using the delimiter, this fields will generate
     # additional columns for the different values, based on defined criteria.
-    exceptional_fields = [{'transaction_types.transaction_type': transaction_types}]  # NOQA: E501
+    exceptional_fields = [{'transaction_types': transaction_types}]  # NOQA: E501
 
     always_ordering = 'id'
 
@@ -429,13 +425,17 @@ class ActivityList(CacheResponseMixin, DynamicListView):
         'activity_expenditure_value',
         'activity_plus_child_budget_value')
 
-    list_cache_key_func = QueryParamsKeyConstructor()
-
     def __init__(self, *args, **kwargs):
         super(ActivityList, self).__init__(*args, **kwargs)
 
         for transaction_type in list(TransactionType.objects.all()):
             self.transaction_types.append(transaction_type.code)
+
+    @method_decorator(
+        cache_page(settings.CACHES.get('default').get('TIMEOUT'))
+    )
+    def dispatch(self, *args, **kwargs):
+        return super(ActivityList, self).dispatch(*args, **kwargs)
 
 
 class ActivityMarkReadyToPublish(APIView, FilterPublisherMixin):
@@ -465,7 +465,7 @@ class ActivityMarkReadyToPublish(APIView, FilterPublisherMixin):
         return Response(True)
 
 
-class ActivityDetail(CacheResponseMixin, DynamicDetailView):
+class ActivityDetail(DynamicDetailView):
 
     """
     Returns detailed information about Activity.
@@ -497,14 +497,49 @@ class ActivityDetail(CacheResponseMixin, DynamicDetailView):
     """
 
     queryset = Activity.objects.all()
+
+    # TODO: filter_class, selectable_fields, etc. Is needed for detail?
     filter_class = ActivityFilter
     serializer_class = ActivitySerializer
+    selectable_fields = ()
+
+    # specification document
+    fields = (
+        'iati_identifier',
+        'sectors',
+        'recipient_regions',
+        'recipient_countries',
+        )
+
+    # column headers with paths to the json property value.
+    # reference to the field name made by the first term in the path
+    # example: for recipient_countries.country.code path
+    # reference field name is first term, meaning recipient_countries.
+    csv_headers = \
+        {
+                   'iati_identifier': {'header': 'activity_id'},
+                   'sectors.sector.code': {'header': 'sector_code'},
+                   'sectors.percentage':  {'header': 'sectors_percentage'},
+                   'recipient_countries.country.code': {'header': 'country'},
+                   'recipient_regions.region.code': {'header': 'region'},
+        }
+
+    # Activity break down column
+    break_down_by = 'sectors'
+
+    exceptional_fields = [{'transaction_types': []}]  # NOQA: E501
+
+    @method_decorator(
+        cache_page(settings.CACHES.get('default').get('TIMEOUT'))
+    )
+    def dispatch(self, *args, **kwargs):
+        return super(ActivityDetail, self).dispatch(*args, **kwargs)
 
 # TODO separate endpoints for expensive fields like ActivityLocations &
 # ActivityResults 08-07-2016
 
 
-class ActivityDetailByIatiIdentifier(CacheResponseMixin, DynamicDetailView):
+class ActivityDetailByIatiIdentifier(DynamicDetailView):
     """
     Returns detailed information of the Activity.
 
@@ -525,9 +560,16 @@ class ActivityDetailByIatiIdentifier(CacheResponseMixin, DynamicDetailView):
     """
 
     queryset = Activity.objects.all()
-    filter_class = ActivityFilter
     serializer_class = ActivitySerializerByIatiIdentifier
     lookup_field = 'iati_identifier'
+
+    @method_decorator(
+        cache_page(settings.CACHES.get('default').get('TIMEOUT'))
+    )
+    def dispatch(self, *args, **kwargs):
+        return super(ActivityDetailByIatiIdentifier, self).dispatch(
+            *args, **kwargs
+        )
 
 
 class ActivityTransactionList(DynamicListView):
@@ -576,17 +618,6 @@ class ActivityTransactionList(DynamicListView):
     serializer_class = TransactionSerializer
     filter_class = TransactionFilter
 
-    # TODO: Create cached logic for this class
-    """
-    This class has unique URL so not compatible the rest_framework_extensions
-    cached. We should make a Params Key Constructor function
-    then override the default below function and will be like below:
-
-    @cache_response(key_func=YourQueryParamsKeyConstructor())
-    def get(self, request, *args, **kwargs):
-        return self.list(request, *args, **kwargs)
-    """
-
     def get_queryset(self):
         # Override default get query to get transaction list by primary key of
         # the activity
@@ -596,6 +627,12 @@ class ActivityTransactionList(DynamicListView):
                 transaction_set.all().order_by('id')
         except Activity.DoesNotExist:
             return Transaction.objects.none().order_by('id')
+
+    @method_decorator(
+        cache_page(settings.CACHES.get('default').get('TIMEOUT'))
+    )
+    def dispatch(self, *args, **kwargs):
+        return super(ActivityTransactionList, self).dispatch(*args, **kwargs)
 
 
 class ActivityTransactionListByIatiIdentifier(DynamicListView):
@@ -644,17 +681,6 @@ class ActivityTransactionListByIatiIdentifier(DynamicListView):
     serializer_class = TransactionSerializer
     filter_class = TransactionFilter
 
-    # TODO: Create cached logic for this class
-    """
-    This class has unique URL so not compatible the rest_framework_extensions
-    cached. We should make a Params Key Constructor function
-    then override the default below function and will be like below:
-
-    @cache_response(key_func=YourQueryParamsKeyConstructor())
-    def get(self, request, *args, **kwargs):
-        return self.list(request, *args, **kwargs)
-    """
-
     def get_queryset(self):
         # Override default get query to get transaction list by primary key of
         # the activity
@@ -664,6 +690,14 @@ class ActivityTransactionListByIatiIdentifier(DynamicListView):
                 transaction_set.all().order_by('id')
         except Activity.DoesNotExist:
             return Transaction.objects.none().order_by('id')
+
+    @method_decorator(
+        cache_page(settings.CACHES.get('default').get('TIMEOUT'))
+    )
+    def dispatch(self, *args, **kwargs):
+        return super(ActivityTransactionListByIatiIdentifier, self).dispatch(
+            *args, **kwargs
+        )
 
 
 class ActivityTransactionDetail(CacheResponseMixin, DynamicDetailView):

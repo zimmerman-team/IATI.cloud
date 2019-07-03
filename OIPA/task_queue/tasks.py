@@ -77,6 +77,15 @@ def get_new_sources_from_iati_api():
 
 
 @job
+def get_new_sources_from_iati_api_and_download():
+    from django.core import management
+    management.call_command(
+        'get_new_sources_from_iati_registry_and_download',
+        verbosity=0
+    )
+
+
+@job
 def add_new_sources_from_registry_and_parse_all():
     queue = django_rq.get_queue("default")
     queue.enqueue(get_new_sources_from_iati_api)
@@ -485,3 +494,9 @@ def download_file(d):
         # print str(e)
         doc.document_content = document_content.decode("latin-1")
         doc.save()
+
+
+@job
+def update_activity_count():
+    for dataset in Dataset.objects.all():
+        dataset.update_activities_count()

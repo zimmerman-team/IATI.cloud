@@ -1819,6 +1819,11 @@ class ActivityDate(models.Model):
     activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
     iso_date = models.DateField()
     type = models.ForeignKey(ActivityDateType, on_delete=models.CASCADE)
+    narratives = GenericRelation(
+        Narrative,
+        content_type_field='related_content_type',
+        object_id_field='related_object_id'
+    )
 
     def __unicode__(self):
         return "type: %s - iso_date: %s" % (

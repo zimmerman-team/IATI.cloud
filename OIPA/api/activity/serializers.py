@@ -551,7 +551,7 @@ class PlannedDisbursementSerializer(ModelSerializerNoValidation):
 class ActivityDateSerializer(ModelSerializerNoValidation):
     type = CodelistSerializer()
     iso_date = serializers.DateField()
-
+    narratives = NarrativeSerializer(many=True)
     activity = serializers.CharField(write_only=True)
 
     def validate(self, data):
@@ -589,7 +589,7 @@ class ActivityDateSerializer(ModelSerializerNoValidation):
 
     class Meta:
         model = ActivityDate
-        fields = ('id', 'activity', 'iso_date', 'type')
+        fields = ('id', 'activity', 'iso_date', 'type', 'narratives')
 
 
 class ActivityAggregationSerializer(DynamicFieldsSerializer):
@@ -2382,6 +2382,28 @@ class ResultSerializer(ModelSerializerNoValidation):
         source='documentlink_set'
     )
 
+    sectors = ActivitySectorSerializer(
+        many=True,
+        source='activity.activitysector_set',
+        read_only=True,
+        required=False,
+    )
+
+    recipient_countries = RecipientCountrySerializer(
+        many=True,
+        source='activity.activityrecipientcountry_set',
+        read_only=True,
+        required=False,
+    )
+    recipient_regions = ActivityRecipientRegionSerializer(
+        many=True,
+        source='activity.activityrecipientregion_set',
+        read_only=True,
+        required=False,
+    )
+
+    iati_identifier = serializers.CharField(source='activity.iati_identifier', required=False)  # NOQA: E501
+
     class Meta:
         model = Result
         fields = (
@@ -2392,7 +2414,11 @@ class ResultSerializer(ModelSerializerNoValidation):
             'indicators',
             'type',
             'aggregation_status',
-            'document_links'
+            'document_links',
+            'sectors',
+            'recipient_countries',
+            'recipient_regions',
+            'iati_identifier'
         )
 
     def validate(self, data):
@@ -2541,7 +2567,7 @@ class CrsAddSerializer(ModelSerializerNoValidation):
     other_flags = CrsAddOtherFlagsSerializer(many=True, required=False)
     loan_terms = CrsAddLoanTermsSerializer(required=False)
     loan_status = CrsAddLoanStatusSerializer(required=False)
-
+    channel_code = serializers.CharField(required=False)
     activity = serializers.CharField(write_only=True)
 
     class Meta:
@@ -2549,6 +2575,7 @@ class CrsAddSerializer(ModelSerializerNoValidation):
         fields = (
             'activity',
             'id',
+            'channel_code',
             'other_flags',
             'loan_terms',
             'loan_status',
@@ -2782,6 +2809,8 @@ class LocationSerializer(DynamicFieldsModelSerializer):
 
     activity = serializers.CharField(write_only=True)
 
+    # TODO: slow fields so ignored them, until we have a good solution
+    """
     sectors = ActivitySectorSerializer(
         many=True,
         source='activity.activitysector_set',
@@ -2801,7 +2830,15 @@ class LocationSerializer(DynamicFieldsModelSerializer):
         read_only=True,
         required=False,
     )
+    """
 
+    reporting_organisations = ReportingOrganisationDataSerializer(
+        many=True,
+        source='activity.reporting_organisations',
+        required=False,
+        read_only=True,
+
+    )
     iati_identifier = serializers.CharField(source='activity.iati_identifier', required=False)  # NOQA: E501
 
     def validate(self, data):
@@ -2897,9 +2934,11 @@ class LocationSerializer(DynamicFieldsModelSerializer):
             'exactness',
             'location_class',
             'feature_designation',
-            'sectors',
-            'recipient_countries',
-            'recipient_regions'
+            # TODO: slow fields so ignored them, until we have a good solution
+            # 'sectors',
+            # 'recipient_countries',
+            # 'recipient_regions'
+            'reporting_organisations',
         )
 
 
@@ -3022,11 +3061,14 @@ class TransactionSerializer(serializers.ModelSerializer):
     """
     transaction_date = serializers.CharField()
     value_date = serializers.CharField()
-    transaction_aid_types = TransactionAidTypeSerializer(
+    # Aid type for version 2.03
+    aid_types = TransactionAidTypeSerializer(
         many=True,
         source='transactionaidtype_set',
         read_only=True
     )
+    # Aid type for version 2.02 or below
+    aid_type = CodelistSerializer()
     disbursement_channel = CodelistSerializer()
     finance_type = CodelistSerializer()
     flow_type = CodelistSerializer()
@@ -3074,7 +3116,8 @@ class TransactionSerializer(serializers.ModelSerializer):
             'recipient_regions',
             'flow_type',
             'finance_type',
-            'transaction_aid_types',
+            'aid_types',
+            'aid_type',
             'tied_status',
         )
 
@@ -3124,6 +3167,7 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
         many=True, source="otheridentifier_set", required=False)
 
     activity_status = CodelistSerializer(required=False)
+    budget_not_provided = CodelistSerializer(required=False)
     activity_dates = ActivityDateSerializer(
         many=True,
         source='activitydate_set',
@@ -3419,6 +3463,7 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
             'participating_organisations',
             'other_identifier',
             'activity_status',
+            'budget_not_provided',
             'activity_dates',
             'contact_info',
             'activity_scope',
@@ -3465,225 +3510,9 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
         validators = []
 
 
-class ActivitySerializerByIatiIdentifier(DynamicFieldsModelSerializer):
+class ActivitySerializerByIatiIdentifier(ActivitySerializer):
     url = serializers.HyperlinkedIdentityField(
         view_name='activities:activity-detail-by-iati-identifier',
         lookup_field='iati_identifier',
-        read_only=True)
-
-    id = serializers.CharField(required=False)
-    iati_identifier = serializers.CharField()
-
-    reporting_organisation = ReportingOrganisationSerializer(
-        read_only=True,
-        source="*"
+        read_only=True
     )
-    title = TitleSerializer(required=False)
-
-    descriptions = DescriptionSerializer(
-        many=True,
-        source='description_set',
-        read_only=True,
-    )
-    participating_organisations = ParticipatingOrganisationSerializer(
-        many=True,
-        read_only=True,
-    )
-
-    other_identifier = OtherIdentifierSerializer(
-        many=True, source="otheridentifier_set", required=False)
-
-    activity_status = CodelistSerializer(required=False)
-    activity_dates = ActivityDateSerializer(
-        many=True,
-        source='activitydate_set',
-        read_only=True,
-    )
-
-    contact_info = ContactInfoSerializer(
-        many=True,
-        source="contactinfo_set",
-        read_only=True,
-        required=False,
-    )
-
-    activity_scope = CodelistSerializer(source='scope', required=False)
-    recipient_countries = RecipientCountrySerializer(
-        many=True,
-        source='activityrecipientcountry_set',
-        read_only=True,
-        required=False,
-    )
-    recipient_regions = ActivityRecipientRegionSerializer(
-        many=True,
-        source='activityrecipientregion_set',
-        read_only=True,
-        required=False,
-    )
-    locations = LocationSerializer(
-        many=True,
-        source='location_set',
-        read_only=True,
-        required=False,
-    )
-    sectors = ActivitySectorSerializer(
-        many=True,
-        source='activitysector_set',
-        read_only=True,
-        required=False,
-    )
-
-    country_budget_items = CountryBudgetItemsSerializer(required=False)
-
-    humanitarian_scope = HumanitarianScopeSerializer(
-        many=True,
-        source='humanitarianscope_set',
-        read_only=True,
-        required=False,
-    )
-
-    policy_markers = ActivityPolicyMarkerSerializer(
-        many=True,
-        source='activitypolicymarker_set',
-        read_only=True,
-        required=False,
-    )
-
-    collaboration_type = CodelistSerializer(required=False)
-    default_flow_type = CodelistSerializer(required=False)
-    default_finance_type = CodelistSerializer(required=False)
-    default_aid_type = CodelistSerializer(required=False)
-    default_tied_status = CodelistSerializer(required=False)
-
-    budgets = BudgetSerializer(
-        many=True,
-        source='budget_set',
-        read_only=True,
-    )
-
-    planned_disbursements = PlannedDisbursementSerializer(
-        many=True,
-        source='planneddisbursement_set',
-        read_only=True,
-    )
-
-    capital_spend = serializers.DecimalField(
-        max_digits=5,
-        decimal_places=2,
-        coerce_to_string=False,
-        required=False,
-    )
-
-    transactions = serializers.HyperlinkedIdentityField(
-        read_only=True,
-        view_name='activities:activity-transactions',
-    )
-
-    document_links = DocumentLinkSerializer(
-        many=True,
-        read_only=True,
-        source='documentlink_set')
-    related_activities = RelatedActivitySerializer(
-        many=True,
-        read_only=True,
-        source='relatedactivity_set')
-
-    legacy_data = LegacyDataSerializer(
-        many=True, source="legacydata_set", required=False)
-
-    conditions = ConditionsSerializer(required=False)
-
-    results = ResultSerializer(
-        many=True,
-        read_only=True,
-        source="result_set")
-
-    crs_add = CrsAddSerializer(many=True, source="crsadd_set", required=False)
-
-    fss = FssSerializer(many=True, source="fss_set", required=False)
-
-    last_updated_datetime = serializers.DateTimeField(required=False)
-    xml_lang = serializers.CharField(source='default_lang.code',
-                                     required=False)
-    default_currency = CodelistSerializer(required=False)
-
-    humanitarian = serializers.BooleanField(required=False)
-
-    secondary_reporter = serializers.BooleanField(
-        write_only=True, required=False)
-
-    aggregations = ActivityAggregationContainerSerializer(
-        source="*", read_only=True)
-
-    dataset = SimpleDatasetSerializer(
-        read_only=True,
-        fields=(
-            'id',
-            'iati_id',
-            'name',
-            'title',
-            'source_url'))
-
-    publisher = PublisherSerializer(
-        read_only=True,
-        fields=(
-            'id',
-            'url',
-            'publisher_iati_id',
-            'display_name',
-            'name'))
-
-    published_state = PublishedStateSerializer(source="*", read_only=True)
-
-    class Meta:
-        model = Activity
-        lookup_field = 'iati_identifier'
-        fields = (
-            'url',
-            'id',
-            'iati_identifier',
-            'reporting_organisation',
-            'title',
-            'descriptions',
-            'participating_organisations',
-            'other_identifier',
-            'activity_status',
-            'activity_dates',
-            'contact_info',
-            'activity_scope',
-            'recipient_countries',
-            'recipient_regions',
-            'locations',
-            'sectors',
-            'country_budget_items',
-            'humanitarian',
-            'humanitarian_scope',
-            'policy_markers',
-            'collaboration_type',
-            'default_flow_type',
-            'default_finance_type',
-            'default_aid_type',
-            'default_tied_status',
-            'planned_disbursements',
-            'budgets',
-            'capital_spend',
-            'transactions',
-            'document_links',
-            'related_activities',
-            'legacy_data',
-            'conditions',
-            'results',
-            'crs_add',
-            'fss',
-            'last_updated_datetime',
-            'xml_lang',
-            'default_currency',
-            'humanitarian',
-            'hierarchy',
-            'linked_data_uri',
-            'secondary_reporter',
-            'aggregations',
-            'dataset',
-            'publisher',
-            'published_state',
-        )

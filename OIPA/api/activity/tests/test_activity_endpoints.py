@@ -233,6 +233,10 @@ class TestActivityEndpoints(APITestCase):
                     ('tied_status', OrderedDict([
                         ('code', transaction.tied_status.code),
                         ('name', transaction.tied_status.name)
-                    ]))
+                    ])),
+                    ('sectors', []),
+                    ('iati_identifier', self.activity.iati_identifier),
+                    ('recipient_countries', []),
+                    ('recipient_regions', [])
                 ])])])
         )

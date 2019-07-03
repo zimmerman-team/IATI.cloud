@@ -43,7 +43,7 @@ class DatasetFilter(FilterSet):
         lookup_expr='exact',
         field_name='publisher__id')
 
-    publisher_name = CharFilter(
+    publisher_identifier = CharFilter(
         lookup_expr='icontains',
         field_name='publisher__publisher_iati_id')
 

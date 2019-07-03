@@ -81,10 +81,17 @@ CACHES = {
         'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
     },
     'default': {
-        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        'LOCATION': '127.0.0.1:11211',
+        'TIMEOUT': 60 * 60,
     },
 }
 
 # A setting indicating whether to save XML datasets (files) to local machine or
 # not:
 DOWNLOAD_DATASETS = True
+
+try:
+    from .local_settings import *  # noqa: F401, F403
+except ImportError:
+    pass

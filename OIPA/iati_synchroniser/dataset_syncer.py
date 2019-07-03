@@ -17,7 +17,8 @@ DATASET_URL = 'https://iatiregistry.org/api/action/package_search?rows=200&{opti
 PUBLISHER_URL = 'https://iatiregistry.org/api/action/organization_list?all_fields=true&include_extras=true&limit=200&{options}'  # NOQA: E501
 
 
-class DatasetSyncer():
+class DatasetSyncer(object):
+    is_download_datasets = False
 
     def get_data(self, url):
         req = urllib.request.Request(url)
@@ -31,11 +32,13 @@ class DatasetSyncer():
                 if item.get("key") and item["key"] == key), None
         )
 
-    def synchronize_with_iati_api(self):
+    def synchronize_with_iati_api(self, is_download_datasets=False):
         """
         First update all publishers.
         Then all datasets.
         """
+
+        self.is_download_datasets = is_download_datasets
 
         # parse publishers
         offset = 0
@@ -92,12 +95,18 @@ class DatasetSyncer():
         """
 
         """
+        if publisher['package_count'] == 0:
+            package_count = None
+        else:
+            package_count = publisher['package_count']
+
         obj, created = Publisher.objects.update_or_create(
             iati_id=publisher['id'],
             defaults={
                 'publisher_iati_id': publisher['publisher_iati_id'],
                 'name': publisher['name'],
-                'display_name': publisher['title']
+                'display_name': publisher['title'],
+                'package_count': package_count,
             }
         )
 
@@ -166,7 +175,7 @@ class DatasetSyncer():
         reachable (requires broader implementation of error logs)
         """
 
-        if settings.DOWNLOAD_DATASETS:
+        if self.is_download_datasets and settings.DOWNLOAD_DATASETS:
 
             # URL:
             dataset_url = dataset_data['resources'][0]['url']

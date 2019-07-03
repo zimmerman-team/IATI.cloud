@@ -39,6 +39,93 @@ class ActivityFilter(TogetherFilterSet):
         name='scope__code',
         lookup_expr='in',)
 
+    budget_not_provided = CommaSeparatedCharFilter(
+        name='budget_not_provided',
+        lookup_expr='in',
+    )
+
+    has_crs_add = BooleanFilter(name='crsadd', exclude=True,
+                                lookup_expr='isnull')
+
+    has_other_identifier = BooleanFilter(name='otheridentifier',
+                                         exclude=True, lookup_expr='isnull')
+
+    has_contact_info = BooleanFilter(name='contactinfo', exclude=True,
+                                     lookup_expr='isnull')
+
+    has_activity_scope = BooleanFilter(name='scope', exclude=True,
+                                       lookup_expr='isnull')
+
+    has_recipient_country = BooleanFilter(name='activityrecipientcountry',
+                                          exclude=True, lookup_expr='isnull')
+
+    has_recipient_region = BooleanFilter(name='activityrecipientregion',
+                                         exclude=True, lookup_expr='isnull')
+
+    has_location = BooleanFilter(name='location', exclude=True,
+                                 lookup_expr='isnull')
+
+    has_sector = BooleanFilter(name='activitysector', exclude=True,
+                               lookup_expr='isnull')
+
+    has_tag = BooleanFilter(name='activitytag', exclude=True,
+                            lookup_expr='isnull')
+
+    has_country_budget_item = BooleanFilter(name='country_budget_items',
+                                            exclude=True, lookup_expr='isnull')
+
+    has_humanitarian_scope = BooleanFilter(name='humanitarianscope',
+                                           exclude=True, lookup_expr='isnull')
+
+    has_policy_marker = BooleanFilter(name='activitypolicymarker',
+                                      exclude=True, lookup_expr='isnull')
+
+    has_collaboration_type = BooleanFilter(name='collaboration_type',
+                                           exclude=True, lookup_expr='isnull')
+
+    has_default_flow_type = BooleanFilter(name='default_flow_type',
+                                          exclude=True, lookup_expr='isnull')
+
+    has_default_finance_type = BooleanFilter(name='default_finance_type',
+                                             exclude=True,
+                                             lookup_expr='isnull')
+
+    has_default_aid_type = BooleanFilter(name='default_aid_type',
+                                         exclude=True, lookup_expr='isnull')
+
+    has_default_tied_status = BooleanFilter(name='default_tied_status',
+                                            exclude=True, lookup_expr='isnull')
+
+    has_budget = BooleanFilter(name='budget', exclude=True,
+                               lookup_expr='isnull')
+
+    has_planned_disbursement = BooleanFilter(name='planneddisbursement',
+                                             exclude=True,
+                                             lookup_expr='isnull')
+
+    has_capital_spend = BooleanFilter(name='capital_spend', exclude=True,
+                                      lookup_expr='isnull')
+
+    has_transaction = BooleanFilter(name='transaction', exclude=True,
+                                    lookup_expr='isnull')
+
+    has_document_link = BooleanFilter(name='documentlink', exclude=True,
+                                      lookup_expr='isnull')
+
+    has_related_activity = BooleanFilter(name='relatedactivity',
+                                         exclude=True, lookup_expr='isnull')
+
+    has_legacy_data = BooleanFilter(name='legacydata', exclude=True,
+                                    lookup_expr='isnull')
+
+    has_condition = BooleanFilter(name='conditions', exclude=True,
+                                  lookup_expr='isnull')  # related name of  Foreign Key for `activity` is `conditions` # NOQA: E501
+
+    has_result = BooleanFilter(name='result', exclude=True,
+                               lookup_expr='isnull')
+
+    has_fss = BooleanFilter(name='fss', exclude=True, lookup_expr='isnull')
+
     document_link_category = ToManyFilter(
         qs=DocumentLink,
         lookup_expr='in',

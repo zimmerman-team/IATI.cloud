@@ -16,7 +16,7 @@ def validate(iati_parser, xml_etree):
         location = base + "/../schemas/" + iati_parser.VERSION \
             + "/iati-organisations-schema.xsd"
 
-    xsd_data = open(location)
+    xsd_data = open(location, encoding="utf-8")
     xmlschema_doc = etree.parse(xsd_data)
     xsd_data.close()
 

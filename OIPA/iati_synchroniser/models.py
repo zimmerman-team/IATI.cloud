@@ -1,10 +1,16 @@
 import datetime
+import logging
 
 from django.conf import settings
 from django.contrib.staticfiles import finders
 from django.db import models
+from lxml import etree
 
+from iati.filegrabber import FileGrabber
 from iati_organisation.models import Organisation
+
+# Get an instance of a logger
+logger = logging.getLogger(__name__)
 
 
 class Publisher(models.Model):
@@ -18,7 +24,7 @@ class Publisher(models.Model):
     # name given in the IR API
     name = models.CharField(max_length=55, default="")
     display_name = models.CharField(max_length=255)
-
+    package_count = models.CharField(max_length=10, default=None, null=True)
     organisation = models.OneToOneField(
         Organisation,
         default=None,
@@ -66,6 +72,9 @@ class Dataset(models.Model):
 
     export_in_progress = models.BooleanField(default=False)
     parse_in_progress = models.BooleanField(default=False)
+
+    activities_count_in_xml = models.IntegerField(default=0)
+    activities_count_in_database = models.IntegerField(default=0)
 
     class Meta:
         verbose_name_plural = "IATI XML sources"
@@ -116,6 +125,27 @@ class Dataset(models.Model):
             return settings.STATIC_URL + self.internal_url
 
         return None
+
+    def update_activities_count(self):
+        # This module to give us imformation the count activity in database
+        # and in the XML
+
+        try:
+            # Activity count in the XML
+            file_grabber = FileGrabber()
+            response = file_grabber.get_the_file(self.source_url)
+
+            # Parse to XML tree
+            tree = etree.fromstring(response.content)
+            count = len(tree.getchildren())
+            self.activities_count_in_xml = count - 1 if count > 0 else count
+
+            # Activity count in the Database
+            self.activities_count_in_database = self.activity_set.all().count()
+
+            self.save(process=False)
+        except Exception as e:
+            logger.error(e)
 
     def save(self, process=False, *args, **kwargs):
         super(Dataset, self).save()

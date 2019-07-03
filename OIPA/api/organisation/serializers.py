@@ -6,6 +6,7 @@ from api.codelist.serializers import (
 )
 from api.country.serializers import CountrySerializer
 from api.fields import EncodedHyperlinkedIdentityField
+from api.generics.fields import BoolToNumField
 from api.generics.serializers import (
     DynamicFieldsModelSerializer, DynamicFieldsSerializer,
     ModelSerializerNoValidation, SerializerNoValidation
@@ -152,7 +153,7 @@ class OrganisationTotalBudgetSerializer(ModelSerializerNoValidation):
     period_end = serializers.CharField()
 
     budget_lines = TotalBudgetBudgetLineSerializer(
-        many=True, source="totalbudgetbudgetline_set", required=False)
+        many=True, source="totalbudgetline_set", required=False)
 
     class Meta:
         model = org_models.TotalBudget
@@ -275,10 +276,12 @@ class RecipientOrgBudgetLineSerializer(ModelSerializerNoValidation):
 class OrganisationRecipientOrgBudgetSerializer(ModelSerializerNoValidation):
     class RecipientOrganisationSerializer(SerializerNoValidation):
         ref = serializers.CharField(source="recipient_org_identifier")
+        narratives = OrganisationNarrativeSerializer(many=True, read_only=True)
 
         class Meta:
             fields = (
                 'ref',
+                'narratives',
             )
 
     organisation = serializers.CharField(write_only=True)
@@ -576,7 +579,7 @@ class OrganisationRecipientRegionBudgetSerializer(ModelSerializerNoValidation):
     period_end = serializers.CharField()
 
     recipient_region = BasicRegionSerializer(
-        source="region", fields=('url', 'code', 'name'))
+        source="region", fields=('url', 'code', 'name', 'region_vocabulary'))
 
     budget_lines = RecipientRegionBudgetLineSerializer(
         many=True, source="recipientregionbudgetline_set", required=False)
@@ -919,30 +922,28 @@ class OrganisationDocumentLinkSerializer(ModelSerializerNoValidation):
         iso_date = serializers.CharField()
 
     format = CodelistSerializer(source='file_format')
-
     categories = OrganisationDocumentLinkCategorySerializer(
         many=True,
         required=False,
-        source="documentlinkcategory_set"
+        source="organisationdocumentlinkcategory_set"
     )
-
     languages = OrganisationDocumentLinkLanguageSerializer(
         many=True,
         required=False,
-        source="documentlinklanguage_set"
+        source="organisationdocumentlinklanguage_set"
     )
-
     recipient_countries = OrganisationDocumentLinkRecipientCountrySerializer(
         many=True,
         required=False,
         source="documentlinkrecipientcountry_set"
     )
-
     title = OrganisationNarrativeContainerSerializer(
-        source="documentlinktitle")
-
+        source="documentlinktitle"
+    )
+    description = OrganisationNarrativeContainerSerializer(
+        source='documentlinkdescription'
+    )
     document_date = DocumentDateSerializer(source="*")
-
     organisation = serializers.CharField(write_only=True)
 
     class Meta:
@@ -953,6 +954,7 @@ class OrganisationDocumentLinkSerializer(ModelSerializerNoValidation):
             'url',
             'format',
             'title',
+            'description',
             'categories',
             'languages',
             'document_date',
@@ -1008,35 +1010,109 @@ class OrganisationDocumentLinkSerializer(ModelSerializerNoValidation):
         return update_instance
 
 
-class OrganisationSerializer(DynamicFieldsModelSerializer):
-    class PublishedStateSerializer(DynamicFieldsSerializer):
-        published = serializers.BooleanField()
-        ready_to_publish = serializers.BooleanField()
-        modified = serializers.BooleanField()
+class OrganisationReportingOrganisationSerializer(ModelSerializerNoValidation):
+    xml_meta = {'attributes': ('ref', 'type', 'secondary_reporter')}
 
+    ref = serializers.CharField(source="reporting_org_identifier")
+    type = CodelistSerializer(source="org_type")
+    secondary_reporter = BoolToNumField()
+
+    narratives = OrganisationNarrativeSerializer(many=True)
+
+    class Meta:
+        model = org_models.OrganisationReportingOrganisation
+        fields = (
+            'ref',
+            'type',
+            'secondary_reporter',
+            'narratives',
+        )
+
+
+class OrganisationAggregationSerializer(DynamicFieldsModelSerializer):
     url = EncodedHyperlinkedIdentityField(
-        view_name='organisations:organisation-detail', read_only=True)
-
-    last_updated_datetime = serializers.DateTimeField(required=False)
-    xml_lang = serializers.CharField(
-        source='default_lang.code', required=False)
-    default_currency = CodelistSerializer(required=False)
-    name = OrganisationNameSerializer(required=False)
-
-    published_state = PublishedStateSerializer(source="*", read_only=True)
+        view_name='organisations:organisation-detail',
+        read_only=True
+    )
 
     class Meta:
         model = org_models.Organisation
         fields = (
             'url',
             'id',
+            'primary_name',
             'organisation_identifier',
+        )
+
+
+class OrganisationSerializer(DynamicFieldsModelSerializer):
+
+    class PublishedStateSerializer(DynamicFieldsSerializer):
+        published = serializers.BooleanField()
+        ready_to_publish = serializers.BooleanField()
+        modified = serializers.BooleanField()
+
+    url = EncodedHyperlinkedIdentityField(
+        view_name='organisations:organisation-detail',
+        read_only=True
+    )
+    default_currency = CodelistSerializer(required=False)
+    last_updated_datetime = serializers.DateTimeField(required=False)
+    xml_lang = serializers.CharField(
+        source='default_lang.code',
+        required=False
+    )
+    name = OrganisationNameSerializer(required=False)
+    published_state = PublishedStateSerializer(source="*", read_only=True)
+    reporting_org = OrganisationReportingOrganisationSerializer(read_only=True)
+    total_budgets = OrganisationTotalBudgetSerializer(
+        many=True,
+        read_only=True
+    )
+    recipient_org_budgets = OrganisationRecipientOrgBudgetSerializer(
+        source='recipientorgbudget_set',
+        many=True,
+        read_only=True
+    )
+    recipient_region_budgets = OrganisationRecipientRegionBudgetSerializer(
+        source='recipient_region_budget',
+        many=True,
+        read_only=True
+    )
+    recipient_country_budgets = OrganisationRecipientCountryBudgetSerializer(
+        many=True,
+        read_only=True
+    )
+    total_expenditures = OrganisationTotalExpenditureSerializer(
+        source='total_expenditure',
+        many=True,
+        read_only=True
+    )
+    document_links = OrganisationDocumentLinkSerializer(
+        source='organisationdocumentlink_set',
+        many=True,
+        read_only=True
+    )
+
+    class Meta:
+        model = org_models.Organisation
+        fields = (
+            'url',
+            'id',
+            'published_state',
+            'primary_name',
+            'default_currency',
             'last_updated_datetime',
             'xml_lang',
-            'default_currency',
+            'organisation_identifier',
             'name',
-            'published_state',
-            'primary_name'
+            'reporting_org',
+            'total_budgets',
+            'recipient_org_budgets',
+            'recipient_region_budgets',
+            'recipient_country_budgets',
+            'total_expenditures',
+            'document_links'
         )
 
     def validate(self, data):

@@ -3922,7 +3922,7 @@ class ActivityResultIndicatorPeriodTargetTestCase(TestCase):
 
         self.assertEqual(
             result_indicator_period_target.value,
-            ''
+            0
         )
 
         # 2) test if value is provided:
@@ -3945,7 +3945,7 @@ class ActivityResultIndicatorPeriodTargetTestCase(TestCase):
 
         self.assertEqual(
             result_indicator_period_target.value,
-            result_indicator_period_target_attrs['value']
+            Decimal(result_indicator_period_target_attrs['value'])
         )
 
         # 3) test multiple target elements:
@@ -4000,7 +4000,7 @@ class ActivityResultIndicatorPeriodTargetTestCase(TestCase):
         self.assertEqual(self.result_indicator_period.targets.count(), 4)
 
         self.assertListEqual(
-            ['', '11', '20', '21'],
+            ['0', '11', '20', '21'],
             list(self.result_indicator_period.targets.values_list(
                 'value', flat=True
             ))
@@ -4690,7 +4690,7 @@ class ActivityResultIndicatorPeriodActualTestCase(TestCase):
 
         self.assertEqual(
             result_indicator_period_actual.value,
-            ''
+            0
         )
 
         # 2) test if value is provided:
@@ -4713,7 +4713,7 @@ class ActivityResultIndicatorPeriodActualTestCase(TestCase):
 
         self.assertEqual(
             result_indicator_period_actual.value,
-            result_indicator_period_actual_attrs['value']
+            Decimal(result_indicator_period_actual_attrs['value'])
         )
 
         # 3) test multiple actual elements:
@@ -4768,7 +4768,7 @@ class ActivityResultIndicatorPeriodActualTestCase(TestCase):
         self.assertEqual(self.result_indicator_period.actuals.count(), 4)
 
         self.assertListEqual(
-            ['', '11', '20', '21'],
+            ['0', '11', '20', '21'],
             list(self.result_indicator_period.actuals.values_list(
                 'value', flat=True
             ))

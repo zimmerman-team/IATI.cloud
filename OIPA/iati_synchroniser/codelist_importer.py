@@ -32,14 +32,6 @@ class CodeListImporter():
         self.looping_through_version = "2.03"
         self.iati_versions = ["2.03", ]
 
-    def synchronise_with_codelists(self):
-        """These are the Codelists to grab from IATI xml file which lists all
-        available codelists.
-
-           - The model name has to match 'name' argument
-           - If it doesn't, add an 'if' block in 'add_code_list_item()' method
-             in this class
-        """
         self.CODELIST_ITEMS_TO_PARSE = [
             # Do categories first
             "SectorCategory",
@@ -56,9 +48,17 @@ class CodeListImporter():
             # TODO: update test:
             "AidTypeVocabulary",
             "DocumentCategory-category",
-            "TagVocabulary",
+            "TagVocabulary"
         ]
 
+    def synchronise_with_codelists(self):
+        """These are the Codelists to grab from IATI xml file which lists all
+        available codelists.
+
+           - The model name has to match 'name' argument
+           - If it doesn't, add an 'if' block in 'add_code_list_item()' method
+             in this class
+        """
         for codelist_name in self.CODELIST_ITEMS_TO_PARSE:
             # This adds Codelist ITEMS (not Codelist objects):
             # FIXME: although, they are (probably) already added here TWICE
@@ -171,6 +171,13 @@ class CodeListImporter():
 
         elif tag == "CRSChannelCode":
             name = name[:255]
+
+        elif tag == "EarmarkingCategory":
+            # Ref. http://reference.iatistandard.org/203/codelists/AidTypeVocabulary/  # NOQA: E501
+            # If vocabulary 2 should be using an aid type from Earmarking Category  # NOQA: E501
+            item = AidType(vocabulary=AidTypeVocabulary.objects.get(code=2))
+            model_name = 'AidType'
+            category = None
 
         elif tag == "Version":
             if url is None:

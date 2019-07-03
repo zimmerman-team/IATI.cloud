@@ -1,17 +1,19 @@
 from django.conf import settings
 
-from geodata.models import Region
+from geodata.models import Country, Region
 from iati.parser.exceptions import (
     FieldValidationError, ParserError, RequiredFieldError
 )
 from iati.parser.iati_parser import IatiParser
 from iati_codelists import models as codelist_models
 from iati_organisation.models import (
-    Organisation, OrganisationDocumentLink, OrganisationName,
-    OrganisationNarrative, OrganisationReportingOrganisation,
-    RecipientCountryBudget, RecipientOrgBudget, RecipientOrgBudgetLine,
+    DocumentLinkDescription, DocumentLinkRecipientCountry, DocumentLinkTitle,
+    Organisation, OrganisationDocumentLink, OrganisationDocumentLinkCategory,
+    OrganisationDocumentLinkLanguage, OrganisationName, OrganisationNarrative,
+    OrganisationReportingOrganisation, RecipientCountryBudget,
+    RecipientCountryBudgetLine, RecipientOrgBudget, RecipientOrgBudgetLine,
     RecipientRegionBudget, RecipientRegionBudgetLine, TotalBudget,
-    TotalBudgetLine, TotalExpenditure
+    TotalBudgetLine, TotalExpenditure, TotalExpenditureLine
 )
 from iati_organisation.parser import post_save
 from iati_vocabulary.models import RegionVocabulary
@@ -37,6 +39,7 @@ class Parse(IatiParser):
         # on the process parse
         self.organisation_document_link_current_index = 0
         self.document_link_title_current_index = 0
+        self.document_link_description_current_index = 0
         self.document_link_language_current_index = 0
         self.total_budget_current_index = 0
         self.total_budget_line_current_index = 0
@@ -147,9 +150,11 @@ class Parse(IatiParser):
             code=element.attrib.get('default-currency'))
 
         old_organisation = self.get_or_none(
-            Organisation, organisation_identifier=organisation_identifier)
+            Organisation,
+            organisation_identifier=organisation_identifier
+        )
         if old_organisation:
-            if old_organisation.last_updated_datetime < last_updated_datetime:
+            if (old_organisation.last_updated_datetime and (old_organisation.last_updated_datetime < last_updated_datetime)) or self.force_reparse:  # NOQA: E501
 
                 OrganisationName.objects.filter(
                     organisation=old_organisation).delete()
@@ -709,8 +714,7 @@ class Parse(IatiParser):
         self.add_narrative(element, recipient_org_budget_line)
         return element
 
-    def iati_organisations__iati_organisation__recipient_region_budget(
-            self, element):
+    def iati_organisations__iati_organisation__recipient_region_budget(self, element):  # NOQA: E501
         status = element.attrib.get("status")
         if status:
             status = self.get_or_none(codelist_models.BudgetStatus,
@@ -725,6 +729,7 @@ class Parse(IatiParser):
                 )
         else:
             status = codelist_models.BudgetStatus.objects.get(code=1)
+
         recipient_region = element.xpath("recipient-region")
         if len(recipient_region) is not 1:
             raise ParserError("RecipientRegionBudget",
@@ -734,8 +739,10 @@ class Parse(IatiParser):
         recipient_region_vocabulary = recipient_region[0].attrib.get(
             "vocabulary")
         if recipient_region_vocabulary:
-            recipient_region_vocabulary = self.get_or_none(RegionVocabulary,
-                                                           code=recipient_region_vocabulary)  # NOQA: E501
+            recipient_region_vocabulary = self.get_or_none(
+                RegionVocabulary,
+                code=recipient_region_vocabulary
+            )
             if recipient_region_vocabulary is None:
                 raise FieldValidationError(
                     "RecipientRegionBudget",
@@ -761,18 +768,38 @@ class Parse(IatiParser):
                     None,
                     None,
                 )
+        elif recipient_region_vocabulary.code == '99':
+            # 99 vocabulary provide by reporting organisation
+            # if code region is not available the make a new one
+            code = region
+            region = self.get_or_none(Region, code=code)
+            if not region:
+                region = Region()
+                region.code = code
+                region.region_vocabulary = recipient_region_vocabulary
+                region.name = '{code}'.format(
+                    code=code
+                )
+                region.save()
         else:
-                region = None
+            region = None
 
         period_start = element.xpath("period-start")
         if len(period_start) is not 1:
-            raise ParserError("RecipientRegionBudget",
-                              "period-start",
-                              "must occur once and only once.")
+            raise ParserError(
+                "RecipientRegionBudget",
+                "period-start",
+                "must occur once and only once."
+            )
+
         period_start_date = period_start[0].attrib.get("iso-date")
         if period_start_date is None:
-            raise RequiredFieldError("RecipientRegionBudget", "iso-date",
-                                     "required field missing.")
+            raise RequiredFieldError(
+                "RecipientRegionBudget",
+                "iso-date",
+                "required field missing."
+            )
+
         period_start_date = self.validate_date(period_start_date)
         if not period_start_date:
             raise FieldValidationError(
@@ -782,15 +809,23 @@ class Parse(IatiParser):
                 None,
                 None,
             )
+
         period_end = element.xpath("period-end")
         if len(period_end) is not 1:
-            raise ParserError("RecipientRegionBudget",
-                              "period-end",
-                              "must occur once and only once.")
+            raise ParserError(
+                "RecipientRegionBudget",
+                "period-end",
+                "must occur once and only once."
+            )
+
         period_end_date = period_end[0].attrib.get("iso-date")
         if period_end_date is None:
-            raise RequiredFieldError("RecipientRegionBudget", "iso-date",
-                                     "required field missing.")
+            raise RequiredFieldError(
+                "RecipientRegionBudget",
+                "iso-date",
+                "required field missing."
+            )
+
         period_end_date = self.validate_date(period_end_date)
         if not period_end_date:
             raise FieldValidationError(
@@ -800,18 +835,25 @@ class Parse(IatiParser):
                 None,
                 None,
             )
+
         value_element = element.xpath("value")
         if len(value_element) is not 1:
-            raise ParserError("RecipientRegionBudget",
-                              "value",
-                              "must occur once and only once.")
-        value = self.guess_number("RecipientRegionBudget", value_element[
-            0].text)
+            raise ParserError(
+                "RecipientRegionBudget",
+                "value",
+                "must occur once and only once."
+            )
+
+        value = self.guess_number(
+            "RecipientRegionBudget", value_element[0].text
+        )
 
         currency = value_element[0].attrib.get("currency")
         if not currency:
-            currency = getattr(self.get_model("Organisation"),
-                               "default_currency")
+            currency = getattr(
+                self.get_model("Organisation"),
+                "default_currency"
+            )
             if not currency:
                 raise RequiredFieldError(
                     "RecipientRegionBudget",
@@ -820,8 +862,10 @@ class Parse(IatiParser):
                     "as currency on the element itself."
                 )
         else:
-            currency = self.get_or_none(codelist_models.Currency,
-                                        code=currency)
+            currency = self.get_or_none(
+                codelist_models.Currency,
+                code=currency
+            )
             if not currency:
                 raise FieldValidationError(
                     "RecipientRegionBudget",
@@ -833,8 +877,12 @@ class Parse(IatiParser):
 
         value_date = value_element[0].attrib.get("value-date")
         if value_date is None:
-            raise RequiredFieldError("RecipientRegionBudget", "value-date",
-                                     "required field missing.")
+            raise RequiredFieldError(
+                "RecipientRegionBudget",
+                "value-date",
+                "required field missing."
+            )
+
         value_date = self.validate_date(value_date)
         if not value_date:
             raise FieldValidationError(
@@ -844,7 +892,9 @@ class Parse(IatiParser):
                 None,
                 None,
             )
+
         organisation = self.get_model("Organisation")
+
         recipient_region_budget = RecipientRegionBudget()
         recipient_region_budget.organisation = organisation
         recipient_region_budget.status = status
@@ -858,6 +908,7 @@ class Parse(IatiParser):
         recipient_region_budget.value = value
 
         self.register_model("RecipientRegionBudget", recipient_region_budget)
+
         return element
 
     def iati_organistions__iati_organisation__recipient_region_budget__recipient_region__narrative(self, element):  # NOQA: E501
@@ -940,6 +991,677 @@ class Parse(IatiParser):
         recipient_region_budget_line = self.get_model(
             'RecipientRegionBudgetLine')
         self.add_narrative(element, recipient_region_budget_line)
+        return element
+
+    def iati_organisations__iati_organisation__recipient_country_budget(self, element):  # NOQA: E501
+        status = element.attrib.get("status")
+        if status:
+            status = self.get_or_none(codelist_models.BudgetStatus,
+                                      code=status)
+            if status is None:
+                raise FieldValidationError(
+                    "RecipientCountryBudget",
+                    "status",
+                    "not found on the accompanying codelist.",
+                    None,
+                    None,
+                )
+        else:
+            status = codelist_models.BudgetStatus.objects.get(code=1)
+
+        recipient_country = element.xpath("recipient-country")
+        if len(recipient_country) is not 1:
+            raise ParserError("RecipientCountryBudget",
+                              "recipient-region",
+                              "must occur once and only once.")
+
+        country = recipient_country[0].attrib.get("code")
+        if country is None:
+            raise RequiredFieldError(
+                "RecipientCountryBudget",
+                "code",
+                "required field missing."
+            )
+
+        country = self.get_or_none(Country, code=country)
+        if not country:
+            raise FieldValidationError(
+                "RecipientCountryBudget",
+                "country",
+                "not found on the accompanying codelist.",
+                None,
+                None,
+            )
+
+        period_start = element.xpath("period-start")
+        if len(period_start) is not 1:
+            raise ParserError(
+                "RecipientCountryBudget",
+                "period-start",
+                "must occur once and only once."
+            )
+
+        period_start_date = period_start[0].attrib.get("iso-date")
+        if period_start_date is None:
+            raise RequiredFieldError(
+                "RecipientCountryBudget",
+                "iso-date",
+                "required field missing."
+            )
+
+        period_start_date = self.validate_date(period_start_date)
+        if not period_start_date:
+            raise FieldValidationError(
+                "RecipientCountryBudget",
+                "iso-date",
+                "is not in correct range.",
+                None,
+                None,
+            )
+
+        period_end = element.xpath("period-end")
+        if len(period_end) is not 1:
+            raise ParserError(
+                "RecipientCountryBudget",
+                "period-end",
+                "must occur once and only once."
+            )
+
+        period_end_date = period_end[0].attrib.get("iso-date")
+        if period_end_date is None:
+            raise RequiredFieldError(
+                "RecipientCountryBudget",
+                "iso-date",
+                "required field missing."
+            )
+
+        period_end_date = self.validate_date(period_end_date)
+        if not period_end_date:
+            raise FieldValidationError(
+                "RecipientCountryBudget",
+                "iso-date",
+                "is not in correct range.",
+                None,
+                None,
+            )
+
+        value_element = element.xpath("value")
+        if len(value_element) is not 1:
+            raise ParserError(
+                "RecipientCountryBudget",
+                "value",
+                "must occur once and only once."
+            )
+
+        value = self.guess_number(
+            "RecipientCountryBudget", value_element[0].text
+        )
+
+        currency = value_element[0].attrib.get("currency")
+        if not currency:
+            currency = getattr(
+                self.get_model("Organisation"),
+                "default_currency"
+            )
+            if not currency:
+                raise RequiredFieldError(
+                    "RecipientCountryBudget",
+                    "currency",
+                    "must specify default-currency on iati-organisation or "
+                    "as currency on the element itself."
+                )
+        else:
+            currency = self.get_or_none(
+                codelist_models.Currency,
+                code=currency
+            )
+            if not currency:
+                raise FieldValidationError(
+                    "RecipientCountryBudget",
+                    "currency",
+                    "not found on the accompanying codelist.",
+                    None,
+                    None,
+                )
+
+        value_date = value_element[0].attrib.get("value-date")
+        if value_date is None:
+            raise RequiredFieldError(
+                "RecipientCountryBudget",
+                "value-date",
+                "required field missing."
+            )
+
+        value_date = self.validate_date(value_date)
+        if not value_date:
+            raise FieldValidationError(
+                "RecipientCountryBudget",
+                "value-date",
+                "not in the correct range.",
+                None,
+                None,
+            )
+
+        organisation = self.get_model("Organisation")
+
+        recipient_country_budget = RecipientCountryBudget()
+        recipient_country_budget.organisation = organisation
+        recipient_country_budget.status = status
+        recipient_country_budget.country = country
+        recipient_country_budget.period_start = period_start_date
+        recipient_country_budget.period_end = period_end_date
+        recipient_country_budget.value_date = value_date
+        recipient_country_budget.currency = currency
+        recipient_country_budget.value = value
+
+        self.register_model("RecipientCountryBudget", recipient_country_budget)
+
+        return element
+
+    def iati_organisations__iati_organisation__recipient_country_budget__recipient_country__narrative(self, element):  # NOQA: E501
+        recipient_country_budget = self.get_model(
+            'RecipientCountryBudget'
+        )
+        self.add_narrative(element, recipient_country_budget)
+
+        return element
+
+    def iati_organisations__iati_organisation__recipient_country_budget__budget_line(self, element):  # NOQA: E501
+        ref = element.attrib.get("ref")
+
+        narrative = element.xpath("narrative")
+        # "narrative" element must occur at least once.
+        if len(narrative) < 1:
+            raise ParserError(
+                "RecipientCountryBudgetLine",
+                "narrative",
+                "must occur at least once."
+            )
+
+        value_element = element.xpath("value")
+        # "value" element must occur once and only once.
+        if len(value_element) is not 1:
+            raise ParserError(
+                "RecipientCountryBudgetLine",
+                "value",
+                "must occur once and only once."
+            )
+
+        value = self.guess_number(
+            "RecipientCountryBudget",
+            value_element[0].text
+        )
+
+        currency = value_element[0].attrib.get("currency")
+        if not currency:
+            currency = getattr(
+                self.get_model("Organisation"),
+                "default_currency"
+            )
+            if not currency:
+                raise RequiredFieldError(
+                    "RecipientCountryBudgetLine",
+                    "currency",
+                    "must specify default-currency on iati-activity or as "
+                    "currency on the element itself."
+                )
+
+        else:
+            currency = self.get_or_none(
+                codelist_models.Currency,
+                code=currency
+            )
+            if currency is None:
+                raise FieldValidationError(
+                    "RecipientCountryBudgetLine",
+                    "currency",
+                    "not found on the accompanying codelist.",
+                    None,
+                    None,
+                )
+
+        value_date = value_element[0].attrib.get("value-date")
+        if value_date is None:
+            raise RequiredFieldError(
+                "RecipientCountryBudgetLine",
+                "value-date",
+                "required field missing."
+            )
+
+        value_date = self.validate_date(value_date)
+        if not value_date:
+            raise FieldValidationError(
+                "RecipientCountryBudgetLine",
+                "value-date",
+                "not in the correct range.",
+                None,
+                None,
+            )
+
+        recipient_country_budget = self.get_model("RecipientCountryBudget")
+
+        recipient_country_budget_line = RecipientCountryBudgetLine()
+        recipient_country_budget_line.recipient_country_budget = \
+            recipient_country_budget
+        recipient_country_budget_line.ref = ref
+        recipient_country_budget_line.currency = currency
+        recipient_country_budget_line.value = value
+        recipient_country_budget_line.value_date = value_date
+
+        self.register_model(
+            "RecipientCountryBudgetLine",
+            recipient_country_budget_line
+        )
+
+        return element
+
+    def iati_organisations__iati_organisation__recipient_country_budget__budget_line__narrative(self, element):  # NOQA: E501
+        recipient_country_budget_line = self.get_model(
+            'RecipientCountryBudgetLine'
+        )
+        self.add_narrative(element, recipient_country_budget_line)
+
+        return element
+
+    def iati_organisations__iati_organisation__total_expenditure(self, element):  # NOQA: E501
+        period_start = element.xpath("period-start")
+        if len(period_start) is not 1:
+            raise ParserError(
+                "TotalExpenditure",
+                "period-start",
+                "must occur once and only once."
+            )
+
+        period_start_date = period_start[0].attrib.get("iso-date")
+        if period_start_date is None:
+            raise RequiredFieldError(
+                "TotalExpenditure",
+                "iso-date",
+                "required field missing."
+            )
+
+        period_start_date = self.validate_date(period_start_date)
+        if not period_start_date:
+            raise FieldValidationError(
+                "TotalExpenditure",
+                "iso-date",
+                "is not in correct range.",
+                None,
+                None,
+            )
+
+        period_end = element.xpath("period-end")
+        if len(period_end) is not 1:
+            raise ParserError(
+                "TotalExpenditure",
+                "period-end",
+                "must occur once and only once."
+            )
+
+        period_end_date = period_end[0].attrib.get("iso-date")
+        if period_end_date is None:
+            raise RequiredFieldError(
+                "TotalExpenditure",
+                "iso-date",
+                "required field missing."
+            )
+
+        period_end_date = self.validate_date(period_end_date)
+        if not period_end_date:
+            raise FieldValidationError(
+                "TotalExpenditure",
+                "iso-date",
+                "is not in correct range.",
+                None,
+                None,
+            )
+
+        value_element = element.xpath("value")
+        if len(value_element) is not 1:
+            raise ParserError(
+                "TotalExpenditure",
+                "value",
+                "must occur once and only once."
+            )
+
+        value = self.guess_number("TotalExpenditure", value_element[0].text)
+
+        currency = value_element[0].attrib.get("currency")
+        if not currency:
+            currency = getattr(
+                self.get_model("Organisation"),
+                "default_currency"
+            )
+            if not currency:
+                raise RequiredFieldError(
+                    "TotalExpenditure",
+                    "currency",
+                    "must specify default-currency on iati-activity or as "
+                    "currency on the element itself."
+                )
+        else:
+            currency = self.get_or_none(
+                codelist_models.Currency,
+                code=currency
+            )
+            if currency is None:
+                raise FieldValidationError(
+                    "TotalExpenditure",
+                    "currency",
+                    "not found on the accompanying codelist.",
+                    None,
+                    None,
+                )
+
+        value_date = value_element[0].attrib.get("value-date")
+        if value_date is None:
+            raise RequiredFieldError(
+                "TotalExpenditure",
+                "value-date",
+                "required field missing."
+            )
+
+        value_date = self.validate_date(value_date)
+        if not value_date:
+            raise FieldValidationError(
+                "TotalExpenditure",
+                "value-date",
+                "not in the correct range.",
+                None,
+                None,
+            )
+
+        organisation = self.get_model("Organisation")
+
+        total_expenditure = TotalExpenditure()
+        total_expenditure.organisation = organisation
+        total_expenditure.period_start = period_start_date
+        total_expenditure.period_end = period_end_date
+        total_expenditure.value_date = value_date
+        total_expenditure.currency = currency
+        total_expenditure.value = value
+
+        self.register_model("TotalExpenditure", total_expenditure)
+
+        return element
+
+    def iati_organisations__iati_organisation__total_expenditure__expense_line(self, element):  # NOQA: E501
+        ref = element.attrib.get("ref")
+
+        narrative = element.xpath("narrative")
+        if len(narrative) < 1:
+            raise ParserError(
+                "TotalExpenditureLine",
+                "narrative",
+                "must occur at least once."
+            )
+
+        value_element = element.xpath("value")
+        if len(value_element) is not 1:
+            raise ParserError(
+                "TotalExpenditureLine",
+                "value",
+                "must occur once and only once."
+            )
+
+        value = self.guess_number("TotalExpenditure", value_element[0].text)
+
+        currency = value_element[0].attrib.get("currency")
+        if not currency:
+            currency = getattr(
+                self.get_model("Organisation"),
+                "default_currency"
+            )
+            if not currency:
+                raise RequiredFieldError(
+                    "TotalExpenditureLine",
+                    "currency",
+                    "must specify default-currency on iati-activity or as "
+                    "currency on the element itself."
+                )
+
+        else:
+            currency = self.get_or_none(
+                codelist_models.Currency,
+                code=currency
+            )
+            if currency is None:
+                raise FieldValidationError(
+                    "TotalExpenditureLine",
+                    "currency",
+                    "not found on the accompanying codelist.",
+                    None,
+                    None,
+                )
+
+        value_date = value_element[0].attrib.get("value-date")
+        if value_date is None:
+            raise RequiredFieldError(
+                "TotalExpenditureLine",
+                "value-date",
+                "required field missing."
+            )
+
+        value_date = self.validate_date(value_date)
+        if not value_date:
+            raise FieldValidationError(
+                "TotalExpenditureLine",
+                "value-date",
+                "not in the correct range.",
+                None,
+                None,
+            )
+
+        total_expenditure = self.get_model("TotalExpenditure")
+
+        total_expenditure_line = TotalExpenditureLine()
+        total_expenditure_line.total_expenditure = total_expenditure
+        total_expenditure_line.ref = ref
+        total_expenditure_line.currency = currency
+        total_expenditure_line.value = value
+        total_expenditure_line.value_date = value_date
+
+        self.register_model("TotalExpenditureLine", total_expenditure_line)
+
+        return element
+
+    def iati_organisations__iati_organisation__total_expenditure__expense_line__narrative(self, element):  # NOQA: E501
+        expenditure_line = self.get_model("TotalExpenditureLine")
+        self.add_narrative(element, expenditure_line)
+
+        return element
+
+    def iati_organisations__iati_organisation__document_link(self, element):
+        """atributes:
+        format:application/vnd.oasis.opendocument.text
+        url:http:www.example.org/docs/report_en.odt
+
+        tag:document-link"""
+        model = self.get_model('Organisation')
+        document_link = OrganisationDocumentLink()
+        document_link.organisation = model
+        document_link.url = element.attrib.get('url')
+        document_link.file_format = self.get_or_none(
+            codelist_models.FileFormat,
+            code=element.attrib.get('format')
+        )
+
+        self.organisation_document_link_current_index = self.register_model(
+            'OrganisationDocumentLink',
+            document_link
+        )
+
+        return element
+
+    def iati_organisations__iati_organisation__document_link__title(self, element):  # NOQA: E501
+        """
+        atributes:
+        tag:title
+        """
+
+        document_link_title = DocumentLinkTitle()
+        self.document_link_title_current_index = self.register_model(
+            'DocumentLinkTitle',
+            document_link_title
+        )
+
+        model = self.get_model(
+            'OrganisationDocumentLink',
+            self.organisation_document_link_current_index
+        )
+        document_link_title.document_link = model
+
+        return element
+
+    def iati_organisations__iati_organisation__document_link__title__narrative(self, element):  # NOQA: E501
+        """
+        atributes:
+        tag:narrative
+        """
+        model = self.get_model(
+            'DocumentLinkTitle',
+            self.document_link_title_current_index
+        )
+        self.add_narrative(element, model)
+
+        return element
+
+    def iati_organisations__iati_organisation__document_link__description(self, element):  # NOQA: E501
+        """
+        http://reference.iatistandard.org/203/organisation-standard/iati-organisations/iati-organisation/document-link/description/
+        """
+
+        document_link_description = DocumentLinkDescription()
+        self.document_link_description_current_index = self.register_model(
+            'DocumentLinkDescription',
+            document_link_description
+        )
+
+        model = self.get_model(
+            'OrganisationDocumentLink',
+            self.organisation_document_link_current_index
+        )
+        document_link_description.document_link = model
+
+        return element
+
+    def iati_organisations__iati_organisation__document_link__description__narrative(self, element):  # NOQA: E501
+        """
+        http://reference.iatistandard.org/203/organisation-standard/iati-organisations/iati-organisation/document-link/description/narrative/
+        """
+        model = self.get_model(
+            'DocumentLinkDescription',
+            self.document_link_description_current_index
+        )
+        self.add_narrative(element, model)
+
+        return element
+
+    def iati_organisations__iati_organisation__document_link__category(self, element):  # NOQA: E501
+        """
+        atributes:
+        code:B01
+        tag:category
+        """
+        model = self.get_model(
+            'OrganisationDocumentLink',
+            self.organisation_document_link_current_index
+        )
+        document_category = self.get_or_none(
+            codelist_models.DocumentCategory,
+            code=element.attrib.get('code')
+        )
+
+        document_link_category = OrganisationDocumentLinkCategory()
+        document_link_category.category = document_category
+        document_link_category.document_link = model
+
+        self.register_model(
+            'OrganisationDocumentLinkCategory',
+            document_link_category
+        )
+
+        return element
+
+    def iati_organisations__iati_organisation__document_link__language(self, element):  # NOQA: E501
+        """
+        atributes:
+        code:en
+        tag:language
+        """
+        organisation_document_link_language = \
+            OrganisationDocumentLinkLanguage()
+
+        organisation_document_link_language.language = self.get_or_none(
+            codelist_models.Language,
+            code=element.attrib.get('code')
+        )
+        model = self.get_model(
+            'OrganisationDocumentLink',
+            self.organisation_document_link_current_index
+        )
+        organisation_document_link_language.document_link = model
+
+        self.document_link_language_current_index = self.register_model(
+            'OrganisationDocumentLinkLanguage',
+            organisation_document_link_language
+        )
+
+        return element
+
+    def iati_organisations__iati_organisation__document_link__document_date(self, element):  # NOQA: E501
+        """
+        attributes:
+        format:application/vnd.oasis.opendocument.text
+        url:http:www.example.org/docs/report_en.odt
+        tag:document-link
+        """
+
+        iso_date = element.attrib.get('iso-date')
+        if not iso_date:
+            raise RequiredFieldError(
+                "document-link/document-date",
+                "iso-date",
+                "required attribute missing"
+            )
+
+        iso_date = self.validate_date(iso_date)
+        if not iso_date:
+            raise FieldValidationError(
+                "document-link/document-date",
+                "iso-date",
+                "iso-date not of type xsd:date"
+            )
+
+        document_link = self.get_model(
+            'OrganisationDocumentLink',
+            self.organisation_document_link_current_index
+        )
+        document_link.iso_date = iso_date
+
+        return element
+
+    def iati_organisations__iati_organisation__document_link__recipient_country(self, element):  # NOQA: E501
+        """
+        atributes:
+        code:AF
+        tag:recipient-country
+        """
+        model = self.get_model(
+            'OrganisationDocumentLink',
+            self.organisation_document_link_current_index
+        )
+        country = self.get_or_none(Country, code=element.attrib.get('code'))
+
+        document_link_recipient_country = DocumentLinkRecipientCountry()
+        document_link_recipient_country.recipient_country = country
+        document_link_recipient_country.document_link = model
+
+        self.register_model(
+            'DocumentLinkRecipientCountry',
+            document_link_recipient_country
+        )
+
         return element
 
     def post_save_models(self):

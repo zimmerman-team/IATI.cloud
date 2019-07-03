@@ -228,19 +228,53 @@ class Parse(IatiParser):
         return element
 
     def iati_organisations__iati_organisation__reporting_org(self, element):
-        model = self.get_model('Organisation')
+        # Although OrganisationReportingOrganisation and Organisation has
+        # One-to-One relation on the database level, we check here whether
+        # element 'reporting-org' occurs only once in the parent element
+        # 'organisation'.
+        organisation = self.get_model('Organisation')
+        if 'OrganisationReportingOrganisation' in self.model_store:
+            for reporting_org in self.model_store[
+                    'OrganisationReportingOrganisation']:
+                if reporting_org.organisation == organisation:
+                    raise ParserError("Organisation",
+                                      "OrganisationReportingOrganisation",
+                                      "must occur no more than once.")
+        # narrative is parsed in different method but as it is required
+        # sub-element in 'name' element so we check it here.
+        narrative = element.xpath("narrative")
+        if len(narrative) < 1:
+            raise RequiredFieldError("OrganisationName", "narrative",
+                                     "must occur at least once.")
+        reporting_org_identifier = element.attrib.get("ref")
+        if reporting_org_identifier is None:
+            raise RequiredFieldError("OrganisationReportingOrganisation",
+                                     "ref", "required field missing.")
+        org_type = element.attrib.get("type")
+        if org_type is None:
+            raise RequiredFieldError("OrganisationReportingOrganisation",
+                                     "type", "required field missing.")
+        # here org_type is OrganisationType object.
+        org_type = self.get_or_none(codelist_models.OrganisationType,
+                                    code=org_type)
+        if org_type is None:
+            raise FieldValidationError(
+                "OrganisationReportingOrganisation",
+                "type",
+                "not found on the accompanying codelist.",
+                None,
+                None,
+            )
+        secondary_reporter = self.makeBool(element.attrib.get(
+            "secondary-reporter"))
 
         reporting_org = OrganisationReportingOrganisation()
-        reporting_org.organisation = model
-        reporting_org.reporting_org_identifier = element.attrib.get('ref')
-        type_ref = element.attrib.get('type')
-        if self.isInt(type_ref) and self.get_or_none(
-                codelist_models.OrganisationType, code=type_ref) is not None:
-            org_type = self.get_or_none(
-                codelist_models.OrganisationType, code=type_ref)
-            reporting_org.org_type = org_type
-        self.register_model('OrganisationReportingOrganisation', reporting_org)
+        reporting_org.organisation = organisation
+        reporting_org.org_type = org_type
+        reporting_org.secondary_reporter = secondary_reporter
+        reporting_org.reporting_org_identifier = reporting_org_identifier
 
+        self.register_model("OrganisationReportingOrganisation", reporting_org)
         return element
 
     def iati_organisations__iati_organisation__reporting_org__narrative(
@@ -437,6 +471,20 @@ class Parse(IatiParser):
             code=self._get_currency_or_raise(
                 'recipient-org-budget/value',
                 element.attrib.get('currency')))
+        value_date = element.attrib.get('value-date')
+        if value_date is None:
+            raise RequiredFieldError("RecipientOrgBudget", "value-date",
+                                     "required field missing.")
+        value_date = self.validate_date(value_date)
+        if not value_date:
+            raise FieldValidationError(
+                "RecipientOrgBudget",
+                "value-date",
+                "not in the correct range.",
+                None,
+                None,
+            )
+        model.value_date = value_date
         model.value = element.text
         # store element
         return element
@@ -446,9 +494,10 @@ class Parse(IatiParser):
         ref:1234
 
         tag:budget-line"""
-        self.get_model('RecipientOrgBudget')
+        org_budget = self.get_model('RecipientOrgBudget')
         budget_line = RecipientOrgBudgetLine()
         budget_line.ref = element.attrib.get('ref')
+        budget_line.recipient_org_budget = org_budget
         self.register_model('RecipientOrgBudgetLine', budget_line)
         # store element
         return element
@@ -510,6 +559,14 @@ class Parse(IatiParser):
         # store element
         return element
 
+    def iati_organisations__iati_organisation__recipient_country_budget__recipient_country__narrative(self, element):  # NOQA: E501
+        recipient_country_budget = self.get_model(
+            'RecipientCountryBudget'
+        )
+        self.add_narrative(element, recipient_country_budget)
+
+        return element
+
     def iati_organisations__iati_organisation__recipient_country_budget__period_start(  # NOQA: E501
             self, element):
         """atributes:
@@ -544,7 +601,27 @@ class Parse(IatiParser):
             code=self._get_currency_or_raise(
                 'recipient-country-budget/value',
                 element.attrib.get('currency')))
+
+        value_date = element.attrib.get("value-date")
+        if value_date is None:
+            raise RequiredFieldError(
+                "RecipientCountryBudget",
+                "value-date",
+                "required field missing."
+            )
+
+        value_date = self.validate_date(value_date)
+        if not value_date:
+            raise FieldValidationError(
+                "RecipientCountryBudget",
+                "value-date",
+                "not in the correct range.",
+                None,
+                None,
+            )
+
         model.value = element.text
+        model.value_date = value_date
         # store element
         return element
 
@@ -554,9 +631,10 @@ class Parse(IatiParser):
         ref:1234
 
         tag:budget-line"""
-        self.get_model('RecipientCountryBudget')
+        recipient_country_budget = self.get_model('RecipientCountryBudget')
         budget_line = RecipientCountryBudgetLine()
         budget_line.ref = element.attrib.get('ref', '-')
+        budget_line.recipient_country_budget = recipient_country_budget
         self.register_model('RecipientCountryBudgetLine', budget_line)
         # store element
         return element
@@ -632,6 +710,11 @@ class Parse(IatiParser):
         # store element
         return element
 
+    def iati_organistions__iati_organisation__recipient_region_budget__recipient_region__narrative(self, element):  # NOQA: E501
+        recipient_region_budget = self.get_model('RecipientRegionBudget')
+        self.add_narrative(element, recipient_region_budget)
+        return element
+
     def iati_organisations__iati_organisation__recipient_region_budget__period_start(  # NOQA: E501
             self, element):
         """atributes:
@@ -666,7 +749,24 @@ class Parse(IatiParser):
             code=self._get_currency_or_raise(
                 'recipient-region-budget/value',
                 element.attrib.get('currency')))
+        value_date = element.attrib.get('value-date')
+        if value_date is None:
+            raise RequiredFieldError(
+                "RecipientRegionBudget",
+                "value-date",
+                "required field missing."
+            )
+        value_date = self.validate_date(value_date)
+        if not value_date:
+            raise FieldValidationError(
+                "RecipientRegionBudget",
+                "value-date",
+                "not in the correct range.",
+                None,
+                None,
+            )
         model.value = element.text
+        model.value_date = value_date
         # store element
         return element
 
@@ -675,9 +775,10 @@ class Parse(IatiParser):
         ref:1234
 
         tag:budget-line"""
-        self.get_model('RecipientRegionBudget')
+        recipient_region_budget = self.get_model('RecipientRegionBudget')
         budget_line = RecipientRegionBudgetLine()
         budget_line.ref = element.attrib.get('ref')
+        budget_line.recipient_region_budget = recipient_region_budget
         self.register_model('RecipientRegionBudgetLine', budget_line)
         # store element
         return element

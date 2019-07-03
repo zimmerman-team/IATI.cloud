@@ -46,6 +46,7 @@ class CountryList(CacheResponseMixin, DynamicListView):
     filter_class = CountryFilter
 
     fields = ('url', 'code', 'name',)
+    selectable_fields = ()
 
 
 class CountryDetail(CacheResponseMixin, RetrieveAPIView):

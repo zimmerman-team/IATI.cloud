@@ -9,6 +9,8 @@ from api.iati.elements import (
     AttributeRecord, ElementBase, ElementRecord, ElementReference,
     ElementWithNarrativeReference
 )
+from iati_codelists.models import AidType
+from iati_vocabulary.models import AidTypeVocabulary
 
 
 class TitleReference(ElementWithNarrativeReference):
@@ -76,6 +78,26 @@ class ActivityDateReference(ElementReference):
                 type_value = type_date.get(self.type_value_key)
                 if type_value:
                     iso_date_element.set(self.type_attr, type_value)
+
+
+class DefaultAidTypeReference(ElementReference):
+    element = 'default-aid-type'
+    code_key = 'code'
+    code_attr = 'code'
+    vocabulary_attr = 'vocabulary'
+
+    def create(self):
+        code = self.data.get(self.code_key)
+        # We get vocabulary code from AidTypeVocabulary table.
+        vocabulary = AidTypeVocabulary.objects.get(code=AidType.objects.get(
+            code=code).vocabulary_id).code
+        if code:
+            default_aid_type_element = etree.SubElement(
+                self.parent_element, self.element
+            )
+        default_aid_type_element.set(self.code_attr, code)
+
+        default_aid_type_element.set(self.vocabulary_attr, vocabulary)
 
 
 class ReportingOrgReference(ElementWithNarrativeReference):
@@ -344,7 +366,7 @@ class TransactionReference(ElementReference):
     }
     # Aid type
     aid_types = {
-        'key': 'transaction_aid_types',
+        'key': 'aid_types',
         'element': 'aid-type',
         'aid_type': {
             'key': 'aid_type',
@@ -3526,3 +3548,809 @@ class ActivityScopeReference(BaseReference):
         attributes=attributes
     )
     # </activity-scope>
+
+
+class DefaultCurrencyOrgReference(BaseReference):
+    """
+    http://reference.iatistandard.org/203/organisation-standard/iati-organisations/iati-organisation/
+    """
+
+    # <iati-organisation
+    attributes = [
+        # @code
+        AttributeRecord(
+            name='default-currency',
+            key='code'
+        ),
+    ]
+    element_record = ElementRecord(
+        attributes=attributes,
+    )
+    # />
+
+
+class LastUpdatedDatetimeOrgReference(BaseReference):
+    """
+    http://reference.iatistandard.org/203/organisation-standard/iati-organisations/iati-organisation/
+    """
+
+    # <iati-organisation
+    attributes = [
+        # @code
+        AttributeRecord(
+            name='last-updated-datetime'
+        ),
+    ]
+    element_record = ElementRecord(
+        attributes=attributes,
+    )
+    # />
+
+
+class XmlLangReference(BaseReference):
+    """
+    http://reference.iatistandard.org/203/organisation-standard/iati-organisations/iati-organisation/
+    """
+
+    # <iati-organisation />
+
+    def create(self):
+        self.parent_element.set(
+            '{http://www.w3.org/XML/1998/namespace}lang', self.data.lower()
+        )
+
+
+class NameOrgReference(BaseReference):
+    """
+    http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/activity-scope/
+    """
+
+    # <name>
+    element_record = ElementRecord(
+        name='name',
+        element_type=ElementWithNarrativeReference
+    )
+    # </name>
+
+
+class ReportingOrgOrgReference(BaseReference):
+    """
+    http://reference.iatistandard.org/203/organisation-standard/iati-organisations/iati-organisation/reporting-org/
+    """
+
+    # <reporting-org
+    attributes = [
+        # @ref
+        AttributeRecord(
+            name='ref',
+            key='ref'
+        ),
+        # @type
+        AttributeRecord(
+            name='type',
+            key='code',
+            dict_key='type'
+        ),
+        # @secondary-reporter
+        AttributeRecord(
+            name='secondary-reporter',
+            key='secondary_reporter'
+        ),
+    ]
+    # >
+    children = [
+        # <narrative>
+        ElementRecord(
+            name=None,
+            element_type=ElementWithNarrativeReference
+        ),
+        # </narrative>
+    ]
+    element_record = ElementRecord(
+        name='reporting-org',
+        attributes=attributes,
+        children=children
+    )
+    # </reporting-org>
+
+
+class TotalBudgetOrgReference(BaseReference):
+    """
+    http://reference.iatistandard.org/203/organisation-standard/iati-organisations/iati-organisation/total-budget/
+    """
+
+    # <total-budget
+    attributes = [
+        # @status
+        AttributeRecord(
+            name='status',
+            key='code',
+            dict_key='status'
+        )
+    ]
+    # >
+    children = [
+        # <period-start
+        ElementRecord(
+            name='period-start',
+            attributes=[
+                # @iso-date
+                AttributeRecord(
+                    name='iso-date',
+                    key='period_start',
+                )
+            ],
+        ),
+        # />
+        # <period-start
+        ElementRecord(
+            name='period-end',
+            attributes=[
+                # @iso-date
+                AttributeRecord(
+                    name='iso-date',
+                    key='period_end',
+                )
+            ],
+        ),
+        # />
+        # <value
+        ElementRecord(
+            name='value',
+            key='value',
+            attributes=[
+                # @currency
+                AttributeRecord(
+                    name='currency',
+                    key='code',
+                    dict_key='currency'
+                ),
+                # @value-date
+                AttributeRecord(
+                    name='value-date',
+                    key='date'
+                ),
+            ],
+            # />
+        ),
+        # </value>
+        # <budget-line
+        ElementRecord(
+            name='budget-line',
+            key='budget_lines',
+            attributes=[
+                # @ref
+                AttributeRecord(
+                    name='ref',
+                    key='ref'
+                ),
+            ],
+            # />
+            children=[
+                # <value
+                ElementRecord(
+                    name='value',
+                    key='value',
+                    attributes=[
+                        # @currency
+                        AttributeRecord(
+                            name='currency',
+                            key='code',
+                            dict_key='currency'
+                        ),
+                        # @value-date
+                        AttributeRecord(
+                            name='value-date',
+                            key='date'
+                        ),
+                    ],
+                    # />
+                ),
+                # </value>
+                # <narrative>
+                ElementRecord(
+                    name=None,
+                    element_type=ElementWithNarrativeReference
+                ),
+                # </narrative>
+            ]
+        ),
+        # </budget-line>
+    ]
+    element_record = ElementRecord(
+        name='total-budget',
+        attributes=attributes,
+        children=children
+    )
+    # <total-budget/>
+
+
+class RecipientOrgBudgetOrgReference(BaseReference):
+    """
+    http://reference.iatistandard.org/203/organisation-standard/iati-organisations/iati-organisation/recipient-org-budget/
+    """
+
+    # <recipient-org-budget
+    attributes = [
+        # @status
+        AttributeRecord(
+            name='status',
+            key='code',
+            dict_key='status'
+        )
+    ]
+    # >
+    children = [
+        # <recipient-org
+        ElementRecord(
+            name='recipient-org',
+            key='recipient_org',
+            attributes=[
+                # @ref
+                AttributeRecord(
+                    name='ref',
+                    key='ref',
+                )
+            ],
+            # />
+            children=[
+                # <narrative>
+                ElementRecord(
+                    name=None,
+                    element_type=ElementWithNarrativeReference
+                ),
+                # </narrative>
+            ]
+        ),
+        # </recipient-org>
+        # <period-start
+        ElementRecord(
+            name='period-start',
+            attributes=[
+                # @iso-date
+                AttributeRecord(
+                    name='iso-date',
+                    key='period_start',
+                )
+            ],
+        ),
+        # />
+        # <period-start
+        ElementRecord(
+            name='period-end',
+            attributes=[
+                # @iso-date
+                AttributeRecord(
+                    name='iso-date',
+                    key='period_end',
+                )
+            ],
+        ),
+        # />
+        # <value
+        ElementRecord(
+            name='value',
+            key='value',
+            attributes=[
+                # @currency
+                AttributeRecord(
+                    name='currency',
+                    key='code',
+                    dict_key='currency'
+                ),
+                # @value-date
+                AttributeRecord(
+                    name='value-date',
+                    key='date'
+                ),
+            ],
+            # />
+        ),
+        # </value>
+        # <budget-line
+        ElementRecord(
+            name='budget-line',
+            key='budget_lines',
+            attributes=[
+                # @ref
+                AttributeRecord(
+                    name='ref',
+                    key='ref'
+                ),
+            ],
+            # />
+            children=[
+                # <value
+                ElementRecord(
+                    name='value',
+                    key='value',
+                    attributes=[
+                        # @currency
+                        AttributeRecord(
+                            name='currency',
+                            key='code',
+                            dict_key='currency'
+                        ),
+                        # @value-date
+                        AttributeRecord(
+                            name='value-date',
+                            key='date'
+                        ),
+                    ],
+                    # />
+                ),
+                # </value>
+                # <narrative>
+                ElementRecord(
+                    name=None,
+                    element_type=ElementWithNarrativeReference
+                ),
+                # </narrative>
+            ]
+        ),
+        # </budget-line>
+    ]
+    element_record = ElementRecord(
+        name='recipient-org-budget',
+        attributes=attributes,
+        children=children
+    )
+    # <recipient-org-budget/>
+
+
+class RecipientRegionBudgetOrgReference(BaseReference):
+    """
+    http://reference.iatistandard.org/203/organisation-standard/iati-organisations/iati-organisation/recipient-region-budget/
+    """
+
+    # <recipient-region-budget
+    attributes = [
+        # @status
+        AttributeRecord(
+            name='status',
+            key='code',
+            dict_key='status'
+        )
+    ]
+    # >
+    children = [
+        # <recipient-org
+        ElementRecord(
+            name='recipient-region',
+            key='recipient_region',
+            attributes=[
+                # @vocabulary
+                AttributeRecord(
+                    name='vocabulary',
+                    key='code',
+                    dict_key='region_vocabulary'
+                ),
+                # @vocabulary-uri
+                AttributeRecord(
+                    name='vocabulary-uri',
+                    key='url'
+                ),
+                # @code
+                AttributeRecord(
+                    name='code',
+                    key='code'
+                ),
+            ],
+        ),
+        # />
+        # <period-start
+        ElementRecord(
+            name='period-start',
+            attributes=[
+                # @iso-date
+                AttributeRecord(
+                    name='iso-date',
+                    key='period_start',
+                )
+            ],
+        ),
+        # />
+        # <period-start
+        ElementRecord(
+            name='period-end',
+            attributes=[
+                # @iso-date
+                AttributeRecord(
+                    name='iso-date',
+                    key='period_end',
+                )
+            ],
+        ),
+        # />
+        # <value
+        ElementRecord(
+            name='value',
+            key='value',
+            attributes=[
+                # @currency
+                AttributeRecord(
+                    name='currency',
+                    key='code',
+                    dict_key='currency'
+                ),
+                # @value-date
+                AttributeRecord(
+                    name='value-date',
+                    key='date'
+                ),
+            ],
+            # />
+        ),
+        # </value>
+        # <budget-line
+        ElementRecord(
+            name='budget-line',
+            key='budget_lines',
+            attributes=[
+                # @ref
+                AttributeRecord(
+                    name='ref',
+                    key='ref'
+                ),
+            ],
+            # />
+            children=[
+                # <value
+                ElementRecord(
+                    name='value',
+                    key='value',
+                    attributes=[
+                        # @currency
+                        AttributeRecord(
+                            name='currency',
+                            key='code',
+                            dict_key='currency'
+                        ),
+                        # @value-date
+                        AttributeRecord(
+                            name='value-date',
+                            key='date'
+                        ),
+                    ],
+                    # />
+                ),
+                # </value>
+                # <narrative>
+                ElementRecord(
+                    name=None,
+                    element_type=ElementWithNarrativeReference
+                ),
+                # </narrative>
+            ]
+        ),
+        # </budget-line>
+    ]
+    element_record = ElementRecord(
+        name='recipient-region-budget',
+        attributes=attributes,
+        children=children
+    )
+    # </recipient-region-budget>
+
+
+class RecipientCountryBudgetOrgReference(BaseReference):
+    """
+    http://reference.iatistandard.org/203/organisation-standard/iati-organisations/iati-organisation/recipient-country-budget/
+    """
+
+    # <recipient-country-budge
+    attributes = [
+        # @status
+        AttributeRecord(
+            name='status',
+            key='code',
+            dict_key='status'
+        )
+    ]
+    # >
+    children = [
+        # <recipient-org
+        ElementRecord(
+            name='recipient-country',
+            key='recipient_country',
+            attributes=[
+                # @code
+                AttributeRecord(
+                    name='code',
+                    key='code'
+                )
+            ],
+        ),
+        # />
+        # <period-start
+        ElementRecord(
+            name='period-start',
+            attributes=[
+                # @iso-date
+                AttributeRecord(
+                    name='iso-date',
+                    key='period_start',
+                )
+            ],
+        ),
+        # />
+        # <period-start
+        ElementRecord(
+            name='period-end',
+            attributes=[
+                # @iso-date
+                AttributeRecord(
+                    name='iso-date',
+                    key='period_end',
+                )
+            ],
+        ),
+        # />
+        # <value
+        ElementRecord(
+            name='value',
+            key='value',
+            attributes=[
+                # @currency
+                AttributeRecord(
+                    name='currency',
+                    key='code',
+                    dict_key='currency'
+                ),
+                # @value-date
+                AttributeRecord(
+                    name='value-date',
+                    key='date'
+                ),
+            ],
+            # />
+        ),
+        # </value>
+        # <budget-line
+        ElementRecord(
+            name='budget-line',
+            key='budget_lines',
+            attributes=[
+                # @ref
+                AttributeRecord(
+                    name='ref',
+                    key='ref'
+                ),
+            ],
+            # />
+            children=[
+                # <value
+                ElementRecord(
+                    name='value',
+                    key='value',
+                    attributes=[
+                        # @currency
+                        AttributeRecord(
+                            name='currency',
+                            key='code',
+                            dict_key='currency'
+                        ),
+                        # @value-date
+                        AttributeRecord(
+                            name='value-date',
+                            key='date'
+                        ),
+                    ],
+                    # />
+                ),
+                # </value>
+                # <narrative>
+                ElementRecord(
+                    name=None,
+                    element_type=ElementWithNarrativeReference
+                ),
+                # </narrative>
+            ]
+        ),
+        # </budget-line>
+    ]
+    element_record = ElementRecord(
+        name='recipient-country-budget',
+        attributes=attributes,
+        children=children
+    )
+    # </recipient-country-budge>
+
+
+class TotalExpenditureOrgReference(BaseReference):
+    """
+    http://reference.iatistandard.org/203/organisation-standard/iati-organisations/iati-organisation/total-expenditure/
+    """
+
+    # <recipient-region-budget>
+    children = [
+        # <period-start
+        ElementRecord(
+            name='period-start',
+            attributes=[
+                # @iso-date
+                AttributeRecord(
+                    name='iso-date',
+                    key='period_start',
+                )
+            ],
+        ),
+        # />
+        # <period-start
+        ElementRecord(
+            name='period-end',
+            attributes=[
+                # @iso-date
+                AttributeRecord(
+                    name='iso-date',
+                    key='period_end',
+                )
+            ],
+        ),
+        # />
+        # <value
+        ElementRecord(
+            name='value',
+            key='value',
+            attributes=[
+                # @currency
+                AttributeRecord(
+                    name='currency',
+                    key='code',
+                    dict_key='currency'
+                ),
+                # @value-date
+                AttributeRecord(
+                    name='value-date',
+                    key='date'
+                ),
+            ],
+            # />
+        ),
+        # </value>
+        # <expense-line
+        ElementRecord(
+            name='expense-line',
+            key='expense_line',
+            attributes=[
+                # @ref
+                AttributeRecord(
+                    name='ref',
+                    key='ref'
+                ),
+            ],
+            # />
+            children=[
+                # <value
+                ElementRecord(
+                    name='value',
+                    key='value',
+                    attributes=[
+                        # @currency
+                        AttributeRecord(
+                            name='currency',
+                            key='code',
+                            dict_key='currency'
+                        ),
+                        # @value-date
+                        AttributeRecord(
+                            name='value-date',
+                            key='date'
+                        ),
+                    ],
+                    # />
+                ),
+                # </value>
+                # <narrative>
+                ElementRecord(
+                    name=None,
+                    element_type=ElementWithNarrativeReference
+                ),
+                # </narrative>
+            ]
+        ),
+        # </budget-line>
+    ]
+    element_record = ElementRecord(
+        name='total-expenditure',
+        children=children
+    )
+    # </total-expenditure>
+
+
+class DocumentLinkOrgReference(BaseReference):
+    """
+    http://reference.iatistandard.org/203/organisation-standard/iati-organisations/iati-organisation/document-link/
+    """
+    # <document-link
+    attributes = [
+        # @format
+        AttributeRecord(
+            name='format',
+            key='code',
+            dict_key='format'
+        ),
+        # @format
+        AttributeRecord(
+            name='url',
+            key='url',
+        ),
+    ]
+    # >
+    children = [
+        # <title>
+        ElementRecord(
+            name='title',
+            key='title',
+            element_type=ElementWithNarrativeReference
+        ),
+        # </title>
+        # TODO: check this, description is not available in the endpoint
+        # <description>
+        ElementRecord(
+            name='description',
+            key='description',
+            element_type=ElementWithNarrativeReference
+        ),
+        # </description>
+        # <category
+        ElementRecord(
+            name='category',
+            key='categories',
+            attributes=[
+                # @code
+                AttributeRecord(
+                    name='code',
+                    key='code',
+                    dict_key='category'
+                )
+            ],
+        ),
+        # />
+        # <language
+        ElementRecord(
+            name='language',
+            key='languages',
+            attributes=[
+                # @code
+                AttributeRecord(
+                    name='code',
+                    key='code',
+                    dict_key='language'
+                )
+            ],
+        ),
+        # />
+        # <document-date
+        ElementRecord(
+            name='document-date',
+            key='document_date',
+            attributes=[
+                # @code
+                AttributeRecord(
+                    name='iso-date',
+                    key='iso_date',
+                )
+            ],
+        ),
+        # />
+        # <recipient-country
+        ElementRecord(
+            name='recipient-country',
+            key='recipient_countries',
+            attributes=[
+                # @code
+                AttributeRecord(
+                    name='code',
+                    key='code',
+                    dict_key='recipient_country'
+                )
+            ],
+        ),
+        # />
+    ]
+    element_record = ElementRecord(
+        name='document-link',
+        attributes=attributes,
+        children=children
+    )

@@ -127,6 +127,7 @@ class ActivitySaveTestCase(TestCase):
 
             list(serializer.data)
 
+    @skip
     def test_prefetch_activity_dates(self):
         """
         Test if the prefetches are applied correctly

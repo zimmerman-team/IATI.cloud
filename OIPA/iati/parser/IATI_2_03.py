@@ -3,6 +3,7 @@ from decimal import Decimal, InvalidOperation
 
 from django.conf import settings
 from django.contrib.gis.geos import GEOSGeometry, Point
+from django.template.defaultfilters import slugify
 
 from currency_convert import convert
 from geodata.models import Country, Region
@@ -983,11 +984,15 @@ class Parse(IatiParser):
                     "code",
                     "code is unspecified or invalid")
 
-            region = Region()
-            region.code = code
-            region.name = 'Vocabulary 99'
-            region.region_vocabulary = region_vocabulary
-            region.save()
+            code = slugify(code)
+            region = self.get_or_none(Region, code=code)
+
+            if not region:
+                region = Region()
+                region.code = code
+                region.name = 'Vocabulary 99'
+                region.region_vocabulary = region_vocabulary
+                region.save()
 
         elif not region:
             raise IgnoredVocabularyError(
@@ -1405,11 +1410,15 @@ class Parse(IatiParser):
             # This is needed to create a new sector if related to vocabulary 99 or 98  # NOQA: E501
             # ref. http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/sector/  # NOQA: E501
 
-            sector = models.Sector()
-            sector.code = code
-            sector.name = 'Vocabulary 99 or 98'
-            sector.description = 'The sector reported corresponds to a sector vocabulary maintained by the reporting organisation for this activity'  # NOQA: E501
-            sector.save()
+            code = slugify(code)
+            sector = self.get_or_none(models.Sector, code=code)
+
+            if not sector:
+                sector = models.Sector()
+                sector.code = code
+                sector.name = 'Vocabulary 99 or 98'
+                sector.description = 'The sector reported corresponds to a sector vocabulary maintained by the reporting organisation for this activity'  # NOQA: E501
+                sector.save()
 
         elif not sector:
             raise IgnoredVocabularyError(
@@ -1679,11 +1688,15 @@ class Parse(IatiParser):
             # This is needed to create a new policy marker if related to vocabulary 99 or 98  # NOQA: E501
             # ref. http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/policy-marker/  # NOQA: E501
 
-            policy_marker_code = models.PolicyMarker()
-            policy_marker_code.code = code
-            policy_marker_code.name = 'Vocabulary 99 or 98'
-            policy_marker_code.description = 'The policy marker is maintained by a reporting organisation'  # NOQA: E501
-            policy_marker_code.save()
+            code = slugify(code)
+            policy_marker_code = self.get_or_none(models.PolicyMarke, code)
+
+            if not policy_marker_code:
+                policy_marker_code = models.PolicyMarker()
+                policy_marker_code.code = code
+                policy_marker_code.name = 'Vocabulary 99 or 98'
+                policy_marker_code.description = 'The policy marker is maintained by a reporting organisation'  # NOQA: E501
+                policy_marker_code.save()
 
         elif not policy_marker_code:
             raise IgnoredVocabularyError(
@@ -4252,11 +4265,21 @@ class Parse(IatiParser):
         # measures
         value = element.attrib.get('value')
 
+        try:
+            value = Decimal(value)
+        except Exception as e:
+            value = 0     # value could be None according to
+            # iati-specification but we should not add None to our database
+            # otherwise it would raise error in endpoint aggregation.
+            # Example API call:
+            # /api/results/aggregations/?group_by=result_indicator_title
+            # &aggregations=targets&format=json
+
         result_indicator_period = self.get_model('ResultIndicatorPeriod')
 
         result_indicator_period_target = models.ResultIndicatorPeriodTarget()
         result_indicator_period_target.result_indicator_period = result_indicator_period  # NOQA: E501
-        result_indicator_period_target.value = value or ''  # can be None
+        result_indicator_period_target.value = value
 
         self.register_model(
             'ResultIndicatorPeriodTarget', result_indicator_period_target)
@@ -4561,12 +4584,21 @@ class Parse(IatiParser):
         # 3 - The @value must be a valid number for all non-qualitative
         # measures
         value = element.attrib.get('value')
+        try:
+            value = Decimal(value)
+        except Exception as e:
+            value = 0  # value could be None according to
+            # iati-specification but we should not add None to our database
+            # otherwise it would raise error in endpoint aggregation.
+            # Example API call:
+            # /api/results/aggregations/?group_by=result_indicator_title
+            # &aggregations=actuals&format=json
 
         result_indicator_period = self.get_model('ResultIndicatorPeriod')
 
         result_indicator_period_actual = models.ResultIndicatorPeriodActual()
         result_indicator_period_actual.result_indicator_period = result_indicator_period  # NOQA: E501
-        result_indicator_period_actual.value = value or ''  # can be None
+        result_indicator_period_actual.value = value
 
         self.register_model(
             'ResultIndicatorPeriodActual', result_indicator_period_actual)
