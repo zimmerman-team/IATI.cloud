@@ -56,7 +56,7 @@ If you don't have Docker:
    * OIPA_DB_NAME= ```your_database_name```
    * OIPA_DB_USER= ```your_db_user```
    * OIPA_DB_PASSWORD= ```your_db_password```
-   * DJANGO_SETTINGS_MODULE=OIPA.[env]_settings - where in this case the [env] should be replaced with the environment that     OIPA is set up for(development, production, test. So for production it would be 'production_settings.py'), you can find     the settings in the deeper 'OIPA' folder from the current location.
+   * DJANGO_SETTINGS_MODULE=```OIPA.[env]_settings``` - where in this case the [env] should be replaced with the environment that     OIPA is set up for(development, production, test. So for production it would be 'production_settings.py'), you can find     the settings in the deeper 'OIPA' folder from the current location.
 7. Run database migrations with ```python manage.py migrate```
 8. Start the development server: ```python manage.py runserver```
 8. In order for the parser to work, you need to start Redis too: ```redis-server```
@@ -65,14 +65,15 @@ If you don't have Docker:
 11. Open your browser at <a href="http://localhost:8000" target="_blank">localhost:8000</a>
 12. Follow instructions for signing-in: <a href="http://docs.oipa.nl/en/latest/admin_interface/" target="_blank">http://docs.oipa.nl/en/latest/admin_interface</a>
 13. Finally, follow the instructions from here: <a href="http://docs.oipa.nl/en/latest/where_to_start/" target="_blank">http://docs.oipa.nl/en/latest/where_to_start</a>
-14. Start the crontab for OIPA data - basically go to your oipa folder 'OIPA', activate the python virtual environment ```source env/bin/activate```. Ant add the cron job by going into the deeper OIPA folder and running ./manage.py crontab add
+14. Start the crontab for OIPA data - basically go to your oipa folder 'OIPA', activate the python virtual environment ```source env/bin/activate```. Ant add the cron job by going into the deeper OIPA folder and running 
+```./manage.py crontab add```
 
 ## Deployment
 
-    * Set up nginx for your instance. And start the nginx service.
-    * Set up supervisor for your instance. And start the supervisor service.
-    * Set up uWSGI - https://www.digitalocean.com/community/tutorials/how-to-serve-django-applications-with-uwsgi-and-nginx-on-ubuntu-16-04. 
-    * Start the crontab for OIPA data - basically go to your oipa folder 'OIPA', activate the python virtual environment source env/bin/activate . Ant add the cron job by going into the deeper OIPA folder and running ./manage.py crontab add 
+   * Set up nginx for your instance. And start the nginx service.
+   * Set up supervisor for your instance. And start the supervisor service.
+   * Set up uWSGI - https://www.digitalocean.com/community/tutorials/how-to-serve-django-applications-with-uwsgi-and-nginx-on-ubuntu-16-04. 
+   * Start the crontab for OIPA data - basically go to your oipa folder 'OIPA', activate the python virtual environment source env/bin/activate . Ant add the cron job by going into the deeper OIPA folder and running ./manage.py crontab add 
 
 Happy Hunting!
 
