@@ -15,8 +15,8 @@ IATI is a global aid transparency standard and it makes information about aid sp
 
 | Name                   | Recommended version | Reference for ubuntu xenial 16.04 |
 | ---                    | ---       | ---                 | 
-| Python                 | 3.6.5     | <a href="http://ubuntuhandbook.org/index.php/2017/07/install-python-3-6-1-in-ubuntu-16-04-lts/"/> |
-| PostgreSQL             | 9.5 or 9.6 | <a href="https://www.digitalocean.com/community/tutorials/how-to-install-and-use-postgresql-on-ubuntu-16-04">Installing python</a> |
+| Python                 | 3.6.5     | <a href="http://ubuntuhandbook.org/index.php/2017/07/install-python-3-6-1-in-ubuntu-16-04-lts/"> Installing Python </a> |
+| PostgreSQL             | 9.5 or 9.6 | <a href="https://www.digitalocean.com/community/tutorials/how-to-install-and-use-postgresql-on-ubuntu-16-04">Installing postgreSQL</a> |
 | Redis                  | 4.0.x     | <a href="https://tecadmin.net/install-redis-ubuntu/">Installing redis</a> |
 | PostGIS                | 2.2 | ```sudo apt-get install postgis``` |
 | SpaciaLite (for tests) | 4.2+ | See: <a href="https://docs.djangoproject.com/en/2.0/ref/contrib/gis/install/spatialite/">installing SpatiaLite</a> |
