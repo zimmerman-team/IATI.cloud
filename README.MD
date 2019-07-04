@@ -13,13 +13,22 @@ IATI is a global aid transparency standard and it makes information about aid sp
 
 ## Requirements
 
-| Name                   | Recommended version |
-| ---                    | ---       |
-| Python                 | 3.6.5     |
-| PostgreSQL             | 9.6       |
-| Redis                  | 4.0.x     |
-| PostGIS                | See: <a href="https://docs.djangoproject.com/en/2.0/ref/contrib/gis/install/postgis/">installing PostGIS</a> |
-| SpaciaLite (for tests) | See: <a href="https://docs.djangoproject.com/en/2.0/ref/contrib/gis/install/spatialite/">installing SpatiaLite</a> |
+| Name                   | Recommended version | Reference for ubuntu xenial 16.04 |
+| ---                    | ---       | ---                 | 
+| Python                 | 3.6.5     | <a href="http://ubuntuhandbook.org/index.php/2017/07/install-python-3-6-1-in-ubuntu-16-04-lts/"/> |
+| PostgreSQL             | 9.5 or 9.6 | <a href="https://www.digitalocean.com/community/tutorials/how-to-install-and-use-postgresql-on-ubuntu-16-04"/> |
+| Redis                  | 4.0.x     | <a href="https://tecadmin.net/install-redis-ubuntu/"/> |
+| PostGIS                | 2.2 | sudo apt-get install postgis |
+| SpaciaLite (for tests) | 4.2+ | See: <a href="https://docs.djangoproject.com/en/2.0/ref/contrib/gis/install/spatialite/">installing SpatiaLite</a> |
+| Gdbm for python | --- | sudo apt-get install python3.6-gdbm |
+| Install dev tools for python | --- | sudo apt-get install python3.6-dev & 
+sudo apt-get install libpython3.6-dev & sudo apt-get install python-dev & sudo apt-get install libpython-dev |
+| Libsqlite3 | --- | sudo apt-get install libsqlite3-dev |
+| Supervisor (for deployment) | 3.2 | <a href="https://www.digitalocean.com/community/tutorials/how-to-install-and-manage-supervisor-on-ubuntu-and-debian-vps"/> |
+| Nginx (for deployment) | 1.15 | <a href="https://www.digitalocean.com/community/tutorials/how-to-install-nginx-on-ubuntu-16-04 "/> | 
+| Brotli (for deployment) | 1.0.x | <a href="https://www.howtoinstall.co/en/ubuntu/xenial/brotli"/> | 
+| uWSGI (for deployment) | 2.0.x | <a href="https://www.digitalocean.com/community/tutorials/how-to-serve-django-applications-with-uwsgi-and-nginx-on-ubuntu-16-04"/> |
+
 
 
 ## Quick start
@@ -38,11 +47,17 @@ If you don't have Docker:
 2. Run ```virtualenv <name> -p python3``` to create a virtual environment
 3. Run ```source env/bin/activate``` to activate the virtual environment
 4. Install required libraries using ```pip install -r requirements.txt```
-5. Create a PostgreSQL database
+5. Create a PostgreSQL database:
+    * ```sudo su postgres```  (make sure to create a proper user with a password, this command uses the default 'postgres' user)
+    * ```psql```
+    * ```CREATE DATABASE your_database_name;```
+    * ```/c your_database_name``` - to connect to your database
+    * ```CREATE EXTENSION postgis;``` 
 6. Set your database credentials in ```OIPA/.env``` file as follows:
    * OIPA_DB_NAME= ```your_database_name```
    * OIPA_DB_USER= ```your_db_user```
    * OIPA_DB_PASSWORD= ```your_db_password```
+   * DJANGO_SETTINGS_MODULE=OIPA.[env]_settings - where in this case the [env] should be replaced with the environment that     OIPA is set up for(development, production, test. So for production it would be 'production_settings.py'), you can find     the settings in the deeper 'OIPA' folder from the current location.
 7. Run database migrations with ```python manage.py migrate```
 8. Start the development server: ```python manage.py runserver```
 8. In order for the parser to work, you need to start Redis too: ```redis-server```
@@ -51,6 +66,14 @@ If you don't have Docker:
 11. Open your browser at <a href="http://localhost:8000" target="_blank">localhost:8000</a>
 12. Follow instructions for signing-in: <a href="http://docs.oipa.nl/en/latest/admin_interface/" target="_blank">http://docs.oipa.nl/en/latest/admin_interface</a>
 13. Finally, follow the instructions from here: <a href="http://docs.oipa.nl/en/latest/where_to_start/" target="_blank">http://docs.oipa.nl/en/latest/where_to_start</a>
+14. Start the crontab for OIPA data - basically go to your oipa folder 'OIPA', activate the python virtual environment ```source env/bin/activate```. Ant add the cron job by going into the deeper OIPA folder and running ./manage.py crontab add
+
+## Deployment
+
+    * Set up nginx for your instance. And start the nginx service.
+    * Set up supervisor for your instance. And start the supervisor service.
+    * Set up uWSGI - https://www.digitalocean.com/community/tutorials/how-to-serve-django-applications-with-uwsgi-and-nginx-on-ubuntu-16-04. 
+    * Start the crontab for OIPA data - basically go to your oipa folder 'OIPA', activate the python virtual environment source env/bin/activate . Ant add the cron job by going into the deeper OIPA folder and running ./manage.py crontab add 
 
 Happy Hunting!
 
