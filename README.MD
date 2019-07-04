@@ -1,4 +1,4 @@
-## OIPA/Unesco
+## OIPA - Unesco
 --------
 
 [![Codacy Badge](https://api.codacy.com/project/badge/Coverage/66a6772e1f264199830b01a86f9a2b47)](https://www.codacy.com/app/eimantas_4/OIPA?utm_source=github.com&utm_medium=referral&utm_content=zimmerman-zimmerman/OIPA&utm_campaign=Badge_Coverage)
@@ -20,9 +20,8 @@ IATI is a global aid transparency standard and it makes information about aid sp
 | Redis                  | 4.0.x     | <a href="https://tecadmin.net/install-redis-ubuntu/">Installing redis</a> |
 | PostGIS                | 2.2 | ```sudo apt-get install postgis``` |
 | SpaciaLite (for tests) | 4.2+ | See: <a href="https://docs.djangoproject.com/en/2.0/ref/contrib/gis/install/spatialite/">installing SpatiaLite</a> |
-| Gdbm for python | --- | sudo apt-get install python3.6-gdbm |
-| Install dev tools for python | --- | ```sudo apt-get install python3.6-dev```, 
-```sudo apt-get install libpython3.6-dev```, ```sudo apt-get install python-dev```, ```sudo apt-get install libpython-dev``` |
+| Gdbm for python | --- | ```sudo apt-get install python3.6-gdbm``` |
+| Install dev tools for python | --- | ```sudo apt-get install python3.6-dev``` ```sudo apt-get install libpython3.6-dev``` ```sudo apt-get install python-dev``` ```sudo apt-get install libpython-dev``` |
 | Libsqlite3 | --- | ```sudo apt-get install libsqlite3-dev``` |
 | Supervisor (for deployment) | 3.2 | <a href="https://www.digitalocean.com/community/tutorials/how-to-install-and-manage-supervisor-on-ubuntu-and-debian-vps"> Installing supervisor </a> |
 | Nginx (for deployment) | 1.15 | <a href="https://www.digitalocean.com/community/tutorials/how-to-install-nginx-on-ubuntu-16-04 "> Installing nginx </a> | 
