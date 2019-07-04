@@ -16,18 +16,18 @@ IATI is a global aid transparency standard and it makes information about aid sp
 | Name                   | Recommended version | Reference for ubuntu xenial 16.04 |
 | ---                    | ---       | ---                 | 
 | Python                 | 3.6.5     | <a href="http://ubuntuhandbook.org/index.php/2017/07/install-python-3-6-1-in-ubuntu-16-04-lts/"/> |
-| PostgreSQL             | 9.5 or 9.6 | <a href="https://www.digitalocean.com/community/tutorials/how-to-install-and-use-postgresql-on-ubuntu-16-04"/> |
-| Redis                  | 4.0.x     | <a href="https://tecadmin.net/install-redis-ubuntu/"/> |
-| PostGIS                | 2.2 | sudo apt-get install postgis |
+| PostgreSQL             | 9.5 or 9.6 | <a href="https://www.digitalocean.com/community/tutorials/how-to-install-and-use-postgresql-on-ubuntu-16-04">Installing python</a> |
+| Redis                  | 4.0.x     | <a href="https://tecadmin.net/install-redis-ubuntu/">Installing redis</a> |
+| PostGIS                | 2.2 | ```sudo apt-get install postgis``` |
 | SpaciaLite (for tests) | 4.2+ | See: <a href="https://docs.djangoproject.com/en/2.0/ref/contrib/gis/install/spatialite/">installing SpatiaLite</a> |
 | Gdbm for python | --- | sudo apt-get install python3.6-gdbm |
-| Install dev tools for python | --- | sudo apt-get install python3.6-dev & 
-sudo apt-get install libpython3.6-dev & sudo apt-get install python-dev & sudo apt-get install libpython-dev |
-| Libsqlite3 | --- | sudo apt-get install libsqlite3-dev |
-| Supervisor (for deployment) | 3.2 | <a href="https://www.digitalocean.com/community/tutorials/how-to-install-and-manage-supervisor-on-ubuntu-and-debian-vps"/> |
-| Nginx (for deployment) | 1.15 | <a href="https://www.digitalocean.com/community/tutorials/how-to-install-nginx-on-ubuntu-16-04 "/> | 
-| Brotli (for deployment) | 1.0.x | <a href="https://www.howtoinstall.co/en/ubuntu/xenial/brotli"/> | 
-| uWSGI (for deployment) | 2.0.x | <a href="https://www.digitalocean.com/community/tutorials/how-to-serve-django-applications-with-uwsgi-and-nginx-on-ubuntu-16-04"/> |
+| Install dev tools for python | --- | ```sudo apt-get install python3.6-dev```, 
+```sudo apt-get install libpython3.6-dev```, ```sudo apt-get install python-dev```, ```sudo apt-get install libpython-dev``` |
+| Libsqlite3 | --- | ```sudo apt-get install libsqlite3-dev``` |
+| Supervisor (for deployment) | 3.2 | <a href="https://www.digitalocean.com/community/tutorials/how-to-install-and-manage-supervisor-on-ubuntu-and-debian-vps"> Installing supervisor </a> |
+| Nginx (for deployment) | 1.15 | <a href="https://www.digitalocean.com/community/tutorials/how-to-install-nginx-on-ubuntu-16-04 "> Installing nginx </a> | 
+| Brotli (for deployment) | 1.0.x | <a href="https://www.howtoinstall.co/en/ubuntu/xenial/brotli"> Installing brotli </a> | 
+| uWSGI (for deployment) | 2.0.x | <a href="https://www.digitalocean.com/community/tutorials/how-to-serve-django-applications-with-uwsgi-and-nginx-on-ubuntu-16-04"> Installing uWSGI </a> |
 
 
 
