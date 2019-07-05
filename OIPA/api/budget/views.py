@@ -4,7 +4,9 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from django_filters.rest_framework import DjangoFilterBackend
 
-from api.activity.serializers import CodelistSerializer
+from api.activity.serializers import (
+    CodelistSerializer, ParticipatingOrganisationSerializer
+)
 from api.aggregation.views import Aggregation, AggregationView, GroupBy
 from api.budget import filters
 from api.budget.filters import RelatedOrderingFilter
@@ -192,11 +194,11 @@ class BudgetAggregations(AggregationView):
         ),
         GroupBy(
             query_param="participating_organisation",
-            fields="activity__participating_organisations__primary_name",
+            fields="activity__participating_organisations__ref",
             renamed_fields="participating_organisation",
             queryset=ActivityParticipatingOrganisation.objects.all(),
             name_search_field=  # NOQA: E251
-            "activity__participating_organisations__primary_name",
+            "activity__participating_organisations__ref",
             renamed_name_search_field="participating_organisation_name"
         ),
         GroupBy(
