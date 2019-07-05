@@ -169,7 +169,16 @@ def apply_ordering(result, orderings):
                 reverse = True
                 field = field[1:]
 
-            result = sorted(result, key=itemgetter(field), reverse=reverse)
+            items = list()
+            for item in result:
+                key = 'value'
+                if key in item:
+                    if not item.get(key):
+                        item[key] = 0
+
+                items.append(item)
+
+            result = sorted(items, key=itemgetter(field), reverse=reverse)
 
     return result
 
