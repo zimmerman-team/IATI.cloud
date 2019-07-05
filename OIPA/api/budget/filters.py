@@ -30,7 +30,7 @@ class BudgetFilter(TogetherFilterSet):
 
     document_link_category = CommaSeparatedCharFilter(
         lookup_expr='in',
-        field_name='documentlink__categories')
+        field_name='activity__documentlink__categories')
 
     planned_start_date_lte = DateFilter(
         lookup_expr='lte',
