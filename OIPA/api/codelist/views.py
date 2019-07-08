@@ -29,6 +29,11 @@ class CodelistMetaList(CacheResponseMixin, DynamicListView):
     fields = ('name', 'items')
     pagination_class = None
 
+    def get_queryset(self):
+        return Codelist.objects.exclude(
+            name__in=['EarmarkingCategory', 'Region', 'Country']
+        )
+
 
 class CodelistItemList(CacheResponseMixin, DynamicListView):
     """
