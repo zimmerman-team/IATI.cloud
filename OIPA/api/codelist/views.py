@@ -67,7 +67,8 @@ class CodelistItemList(CacheResponseMixin, DynamicListView):
     }
     pagination_class = None
 
-    def model_name_camel(self, name):
+    @classmethod
+    def model_name_camel(cls, name):
         names = name.split('-')
         if len(names) > 1:
             name = names[0] + names[1].capitalize()
