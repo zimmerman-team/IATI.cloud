@@ -29,7 +29,8 @@ class CodelistMetaList(CacheResponseMixin, DynamicListView):
     fields = ('name', 'items')
     pagination_class = None
 
-    def get_queryset(self):
+    @classmethod
+    def get_queryset(cls):
         return Codelist.objects.exclude(
             name__in=['EarmarkingCategory', 'Region', 'Country']
         )
