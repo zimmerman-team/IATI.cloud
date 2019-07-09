@@ -124,7 +124,6 @@ class CodelistItemList(CacheResponseMixin, DynamicListView):
 
             model_name = self.model_name_maps.get(model_name, model_name)
 
-
             model_name = self.model_name_camel(model_name)
 
             app_label = self.get_app_label(model_name)
