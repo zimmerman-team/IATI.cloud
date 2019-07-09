@@ -72,6 +72,10 @@ class CodelistItemList(CacheResponseMixin, DynamicListView):
         'Region': 'geodata',
     }
     pagination_class = None
+    model_name_maps = {
+        'CRSAddOtherFlags': 'OtherFlags',
+        'IATIOrganisationIdentifier': 'OrganisationIdentifier'
+    }
 
     @classmethod
     def model_name_camel(cls, name):
@@ -95,6 +99,8 @@ class CodelistItemList(CacheResponseMixin, DynamicListView):
         model_name = self.model_name_camel(model_name)
 
         app_label = self.get_app_label(model_name)
+
+        model_name = self.model_name_maps.get(model_name, model_name)
 
         try:
             model_cls = apps.get_model(app_label, model_name)
@@ -120,6 +126,9 @@ class CodelistItemList(CacheResponseMixin, DynamicListView):
 
             if not model_name:
                 return cms
+            # model_name = self.capitalize(model_name)
+
+            model_name = self.model_name_maps.get(model_name, model_name)
 
             model_name = self.model_name_camel(model_name)
 
