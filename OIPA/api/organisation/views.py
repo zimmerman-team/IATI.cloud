@@ -21,6 +21,7 @@ from api.organisation.validators import organisation_required_fields
 from api.publisher.permissions import PublisherPermissions
 from api.renderers import OrganisationIATIXMLRenderer
 from api.transaction.views import TransactionList
+from iati.models import Activity
 from iati_organisation.models import (
     DocumentLinkRecipientCountry, Organisation, OrganisationDocumentLink,
     OrganisationDocumentLinkCategory, OrganisationDocumentLinkLanguage,
@@ -193,7 +194,8 @@ class ReportedActivities(ActivityList):
     def get_queryset(self):
         organisation = custom_get_object_from_queryset(
             self, Organisation.objects.all())
-        return organisation.activity_reporting_organisation.all()
+        return Activity.objects.filter(
+            reporting_organisations__organisation_id=organisation.id)
 
 
 class ProvidedTransactions(TransactionList):

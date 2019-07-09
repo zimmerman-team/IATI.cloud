@@ -7,6 +7,11 @@ urlpatterns = [
     # The Organisation File Endpoint
     # - Organisation Document Link
     url(
+        r'^(?P<pk>[^@$&+,/:;=?]+)/reported-activities/$',
+        views.ReportedActivities.as_view(),
+        name='organisation-reported-activities'
+    ),
+    url(
         r'^organisation-file/(?P<organisation_identifier>[^@$&+,/:;=?]+)'
         r'/organisation-document-link-list/$',
         views.OrganisationFileOrganisationDocumentLinkList.as_view(),
@@ -18,11 +23,7 @@ urlpatterns = [
         views.OrganisationDetail.as_view(),
         name='organisation-detail'
     ),
-    url(
-        r'^(?P<pk>[^@$&+,/:;=?]+)/reported-activities/$',
-        views.ReportedActivities.as_view(),
-        name='organisation-reported-activities'
-    ),
+
     url(
         r'^(?P<pk>[^@$&+,/:;=?]+)/participated-activities/$',
         views.ParticipatedActivities.as_view(),
