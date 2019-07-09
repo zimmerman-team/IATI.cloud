@@ -192,11 +192,12 @@ class BudgetAggregations(AggregationView):
         ),
         GroupBy(
             query_param="participating_organisation",
-            fields="activity__participating_organisations__primary_name",
+            fields="activity__participating_organisations__ref",
             renamed_fields="participating_organisation",
             queryset=ActivityParticipatingOrganisation.objects.all(),
+
             name_search_field=  # NOQA: E251
-            "activity__participating_organisations__primary_name",
+            "activity__participating_organisations__ref",
             renamed_name_search_field="participating_organisation_name"
         ),
         GroupBy(
