@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 import ast
 import io
 from collections import OrderedDict
+from six import BytesIO, text_type
 
 import unicodecsv as csv
 import xlsxwriter
@@ -958,3 +959,257 @@ class OrganisationIATIXMLRenderer(IATIXMLRenderer):
         'total_expenditures': TotalExpenditureOrgReference,
         'document_links': DocumentLinkOrgReference
     }
+
+
+class OrganisationIATICSVRenderer(CSVRenderer):
+
+    class OrganisationIdentifierMap:
+
+        @classmethod
+        def get(cls, data):
+            return data.get('organisation_identifier')
+
+    class NameMap:
+
+        @classmethod
+        def get(cls, data):
+            narratives = data.get('name').get('narratives')
+
+            if narratives and isinstance(narratives, list):
+                data_column = ''
+                for narrative in narratives:
+                    data_column = data_column + narrative.get('text') + ';'
+
+                return data_column
+
+            return ''
+
+    class ReportingOrgMap:
+
+        @classmethod
+        def get(cls, data):
+            reporting_org = data.get('reporting_org')
+
+            if reporting_org:
+                data_columns = list()
+                data_columns.append(reporting_org.get('ref'))
+                data_columns.append(reporting_org.get('type').get('code'))
+                data_columns.append(reporting_org.get('secondary_reporter'))
+                data_columns.append(
+                    reporting_org.get('narratives')[0].get('text')
+                )
+
+                return data_columns
+
+            return ['', '', '', '']
+
+    class TotalBudgetsMap:
+
+        @classmethod
+        def get(cls, data):
+            total_budgets = data.get('total_budgets')
+            if total_budgets and isinstance(total_budgets, list):
+                data_column = ''
+                for total_budget in total_budgets:
+                    currency = total_budget.get(
+                        'value'
+                    ).get('currency').get('code')
+                    value = str(total_budget.get('value').get('value'))
+
+                    data_column = data_column + '{currency}{value};'.format(
+                        currency=currency, value=value
+                    )
+
+                return data_column
+
+            return ''
+
+    class RecipientOrgBudgetsMap:
+
+        @classmethod
+        def get(cls, data):
+            recipient_org_budgets = data.get('recipient_org_budgets')
+            if recipient_org_budgets and isinstance(
+                    recipient_org_budgets, list
+            ):
+                data_column = ''
+                for recipient_org_budget in recipient_org_budgets:
+                    data_column = data_column + recipient_org_budget.get(
+                        'recipient_org'
+                    ).get('ref') + ';'
+
+                return data_column
+
+            return ''
+
+    class RecipientRegionBudgetsMap:
+
+        @classmethod
+        def get(cls, data):
+            recipient_region_budgets = data.get('recipient_region_budgets')
+            if recipient_region_budgets and isinstance(
+                    recipient_region_budgets, list
+            ):
+                data_column = ''
+                for recipient_region_budget in recipient_region_budgets:
+                    data_column = data_column + recipient_region_budget.get(
+                        'recipient_region'
+                    ).get('code') + ';'
+
+                return data_column
+
+            return ''
+
+    class RecipientCountryBudgetsMap:
+
+        @classmethod
+        def get(cls, data):
+            recipient_country_budgets = data.get('recipient_country_budgets')
+            if recipient_country_budgets and isinstance(
+                    recipient_country_budgets, list
+            ):
+                data_column = ''
+                for recipient_country_budget in recipient_country_budgets:
+                    data_column = data_column + recipient_country_budget.get(
+                        'recipient_country'
+                    ).get('code') + ';'
+
+                return data_column
+
+            return ''
+
+    class TotalExpendituresMap:
+
+        @classmethod
+        def get(cls, data):
+            total_expenditures = data.get('total_expenditures')
+            if total_expenditures and isinstance(total_expenditures, list):
+                data_column = ''
+                for total_expenditure in total_expenditures:
+                    currency = total_expenditure.get(
+                        'value'
+                    ).get('currency').get('code')
+                    value = str(total_expenditure.get('value').get('value'))
+
+                    data_column = data_column + '{currency}{value};'.format(
+                        currency=currency, value=value
+                    )
+
+                return data_column
+
+            return ''
+
+    class DocumentLinksMap:
+
+        @classmethod
+        def get(cls, data):
+            document_links = data.get('document_links')
+            if document_links and isinstance(document_links, list):
+                data_column = ''
+                for document_links in document_links:
+                    data_column = data_column + document_links.get('url') + ';'
+
+                return data_column
+
+            return ''
+
+    results_field = 'results'
+    default_headers = [
+        'orgasanition_identifier',
+        'name'
+    ]
+    headers_name = {
+        'orgasanition_identifier': 'organisation-identifier',
+        'name': 'name/0/narratives',
+        'reporting_org': [
+            'reporting-org/@ref',
+            'reporting-org/@type',
+            'reporting-org/@secondary_reporter',
+            'reporting-org/narratives',
+        ],
+        'total_budgets': 'total_budget/0/value',
+        'recipient_org_budgets': 'recipient-org-budget/0/recipient-org/@ref',
+        'recipient_region_budgets': 'recipient-region-budget/0/recipient-region/@code',  # NOQA: E501
+        'recipient_country_budgets': 'recipient-country-budget/0/recipient-country/@code',  # NOQA: E501
+        'total_expenditures': 'total-expenditure/0/value',
+        'document_links': 'document_link/0/@url',
+    }
+    data_map = {
+        'orgasanition_identifier': OrganisationIdentifierMap,
+        'name': NameMap,
+        'reporting_org': ReportingOrgMap,
+        'total_budgets': TotalBudgetsMap,
+        'recipient_org_budgets': RecipientOrgBudgetsMap,
+        'recipient_region_budgets': RecipientRegionBudgetsMap,
+        'recipient_country_budgets': RecipientCountryBudgetsMap,
+        'total_expenditures': TotalExpendituresMap,
+        'document_links': DocumentLinksMap,
+    }
+    fields = ''
+
+    def __init__(self, *args, **kwargs):
+        super(OrganisationIATICSVRenderer, self).__init__(*args, **kwargs)
+
+    def render(self, data, *args, **kwargs):
+        actual_kwargs = args[1].get('kwargs', {})
+
+        # this is a list view
+        if 'pk' not in actual_kwargs:
+            data = data.get(self.results_field, [])
+
+            self.fields = args[1].get('request').GET.get('fields', '')
+        else:
+            self.fields = 'orgasanition_identifier,name,reporting_org,total_budgets,recipient_org_budgets.recipient_country_budgets,total_expenditures,document_links'  # NOQA: E501
+
+        return self.process(data, *args, **kwargs)
+
+    def process(self, data, media_type=None, renderer_context={}, writer_opts=None):
+        """
+        Renders serialized *data* into CSV. For a dictionary:
+        """
+        if data is None:
+            return ''
+
+        if not isinstance(data, list):
+            data = [data]
+
+        headers = []
+        headers_column = []
+        for header in self.default_headers:
+            headers.append(self.headers_name.get(header))
+            headers_column.append(header)
+
+        for field in self.fields.split(','):
+            header = self.headers_name.get(field)
+
+            if header:
+                headers_column.append(field)
+
+                if isinstance(header, list):
+                    headers = headers + header
+                else:
+                    headers.append(header)
+
+        writer_opts = renderer_context.get(
+            'writer_opts', writer_opts or self.writer_opts or {}
+        )
+        encoding = renderer_context.get('encoding', settings.DEFAULT_CHARSET)
+
+        csv_buffer = BytesIO()
+        csv_writer = csv.writer(csv_buffer, encoding=encoding, **writer_opts)
+        csv_writer.writerow(headers)
+
+        for row in data:
+            data_columns = []
+
+            for header in headers_column:
+                item = self.data_map.get(header)().get(row)
+
+                if isinstance(item, list):
+                    data_columns = data_columns + item
+                elif item:
+                    data_columns.append(item)
+
+            csv_writer.writerow(data_columns)
+
+        return csv_buffer.getvalue()
