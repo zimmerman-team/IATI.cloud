@@ -982,7 +982,9 @@ class OrganisationIATICSVRenderer(CSVRenderer):
 
                 return data_column
 
-            return ''
+            # Balefully, CSV is needed blank space
+            # to initial it as blank values
+            return ' '
 
     class ReportingOrgMap:
 
@@ -1001,7 +1003,7 @@ class OrganisationIATICSVRenderer(CSVRenderer):
 
                 return data_columns
 
-            return ['', '', '', '']
+            return [' ', ' ', ' ', ' ']
 
     class TotalBudgetsMap:
 
@@ -1022,7 +1024,7 @@ class OrganisationIATICSVRenderer(CSVRenderer):
 
                 return data_column
 
-            return ''
+            return ' '
 
     class RecipientOrgBudgetsMap:
 
@@ -1040,7 +1042,7 @@ class OrganisationIATICSVRenderer(CSVRenderer):
 
                 return data_column
 
-            return ''
+            return ' '
 
     class RecipientRegionBudgetsMap:
 
@@ -1058,7 +1060,7 @@ class OrganisationIATICSVRenderer(CSVRenderer):
 
                 return data_column
 
-            return ''
+            return ' '
 
     class RecipientCountryBudgetsMap:
 
@@ -1076,7 +1078,7 @@ class OrganisationIATICSVRenderer(CSVRenderer):
 
                 return data_column
 
-            return ''
+            return ' '
 
     class TotalExpendituresMap:
 
@@ -1097,7 +1099,7 @@ class OrganisationIATICSVRenderer(CSVRenderer):
 
                 return data_column
 
-            return ''
+            return ' '
 
     class DocumentLinksMap:
 
@@ -1111,7 +1113,7 @@ class OrganisationIATICSVRenderer(CSVRenderer):
 
                 return data_column
 
-            return ''
+            return ' '
 
     results_field = 'results'
     default_headers = [
