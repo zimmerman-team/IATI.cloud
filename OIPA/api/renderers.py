@@ -6,7 +6,6 @@ from __future__ import unicode_literals
 import ast
 import io
 from collections import OrderedDict
-from six import BytesIO, text_type
 
 import unicodecsv as csv
 import xlsxwriter
@@ -17,6 +16,7 @@ from lxml.builder import E
 from rest_framework.renderers import BaseRenderer
 from rest_framework.utils.serializer_helpers import ReturnDict, ReturnList
 from rest_framework_csv.renderers import CSVRenderer
+from six import BytesIO
 
 from api.iati.references import (
     ActivityDateReference, ActivityScopeReference, ActivityStatusReference,

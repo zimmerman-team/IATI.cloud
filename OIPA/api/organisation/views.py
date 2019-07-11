@@ -11,7 +11,6 @@ from rest_framework.views import APIView
 from rest_framework_extensions.cache.mixins import CacheResponseMixin
 
 from api.activity.views import ActivityList
-from api.cache import QueryParamsKeyConstructor
 from api.generics.views import (
     DynamicDetailCRUDView, DynamicDetailView, DynamicListCRUDView,
     DynamicListView
@@ -20,8 +19,7 @@ from api.organisation import serializers
 from api.organisation.validators import organisation_required_fields
 from api.publisher.permissions import PublisherPermissions
 from api.renderers import (
-    OrganisationIATIXMLRenderer,
-    OrganisationIATICSVRenderer
+    OrganisationIATICSVRenderer, OrganisationIATIXMLRenderer
 )
 from api.transaction.views import TransactionList
 from iati_organisation.models import (
