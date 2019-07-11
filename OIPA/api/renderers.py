@@ -1126,7 +1126,7 @@ class OrganisationIATICSVRenderer(CSVRenderer):
         'reporting_org': [
             'reporting-org/@ref',
             'reporting-org/@type',
-            'reporting-org/@secondary_reporter',
+            'reporting-org/@secondary-reporter',
             'reporting-org/narratives',
         ],
         'total_budgets': 'total_budget/0/value',
