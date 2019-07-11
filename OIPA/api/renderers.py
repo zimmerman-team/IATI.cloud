@@ -1165,12 +1165,12 @@ class OrganisationIATICSVRenderer(CSVRenderer):
 
         return self.process(data, *args, **kwargs)
 
-    def process(self, data, media_type=None, renderer_context,
+    def process(self, data, media_type=None, renderer_context=None,
                 writer_opts=None):
         """
         Renders serialized *data* into CSV. For a dictionary:
         """
-        if not isinstance(renderer_context, dict):
+        if not renderer_context:
             renderer_context = dict()
 
         if data is None:
