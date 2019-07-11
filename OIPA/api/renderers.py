@@ -1161,7 +1161,7 @@ class OrganisationIATICSVRenderer(CSVRenderer):
 
             self.fields = args[1].get('request').GET.get('fields', '')
         else:
-            self.fields = 'orgasanition_identifier,name,reporting_org,total_budgets,recipient_org_budgets.recipient_country_budgets,total_expenditures,document_links'  # NOQA: E501
+            self.fields = 'reporting_org,total_budgets,recipient_org_budgets,recipient_country_budgets,total_expenditures,document_links'  # NOQA: E501
 
         return self.process(data, *args, **kwargs)
 
