@@ -1165,7 +1165,7 @@ class OrganisationIATICSVRenderer(CSVRenderer):
 
         return self.process(data, *args, **kwargs)
 
-    def process(self, data, media_type=None, renderer_context={}, writer_opts=None):
+    def process(self, data, media_type=None, renderer_context={}, writer_opts=None):  # NOQA: E501
         """
         Renders serialized *data* into CSV. For a dictionary:
         """
