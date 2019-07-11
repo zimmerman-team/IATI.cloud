@@ -122,8 +122,9 @@ class Dataset(models.Model):
 
         # Serve only the XML file is exists on the DataSet static folder
         file_path = Path(
-            '{static_url}/{internal_udl}'.format(
-                static_url=settings.STATIC_ROOT, internal_udl=self.internal_url
+            '{static_root}/{internal_url}'.format(
+                static_root=settings.STATIC_ROOT,
+                internal_url=self.internal_url
             )
         )
         if file_path.is_file():
