@@ -982,7 +982,7 @@ class OrganisationIATICSVRenderer(CSVRenderer):
 
                 return data_column
 
-            # Balefully, CSV is needed blank space
+            # Note: CSV is needed blank space
             # to initial it as blank values
             return ' '
 
