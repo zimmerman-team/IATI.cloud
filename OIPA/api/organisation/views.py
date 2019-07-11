@@ -61,7 +61,7 @@ class FilterPublisherMixin(object):
         return Organisation.objects.filter(publisher__id=publisher_id)
 
 
-class OrganisationList(CacheResponseMixin, DynamicListView):
+class OrganisationList(DynamicListView):
     """
     Returns a list of IATI Organisations stored in OIPA.
 
@@ -84,7 +84,6 @@ class OrganisationList(CacheResponseMixin, DynamicListView):
     selectable_fields = ()
     fields = ('url', 'organisation_identifier',
               'last_updated_datetime', 'name')
-    list_cache_key_func = QueryParamsKeyConstructor()
 
 
 class OrganisationDetail(CacheResponseMixin, DynamicDetailView):
