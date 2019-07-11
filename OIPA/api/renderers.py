@@ -1170,7 +1170,7 @@ class OrganisationIATICSVRenderer(CSVRenderer):
         """
         Renders serialized *data* into CSV. For a dictionary:
         """
-        if isinstance(renderer_context, dict):
+        if not isinstance(renderer_context, dict):
             renderer_context = dict()
 
         if data is None:
