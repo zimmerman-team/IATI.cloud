@@ -1219,3 +1219,76 @@ class OrganisationIATICSVRenderer(CSVRenderer):
             csv_writer.writerow(data_columns)
 
         return csv_buffer.getvalue()
+
+
+class OrganisationIATIXSLXRenderer(OrganisationIATICSVRenderer):
+    media_type = 'application/vnd.ms-excel'
+    results_field = 'results'
+    render_style = 'xls'
+    format = 'xls'
+
+    def process(self, data, media_type=None, renderer_context=None,
+                writer_opts=None):
+        """
+        Renders serialized *data* into XSLX.
+        """
+        if data is None:
+            return ''
+
+        if not isinstance(data, list):
+            data = [data]
+
+        # Setup headers
+        headers = []
+        headers_column = []
+        for header in self.default_headers:
+            headers.append(self.headers_name.get(header))
+            headers_column.append(header)
+
+        for field in self.fields.split(','):
+            header = self.headers_name.get(field)
+
+            if header:
+                headers_column.append(field)
+
+                if isinstance(header, list):
+                    headers = headers + header
+                else:
+                    headers.append(header)
+
+        # Setup IO
+        xlsx_buffer = BytesIO()
+        workbook = xlsxwriter.Workbook(xlsx_buffer)
+        worksheet = workbook.add_worksheet()
+
+        # Render Header
+        row = 0
+        col = 0
+        bold = workbook.add_format({'bold': 1})
+        for header in headers:
+            worksheet.write(row, col, header, bold)
+            col += 1
+
+        # Render data contents
+        row = 1
+        for data_row in data:
+            data_columns = []
+
+            for header in headers_column:
+                item = self.data_map.get(header)().get(data_row)
+
+                if isinstance(item, list):
+                    data_columns = data_columns + item
+                elif item:
+                    data_columns.append(item)
+
+            col = 0
+            for data_column in data_columns:
+                worksheet.write(row, col, data_column)
+                col += 1
+
+            row += 1
+
+        workbook.close()
+
+        return xlsx_buffer.getvalue()
