@@ -118,6 +118,8 @@ class OrganisationDetail(CacheResponseMixin, DynamicDetailView):
     )
     queryset = Organisation.objects.all()
     serializer_class = serializers.OrganisationSerializer
+    fields = ('url', 'organisation_identifier',
+              'last_updated_datetime', 'name')
 
 
 class OrganisationMarkReadyToPublish(APIView, FilterPublisherMixin):
