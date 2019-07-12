@@ -16,6 +16,7 @@ from api.generics.views import (
     DynamicListView
 )
 from api.organisation import serializers
+from api.organisation.filters import OrganisationFilter
 from api.organisation.validators import organisation_required_fields
 from api.publisher.permissions import PublisherPermissions
 from api.renderers import (
@@ -80,6 +81,8 @@ class OrganisationList(DynamicListView):
         OrganisationIATIXSLXRenderer,
     )
     queryset = Organisation.objects.all()
+    filter_backends = (DjangoFilterBackend,)
+    filter_class = OrganisationFilter
     serializer_class = serializers.OrganisationSerializer
     selectable_fields = ()
     fields = ('url', 'organisation_identifier',
