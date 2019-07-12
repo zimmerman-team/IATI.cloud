@@ -1265,8 +1265,10 @@ class OrganisationIATIXSLXRenderer(OrganisationIATICSVRenderer):
         row = 0
         col = 0
         bold = workbook.add_format({'bold': 1})
+        column_width = dict()
         for header in headers:
             worksheet.write(row, col, header, bold)
+            column_width[col] = len(header)
             col += 1
 
         # Render data contents
@@ -1285,9 +1287,17 @@ class OrganisationIATIXSLXRenderer(OrganisationIATICSVRenderer):
             col = 0
             for data_column in data_columns:
                 worksheet.write(row, col, data_column)
+
+                if column_width[col] < len(data_column):
+                    column_width[col] = len(data_column)
+
                 col += 1
 
             row += 1
+
+        for index, width in column_width.items():
+            # Adjust the column width.
+            worksheet.set_column(index, index, width)
 
         workbook.close()
 
