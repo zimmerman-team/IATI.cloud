@@ -29,6 +29,12 @@ class CodelistMetaList(CacheResponseMixin, DynamicListView):
     fields = ('name', 'items')
     pagination_class = None
 
+    @classmethod
+    def get_queryset(cls):
+        return Codelist.objects.exclude(
+            name__in=['EarmarkingCategory', 'Region', 'Country']
+        )
+
 
 class CodelistItemList(CacheResponseMixin, DynamicListView):
     """
@@ -66,9 +72,18 @@ class CodelistItemList(CacheResponseMixin, DynamicListView):
         'Region': 'geodata',
     }
     pagination_class = None
+    model_name_maps = {
+        'CRSAddOtherFlags': 'OtherFlags',
+        'IATIOrganisationIdentifier': 'OrganisationIdentifier'
+    }
 
-    # def capitalize(self, name):
-    #     return "".join([ part.capitalize() for part in name.split('_') ])
+    @classmethod
+    def model_name_camel(cls, name):
+        names = name.split('-')
+        if len(names) > 1:
+            name = names[0] + names[1].capitalize()
+
+        return name
 
     def get_app_label(self, model_name):
         if 'Vocabulary' in model_name:
@@ -80,8 +95,12 @@ class CodelistItemList(CacheResponseMixin, DynamicListView):
 
         if not model_name:
             return self.queryset
-        # model_name = self.capitalize(model_name)
+
+        model_name = self.model_name_camel(model_name)
+
         app_label = self.get_app_label(model_name)
+
+        model_name = self.model_name_maps.get(model_name, model_name)
 
         try:
             model_cls = apps.get_model(app_label, model_name)
@@ -104,9 +123,15 @@ class CodelistItemList(CacheResponseMixin, DynamicListView):
 
         if hasattr(self, 'request'):
             model_name = self.kwargs.get('codelist', None)
+
             if not model_name:
                 return cms
             # model_name = self.capitalize(model_name)
+
+            model_name = self.model_name_maps.get(model_name, model_name)
+
+            model_name = self.model_name_camel(model_name)
+
             app_label = self.get_app_label(model_name)
             cms.Meta.model = apps.get_model(app_label, model_name)
 

@@ -11,16 +11,20 @@ from rest_framework.views import APIView
 from rest_framework_extensions.cache.mixins import CacheResponseMixin
 
 from api.activity.views import ActivityList
-from api.cache import QueryParamsKeyConstructor
 from api.generics.views import (
     DynamicDetailCRUDView, DynamicDetailView, DynamicListCRUDView,
     DynamicListView
 )
 from api.organisation import serializers
+from api.organisation.filters import OrganisationFilter
 from api.organisation.validators import organisation_required_fields
 from api.publisher.permissions import PublisherPermissions
-from api.renderers import OrganisationIATIXMLRenderer
+from api.renderers import (
+    OrganisationIATICSVRenderer, OrganisationIATIXMLRenderer,
+    OrganisationIATIXSLXRenderer
+)
 from api.transaction.views import TransactionList
+from iati.models import Activity
 from iati_organisation.models import (
     DocumentLinkRecipientCountry, Organisation, OrganisationDocumentLink,
     OrganisationDocumentLinkCategory, OrganisationDocumentLinkLanguage,
@@ -58,7 +62,7 @@ class FilterPublisherMixin(object):
         return Organisation.objects.filter(publisher__id=publisher_id)
 
 
-class OrganisationList(CacheResponseMixin, DynamicListView):
+class OrganisationList(DynamicListView):
     """
     Returns a list of IATI Organisations stored in OIPA.
 
@@ -74,13 +78,16 @@ class OrganisationList(CacheResponseMixin, DynamicListView):
         rest_framework.renderers.BrowsableAPIRenderer,
         rest_framework.renderers.JSONRenderer,
         OrganisationIATIXMLRenderer,
+        OrganisationIATICSVRenderer,
+        OrganisationIATIXSLXRenderer,
     )
     queryset = Organisation.objects.all()
+    filter_backends = (DjangoFilterBackend,)
+    filter_class = OrganisationFilter
     serializer_class = serializers.OrganisationSerializer
     selectable_fields = ()
     fields = ('url', 'organisation_identifier',
               'last_updated_datetime', 'name')
-    list_cache_key_func = QueryParamsKeyConstructor()
 
 
 class OrganisationDetail(CacheResponseMixin, DynamicDetailView):
@@ -106,9 +113,13 @@ class OrganisationDetail(CacheResponseMixin, DynamicDetailView):
         rest_framework.renderers.BrowsableAPIRenderer,
         rest_framework.renderers.JSONRenderer,
         OrganisationIATIXMLRenderer,
+        OrganisationIATICSVRenderer,
+        OrganisationIATIXSLXRenderer,
     )
     queryset = Organisation.objects.all()
     serializer_class = serializers.OrganisationSerializer
+    fields = ('url', 'organisation_identifier',
+              'last_updated_datetime', 'name')
 
 
 class OrganisationMarkReadyToPublish(APIView, FilterPublisherMixin):
@@ -193,7 +204,8 @@ class ReportedActivities(ActivityList):
     def get_queryset(self):
         organisation = custom_get_object_from_queryset(
             self, Organisation.objects.all())
-        return organisation.activity_reporting_organisation.all()
+        return Activity.objects.filter(
+            reporting_organisations__organisation_id=organisation.id)
 
 
 class ProvidedTransactions(TransactionList):
