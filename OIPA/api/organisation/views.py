@@ -16,6 +16,7 @@ from api.generics.views import (
     DynamicListView
 )
 from api.organisation import serializers
+from api.organisation.filters import OrganisationFilter
 from api.organisation.validators import organisation_required_fields
 from api.publisher.permissions import PublisherPermissions
 from api.renderers import (
@@ -23,6 +24,7 @@ from api.renderers import (
     OrganisationIATIXSLXRenderer
 )
 from api.transaction.views import TransactionList
+from iati.models import Activity
 from iati_organisation.models import (
     DocumentLinkRecipientCountry, Organisation, OrganisationDocumentLink,
     OrganisationDocumentLinkCategory, OrganisationDocumentLinkLanguage,
@@ -80,6 +82,8 @@ class OrganisationList(DynamicListView):
         OrganisationIATIXSLXRenderer,
     )
     queryset = Organisation.objects.all()
+    filter_backends = (DjangoFilterBackend,)
+    filter_class = OrganisationFilter
     serializer_class = serializers.OrganisationSerializer
     selectable_fields = ()
     fields = ('url', 'organisation_identifier',
@@ -114,6 +118,8 @@ class OrganisationDetail(CacheResponseMixin, DynamicDetailView):
     )
     queryset = Organisation.objects.all()
     serializer_class = serializers.OrganisationSerializer
+    fields = ('url', 'organisation_identifier',
+              'last_updated_datetime', 'name')
 
 
 class OrganisationMarkReadyToPublish(APIView, FilterPublisherMixin):
@@ -198,7 +204,8 @@ class ReportedActivities(ActivityList):
     def get_queryset(self):
         organisation = custom_get_object_from_queryset(
             self, Organisation.objects.all())
-        return organisation.activity_reporting_organisation.all()
+        return Activity.objects.filter(
+            reporting_organisations__organisation_id=organisation.id)
 
 
 class ProvidedTransactions(TransactionList):

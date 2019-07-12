@@ -1,8 +1,8 @@
 import datetime
 import logging
+from pathlib import Path
 
 from django.conf import settings
-from django.contrib.staticfiles import finders
 from django.db import models
 from lxml import etree
 
@@ -119,9 +119,15 @@ class Dataset(models.Model):
         """
         Constructs and returns internal URL for the Dataset
         """
+
         # Serve only the XML file is exists on the DataSet static folder
-        result = finders.find(self.internal_url)
-        if self.internal_url and result:
+        file_path = Path(
+            '{static_root}/{internal_url}'.format(
+                static_root=settings.STATIC_ROOT,
+                internal_url=self.internal_url
+            )
+        )
+        if file_path.is_file():
             return settings.STATIC_URL + self.internal_url
 
         return None
