@@ -30,8 +30,7 @@ def add_task(request):
     elif parameters:
         queue.enqueue(func, args=([parameters]))
     else:
-        func()
-        # queue.enqueue(func)
+        queue.enqueue(func)
 
     return HttpResponse(json.dumps(True), content_type='application/json')
 
