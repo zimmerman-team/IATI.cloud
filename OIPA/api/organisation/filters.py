@@ -3,7 +3,8 @@ from iati_organisation.models import Organisation
 
 
 class OrganisationFilter(TogetherFilterSet):
-    organisation_identifier = CommaSeparatedCharFilter(
+    # naming is according to IATI standard.
+    reporting_organisation_identifier = CommaSeparatedCharFilter(
         field_name='organisation_identifier',
         lookup_expr='in'
     )
@@ -14,5 +15,4 @@ class OrganisationFilter(TogetherFilterSet):
 
     class Meta:
         model = Organisation
-        fields = ['organisation_identifier',
-                  'name']
+        fields = []
