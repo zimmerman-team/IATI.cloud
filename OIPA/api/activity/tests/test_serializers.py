@@ -691,7 +691,7 @@ class ActivitySerializerTestCase(TestCase):
             'document_links',
             'results',
             'locations',
-            'aggregations',
+            'activity_plus_child_aggregation',
         )
         assertion_msg = "the field '{0}' should be in the serialized activity"
         for field in required_fields:
