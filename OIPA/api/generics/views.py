@@ -81,7 +81,7 @@ class DynamicView(GenericAPIView):
             fields = list(self.fields)
             try:
                 fields.remove('aggregations')
-            except Exception as e:
+            except Exception:
                 pass
             # Assign it again
             self.fields = tuple(fields)
