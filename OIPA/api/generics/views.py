@@ -75,6 +75,17 @@ class DynamicView(GenericAPIView):
                     # we get as selectable field
                     self.selectable_fields = self.selectable_fields+(request_field,)  # NOQA: E501
 
+            # Some bugs if request fields has 'aggregations'
+            # So we need to remove it from request fields.
+            # And assign a tuple fields without aggregations
+            fields = list(self.fields)
+            try:
+                fields.remove('aggregations')
+            except Exception as e:
+                pass
+            # Assign it again
+            self.fields = tuple(fields)
+
         return getattr(self, 'fields', ())
 
     def filter_queryset(self, queryset, *args, **kwargs):
