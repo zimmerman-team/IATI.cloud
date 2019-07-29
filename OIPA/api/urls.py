@@ -27,7 +27,9 @@ urlpatterns = [
     url(r'^publishers/', include(
         'api.publisher.urls', namespace='publishers'
     )),
-    url(r'^chains/', include('api.chain.urls', namespace='chains')),
+
+    # This endpoint is not working yet, so we remove it just for now
+    # url(r'^chains/', include('api.chain.urls', namespace='chains')),
 
     # TODO: no email confirmation? - 2016-10-18
     url(r'^auth/', include('rest_auth.urls')),
