@@ -39,11 +39,12 @@ class LocationList(CacheResponseMixin, DynamicListView):
 
     fields = (
         'iati_identifier',
-        'sectors',
-        'recipient_regions',
-        'recipient_countries',
-        'locations'
-
+        'ref',
+        'location_class',
+        'location_reach',
+        'feature_designation',
+        'name',
+        'description'
     )
     # column headers with paths to the json property value.
     # reference to the field name made by the first term in the path
