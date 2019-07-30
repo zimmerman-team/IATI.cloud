@@ -34,7 +34,7 @@ class SectorList(CacheResponseMixin, DynamicListView):
     selectable_fields = ()
 
 
-class SectorDetail(CacheResponseMixin, RetrieveAPIView):
+class SectorDetail(RetrieveAPIView):
     """
     Returns detailed information about Sector.
 
@@ -55,3 +55,4 @@ class SectorDetail(CacheResponseMixin, RetrieveAPIView):
     """
     queryset = iati.models.Sector.objects.all()
     serializer_class = serializers.SectorSerializer
+    lookup_field = 'code'
