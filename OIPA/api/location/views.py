@@ -40,9 +40,6 @@ class LocationList(CacheResponseMixin, DynamicListView):
     fields = (
         'iati_identifier',
         'ref',
-        'location_class',
-        'location_reach',
-        'feature_designation',
         'name',
         'description'
     )
