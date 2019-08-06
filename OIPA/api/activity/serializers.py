@@ -24,8 +24,9 @@ from api.publisher.serializers import PublisherSerializer
 from api.region.serializers import BasicRegionSerializer
 from api.sector.serializers import SectorSerializer
 from iati.models import (
-    Activity, ActivityDate, ActivityParticipatingOrganisation,
-    ActivityPolicyMarker, ActivityRecipientCountry, ActivityRecipientRegion,
+    Activity, ActivityDate, ActivityDefaultAidType,
+    ActivityParticipatingOrganisation, ActivityPolicyMarker,
+    ActivityRecipientCountry, ActivityRecipientRegion,
     ActivityReportingOrganisation, ActivitySector, ActivityTag, Budget,
     BudgetItem, BudgetItemDescription, Condition, Conditions, ContactInfo,
     ContactInfoDepartment, ContactInfoJobTitle, ContactInfoMailingAddress,
@@ -3142,6 +3143,16 @@ class ActivityTagSerializer(ModelSerializerNoValidation):
         )
 
 
+class ActivityDefaultAidTypeSerializer(ModelSerializerNoValidation):
+    aid_type = AidTypeSerializer()
+
+    class Meta:
+        model = ActivityDefaultAidType
+        fields = (
+            'aid_type',
+        )
+
+
 class ActivitySerializer(DynamicFieldsModelSerializer):
     url = serializers.HyperlinkedIdentityField(
         view_name='activities:activity-detail', read_only=True)
@@ -3242,6 +3253,11 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
     default_flow_type = CodelistSerializer(required=False)
     default_finance_type = CodelistSerializer(required=False)
     default_aid_type = CodelistSerializer(required=False)
+    default_aid_types = ActivityDefaultAidTypeSerializer(
+        many=True,
+        read_only=True,
+        required=False,
+    )
     default_tied_status = CodelistSerializer(required=False)
 
     budgets = BudgetSerializer(
@@ -3529,6 +3545,7 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
             'default_flow_type',
             'default_finance_type',
             'default_aid_type',
+            'default_aid_types',
             'default_tied_status',
             'budgets',
             'planned_disbursements',
