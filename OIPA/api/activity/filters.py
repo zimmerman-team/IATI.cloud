@@ -104,6 +104,13 @@ class ActivityFilter(TogetherFilterSet):
                                                lookup_expr='isnull',
                                                distinct=True)
 
+    # IATI Version 2.03 has one to many default aid type
+    has_default_aid_types = IsNullBooleanFilter(
+        name='default_aid_types',
+        lookup_expr='isnull',
+        distinct=True
+    )
+
     has_default_tied_status = IsNullBooleanFilter(
         name='default_tied_status',
         lookup_expr='isnull',
