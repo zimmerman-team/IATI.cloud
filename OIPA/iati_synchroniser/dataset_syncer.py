@@ -160,7 +160,9 @@ class DatasetSyncer(object):
                 'source_url': dataset['resources'][0]['url'],
                 'iati_version': iati_version,
                 'last_found_in_registry': datetime.datetime.now(),
-                'added_manually': False
+                'added_manually': False,
+                'date_created': dataset['metadata_created'],
+                'date_updated': dataset['metadata_modified']
             }
         )
 
