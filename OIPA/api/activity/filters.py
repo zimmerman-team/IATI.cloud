@@ -7,6 +7,7 @@ from django_filters import (
     BooleanFilter, CharFilter, DateFilter, DateTimeFilter, FilterSet,
     NumberFilter, TypedChoiceFilter
 )
+from django_filters.widgets import BooleanWidget
 from rest_framework import filters
 
 from api.generics.filters import (
@@ -45,107 +46,151 @@ class ActivityFilter(TogetherFilterSet):
     )
 
     has_crs_add = IsNullBooleanFilter(name='crsadd', lookup_expr='isnull',
-                                      distinct=True)
+                                      distinct=True,
+                                      widget=BooleanWidget())
 
     has_other_identifier = IsNullBooleanFilter(name='otheridentifier',
                                                lookup_expr='isnull',
-                                               distinct=True)
+                                               distinct=True,
+                                               widget=BooleanWidget()
+                                               )
 
     has_contact_info = IsNullBooleanFilter(name='contactinfo',
                                            lookup_expr='isnull',
-                                           distinct=True)
+                                           distinct=True,
+                                           widget=BooleanWidget()
+                                           )
 
     has_activity_scope = IsNullBooleanFilter(name='scope',
                                              lookup_expr='isnull',
-                                             distinct=True)
+                                             distinct=True,
+                                             widget=BooleanWidget()
+                                             )
 
     has_recipient_country = IsNullBooleanFilter(
-        name='activityrecipientcountry', lookup_expr='isnull', distinct=True)
+        name='activityrecipientcountry', lookup_expr='isnull',
+        distinct=True, widget=BooleanWidget())
 
     has_recipient_region = IsNullBooleanFilter(name='activityrecipientregion',
                                                lookup_expr='isnull',
-                                               distinct=True)
+                                               distinct=True,
+                                               widget=BooleanWidget())
 
     has_location = IsNullBooleanFilter(name='location',
-                                       lookup_expr='isnull', distinct=True)
+                                       lookup_expr='isnull', distinct=True,
+                                       widget=BooleanWidget())
 
     has_sector = IsNullBooleanFilter(name='activitysector',
-                                     lookup_expr='isnull', distinct=True)
+                                     lookup_expr='isnull', distinct=True,
+                                     widget=BooleanWidget())
 
     has_tag = IsNullBooleanFilter(name='activitytag', lookup_expr='isnull',
-                                  distinct=True)
+                                  distinct=True,
+                                  widget=BooleanWidget())
 
     has_country_budget_item = IsNullBooleanFilter(
         name='country_budget_items',
         lookup_expr='isnull',
-        distinct=True)
+        distinct=True,
+        widget=BooleanWidget()
+    )
 
     has_humanitarian_scope = IsNullBooleanFilter(name='humanitarianscope',
                                                  lookup_expr='isnull',
-                                                 distinct=True)
+                                                 distinct=True,
+                                                 widget=BooleanWidget()
+                                                 )
 
     has_policy_marker = IsNullBooleanFilter(name='activitypolicymarker',
                                             lookup_expr='isnull',
-                                            distinct=True)
+                                            distinct=True,
+                                            widget=BooleanWidget()
+                                            )
 
     has_collaboration_type = IsNullBooleanFilter(name='collaboration_type',
                                                  lookup_expr='isnull',
-                                                 distinct=True)
+                                                 distinct=True,
+                                                 widget=BooleanWidget()
+                                                 )
 
     has_default_flow_type = IsNullBooleanFilter(name='default_flow_type',
                                                 lookup_expr='isnull',
-                                                distinct=True)
+                                                distinct=True,
+                                                widget=BooleanWidget()
+                                                )
 
     has_default_finance_type = IsNullBooleanFilter(name='default_finance_type',
                                                    lookup_expr='isnull',
-                                                   distinct=True)
+                                                   distinct=True,
+                                                   widget=BooleanWidget()
+                                                   )
 
     has_default_aid_type = IsNullBooleanFilter(name='default_aid_type',
                                                lookup_expr='isnull',
-                                               distinct=True)
+                                               distinct=True,
+                                               widget=BooleanWidget()
+                                               )
 
     # IATI Version 2.03 has one to many default aid type
     has_default_aid_types = IsNullBooleanFilter(
         name='default_aid_types',
         lookup_expr='isnull',
-        distinct=True
+        distinct=True,
+        widget=BooleanWidget()
     )
 
     has_default_tied_status = IsNullBooleanFilter(
         name='default_tied_status',
         lookup_expr='isnull',
-        distinct=True)
+        distinct=True,
+        widget=BooleanWidget()
+    )
 
     has_budget = IsNullBooleanFilter(name='budget', lookup_expr='isnull',
-                                     distinct=True)
+                                     distinct=True, widget=BooleanWidget()
+                                     )
 
     has_planned_disbursement = IsNullBooleanFilter(name='planneddisbursement',
                                                    lookup_expr='isnull',
-                                                   distinct=True)
+                                                   distinct=True,
+                                                   widget=BooleanWidget()
+                                                   )
 
     has_capital_spend = IsNullBooleanFilter(name='capital_spend',
                                             lookup_expr='isnull',
-                                            distinct=True)
+                                            distinct=True,
+                                            widget=BooleanWidget()
+                                            )
 
     has_document_link = IsNullBooleanFilter(name='documentlink',
                                             lookup_expr='isnull',
-                                            distinct=True)
+                                            distinct=True,
+                                            widget=BooleanWidget()
+                                            )
 
     has_related_activity = IsNullBooleanFilter(name='relatedactivity',
                                                lookup_expr='isnull',
-                                               distinct=True)
+                                               distinct=True,
+                                               widget=BooleanWidget()
+                                               )
 
     has_legacy_data = IsNullBooleanFilter(name='legacydata',
-                                          lookup_expr='isnull', distinct=True)
+                                          lookup_expr='isnull', distinct=True,
+                                          widget=BooleanWidget()
+                                          )
 
     has_condition = IsNullBooleanFilter(name='conditions',
-                                  lookup_expr='isnull',  # related name of Foreign Key for `activity` is `conditions` # NOQA: E501
-                                  distinct=True)
+                                        lookup_expr='isnull',  # related name of Foreign Key for `activity` is `conditions` # NOQA: E501
+                                        distinct=True,
+                                        widget=BooleanWidget()
+                                        )
     has_result = IsNullBooleanFilter(name='result', lookup_expr='isnull',
-                                     distinct=True)
+                                     distinct=True, widget=BooleanWidget()
+                                     )
 
     has_fss = IsNullBooleanFilter(name='fss', lookup_expr='isnull',
-                                  distinct=True)
+                                  distinct=True, widget=BooleanWidget()
+                                  )
 
     document_link_category = ToManyFilter(
         qs=DocumentLink,
