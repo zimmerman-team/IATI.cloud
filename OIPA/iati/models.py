@@ -173,10 +173,6 @@ class Activity(models.Model):
         FlowType, null=True, blank=True, default=None,
         on_delete=models.CASCADE)
 
-    # XXX: this is for IATI versions until 2.03. See: #763:
-    default_aid_type = models.ForeignKey(
-        AidType, null=True, blank=True, default=None, on_delete=models.CASCADE)
-
     default_finance_type = models.ForeignKey(
         FinanceType, null=True, blank=True,
         default=None, on_delete=models.CASCADE)
@@ -279,7 +275,7 @@ class ActivityDefaultAidType(models.Model):
     activity = models.ForeignKey(
         Activity,
         on_delete=models.CASCADE,
-        related_name='default_aid_types'
+        related_name='default_aid_type'
     )
     aid_type = models.ForeignKey(AidType, on_delete=models.CASCADE)
 
