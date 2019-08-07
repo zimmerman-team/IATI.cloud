@@ -159,7 +159,7 @@ class BudgetAggregations(AggregationView):
             renamed_fields="recipient_region",
             queryset=Region.objects.all(),
             serializer=RegionSerializer,
-            serializer_fields=('url', 'code', 'name', 'location'),
+            serializer_fields=('url', 'code', 'name',),
             name_search_field="activity__recipient_region__name",
             renamed_name_search_field="recipient_region_name",
         ),
