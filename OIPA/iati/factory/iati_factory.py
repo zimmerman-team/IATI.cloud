@@ -66,7 +66,6 @@ class ActivityFactory(NoDatabaseFactory):
     collaboration_type = SubFactory(CollaborationTypeFactory)
     default_flow_type = SubFactory(FlowTypeFactory)
     default_finance_type = SubFactory(FinanceTypeFactory)
-    default_aid_type = SubFactory(AidTypeFactory)
     default_tied_status = SubFactory(TiedStatusFactory)
     scope = SubFactory(ActivityScopeFactory)
     activity_status = SubFactory(ActivityStatusFactory)

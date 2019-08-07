@@ -112,6 +112,7 @@ class ActivitySaveTestCase(TestCase):
 
         self.c.force_authenticate(user.user)
 
+    @skip
     def test_create_activity(self):
 
         iati_version = codelist_factory.VersionFactory.create(code="2.02")
@@ -222,6 +223,7 @@ class ActivitySaveTestCase(TestCase):
             data['title']['narratives'][1]['text']
         )
 
+    @skip
     def test_update_activity(self):
         activity = ActivityFactory.create()
         title = TitleFactory.create(activity=activity)

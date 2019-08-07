@@ -3252,9 +3252,9 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
     collaboration_type = CodelistSerializer(required=False)
     default_flow_type = CodelistSerializer(required=False)
     default_finance_type = CodelistSerializer(required=False)
-    default_aid_type = CodelistSerializer(required=False)
-    default_aid_types = ActivityDefaultAidTypeSerializer(
+    default_aid_type = ActivityDefaultAidTypeSerializer(
         many=True,
+        source='default_aid_types',
         read_only=True,
         required=False,
     )
