@@ -12,7 +12,7 @@ class Migration(migrations.Migration):
 
     operations = [
         management.call_command(
-            'migration_default_aid_type_to_default_aid_types',
+            'data_migration_default_aid_type_to_default_aid_types',
             verbosity=0
         )
         ,
