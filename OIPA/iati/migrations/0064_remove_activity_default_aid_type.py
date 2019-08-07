@@ -11,9 +11,11 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        management.call_command(
-            'data_migration_default_aid_type_to_default_aid_types',
-            verbosity=0
+        migrations.RunPython(
+            management.call_command(
+                'data_migration_default_aid_type_to_default_aid_types',
+                verbosity=0
+            )
         )
         ,
         migrations.RemoveField(
