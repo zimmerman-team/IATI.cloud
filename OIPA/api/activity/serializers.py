@@ -3545,7 +3545,6 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
             'default_flow_type',
             'default_finance_type',
             'default_aid_type',
-            'default_aid_types',
             'default_tied_status',
             'budgets',
             'planned_disbursements',
