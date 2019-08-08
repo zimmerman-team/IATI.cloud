@@ -16,8 +16,8 @@ from iati import models as iati_models
 from iati.factory.iati_factory import (
     ActivityDateFactory, ActivityDateTypeFactory, ActivityFactory,
     ActivityPolicyMarkerFactory, ActivityRecipientCountryFactory,
-    ActivityRecipientRegionFactory, ActivitySectorFactory, AidTypeFactory,
-    BudgetFactory, BudgetItemFactory, BudgetStatusFactory, BudgetTypeFactory,
+    ActivityRecipientRegionFactory, ActivitySectorFactory, BudgetFactory,
+    BudgetItemFactory, BudgetStatusFactory, BudgetTypeFactory,
     ConditionFactory, ConditionsFactory, ContactInfoFactory,
     ContactTypeFactory, CountryBudgetItemFactory, CountryFactory,
     CrsAddFactory, CrsAddOtherFlagsFactory, CurrencyFactory,
@@ -46,6 +46,7 @@ from iati.permissions.factories import (
 from iati.transaction import factories as transaction_factory
 from iati.transaction import models as transaction_models
 from iati_codelists.factory import codelist_factory
+from iati_codelists.factory.codelist_factory import AidTypeFactory
 from iati_vocabulary.factory import vocabulary_factory
 
 
