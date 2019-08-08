@@ -125,7 +125,14 @@ class ActivityFilter(TogetherFilterSet):
                                                    widget=BooleanWidget()
                                                    )
 
-    has_default_aid_type = IsNullBooleanFilter(
+    has_default_aid_type = IsNullBooleanFilter(name='default_aid_type',
+                                               lookup_expr='isnull',
+                                               distinct=True,
+                                               widget=BooleanWidget()
+                                               )
+
+    # IATI Version 2.03 has one to many default aid type
+    has_default_aid_types = IsNullBooleanFilter(
         name='default_aid_types',
         lookup_expr='isnull',
         distinct=True,
@@ -266,7 +273,7 @@ class ActivityFilter(TogetherFilterSet):
 
     default_aid_type = CommaSeparatedCharFilter(
         lookup_expr='in',
-        name='default_aid_types__aid_type__code',)
+        name='default_aid_type',)
 
     default_finance_type = CommaSeparatedCharFilter(
         lookup_expr='in',
