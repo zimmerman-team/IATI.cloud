@@ -123,7 +123,7 @@ class ResultFilter(TogetherFilterSet):
 
     default_aid_type = CommaSeparatedCharFilter(
         lookup_expr='in',
-        field_name='activity__default_aid_type',)
+        field_name='activity__default_aid_types__aid_type__code',)
 
     default_finance_type = CommaSeparatedCharFilter(
         lookup_expr='in',

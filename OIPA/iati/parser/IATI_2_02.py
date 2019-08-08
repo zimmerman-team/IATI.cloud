@@ -1735,7 +1735,15 @@ class Parse(IatiParser):
                 code)
 
         activity = self.get_model('Activity')
-        activity.default_aid_type = default_aid_type
+        activity_default_aid_type = models.ActivityDefaultAidType()
+
+        activity_default_aid_type.activity = activity
+        activity_default_aid_type.aid_type = default_aid_type
+
+        self.register_model(
+            'ActivityDefaultAidType',
+            activity_default_aid_type
+        )
 
         return element
 
