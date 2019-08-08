@@ -11,7 +11,7 @@ import iati
 import iati_organisation
 from iati_codelists.factory.codelist_factory import (
     ActivityDateTypeFactory, ActivityScopeFactory, ActivityStatusFactory,
-    AidTypeFactory, BudgetIdentifierFactory, BudgetStatusFactory,
+    BudgetIdentifierFactory, BudgetStatusFactory,
     BudgetTypeFactory, CollaborationTypeFactory, ConditionTypeFactory,
     ContactTypeFactory, CurrencyFactory, DescriptionTypeFactory,
     DocumentCategoryFactory, FileFormatFactory, FinanceTypeFactory,
