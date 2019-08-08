@@ -31,7 +31,6 @@ class TestRegionSerializers(TestCase):
             'url',
             'region_vocabulary',
             'parental_region',
-            'location',
             'child_regions'
         )
         assertion_msg = "the field '{0}' should be in the serialized region"
