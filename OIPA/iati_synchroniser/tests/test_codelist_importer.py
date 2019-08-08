@@ -5,7 +5,6 @@ from lxml.etree import Element
 from mock import MagicMock
 
 from geodata.models import Country
-from iati.factory import iati_factory
 from iati_codelists.factory.codelist_factory import (
     AidTypeCategoryFactory, AidTypeFactory
 )
