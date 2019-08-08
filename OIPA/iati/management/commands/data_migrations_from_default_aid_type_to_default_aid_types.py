@@ -1,4 +1,5 @@
 import sys
+
 from django.core.management.base import BaseCommand
 
 from iati.models import Activity, ActivityDefaultAidType
