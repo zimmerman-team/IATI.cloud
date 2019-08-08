@@ -45,15 +45,19 @@ class CodelistImporterTestCase(TestCase):
         code.text = code_text
 
         name = Element('name')
-        name.text = name_text
+        narrative = Element('narrative')
+        narrative.text = name_text
+        name.append(narrative)
 
         description = Element('description')
-        description.text = description_text
+        narrative = Element('narrative')
+        narrative.text = description_text
+        description.append(narrative)
 
         element.extend([code, name, description])
 
         importer = CodeListImporter()
-        importer.add_code_list_item(element)
+        importer.add_code_list_item(element, 'AidType-category')
 
         self.assertEqual(1, AidTypeCategory.objects.count(),
                          "New AidTypeCategory should be added into database")
@@ -74,7 +78,9 @@ class CodelistImporterTestCase(TestCase):
         code.text = 'A01'
 
         name = Element('name')
-        name.text = 'General budget support'
+        narrative = Element('narrative')
+        narrative.text = 'General budget support'
+        name.append(narrative)
 
         language = Element('language')
         language.text = 'en'
@@ -83,12 +89,14 @@ class CodelistImporterTestCase(TestCase):
         category.text = 'A'
 
         description = Element('description')
-        description.text = 'test description'
+        narrative = Element('narrative')
+        narrative.text = 'test description'
+        description.append(narrative)
 
         element.extend([code, name, language, category, description])
 
         importer = CodeListImporter()
-        importer.add_code_list_item(element)
+        importer.add_code_list_item(element, 'aidType')
 
         self.assertEqual(1, AidType.objects.count(),
                          "New AidType should be added into database")

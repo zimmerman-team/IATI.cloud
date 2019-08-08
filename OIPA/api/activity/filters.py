@@ -125,12 +125,19 @@ class ActivityFilter(TogetherFilterSet):
                                                    widget=BooleanWidget()
                                                    )
 
-    # Source from default_aid_types
-    has_default_aid_type = IsNullBooleanFilter(name='default_aid_typess',
+    has_default_aid_type = IsNullBooleanFilter(name='default_aid_type',
                                                lookup_expr='isnull',
                                                distinct=True,
                                                widget=BooleanWidget()
                                                )
+
+    # IATI Version 2.03 has one to many default aid type
+    has_default_aid_types = IsNullBooleanFilter(
+        name='default_aid_types',
+        lookup_expr='isnull',
+        distinct=True,
+        widget=BooleanWidget()
+    )
 
     has_default_tied_status = IsNullBooleanFilter(
         name='default_tied_status',
@@ -264,7 +271,6 @@ class ActivityFilter(TogetherFilterSet):
         lookup_expr='in',
         name='default_flow_type',)
 
-    # Source from default_aid_types
     default_aid_type = CommaSeparatedCharFilter(
         lookup_expr='in',
         name='default_aid_types__aid_type__code',)
