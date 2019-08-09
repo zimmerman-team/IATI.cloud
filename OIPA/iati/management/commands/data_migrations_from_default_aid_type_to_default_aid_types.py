@@ -42,7 +42,7 @@ class Command(BaseCommand):
         activities = Activity.objects.filter(default_aid_type__isnull=False)
         for activity in activities:
             print('Activity: {iati_identifier} in process'.format(
-                iati_identifier=activity.iati_identifier
+                iati_identifier=activity.iati_identifier.encode('utf-8')
             ), end='\r')
 
             # Migration to ActivityDefaultAidType
