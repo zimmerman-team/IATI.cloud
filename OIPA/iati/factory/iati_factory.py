@@ -11,18 +11,17 @@ import iati
 import iati_organisation
 from iati_codelists.factory.codelist_factory import (
     ActivityDateTypeFactory, ActivityScopeFactory, ActivityStatusFactory,
-    AidTypeFactory, BudgetIdentifierFactory, BudgetStatusFactory,
-    BudgetTypeFactory, CollaborationTypeFactory, ConditionTypeFactory,
-    ContactTypeFactory, CurrencyFactory, DescriptionTypeFactory,
-    DocumentCategoryFactory, FileFormatFactory, FinanceTypeFactory,
-    FlowTypeFactory, GeographicExactnessFactory,
-    GeographicLocationClassFactory, GeographicLocationReachFactory,
-    HumanitarianScopeTypeFactory, IndicatorMeasureFactory, LanguageFactory,
-    LoanRepaymentPeriodFactory, LoanRepaymentTypeFactory, LocationTypeFactory,
-    OrganisationRoleFactory, OrganisationTypeFactory, OtherFlagsFactory,
-    OtherIdentifierTypeFactory, PolicyMarkerFactory, PolicySignificanceFactory,
-    RelatedActivityTypeFactory, ResultTypeFactory, SectorFactory,
-    TiedStatusFactory, VersionFactory
+    BudgetIdentifierFactory, BudgetStatusFactory, BudgetTypeFactory,
+    CollaborationTypeFactory, ConditionTypeFactory, ContactTypeFactory,
+    CurrencyFactory, DescriptionTypeFactory, DocumentCategoryFactory,
+    FileFormatFactory, FinanceTypeFactory, FlowTypeFactory,
+    GeographicExactnessFactory, GeographicLocationClassFactory,
+    GeographicLocationReachFactory, HumanitarianScopeTypeFactory,
+    IndicatorMeasureFactory, LanguageFactory, LoanRepaymentPeriodFactory,
+    LoanRepaymentTypeFactory, LocationTypeFactory, OrganisationRoleFactory,
+    OrganisationTypeFactory, OtherFlagsFactory, OtherIdentifierTypeFactory,
+    PolicyMarkerFactory, PolicySignificanceFactory, RelatedActivityTypeFactory,
+    ResultTypeFactory, SectorFactory, TiedStatusFactory, VersionFactory
 )
 from iati_vocabulary.factory.vocabulary_factory import (
     BudgetIdentifierVocabularyFactory, GeographicVocabularyFactory,
@@ -66,7 +65,6 @@ class ActivityFactory(NoDatabaseFactory):
     collaboration_type = SubFactory(CollaborationTypeFactory)
     default_flow_type = SubFactory(FlowTypeFactory)
     default_finance_type = SubFactory(FinanceTypeFactory)
-    default_aid_type = SubFactory(AidTypeFactory)
     default_tied_status = SubFactory(TiedStatusFactory)
     scope = SubFactory(ActivityScopeFactory)
     activity_status = SubFactory(ActivityStatusFactory)

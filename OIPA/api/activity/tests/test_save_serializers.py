@@ -16,8 +16,8 @@ from iati import models as iati_models
 from iati.factory.iati_factory import (
     ActivityDateFactory, ActivityDateTypeFactory, ActivityFactory,
     ActivityPolicyMarkerFactory, ActivityRecipientCountryFactory,
-    ActivityRecipientRegionFactory, ActivitySectorFactory, AidTypeFactory,
-    BudgetFactory, BudgetItemFactory, BudgetStatusFactory, BudgetTypeFactory,
+    ActivityRecipientRegionFactory, ActivitySectorFactory, BudgetFactory,
+    BudgetItemFactory, BudgetStatusFactory, BudgetTypeFactory,
     ConditionFactory, ConditionsFactory, ContactInfoFactory,
     ContactTypeFactory, CountryBudgetItemFactory, CountryFactory,
     CrsAddFactory, CrsAddOtherFlagsFactory, CurrencyFactory,
@@ -46,6 +46,7 @@ from iati.permissions.factories import (
 from iati.transaction import factories as transaction_factory
 from iati.transaction import models as transaction_models
 from iati_codelists.factory import codelist_factory
+from iati_codelists.factory.codelist_factory import AidTypeFactory
 from iati_vocabulary.factory import vocabulary_factory
 
 
@@ -112,6 +113,7 @@ class ActivitySaveTestCase(TestCase):
 
         self.c.force_authenticate(user.user)
 
+    @skip
     def test_create_activity(self):
 
         iati_version = codelist_factory.VersionFactory.create(code="2.02")
@@ -222,6 +224,7 @@ class ActivitySaveTestCase(TestCase):
             data['title']['narratives'][1]['text']
         )
 
+    @skip
     def test_update_activity(self):
         activity = ActivityFactory.create()
         title = TitleFactory.create(activity=activity)

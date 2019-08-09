@@ -501,23 +501,6 @@ class ActivitySaveTestCase(TestCase):
 
             list(serializer.data)
 
-    def test_prefetch_default_aid_type(self):
-        """
-        Test if the prefetches are applied correctly
-        Here we expect 2 queries:
-        1. Fetch Activity objects
-        """
-
-        with self.assertNumQueries(1):
-            queryset = Activity.objects.all().prefetch_default_aid_type()
-            serializer = ActivitySerializer(
-                queryset,
-                many=True,
-                context={'request': self.request_dummy},
-                fields=('default_aid_type',))
-
-            list(serializer.data)
-
     def test_prefetch_default_finance_type(self):
         """
         Test if the prefetches are applied correctly

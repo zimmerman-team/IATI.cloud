@@ -5,8 +5,9 @@ from lxml.etree import Element
 from mock import MagicMock
 
 from geodata.models import Country
-from iati.factory import iati_factory
-from iati_codelists.factory.codelist_factory import AidTypeCategoryFactory
+from iati_codelists.factory.codelist_factory import (
+    AidTypeCategoryFactory, AidTypeFactory
+)
 from iati_codelists.models import AidType, AidTypeCategory
 from iati_synchroniser.codelist_importer import CodeListImporter
 
@@ -113,7 +114,7 @@ class CodelistImporterTestCase(TestCase):
 
     def test_add_to_model_if_field_exists(self):
 
-        aid_type_item = iati_factory.AidTypeFactory.create(code='A')
+        aid_type_item = AidTypeFactory.create(code='A')
 
         fake_description = 'added_through_add_to_model_if_field_exists'
 
