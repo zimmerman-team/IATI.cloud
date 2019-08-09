@@ -2,7 +2,6 @@ from rest_framework import serializers
 
 import geodata
 import iati.models
-from api.fields import GeometryField
 from api.generics.serializers import DynamicFieldsModelSerializer
 
 
