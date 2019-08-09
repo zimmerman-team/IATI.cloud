@@ -18,7 +18,7 @@ urlpatterns = [
     url(r'^(?P<pk>\d+)/$',
         api.activity.views.ActivityDetail.as_view(),
         name='activity-detail'),
-    url(r'^(?P<iati_identifier>[\w-]+)/$',
+    url(r'^(?P<iati_identifier>[:\/\.\w-]+)/$',
         api.activity.views.ActivityDetailByIatiIdentifier.as_view(),
         name='activity-detail-by-iati-identifier'),
     url(r'^(?P<pk>\d+)/transactions/$',
