@@ -16,7 +16,7 @@
                                     WHERE related_object_id=iati_description.id
                                         AND django_content_type.model='description'
                                         AND related_content_type_id=django_content_type.id
-                                        AND activity_id=${activity.id}
+                                        /* AND activity_id=${activity.id} */
                                 ) AS description
                             ) AS description_record
                         ) AS VARCHAR)

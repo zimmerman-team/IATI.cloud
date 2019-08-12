@@ -20,7 +20,7 @@
                                     WHERE related_object_id=iati_activityparticipatingorganisation.id
                                         AND django_content_type.model='activityparticipatingorganisation'
                                         AND related_content_type_id=django_content_type.id
-                                        AND activity_id=${activity.id}
+                                        /* AND activity_id=${activity.id} */
                                 ) AS narrative_record
                             ) AS participating_org_record
                         ) AS VARCHAR)
