@@ -12,4 +12,4 @@
                             ) AS VARCHAR)
                     FROM iati_activitydefaultaidtype, iati_codelists_aidtype
                     WHERE iati_activitydefaultaidtype.aid_type_id = iati_codelists_aidtype.code
-                        /* AND activity_id=${activity.id}
+                        /* AND activity_id=${activity.id} */

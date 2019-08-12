@@ -23,4 +23,4 @@
                             ) AS activity_date_record
                         ) AS VARCHAR)
                     FROM iati_activitydate
-                    /* WHERE activity_id=${activity.id}
+                    /* WHERE activity_id=${activity.id} */

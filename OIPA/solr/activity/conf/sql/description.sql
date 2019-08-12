@@ -21,4 +21,4 @@
                             ) AS description_record
                         ) AS VARCHAR)
                     FROM iati_description
-                    /* WHERE activity_id=${activity.id}
+                    /* WHERE activity_id=${activity.id} */

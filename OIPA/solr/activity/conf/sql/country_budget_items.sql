@@ -34,4 +34,4 @@
                             ) AS country_budget_items_record
                         ) AS VARCHAR)
                     FROM iati_countrybudgetitem
-                    /* WHERE activity_id=${activity.id}
+                    /* WHERE activity_id=${activity.id} */
