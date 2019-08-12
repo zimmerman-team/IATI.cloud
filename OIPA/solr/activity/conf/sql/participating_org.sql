@@ -25,4 +25,4 @@
                             ) AS participating_org_record
                         ) AS VARCHAR)
                     FROM iati_activityparticipatingorganisation
-                    WHERE activity_id=${activity.id}
+                    /* WHERE activity_id=${activity.id} */

@@ -24,4 +24,4 @@
                             ) AS tag_record
                         ) AS VARCHAR)
                     FROM iati_activitytag
-                    WHERE activity_id=${activity.id}
+                    /* WHERE activity_id=${activity.id} */

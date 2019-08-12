@@ -76,4 +76,4 @@
                             ) AS planned_disbursement_record
                         ) AS VARCHAR)
                     FROM iati_planneddisbursement
-                    WHERE activity_id=${activity.id}
+                    /* WHERE activity_id=${activity.id} */

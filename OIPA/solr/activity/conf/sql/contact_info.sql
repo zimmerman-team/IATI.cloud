@@ -72,4 +72,4 @@
                             ) AS constact_info_record
                         ) AS VARCHAR)
                     FROM iati_contactinfo
-                    WHERE activity_id=${activity.id}
+                    /* WHERE activity_id=${activity.id}

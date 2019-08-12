@@ -11,5 +11,5 @@
                                 ) AS default_aid_type_record
                             ) AS VARCHAR)
                     FROM iati_activitydefaultaidtype, iati_codelists_aidtype
-                    WHERE activity_id=${activity.id}
-                        AND iati_activitydefaultaidtype.aid_type_id = iati_codelists_aidtype.code
+                    WHERE iati_activitydefaultaidtype.aid_type_id = iati_codelists_aidtype.code
+                        /* AND activity_id=${activity.id}

@@ -26,4 +26,4 @@
                             ) AS recipient_region_record
                         ) AS VARCHAR)
                     FROM iati_activityrecipientregion
-                    WHERE activity_id=${activity.id}
+                    /* WHERE activity_id=${activity.id} */

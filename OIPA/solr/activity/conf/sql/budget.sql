@@ -27,4 +27,4 @@
                             ) AS budget_record
                         ) AS VARCHAR)
                     FROM iati_budget
-                    WHERE activity_id=${activity.id}
+                    /* WHERE activity_id=${activity.id}

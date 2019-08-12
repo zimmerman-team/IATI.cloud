@@ -55,4 +55,4 @@
                             ) AS location_record
                         ) AS VARCHAR)
                     FROM iati_location
-                    WHERE activity_id=${activity.id}
+                    /* WHERE activity_id=${activity.id}

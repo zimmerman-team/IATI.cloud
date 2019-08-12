@@ -26,4 +26,4 @@
                             ) AS policy_marker_record
                         ) AS VARCHAR)
                     FROM iati_activitypolicymarker
-                    WHERE activity_id=${activity.id}
+                    /* WHERE activity_id=${activity.id} */

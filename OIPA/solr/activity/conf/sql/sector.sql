@@ -27,4 +27,4 @@
                             ) AS sector_record
                         ) AS VARCHAR)
                     FROM iati_activitysector
-                    WHERE activity_id=${activity.id}
+                    /* WHERE activity_id=${activity.id} */
