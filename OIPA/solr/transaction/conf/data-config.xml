@@ -1,0 +1,180 @@
+<dataConfig>
+    <dataSource type="JdbcDataSource" driver="org.postgresql.Driver" url="jdbc:postgresql://localhost:5432/oipa" user="zimmerman" password="" />
+    <document>
+        <entity 
+            name="activity_transaction" 
+            query="
+                SELECT
+                    CONCAT(iati_activity.iati_identifier, '-', iati_transaction.id) AS activity_iati_indentifier_and_transaction_id,
+                    iati_activity.iati_identifier as iati_identifier,
+                    iati_transaction.id as id,
+                    activity_id,
+                    ref,
+                    CASE WHEN iati_transaction.humanitarian=TRUE THEN '1' ELSE '0' END AS humanitarian,
+                    transaction_type_id,
+                    TO_CHAR(transaction_date::timestamp, 'YYYY-MM-DD') AS transaction_date,
+                    currency_id, 
+                    TO_CHAR(value_date::timestamp, 'YYYY-MM-DD') AS value_date,
+                    value, 
+                    disbursement_channel_id,
+                    tied_status_id
+                FROM iati_transaction, iati_activity
+                WHERE activity_id=iati_activity.id
+            "
+        >
+            <field column="activity_iati_indentifier_and_transaction_id" name="id"/>
+            <field column="iati_identifier" name="iati_identifier"/>
+            <field column="ref" name="transaction_ref"/>
+            <field column="humanitarian" name="transaction_humanitarian"/>
+            <field column="transaction_type_id" name="transaction_type"/>
+            <field column="transaction_date" name="transaction_date_iso_date"/>
+            <field column="currency_id" name="transaction_value_currency"/>
+            <field column="value_date" name="transaction_value_date"/>
+            <field column="value" name="transaction_value"/>
+            <field column="disbursement_channel_id" name="transaction_disburstment_channel_code"/>
+            <field column="flow_type_id" name="transaction_flow_type_code"/>
+            <field column="tied_status_id" name="transaction_tied_status_code"/>
+            <entity name="activity_reporting_org" 
+                query="
+                    SELECT 
+                        organisation_id,
+                        ref 
+                    FROM iati_activityreportingorganisation 
+                    WHERE activity_id=${activity_transaction.activity_id} LIMIT 1
+                "
+            >
+                <field column="ref" name="reporting_org_ref"/>
+                <field column="type_id" name="reporting_org_type"/>
+                <field column="secondary_reporter" name="reporting_org_secondary_reporter"/>
+                <entity name="activity_reporting_org_narrative" 
+                    query="
+                        SELECT 
+                            primary_name 
+                        FROM iati_organisation_organisation 
+                        WHERE iati_organisation_organisation.id=${activity_reporting_org.organisation_id}
+                    "
+                >
+                    <field column="primary_name" name="reporting_org_narrative"/>
+                </entity> 
+            </entity>
+            <entity name="activity_transaction_sector" 
+                query="
+                    SELECT 
+                        sector_id, 
+                        vocabulary_id,
+                        vocabulary_uri  
+                    FROM iati_transactionsector
+                    WHERE transaction_id=${activity_transaction.id}
+                "
+            >
+                <field column="sector_id" name="transaction_sector_code"/>
+                <field column="vocabulary_id" name="transaction_sector_vocabulary"/>
+                <field column="vocabulary_uri" name="transaction_sector_vocabulary_uri"/>
+            </entity>
+            <entity name="activity_transaction_provider_org" 
+                query="
+                    SELECT
+                        id, 
+                        provider_activity_ref, 
+                        type_id,  
+                        ref  
+                    FROM iati_transactionprovider 
+                    WHERE transaction_id=${activity_transaction.id}
+                "
+            >
+                <field column="provider_activity_ref" name="transaction_provider_org_provider_activity_id"/>
+                <field column="type_id" name="transaction_provider_org_type"/>
+                <field column="ref" name="transaction_provider_org_ref"/>
+                <entity name="aactivity_transaction_provider_org_narrative" 
+                    query="
+                        SELECT 
+                            iati_narrative.related_object_id AS related_object_id, 
+                            iati_narrative.content AS content 
+                        FROM iati_narrative, django_content_type 
+                        WHERE iati_narrative.related_object_id=${activity_transaction_provider_org.id} 
+                            AND iati_narrative.activity_id=${activity_transaction.activity_id} 
+                            AND django_content_type.model='transactionprovider' 
+                            AND django_content_type.id=iati_narrative.related_content_type_id LIMIT 1
+                    "
+                >
+                    <field column="content" name="transaction_provider_org_narrative"/>
+                </entity>
+            </entity>
+            <entity name="activity_transaction_receiver_org" 
+                query="
+                    SELECT 
+                        id,
+                        receiver_activity_ref, 
+                        type_id, 
+                        ref  
+                    FROM iati_transactionreceiver 
+                    WHERE transaction_id=${activity_transaction.id}
+                "
+            >
+                <field column="receiver_activity_ref" name="transaction_receiver_org_receiver_activity_id"/>
+                <field column="type_id" name="transaction_receiver_org_type"/>
+                <field column="ref" name="transaction_receiver_org_ref"/>
+                <entity name="activity_transaction_receiver_org_narrative" 
+                    query="
+                        SELECT 
+                            iati_narrative.related_object_id AS related_object_id, 
+                            iati_narrative.content AS content 
+                        FROM iati_narrative, django_content_type 
+                        WHERE iati_narrative.related_object_id=${activity_transaction_receiver_org.id} 
+                            AND iati_narrative.activity_id=${activity_transaction.activity_id} 
+                            AND django_content_type.model='transactionreceiver' 
+                            AND django_content_type.id=iati_narrative.related_content_type_id
+                    "
+                >
+                    <field column="related_object_id" name="transaction_receiver_org_narrative_parent_id"/>
+                    <field column="content" name="transaction_receiver_org_narrative"/>
+                </entity>
+            </entity>
+            <entity name="activity_transaction_recipient_country" 
+                query="
+                    SELECT 
+                        country_id  
+                    FROM iati_transactionrecipientcountry 
+                    WHERE transaction_id=${activity_transaction.id}
+                    LIMIT 1
+                "
+            >
+                <field column="country_id" name="transaction_recipient_country_code"/>
+            </entity>
+            <entity name="activity_transaction_recipient_region" 
+                query="
+                    SELECT 
+                        region_id,
+                        vocabulary_id  
+                    FROM iati_transactionrecipientregion 
+                    WHERE transaction_id=${activity_transaction.id}
+                    LIMIT 1
+                "
+            >
+                <field column="region_id" name="transaction_recipient_region_code"/>
+                <field column="vocabulary_id" name="transaction_recipient_region_vocabulary"/>
+            </entity>
+            <entity name="activity_transaction_aid_type" 
+                query="
+                    SELECT 
+                        aid_type_id 
+                    FROM iati_transactionaidtype 
+                    WHERE transaction_id=${activity_transaction.id} 
+                "
+            >
+                <field column="transaction_id" name="transaction_aid_type_parent_id"/>
+                <field column="aid_type_id" name="transaction_aid_type_code"/>
+                <entity name="activity_transaction_aid_type_vocabulary" 
+                    query="
+                        SELECT 
+                            vocabulary_id 
+                        FROM iati_codelists_aidtype 
+                        WHERE code='${activity_transaction_aid_type.aid_type_id}'
+                    "
+                >
+                    <field column="vocabulary_id" name="transaction_aid_type_vocabulary"/>
+                </entity>
+            </entity>
+        </entity>                         
+    </document>
+</dataConfig>

@@ -1,0 +1,1507 @@
+<dataConfig>
+    <dataSource type="JdbcDataSource" driver="org.postgresql.Driver" url="jdbc:postgresql://localhost:5432/oipa" user="zimmerman" password="" />
+    <document>
+        <entity name="activity" 
+            pk="iati_identifier" 
+            query="
+                SELECT 
+                    iati_activity.id AS id, 
+                    iati_identifier, 
+                    activity_status_id, 
+                    scope_id, 
+                    collaboration_type_id, 
+                    default_flow_type_id, 
+                    default_finance_type_id, 
+                    default_tied_status_id, 
+                    capital_spend,
+                    iati_version
+                FROM iati_activity, iati_synchroniser_dataset
+                WHERE iati_activity.dataset_id=iati_synchroniser_dataset.id
+            "
+        >  
+            <field column="iati_identifier" name="id"/>
+            <field column="iati_identifier" name="iati_identifier"/>
+            <field column="iati_version" name="iati_version"/>
+            <field column="activity_status_id" name="activity_status_code"/>
+            <field column="scope_id" name="activity_scope_code"/>
+            <field column="collaboration_type_id" name="collaboration_type_code"/>
+            <field column="default_flow_type_id" name="default_flow_type_code"/>
+            <field column="default_finance_type_id" name="default_finance_type_code"/>
+            <field column="default_tied_status_id" name="default_tied_status_code"/>
+            <field column="capital_spend" name="capital_spend_percentage"/>
+            <entity name="activity_reporting_org" 
+                query="
+                    SELECT 
+                        ref, 
+                        type_id, 
+                        CASE WHEN secondary_reporter=TRUE THEN '1' ELSE '0' END AS secondary_reporter, 
+                        organisation_id,
+                        CAST((
+                            SELECT ROW_TO_JSON(reporting_org) AS reporting_org FROM (
+                                SELECT
+                                    iati_activityreportingorganisation.ref AS ref,
+                                    iati_activityreportingorganisation.type_id as type,
+                                    CASE WHEN iati_activityreportingorganisation.secondary_reporter=TRUE THEN '1' ELSE '0' END AS secondary_reporter,
+                                    primary_name AS narrative
+                                FROM iati_organisation_organisation
+                                WHERE iati_activityreportingorganisation.organisation_id = iati_organisation_organisation.id
+                            ) reporting_org
+                        ) AS VARCHAR) 
+                    FROM iati_activityreportingorganisation 
+                    WHERE activity_id=${activity.id} 
+                    LIMIT 1
+                "
+            >
+                <field column="reporting_org" name="reporting_org"/>
+                <field column="ref" name="reporting_org_ref"/>
+                <field column="type_id" name="reporting_org_type"/>
+                <field column="secondary_reporter" name="reporting_org_secondary_reporter"/>
+                <entity name="activity_reporting_org_narrative" 
+                    query="
+                        SELECT 
+                            primary_name 
+                        FROM iati_organisation_organisation 
+                        WHERE iati_organisation_organisation.id=${activity_reporting_org.organisation_id}
+                    "
+                >
+                    <field column="primary_name" name="reporting_org_narrative"/>
+                </entity> 
+            </entity>
+            <entity name="activity_title" 
+                query="
+                     SELECT 
+                        id,
+                        CAST((
+                            SELECT
+                                JSON_AGG(ROW_TO_JSON(title)) as title
+                            FROM (
+                                SELECT
+                                       language_id AS lang,
+                                       content AS narrative
+                                FROM iati_narrative, django_content_type
+                                WHERE related_object_id=iati_title.id
+                                    AND django_content_type.model='title'
+                                    AND related_content_type_id=django_content_type.id
+                                ) as title
+                        ) AS VARCHAR)
+                    FROM iati_title
+                    WHERE activity_id=${activity.id}
+                "
+            >
+                <field column="title" name="title"/>
+                <entity name="activity_title_narrative" 
+                    query="
+                        SELECT 
+                            iati_narrative.content AS content 
+                        FROM iati_narrative, django_content_type 
+                        WHERE iati_narrative.related_object_id=${activity_title.id} 
+                            AND iati_narrative.activity_id=${activity.id} 
+                            AND django_content_type.model='title' 
+                            AND django_content_type.id=iati_narrative.related_content_type_id
+                    "
+                >
+                    <field column="content" name="title_narrative"/>
+                </entity>  
+            </entity>
+            <entity name="activity_description" 
+                query="
+                   SELECT
+                        id,
+                        type_id AS type,
+                        CAST((
+                            SELECT
+                                   ROW_TO_JSON(description_record) AS description
+                            FROM (
+                                SELECT
+                                       type_id as type,
+                                       JSON_AGG(ROW_TO_JSON(description)) AS narrative
+                                FROM (
+                                    SELECT
+                                           language_id AS lang,
+                                           content AS narrative
+                                    FROM iati_narrative, django_content_type
+                                    WHERE related_object_id=iati_description.id
+                                        AND django_content_type.model='description'
+                                        AND related_content_type_id=django_content_type.id
+                                        AND activity_id=${activity.id}
+                                ) AS description
+                            ) AS description_record
+                        ) AS VARCHAR)
+                    FROM iati_description
+                    WHERE activity_id=${activity.id}
+                "
+            >
+                <field column="description" name="description"/>
+                <field column="type" name="description_type"/>
+                <entity name="activity_description_narrative" 
+                    query="
+                        SELECT 
+                            language_id AS lang,
+                            content AS narrative  
+                        FROM iati_narrative, django_content_type 
+                        WHERE iati_narrative.related_object_id=${activity_description.id} 
+                            AND iati_narrative.activity_id=${activity.id} 
+                            AND django_content_type.model='description' 
+                            AND django_content_type.id=iati_narrative.related_content_type_id
+                    "
+                >
+                    <field column="lang" name="description_lang"/>
+                    <field column="narrative" name="description_narrative"/>
+                </entity>  
+            </entity>
+            <entity name="activity_participating_org" 
+                query="
+                   SELECT
+                        id,
+                        ref,
+                        type_id,
+                        role_id,
+                        CAST((
+                            SELECT
+                                   ROW_TO_JSON(participating_org_record) AS participating_org
+                            FROM (
+                                SELECT
+                                       ref AS ref,
+                                       role_id AS role,
+                                       type_id AS type,
+                                       JSON_AGG(ROW_TO_JSON(narrative_record)) AS narrative
+                                FROM (
+                                    SELECT
+                                           language_id AS lang,
+                                           content AS narrative
+                                    FROM iati_narrative, django_content_type
+                                    WHERE related_object_id=iati_activityparticipatingorganisation.id
+                                        AND django_content_type.model='activityparticipatingorganisation'
+                                        AND related_content_type_id=django_content_type.id
+                                        AND activity_id=${activity.id}
+                                ) AS narrative_record
+                            ) AS participating_org_record
+                        ) AS VARCHAR)
+                    FROM iati_activityparticipatingorganisation
+                    WHERE activity_id=${activity.id}
+                "
+            >
+                <field column="ref" name="participating_org_ref"/>
+                <field column="type_id" name="participating_org_type"/>
+                <field column="role_id" name="participating_org_role"/>
+                <entity name="activity_participating_org_narrative" 
+                    query="
+                        SELECT 
+                            iati_narrative.content AS content 
+                        FROM iati_narrative, django_content_type 
+                        WHERE iati_narrative.related_object_id=${activity_participating_org.id} 
+                            AND iati_narrative.activity_id=${activity.id} 
+                            AND django_content_type.model='activityparticipatingorganisation' 
+                            AND django_content_type.id=iati_narrative.related_content_type_id
+                    "
+                >
+                    <field column="content" name="participating_org_narrative"/>
+                </entity>
+            </entity>
+            <entity name="activity_other_identifier" 
+                query="
+                    SELECT
+                        id,
+                        identifier,
+                        type_id,
+                        owner_ref,
+                        CAST((
+                            SELECT
+                                   ROW_TO_JSON(other_identifier_record) AS other_identifier
+                            FROM (
+                                SELECT
+                                       identifier AS ref,
+                                       type_id AS type,
+                                       owner_ref AS owner_org_ref,
+                                       JSON_AGG(ROW_TO_JSON(narrative_record)) AS owner_org_narrative
+                                FROM (
+                                    SELECT
+                                           language_id AS lang,
+                                           content AS text
+                                    FROM iati_narrative, django_content_type
+                                    WHERE related_object_id = iati_otheridentifier.id
+                                        AND django_content_type.model = 'otheridentifier'
+                                        AND related_content_type_id =
+                                            django_content_type.id
+                                ) as narrative_record
+                            ) AS other_identifier_record
+                        ) AS VARCHAR)
+
+                    FROM iati_otheridentifier
+                    WHERE activity_id=${activity.id}
+                "
+            >
+                <field column="other_identifier" name="other_identifier"/>
+                <field column="identifier" name="other_identifier_ref"/>
+                <field column="type_id" name="other_identifier_type"/>
+                <field column="owner_ref" name="other_identifier_owner_org_ref"/>
+                <entity name="activity_other_identifier_owner_org_narrative" 
+                    query="
+                        SELECT 
+                            iati_narrative.content AS content 
+                        FROM iati_narrative, django_content_type 
+                        WHERE iati_narrative.related_object_id=${activity_other_identifier.id} 
+                            AND iati_narrative.activity_id=${activity.id} 
+                            AND django_content_type.model='otheridentifier' 
+                            AND django_content_type.id=iati_narrative.related_content_type_id
+                    "
+                >
+                    <field column="content" name="other_identifier_owner_org_narrative"/>
+                </entity>
+            </entity>
+            <entity name="activity_activity_date" 
+                query="
+                    SELECT
+                    id,
+                    type_id,
+                    TO_CHAR(iso_date::timestamp, 'YYYY-MM-DD') AS iso_date,
+                    CAST((
+                            SELECT
+                                   ROW_TO_JSON(activity_date_record) AS activity_date
+                            FROM (
+                                SELECT
+                                       type_id AS type,
+                                       TO_CHAR(iso_date::timestamp, 'YYYY-MM-DD') AS iso_date,
+                                       JSON_AGG(ROW_TO_JSON(narrative_record)) AS narrative
+                                FROM (
+                                    SELECT
+                                           language_id AS lang,
+                                           content AS text
+                                    FROM iati_narrative, django_content_type
+                                    WHERE related_object_id = iati_activitydate.id
+                                        AND django_content_type.model = 'activitydate'
+                                        AND related_content_type_id =
+                                            django_content_type.id
+                                ) as narrative_record
+                            ) AS activity_date_record
+                        ) AS VARCHAR)
+                    FROM iati_activitydate
+                    WHERE activity_id=${activity.id}
+                "
+            >
+                <field column="activity_date" name="activity_date"/>
+                <field column="type_id" name="activity_date_type"/>
+                <field column="iso_date" name="activity_date_iso_date"/>
+                <entity name="activity_activity_date_narrative" 
+                    query="
+                        SELECT 
+                            iati_narrative.content AS content 
+                        FROM iati_narrative, django_content_type 
+                        WHERE iati_narrative.related_object_id=${activity_activity_date.id} 
+                            AND iati_narrative.activity_id=${activity.id} 
+                            AND django_content_type.model='activitydate' 
+                            AND django_content_type.id=iati_narrative.related_content_type_id
+                        "
+                    >
+                    <field column="content" name="activity_date_narrative"/>
+                </entity>
+            </entity>
+            <entity name="activity_contact_info" 
+                query="
+                    SELECT
+                        id,
+                        type_id,
+                        telephone,
+                        email,
+                        website,
+                        CAST((
+                            SELECT
+                                   ROW_TO_JSON(constact_info_record) AS contact_info
+                            FROM (
+                                SELECT
+                                    type_id AS type,
+                                    telephone AS telephone,
+                                    email AS email,
+                                    website AS website,
+                                    JSON_AGG(ROW_TO_JSON(organisation_narrative_record)) AS organisation_narrative,
+                                    JSON_AGG(ROW_TO_JSON(department_narrative_record)) AS department_narrative,
+                                    JSON_AGG(ROW_TO_JSON(person_name_narrative_record)) AS person_name_narrative,
+                                    JSON_AGG(ROW_TO_JSON(job_title_narrative_record)) AS job_title_narrative,
+                                    JSON_AGG(ROW_TO_JSON(mailing_address_narrative_record)) AS mailing_address_narrative
+                                FROM
+                                     (
+                                        SELECT
+                                            language_id AS lang,
+                                            content AS narrative
+                                        FROM iati_narrative, django_content_type, iati_contactinfoorganisation
+                                        WHERE related_object_id=iati_contactinfoorganisation.id
+                                            AND iati_contactinfoorganisation.contact_info_id=iati_contactinfo.id
+                                            AND django_content_type.model='contactinfoorganisation'
+                                            AND related_content_type_id=django_content_type.id
+                                    ) as organisation_narrative_record,
+                                    (
+                                        SELECT
+                                            language_id AS lang,
+                                            content AS narrative
+                                        FROM iati_narrative, django_content_type, iati_contactinfodepartment
+                                        WHERE related_object_id=iati_contactinfodepartment.id
+                                            AND iati_contactinfodepartment.contact_info_id=iati_contactinfo.id
+                                            AND django_content_type.model='contactinfodepartment'
+                                            AND related_content_type_id=django_content_type.id
+                                    ) as department_narrative_record,
+                                    (
+                                        SELECT
+                                            language_id AS lang,
+                                            content AS narrative
+                                        FROM iati_narrative, django_content_type, iati_contactinfopersonname
+                                        WHERE related_object_id=iati_contactinfopersonname.id
+                                            AND iati_contactinfopersonname.contact_info_id=iati_contactinfo.id
+                                            AND django_content_type.model='contactinfopersonname'
+                                            AND related_content_type_id=django_content_type.id
+                                    ) as person_name_narrative_record,
+                                    (
+                                        SELECT
+                                            language_id AS lang,
+                                            content AS narrative
+                                        FROM iati_narrative, django_content_type, iati_contactinfojobtitle
+                                        WHERE related_object_id=iati_contactinfojobtitle.id
+                                            AND iati_contactinfojobtitle.contact_info_id=iati_contactinfo.id
+                                            AND django_content_type.model='contactinfojobtitle'
+                                            AND related_content_type_id=django_content_type.id
+                                    ) as job_title_narrative_record,
+                                    (
+                                        SELECT
+                                            language_id AS lang,
+                                            content AS narrative
+                                        FROM iati_narrative, django_content_type, iati_contactinfomailingaddress
+                                        WHERE related_object_id=iati_contactinfomailingaddress.id
+                                            AND iati_contactinfomailingaddress.contact_info_id=iati_contactinfo.id
+                                            AND django_content_type.model='contactinfomailingaddress'
+                                            AND related_content_type_id=django_content_type.id
+                                    ) as mailing_address_narrative_record
+                            ) AS constact_info_record
+                        ) AS VARCHAR)
+                    FROM iati_contactinfo
+                    WHERE activity_id=${activity.id}
+                "
+            >   
+                <field column="contact_info" name="contact_info"/>
+                <field column="type_id" name="contact_info_type"/>
+                <field column="telephone" name="contact_info_telephone"/>
+                <field column="email" name="contact_info_email"/>
+                <field column="website" name="contact_info_website"/>
+                <entity name="activity_contact_info_organisation" 
+                    query="
+                        SELECT 
+                            id 
+                        FROM iati_contactinfoorganisation 
+                        WHERE contact_info_id=${activity_contact_info.id}
+                    "
+                >
+                    <entity name="activity_contact_info_organisation_narrative" 
+                        query="
+                            SELECT 
+                                iati_narrative.content AS content 
+                            FROM iati_narrative, django_content_type 
+                            WHERE iati_narrative.related_object_id=${activity_contact_info_organisation.id} 
+                                AND iati_narrative.activity_id=${activity.id} 
+                                AND django_content_type.model='contactinfoorganisation' 
+                                AND django_content_type.id=iati_narrative.related_content_type_id
+                        "
+                    >
+                        <field column="content" name="contact_info_organisation_narrative"/>
+                    </entity>
+                </entity>
+                <entity name="activity_contact_info_department" 
+                    query="
+                        SELECT 
+                            id 
+                        FROM iati_contactinfodepartment 
+                        WHERE contact_info_id=${activity_contact_info.id}
+                    "
+                >
+                    <entity name="activity_contact_info_department_narrative" 
+                        query="
+                            SELECT 
+                                iati_narrative.content AS content 
+                            FROM iati_narrative, django_content_type 
+                            WHERE iati_narrative.related_object_id=${activity_contact_info_department.id} 
+                                AND iati_narrative.activity_id=${activity.id} 
+                                AND django_content_type.model='contactinfodepartment' 
+                                AND django_content_type.id=iati_narrative.related_content_type_id
+                        "
+                    >
+                        <field column="content" name="contact_info_department_narrative"/>
+                    </entity>
+                </entity>
+                <entity name="activity_contact_info_person_name" 
+                    query="
+                        SELECT 
+                            id 
+                        FROM iati_contactinfopersonname 
+                        WHERE contact_info_id=${activity_contact_info.id}
+                    "
+                >
+                    <entity name="activity_contact_info_person_name_narrative" 
+                        query="
+                            SELECT 
+                                iati_narrative.content AS content 
+                            FROM iati_narrative, django_content_type 
+                            WHERE iati_narrative.related_object_id=${activity_contact_info_person_name.id} 
+                                AND iati_narrative.activity_id=${activity.id} 
+                                AND django_content_type.model='contactinfopersonname' 
+                                AND django_content_type.id=iati_narrative.related_content_type_id
+                        "
+                    >
+                        <field column="content" name="contact_info_person_name_narrative"/>
+                    </entity>
+                </entity>
+                <entity name="activity_contact_info_job_title" 
+                    query="
+                        SELECT 
+                            id 
+                        FROM iati_contactinfojobtitle 
+                        WHERE contact_info_id=${activity_contact_info.id}
+                    "
+                >
+                    <entity name="activity_contact_info_job_title_narrative" 
+                        query="
+                            SELECT 
+                                iati_narrative.content AS content 
+                            FROM iati_narrative, django_content_type 
+                            WHERE iati_narrative.related_object_id=${activity_contact_info_job_title.id} 
+                                AND iati_narrative.activity_id=${activity.id} 
+                                AND django_content_type.model='contactinfojobtitle' 
+                                AND django_content_type.id=iati_narrative.related_content_type_id
+                        "
+                    >
+                        <field column="content" name="contact_info_job_title_narrative"/>
+                    </entity>
+                </entity>
+                <entity name="activity_contact_info_mailing_address" 
+                    query="
+                        SELECT 
+                            id 
+                        FROM iati_contactinfomailingaddress 
+                        WHERE contact_info_id=${activity_contact_info.id}
+                    "
+                >
+                    <entity name="activity_contact_info_mailing_address_narrative" 
+                        query="
+                            SELECT 
+                                iati_narrative.content AS content 
+                            FROM iati_narrative, django_content_type 
+                            WHERE iati_narrative.related_object_id=${activity_contact_info_mailing_address.id} 
+                                AND iati_narrative.activity_id=${activity.id} 
+                                AND django_content_type.model='contactinfomailingaddress' 
+                                AND django_content_type.id=iati_narrative.related_content_type_id
+                        "
+                    >
+                        <field column="content" name="contact_info_mailing_address_narrative"/>
+                    </entity>
+                </entity>
+            </entity>
+            <entity name="activity_recipient_country" 
+                query="
+                    SELECT 
+                        id, 
+                        country_id, 
+                        percentage,
+                        CAST((
+                            SELECT
+                                   ROW_TO_JSON(recipient_country_record) AS recipient_country
+                            FROM (
+                                SELECT
+                                       country_id AS code,
+                                       percentage AS percentage,
+                                       JSON_AGG(ROW_TO_JSON(narrative_record)) AS narrative
+                                FROM (
+                                    SELECT
+                                           language_id AS lang,
+                                           content AS text
+                                    FROM iati_narrative, django_content_type
+                                    WHERE related_object_id = iati_activityrecipientcountry.id
+                                        AND django_content_type.model = 'activityrecipientcountry'
+                                        AND related_content_type_id =
+                                            django_content_type.id
+                                ) as narrative_record
+                            ) AS recipient_country_record
+                        ) AS VARCHAR) 
+                    FROM iati_activityrecipientcountry 
+                    WHERE activity_id=${activity.id}
+                "
+            >
+                <field column="recipient_country" name="recipient_country"/>
+                <field column="recipient_country_code" name="recipient_country_code"/>
+                <field column="country_id" name="recipient_country_code"/>
+                <field column="percentage" name="recipient_country_percentage"/>
+                <entity name="activity_recipient_country_narrative" 
+                    query="
+                        SELECT 
+                            iati_narrative.content AS content 
+                        FROM iati_narrative, django_content_type 
+                        WHERE iati_narrative.related_object_id=${activity_recipient_country.id} 
+                            AND iati_narrative.activity_id=${activity.id} 
+                            AND django_content_type.model='activityrecipientcountry' 
+                            AND django_content_type.id=iati_narrative.related_content_type_id
+                    "
+                >
+                    <field column="content" name="recipient_country_narrative"/>
+                </entity>
+            </entity>
+            <entity name="activity_recipient_region" 
+                query="
+                    SELECT
+                        id,
+                        region_id,
+                        percentage,
+                        vocabulary_id,
+                        vocabulary_uri,
+                        CAST((
+                            SELECT
+                                   ROW_TO_JSON(recipient_region_record) AS recipient_region
+                            FROM (
+                                SELECT
+                                       region_id AS code,
+                                       vocabulary_id AS vocabulary,
+                                       vocabulary_uri AS vocabulary_uri,
+                                       percentage AS percentage,
+                                       JSON_AGG(ROW_TO_JSON(narrative_record)) AS narrative
+                                FROM (
+                                    SELECT
+                                           language_id AS lang,
+                                           content AS text
+                                    FROM iati_narrative, django_content_type
+                                    WHERE related_object_id = iati_activityrecipientregion.id
+                                        AND django_content_type.model = 'activityrecipientregion'
+                                        AND related_content_type_id = django_content_type.id
+                                ) as narrative_record
+                            ) AS recipient_region_record
+                        ) AS VARCHAR)
+                    FROM iati_activityrecipientregion
+                    WHERE activity_id=${activity.id}
+                "
+            >
+                <field column="recipient_region" name="recipient_region"/>
+                <field column="region_id" name="recipient_region_code"/>
+                <field column="percentage" name="recipient_region_percentage"/>
+                <field column="vocabulary_id" name="recipient_region_vocabulary"/>
+                <field column="vocabulary_uri" name="recipient_region_vocabulary_uri"/>
+                <entity name="activity_recipient_region_narrative" 
+                    query="
+                        SELECT 
+                            iati_narrative.content AS content 
+                        FROM iati_narrative, django_content_type 
+                        WHERE iati_narrative.related_object_id=${activity_recipient_region.id} 
+                            AND iati_narrative.activity_id=${activity.id} 
+                            AND django_content_type.model='activityrecipientregion' 
+                            AND django_content_type.id=iati_narrative.related_content_type_id
+                    "
+                >
+                    <field column="content" name="recipient_region_narrative"/>
+                </entity>
+            </entity>
+            <entity name="activity_location" 
+                query="
+                    SELECT
+                        id,
+                        ref,
+                        location_reach_id,
+                        location_id_vocabulary_id,
+                        location_id_code,
+                        ST_AsText(point_pos) AS point_pos,
+                        exactness_id,
+                        location_class_id,
+                        feature_designation_id,
+                        CAST((
+                            SELECT
+                                   ROW_TO_JSON(location_record) AS location
+                            FROM (
+                                SELECT
+                                       ref AS ref,
+                                       location_reach_id AS location_reach_code,
+                                       location_id_vocabulary_id AS location_id_vocabulary,
+                                       location_id_code AS location_id_code,
+                                       ST_AsText(point_pos) AS point_pos,
+                                       exactness_id AS exactness_code,
+                                       location_class_id AS location_class_code,
+                                       feature_designation_id AS feature_designation_code,
+                                       JSON_AGG(ROW_TO_JSON(name_narrative_record)) AS name_narrative,
+                                       JSON_AGG(ROW_TO_JSON(description_narrative_record)) AS description_narrative,
+                                       JSON_AGG(ROW_TO_JSON(administrative_record)) AS administrative
+                                FROM (
+                                        SELECT
+                                            language_id AS lang,
+                                            content AS text
+                                        FROM iati_narrative, django_content_type, iati_locationname
+                                        WHERE related_object_id = iati_locationname.id
+                                            AND iati_locationname.location_id = iati_location.id
+                                            AND django_content_type.model = 'locationname'
+                                            AND related_content_type_id = django_content_type.id
+                                    ) as name_narrative_record,
+                                    (
+                                        SELECT
+                                            language_id AS lang,
+                                            content AS text
+                                        FROM iati_narrative, django_content_type, iati_locationdescription
+                                        WHERE related_object_id = iati_locationdescription.id
+                                            AND iati_locationdescription.location_id = iati_location.id
+                                            AND django_content_type.model = 'locationdescription'
+                                            AND related_content_type_id = django_content_type.id
+                                    ) as description_narrative_record,
+                                    (
+                                        SELECT
+                                            vocabulary_id AS vocabulary,
+                                            level AS level,
+                                            code  AS code
+                                        FROM iati_locationadministrative
+                                        WHERE iati_locationadministrative.location_id = iati_location.id
+                                    ) as administrative_record
+                            ) AS location_record
+                        ) AS VARCHAR)
+                    FROM iati_location
+                    WHERE activity_id=${activity.id}
+                "
+            >
+                <field column="location" name="location"/>
+                <field column="ref" name="location_ref"/>
+                <field column="location_reach_id" name="location_reach_code"/>
+                <field column="location_id_vocabulary_id" name="location_id_vocabulary"/>
+                <field column="location_id_code" name="location_id_code"/>
+                <field column="point_pos" name="location_point_pos"/>
+                <field column="exactness_id" name="location_exactness_code"/>
+                <field column="location_class_id" name="location_class_code"/>
+                <field column="feature_designation_id" name="location_feature_designation_code"/>
+                <entity name="activity_location_name" 
+                    query="
+                        SELECT 
+                            id 
+                        FROM iati_locationname 
+                        WHERE location_id=${activity_location.id}
+                    "
+                >
+                    <entity name="activity_location_name_narrative" 
+                        query="
+                            SELECT 
+                                iati_narrative.content AS content 
+                            FROM iati_narrative, django_content_type 
+                            WHERE iati_narrative.related_object_id=${activity_location_name.id} 
+                                AND iati_narrative.activity_id=${activity.id} 
+                                AND django_content_type.model='locationname' 
+                                AND django_content_type.id=iati_narrative.related_content_type_id
+                        "
+                    >
+                        <field column="content" name="location_name_narrative"/>
+                    </entity>
+                </entity>
+                <entity name="activity_location_description" 
+                    query="
+                        SELECT 
+                            id 
+                        FROM iati_locationdescription 
+                        WHERE location_id=${activity_location.id}
+                    "
+                >
+                    <entity name="activity_location_name_narrative" 
+                        query="
+                            SELECT 
+                                iati_narrative.content AS content 
+                            FROM iati_narrative, django_content_type 
+                            WHERE iati_narrative.related_object_id=${activity_location_description.id} 
+                                AND iati_narrative.activity_id=${activity.id} 
+                                AND django_content_type.model='locationdescription' 
+                                AND django_content_type.id=iati_narrative.related_content_type_id
+                        "
+                    >
+                        <field column="content" name="location_description_narrative"/>
+                    </entity>
+                </entity>
+                <entity name="activity_location_administrative" 
+                    query="
+                        SELECT 
+                            vocabulary_id, 
+                            level, 
+                            code 
+                        FROM iati_locationadministrative 
+                        WHERE location_id=${activity_location.id}
+                    "
+                >
+                    <field column="vocabulary_id" name="location_administrative_vocabulary"/>
+                    <field column="level" name="location_administrative_level"/>
+                    <field column="code" name="location_administrative_code"/>
+                </entity>
+            </entity>
+            <entity name="activity_sector" 
+                query="
+                    SELECT
+                        id,
+                        vocabulary_id,
+                        vocabulary_uri,
+                        sector_id,
+                        percentage,
+                        CAST((
+                            SELECT
+                                   ROW_TO_JSON(sector_record) AS sector
+                            FROM (
+                                SELECT
+                                       vocabulary_id AS vocabulary,
+                                       vocabulary_uri AS vocabulary_uri,
+                                       sector_id AS code,
+                                       percentage AS percentage,
+                                       JSON_AGG(ROW_TO_JSON(narrative_record)) AS narrative
+                                FROM (
+                                    SELECT
+                                           language_id AS lang,
+                                           content AS text
+                                    FROM iati_narrative, django_content_type
+                                    WHERE related_object_id = iati_activitysector.id
+                                        AND django_content_type.model = 'activitysector'
+                                        AND related_content_type_id =
+                                            django_content_type.id
+                                ) as narrative_record
+                            ) AS sector_record
+                        ) AS VARCHAR)
+                    FROM iati_activitysector
+                    WHERE activity_id=${activity.id}
+                "
+            >
+                <field column="sector" name="sector"/>
+                <field column="vocabulary_id" name="sector_vocabulary"/>
+                <field column="vocabulary_uri" name="sector_vocabulary_uri"/>
+                <field column="sector_id" name="sector_code"/>
+                <field column="percentage" name="sector_percentage"/>
+                <entity name="activity_sector_narrative" 
+                    query="
+                        SELECT 
+                            iati_narrative.content AS content 
+                        FROM iati_narrative, django_content_type 
+                        WHERE iati_narrative.related_object_id=${activity_sector.id} 
+                            AND iati_narrative.activity_id=${activity.id} 
+                            AND django_content_type.model='activitysector' 
+                            AND django_content_type.id=iati_narrative.related_content_type_id
+                    "
+                >
+                    <field column="content" name="sector_narrative"/>
+                </entity>
+            </entity>
+            <entity name="activity_tag" 
+                query="
+                    SELECT
+                        id,
+                        vocabulary_id,
+                        vocabulary_uri,
+                        code,
+                        CAST((
+                            SELECT
+                                   ROW_TO_JSON(tag_record) AS tag
+                            FROM (
+                                SELECT
+                                       vocabulary_id AS vocabulary,
+                                       vocabulary_uri AS vocabulary_uri,
+                                       code AS code,
+                                       JSON_AGG(ROW_TO_JSON(narrative_record)) AS narrative
+                                FROM (
+                                    SELECT
+                                           language_id AS lang,
+                                           content AS text
+                                    FROM iati_narrative, django_content_type
+                                    WHERE related_object_id = iati_activitytag.id
+                                        AND django_content_type.model = 'activitytag'
+                                        AND related_content_type_id = django_content_type.id
+                                ) as narrative_record
+                            ) AS tag_record
+                        ) AS VARCHAR)
+                    FROM iati_activitytag
+                    WHERE activity_id=${activity.id}
+                "
+            >
+                <field column="tag" name="tag"/>
+                <field column="vocabulary_id" name="tag_vocabulary"/>
+                <field column="vocabulary_uri" name="tag_vocabulary_uri"/>
+                <field column="code" name="tag_code"/>
+                <entity name="activity_tag_narrative" 
+            query="
+                SELECT 
+                    iati_narrative.content AS content 
+                FROM iati_narrative, django_content_type 
+                WHERE iati_narrative.related_object_id=${activity_tag.id} 
+                    AND iati_narrative.activity_id=${activity.id} 
+                    AND django_content_type.model='activitytag' 
+                    AND django_content_type.id=iati_narrative.related_content_type_id
+                "
+            >
+                    <field column="content" name="tag_narrative"/>
+                </entity>
+            </entity>
+            <entity name="activity_country_budget_items" 
+                query="
+                    SELECT
+                        id,
+                        vocabulary_id,
+                        CAST((
+                            SELECT
+                                   ROW_TO_JSON(country_budget_items_record) AS country_budget_items
+                            FROM (
+                                SELECT
+                                       vocabulary_id AS vocabulary,
+                                       JSON_AGG(ROW_TO_JSON(budget_item_record)) AS budget_item
+                                FROM (
+                                    SELECT
+                                           code_id AS code,
+                                           percentage AS percentage,
+                                           (
+                                               SELECT
+                                                      JSON_AGG(ROW_TO_JSON(narrative_record)) AS description
+                                               FROM (
+                                                    SELECT
+                                                        language_id AS lang,
+                                                        content AS narrative
+                                                    FROM iati_narrative, django_content_type, iati_budgetitemdescription
+                                                    WHERE related_object_id = iati_budgetitemdescription.id
+                                                        AND iati_budgetitemdescription.budget_item_id = iati_budgetitem.id
+                                                        AND django_content_type.model = 'budgetitemdescription'
+                                                        AND related_content_type_id = django_content_type.id
+                                               ) AS narrative_record
+                                            )
+                                    FROM
+                                        iati_budgetitem
+                                    WHERE
+                                        country_budget_item_id = iati_countrybudgetitem.id
+                                ) AS budget_item_record
+                            ) AS country_budget_items_record
+                        ) AS VARCHAR)
+                    FROM iati_countrybudgetitem
+                    WHERE activity_id=${activity.id}
+                "
+            >
+                <field column="country_budget_items" name="country_budget_items"/>
+                <field column="vocabulary_id" name="country_budget_items_vocabulary"/>
+                <entity name="activity_country_budget_items_budget_item" 
+                    query="
+                        SELECT 
+                            code_id, 
+                            percentage 
+                        FROM iati_budgetitem 
+                        WHERE country_budget_item_id=${activity_country_budget_items.id}
+                    "
+                >
+                    <field column="code_id" name="country_budget_items_budget_item_code"/>
+                    <field column="percentage" name="country_budget_items_budget_item_percentage"/>
+                </entity>
+            </entity>
+            <entity name="activity_humanitarian_scope" 
+                query="
+                    SELECT 
+                        id, 
+                        type_id, 
+                        vocabulary_id, 
+                        vocabulary_uri, 
+                        code,
+                        CAST((
+                            SELECT
+                                   ROW_TO_JSON(humanitarian_scope_record) AS humanitarian_scope
+                            FROM (
+                                SELECT
+                                       type_id AS type, 
+                                       vocabulary_id AS vocabulary, 
+                                       vocabulary_uri AS vocabulary_uri, 
+                                       code AS code,
+                                       JSON_AGG(ROW_TO_JSON(narrative_record)) AS narrative
+                                FROM (
+                                    SELECT
+                                           language_id AS lang,
+                                           content AS text
+                                    FROM iati_narrative, django_content_type
+                                    WHERE related_object_id = iati_humanitarianscope.id
+                                        AND django_content_type.model = 'humanitarianscope'
+                                        AND related_content_type_id = django_content_type.id
+                                ) as narrative_record
+                            ) AS humanitarian_scope_record
+                        ) AS VARCHAR)  
+                    FROM iati_humanitarianscope 
+                    WHERE activity_id=${activity.id}
+                "
+            >
+                <field column="humanitarian_scope" name="humanitarian_scope"/>
+                <field column="type_id" name="humanitarian_scope_type"/>
+                <field column="vocabulary_id" name="humanitarian_scope_vocabulary"/>
+                <field column="vocabulary_uri" name="humanitarian_scope_vocabulary_uri"/>
+                <field column="code" name="humanitarian_scope_code"/>
+                <entity name="activity_humanitarian_scope_narrative" 
+                    query="
+                        SELECT 
+                            iati_narrative.content AS content 
+                        FROM iati_narrative, django_content_type 
+                        WHERE iati_narrative.related_object_id=${activity_humanitarian_scope.id} 
+                            AND iati_narrative.activity_id=${activity.id} 
+                            AND django_content_type.model='humanitarianscope' 
+                            AND django_content_type.id=iati_narrative.related_content_type_id
+                    "
+                >
+                    <field column="content" name="humanitarian_scope_narrative"/>
+                </entity>
+            </entity>
+            <entity name="activity_policy_marker" 
+                query="
+                    SELECT
+                        id,
+                        vocabulary_id,
+                        vocabulary_uri,
+                        code_id,
+                        significance_id,
+                        CAST((
+                            SELECT
+                                   ROW_TO_JSON(policy_marker_record) AS policy_marker
+                            FROM (
+                                SELECT
+                                       vocabulary_id AS vocabulary,
+                                       vocabulary_uri AS vocabulary_uri,
+                                       code_id AS code,
+                                       significance_id AS significance,
+                                       JSON_AGG(ROW_TO_JSON(narrative_record)) AS narrative
+                                FROM (
+                                    SELECT
+                                           language_id AS lang,
+                                           content AS text
+                                    FROM iati_narrative, django_content_type
+                                    WHERE related_object_id = iati_activitypolicymarker.id
+                                        AND django_content_type.model = 'activitypolicymarker'
+                                        AND related_content_type_id = django_content_type.id
+                                ) as narrative_record
+                            ) AS policy_marker_record
+                        ) AS VARCHAR)
+                    FROM iati_activitypolicymarker
+                    WHERE activity_id=${activity.id}
+                "
+            >
+                <field column="policy_marker" name="policy_marker"/>
+                <field column="vocabulary_id" name="policy_marker_vocabulary"/>
+                <field column="vocabulary_uri" name="policy_marker_vocabulary_uri"/>
+                <field column="code_id" name="policy_marker_code"/>
+                <field column="significance_id" name="policy_marker_significance"/>
+                <entity name="activity_policy_marker_narrative" 
+                    query="
+                        SELECT 
+                            iati_narrative.content AS content 
+                        FROM iati_narrative, django_content_type 
+                            WHERE iati_narrative.related_object_id=${activity_policy_marker.id} 
+                                AND iati_narrative.activity_id=${activity.id} 
+                                AND django_content_type.model='activitypolicymarker' 
+                                AND django_content_type.id=iati_narrative.related_content_type_id
+                    "
+                >
+                    <field column="content" name="policy_marker_narrative"/>
+                </entity>
+            </entity>
+            <entity name="activity_default_aid_type" 
+                query="
+                    SELECT
+                           aid_type_id,
+                           vocabulary_id,
+                           CAST((
+                               SELECT
+                                      ROW_TO_JSON(default_aid_type_record) AS default_aid_type
+                               FROM (
+                                    SELECT
+                                           aid_type_id AS code,
+                                           vocabulary_id AS vocabulary
+                                ) AS default_aid_type_record
+                            ) AS VARCHAR)
+                    FROM iati_activitydefaultaidtype, iati_codelists_aidtype
+                    WHERE activity_id=${activity.id}
+                        AND iati_activitydefaultaidtype.aid_type_id = iati_codelists_aidtype.code
+                "
+            >
+                <field column="default_aid_type" name="default_aid_type"/>
+                <field column="aid_type_id" name="default_aid_type_code"/>
+                <field column="vocabulary_id" name="default_aid_type_vocabulary"/>    
+            </entity>
+            <entity name="activity_budget" 
+                query="
+                    SELECT
+                        type_id,
+                        status_id,
+                        TO_CHAR(period_start::timestamp, 'YYYY-MM-DD') AS period_start,
+                        TO_CHAR(period_end::timestamp, 'YYYY-MM-DD') AS period_end,
+                        currency_id,
+                        TO_CHAR(value_date::timestamp, 'YYYY-MM-DD') AS value_date,
+                        value,
+                        CAST((
+                            SELECT
+                                   ROW_TO_JSON(budget_record) AS budget
+                            FROM (
+                                SELECT
+                                       type_id AS type,
+                                       status_id AS status,
+                                       TO_CHAR(period_start::timestamp, 'YYYY-MM-DD') AS period_start,
+                                       TO_CHAR(period_end::timestamp, 'YYYY-MM-DD') AS period_end,
+                                       (
+                                           SELECT ROW_TO_JSON(value_record) AS value
+                                           FROM (
+                                               SELECT
+                                                      currency_id AS currency,
+                                                      value_date AS value_date,
+                                                      value AS value
+                                           ) AS value_record
+                                       )
+                            ) AS budget_record
+                        ) AS VARCHAR)
+                    FROM iati_budget
+                    WHERE activity_id=${activity.id}
+                "
+            >
+                <field column="budget" name="budget"/>
+                <field column="type_id" name="budget_type"/>
+                <field column="status_id" name="budget_status"/>
+                <field column="period_start" name="budget_period_start_iso_date"/>
+                <field column="period_end" name="budget_period_end_iso_date"/>
+                <field column="currency_id" name="budget_value_currency"/>
+                <field column="value_date" name="budget_value_date"/>
+                <field column="value" name="budget_value"/>
+            </entity>
+            <entity name="activity_planned_disbursement" 
+                query="
+                    SELECT
+                        id,
+                        type_id,
+                        TO_CHAR(period_start::timestamp, 'YYYY-MM-DD') AS period_start,
+                        TO_CHAR(period_end::timestamp, 'YYYY-MM-DD') AS period_end,
+                        currency_id,
+                        TO_CHAR(value_date::timestamp, 'YYYY-MM-DD') AS value_date,
+                        value,
+                        CAST((
+                            SELECT
+                                   ROW_TO_JSON(planned_disbursement_record) AS planned_disbursement
+                            FROM (
+                                SELECT
+                                       type_id AS type,
+                                       TO_CHAR(period_start::timestamp, 'YYYY-MM-DD') AS period_start,
+                                       TO_CHAR(period_end::timestamp, 'YYYY-MM-DD') AS period_end,
+                                       (
+                                           SELECT ROW_TO_JSON(value_record) AS value
+                                           FROM (
+                                               SELECT
+                                                      currency_id AS currency,
+                                                      value_date AS value_date,
+                                                      value AS value
+                                           ) AS value_record
+                                       ),
+                                       (
+                                           SELECT ROW_TO_JSON(provider_org_record) AS provider_org
+                                           FROM (
+                                               SELECT
+                                                      provider_activity_ref AS provider_activity_id,
+                                                      iati_planneddisbursementprovider.type_id AS type,
+                                                      ref AS ref,
+                                                      (
+                                                          SELECT
+                                                                JSON_AGG(ROW_TO_JSON(narrative_record)) AS narrative
+                                                          FROM (
+                                                                SELECT
+                                                                       language_id AS lang,
+                                                                       content AS text
+                                                                FROM iati_narrative, django_content_type
+                                                                WHERE related_object_id = iati_planneddisbursementprovider.id
+                                                                    AND django_content_type.model = 'planneddisbursementprovider'
+                                                                    AND related_content_type_id =
+                                                                        django_content_type.id
+                                                          ) as narrative_record
+                                                      )
+                                               FROM iati_planneddisbursementprovider
+                                               WHERE planned_disbursement_id = iati_planneddisbursement.id
+                                           ) AS provider_org_record
+                                       ),
+                                       (
+                                           SELECT ROW_TO_JSON(receiver_org_record) AS receiver_org
+                                           FROM (
+                                               SELECT
+                                                      receiver_activity_ref AS receiver_activity_id,
+                                                      iati_planneddisbursementreceiver.type_id AS type,
+                                                      ref AS ref,
+                                                      (
+                                                          SELECT
+                                                                JSON_AGG(ROW_TO_JSON(narrative_record)) AS narrative
+                                                          FROM (
+                                                                SELECT
+                                                                       language_id AS lang,
+                                                                       content AS text
+                                                                FROM iati_narrative, django_content_type
+                                                                WHERE related_object_id = iati_planneddisbursementreceiver.id
+                                                                    AND django_content_type.model = 'planneddisbursementreceiver'
+                                                                    AND related_content_type_id =
+                                                                        django_content_type.id
+                                                          ) as narrative_record
+                                                      )
+                                               FROM iati_planneddisbursementreceiver
+                                               WHERE planned_disbursement_id = iati_planneddisbursement.id
+                                           ) AS receiver_org_record
+                                       )
+                            ) AS planned_disbursement_record
+                        ) AS VARCHAR)
+                    FROM iati_planneddisbursement
+                    WHERE activity_id=${activity.id}
+                "
+            >
+                <field column="planned_disbursement" name="planned_disbursement"/>
+                <field column="type_id" name="planned_disbursement_type"/>
+                <field column="period_start" name="planned_disbursement_period_start_iso_date"/>
+                <field column="period_end" name="planned_disbursement_period_end_iso_date"/>
+                <field column="currency_id" name="planned_disbursement_value_currency"/>
+                <field column="value_date" name="planned_disbursement_value_date"/>
+                <field column="value" name="planned_disbursement_value"/>
+                <entity name="activity_planned_disbursement_provider_org" 
+                    query="
+                        SELECT 
+                            id, 
+                            planned_disbursement_id, 
+                            provider_activity_ref, 
+                            type_id, 
+                            ref 
+                        FROM iati_planneddisbursementprovider 
+                        WHERE planned_disbursement_id=${activity_planned_disbursement.id}
+                    "
+                >
+                    <field column="provider_activity_ref" name="planned_disbursement_provider_org_provider_activity_id"/>
+                    <field column="type_id" name="planned_disbursement_provider_org_type"/>
+                    <field column="ref" name="planned_disbursement_provider_org_ref"/>
+                    <entity name="activity_planned_disbursement_provider_org_narrative" 
+                        query="
+                            SELECT 
+                                iati_narrative.content AS content 
+                            FROM iati_narrative, django_content_type 
+                            WHERE iati_narrative.related_object_id=${activity_planned_disbursement_provider_org.id} 
+                                AND iati_narrative.activity_id=${activity.id} 
+                                AND django_content_type.model='planneddisbursementprovider' 
+                                AND django_content_type.id=iati_narrative.related_content_type_id
+                        "
+                    >
+                        <field column="content" name="planned_disbursement_provider_org_narrative"/>
+                    </entity>
+                </entity>
+                <entity name="activity_planned_disbursement_receiver_org" 
+                    query="
+                        SELECT 
+                            id, 
+                            planned_disbursement_id, 
+                            receiver_activity_ref, 
+                            type_id, 
+                            ref 
+                        FROM iati_planneddisbursementreceiver 
+                        WHERE planned_disbursement_id=${activity_planned_disbursement.id}
+                    "
+                >
+                    <field column="receiver_activity_ref" name="planned_disbursement_provider_org_provider_activity_id"/>
+                    <field column="type_id" name="planned_disbursement_receiver_org_type"/>
+                    <field column="ref" name="planned_disbursement_receiver_org_ref"/>
+                    <entity name="activity_planned_disbursement_receiver_org_narrative" 
+                        query="
+                            SELECT 
+                                iati_narrative.content AS content 
+                            FROM iati_narrative, django_content_type 
+                            WHERE iati_narrative.related_object_id=${activity_planned_disbursement_receiver_org.id} 
+                                AND iati_narrative.activity_id=${activity.id} 
+                                AND django_content_type.model='planneddisbursementreceiver' 
+                                AND django_content_type.id=iati_narrative.related_content_type_id
+                        "
+                    >
+                        <field column="content" name="planned_disbursement_receiver_org_narrative"/>
+                    </entity>
+                </entity>
+            </entity>
+            <entity 
+                name="activity_transaction" 
+                query="
+                    SELECT
+                        id,
+                        ref,
+                        CASE WHEN humanitarian=TRUE THEN '1' ELSE '0' END AS humanitarian,
+                        transaction_type_id,
+                        TO_CHAR(transaction_date::timestamp, 'YYYY-MM-DD') AS transaction_date,
+                        currency_id,
+                        TO_CHAR(value_date::timestamp, 'YYYY-MM-DD') AS value_date,
+                        value,
+                        disbursement_channel_id,
+                        flow_type_id,
+                        tied_status_id,
+                        CAST((SELECT row_to_json(transaction) AS transaction FROM (
+                            SELECT
+                                ref AS ref,
+                                CASE WHEN humanitarian=TRUE THEN '1' ELSE '0' END AS humanitarian,
+                                transaction_type_id AS transaction_type_code,
+                                transaction_date AS transaction_date_iso_date,
+                                disbursement_channel_id AS disbursement_channel_code,
+                                flow_type_id AS flow_type_code,
+                                tied_status_id AS tied_status_code,
+                                (
+                                    SELECT ROW_TO_JSON(value_record) AS value
+                                    FROM (
+                                        SELECT
+                                            currency_id AS currency,
+                                            value_date AS value_date,
+                                            value AS value
+                                    ) AS value_record
+                                ),
+                                (
+                                    SELECT row_to_json(provider_org) AS provider_org FROM (
+                                        SELECT
+                                            provider_activity_ref as provider_activity_id,
+                                            ref as ref,
+                                            (
+                                                SELECT
+                                                    JSON_AGG(ROW_TO_JSON(narrative)) as narrative
+                                                FROM (
+                                                    SELECT language_id AS lang, content as text FROM iati_narrative, django_content_type
+                                                    WHERE related_object_id=iati_transactionprovider.id
+                                                        AND django_content_type.model='transactionprovider'
+                                                        AND related_content_type_id=django_content_type.id
+                                                    ) as narrative
+                                            )
+                                        FROM iati_transactionprovider
+                                        WHERE transaction_id=iati_transaction.id
+                                    ) provider_org
+                                ),
+                                (
+                                    SELECT row_to_json(receiver_org) AS receiver_org FROM (
+                                        SELECT
+                                            receiver_activity_ref as receiver_activity_id,
+                                            ref as ref,
+                                            (
+                                                SELECT
+                                                    JSON_AGG(ROW_TO_JSON(narrative)) as narrative
+                                                FROM (
+                                                    SELECT language_id AS lang, content as text FROM iati_narrative, django_content_type
+                                                    WHERE related_object_id=iati_transactionreceiver.id
+                                                        AND django_content_type.model='transactionreceiver'
+                                                        AND related_content_type_id=django_content_type.id
+                                                    ) as narrative
+                                            )
+                                        FROM iati_transactionreceiver
+                                        WHERE transaction_id=iati_transaction.id
+                                    ) receiver_org
+                                ),
+                                (
+                                    SELECT JSON_AGG(ROW_TO_JSON(aid_type)) AS aid_type FROM (
+                                        SELECT
+                                            iati_codelists_aidtype.code as code,
+                                            iati_codelists_aidtype.vocabulary_id as vocabulary_id
+                                        FROM iati_codelists_aidtype, iati_transactionaidtype
+                                        WHERE iati_codelists_aidtype.code=iati_transactionaidtype.aid_type_id
+                                            AND transaction_id=iati_transaction.id
+                                    ) aid_type
+                                )
+                        ) transaction) AS VARCHAR)
+                    FROM iati_transaction
+                    WHERE activity_id=${activity.id}
+                "
+            >
+                <field column="transaction" name="transaction"/>
+                <field column="ref" name="transaction_ref"/>
+                <field column="humanitarian" name="transaction_humanitarian"/>
+                <field column="transaction_type_id" name="transaction_type"/>
+                <field column="transaction_date" name="transaction_date_iso_date"/>
+                <field column="currency_id" name="transaction_value_currency"/>
+                <field column="value_date" name="transaction_value_date"/>
+                <field column="value" name="transaction_value"/>
+                <field column="disbursement_channel_id" name="transaction_disburstment_channel_code"/>
+                <field column="flow_type_id" name="transaction_flow_type_code"/>
+                <field column="tied_status_id" name="transaction_tied_status_code"/>
+                <entity name="activity_transaction_provider_org" 
+                    query="
+                        SELECT 
+                            id, 
+                            provider_activity_ref, 
+                            type_id, 
+                            ref  
+                        FROM iati_transactionprovider 
+                        WHERE transaction_id=${activity_transaction.id}
+                    "
+                >
+                    <field column="provider_activity_ref" name="transaction_provider_org_provider_activity_id"/>
+                    <field column="type_id" name="transaction_provider_org_type"/>
+                    <field column="ref" name="transaction_provider_org_ref"/>
+                    <entity name="activity_transaction_provider_org_narrative" 
+                        query="
+                            SELECT 
+                                iati_narrative.content AS content 
+                            FROM iati_narrative, django_content_type 
+                            WHERE iati_narrative.related_object_id=${activity_transaction_provider_org.id} 
+                                AND iati_narrative.activity_id=${activity.id} AND django_content_type.model='transactionprovider' 
+                                AND django_content_type.id=iati_narrative.related_content_type_id
+                        "
+                    >
+                        <field column="content" name="transaction_provider_org_narrative"/>
+                    </entity>
+                </entity>
+                <entity name="activity_transaction_receiver_org" 
+                    query="
+                        SELECT 
+                            id, 
+                            receiver_activity_ref, 
+                            type_id, 
+                            ref  
+                        FROM iati_transactionreceiver 
+                        WHERE transaction_id=${activity_transaction.id}
+                    "
+                >
+                    <field column="receiver_activity_ref" name="transaction_receiver_org_receiver_activity_id"/>
+                    <field column="type_id" name="transaction_receiver_org_type"/>
+                    <field column="ref" name="transaction_receiver_org_ref"/>
+                    <entity name="activity_transaction_receiver_org_narrative" 
+                        query="
+                            SELECT 
+                                iati_narrative.content AS content 
+                            FROM iati_narrative, django_content_type 
+                            WHERE iati_narrative.related_object_id=${activity_transaction_receiver_org.id} 
+                                AND iati_narrative.activity_id=${activity.id} 
+                                AND django_content_type.model='transactionreceiver' 
+                                AND django_content_type.id=iati_narrative.related_content_type_id
+                        "
+                    >
+                        <field column="content" name="transaction_receiver_org_narrative"/>
+                    </entity>
+                </entity>
+                <entity name="activity_transaction_aid_type" 
+                    query="
+                        SELECT 
+                            aid_type_id  
+                        FROM iati_transactionaidtype 
+                        WHERE transaction_id=${activity_transaction.id} 
+                    "
+                >
+                    <field column="aid_type_id" name="transaction_aid_type_code"/>
+                    <entity name="activity_transaction_aid_type_vocabulary" 
+                        query="
+                            SELECT 
+                                vocabulary_id 
+                            FROM iati_codelists_aidtype 
+                            WHERE code='${activity_transaction_aid_type.aid_type_id}'
+                        "
+                    >
+                        <field column="vocabulary_id" name="transaction_aid_type_vocabulary"/>
+                    </entity>
+                </entity>
+            </entity>
+            <entity 
+                name="activity_document_link" 
+                query="
+                    SELECT
+                        id,
+                        file_format_id,
+                        url,
+                        TO_CHAR(iso_date::timestamp, 'YYYY-MM-DD') AS iso_date
+                    FROM iati_documentlink
+                    WHERE activity_id=${activity.id} 
+                "
+            >
+                <field column="file_format_id" name="document_link_format"/>
+                <field column="url" name="document_link_url"/>
+                <field column="iso_date" name="document_link_document_date_iso_date"/>
+                <entity name="activity_document_link_title" 
+                    query="
+                        SELECT 
+                            id 
+                        FROM iati_documentlinktitle 
+                        WHERE document_link_id='${activity_document_link.id}'
+                    "
+                >
+                    <entity name="activity_document_link_title_narrative" 
+                        query="
+                            SELECT 
+                                iati_narrative.content AS content,
+                                iati_narrative.language_id AS language_id 
+                            FROM iati_narrative, django_content_type 
+                            WHERE iati_narrative.related_object_id=${activity_document_link_title.id} 
+                                AND iati_narrative.activity_id=${activity.id} AND django_content_type.model='documentlinktitle' 
+                                AND django_content_type.id=iati_narrative.related_content_type_id
+                        "
+                    >
+                        <field column="content" name="document_link_title_narrative"/>
+                        <field column="language_id" name="document_link_description_narrative_lang"/>
+                    </entity>
+                </entity>
+                <entity name="activity_document_link_category" 
+                    query="
+                        SELECT 
+                            id,
+                            category_id 
+                        FROM iati_documentlinkcategory 
+                        WHERE document_link_id='${activity_document_link.id}'
+                    "
+                >
+                    <field column="category_id" name="document_link_category_code"/>
+                </entity>
+                <entity name="activity_document_link_language" 
+                    query="
+                        SELECT 
+                            id,
+                            language_id 
+                        FROM iati_documentlinklanguage 
+                        WHERE document_link_id='${activity_document_link.id}'
+                    "
+                >
+                    <field column="language_id" name="document_link_language_code"/>
+                </entity> 
+            </entity>
+            <entity 
+                name="activity_related_activity" 
+                query="
+                    SELECT
+                        ref,
+                        type_id
+                    FROM iati_relatedactivity
+                    WHERE current_activity_id=${activity.id}
+                    ORDER BY id 
+                "
+            >
+                <field column="ref" name="related_activity_ref"/>  
+                <field column="type_id" name="related_activity_type"/>   
+            </entity>
+            <entity 
+                name="activity_legacy_date" 
+                query="
+                    SELECT
+                        name,
+                        value,
+                        iati_equivalent
+                    FROM iati_legacydata
+                    WHERE activity_id=${activity.id}
+                    ORDER BY id 
+                "
+            >
+                <field column="name" name="legacy_data_name"/>  
+                <field column="value" name="legacy_data_value"/>   
+                <field column="iati_equivalent" name="legacy_data_iati_equivalent"/>   
+            </entity>
+            <entity 
+                name="activity_conditions" 
+                query="
+                    SELECT
+                        id,
+                        attached
+                    FROM iati_conditions
+                    WHERE activity_id=${activity.id}
+                    LIMIT 1
+                "
+            >
+                <field column="attached" name="conditions_attached"/>
+                <entity 
+                    name="activity_conditions_condition" 
+                    query="
+                        SELECT
+                            id,
+                            type_id
+                        FROM iati_condition
+                        WHERE conditions_id=${activity_conditions.id}
+                        LIMIT 1
+                    "
+                >
+                    <field column="type_id" name="conditions_condition_type"/>
+                    <entity name="activity_conditions_condition_narrative" 
+                        query="
+                            SELECT 
+                                iati_narrative.content AS content,
+                                iati_narrative.language_id AS language_id 
+                            FROM iati_narrative, django_content_type 
+                            WHERE iati_narrative.related_object_id=${activity_conditions_condition.id} 
+                                AND iati_narrative.activity_id=${activity.id} AND django_content_type.model='condition' 
+                                AND django_content_type.id=iati_narrative.related_content_type_id
+                        "
+                    >
+                        <field column="content" name="conditions_condition_narrative"/>
+                        <field column="language_id" name="conditions_condition_narrative_lang"/>
+                    </entity>
+                </entity>    
+            </entity>   
+        </entity>                         
+    </document>
+</dataConfig>
