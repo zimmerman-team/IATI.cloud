@@ -25,7 +25,8 @@ class TestActivityCSVEndpoints(APITestCase):
         url = reverse('activities:activity-list')
         expect_url = '/api/activities/'
         msg = 'activities endpoint should be located at {0}'
-        assert url == expect_url, msg.format(expect_url)
+        if not url == expect_url:
+            raise AssertionError(msg.format(expect_url))
         response = self.c.get(url)
         self.assertTrue(status.is_success(response.status_code))
 
