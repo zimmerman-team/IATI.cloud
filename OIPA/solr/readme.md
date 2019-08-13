@@ -24,3 +24,5 @@ cd solr
 ./bin/solr restart
 
 ```
+-   Run dataimport in this link [http://localhost:8983/solr/#/activity/dataimport//dataimport](http://localhost:8983/solr/#/activity/dataimport//dataimport), and choose command 'full-import' with options 'Clean' and 'Commit'. And then click button 'Execute'.
+-   Because DataStore database is very big, we can stop this process with  [http://localhost:8983/solr/#/activity/dataimport//dataimport?command=abort](http://localhost:8983/solr/#/activity/dataimport//dataimport?command=abort).
