@@ -1,0 +1,30 @@
+<dataConfig>
+    <dataSource type="JdbcDataSource" driver="org.postgresql.Driver" url="jdbc:postgresql://localhost:5432/defaultdb" user="zimmerman" password="" />
+    <document>
+        <entity name="activity" 
+            pk="iati_identifier" 
+            query="
+                SELECT 
+                    organisation_identifier, 
+                    primary_name, 
+                    type_id,
+                    reported_in_iati, 
+                    published,
+                    last_updated_datetime, 
+                    default_currency_id,
+                    default_lang_id
+                FROM iati_organisation_organisation
+            "
+        >  
+            <field column="organisation_identifier" name="id"/>
+            <field column="organisation_identifier" name="organisation_identifier"/>
+            <field column="primary_name" name="organisation_name"/>
+            <field column="type_id" name="organisation_type"/>
+            <field column="reported_in_iati" name="organisation_reported_in_iati"/>
+            <field column="published" name="organisation_published"/>
+            <field column="last_updated_datetime" name="organisation_last_updated_datetime"/>
+            <field column="default_currency_id" name="organisation_default_currency_code"/>
+            <field column="default_lang_id" name="organisation_default_lang_code"/>
+        </entity>                         
+    </document>
+</dataConfig>

@@ -1,0 +1,57 @@
+<dataConfig>
+    <dataSource type="JdbcDataSource" driver="org.postgresql.Driver" url="jdbc:postgresql://localhost:5432/defaultdb" user="zimmerman" password="" />
+    <document>
+        <entity 
+            name="activity_budget" 
+            query="
+                SELECT
+                    CONCAT(iati_activity.iati_identifier, '-', iati_budget.id) AS activity_iati_indentifier_and_budget_id,
+                    iati_activity.iati_identifier AS iati_identifier,
+                    iati_budget.id AS id,
+                    activity_id,
+                    type_id,
+                    status_id,
+                    TO_CHAR(period_start::timestamp, 'YYYY-MM-DD') AS period_start, 
+                    TO_CHAR(period_end::timestamp, 'YYYY-MM-DD') AS period_end, 
+                    iati_budget.currency_id AS currency_id,
+                    TO_CHAR(value_date::timestamp, 'YYYY-MM-DD') AS value_date, 
+                    value
+                FROM iati_budget, iati_activity
+                WHERE activity_id=iati_activity.id
+            "
+        >
+            <field column="activity_iati_indentifier_and_budget_id" name="id"/>
+            <field column="iati_identifier" name="iati_identifier"/>
+            <field column="type_id" name="budget_type"/>
+            <field column="status_id" name="budget_status"/>
+            <field column="period_start" name="budget_period_start_iso_date"/>
+            <field column="period_end" name="budget_period_end_iso_date"/>
+            <field column="currency_id" name="budget_value_currency"/>
+            <field column="value_date" name="budget_value_date"/>
+            <field column="value" name="budget_value"/>
+            <entity name="activity_reporting_org" 
+                query="
+                    SELECT 
+                        organisation_id,
+                        ref 
+                    FROM iati_activityreportingorganisation 
+                    WHERE activity_id=${activity_budget.activity_id} LIMIT 1
+                "
+            >
+                <field column="ref" name="reporting_org_ref"/>
+                <field column="type_id" name="reporting_org_type"/>
+                <field column="secondary_reporter" name="reporting_org_secondary_reporter"/>
+                <entity name="activity_reporting_org_narrative" 
+                    query="
+                        SELECT 
+                            primary_name 
+                        FROM iati_organisation_organisation 
+                        WHERE iati_organisation_organisation.id=${activity_reporting_org.organisation_id}
+                    "
+                >
+                    <field column="primary_name" name="reporting_org_narrative"/>
+                </entity> 
+            </entity>
+        </entity>                         
+    </document>
+</dataConfig>
