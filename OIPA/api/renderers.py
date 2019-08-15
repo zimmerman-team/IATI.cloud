@@ -1101,6 +1101,16 @@ class OrganisationIATICSVRenderer(CSVRenderer):
 
             return ' '
 
+    class DefaultCurrencyMap:
+        @classmethod
+        def get(cls, data):
+            default_currency = data.get('default_currency')
+            if default_currency:
+                currency = default_currency.get('code')
+                return currency
+
+            return ' '
+
     class DocumentLinksMap:
 
         @classmethod
@@ -1129,12 +1139,13 @@ class OrganisationIATICSVRenderer(CSVRenderer):
             'reporting-org/@secondary-reporter',
             'reporting-org/narratives',
         ],
-        'total_budgets': 'total_budget/0/value',
-        'recipient_org_budgets': 'recipient-org-budget/0/recipient-org/@ref',
-        'recipient_region_budgets': 'recipient-region-budget/0/recipient-region/@code',  # NOQA: E501
-        'recipient_country_budgets': 'recipient-country-budget/0/recipient-country/@code',  # NOQA: E501
-        'total_expenditures': 'total-expenditure/0/value',
-        'document_links': 'document_link/0/@url',
+        'total_budgets': '0/total_budget/value',
+        'recipient_org_budgets': '0/recipient-org-budget/recipient-org/@ref',
+        'recipient_region_budgets': '0/recipient-region-budget/recipient-region/@code',  # NOQA: E501
+        'recipient_country_budgets': '0/recipient-country-budget/recipient-country/@code',  # NOQA: E501
+        'total_expenditures': '0/total-expenditure/value',
+        'document_links': '0/document_link/@url',
+        'default_currency': 'default-currency/@code'
     }
     data_map = {
         'orgasanition_identifier': OrganisationIdentifierMap,
@@ -1146,6 +1157,7 @@ class OrganisationIATICSVRenderer(CSVRenderer):
         'recipient_country_budgets': RecipientCountryBudgetsMap,
         'total_expenditures': TotalExpendituresMap,
         'document_links': DocumentLinksMap,
+        'default_currency': DefaultCurrencyMap,
     }
     fields = ''
 
@@ -1160,8 +1172,10 @@ class OrganisationIATICSVRenderer(CSVRenderer):
             data = data.get(self.results_field, [])
 
             self.fields = args[1].get('request').GET.get('fields', '')
+            if self.fields == 'all':
+                self.fields = 'reporting_org,total_budgets,recipient_org_budgets,recipient_country_budgets,total_expenditures,document_links,default_currency'  # NOQA:  E501
         else:
-            self.fields = 'reporting_org,total_budgets,recipient_org_budgets,recipient_country_budgets,total_expenditures,document_links'  # NOQA: E501
+            self.fields = 'reporting_org,total_budgets,recipient_org_budgets,recipient_country_budgets,total_expenditures,document_links,default_currency'  # NOQA:  E501
 
         return self.process(data, *args, **kwargs)
 
