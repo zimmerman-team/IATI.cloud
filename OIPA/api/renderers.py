@@ -205,7 +205,8 @@ class PaginatedCSVRenderer(CSVRenderer):
             utils.selectable_fields = view.selectable_fields
             utils.default_fields = self.default_fields
 
-            if view_class_name in ['ActivityList', 'ActivityDetail']:
+            if view_class_name in ['ActivityList', 'ActivityDetail',
+                                   'ActivityDetailByIatiIdentifier']:
 
                 activity_data = utils.adjust_transaction_types(data, 'transaction_types')  # NOQA: E501
                 data = activity_data['data']
@@ -443,21 +444,38 @@ class UtilRenderer(object):
     def adjust_transaction_types(self, data, item_key):
 
         tmp_data = []
-        for item in data:
-
-            if item_key in item:
-                for transaction in item[item_key]:
-                    item[item_key + '_' + str(transaction['transaction_type'])] = transaction['dsum']  # NOQA: E501
+        if not isinstance(data, list):
+            if item_key in data:
+                for transaction in data[item_key]:
+                    data[item_key + '_' + str(transaction[
+                                                'transaction_type'])] = transaction['dsum']  # NOQA: E501
 
             for field in self.selectable_fields:
                 tmp_paths = {}
-                tmp_item = {field: item[field]}
+                tmp_item = {field: data[field]}
                 tmp_paths = self._go_deeper(tmp_item, '', tmp_paths)
                 tmp_data = tmp_data + list(set(tmp_paths.keys()) - set(tmp_data))  # NOQA: E501
 
-            if item_key in item:
-                item.pop(item_key, None)
-                item['selectable_headers'] = tmp_data
+            if item_key in data:
+                data.pop(item_key, None)
+                data['selectable_headers'] = tmp_data
+
+        else:
+            for item in data:
+
+                if item_key in item:
+                    for transaction in item[item_key]:
+                        item[item_key + '_' + str(transaction['transaction_type'])] = transaction['dsum']  # NOQA: E501
+
+                for field in self.selectable_fields:
+                    tmp_paths = {}
+                    tmp_item = {field: item[field]}
+                    tmp_paths = self._go_deeper(tmp_item, '', tmp_paths)
+                    tmp_data = tmp_data + list(set(tmp_paths.keys()) - set(tmp_data))  # NOQA: E501
+
+                if item_key in item:
+                    item.pop(item_key, None)
+                    item['selectable_headers'] = tmp_data
 
         return {'data': data, 'selectable_headers': tmp_data}
 

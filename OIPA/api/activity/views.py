@@ -539,7 +539,7 @@ class ActivityDetail(DynamicDetailView):
 # ActivityResults 08-07-2016
 
 
-class ActivityDetailByIatiIdentifier(DynamicDetailView):
+class ActivityDetailByIatiIdentifier(DynamicDetailView, ActivityList):
     """
     Returns detailed information of the Activity.
 
