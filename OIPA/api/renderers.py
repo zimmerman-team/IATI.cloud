@@ -197,6 +197,11 @@ class PaginatedCSVRenderer(CSVRenderer):
 
             self.selectable_fields = view.selectable_fields
 
+            if view.fields == ():
+                fields = tuple(view.serializer_fields)
+            else:
+                fields = view.fields
+
             self.default_fields = list(set(view.fields) - set(self.selectable_fields))  # NOQA: E501
 
             utils = UtilRenderer()
@@ -212,7 +217,7 @@ class PaginatedCSVRenderer(CSVRenderer):
                 data = activity_data['data']
                 selectable_headers = activity_data['selectable_headers']
                 activity_data.pop('selectable_headers', None)
-                self.rows, self.headers = utils.create_rows_headers(data, view.csv_headers, selectable_headers, view.fields, False)  # NOQA: E501
+                self.rows, self.headers = utils.create_rows_headers(data, view.csv_headers, selectable_headers, fields, False)  # NOQA: E501
 
             elif view_class_name in ['TransactionList', 'TransactionDetail']:
 
@@ -452,7 +457,10 @@ class UtilRenderer(object):
 
             for field in self.selectable_fields:
                 tmp_paths = {}
-                tmp_item = {field: data[field]}
+                try:
+                    tmp_item = {field: data[field]}
+                except KeyError:
+                    pass
                 tmp_paths = self._go_deeper(tmp_item, '', tmp_paths)
                 tmp_data = tmp_data + list(set(tmp_paths.keys()) - set(tmp_data))  # NOQA: E501
 
@@ -469,7 +477,10 @@ class UtilRenderer(object):
 
                 for field in self.selectable_fields:
                     tmp_paths = {}
-                    tmp_item = {field: item[field]}
+                    try:
+                        tmp_item = {field: item[field]}
+                    except KeyError:
+                        pass
                     tmp_paths = self._go_deeper(tmp_item, '', tmp_paths)
                     tmp_data = tmp_data + list(set(tmp_paths.keys()) - set(tmp_data))  # NOQA: E501
 
