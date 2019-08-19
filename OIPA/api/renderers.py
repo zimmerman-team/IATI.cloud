@@ -591,6 +591,13 @@ class XlsRenderer(BaseRenderer):
 
             self.selectable_fields = view.selectable_fields
 
+            # if view.field = (), that means fields = all parameter is
+            # passed. So we need to get all the serializer fields.
+            if view.fields == ():
+                fields = tuple(view.serializer_fields)
+            else:
+                fields = view.fields
+
             self.default_fields = list(set(view.fields) - set(self.selectable_fields))  # NOQA: E501
 
             utils = UtilRenderer()
@@ -605,7 +612,7 @@ class XlsRenderer(BaseRenderer):
                 data = activity_data['data']
                 selectable_headers = activity_data['selectable_headers']
                 activity_data.pop('selectable_headers', None)
-                self.rows, self.headers = utils.create_rows_headers(data, view.csv_headers, selectable_headers, view.fields, False)  # NOQA: E501
+                self.rows, self.headers = utils.create_rows_headers(data, view.csv_headers, selectable_headers, fields, False)  # NOQA: E501
 
             elif view_class_name in ['TransactionList', 'TransactionDetail']:
 
