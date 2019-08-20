@@ -65,6 +65,8 @@ class DynamicView(GenericAPIView):
         # fields in `filter_queryset` method.
         if request_fields and request_fields == 'all':
             self.fields = ()
+            self.selectable_fields = (self.selectable_fields + tuple(
+                self.serializer_fields))
         elif request_fields:
             for request_field in request_fields.split(','):
                 if request_field not in list(self.fields):
@@ -74,6 +76,17 @@ class DynamicView(GenericAPIView):
                     # just in case if you want to know which of fields
                     # we get as selectable field
                     self.selectable_fields = self.selectable_fields+(request_field,)  # NOQA: E501
+
+            # Some bugs if request fields has 'aggregations'
+            # So we need to remove it from request fields.
+            # And assign a tuple fields without aggregations
+            fields = list(self.fields)
+            try:
+                fields.remove('aggregations')
+            except ValueError:
+                pass
+            # Assign it again
+            self.fields = tuple(fields)
 
         return getattr(self, 'fields', ())
 

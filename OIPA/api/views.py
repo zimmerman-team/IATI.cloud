@@ -21,8 +21,6 @@ def welcome(request, format=None):
 
     * Budget aggregations: [`/api/budgets/aggregations`](/api/budgets/aggregations)
 
-    * Chains: [`/api/chains`](/api/chains)
-
     * Codelists: [`/api/publishers`](/api/codelists)
 
     * Countries: [`/api/countries`](/api/countries)
@@ -120,10 +118,11 @@ def welcome(request, format=None):
                 'codelists:codelist-meta-list',
                 request=request,
                 format=format),
-            'chains': reverse(
-                'chains:chain-list',
-                request=request,
-                format=format),
+            # We remove for now because need implemented
+            # 'chains': reverse(
+            #    'chains:chain-list',
+            #    request=request,
+            #    format=format),
             'branch': reverse(
                 'branch:current-branch',
                 request=request,

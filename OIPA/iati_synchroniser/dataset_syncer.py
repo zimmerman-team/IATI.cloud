@@ -150,23 +150,26 @@ class DatasetSyncer(object):
         publisher = Publisher.objects.get(
             iati_id=dataset['organization']['id'])
 
-        obj, created = Dataset.objects.update_or_create(
-            iati_id=dataset['id'],
-            defaults={
-                'name': dataset['name'],
-                'title': dataset['title'][0:254],
-                'filetype': filetype,
-                'publisher': publisher,
-                'source_url': dataset['resources'][0]['url'],
-                'iati_version': iati_version,
-                'last_found_in_registry': datetime.datetime.now(),
-                'added_manually': False
-            }
-        )
+        if iati_version in ['2.01', '2.02', '2.03']:
+            obj, created = Dataset.objects.update_or_create(
+                iati_id=dataset['id'],
+                defaults={
+                    'name': dataset['name'],
+                    'title': dataset['title'][0:254],
+                    'filetype': filetype,
+                    'publisher': publisher,
+                    'source_url': dataset['resources'][0]['url'],
+                    'iati_version': iati_version,
+                    'last_found_in_registry': datetime.datetime.now(),
+                    'added_manually': False,
+                    'date_created': dataset['metadata_created'],
+                    'date_updated': dataset['metadata_modified']
+                }
+            )
 
-        # this also returns internal URL for the Dataset:
-        obj.internal_url = self.download_dataset(dataset) or ''
-        obj.save()
+            # this also returns internal URL for the Dataset:
+            obj.internal_url = self.download_dataset(dataset) or ''
+            obj.save()
 
     def download_dataset(self, dataset_data):
         """Based on dataset URL, downloads and saves it in the server

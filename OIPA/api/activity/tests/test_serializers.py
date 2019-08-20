@@ -13,6 +13,7 @@ from api.activity import serializers
 from api.codelist.serializers import CodelistCategorySerializer
 from iati.factory import iati_factory
 from iati_codelists.factory import codelist_factory
+from iati_codelists.factory.codelist_factory import AidTypeFactory
 from iati_synchroniser.factory.synchroniser_factory import PublisherFactory
 
 
@@ -122,7 +123,7 @@ class ActivitySerializerTestCase(TestCase):
             """
 
     def test_aid_type_serializer(self):
-        aidtype = iati_factory.AidTypeFactory.build(
+        aidtype = AidTypeFactory.build(
             code='10',
         )
         serializer = serializers.CodelistSerializer(aidtype)
@@ -691,7 +692,7 @@ class ActivitySerializerTestCase(TestCase):
             'document_links',
             'results',
             'locations',
-            'aggregations',
+            'activity_plus_child_aggregation',
         )
         assertion_msg = "the field '{0}' should be in the serialized activity"
         for field in required_fields:

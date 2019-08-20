@@ -151,6 +151,28 @@ class StickyBooleanFilter(BooleanFilter):
         return super(StickyBooleanFilter, self).filter(qs, value)
 
 
+class IsNullBooleanFilter(BooleanFilter):
+    """
+    when we pass, for example, 'has_recipient_country=True' in activity
+    endpoint , that means we want all activities where
+    'recipient_county__isnull = False'. We don't have 'isnotnull' look_up field
+    in Django ORM so we need to change'True' in the request value to
+    'False' so that 'recipient_country_isnull' would be False.
+    Another option might be to use 'exlude' method in filter but the
+    performance is so bad that we get timeout error.
+    """
+
+    def filter(self, qs, value):
+        if value is False:
+            value = True
+        elif value is True:
+            value = False
+        else:
+            value = None
+
+        return super().filter(qs, value)
+
+
 class CommaSeparatedDateRangeFilter(Filter):
 
     def filter(self, qs, value):

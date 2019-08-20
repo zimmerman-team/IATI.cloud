@@ -1589,7 +1589,8 @@ class Parse(IatiParser):
             # ref. http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/policy-marker/  # NOQA: E501
 
             code = slugify(code)
-            policy_marker_code = self.get_or_none(models.PolicyMarker, code)
+            policy_marker_code = self.get_or_none(models.PolicyMarker,
+                                                  code=code)
 
             if not policy_marker_code:
                 policy_marker_code = models.PolicyMarker()
@@ -1735,7 +1736,15 @@ class Parse(IatiParser):
                 code)
 
         activity = self.get_model('Activity')
-        activity.default_aid_type = default_aid_type
+        activity_default_aid_type = models.ActivityDefaultAidType()
+
+        activity_default_aid_type.activity = activity
+        activity_default_aid_type.aid_type = default_aid_type
+
+        self.register_model(
+            'ActivityDefaultAidType',
+            activity_default_aid_type
+        )
 
         return element
 

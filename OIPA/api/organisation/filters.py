@@ -1,9 +1,12 @@
-from api.generics.filters import CommaSeparatedCharFilter, TogetherFilterSet
+from api.generics.filters import (
+    BooleanFilter, CommaSeparatedCharFilter, TogetherFilterSet
+)
 from iati_organisation.models import Organisation
 
 
 class OrganisationFilter(TogetherFilterSet):
-    organisation_identifier = CommaSeparatedCharFilter(
+    # naming is according to IATI standard.
+    reporting_organisation_identifier = CommaSeparatedCharFilter(
         field_name='organisation_identifier',
         lookup_expr='in'
     )
@@ -11,8 +14,11 @@ class OrganisationFilter(TogetherFilterSet):
         field_name='primary_name',
         lookup_expr='exact'
     )
+    is_reporting_organisation = BooleanFilter(
+        field_name='activityreportingorganisation',
+        lookup_expr='isnull',
+        exclude=True)
 
     class Meta:
         model = Organisation
-        fields = ['organisation_identifier',
-                  'name']
+        fields = []

@@ -197,6 +197,11 @@ class PaginatedCSVRenderer(CSVRenderer):
 
             self.selectable_fields = view.selectable_fields
 
+            if view.fields == ():
+                fields = tuple(view.serializer_fields)
+            else:
+                fields = view.fields
+
             self.default_fields = list(set(view.fields) - set(self.selectable_fields))  # NOQA: E501
 
             utils = UtilRenderer()
@@ -205,13 +210,14 @@ class PaginatedCSVRenderer(CSVRenderer):
             utils.selectable_fields = view.selectable_fields
             utils.default_fields = self.default_fields
 
-            if view_class_name in ['ActivityList', 'ActivityDetail']:
+            if view_class_name in ['ActivityList', 'ActivityDetail',
+                                   'ActivityDetailByIatiIdentifier']:
 
                 activity_data = utils.adjust_transaction_types(data, 'transaction_types')  # NOQA: E501
                 data = activity_data['data']
                 selectable_headers = activity_data['selectable_headers']
                 activity_data.pop('selectable_headers', None)
-                self.rows, self.headers = utils.create_rows_headers(data, view.csv_headers, selectable_headers, view.fields, False)  # NOQA: E501
+                self.rows, self.headers = utils.create_rows_headers(data, view.csv_headers, selectable_headers, fields, False)  # NOQA: E501
 
             elif view_class_name in ['TransactionList', 'TransactionDetail']:
 
@@ -443,21 +449,44 @@ class UtilRenderer(object):
     def adjust_transaction_types(self, data, item_key):
 
         tmp_data = []
-        for item in data:
-
-            if item_key in item:
-                for transaction in item[item_key]:
-                    item[item_key + '_' + str(transaction['transaction_type'])] = transaction['dsum']  # NOQA: E501
+        if not isinstance(data, list):
+            if item_key in data:
+                for transaction in data[item_key]:
+                    data[item_key + '_' + str(transaction[
+                                                'transaction_type'])] = transaction['dsum']  # NOQA: E501
 
             for field in self.selectable_fields:
                 tmp_paths = {}
-                tmp_item = {field: item[field]}
+                try:
+                    tmp_item = {field: data[field]}
+                except KeyError:
+                    pass
                 tmp_paths = self._go_deeper(tmp_item, '', tmp_paths)
                 tmp_data = tmp_data + list(set(tmp_paths.keys()) - set(tmp_data))  # NOQA: E501
 
-            if item_key in item:
-                item.pop(item_key, None)
-                item['selectable_headers'] = tmp_data
+            if item_key in data:
+                data.pop(item_key, None)
+                data['selectable_headers'] = tmp_data
+
+        else:
+            for item in data:
+
+                if item_key in item:
+                    for transaction in item[item_key]:
+                        item[item_key + '_' + str(transaction['transaction_type'])] = transaction['dsum']  # NOQA: E501
+
+                for field in self.selectable_fields:
+                    tmp_paths = {}
+                    try:
+                        tmp_item = {field: item[field]}
+                    except KeyError:
+                        pass
+                    tmp_paths = self._go_deeper(tmp_item, '', tmp_paths)
+                    tmp_data = tmp_data + list(set(tmp_paths.keys()) - set(tmp_data))  # NOQA: E501
+
+                if item_key in item:
+                    item.pop(item_key, None)
+                    item['selectable_headers'] = tmp_data
 
         return {'data': data, 'selectable_headers': tmp_data}
 
@@ -1101,6 +1130,16 @@ class OrganisationIATICSVRenderer(CSVRenderer):
 
             return ' '
 
+    class DefaultCurrencyMap:
+        @classmethod
+        def get(cls, data):
+            default_currency = data.get('default_currency')
+            if default_currency:
+                currency = default_currency.get('code')
+                return currency
+
+            return ' '
+
     class DocumentLinksMap:
 
         @classmethod
@@ -1129,12 +1168,13 @@ class OrganisationIATICSVRenderer(CSVRenderer):
             'reporting-org/@secondary-reporter',
             'reporting-org/narratives',
         ],
-        'total_budgets': 'total_budget/0/value',
-        'recipient_org_budgets': 'recipient-org-budget/0/recipient-org/@ref',
-        'recipient_region_budgets': 'recipient-region-budget/0/recipient-region/@code',  # NOQA: E501
-        'recipient_country_budgets': 'recipient-country-budget/0/recipient-country/@code',  # NOQA: E501
-        'total_expenditures': 'total-expenditure/0/value',
-        'document_links': 'document_link/0/@url',
+        'total_budgets': '0/total_budget/value',
+        'recipient_org_budgets': '0/recipient-org-budget/recipient-org/@ref',
+        'recipient_region_budgets': '0/recipient-region-budget/recipient-region/@code',  # NOQA: E501
+        'recipient_country_budgets': '0/recipient-country-budget/recipient-country/@code',  # NOQA: E501
+        'total_expenditures': '0/total-expenditure/value',
+        'document_links': '0/document_link/@url',
+        'default_currency': 'default-currency/@code'
     }
     data_map = {
         'orgasanition_identifier': OrganisationIdentifierMap,
@@ -1146,6 +1186,7 @@ class OrganisationIATICSVRenderer(CSVRenderer):
         'recipient_country_budgets': RecipientCountryBudgetsMap,
         'total_expenditures': TotalExpendituresMap,
         'document_links': DocumentLinksMap,
+        'default_currency': DefaultCurrencyMap,
     }
     fields = ''
 
@@ -1160,8 +1201,10 @@ class OrganisationIATICSVRenderer(CSVRenderer):
             data = data.get(self.results_field, [])
 
             self.fields = args[1].get('request').GET.get('fields', '')
+            if self.fields == 'all':
+                self.fields = 'reporting_org,total_budgets,recipient_org_budgets,recipient_country_budgets,total_expenditures,document_links,default_currency'  # NOQA:  E501
         else:
-            self.fields = 'reporting_org,total_budgets,recipient_org_budgets,recipient_country_budgets,total_expenditures,document_links'  # NOQA: E501
+            self.fields = 'reporting_org,total_budgets,recipient_org_budgets,recipient_country_budgets,total_expenditures,document_links,default_currency'  # NOQA:  E501
 
         return self.process(data, *args, **kwargs)
 

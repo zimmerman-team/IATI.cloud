@@ -1,6 +1,10 @@
+from collections import OrderedDict
+
 from django.db.models import Sum
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
+from rest_framework.fields import SkipField
+from rest_framework.relations import PKOnlyObject
 from rest_framework.reverse import reverse
 
 from api.activity.filters import RelatedActivityFilter
@@ -20,8 +24,9 @@ from api.publisher.serializers import PublisherSerializer
 from api.region.serializers import BasicRegionSerializer
 from api.sector.serializers import SectorSerializer
 from iati.models import (
-    Activity, ActivityDate, ActivityParticipatingOrganisation,
-    ActivityPolicyMarker, ActivityRecipientCountry, ActivityRecipientRegion,
+    Activity, ActivityDate, ActivityDefaultAidType,
+    ActivityParticipatingOrganisation, ActivityPolicyMarker,
+    ActivityRecipientCountry, ActivityRecipientRegion,
     ActivityReportingOrganisation, ActivitySector, ActivityTag, Budget,
     BudgetItem, BudgetItemDescription, Condition, Conditions, ContactInfo,
     ContactInfoDepartment, ContactInfoJobTitle, ContactInfoMailingAddress,
@@ -3138,6 +3143,16 @@ class ActivityTagSerializer(ModelSerializerNoValidation):
         )
 
 
+class ActivityDefaultAidTypeSerializer(ModelSerializerNoValidation):
+    aid_type = AidTypeSerializer()
+
+    class Meta:
+        model = ActivityDefaultAidType
+        fields = (
+            'aid_type',
+        )
+
+
 class ActivitySerializer(DynamicFieldsModelSerializer):
     url = serializers.HyperlinkedIdentityField(
         view_name='activities:activity-detail', read_only=True)
@@ -3237,7 +3252,12 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
     collaboration_type = CodelistSerializer(required=False)
     default_flow_type = CodelistSerializer(required=False)
     default_finance_type = CodelistSerializer(required=False)
-    default_aid_type = CodelistSerializer(required=False)
+    default_aid_type = ActivityDefaultAidTypeSerializer(
+        many=True,
+        source='default_aid_types',
+        read_only=True,
+        required=False,
+    )
     default_tied_status = CodelistSerializer(required=False)
 
     budgets = BudgetSerializer(
@@ -3310,7 +3330,7 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
         write_only=True, required=False)
 
     # other added data
-    aggregations = ActivityAggregationContainerSerializer(
+    activity_plus_child_aggregation = ActivityAggregationContainerSerializer(
         source="*", read_only=True)
 
     dataset = SimpleDatasetSerializer(
@@ -3451,6 +3471,51 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
 
         return update_instance
 
+    def to_representation(self, instance):
+        """
+        Custom render to avoid auto render of related transaction
+        """
+        request = self.context.get('request', None)
+        if request:
+            request_fields = request.GET.get('fields', None)
+        else:
+            request_fields = None
+
+        ret = OrderedDict()
+        fields = self._readable_fields
+
+        for field in fields:
+            # Some activity has many related transaction,
+            # the request will take too long.
+            # So related transaction will be shown if it is on fields request
+            if field.field_name == 'related_transactions':
+                if request_fields:
+                    if 'related_transactions' not in request_fields.split(','):
+                        continue
+                else:
+                    continue
+
+            try:
+                attribute = field.get_attribute(instance)
+            except SkipField:
+                continue
+
+            # We skip `to_representation` for `None` values so that fields do
+            # not have to explicitly deal with that case.
+            #
+            # For related fields with `use_pk_only_optimization` we need to
+            # resolve the pk value.
+            check_for_none = attribute.pk if isinstance(
+                attribute, PKOnlyObject
+            ) else attribute
+
+            if check_for_none is None:
+                ret[field.field_name] = None
+            else:
+                ret[field.field_name] = field.to_representation(attribute)
+
+        return ret
+
     class Meta:
         model = Activity
         fields = (
@@ -3500,7 +3565,7 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
             'hierarchy',
             'linked_data_uri',
             'secondary_reporter',
-            'aggregations',
+            'activity_plus_child_aggregation',
             'dataset',
             'publisher',
             'published_state',

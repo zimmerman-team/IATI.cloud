@@ -279,8 +279,9 @@ class Parse(IatiParser):
             organisation = organisation_models.Organisation()
             organisation.organisation_identifier = ref
             organisation.last_updated_datetime = datetime.now()
-            organisation.iati_standard_version_id = "2.02"
+            organisation.iati_standard_version_id = "2.03"
             organisation.reported_in_iati = False
+            organisation.type = org_type
 
             # TODO: is this right? - 2017-03-27
             organisation.published = False
@@ -1689,7 +1690,8 @@ class Parse(IatiParser):
             # ref. http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/policy-marker/  # NOQA: E501
 
             code = slugify(code)
-            policy_marker_code = self.get_or_none(models.PolicyMarke, code)
+            policy_marker_code = self.get_or_none(models.PolicyMarker,
+                                                  code=code)
 
             if not policy_marker_code:
                 policy_marker_code = models.PolicyMarker()

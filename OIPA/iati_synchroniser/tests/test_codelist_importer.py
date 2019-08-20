@@ -5,8 +5,9 @@ from lxml.etree import Element
 from mock import MagicMock
 
 from geodata.models import Country
-from iati.factory import iati_factory
-from iati_codelists.factory.codelist_factory import AidTypeCategoryFactory
+from iati_codelists.factory.codelist_factory import (
+    AidTypeCategoryFactory, AidTypeFactory
+)
 from iati_codelists.models import AidType, AidTypeCategory
 from iati_synchroniser.codelist_importer import CodeListImporter
 
@@ -45,15 +46,19 @@ class CodelistImporterTestCase(TestCase):
         code.text = code_text
 
         name = Element('name')
-        name.text = name_text
+        narrative = Element('narrative')
+        narrative.text = name_text
+        name.append(narrative)
 
         description = Element('description')
-        description.text = description_text
+        narrative = Element('narrative')
+        narrative.text = description_text
+        description.append(narrative)
 
         element.extend([code, name, description])
 
         importer = CodeListImporter()
-        importer.add_code_list_item(element)
+        importer.add_code_list_item(element, 'AidType-category')
 
         self.assertEqual(1, AidTypeCategory.objects.count(),
                          "New AidTypeCategory should be added into database")
@@ -74,7 +79,9 @@ class CodelistImporterTestCase(TestCase):
         code.text = 'A01'
 
         name = Element('name')
-        name.text = 'General budget support'
+        narrative = Element('narrative')
+        narrative.text = 'General budget support'
+        name.append(narrative)
 
         language = Element('language')
         language.text = 'en'
@@ -83,12 +90,14 @@ class CodelistImporterTestCase(TestCase):
         category.text = 'A'
 
         description = Element('description')
-        description.text = 'test description'
+        narrative = Element('narrative')
+        narrative.text = 'test description'
+        description.append(narrative)
 
         element.extend([code, name, language, category, description])
 
         importer = CodeListImporter()
-        importer.add_code_list_item(element)
+        importer.add_code_list_item(element, 'aidType')
 
         self.assertEqual(1, AidType.objects.count(),
                          "New AidType should be added into database")
@@ -105,7 +114,7 @@ class CodelistImporterTestCase(TestCase):
 
     def test_add_to_model_if_field_exists(self):
 
-        aid_type_item = iati_factory.AidTypeFactory.create(code='A')
+        aid_type_item = AidTypeFactory.create(code='A')
 
         fake_description = 'added_through_add_to_model_if_field_exists'
 

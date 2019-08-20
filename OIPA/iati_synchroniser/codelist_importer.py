@@ -80,9 +80,9 @@ class CodeListImporter():
             )
 
     @staticmethod
-    def fast_iter(context, func):
+    def fast_iter(context, func, tag):
         for event, elem in context:
-            func(elem)
+            func(elem, tag)
             elem.clear()
             while elem.getprevious() is not None:
                 del elem.getparent()[0]
@@ -93,19 +93,23 @@ class CodeListImporter():
         if xpath_find:
             return xpath_find[0].encode('utf-8')
 
-    def add_code_list_item(self, elem):
+        return ''
+
+    def add_code_list_item(self, elem, tag):
         '''Adds ALL available codelist items from the file IF element's name
         matches model name in our database (RegionVocabulary, Country, etc.)
         '''
 
-        tag = elem.tag
+        # tag = elem.tag
         item = None
         code = smart_text(self.return_first(elem.xpath('code/text()')))
-        name = smart_text(self.return_first(elem.xpath('name/text()')))
+        name = smart_text(self.return_first(
+            elem.xpath('name/narrative/text()')
+        ))
         description = smart_text(self.return_first(
-            elem.xpath('description/text()'))) or ''
+            elem.xpath('description/narrative/text()'))) or ''
         language_name = smart_text(
-            self.return_first(elem.xpath('language/text()')))
+            self.return_first(elem.xpath('language/text()'))) or ''
         category = smart_text(self.return_first(elem.xpath('category/text()')))
         url = smart_text(self.return_first(elem.xpath('url/text()'))) or ' '
         model_name = tag
@@ -290,60 +294,54 @@ class CodeListImporter():
                 'language': 'en'})
 
     def get_codelist_data(self, elem=None, name=None):
-        '''If 'name' parameter is not passed to this funtion, it first creates
-           Codelist objects.
-           Otherwise, actual codelist items (RegionVocabulary, SectorCategory)
-           are also created
-        '''
+        """
+        If 'name' parameter is not passed to this funtion, it first creates
+        Codelist objects.
+        Otherwise, actual codelist items (RegionVocabulary, SectorCategory)
+        are also created
+        """
 
         if not name:
-            name = smart_text(self.return_first(elem.xpath('name/text()')))
-            description = smart_text(
-                self.return_first(elem.xpath('description/text()'))
-            )
-            count = smart_text(self.return_first(elem.xpath('count/text()')))
-            fields = smart_text(self.return_first(elem.xpath('fields/text()')))
+            name = smart_text(self.return_first(elem.xpath('@ref')))
             date_updated = datetime.datetime.now()
+
+            if name == 'OrganisationIdentifier':
+                pass
 
             if Codelist.objects.filter(name=name).exists():
                 current_codelist = Codelist.objects.get(name=name)
                 current_codelist.date_updated = date_updated
-                current_codelist.description = description
-                current_codelist.count = count
-                current_codelist.fields = fields
                 current_codelist.save()
             else:
                 new_codelist = Codelist(
                     name=name,
-                    description=description,
-                    count=count,
-                    fields=fields,
-                    date_updated=date_updated)
+                    date_updated=date_updated
+                )
                 new_codelist.save()
 
         codelist_file_url = ("http://reference.iatistandard.org/"
                              + self.looping_through_version.replace('.', '') +
-                             "/codelists/downloads/clv1/"
-                             "codelist/" + smart_text(name) + ".xml")
+                             "/codelists/downloads/clv3/"
+                             "xml/" + smart_text(name) + ".xml")
 
         response = self.get_xml(codelist_file_url)
 
-        context2 = etree.iterparse(response, tag=name)
+        context2 = etree.iterparse(response, tag='codelist-item')
 
-        self.fast_iter(context2, self.add_code_list_item)
+        self.fast_iter(context2, self.add_code_list_item, name)
 
     def loop_through_codelists(self, version):
         codelist_file_url = (
             "http://reference.iatistandard.org/"
             + version.replace('.', '') +
-            "/codelists/downloads/clv1/codelist.xml")
+            "/codelists/downloads/clv3/codelists.xml")
 
         response = self.get_xml(codelist_file_url)
         context = etree.iterparse(response, tag='codelist')
 
         # This updates / creates new Codelist objects (name argument is not
         # passed to 'get_codelist_data') AND adds Codelist items:
-        self.fast_iter(context, self.get_codelist_data)
+        self.fast_iter(context, self.get_codelist_data, None)
         self.add_missing_items()
 
         # XXX: where are these used?
