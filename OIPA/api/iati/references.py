@@ -87,7 +87,7 @@ class DefaultAidTypeReference(ElementReference):
     vocabulary_attr = 'vocabulary'
 
     def create(self):
-        code = self.data.get(self.code_key)
+        code = self.data.get('aid_type').get(self.code_key)
         # We get vocabulary code from AidTypeVocabulary table.
         vocabulary = AidTypeVocabulary.objects.get(code=AidType.objects.get(
             code=code).vocabulary_id).code
