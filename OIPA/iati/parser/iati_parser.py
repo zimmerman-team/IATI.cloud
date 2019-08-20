@@ -412,6 +412,7 @@ class IatiParser(object):
 
                 except Exception as e:
                     log.exception(e)
+                    pass
 
     def remove_brackets(self, function_name):
         result = ""
