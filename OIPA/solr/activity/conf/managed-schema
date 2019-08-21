@@ -134,7 +134,8 @@
 
     <field name="reporting_org" type="text_general" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="reporting_org_ref" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-    <field name="reporting_org_type" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="reporting_org_type_code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="reporting_org_type_name" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="reporting_org_secondary_reporter" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="reporting_org_narrative" type="text_general" indexed="true" required="false" stored="true"/>
 
