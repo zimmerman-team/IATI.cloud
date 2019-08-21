@@ -23,7 +23,7 @@
                             ) reporting_org
                         ) AS VARCHAR)
                     FROM iati_activityreportingorganisation, iati_organisation_organisation, iati_codelists_organisationtype
-                    WHERE  activity_id=${activity.id}
+                    /* WHERE activity_id=${activity.id}
                         AND iati_activityreportingorganisation.organisation_id = iati_organisation_organisation.id
-                        AND iati_organisation_organisation.type_id = iati_codelists_organisationtype.code
+                        AND iati_organisation_organisation.type_id = iati_codelists_organisationtype.code */
                     LIMIT 1
