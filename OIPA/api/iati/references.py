@@ -4391,7 +4391,8 @@ class ActivityReference(BaseReference):
         # @budget-not-provided
         AttributeRecord(
             name='budget-not-provided',
-            key='budget_not_provided'
+            key='budget_not_provided',
+            dict_key='budget_not_provided'
         ),
     ]
     # >
