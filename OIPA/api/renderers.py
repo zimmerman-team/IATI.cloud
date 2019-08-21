@@ -34,7 +34,8 @@ from api.iati.references import (
     RecipientRegionReference, RelatedActivityReference,
     ReportingOrgOrgReference, ReportingOrgReference, ResultReference,
     SectorReference, TagReference, TitleReference, TotalBudgetOrgReference,
-    TotalExpenditureOrgReference, TransactionReference, XmlLangReference
+    TotalExpenditureOrgReference, TransactionReference, XmlLangReference,
+    ActivityReference
 )
 
 # TODO: Make this more generic - 2016-01-21
@@ -862,8 +863,7 @@ class IATIXMLRenderer(BaseRenderer):
         """
         Renders `data` into serialized XML.
         """
-
-        if data is None:
+        if not data:
             return ''
 
         if 'results' in data:
@@ -875,12 +875,7 @@ class IATIXMLRenderer(BaseRenderer):
         if hasattr(settings, 'EXPORT_COMMENT'):
             xml.append(etree.Comment(getattr(settings, 'EXPORT_COMMENT')))
 
-        self._to_xml(
-            etree.SubElement(
-                xml,
-                self.item_tag_name.replace('_', '-')),
-            data
-        )
+        self._to_xml(xml, data)
 
         return etree.tostring(xml, encoding=self.charset, pretty_print=True)
 
@@ -898,7 +893,17 @@ class IATIXMLRenderer(BaseRenderer):
                     self._to_xml(etree.SubElement(
                         xml, parent_name.replace('_', '-')), item)
                 else:
-                    self._to_xml(xml, item)
+                    element = ActivityReference(
+                        parent_element=xml,
+                        data=item
+                    )
+                    element.create()
+
+                    parent_element = element.parent_element.find('iati-activity')
+                    self._to_xml(
+                        parent_element,
+                        item
+                    )
 
         elif isinstance(data, dict):
             attributes = []

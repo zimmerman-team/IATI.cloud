@@ -4354,3 +4354,48 @@ class DocumentLinkOrgReference(BaseReference):
         attributes=attributes,
         children=children
     )
+
+
+class ActivityReference(BaseReference):
+    """
+    http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/
+    """
+    # <iati-activity
+    attributes = [
+        # @last-updated-datetime
+        AttributeRecord(
+            name='last-updated-datetime',
+            key='last_updated_datetime'
+        ),
+        # @default-currency
+        AttributeRecord(
+            name='default-currency',
+            key='code',
+            dict_key='default_currency'
+        ),
+        # @humanitarian
+        AttributeRecord(
+            name='humanitarian',
+            key='humanitarian'
+        ),
+        # @hierarchy
+        AttributeRecord(
+            name='hierarchy',
+            key='hierarchy'
+        ),
+        # @linked-data-uri
+        AttributeRecord(
+            name='linked-data-uri',
+            key='linked_data_uri'
+        ),
+        # @budget-not-provided
+        AttributeRecord(
+            name='budget-not-provided',
+            key='budget_not_provided'
+        ),
+    ]
+    # >
+    element_record = ElementRecord(
+        name='iati-activity',
+        attributes=attributes
+    )
