@@ -198,10 +198,6 @@ class ElementBase(object):
             # Create attribute
             if self.element_record.attributes:
                 for attribute in self.element_record.attributes:
-                    if attribute.key == 'humanitarian':
-                        a = 1
-                        pass
-
                     if attribute.key:
                         if attribute.key == 'humanitarian':
                             pass
