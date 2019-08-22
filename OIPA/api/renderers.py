@@ -19,15 +19,16 @@ from rest_framework_csv.renderers import CSVRenderer
 from six import BytesIO
 
 from api.iati.references import (
-    ActivityDateReference, ActivityScopeReference, ActivityStatusReference,
-    BudgetReference, CapitalSpendReference, CollaborationTypeReference,
-    ConditionsReference, ContactInfoReference, CountryBudgetItemsReference,
-    CrsAddReference, DefaultAidTypeReference, DefaultCurrencyOrgReference,
-    DefaultFinanceTypeReference, DefaultFlowTypeReference,
-    DefaultTiedStatusReference, DescriptionReference, DocumentLinkOrgReference,
-    DocumentLinkReference, FssReference, HumanitarianScopeReference,
-    LastUpdatedDatetimeOrgReference, LegacyDataReference, LocationReference,
-    NameOrgReference, OtherIdentifierReference, ParticipatingOrgReference,
+    ActivityDateReference, ActivityReference, ActivityScopeReference,
+    ActivityStatusReference, BudgetReference, CapitalSpendReference,
+    CollaborationTypeReference, ConditionsReference, ContactInfoReference,
+    CountryBudgetItemsReference, CrsAddReference, DefaultAidTypeReference,
+    DefaultCurrencyOrgReference, DefaultFinanceTypeReference,
+    DefaultFlowTypeReference, DefaultTiedStatusReference, DescriptionReference,
+    DocumentLinkOrgReference, DocumentLinkReference, FssReference,
+    HumanitarianScopeReference, LastUpdatedDatetimeOrgReference,
+    LegacyDataReference, LocationReference, NameOrgReference,
+    OtherIdentifierReference, ParticipatingOrgReference,
     PlannedDisbursementReference, PolicyMarkerReference,
     RecipientCountryBudgetOrgReference, RecipientCountryReference,
     RecipientOrgBudgetOrgReference, RecipientRegionBudgetOrgReference,
@@ -869,27 +870,25 @@ class IATIXMLRenderer(BaseRenderer):
         """
         Renders `data` into serialized XML.
         """
-
-        if data is None:
+        if not data:
             return ''
 
         if 'results' in data:
             data = data['results']
 
-        xml = E(self.root_tag_name)
-        xml.set('version', self.version)
+        self.xml = E(self.root_tag_name)
+        self.xml.set('version', self.version)
 
         if hasattr(settings, 'EXPORT_COMMENT'):
-            xml.append(etree.Comment(getattr(settings, 'EXPORT_COMMENT')))
+            self.xml.append(etree.Comment(getattr(settings, 'EXPORT_COMMENT')))
 
-        self._to_xml(
-            etree.SubElement(
-                xml,
-                self.item_tag_name.replace('_', '-')),
-            data
+        self._to_xml(self.xml, data)
+
+        return etree.tostring(
+            self.xml,
+            encoding=self.charset,
+            pretty_print=True
         )
-
-        return etree.tostring(xml, encoding=self.charset, pretty_print=True)
 
     def _to_xml(self, xml, data, parent_name=None):
         if isinstance(data, (list, tuple)):
@@ -905,7 +904,16 @@ class IATIXMLRenderer(BaseRenderer):
                     self._to_xml(etree.SubElement(
                         xml, parent_name.replace('_', '-')), item)
                 else:
-                    self._to_xml(xml, item)
+                    element = ActivityReference(
+                        parent_element=self.xml,
+                        data=item
+                    )
+                    element.create()
+
+                    self._to_xml(
+                        self.xml.findall('iati-activity')[-1],
+                        item
+                    )
 
         elif isinstance(data, dict):
             attributes = []
