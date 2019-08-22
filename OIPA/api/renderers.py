@@ -869,15 +869,15 @@ class IATIXMLRenderer(BaseRenderer):
         if 'results' in data:
             data = data['results']
 
-        xml = E(self.root_tag_name)
-        xml.set('version', self.version)
+        self.xml = E(self.root_tag_name)
+        self.xml.set('version', self.version)
 
         if hasattr(settings, 'EXPORT_COMMENT'):
-            xml.append(etree.Comment(getattr(settings, 'EXPORT_COMMENT')))
+            self.xml.append(etree.Comment(getattr(settings, 'EXPORT_COMMENT')))
 
-        self._to_xml(xml, data)
+        self._to_xml(self.xml, data)
 
-        return etree.tostring(xml, encoding=self.charset, pretty_print=True)
+        return etree.tostring(self.xml, encoding=self.charset, pretty_print=True)
 
     def _to_xml(self, xml, data, parent_name=None):
         if isinstance(data, (list, tuple)):
@@ -894,14 +894,13 @@ class IATIXMLRenderer(BaseRenderer):
                         xml, parent_name.replace('_', '-')), item)
                 else:
                     element = ActivityReference(
-                        parent_element=xml,
+                        parent_element=self.xml,
                         data=item
                     )
                     element.create()
 
-                    parent_element = element.parent_element.find('iati-activity')
                     self._to_xml(
-                        parent_element,
+                        self.xml.findall('iati-activity')[-1],
                         item
                     )
 
