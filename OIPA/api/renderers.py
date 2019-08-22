@@ -877,7 +877,11 @@ class IATIXMLRenderer(BaseRenderer):
 
         self._to_xml(self.xml, data)
 
-        return etree.tostring(self.xml, encoding=self.charset, pretty_print=True)
+        return etree.tostring(
+            self.xml,
+            encoding=self.charset,
+            pretty_print=True
+        )
 
     def _to_xml(self, xml, data, parent_name=None):
         if isinstance(data, (list, tuple)):
