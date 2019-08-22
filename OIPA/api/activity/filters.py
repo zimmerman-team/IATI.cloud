@@ -394,7 +394,7 @@ class ActivityFilter(TogetherFilterSet):
     sector_vocabulary = ToManyFilter(
         qs=ActivitySector,
         lookup_expr='in',
-        name='sector__vocabulary__code',
+        name='vocabulary__code',
         fk='activity',
     )
 
