@@ -19,23 +19,23 @@ from rest_framework_csv.renderers import CSVRenderer
 from six import BytesIO
 
 from api.iati.references import (
-    ActivityDateReference, ActivityScopeReference, ActivityStatusReference,
-    BudgetReference, CapitalSpendReference, CollaborationTypeReference,
-    ConditionsReference, ContactInfoReference, CountryBudgetItemsReference,
-    CrsAddReference, DefaultAidTypeReference, DefaultCurrencyOrgReference,
-    DefaultFinanceTypeReference, DefaultFlowTypeReference,
-    DefaultTiedStatusReference, DescriptionReference, DocumentLinkOrgReference,
-    DocumentLinkReference, FssReference, HumanitarianScopeReference,
-    LastUpdatedDatetimeOrgReference, LegacyDataReference, LocationReference,
-    NameOrgReference, OtherIdentifierReference, ParticipatingOrgReference,
+    ActivityDateReference, ActivityReference, ActivityScopeReference,
+    ActivityStatusReference, BudgetReference, CapitalSpendReference,
+    CollaborationTypeReference, ConditionsReference, ContactInfoReference,
+    CountryBudgetItemsReference, CrsAddReference, DefaultAidTypeReference,
+    DefaultCurrencyOrgReference, DefaultFinanceTypeReference,
+    DefaultFlowTypeReference, DefaultTiedStatusReference, DescriptionReference,
+    DocumentLinkOrgReference, DocumentLinkReference, FssReference,
+    HumanitarianScopeReference, LastUpdatedDatetimeOrgReference,
+    LegacyDataReference, LocationReference, NameOrgReference,
+    OtherIdentifierReference, ParticipatingOrgReference,
     PlannedDisbursementReference, PolicyMarkerReference,
     RecipientCountryBudgetOrgReference, RecipientCountryReference,
     RecipientOrgBudgetOrgReference, RecipientRegionBudgetOrgReference,
     RecipientRegionReference, RelatedActivityReference,
     ReportingOrgOrgReference, ReportingOrgReference, ResultReference,
     SectorReference, TagReference, TitleReference, TotalBudgetOrgReference,
-    TotalExpenditureOrgReference, TransactionReference, XmlLangReference,
-    ActivityReference
+    TotalExpenditureOrgReference, TransactionReference, XmlLangReference
 )
 
 # TODO: Make this more generic - 2016-01-21
