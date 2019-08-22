@@ -2212,7 +2212,7 @@ class CapitalSpendReference(ElementReference):
     # />
 
     def create(self):
-        if self.data:
+        if self.data is not None:
             # <capital-spend
             capital_spend_element = etree.SubElement(
                 self.parent_element, self.element
