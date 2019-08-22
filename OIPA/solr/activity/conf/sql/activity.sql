@@ -14,6 +14,8 @@
                     default_finance_type_id,
                     default_tied_status_id,
                     capital_spend,
-                    iati_version
+                    iati_version,
+                    date_created,
+                    date_updated
                 FROM iati_activity, iati_synchroniser_dataset
                 WHERE iati_activity.dataset_id=iati_synchroniser_dataset.id

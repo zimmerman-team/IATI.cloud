@@ -1,0 +1,45 @@
+<dataConfig>
+    <dataSource type="JdbcDataSource" driver="org.postgresql.Driver" url="jdbc:postgresql://localhost:5432/defaultdb" user="" password="" />
+    <document>
+        <entity name="activity" 
+            pk="iati_identifier" 
+            query="
+                SELECT
+                       iati_synchroniser_dataset.name AS name,
+                       title,
+                       filetype,
+                       date_created,
+                       date_updated,
+                       last_found_in_registry,
+                       iati_version,
+                       source_url,
+                       iati_synchroniser_publisher.publisher_iati_id AS publisher_iati_id,
+                       iati_synchroniser_publisher.name AS publisher_name,
+                       iati_synchroniser_publisher.display_name AS publisher_display_name,
+                       CAST((
+                           SELECT ROW_TO_JSON(publisher_record) AS publisher
+                           FROM (
+                               SELECT
+                                      iati_synchroniser_publisher.publisher_iati_id AS publisher_iati_id,
+                                      iati_synchroniser_publisher.name AS name,
+                                      iati_synchroniser_publisher.display_name AS display_name
+                            ) AS publisher_record
+                       ) AS VARCHAR)
+                FROM iati_synchroniser_dataset, iati_synchroniser_publisher
+                WHERE iati_synchroniser_dataset.publisher_id = iati_synchroniser_publisher.id
+            "
+        >  
+            <field column="name" name="name"/>
+            <field column="title" name="title"/>
+            <field column="filetype" name="filetype"/>
+            <field column="date_created" name="date_created"/>
+            <field column="date_updated" name="date_updated"/>
+            <field column="iati_version" name="iati_version"/>
+            <field column="source_url" name="source_url"/>
+            <field column="publisher" name="publisher"/>
+            <field column="publisher_iati_id" name="publisher_iati_id"/>
+            <field column="publisher_name" name="publisher_name"/>
+            <field column="publisher_display_name" name="publisher_display_name"/>
+        </entity>                         
+    </document>
+</dataConfig>
