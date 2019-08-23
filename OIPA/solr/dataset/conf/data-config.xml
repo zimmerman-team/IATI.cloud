@@ -5,6 +5,7 @@
             pk="iati_identifier" 
             query="
                 SELECT
+                       iati_synchroniser_dataset.iati_id AS id,
                        iati_synchroniser_dataset.name AS name,
                        title,
                        filetype,
@@ -28,7 +29,8 @@
                 FROM iati_synchroniser_dataset, iati_synchroniser_publisher
                 WHERE iati_synchroniser_dataset.publisher_id = iati_synchroniser_publisher.id
             "
-        >  
+        >
+            <field column="id" name="id"/>
             <field column="name" name="name"/>
             <field column="title" name="title"/>
             <field column="filetype" name="filetype"/>
