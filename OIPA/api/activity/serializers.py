@@ -1,7 +1,6 @@
 from collections import OrderedDict
 
 from django.db.models import Sum
-from django.urls import reverse
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.fields import SkipField
