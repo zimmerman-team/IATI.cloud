@@ -125,9 +125,9 @@
     <!--Activity Core - Start -->
     <field name="iati_identifier" type="string" multiValued="false" indexed="true" required="true" stored="true"/>
 
-    <field name="iati_version" type="string" multiValued="false" indexed="true" required="true" stored="true"/>
-    <field name="date_created" type="pdate" multiValued="false" indexed="true" required="true" stored="true"/>
-    <field name="date_updated" type="pdate" multiValued="false" indexed="true" required="true" stored="true"/>
+    <field name="dataset_iati_version" type="string" multiValued="false" indexed="true" required="true" stored="true"/>
+    <field name="dataset_date_created" type="pdate" multiValued="false" indexed="true" required="true" stored="true"/>
+    <field name="dataset_date_updated" type="pdate" multiValued="false" indexed="true" required="true" stored="true"/>
 
     <field name="last_updated_datetime" type="pdate" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="default_lang" type="string" multiValued="false" indexed="true" required="false" stored="true"/>

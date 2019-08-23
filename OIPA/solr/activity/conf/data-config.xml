@@ -20,9 +20,9 @@
                     default_finance_type_id,
                     default_tied_status_id,
                     capital_spend,
-                    iati_version,
-                    date_created,
-                    date_updated
+                    iati_version AS dataset_iati_version,
+                    date_created AS dataset_date_created,
+                    date_updated AS dataset_date_updated
                 FROM iati_activity, iati_synchroniser_dataset
                 WHERE iati_activity.dataset_id=iati_synchroniser_dataset.id
             "
@@ -35,7 +35,7 @@
             <field column="humanitarian" name="humanitarian"/>
             <field column="hierarchy" name="hierarchy"/>
             <field column="linked_data_uri" name="linked_data_uri"/>
-            <field column="iati_version" name="iati_version"/>
+            <field column="dataset_iati_version" name="dataset_iati_version"/>
             <field column="activity_status_id" name="activity_status_code"/>
             <field column="scope_id" name="activity_scope_code"/>
             <field column="collaboration_type_id" name="collaboration_type_code"/>
@@ -43,8 +43,8 @@
             <field column="default_finance_type_id" name="default_finance_type_code"/>
             <field column="default_tied_status_id" name="default_tied_status_code"/>
             <field column="capital_spend" name="capital_spend_percentage"/>
-            <field column="date_created" name="date_created"/>
-            <field column="date_updated" name="date_updated"/>
+            <field column="dataset_date_created" name="dataset_date_created"/>
+            <field column="dataset_date_updated" name="dataset_date_updated"/>
             <entity name="activity_reporting_org"
                 query="
                     SELECT
