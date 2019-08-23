@@ -982,6 +982,19 @@ class TransactionReference(ElementReference):
                     code
                 )
 
+        # Message to avoid big record
+        message = self.data.get('message')
+        if message:
+            message_element = etree.SubElement(
+                transaction_element, 'message'
+            )
+            message_element.text = message
+
+            path_url_element = etree.SubElement(
+                transaction_element, 'url'
+            )
+            path_url_element.text = self.data.get('url')
+
 
 class SectorReference(ElementWithNarrativeReference):
     """
