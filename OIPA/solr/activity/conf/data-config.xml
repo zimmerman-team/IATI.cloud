@@ -1,5 +1,5 @@
 <dataConfig>
-    <dataSource type="JdbcDataSource" driver="org.postgresql.Driver" url="jdbc:postgresql://localhost:5432/oipa" user="zimmerman" password="" />
+    <dataSource type="JdbcDataSource" driver="org.postgresql.Driver" url="jdbc:postgresql://localhost:5432/defaultdb" user="" password="" />
     <document>
         <entity name="activity"
             pk="iati_identifier"
@@ -20,7 +20,9 @@
                     default_finance_type_id,
                     default_tied_status_id,
                     capital_spend,
-                    iati_version
+                    iati_version,
+                    date_created,
+                    date_updated
                 FROM iati_activity, iati_synchroniser_dataset
                 WHERE iati_activity.dataset_id=iati_synchroniser_dataset.id
             "
@@ -41,6 +43,8 @@
             <field column="default_finance_type_id" name="default_finance_type_code"/>
             <field column="default_tied_status_id" name="default_tied_status_code"/>
             <field column="capital_spend" name="capital_spend_percentage"/>
+            <field column="date_created" name="date_created"/>
+            <field column="date_updated" name="date_updated"/>
             <entity name="activity_reporting_org"
                 query="
                     SELECT
