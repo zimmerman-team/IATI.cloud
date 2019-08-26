@@ -28,15 +28,14 @@ from api.iati.references import (
     DocumentLinkOrgReference, DocumentLinkReference, FssReference,
     HumanitarianScopeReference, LastUpdatedDatetimeOrgReference,
     LegacyDataReference, LocationReference, NameOrgReference,
-    OtherIdentifierReference, ParticipatingOrgReference,
+    OrganisationReference, OtherIdentifierReference, ParticipatingOrgReference,
     PlannedDisbursementReference, PolicyMarkerReference,
     RecipientCountryBudgetOrgReference, RecipientCountryReference,
     RecipientOrgBudgetOrgReference, RecipientRegionBudgetOrgReference,
     RecipientRegionReference, RelatedActivityReference,
     ReportingOrgOrgReference, ReportingOrgReference, ResultReference,
     SectorReference, TagReference, TitleReference, TotalBudgetOrgReference,
-    TotalExpenditureOrgReference, TransactionReference, XmlLangReference,
-    OrganisationReference
+    TotalExpenditureOrgReference, TransactionReference, XmlLangReference
 )
 
 # TODO: Make this more generic - 2016-01-21
