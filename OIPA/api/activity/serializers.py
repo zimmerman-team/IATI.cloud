@@ -3286,6 +3286,11 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
         read_only=True,
         view_name='activities:activity-transactions',
     )
+    transaction_url = serializers.HyperlinkedIdentityField(
+        read_only=True,
+        view_name='activities:activity-transactions-by-iati-identifier',
+        lookup_field='iati_identifier'
+    )
 
     related_transactions = TransactionSerializer(
         many=True,
@@ -3475,26 +3480,10 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
         """
         Custom render to avoid auto render of related transaction
         """
-        request = self.context.get('request', None)
-        if request:
-            request_fields = request.GET.get('fields', None)
-        else:
-            request_fields = None
-
         ret = OrderedDict()
         fields = self._readable_fields
 
         for field in fields:
-            # Some activity has many related transaction,
-            # the request will take too long.
-            # So related transaction will be shown if it is on fields request
-            if field.field_name == 'related_transactions':
-                if request_fields:
-                    if 'related_transactions' not in request_fields.split(','):
-                        continue
-                else:
-                    continue
-
             try:
                 attribute = field.get_attribute(instance)
             except SkipField:
@@ -3512,7 +3501,33 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
             if check_for_none is None:
                 ret[field.field_name] = None
             else:
-                ret[field.field_name] = field.to_representation(attribute)
+                # Some activity has many related transaction,
+                # the request will take too long.
+                # So related transaction will be shown if it is on fields
+                # request
+                if field.field_name == 'related_transactions':
+                    if instance.transaction_set.count() > 100:
+                        custom_ret = OrderedDict()
+                        custom_ret['message'] = \
+                            'This activity has more ' \
+                            'then 100 transactions! ' \
+                            'To get all transactions,  ' \
+                            'please using the URL transaction, instead!'
+
+                        try:
+                            custom_ret['url'] = self.fields[
+                                'transaction_url'
+                            ].to_representation(instance)
+                        except KeyError:
+                            pass
+
+                        ret[field.field_name] = custom_ret
+                    else:
+                        ret[field.field_name] = field.to_representation(
+                            attribute
+                        )
+                else:
+                    ret[field.field_name] = field.to_representation(attribute)
 
         return ret
 
@@ -3569,7 +3584,8 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
             'dataset',
             'publisher',
             'published_state',
-            'transaction_types'
+            'transaction_types',
+            'transaction_url'
         )
 
         validators = []
