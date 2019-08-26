@@ -3510,9 +3510,9 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
                         custom_ret = OrderedDict()
                         custom_ret['message'] = \
                             'This activity has more ' \
-                            'then 100 transactions! ' \
+                            'than 100 transactions! ' \
                             'To get all transactions,  ' \
-                            'please using the URL transaction, instead!'
+                            'please use the URL transaction, instead!'
 
                         try:
                             custom_ret['url'] = self.fields[
