@@ -35,7 +35,8 @@ from api.iati.references import (
     RecipientRegionReference, RelatedActivityReference,
     ReportingOrgOrgReference, ReportingOrgReference, ResultReference,
     SectorReference, TagReference, TitleReference, TotalBudgetOrgReference,
-    TotalExpenditureOrgReference, TransactionReference, XmlLangReference
+    TotalExpenditureOrgReference, TransactionReference, XmlLangReference,
+    OrganisationReference
 )
 
 # TODO: Make this more generic - 2016-01-21
@@ -904,14 +905,21 @@ class IATIXMLRenderer(BaseRenderer):
                     self._to_xml(etree.SubElement(
                         xml, parent_name.replace('_', '-')), item)
                 else:
-                    element = ActivityReference(
-                        parent_element=self.xml,
-                        data=item
-                    )
-                    element.create()
+                    if self.item_tag_name == 'iati-activity':
+                        element = ActivityReference(
+                            parent_element=self.xml,
+                            data=item
+                        )
+                        element.create()
+                    else:
+                        element = OrganisationReference(
+                            parent_element=self.xml,
+                            data=item
+                        )
+                        element.create()
 
                     self._to_xml(
-                        self.xml.findall('iati-activity')[-1],
+                        self.xml.findall(self.item_tag_name)[-1],
                         item
                     )
 

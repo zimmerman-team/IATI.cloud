@@ -4400,3 +4400,28 @@ class ActivityReference(BaseReference):
         name='iati-activity',
         attributes=attributes
     )
+
+
+class OrganisationReference(BaseReference):
+    """
+    http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/
+    """
+    # <iati-activity
+    attributes = [
+        # @last-updated-datetime
+        AttributeRecord(
+            name='last-updated-datetime',
+            key='last_updated_datetime'
+        ),
+        # @default-currency
+        AttributeRecord(
+            name='default-currency',
+            key='code',
+            dict_key='default_currency'
+        ),
+    ]
+    # >
+    element_record = ElementRecord(
+        name='iati-organisation',
+        attributes=attributes
+    )
