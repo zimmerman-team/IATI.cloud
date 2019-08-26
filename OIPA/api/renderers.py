@@ -400,7 +400,7 @@ class UtilRenderer(object):
                     paths[path] = [paths[path]]
                 paths[path].append(0 if node is None else node)
             else:
-                paths[path] = 0 if node is None else node
+                paths[path] = 'null' if node is None else node
 
         return paths
 
