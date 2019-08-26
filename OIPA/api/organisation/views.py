@@ -75,7 +75,6 @@ class OrganisationList(DynamicListView):
 
     """
     renderer_classes = (
-        rest_framework.renderers.BrowsableAPIRenderer,
         rest_framework.renderers.JSONRenderer,
         OrganisationIATIXMLRenderer,
         OrganisationIATICSVRenderer,
@@ -88,6 +87,8 @@ class OrganisationList(DynamicListView):
     selectable_fields = ()
     fields = ('url', 'organisation_identifier',
               'last_updated_datetime', 'name')
+
+    ordering_fields = '__all__'
 
 
 class OrganisationDetail(CacheResponseMixin, DynamicDetailView):

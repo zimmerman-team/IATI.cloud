@@ -28,7 +28,7 @@ from api.iati.references import (
     DocumentLinkOrgReference, DocumentLinkReference, FssReference,
     HumanitarianScopeReference, LastUpdatedDatetimeOrgReference,
     LegacyDataReference, LocationReference, NameOrgReference,
-    OtherIdentifierReference, ParticipatingOrgReference,
+    OrganisationReference, OtherIdentifierReference, ParticipatingOrgReference,
     PlannedDisbursementReference, PolicyMarkerReference,
     RecipientCountryBudgetOrgReference, RecipientCountryReference,
     RecipientOrgBudgetOrgReference, RecipientRegionBudgetOrgReference,
@@ -904,14 +904,21 @@ class IATIXMLRenderer(BaseRenderer):
                     self._to_xml(etree.SubElement(
                         xml, parent_name.replace('_', '-')), item)
                 else:
-                    element = ActivityReference(
-                        parent_element=self.xml,
-                        data=item
-                    )
-                    element.create()
+                    if self.item_tag_name == 'iati-activity':
+                        element = ActivityReference(
+                            parent_element=self.xml,
+                            data=item
+                        )
+                        element.create()
+                    else:
+                        element = OrganisationReference(
+                            parent_element=self.xml,
+                            data=item
+                        )
+                        element.create()
 
                     self._to_xml(
-                        self.xml.findall('iati-activity')[-1],
+                        self.xml.findall(self.item_tag_name)[-1],
                         item
                     )
 

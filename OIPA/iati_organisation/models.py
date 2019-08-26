@@ -97,6 +97,9 @@ class Organisation(models.Model):
 
     objects = OrganisationManager()
 
+    class Meta:
+        ordering = ['organisation_identifier']
+
     def __unicode__(self):
         return self.organisation_identifier
 
