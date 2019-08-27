@@ -1112,7 +1112,8 @@ class OrganisationSerializer(DynamicFieldsModelSerializer):
             'recipient_region_budgets',
             'recipient_country_budgets',
             'total_expenditures',
-            'document_links'
+            'document_links',
+            'dataset'
         )
 
     def validate(self, data):
