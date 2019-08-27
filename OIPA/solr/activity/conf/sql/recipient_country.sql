@@ -1,6 +1,7 @@
-                    SELECT 
-                        id, 
-                        country_id, 
+                    SELECT
+                        id,
+                        country_id,
+                        geodata_country.name AS country_name,
                         percentage,
                         CAST((
                             SELECT
@@ -21,6 +22,9 @@
                                             django_content_type.id
                                 ) as narrative_record
                             ) AS recipient_country_record
-                        ) AS VARCHAR) 
-                    FROM iati_activityrecipientcountry 
-                    /* WHERE activity_id=${activity.id} */
+                        ) AS VARCHAR)
+                    FROM iati_activityrecipientcountry, geodata_country
+                        /*
+                        WHERE activity_id=${activity.id}
+                            AND iati_activityrecipientcountry.country_id = geodata_country.code
+                        */
