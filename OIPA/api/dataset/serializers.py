@@ -113,7 +113,10 @@ class DatasetSerializer(DynamicFieldsModelSerializer):
     def get_activities(self, obj):
         request = self.context.get('request')
         url = request.build_absolute_uri(reverse('activities:activity-list'))
-        return url + '?dataset=' + str(obj.id)
+        request_format = self.context.get('request').query_params.get('format')
+        return url + '?dataset=' + str(obj.id) + '&format={' \
+                                                 'request_format}'.format(
+            request_format=request_format)
 
     def get_activity_count(self, obj):
         return Activity.objects.filter(dataset=obj.id).count()
