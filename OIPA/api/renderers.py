@@ -937,6 +937,13 @@ class IATIXMLRenderer(BaseRenderer):
                 encoding=self.charset,
                 pretty_print=True
             )
+        else:
+            self.xml = E('message')
+            self.xml.text = 'The requested endpoint is not available in xml ' \
+                            'format.'
+
+            return etree.tostring(self.xml, encoding=self.charset,
+                                  pretty_print=True)
 
     def _to_xml(self, xml, data, parent_name=None):
         if isinstance(data, (list, tuple)):
