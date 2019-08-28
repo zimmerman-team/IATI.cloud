@@ -870,25 +870,73 @@ class IATIXMLRenderer(BaseRenderer):
         """
         Renders `data` into serialized XML.
         """
+        view = renderer_context.get('view')
+        view_class_name = view.__class__.__name__
+
         if not data:
             return ''
+        elif view_class_name in ['ActivityList', 'OrganisationList']:
+            if 'results' in data:
+                data = data['results']
+            self.xml = E(self.root_tag_name)
+            self.xml.set('version', self.version)
 
-        if 'results' in data:
-            data = data['results']
+            if hasattr(settings, 'EXPORT_COMMENT'):
+                self.xml.append(
+                    etree.Comment(getattr(settings, 'EXPORT_COMMENT')))
 
-        self.xml = E(self.root_tag_name)
-        self.xml.set('version', self.version)
+            self._to_xml(self.xml, data)
 
-        if hasattr(settings, 'EXPORT_COMMENT'):
-            self.xml.append(etree.Comment(getattr(settings, 'EXPORT_COMMENT')))
+            return etree.tostring(
+                self.xml,
+                encoding=self.charset,
+                pretty_print=True
+            )
 
-        self._to_xml(self.xml, data)
+        elif view_class_name in ['ActivityDetail',
+                                 'ActivityDetailByIatiIdentifier',
+                                 ]:
+            self.xml = E(self.root_tag_name)
+            self.xml.set('version', self.version)
 
-        return etree.tostring(
-            self.xml,
-            encoding=self.charset,
-            pretty_print=True
-        )
+            if hasattr(settings, 'EXPORT_COMMENT'):
+                self.xml.append(
+                    etree.Comment(getattr(settings, 'EXPORT_COMMENT')))
+
+            element = ActivityReference(parent_element=self.xml, data=data)
+            element.create()
+
+            self._to_xml(
+                # there is only one 'activity' element in 'DetailView'.
+                self.xml.find('iati-activity'),
+                data)
+
+            return etree.tostring(
+                self.xml,
+                encoding=self.charset,
+                pretty_print=True
+            )
+        elif view_class_name in ['OrganisationDetail']:
+            self.xml = E(self.root_tag_name)
+            self.xml.set('version', self.version)
+
+            if hasattr(settings, 'EXPORT_COMMENT'):
+                self.xml.append(
+                    etree.Comment(getattr(settings, 'EXPORT_COMMENT')))
+
+            element = OrganisationReference(parent_element=self.xml,
+                                            data=data)
+            element.create()
+            self._to_xml(
+                # there is only one 'organisation' element in 'DetailView'.
+                self.xml.find('iati-organisation'),
+                data)
+
+            return etree.tostring(
+                self.xml,
+                encoding=self.charset,
+                pretty_print=True
+            )
 
     def _to_xml(self, xml, data, parent_name=None):
         if isinstance(data, (list, tuple)):
