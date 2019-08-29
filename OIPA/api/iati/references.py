@@ -1080,9 +1080,15 @@ class SectorReference(ElementWithNarrativeReference):
             self.percentage.get('key')
         )
         if percentage_value:
+            if percentage_value == 100.00:
+                # we don't want decimals in 100.
+                percentage_value_in_str = (str(percentage_value))[:-3]
+            else:
+                percentage_value_in_str = str(percentage_value)
+
             sector_element.set(
                 self.percentage.get('attr'),
-                str(percentage_value)
+                percentage_value_in_str
             )
 
         # Narrative
