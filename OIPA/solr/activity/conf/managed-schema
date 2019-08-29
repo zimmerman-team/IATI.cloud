@@ -337,6 +337,61 @@
     <field name="conditions_condition_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="conditions_condition_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="conditions_condition_narrative" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
+
+    <field name="result_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_aggregation_status" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_title_narrative" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_description_narrative" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
+
+    <field name="result_document_link" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_document_link_url" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_document_link_format" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_document_link_title_narrative" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_document_link_description_narrative" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_document_link_category_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_document_link_language_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_document_link_document_date_iso_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
+
+    <field name="result_reference" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_reference_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_reference_vocabulary" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_reference_vocabulary_uri" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+
+    <field name="result_indicator" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_indicator_measure" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_indicator_acsending" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_indicator_aggregation_status" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_indicator_title_narrative" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_indicator_description_narrative" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
+
+    <field name="result_indicator_document_link_url" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_indicator_document_link_format" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_indicator_document_link_title_narrative" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_indicator_document_link_description_narrative" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_indicator_document_link_category_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_indicator_document_link_language_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_indicator_document_link_document_date_iso_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
+
+    <field name="result_indicator_reference" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_indicator_reference_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_indicator_reference_vocabulary" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_indicator_reference_indicator_uri" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+
+    <field name="result_indicator_baseline_year" type="pint" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_indicator_baseline_iso_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_indicator_baseline_value" type="pdouble" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_indicator_baseline_location_ref" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_indicator_baseline_dimension_name" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_indicator_baseline_dimension_value" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_indicator_baseline_comment_narrative" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+
+    <field name="result_indicator_baseline_document_link_url" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_indicator_baseline_document_link_format" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_indicator_baseline_document_link_title" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_indicator_baseline_document_link_description" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_indicator_baseline_document_link_category_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_indicator_baseline_document_link_language_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_indicator_baseline_document_link_document_date_iso_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
     <!--Activity Core - End -->
 
     <!-- This can be enabled, in case the client does not know what fields may be searched. It isn't enabled by default
