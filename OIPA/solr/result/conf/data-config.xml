@@ -7,6 +7,7 @@
                 SELECT
                     CONCAT(iati_activity.iati_identifier, '-result-', iati_result.id) AS activity_iati_indentifier_and_result_id,
                     iati_activity.iati_identifier as iati_identifier,
+                    CASE WHEN iati_activity.humanitarian=TRUE THEN '1' ELSE '0' END AS humanitarian,
                     iati_result.id as id,
                     activity_id,
                     type_id,
@@ -17,6 +18,7 @@
         >
             <field column="activity_iati_indentifier_and_result_id" name="id"/>
             <field column="iati_identifier" name="iati_identifier"/>
+            <field column="humanitarian" name="humanitarian"/>
             <field column="type_id" name="result_type"/>
             <field column="aggregation_status" name="result_aggregation_status"/>
             <entity name="activity_reporting_org" 

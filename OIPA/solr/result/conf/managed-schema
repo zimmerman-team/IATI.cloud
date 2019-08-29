@@ -124,6 +124,7 @@
 
     <!--Result Core - Start-->
     <field name="iati_identifier" type="string" multiValued="false" indexed="true" required="true" stored="true"/>
+    <field name="humanitarian" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     
     <field name="reporting_org_ref" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="reporting_org_type" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
