@@ -523,6 +523,7 @@
                     SELECT
                         id,
                         country_id,
+                        geodata_country.name AS country_name,
                         percentage,
                         CAST((
                             SELECT
@@ -544,12 +545,14 @@
                                 ) as narrative_record
                             ) AS recipient_country_record
                         ) AS VARCHAR)
-                    FROM iati_activityrecipientcountry
-                    WHERE activity_id=${activity.id}
+                    FROM iati_activityrecipientcountry, geodata_country
+                        WHERE activity_id=${activity.id}
+                            AND iati_activityrecipientcountry.country_id = geodata_country.code
                 "
             >
                 <field column="recipient_country" name="recipient_country"/>
                 <field column="recipient_country_code" name="recipient_country_code"/>
+                <field column="country_name" name="recipient_country_name"/>
                 <field column="country_id" name="recipient_country_code"/>
                 <field column="percentage" name="recipient_country_percentage"/>
                 <entity name="activity_recipient_country_narrative"
