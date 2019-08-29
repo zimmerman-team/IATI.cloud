@@ -118,7 +118,6 @@ class DatasetSerializer(DynamicFieldsModelSerializer):
                 'format')
         except AttributeError:
             request_format = ''
-            
         return url + '?dataset=' + str(obj.id) + '&format={request_format}'.\
             format(request_format=request_format)
 
