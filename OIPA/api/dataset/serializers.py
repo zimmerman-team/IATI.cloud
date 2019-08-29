@@ -113,7 +113,11 @@ class DatasetSerializer(DynamicFieldsModelSerializer):
     def get_activities(self, obj):
         request = self.context.get('request')
         url = request.build_absolute_uri(reverse('activities:activity-list'))
-        request_format = self.context.get('request').query_params.get('format')
+        try:
+            request_format = self.context.get('request').query_params.get('format')
+        except AttributeError:
+            request_format = ''
+            pass
         return url + '?dataset=' + str(obj.id) + '&format={' \
                                                  'request_format}'.format(
             request_format=request_format)
