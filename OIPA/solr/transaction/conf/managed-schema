@@ -143,8 +143,9 @@
     <field name="transaction_provider_org_provider_activity_id" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="transaction_provider_org_type" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="transaction_provider_org_narrative" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+
     <field name="transaction_receiver_org_ref" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-    <field name="transaction_receiver_org_provider_activity_id" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="transaction_receiver_org_receiver_activity_id" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="transaction_receiver_org_type" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="transaction_receiver_org_narrative" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     
