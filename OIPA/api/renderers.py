@@ -903,13 +903,19 @@ class IATIXMLRenderer(BaseRenderer):
                 self.xml.append(
                     etree.Comment(getattr(settings, 'EXPORT_COMMENT')))
 
-            element = ActivityReference(parent_element=self.xml, data=data)
-            element.create()
+            # if requested data is not found, we don't need to create
+            # 'iati-activity' element.
+            if renderer_context.get('response').status_code == 404:
+                self._to_xml(self.xml.find('iati-activity'), data)
 
-            self._to_xml(
-                # there is only one 'activity' element in 'DetailView'.
-                self.xml.find('iati-activity'),
-                data)
+            else:
+                element = ActivityReference(parent_element=self.xml,
+                                                data=data)
+                element.create()
+                self._to_xml(
+                    # there is only one 'activity' element in 'DetailView'.
+                    self.xml.find('iati-activity'),
+                    data)
 
             return etree.tostring(
                 self.xml,
