@@ -910,7 +910,7 @@ class IATIXMLRenderer(BaseRenderer):
 
             else:
                 element = ActivityReference(parent_element=self.xml,
-                                                data=data)
+                                            data=data)
                 element.create()
                 self._to_xml(
                     # there is only one 'activity' element in 'DetailView'.
