@@ -1846,7 +1846,7 @@ class SectorTestCase(ParserSetupTestCase):
 
         self.assertEqual(sector.activity, self.activity)
         self.assertEqual(sector.sector.code, self.attrs['code'])
-        self.assertEqual(sector.percentage, self.attrs['percentage'])
+        self.assertEqual(sector.percentage, Decimal(self.attrs['percentage']))
         self.assertEqual(sector.vocabulary.code, self.attrs['vocabulary'])
 
         self.assertEqual(sector.vocabulary_uri, self.attrs['vocabulary-uri'])
@@ -1873,7 +1873,7 @@ class SectorTestCase(ParserSetupTestCase):
 
         self.assertEqual(sector.activity, self.activity)
         self.assertEqual(sector.sector.code, self.attrs['code'])
-        self.assertEqual(sector.percentage, self.attrs['percentage'])
+        self.assertEqual(sector.percentage, Decimal(self.attrs['percentage']))
         self.assertEqual(sector.vocabulary.code, self.attrs['vocabulary'])
 
 
@@ -1930,7 +1930,6 @@ class CountryBudgetItemsTestCase(ParserSetupTestCase):
         self.assertEqual(budget_item.code.code, "1.1.1")
         self.assertEqual(budget_item.country_budget_item,
                          self.test_country_budget_items)
-        self.assertEqual(budget_item.percentage, "50.21")
 
     def test_budget_item_description_202(self):
         """
@@ -3629,7 +3628,7 @@ class ResultTestCase(ParserSetupTestCase):
             'ResultIndicatorBaseline')
         self.assertEqual(result_indicator_baseline.year, int(attrs['year']))
         self.assertEqual(result_indicator_baseline.value,
-                         Decimal(attrs['value']))
+                         attrs['value'])
 
     def test_result_indicator_baseline_comment_202(self):
         """
