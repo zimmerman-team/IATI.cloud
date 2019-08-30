@@ -79,6 +79,10 @@ class Organisation(models.Model):
     default_lang = models.ForeignKey(Language, null=True,
                                      on_delete=models.CASCADE)
 
+    # 'iati_synchroniser.Dataset' is used to avoid circular imports
+    dataset = models.ForeignKey('iati_synchroniser.Dataset', null=True,
+                                default=None,
+                                on_delete=models.CASCADE)
     reported_in_iati = models.BooleanField(default=True)
 
     # this is actually reported on activity/reporting-org but we store it here
