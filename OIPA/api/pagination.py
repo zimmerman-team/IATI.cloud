@@ -9,17 +9,17 @@ from rest_framework.response import Response
 
 class CustomPagination(pagination.PageNumberPagination):
     page_size = 10  # default
-    max_page_size = 2000
+    max_page_size = 20
     page_size_query_param = 'page_size'
 
 
 class CustomTransactionPagination(CustomPagination):
-    max_page_size = 2000
+    max_page_size = 20
 
 
 class IatiXMLPagination(pagination.PageNumberPagination):
     page_size = 10  # default
-    max_page_size = 2000
+    max_page_size = 20
     page_size_query_param = 'page_size'
 
     def get_paginated_response(self, data):
