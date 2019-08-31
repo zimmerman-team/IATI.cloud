@@ -1537,6 +1537,18 @@ class Parse(IatiParser):
                 code
             )
 
+        if percentage:
+            try:
+                percentage = Decimal(percentage)
+            except InvalidOperation:
+                raise FieldValidationError(
+                    "sector",
+                    "percentage",
+                    "percentage value is not valid",
+                    None,
+                    None,
+                    percentage)
+
         budget_item = models.BudgetItem()
         budget_item.country_budget_item = country_budget_item
         budget_item.code = budget_identifier
@@ -3832,7 +3844,8 @@ class Parse(IatiParser):
         result_indicator_baseline.result_indicator = result_indicator
         result_indicator_baseline.iso_date = iso_date
         result_indicator_baseline.year = year
-        result_indicator_baseline.value = value or ''  # can be None
+        result_indicator_baseline.value = value if value else None  # can be
+        # None
 
         self.register_model(
             'ResultIndicatorBaseline',

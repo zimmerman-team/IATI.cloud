@@ -1,5 +1,5 @@
 from datetime import datetime
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 
 from django.conf import settings
 from django.contrib.gis.geos import GEOSGeometry, Point
@@ -862,6 +862,18 @@ class Parse(IatiParser):
                 None,
                 element.attrib.get('code'))
 
+        if percentage:
+            try:
+                percentage = Decimal(percentage)
+            except InvalidOperation:
+                raise FieldValidationError(
+                    "recipient-country",
+                    "percentage",
+                    "percentage value is not valid",
+                    None,
+                    None,
+                    percentage)
+
         activity = self.get_model('Activity')
         activity_recipient_country = models.ActivityRecipientCountry()
         activity_recipient_country.country = country
@@ -942,6 +954,18 @@ class Parse(IatiParser):
                 "code",
                 "code is unspecified or invalid"
             )
+
+        if percentage:
+            try:
+                percentage = Decimal(percentage)
+            except InvalidOperation:
+                raise FieldValidationError(
+                    "activity-sector",
+                    "percentage",
+                    "percentage value is not valid",
+                    None,
+                    None,
+                    percentage)
 
         activity = self.get_model('Activity')
         activity_recipient_region = models.ActivityRecipientRegion()
@@ -1356,6 +1380,18 @@ class Parse(IatiParser):
                 "vocabulary",
                 "non implemented vocabulary")
 
+        if percentage:
+            try:
+                percentage = Decimal(percentage)
+            except InvalidOperation:
+                raise FieldValidationError(
+                    "sector",
+                    "percentage",
+                    "percentage value is not valid",
+                    None,
+                    None,
+                    percentage)
+
         activity = self.get_model('Activity')
         activity_sector = models.ActivitySector()
         activity_sector.sector = sector
@@ -1434,6 +1470,18 @@ class Parse(IatiParser):
                 None,
                 None,
                 code)
+
+        if percentage:
+            try:
+                percentage = Decimal(percentage)
+            except InvalidOperation:
+                raise FieldValidationError(
+                    "sector",
+                    "percentage",
+                    "percentage value is not valid",
+                    None,
+                    None,
+                    percentage)
 
         country_budget_item = self.get_model('CountryBudgetItem')
         budget_item = models.BudgetItem()
@@ -3163,11 +3211,6 @@ class Parse(IatiParser):
         value = element.attrib.get('value')
 
         try:
-            value = Decimal(value)
-        except Exception as e:
-            value = None
-
-        try:
             year = int(year)
             if not (year > 1900 and year < 2200):
                 year = None
@@ -3185,8 +3228,7 @@ class Parse(IatiParser):
             raise RequiredFieldError(
                 "result/indicator/baseline",
                 "value",
-                "required attribute missing (note; xsd:decimal is used to \
-                        check instead of xsd:string)")
+                "required attribute missing.")
 
         result_indicator = self.get_model("ResultIndicator")
         result_indicator_baseline = models.ResultIndicatorBaseline()
@@ -3194,7 +3236,8 @@ class Parse(IatiParser):
         result_indicator_baseline.result_indicator = result_indicator
         result_indicator_baseline.iso_date = iso_date
         result_indicator_baseline.year = year
-        result_indicator_baseline.value = value or ''  # can be None
+        result_indicator_baseline.value = value if value else None  # can be
+        # None
 
         self.register_model('ResultIndicatorBaseline',
                             result_indicator_baseline)
