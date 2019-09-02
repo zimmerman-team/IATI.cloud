@@ -68,68 +68,69 @@ def welcome(request, format=None):
     xls with the default values and form the export_fields parameter from that
 
     """  # NOQA: E501
-    return Response({
-        'endpoints': {
-            'regions': reverse(
-                'regions:region-list',
-                request=request,
-                format=format),
-            'activities': reverse(
-                'activities:activity-list',
-                request=request,
-                format=format),
-            'countries': reverse(
-                'countries:country-list',
-                request=request,
-                format=format),
-            'sectors': reverse(
-                'sectors:sector-list',
-                request=request,
-                format=format),
-            'organisations': reverse(
-                'organisations:organisation-list',
-                request=request,
-                format=format),
-            'transactions': reverse(
-                'transactions:transaction-list',
-                request=request,
-                format=format),
-            'publishers': reverse(
-                'publishers:publisher-list',
-                request=request,
-                format=format),
-            'datasets': reverse(
-                'datasets:dataset-list',
-                request=request,
-                format=format),
-            'locations': reverse(
-                'locations:location-list',
-                request=request,
-                format=format),
-            'results': reverse(
-                'results:result-aggregations',
-                request=request,
-                format=format),
-            'budgets': reverse(
-                'budgets:budget-aggregations',
-                request=request,
-                format=format),
-            'codelists': reverse(
-                'codelists:codelist-meta-list',
-                request=request,
-                format=format),
-            # We remove for now because need implemented
-            # 'chains': reverse(
-            #    'chains:chain-list',
-            #    request=request,
-            #    format=format),
-            'branch': reverse(
-                'branch:current-branch',
-                request=request,
-                format=format
-            )
-        }
-    })
+    # return Response({
+    #     'endpoints': {
+    #         'regions': reverse(
+    #             'regions:region-list',
+    #             request=request,
+    #             format=format),
+    #         'activities': reverse(
+    #             'activities:activity-list',
+    #             request=request,
+    #             format=format),
+    #         'countries': reverse(
+    #             'countries:country-list',
+    #             request=request,
+    #             format=format),
+    #         'sectors': reverse(
+    #             'sectors:sector-list',
+    #             request=request,
+    #             format=format),
+    #         'organisations': reverse(
+    #             'organisations:organisation-list',
+    #             request=request,
+    #             format=format),
+    #         'transactions': reverse(
+    #             'transactions:transaction-list',
+    #             request=request,
+    #             format=format),
+    #         'publishers': reverse(
+    #             'publishers:publisher-list',
+    #             request=request,
+    #             format=format),
+    #         'datasets': reverse(
+    #             'datasets:dataset-list',
+    #             request=request,
+    #             format=format),
+    #         'locations': reverse(
+    #             'locations:location-list',
+    #             request=request,
+    #             format=format),
+    #         'results': reverse(
+    #             'results:result-aggregations',
+    #             request=request,
+    #             format=format),
+    #         'budgets': reverse(
+    #             'budgets:budget-aggregations',
+    #             request=request,
+    #             format=format),
+    #         'codelists': reverse(
+    #             'codelists:codelist-meta-list',
+    #             request=request,
+    #             format=format),
+    #         # We remove for now because need implemented
+    #         # 'chains': reverse(
+    #         #    'chains:chain-list',
+    #         #    request=request,
+    #         #    format=format),
+    #         'branch': reverse(
+    #             'branch:current-branch',
+    #             request=request,
+    #             format=format
+    #         )
+    #     }
+    # })
+    return Response(None)
 
 
 @api_view(('GET',))
