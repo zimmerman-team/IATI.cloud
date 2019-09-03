@@ -452,6 +452,13 @@ class ActivityFilter(TogetherFilterSet):
         fk='activity',
     )
 
+    reporting_organisation_type = ToManyFilter(
+        qs=ActivityReportingOrganisation,
+        lookup_expr='in',
+        name='type',
+        fk='activity'
+    )
+
     reporting_organisation_identifier_startswith = ToManyFilter(
         qs=ActivityReportingOrganisation,
         lookup_expr='startswith',
