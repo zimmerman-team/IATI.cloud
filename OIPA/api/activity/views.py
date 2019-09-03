@@ -188,11 +188,10 @@ class ActivityAggregations(AggregationView):
         ),
         GroupBy(
             query_param="reporting_organisation",
-            fields="reporting_organisations__organisation__id",
-            renamed_fields="reporting_organisation",
-            queryset=Organisation.objects.all(),
-            serializer=OrganisationSerializer,
-            serializer_main_field='id',
+            fields=("reporting_organisations__organisation__primary_name",
+                    "reporting_organisations__organisation__organisation_identifier"),  # NOQA: E501
+            renamed_fields=("reporting_organisation",
+                            "reporting_organisation_identifier"),
             name_search_field="reporting_organisations__organisation__primary_name",  # NOQA: E501
             renamed_name_search_field="reporting_organisation_name"
         ),
