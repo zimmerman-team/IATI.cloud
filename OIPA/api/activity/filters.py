@@ -45,6 +45,10 @@ class ActivityFilter(TogetherFilterSet):
         lookup_expr='in',
     )
 
+    is_secondary_reporter = BooleanFilter(
+        name='reporting_organisations__secondary_reporter',
+        widget=BooleanWidget())
+
     has_crs_add = IsNullBooleanFilter(name='crsadd', lookup_expr='isnull',
                                       distinct=True,
                                       widget=BooleanWidget())
