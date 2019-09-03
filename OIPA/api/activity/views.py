@@ -44,7 +44,6 @@ from api.generics.views import (
     DynamicDetailCRUDView, DynamicDetailView, DynamicListCRUDView,
     DynamicListView, SaveAllSerializer
 )
-from api.organisation.serializers import OrganisationSerializer
 from api.publisher.permissions import PublisherPermissions
 from api.region.serializers import RegionSerializer
 from api.sector.serializers import SectorSerializer
@@ -59,9 +58,9 @@ from iati.models import (
     BudgetItem, CollaborationType, Condition, Conditions, ContactInfo,
     CountryBudgetItem, CrsAdd, CrsAddOtherFlags, Description, DocumentCategory,
     DocumentLink, DocumentLinkCategory, DocumentLinkLanguage, Fss, FssForecast,
-    HumanitarianScope, LegacyData, Location, Organisation, OrganisationType,
-    OtherIdentifier, PlannedDisbursement, PolicySignificance, RelatedActivity,
-    Result, ResultIndicator, ResultIndicatorPeriod,
+    HumanitarianScope, LegacyData, Location, OrganisationType, OtherIdentifier,
+    PlannedDisbursement, PolicySignificance, RelatedActivity, Result,
+    ResultIndicator, ResultIndicatorPeriod,
     ResultIndicatorPeriodActualDimension, ResultIndicatorPeriodTargetDimension,
     ResultIndicatorReference, Sector
 )
