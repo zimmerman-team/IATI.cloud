@@ -1596,7 +1596,7 @@ class Location(models.Model):
         default=None,
         related_name="location_id_vocabulary",
         on_delete=models.CASCADE)
-    location_id_code = models.CharField(blank=True, max_length=255,null=True,
+    location_id_code = models.CharField(blank=True, max_length=255, null=True,
                                         default=None)
 
     location_class = models.ForeignKey(
