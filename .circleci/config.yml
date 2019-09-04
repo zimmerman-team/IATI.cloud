@@ -96,6 +96,8 @@ jobs:
               command: |
                   if [ "${CIRCLE_BRANCH}" == "develop" ]; then
                     ssh-keyscan "$SSH_HOST_STAGING" >> ~/.ssh/known_hosts
+                  elif [ "${CIRCLE_BRANCH}" == "feature/DS-198" ]; then
+                    ssh-keyscan "$SSH_HOST_STAGING" >> ~/.ssh/known_hosts
                   fi
         - add_ssh_keys:
               name: Add SSH KEY
