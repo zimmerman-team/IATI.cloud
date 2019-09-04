@@ -4,11 +4,7 @@
 #
 version: 2
 jobs:
-  build:
-    #branches:
-      #only:
-        #- feature/circleci
-
+  test:
     docker:
       # specify the version you desire here
       # use `-browsers` prefix for selenium tests, e.g. `3.6.1-browsers`
@@ -90,3 +86,32 @@ jobs:
           command: |
             . env/bin/activate
             flake8 OIPA
+  deploy:
+    steps:
+        - checkout
+        - run:
+              name: Add target host to known_hosts files
+              command: |
+                  if [ "${CIRCLE_BRANCH}" == "develop" ]; then
+                    ssh-keyscan "$SSH_HOST_STAGING" >> ~/.ssh/known_hosts
+                  fi
+        - add_ssh_keys:
+              name: Add SSH KEY
+              fingerprints:
+                  - "5d:59:e5:e3:ce:cf:ec:18:62:3b:e6:fa:86:c7:9b:9a"
+        - run: eval ssh-agent -s
+        - run:
+              name: Deploy
+              command: |
+                  if [ "${CIRCLE_BRANCH}" == "develop" ]; then
+                    ssh "$SSH_USER"@"$SSH_HOST_STAGING" "cd OIPA/OIPA; source env/bin/activate; echo '"$SSH_STAGING_PASS"' | sudo -S git pull; pip install -r requirements.txt; ./manage.py migrate; echo '"$SSH_STAGING_PASS"' | sudo -S service supervisor restart"
+                  elif [ "${CIRCLE_BRANCH}" == "feature/DS-198" ]; then
+                    ssh "$SSH_USER"@"$SSH_HOST_STAGING" "cd OIPA/OIPA; source env/bin/activate; echo '"$SSH_STAGING_PASS"' | sudo -S git pull; pip install -r requirements.txt; ./manage.py migrate; echo '"$SSH_STAGING_PASS"' | sudo -S service supervisor restart"
+                  fi
+
+workflows:
+  version: 2
+  test_and_deploy:
+    jobs:
+      - test
+      - deploy
