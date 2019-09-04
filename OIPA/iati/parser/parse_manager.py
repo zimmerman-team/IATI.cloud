@@ -1,4 +1,5 @@
 import hashlib
+from io import StringIO
 
 from django import db
 from django.conf import settings
@@ -91,7 +92,10 @@ class ParseManager():
             dataset.save()
 
         try:
-            self.root = etree.fromstring(response.content)
+            parser = etree.XMLParser(huge_tree=True)
+            xml_string = response.content.decode()
+            tree = etree.parse(StringIO(xml_string), parser)
+            self.root = tree.getroot()
             self.parser = self._prepare_parser(self.root, dataset)
 
             if settings.ERROR_LOGS_ENABLED:
