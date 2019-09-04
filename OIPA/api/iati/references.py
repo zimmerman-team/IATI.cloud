@@ -1851,15 +1851,15 @@ class LocationReference(ElementReference):
             )
 
             # @code
-            if location_reach_dict is not None:
-                code_value = location_reach_dict.get(
-                    self.exactness.get('code').get('key')
+
+            code_value = exactness_dict.get(
+                self.exactness.get('code').get('key')
+            )
+            if code_value:
+                exactness_element.set(
+                    self.exactness.get('code').get('attr'),
+                    code_value
                 )
-                if code_value:
-                    exactness_element.set(
-                        self.exactness.get('code').get('attr'),
-                        code_value
-                    )
         # />
 
         # <location-class
