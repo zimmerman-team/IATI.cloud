@@ -381,7 +381,7 @@
 
     <field name="result_indicator_baseline_year" type="pint" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="result_indicator_baseline_iso_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
-    <field name="result_indicator_baseline_value" type="pdouble" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_indicator_baseline_value" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="result_indicator_baseline_location_ref" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="result_indicator_baseline_dimension_name" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="result_indicator_baseline_dimension_value" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
