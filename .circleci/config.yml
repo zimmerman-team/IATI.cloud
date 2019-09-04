@@ -96,8 +96,6 @@ jobs:
               command: |
                   if [ "${CIRCLE_BRANCH}" == "develop" ]; then
                     ssh-keyscan "$SSH_HOST_STAGING" >> ~/.ssh/known_hosts
-                  elif [ "${CIRCLE_BRANCH}" == "feature/DS-198" ]; then
-                    ssh-keyscan "$SSH_HOST_STAGING" >> ~/.ssh/known_hosts
                   fi
         - add_ssh_keys:
               name: Add SSH KEY
@@ -108,8 +106,6 @@ jobs:
               name: Deploy
               command: |
                   if [ "${CIRCLE_BRANCH}" == "develop" ]; then
-                    ssh "$SSH_USER"@"$SSH_HOST_STAGING" "cd OIPA/OIPA; source env/bin/activate; echo '"$SSH_STAGING_PASS"' | sudo -S git pull; pip install -r requirements.txt; ./manage.py migrate; echo '"$SSH_STAGING_PASS"' | sudo -S service supervisor restart"
-                  elif [ "${CIRCLE_BRANCH}" == "feature/DS-198" ]; then
                     ssh "$SSH_USER"@"$SSH_HOST_STAGING" "cd OIPA/OIPA; source env/bin/activate; echo '"$SSH_STAGING_PASS"' | sudo -S git pull; pip install -r requirements.txt; ./manage.py migrate; echo '"$SSH_STAGING_PASS"' | sudo -S service supervisor restart"
                   fi
 
