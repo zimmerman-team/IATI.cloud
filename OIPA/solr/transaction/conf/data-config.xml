@@ -1,5 +1,5 @@
 <dataConfig>
-    <dataSource type="JdbcDataSource" driver="org.postgresql.Driver" url="jdbc:postgresql://localhost:5432/oipa" user="zimmerman" password="" />
+    <dataSource type="JdbcDataSource" driver="org.postgresql.Driver" url="jdbc:postgresql://localhost:5432/defaultdb" user="zimmerman" password="" />
     <document>
         <entity 
             name="activity_transaction" 
@@ -34,6 +34,68 @@
             <field column="disbursement_channel_id" name="transaction_disburstment_channel_code"/>
             <field column="flow_type_id" name="transaction_flow_type_code"/>
             <field column="tied_status_id" name="transaction_tied_status_code"/>
+            <entity name="activity_title"
+                query="
+                     SELECT
+                        id
+                    FROM iati_title
+                    WHERE activity_id=${activity_transaction.activity_id}
+                "
+            >
+                <entity name="activity_title_narrative"
+                    query="
+                        SELECT
+                            language_id AS lang,
+                            iati_narrative.content AS content
+                        FROM iati_narrative, django_content_type
+                        WHERE iati_narrative.related_object_id=${activity_title.id}
+                            AND iati_narrative.activity_id=${activity_transaction.activity_id}
+                            AND django_content_type.model='title'
+                            AND django_content_type.id=iati_narrative.related_content_type_id
+                    "
+                >
+                    <field column="lang" name="title_lang"/>
+                    <field column="content" name="title_narrative"/>
+                </entity>
+            </entity>
+            <entity name="activity_description"
+                query="
+                   SELECT
+                        id,
+                        type_id AS type
+                    FROM iati_description
+                    WHERE activity_id=${activity_transaction.activity_id}
+                "
+            >
+                <field column="type" name="description_type"/>
+                <entity name="activity_description_narrative"
+                    query="
+                        SELECT
+                            language_id AS lang,
+                            content AS narrative
+                        FROM iati_narrative, django_content_type
+                        WHERE iati_narrative.related_object_id=${activity_description.id}
+                            AND iati_narrative.activity_id=${activity_transaction.activity_id}
+                            AND django_content_type.model='description'
+                            AND django_content_type.id=iati_narrative.related_content_type_id
+                    "
+                >
+                    <field column="lang" name="description_lang"/>
+                    <field column="narrative" name="description_narrative"/>
+                </entity>
+            </entity>
+            <entity name="activity_activity_date"
+                query="
+                    SELECT
+                        type_id,
+                        TO_CHAR(iso_date::timestamp, 'YYYY-MM-DD') AS iso_date
+                    FROM iati_activitydate
+                    WHERE activity_id=${activity_transaction.activity_id}
+                "
+            >
+                <field column="type_id" name="activity_date_type"/>
+                <field column="iso_date" name="activity_date_iso_date"/>
+            </entity>
             <entity name="activity_reporting_org" 
                 query="
                     SELECT 

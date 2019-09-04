@@ -124,6 +124,16 @@
 
     <!--Transaction Core - Start-->
     <field name="iati_identifier" type="string" multiValued="false" indexed="true" required="true" stored="true"/>
+
+    <field name="title_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="title_narrative" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+
+    <field name="description_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="description_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="description_narrative" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+
+    <field name="activity_date_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="activity_date_iso_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
     
     <field name="reporting_org_ref" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="reporting_org_type" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
