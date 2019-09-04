@@ -1256,7 +1256,7 @@ class BudgetReference(ElementReference):
 
             # Content
             value = value_dict.get(self.value.get('value').get('key'))
-            if value:
+            if value is not None:
                 # Value type is {Decimal}, then convert it to string
                 value_element.text = str(value)
 
