@@ -1580,7 +1580,7 @@ class Location(models.Model):
         on_delete=models.CASCADE,
     )
 
-    ref = models.CharField(max_length=200, default="", null=True, blank=True)
+    ref = models.CharField(max_length=200, default=None, null=True, blank=True)
     location_reach = models.ForeignKey(
         GeographicLocationReach,
         null=True,
@@ -1596,7 +1596,8 @@ class Location(models.Model):
         default=None,
         related_name="location_id_vocabulary",
         on_delete=models.CASCADE)
-    location_id_code = models.CharField(blank=True, max_length=255, default="")
+    location_id_code = models.CharField(blank=True, max_length=255, null=True,
+                                        default=None)
 
     location_class = models.ForeignKey(
         GeographicLocationClass,
@@ -1610,7 +1611,7 @@ class Location(models.Model):
         default=None,
         related_name="feature_designation", on_delete=models.CASCADE)
 
-    point_srs_name = models.CharField(blank=True, max_length=255, default="")
+    point_srs_name = models.CharField(blank=True, max_length=255, default=None)
     point_pos = PointField(
         null=True,
         blank=False,

@@ -1256,7 +1256,7 @@ class BudgetReference(ElementReference):
 
             # Content
             value = value_dict.get(self.value.get('value').get('key'))
-            if value:
+            if value is not None:
                 # Value type is {Decimal}, then convert it to string
                 value_element.text = str(value)
 
@@ -1851,14 +1851,15 @@ class LocationReference(ElementReference):
             )
 
             # @code
-            code_value = location_reach_dict.get(
-                self.exactness.get('code').get('key')
-            )
-            if code_value:
-                exactness_element.set(
-                    self.exactness.get('code').get('attr'),
-                    code_value
+            if location_reach_dict is not None:
+                code_value = location_reach_dict.get(
+                    self.exactness.get('code').get('key')
                 )
+                if code_value:
+                    exactness_element.set(
+                        self.exactness.get('code').get('attr'),
+                        code_value
+                    )
         # />
 
         # <location-class
