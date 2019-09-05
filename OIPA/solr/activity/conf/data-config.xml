@@ -1,5 +1,5 @@
 <dataConfig>
-    <dataSource type="JdbcDataSource" driver="org.postgresql.Driver" url="jdbc:postgresql://localhost:5432/defaultdb" user="" password="" />
+    <dataSource type="JdbcDataSource" driver="org.postgresql.Driver" url="jdbc:postgresql://localhost:5432/oipa" user="zimmerman" password="" />
     <document>
         <entity name="activity"
             pk="iati_identifier"
@@ -1899,7 +1899,77 @@
                     <field column="year" name="fss_forecast_year"/>
                     <field column="value_date" name="fss_forecast_value_date"/>
                     <field column="currency_id" name="fss_forecast_currency"/>
-                    <field column="value" name="fss_forecast_currency"/>
+                    <field column="value" name="fss_forecast_value"/>
+                </entity>
+            </entity>
+            <entity
+                name="activity_crs_add"
+                pk="id"
+                query="
+                    SELECT
+                        id
+                    FROM iati_crsadd
+                    WHERE activity_id=${activity.id}
+                "
+            >
+                <entity
+                    name="activity_crs_add_other_flags"
+                    query="
+                        SELECT
+                            significance,
+                            other_flags_id
+                        FROM iati_crsaddotherflags
+                        WHERE crs_add_id=${activity_crs_add.id}
+                    "
+                >
+                    <field column="other_flags_id" name="crs_add_other_flags_code"/>
+                    <field column="significance" name="crs_add_other_flags_significance"/>
+                </entity>
+                <entity
+                    name="activity_crs_add_loan_terms"
+                    query="
+                        SELECT
+                            rate_1,
+                            rate_2,
+                            repayment_type_id,
+                            repayment_plan_id,
+                            TO_CHAR(commitment_date::timestamp, 'YYYY-MM-DD') AS commitment_date,
+                            TO_CHAR(repayment_first_date::timestamp, 'YYYY-MM-DD') AS repayment_first_date,
+                            TO_CHAR(repayment_final_date::timestamp, 'YYYY-MM-DD') AS repayment_final_date
+                        FROM iati_crsaddloanterms
+                        WHERE crs_add_id=${activity_crs_add.id}
+                    "
+                >
+                    <field column="rate_1" name="crs_add_loan_terms_rate_1"/>
+                    <field column="rate_2" name="crs_add_loan_terms_rate_2"/>
+                    <field column="repayment_type_id" name="crs_add_loan_terms_repayment_type_code"/>
+                    <field column="repayment_plan_id" name="crs_add_loan_terms_repayment_plan_code"/>
+                    <field column="commitment_date" name="crs_add_loan_terms_commitment_date_iso_date"/>
+                    <field column="repayment_first_date" name="crs_add_loan_terms_repayment_first_date_iso_date"/>
+                    <field column="repayment_final_date" name="crs_add_loan_terms_repayment_final_date_iso_date"/>
+                </entity>
+                <entity
+                    name="activity_crs_add_loan_status"
+                    query="
+                        SELECT
+                            year,
+                            TO_CHAR(value_date::timestamp, 'YYYY-MM-DD') AS  value_date,
+                            interest_received,
+                            principal_outstanding,
+                            principal_arrears,
+                            interest_arrears,
+                            currency_id
+                        FROM iati_crsaddloanstatus
+                        WHERE crs_add_id=${activity_crs_add.id}
+                    "
+                >
+                    <field column="year" name="crs_add_loan_status_year"/>
+                    <field column="currency_id" name="crs_add_loan_status_currency"/>
+                    <field column="value_date" name="crs_add_loan_status_value_date"/>
+                    <field column="interest_received" name="crs_add_loan_status_interest_received"/>
+                    <field column="principal_outstanding" name="crs_add_loan_status_principal_outstanding"/>
+                    <field column="principal_arreas" name="crs_add_loan_status_principal_arrears"/>
+                    <field column="interest_arreas" name="crs_add_loan_status_interest_arrears"/>
                 </entity>
             </entity>
         </entity>

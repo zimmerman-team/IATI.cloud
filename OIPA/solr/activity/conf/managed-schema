@@ -437,6 +437,32 @@
     <field name="fss_forecast_value_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="fss_forecast_currency" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="fss_forecast_value" type="pdoubles" multiValued="true" indexed="true" required="false" stored="true"/>
+
+    <field name="crs_add" type="text_general" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="crs_add_other_flags_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="crs_add_other_flags_significance" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+
+    <field name="crs_add_loan_terms_rate_1" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="crs_add_loan_terms_rate_2" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+
+    <field name="crs_add_loan_terms_repayment_type_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="crs_add_loan_terms_repayment_plan_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+
+    <field name="crs_add_loan_terms_commitment_date_iso_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
+
+    <field name="crs_add_loan_terms_repayment_first_date_iso_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="crs_add_loan_terms_repayment_final_date_iso_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
+
+    <field name="crs_add_loan_status_year" type="pint" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="crs_add_loan_status_currency" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="crs_add_loan_status_value_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
+
+    <field name="crs_add_loan_status_interest_received" type="pdoubles" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="crs_add_loan_status_principal_outstanding" type="pdoubles" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="crs_add_loan_status_principal_arrears" type="pdoubles" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="crs_add_loan_status_interest_arrears" type="pdoubles" multiValued="true" indexed="true" required="false" stored="true"/>
+
+    <field name="crs_add_channel_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <!--Activity Core - End -->
 
     <!-- This can be enabled, in case the client does not know what fields may be searched. It isn't enabled by default
