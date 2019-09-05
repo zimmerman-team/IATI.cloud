@@ -2385,7 +2385,7 @@ class DocumentLinkReference(ElementReference):
 
         # <document-date
         document_date_dict = self.data.get(self.document_date.get('key'))
-        if document_date_dict:
+        if document_date_dict and document_date_dict.get('iso_date'):
             document_date_element = etree.SubElement(
                 document_link_element, self.document_date.get('element')
             )
