@@ -1,5 +1,5 @@
 <dataConfig>
-    <dataSource type="JdbcDataSource" driver="org.postgresql.Driver" url="jdbc:postgresql://localhost:5432/oipa" user="zimmerman" password="" />
+    <dataSource type="JdbcDataSource" driver="org.postgresql.Driver" url="jdbc:postgresql://localhost:5432/defaultdb" user="zimmerman" password="" />
     <document>
         <entity name="activity"
             pk="iati_identifier"
@@ -1866,6 +1866,148 @@
                         <field column="vocabulary_id" name="result_indicator_reference_vocabulary"/>
                         <field column="code" name="result_indicator_reference_code"/>
                         <field column="vocabulary_uri" name="result_indicator_reference_vocabulary_uri"/>
+                    </entity>
+                    <entity name="activity_result_indicator_baseline"
+                        query="
+                            SELECT
+                                id,
+                                year,
+                                TO_CHAR(iso_date::timestamp, 'YYYY-MM-DD') AS iso_date,
+                                value
+                            FROM iati_resultindicatorbaseline
+                            WHERE result_indicator_id=${activity_result_indicator.id}
+                        "
+                    >
+                        <field column="year" name="result_indicator_baseline_year"/>
+                        <field column="iso_date" name="result_indicator_baseline_iso_date"/>
+                        <field column="value" name="result_indicator_baseline_value"/>
+                        <entity name="activity_result_indicator_baseline_location"
+                            query="
+                                SELECT
+                                    ref
+                                FROM iati_location
+                                WHERE result_indicator_baseline_id=${activity_result_indicator_baseline.id}
+                            "
+                        >
+                            <field column="ref" name="result_indicator_baseline_location_ref"/>
+                        </entity>
+                        <entity name="activity_result_indicator_baseline_dimersion"
+                            query="
+                                SELECT
+                                    name,
+                                    value
+                                FROM iati_resultindicatorbaselinedimension
+                                WHERE result_indicator_baseline_id=${activity_result_indicator_baseline.id}
+                            "
+                        >
+                            <field column="name" name="result_indicator_baseline_dimension_name"/>
+                            <field column="value" name="result_indicator_baseline_dimension_value"/>
+                            <entity name="activity_result_indicator_baseline_dimension_document_link"
+                                query="
+                                    SELECT
+                                        id,
+                                        url,
+                                        file_format_id,
+                                        TO_CHAR(iso_date::timestamp, 'YYYY-MM-DD') AS iso_date
+                                    FROM iati_documentlink
+                                    WHERE result_indicator_baseline_id=${activity_result_indicator.id}
+                                        AND activity_id=${activity_result.activity_id}
+                                "
+                            >
+                                <field column="url" name="result_indicator_baseline_document_link_url"/>
+                                <field column="file_format_id" name="result_indicator_baseline_document_link_format"/>
+                                <field column="iso_date" name="result_indicator_baseline_document_link_document_date_iso_date"/>
+                                <entity name="activity_result_indicator_baseline_dimension_document_link_title"
+                                    query="
+                                        SELECT
+                                            id
+                                        FROM iati_documentlinktitle
+                                        WHERE document_link_id=${activity_result_indicator_baseline_dimension_document_link.id}
+                                    "
+                                >
+                                    <entity name="activity_result_indicator_baseline_dimension_document_link_title_narrative"
+                                        query="
+                                            SELECT
+                                                iati_narrative.related_object_id AS related_object_id,
+                                                iati_narrative.content AS content
+                                            FROM iati_narrative, django_content_type
+                                            WHERE iati_narrative.related_object_id=${activity_result_indicator_baseline_dimension_document_link_title.id}
+                                                AND iati_narrative.activity_id=${activity_result.activity_id}
+                                                AND django_content_type.model='documentlinktitle'
+                                                AND django_content_type.id=iati_narrative.related_content_type_id
+                                        "
+                                    >
+                                        <field column="content" name="result_indicator_baseline_document_link_title"/>
+                                    </entity>
+                                </entity>
+                                <entity name="activity_result_indicator_baseline_dimension_document_link_description"
+                                    query="
+                                        SELECT
+                                            id
+                                        FROM iati_documentlinkdescription
+                                        WHERE document_link_id=${activity_result_indicator_baseline_dimension_document_link.id}
+                                    "
+                                >
+                                    <entity name="activity_result_indicator_baseline_dimension_document_link_description_narrative"
+                                        query="
+                                            SELECT
+                                                iati_narrative.related_object_id AS related_object_id,
+                                                iati_narrative.content AS content
+                                            FROM iati_narrative, django_content_type
+                                            WHERE iati_narrative.related_object_id=${activity_result_indicator_baseline_dimension_document_link_description.id}
+                                                AND iati_narrative.activity_id=${activity_result.activity_id}
+                                                AND django_content_type.model='documentlinkdescription'
+                                                AND django_content_type.id=iati_narrative.related_content_type_id
+                                        "
+                                    >
+                                        <field column="content" name="result_indicator_baseline_document_link_description"/>
+                                    </entity>
+                                </entity>
+                                <entity name="activity_result_indicator_baseline_dimension_document_link_category"
+                                    query="
+                                        SELECT
+                                            category_id
+                                        FROM iati_documentlinkcategory
+                                        WHERE document_link_id=${activity_result_indicator_baseline_dimension_document_link.id}
+                                    "
+                                >
+                                    <field column="category_id" name="result_indicator_baseline_document_link_category_code"/>
+                                </entity>
+                                <entity name="activity_result_indicator_baseline_dimension_document_link_language"
+                                    query="
+                                        SELECT
+                                            language_id
+                                        FROM iati_documentlinklanguage
+                                        WHERE document_link_id=${activity_result_indicator_baseline_dimension_document_link.id}
+                                    "
+                                >
+                                    <field column="language_id" name="result_indicator_baseline_document_link_language_code"/>
+                                </entity>
+                            </entity>
+                            <entity name="activity_result_indicator_baseline_comment"
+                                query="
+                                    SELECT
+                                        id
+                                    FROM iati_resultindicatorbaselinecomment
+                                    WHERE result_indicator_baseline_id=${activity_result_indicator.id}
+                                "
+                            >
+                                <entity name="activity_result_indicator_baseline_comment_narrative"
+                                    query="
+                                        SELECT
+                                            iati_narrative.related_object_id AS related_object_id,
+                                            iati_narrative.content AS content
+                                        FROM iati_narrative, django_content_type
+                                        WHERE iati_narrative.related_object_id=${activity_result_indicator_baseline_comment.id}
+                                            AND iati_narrative.activity_id=${activity_result.activity_id}
+                                            AND django_content_type.model='resultindicatorbaselinecomment'
+                                            AND django_content_type.id=iati_narrative.related_content_type_id
+                                    "
+                                >
+                                    <field column="content" name="result_indicator_baseline_comment_narrative"/>
+                                </entity>
+                            </entity>
+                        </entity>
                     </entity>
                 </entity>
             </entity>
