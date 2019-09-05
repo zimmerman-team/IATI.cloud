@@ -1,5 +1,5 @@
 import hashlib
-from io import StringIO
+from io import BytesIO
 
 from django import db
 from django.conf import settings
@@ -92,9 +92,8 @@ class ParseManager():
             dataset.save()
 
         try:
-            parser = etree.XMLParser(huge_tree=True)
-            xml_string = response.content.decode()
-            tree = etree.parse(StringIO(xml_string), parser)
+            parser = etree.XMLParser(huge_tree=True, encoding='utf-8')
+            tree = etree.parse(BytesIO(response.content), parser)
             self.root = tree.getroot()
             self.parser = self._prepare_parser(self.root, dataset)
 
