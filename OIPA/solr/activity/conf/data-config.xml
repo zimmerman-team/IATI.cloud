@@ -1867,43 +1867,39 @@
                         <field column="code" name="result_indicator_reference_code"/>
                         <field column="vocabulary_uri" name="result_indicator_reference_vocabulary_uri"/>
                     </entity>
-                    <entity name="activity_result_indicator_baseline"
-                        query="
-                            SELECT
-                                id,
-                                year,
-                                TO_CHAR(iso_date::timestamp, 'YYYY-MM-DD') AS iso_date,
-                                value
-                            FROM iati_resultindicatorbaseline
-                            WHERE result_indicator_id=${activity_result_indicator.id}
-                        "
-                    >
-                        <field column="year" name="result_indicator_baseline_year"/>
-                        <field column="iso_date" name="result_indicator_baseline_iso_date"/>
-                        <field column="value" name="result_indicator_baseline_value"/>
-                        <entity name="activity_result_indicator_baseline_location"
-                            query="
-                                SELECT
-                                    ref
-                                FROM iati_location
-                                WHERE result_indicator_baseline_id=${activity_result_indicator_baseline.id}
-                            "
-                        >
-                            <field column="ref" name="result_indicator_baseline_location_ref"/>
-                        </entity>
-                        <entity name="activity_result_indicator_baseline_dimersion"
-                            query="
-                                SELECT
-                                    name,
-                                    value
-                                FROM iati_resultindicatorbaselinedimension
-                                WHERE result_indicator_baseline_id=${activity_result_indicator_baseline.id}
-                            "
-                        >
-                            <field column="name" name="result_indicator_baseline_dimension_name"/>
-                            <field column="value" name="result_indicator_baseline_dimension_value"/>
-                         </entity>
-                    </entity>
+                </entity>
+            </entity>
+            <entity
+                name="activity_fss"
+                query="
+                    SELECT
+                        id,
+                        extraction_date,
+                        CASE WHEN priority=TRUE THEN '1' ELSE '0' END AS priority,
+                        phaseout_year
+                    FROM iati_fss
+                    WHERE activity_id=${activity.id}
+                "
+            >
+                <field column="extraction_date" name="fss_extraction_date"/>
+                <field column="priority" name="fss_priority"/>
+                <field column="phaseout_year" name="fss_phaseout_year"/>
+                <entity
+                    name="activity_fss_forecast"
+                    query="
+                        SELECT
+                            year,
+                            TO_CHAR(value_date::timestamp, 'YYYY-MM-DD') AS value_date,
+                            currency_id,
+                            value
+                        FROM iati_fssforecast
+                        WHERE fss_id=${activity_fss.id}
+                    "
+                >
+                    <field column="year" name="fss_forecast_year"/>
+                    <field column="value_date" name="fss_forecast_value_date"/>
+                    <field column="currency_id" name="fss_forecast_currency"/>
+                    <field column="value" name="fss_forecast_currency"/>
                 </entity>
             </entity>
         </entity>
