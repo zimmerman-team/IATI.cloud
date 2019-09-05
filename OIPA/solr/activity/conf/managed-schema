@@ -427,6 +427,16 @@
     <field name="result_indicator_period_actual_document_link_category_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="result_indicator_period_actual_document_link_language_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="result_indicator_period_actual_document_link_document_date_iso_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
+
+    <field name="fss" type="text_general" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="fss_extraction_date" type="pdate" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="fss_priority" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="fss_phaseout_year" type="pint" multiValued="false" indexed="true" required="false" stored="true"/>
+
+    <field name="fss_forecast_year" type="pint" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="fss_forecast_value_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="fss_forecast_currency" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="fss_forecast_value" type="pdoubles" multiValued="true" indexed="true" required="false" stored="true"/>
     <!--Activity Core - End -->
 
     <!-- This can be enabled, in case the client does not know what fields may be searched. It isn't enabled by default
