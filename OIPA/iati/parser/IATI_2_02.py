@@ -842,9 +842,8 @@ class Parse(IatiParser):
         code:AF
         percentage:25
 
-        tag:recipient-country"""
+        tag:recipient-country
 
-        """
         IATI business rule: If transaction/recipient-country AND/OR
         transaction/recipient-region are used THEN ALL transaction elements
         MUST contain a recipient-country or
@@ -915,21 +914,22 @@ class Parse(IatiParser):
         return element
 
     def iati_activities__iati_activity__recipient_region(self, element):
-        """attributes:
+        """
+        attributes:
         code:489
         vocabulary:1
         percentage:25
 
-        tag:recipient-region"""
+        tag:recipient-region
 
-        """
         IATI business rule: If transaction/recipient-country AND/OR
         transaction/recipient-region are used
         THEN ALL transaction elements MUST contain a recipient-country or
         recipient-region element
         AND (iati-activity/recipient-country AND
         iati-activity/recipient-region
-        MUST NOT be used)."""
+        MUST NOT be used).
+        """
 
         transaction_recipient_region = self.root.findall(
             "./iati-activity/transaction/recipient-region")
