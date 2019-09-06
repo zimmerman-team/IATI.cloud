@@ -929,8 +929,7 @@ class Parse(IatiParser):
         recipient-region element
         AND (iati-activity/recipient-country AND
         iati-activity/recipient-region
-        MUST NOT be used)
-        """
+        MUST NOT be used)."""
 
         transaction_recipient_region = self.root.findall(
             "./iati-activity/transaction/recipient-region")
