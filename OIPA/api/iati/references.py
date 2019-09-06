@@ -504,9 +504,18 @@ class TransactionReference(ElementReference):
     }
 
     def create(self):
-        transaction_element = etree.SubElement(
-            self.parent_element, self.element
-        )
+        if 'message' in self.data:
+            ns_map = {"zz":
+                      "https://www.zimmermanzimmerman.nl"}
+            transaction_element = etree.SubElement(
+                self.parent_element,
+                "{https://www.zimmermanzimmerman.nl}"+self.element,
+                nsmap=ns_map
+            )
+        else:
+            transaction_element = etree.SubElement(
+                self.parent_element, self.element
+            )
 
         # Ref
         ref_value = self.data.get(self.ref.get('key'))
