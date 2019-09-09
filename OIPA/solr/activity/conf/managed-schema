@@ -250,6 +250,8 @@
     <field name="default_aid_type" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="default_aid_type_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="default_aid_type_vocabulary" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="default_aid_type_category_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="default_aid_type_category_name" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
 
     <field name="default_tied_status_code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
 
