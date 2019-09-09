@@ -983,7 +983,7 @@ class Parse(IatiParser):
                     "code is unspecified or invalid")
             region = Region()
             region.code = code
-            region.name = 'Vocubulary 99'
+            region.name = 'Vocabulary 99'
             region.region_vocabulary = region_vocabulary
             region.save()
 
