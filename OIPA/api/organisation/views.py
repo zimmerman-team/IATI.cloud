@@ -773,3 +773,18 @@ class RecipientRegionBudgetList(DynamicListView):
             queryset = queryset.filter(
                 organisation__organisation_identifier=organisation_identifier)
         return queryset
+
+
+class DocumentLinkList(DynamicListView):
+    serializer_class = serializers.OrganisationDocumentLinkSerializer
+    fields = ()
+
+    def get_queryset(self):
+        queryset = OrganisationDocumentLink.objects.all()
+        organisation_identifier = self.request.query_params.get(
+            'organisation_identifier', None)
+
+        if organisation_identifier is not None:
+            queryset = queryset.filter(
+                organisation__organisation_identifier=organisation_identifier)
+        return queryset
