@@ -1241,7 +1241,7 @@ class OrganisationSerializer(DynamicFieldsModelSerializer):
                             custom_ret2['message'] = \
                                 'This organisation has more ' \
                                 'than 100 recipient-org-budget! ' \
-                                'To get all total-budget,  ' \
+                                'To get all recipient-org-budgets,  ' \
                                 'please use the recipient-org-budget ' \
                                 'endpoint instead!'
 
