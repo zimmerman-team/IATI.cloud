@@ -13,6 +13,9 @@ urlpatterns = [
     ),
     url(r'^total-budget/', views.TotalBudgetList.as_view(),
         name='total-budget'),
+    url(r'^recipient-region-budget/',
+        views.RecipientRegionBudgetList.as_view(),
+        name='recipient-region-budget'),
     url(
         r'^organisation-file/(?P<organisation_identifier>[^@$&+,/:;=?]+)'
         r'/organisation-document-link-list/$',
