@@ -738,3 +738,21 @@ class OrganisationFileOrganisationDocumentLinkList(ListAPIView):
             ).organisationdocumentlink_set.all().order_by('id')
         except Organisation.DoesNotExist:
             return None
+
+
+class TotalBudgetList(DynamicListView):
+
+    serializer_class = serializers.OrganisationTotalBudgetSerializer
+
+    fields = ()
+
+    # filter by 'organisation_identifier'.
+    def get_queryset(self):
+        queryset = TotalBudget.objects.all()
+        organisation_identifier = self.request.query_params.get(
+            'organisation_identifier', None)
+
+        if organisation_identifier is not None:
+            queryset = queryset.filter(
+                organisation__organisation_identifier=organisation_identifier)
+        return queryset

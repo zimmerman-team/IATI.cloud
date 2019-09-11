@@ -11,6 +11,8 @@ urlpatterns = [
         views.ReportedActivities.as_view(),
         name='organisation-reported-activities'
     ),
+    url(r'^total-budget/', views.TotalBudgetList.as_view(),
+        name='total-budget'),
     url(
         r'^organisation-file/(?P<organisation_identifier>[^@$&+,/:;=?]+)'
         r'/organisation-document-link-list/$',

@@ -1,4 +1,8 @@
+from collections import OrderedDict
+
 from rest_framework import serializers
+from rest_framework.fields import SkipField
+from rest_framework.relations import PKOnlyObject
 
 from api.codelist.serializers import (
     CodelistSerializer, OrganisationNarrativeContainerSerializer,
@@ -144,6 +148,8 @@ class TotalBudgetBudgetLineSerializer(ModelSerializerNoValidation):
 class OrganisationTotalBudgetSerializer(ModelSerializerNoValidation):
 
     organisation = serializers.CharField(write_only=True)
+    organisation_identifier = serializers.CharField(
+        source='organisation.organisation_identifier', required=False)
 
     value = ValueSerializer(source='*')
     status = CodelistSerializer()
@@ -160,6 +166,7 @@ class OrganisationTotalBudgetSerializer(ModelSerializerNoValidation):
         # filter_class = BudgetFilter
         fields = (
             'organisation',
+            'organisation_identifier',
             'id',
             'status',
             'period_start',
@@ -1175,3 +1182,130 @@ class OrganisationSerializer(DynamicFieldsModelSerializer):
                             name_narratives_data, instance)
 
         return update_instance
+
+    def to_representation(self, instance):
+        """
+        Custom render to avoid auto render of 'total-budget'
+        """
+        ret = OrderedDict()
+        fields = self._readable_fields
+
+        for field in fields:
+            try:
+                attribute = field.get_attribute(instance)
+            except SkipField:
+                continue
+
+            # We skip `to_representation` for `None` values so that fields do
+            # not have to explicitly deal with that case.
+            #
+            # For related fields with `use_pk_only_optimization` we need to
+            # resolve the pk value.
+            check_for_none = attribute.pk if isinstance(
+                attribute, PKOnlyObject
+            ) else attribute
+
+            if check_for_none is None:
+                ret[field.field_name] = None
+            else:
+                # Some organisations has more than 100 'total-budget',
+                # 'recipient-org-budget', 'recipient-country-budget',
+                # 'recipient-region-budget' and 'document-link'
+                # elements, and cause time out problem in the server.
+                # So these additional elements will be shown only if there
+                # are less than 100 records of them. Otherwise a message
+                # with information will be returned.
+                if field.field_name in ['total_budgets',
+                                        'recipient_org_budgets',
+                                        'recipient_country_budgets',
+                                        'recipient_region_budgets',
+                                        'total_expenditures',
+                                        'document_links']:
+
+                    if field.field_name not in ret:
+                        if field.field_name == 'total_budgets' and \
+                                instance.total_budgets.count() > 100:
+                            custom_ret1 = OrderedDict()
+                            custom_ret1['message'] = \
+                                'This organisation has more ' \
+                                'than 100 total-budget! ' \
+                                'To get all total-budget,  ' \
+                                'please use the total-budget endpoint ' \
+                                'instead!'
+
+                            ret[field.field_name] = custom_ret1
+
+                        elif field.field_name == 'recipient_org_budgets' and \
+                                instance.recipientorgbudget_set.count() > 100:
+                            custom_ret2 = OrderedDict()
+                            custom_ret2['message'] = \
+                                'This organisation has more ' \
+                                'than 100 recipient-org-budget! ' \
+                                'To get all total-budget,  ' \
+                                'please use the recipient-org-budget ' \
+                                'endpoint instead!'
+
+                            ret[field.field_name] = custom_ret2
+
+                        elif field.field_name == 'recipient_country_budgets'  \
+                                and \
+                                instance.recipient_country_budgets.count() >\
+                                100:
+                            custom_ret3 = OrderedDict()
+                            custom_ret3['message'] = \
+                                'This organisation has more ' \
+                                'than 100 recipient-country-budget! ' \
+                                'To get all recipient_country-budgets,  ' \
+                                'please use the recipient-country-budget ' \
+                                'endpoint instead!'
+
+                            ret[field.field_name] = custom_ret3
+
+                        elif field.field_name == 'recipient_region_budgets' \
+                                and \
+                                instance.recipient_region_budget.count() > 100:
+                            custom_ret4 = OrderedDict()
+                            custom_ret4['message'] = \
+                                'This organisation has more ' \
+                                'than 100 recipient-region-budget! ' \
+                                'To get all recipient-region-budget,  ' \
+                                'please use the recipient-region-budget ' \
+                                'endpoint instead!'
+
+                            ret[field.field_name] = custom_ret4
+
+                        elif field.field_name == 'total_expenditures' and \
+                                instance.total_expenditure.count() > 100:
+                            custom_ret5 = OrderedDict()
+                            custom_ret5['message'] = \
+                                'This organisation has more ' \
+                                'than 100 total-expenditures! ' \
+                                'To get all total-expenditures,  ' \
+                                'please use the total-expenditure endpoint ' \
+                                'instead!'
+
+                            ret[field.field_name] = custom_ret5
+
+                        elif field.field_name == 'document_links' and \
+                                instance.organisationdocumentlink_set.count(
+
+                                ) > 100:
+                            custom_ret6 = OrderedDict()
+                            custom_ret6['message'] = \
+                                'This organisation has more ' \
+                                'than 100 document-links! ' \
+                                'To get all document-links,  ' \
+                                'please use the document-link endpoint ' \
+                                'instead!'
+
+                            ret[field.field_name] = custom_ret6
+
+                        else:
+                            ret[field.field_name] = field.to_representation(
+                                attribute
+                            )
+
+                else:
+                    ret[field.field_name] = field.to_representation(attribute)
+
+        return ret
