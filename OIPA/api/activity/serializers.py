@@ -3515,8 +3515,9 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
                             'please use the URL transaction, instead!'
 
                         try:
+
                             custom_ret['url'] = self.fields[
-                                'transaction_url'
+                                'transactions'
                             ].to_representation(instance)
                         except KeyError:
                             pass
