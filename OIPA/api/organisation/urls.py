@@ -20,6 +20,9 @@ urlpatterns = [
         name='document-link'),
     url(r'^recipient-org-budget/', views.RecipientOrgBudgetList.as_view(),
         name='recipient-org-budget'),
+    url(r'^recipient-country-budget/',
+        views.RecipientCountryBudgetList.as_view(),
+        name='recipient-country-budget'),
     url(
         r'^organisation-file/(?P<organisation_identifier>[^@$&+,/:;=?]+)'
         r'/organisation-document-link-list/$',

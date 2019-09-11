@@ -804,3 +804,19 @@ class RecipientOrgBudgetList(DynamicListView):
                 organisation__organisation_identifier=organisation_identifier)
 
         return queryset
+
+
+class RecipientCountryBudgetList(DynamicListView):
+    serializer_class = serializers.OrganisationRecipientCountryBudgetSerializer
+    fields = ()
+
+    def get_queryset(self):
+        queryset = RecipientCountryBudget.objects.all()
+        organisation_identifier = self.request.query_params.get(
+            'organisation_identifier', None)
+
+        if organisation_identifier is not None:
+            queryset = queryset.filter(
+                organisation__organisation_identifier=organisation_identifier)
+
+        return queryset
