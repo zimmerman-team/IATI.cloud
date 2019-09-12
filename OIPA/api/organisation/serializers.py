@@ -292,6 +292,8 @@ class OrganisationRecipientOrgBudgetSerializer(ModelSerializerNoValidation):
             )
 
     organisation = serializers.CharField(write_only=True)
+    organisation_identifier = serializers.CharField(
+        source="organisation.organisation_identifier")
 
     value = ValueSerializer(source='*')
     status = CodelistSerializer()
@@ -309,6 +311,7 @@ class OrganisationRecipientOrgBudgetSerializer(ModelSerializerNoValidation):
         model = org_models.RecipientOrgBudget
         fields = (
             'organisation',
+            'organisation_identifier',
             'id',
             'status',
             'recipient_org',
@@ -437,6 +440,8 @@ class RecipientCountryBudgetLineSerializer(ModelSerializerNoValidation):
 class OrganisationRecipientCountryBudgetSerializer(
         ModelSerializerNoValidation):
     organisation = serializers.CharField(write_only=True)
+    organisation_identifier = serializers.CharField(
+        source="organisation.organisation_identifier")
 
     value = ValueSerializer(source='*')
     status = CodelistSerializer()
@@ -455,6 +460,7 @@ class OrganisationRecipientCountryBudgetSerializer(
         model = org_models.RecipientCountryBudget
         fields = (
             'organisation',
+            'organisation_identifier',
             'id',
             'status',
             'recipient_country',
@@ -577,6 +583,8 @@ class RecipientRegionBudgetLineSerializer(ModelSerializerNoValidation):
 
 class OrganisationRecipientRegionBudgetSerializer(ModelSerializerNoValidation):
     organisation = serializers.CharField(write_only=True)
+    organisation_identifier = serializers.CharField(
+        source="organisation.organisation_identifier")
 
     value = ValueSerializer(source='*')
     status = CodelistSerializer()
@@ -595,6 +603,7 @@ class OrganisationRecipientRegionBudgetSerializer(ModelSerializerNoValidation):
         model = org_models.RecipientRegionBudget
         fields = (
             'organisation',
+            'organisation_identifier',
             'id',
             'status',
             'recipient_region',
@@ -952,11 +961,14 @@ class OrganisationDocumentLinkSerializer(ModelSerializerNoValidation):
     )
     document_date = DocumentDateSerializer(source="*")
     organisation = serializers.CharField(write_only=True)
+    organisation_identifier = serializers.CharField(
+        source="organisation.organisation_identifier")
 
     class Meta:
         model = org_models.OrganisationDocumentLink
         fields = (
             'organisation',
+            'organisation_identifier',
             'id',
             'url',
             'format',

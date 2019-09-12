@@ -751,10 +751,12 @@ class TotalBudgetList(DynamicListView):
         queryset = TotalBudget.objects.all()
         organisation_identifier = self.request.query_params.get(
             'organisation_identifier', None)
+        organisation_identifier = organisation_identifier.split(",")
 
-        if organisation_identifier is not None:
+        if '' not in organisation_identifier:
             queryset = queryset.filter(
-                organisation__organisation_identifier=organisation_identifier)
+                organisation__organisation_identifier__in
+                =organisation_identifier)
         return queryset
 
 
@@ -768,10 +770,12 @@ class RecipientRegionBudgetList(DynamicListView):
         queryset = RecipientRegionBudget.objects.all()
         organisation_identifier = self.request.query_params.get(
             'organisation_identifier', None)
+        organisation_identifier = organisation_identifier.split(",")
 
-        if organisation_identifier is not None:
+        if '' not in organisation_identifier:
             queryset = queryset.filter(
-                organisation__organisation_identifier=organisation_identifier)
+                organisation__organisation_identifier__in
+                =organisation_identifier)
         return queryset
 
 
@@ -783,10 +787,12 @@ class DocumentLinkList(DynamicListView):
         queryset = OrganisationDocumentLink.objects.all()
         organisation_identifier = self.request.query_params.get(
             'organisation_identifier', None)
+        organisation_identifier = organisation_identifier.split(",")
 
-        if organisation_identifier is not None:
+        if '' not in organisation_identifier:
             queryset = queryset.filter(
-                organisation__organisation_identifier=organisation_identifier)
+                organisation__organisation_identifier__in
+                =organisation_identifier)
         return queryset
 
 
@@ -798,10 +804,12 @@ class RecipientOrgBudgetList(DynamicListView):
         queryset = RecipientOrgBudget.objects.all()
         organisation_identifier = self.request.query_params.get(
             'organisation_identifier', None)
+        organisation_identifier = organisation_identifier.split(",")
 
-        if organisation_identifier is not None:
+        if '' not in organisation_identifier:
             queryset = queryset.filter(
-                organisation__organisation_identifier=organisation_identifier)
+                organisation__organisation_identifier__in
+                =organisation_identifier)
 
         return queryset
 
@@ -814,9 +822,11 @@ class RecipientCountryBudgetList(DynamicListView):
         queryset = RecipientCountryBudget.objects.all()
         organisation_identifier = self.request.query_params.get(
             'organisation_identifier', None)
+        organisation_identifier = organisation_identifier.split(",")
 
-        if organisation_identifier is not None:
+        if '' not in organisation_identifier:
             queryset = queryset.filter(
-                organisation__organisation_identifier=organisation_identifier)
+                organisation__organisation_identifier__in
+                =organisation_identifier)
 
         return queryset
