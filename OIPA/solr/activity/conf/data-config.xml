@@ -1462,16 +1462,6 @@
                                         ),
                                         (
                                             SELECT
-                                                JSON_AGG(ROW_TO_JSON(language_record)) AS language
-                                            FROM (
-                                                SELECT
-                                                       language_id AS code
-                                                FROM iati_documentlinklanguage
-                                                WHERE iati_documentlinklanguage.document_link_id = iati_documentlink.id
-                                            ) as language_record
-                                        ),
-                                        (
-                                            SELECT
                                                 JSON_AGG(ROW_TO_JSON(document_date_record)) AS document_date
                                             FROM (
                                                 SELECT
