@@ -1018,6 +1018,8 @@
                     SELECT
                            aid_type_id,
                            vocabulary_id,
+                           ica.code AS category_code,
+                           ica.name AS category_name,
                            CAST((
                                SELECT
                                       ROW_TO_JSON(default_aid_type_record) AS default_aid_type
@@ -1028,6 +1030,7 @@
                                 ) AS default_aid_type_record
                             ) AS VARCHAR)
                     FROM iati_activitydefaultaidtype, iati_codelists_aidtype
+                    LEFT OUTER JOIN iati_codelists_aidtypecategory ica on iati_codelists_aidtype.category_id = ica.code
                     WHERE activity_id=${activity.id}
                         AND iati_activitydefaultaidtype.aid_type_id = iati_codelists_aidtype.code
                 "
@@ -1035,6 +1038,8 @@
                 <field column="default_aid_type" name="default_aid_type"/>
                 <field column="aid_type_id" name="default_aid_type_code"/>
                 <field column="vocabulary_id" name="default_aid_type_vocabulary"/>
+                <field column="category_code" name="default_aid_type_category_code"/>
+                <field column="category_name" name="default_aid_type_category_name"/>
             </entity>
             <entity name="activity_budget"
                 query="
