@@ -1360,16 +1360,19 @@
                 <entity name="activity_transaction_receiver_org"
                     query="
                         SELECT
-                            id,
+                            iati_transactionreceiver.id AS id,
                             receiver_activity_ref,
                             type_id,
+                            iati_codelists_organisationtype.name AS name,
                             ref
-                        FROM iati_transactionreceiver
+                        FROM iati_transactionreceiver, iati_codelists_organisationtype
                         WHERE transaction_id=${activity_transaction.id}
+                            AND iati_codelists_organisationtype.code = iati_transactionreceiver.type_id
                     "
                 >
                     <field column="receiver_activity_ref" name="transaction_receiver_org_receiver_activity_id"/>
-                    <field column="type_id" name="transaction_receiver_org_type"/>
+                    <field column="type_id" name="transaction_receiver_org_type_code"/>
+                    <field column="name" name="transaction_receiver_org_type_name"/>
                     <field column="ref" name="transaction_receiver_org_ref"/>
                     <entity name="activity_transaction_receiver_org_narrative"
                         query="
@@ -1413,11 +1416,80 @@
                         id,
                         file_format_id,
                         url,
-                        TO_CHAR(iso_date::timestamp, 'YYYY-MM-DD') AS iso_date
+                        TO_CHAR(iso_date::timestamp, 'YYYY-MM-DD') AS iso_date,
+                        CAST((
+                            SELECT
+                                   ROW_TO_JSON(document_link_record) AS document_link
+                            FROM (
+                                SELECT
+                                       file_format_id AS format,
+                                       url AS url,
+                                       (
+                                            SELECT
+                                                JSON_AGG(ROW_TO_JSON(title_record)) AS title
+                                            FROM (
+                                                SELECT
+                                                       language_id AS lang,
+                                                       content AS text
+                                                FROM iati_narrative, django_content_type, iati_documentlinktitle
+                                                WHERE iati_documentlinktitle.document_link_id = iati_documentlink.id
+                                                    AND related_object_id = iati_documentlinktitle.id
+                                                    AND django_content_type.model = 'documentlinktitle'
+                                                    AND related_content_type_id = django_content_type.id
+                                            ) as title_record
+                                        ),
+                                        (
+                                            SELECT
+                                                JSON_AGG(ROW_TO_JSON(category_record)) AS category
+                                            FROM (
+                                                SELECT
+                                                       iati_documentlinkcategory.category_id AS code,
+                                                       name AS name
+                                                FROM iati_documentlinkcategory, iati_codelists_documentcategory
+                                                WHERE iati_documentlinkcategory.document_link_id = iati_documentlink.id
+                                                    AND iati_documentlinkcategory.category_id = iati_codelists_documentcategory.code
+                                            ) as category_record
+                                        ),
+                                        (
+                                            SELECT
+                                                JSON_AGG(ROW_TO_JSON(language_record)) AS language
+                                            FROM (
+                                                SELECT
+                                                       language_id AS code
+                                                FROM iati_documentlinklanguage
+                                                WHERE iati_documentlinklanguage.document_link_id = iati_documentlink.id
+                                            ) as language_record
+                                        ),
+                                        (
+                                            SELECT
+                                                JSON_AGG(ROW_TO_JSON(language_record)) AS language
+                                            FROM (
+                                                SELECT
+                                                       language_id AS code
+                                                FROM iati_documentlinklanguage
+                                                WHERE iati_documentlinklanguage.document_link_id = iati_documentlink.id
+                                            ) as language_record
+                                        ),
+                                        (
+                                            SELECT
+                                                JSON_AGG(ROW_TO_JSON(document_date_record)) AS document_date
+                                            FROM (
+                                                SELECT
+                                                    TO_CHAR(iso_date::timestamp, 'YYYY-MM-DD') AS iso_date
+                                            ) AS document_date_record
+                                        )
+                            ) AS document_link_record
+                        ) AS VARCHAR)
                     FROM iati_documentlink
                     WHERE activity_id=${activity.id}
+                        AND result_id IS NULL
+                        AND result_indicator_id IS NULL
+                        AND result_indicator_baseline_id IS NULL
+                        AND result_indicator_period_actual_id IS NULL
+                        AND result_indicator_period_target_id IS NULL
                 "
             >
+                <field column="document_link" name="document_link"/>
                 <field column="file_format_id" name="document_link_format"/>
                 <field column="url" name="document_link_url"/>
                 <field column="iso_date" name="document_link_document_date_iso_date"/>
