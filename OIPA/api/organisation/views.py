@@ -118,7 +118,7 @@ class OrganisationDetail(CacheResponseMixin, DynamicDetailView):
         OrganisationIATIXSLXRenderer,
     )
     queryset = Organisation.objects.all()
-    serializer_class = serializers.OrganisationSerializer
+    serializer_class = serializers.OrganisationDetailSerializer
     fields = ('url', 'organisation_identifier',
               'last_updated_datetime', 'name')
 

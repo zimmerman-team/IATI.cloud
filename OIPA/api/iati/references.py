@@ -1269,6 +1269,13 @@ class BudgetReference(ElementReference):
                 # Value type is {Decimal}, then convert it to string
                 value_element.text = str(value)
 
+        message = self.data.get('message')
+        if message:
+            message_element = etree.SubElement(
+                budget_element, 'message'
+            )
+            message_element.text = message
+
 
 class OtherIdentifierReference(ElementReference):
     """

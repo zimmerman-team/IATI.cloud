@@ -1321,3 +1321,9 @@ class OrganisationSerializer(DynamicFieldsModelSerializer):
                     ret[field.field_name] = field.to_representation(attribute)
 
         return ret
+
+
+class OrganisationDetailSerializer(OrganisationSerializer):
+    def to_representation(self, instance):
+        # return parent method.
+        return super(OrganisationSerializer, self).to_representation(instance)

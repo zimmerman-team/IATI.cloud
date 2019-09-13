@@ -34,7 +34,7 @@ from api.activity.serializers import (
     ResultIndicatorPeriodTargetDimensionSerializer,
     ResultIndicatorPeriodTargetLocationSerializer,
     ResultIndicatorReferenceSerializer, ResultIndicatorSerializer,
-    ResultSerializer
+    ResultSerializer, ActivityDetailSerializer
 )
 from api.activity.validators import activity_required_fields
 from api.aggregation.views import Aggregation, AggregationView, GroupBy
@@ -498,7 +498,7 @@ class ActivityDetail(DynamicDetailView):
 
     # TODO: filter_class, selectable_fields, etc. Is needed for detail?
     filter_class = ActivityFilter
-    serializer_class = ActivitySerializer
+    serializer_class = ActivityDetailSerializer
     selectable_fields = ()
 
     # specification document

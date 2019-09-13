@@ -3505,28 +3505,55 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
                 # the request will take too long.
                 # So related transaction will be shown if it is on fields
                 # request
-                if field.field_name == 'related_transactions':
-                    if instance.transaction_set.count() > 100:
-                        custom_ret = OrderedDict()
-                        custom_ret['message'] = \
-                            'This activity has more ' \
-                            'than 100 transactions! ' \
-                            'To get all transactions,  ' \
-                            'please use the URL transaction, instead!'
+                if field.field_name in ['related_transactions',
+                                        'budgets',
+                                        'results',
+                                        ]:
 
-                        try:
+                    if field.field_name not in ret:
+                        if field.field_name == 'related_transactions' and \
+                                instance.transaction_set.count() > 100:
+                            custom_ret1 = OrderedDict()
+                            custom_ret1['message'] = \
+                                'This activity has more ' \
+                                'than 100 transactions! ' \
+                                'To get all transactions,  ' \
+                                'please use the transaction endpoint ' \
+                                'instead!'
 
-                            custom_ret['url'] = self.fields[
-                                'transactions'
-                            ].to_representation(instance)
-                        except KeyError:
-                            pass
+                            ret[field.field_name] = custom_ret1
 
-                        ret[field.field_name] = custom_ret
-                    else:
-                        ret[field.field_name] = field.to_representation(
-                            attribute
-                        )
+                        elif field.field_name == 'results' and \
+                                instance.result_set.count() > 100:
+                            custom_ret2 = OrderedDict()
+                            custom_ret2['message'] = \
+                                'This activity has more ' \
+                                'than 100 results! ' \
+                                'To get all results,  ' \
+                                'please use the results ' \
+                                'endpoint instead!'
+
+                            ret[field.field_name] = custom_ret2
+
+                        elif field.field_name == 'budgets' \
+                                and \
+                                instance.budget_set.count() > \
+                                100:
+                            custom_ret3 = OrderedDict()
+                            custom_ret3['message'] = \
+                                'This activity has more ' \
+                                'than 100 budgets! ' \
+                                'To get all budgets,  ' \
+                                'please use the budget ' \
+                                'endpoint instead!'
+
+                            ret[field.field_name] = custom_ret3
+
+                        else:
+                            ret[field.field_name] = field.to_representation(
+                                attribute
+                            )
+
                 else:
                     ret[field.field_name] = field.to_representation(attribute)
 
@@ -3598,3 +3625,9 @@ class ActivitySerializerByIatiIdentifier(ActivitySerializer):
         lookup_field='iati_identifier',
         read_only=True
     )
+
+
+class ActivityDetailSerializer(ActivitySerializer):
+    def to_representation(self, instance):
+        return super(ActivitySerializer, self).to_representation(
+            instance=instance)
