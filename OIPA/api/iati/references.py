@@ -1174,9 +1174,18 @@ class BudgetReference(ElementReference):
     # </budget>
 
     def create(self):
-        budget_element = etree.SubElement(
-            self.parent_element, self.element
-        )
+        if 'message' in self.data:
+            ns_map = {"zz":
+                      "https://www.zimmermanzimmerman.nl"}
+            budget_element = etree.SubElement(
+                self.parent_element,
+                "{https://www.zimmermanzimmerman.nl}"+self.element,
+                nsmap=ns_map
+            )
+        else:
+            budget_element = etree.SubElement(
+                self.parent_element, self.element
+            )
 
         # @type
         type_dict = self.data.get(self._type.get('type').get('key'))
@@ -2971,6 +2980,11 @@ class ResultReference(BaseReference):
             name='title',
             key='title',
             element_type=ElementWithNarrativeReference
+        ),
+        # <message>
+        ElementRecord(
+            name='message',
+            key='message'
         ),
         # </narrative>
         # </title>
