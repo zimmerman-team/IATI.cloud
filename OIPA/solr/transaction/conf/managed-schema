@@ -1077,4 +1077,18 @@
      </similarity>
     -->
 
+    <!-- IATI Narrative -->
+    <fieldType name="iati_narrative" class="solr.SortableTextField" positionIncrementGap="100" multiValued="true">
+      <analyzer type="index">
+        <tokenizer class="solr.StandardTokenizerFactory"/>
+        <filter class="solr.NGramFilterFactory" minGramSize="2" maxGramSize="100"/>
+        <filter class="solr.LowerCaseFilterFactory"/>
+      </analyzer>
+      <analyzer type="query">
+        <tokenizer class="solr.StandardTokenizerFactory"/>
+        <filter class="solr.NGramFilterFactory" minGramSize="2" maxGramSize="100"/>
+        <filter class="solr.LowerCaseFilterFactory"/>
+      </analyzer>
+    </fieldType>
+
 </schema>
