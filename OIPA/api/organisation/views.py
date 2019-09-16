@@ -755,8 +755,8 @@ class TotalBudgetList(DynamicListView):
 
         if '' not in organisation_identifier:
             queryset = queryset.filter(
-                organisation__organisation_identifier__in
-                =organisation_identifier)
+                organisation__organisation_identifier__in=organisation_identifier  # NOQA 251
+            )
         return queryset
 
 
@@ -774,8 +774,7 @@ class RecipientRegionBudgetList(DynamicListView):
 
         if '' not in organisation_identifier:
             queryset = queryset.filter(
-                organisation__organisation_identifier__in
-                =organisation_identifier)
+                organisation__organisation_identifier__in=organisation_identifier)  # NOQA 251
         return queryset
 
 
@@ -791,8 +790,7 @@ class DocumentLinkList(DynamicListView):
 
         if '' not in organisation_identifier:
             queryset = queryset.filter(
-                organisation__organisation_identifier__in
-                =organisation_identifier)
+                organisation__organisation_identifier__in=organisation_identifier)  # NOQA 251
         return queryset
 
 
@@ -808,8 +806,7 @@ class RecipientOrgBudgetList(DynamicListView):
 
         if '' not in organisation_identifier:
             queryset = queryset.filter(
-                organisation__organisation_identifier__in
-                =organisation_identifier)
+                organisation__organisation_identifier__in=organisation_identifier)  # NOQA 251
 
         return queryset
 
@@ -826,7 +823,6 @@ class RecipientCountryBudgetList(DynamicListView):
 
         if '' not in organisation_identifier:
             queryset = queryset.filter(
-                organisation__organisation_identifier__in
-                =organisation_identifier)
+                organisation__organisation_identifier__in=organisation_identifier)  # NOQA 251
 
         return queryset

@@ -15,26 +15,26 @@ from api.activity.filters import (
     ActivityAggregationFilter, ActivityFilter, RelatedOrderingFilter
 )
 from api.activity.serializers import (
-    ActivityDateSerializer, ActivityPolicyMarkerSerializer,
-    ActivityRecipientRegionSerializer, ActivitySectorSerializer,
-    ActivitySerializer, ActivitySerializerByIatiIdentifier,
-    BudgetItemSerializer, BudgetSerializer, CodelistSerializer,
-    ConditionSerializer, ConditionsSerializer, ContactInfoSerializer,
-    CountryBudgetItemsSerializer, CrsAddOtherFlagsSerializer, CrsAddSerializer,
-    DescriptionSerializer, DocumentLinkCategorySerializer,
-    DocumentLinkLanguageSerializer, DocumentLinkSerializer,
-    FssForecastSerializer, FssSerializer, HumanitarianScopeSerializer,
-    LegacyDataSerializer, LocationSerializer, OtherIdentifierSerializer,
-    ParticipatingOrganisationSerializer, PlannedDisbursementSerializer,
-    RecipientCountrySerializer, RelatedActivitySerializer,
-    ReportingOrganisationSerializer,
+    ActivityDateSerializer, ActivityDetailSerializer,
+    ActivityPolicyMarkerSerializer, ActivityRecipientRegionSerializer,
+    ActivitySectorSerializer, ActivitySerializer,
+    ActivitySerializerByIatiIdentifier, BudgetItemSerializer, BudgetSerializer,
+    CodelistSerializer, ConditionSerializer, ConditionsSerializer,
+    ContactInfoSerializer, CountryBudgetItemsSerializer,
+    CrsAddOtherFlagsSerializer, CrsAddSerializer, DescriptionSerializer,
+    DocumentLinkCategorySerializer, DocumentLinkLanguageSerializer,
+    DocumentLinkSerializer, FssForecastSerializer, FssSerializer,
+    HumanitarianScopeSerializer, LegacyDataSerializer, LocationSerializer,
+    OtherIdentifierSerializer, ParticipatingOrganisationSerializer,
+    PlannedDisbursementSerializer, RecipientCountrySerializer,
+    RelatedActivitySerializer, ReportingOrganisationSerializer,
     ResultIndicatorPeriodActualDimensionSerializer,
     ResultIndicatorPeriodActualLocationSerializer,
     ResultIndicatorPeriodSerializer,
     ResultIndicatorPeriodTargetDimensionSerializer,
     ResultIndicatorPeriodTargetLocationSerializer,
     ResultIndicatorReferenceSerializer, ResultIndicatorSerializer,
-    ResultSerializer, ActivityDetailSerializer
+    ResultSerializer
 )
 from api.activity.validators import activity_required_fields
 from api.aggregation.views import Aggregation, AggregationView, GroupBy
