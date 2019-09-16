@@ -128,6 +128,7 @@
     <field name="organisation_name" type="text_general" multiValued="true" indexed="true" required="true" stored="true"/>
     <field name="organisation_name_lang" type="string" multiValued="true" indexed="true" required="true" stored="true"/>
     <field name="organisation_name_narrative" type="iati_narrative" multiValued="true" indexed="true" required="true" stored="true"/>
+    <field name="organisation_name_narrative_lang" type="string" multiValued="true" indexed="true" required="true" stored="true"/>
 
     <field name="organisation_type" type="string" multiValued="false" indexed="true" required="true" stored="true"/>
     

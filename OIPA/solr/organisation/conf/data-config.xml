@@ -50,7 +50,8 @@
                 <entity name="organisation_name_narrative"
                     query="
                         SELECT
-                            iati_organisation_organisationnarrative.content AS content
+                            iati_organisation_organisationnarrative.content AS content,
+                            iati_organisation_organisationnarrative.language_id AS lang
                         FROM iati_organisation_organisationnarrative, django_content_type
                         WHERE iati_organisation_organisationnarrative.object_id=${organisation_name.id}
                             AND iati_organisation_organisationnarrative.organisation_id=${organisation.id}
@@ -59,6 +60,7 @@
                     "
                 >
                     <field column="content" name="organisation_name_narrative"/>
+                    <field column="lang" name="organisation_name_narrative_lang"/>
                 </entity>
             </entity>
         </entity>                         
