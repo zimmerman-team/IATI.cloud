@@ -1711,7 +1711,8 @@ class FssForecast(models.Model):
 
 class CrsAdd(models.Model):
     activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
-    channel_code = models.CharField(max_length=50, null=True, blank=True)
+    channel_code = models.ForeignKey(CRSChannelCode, null=True,
+                                     on_delete=models.CASCADE)
 
     def __unicode__(self,):
         return "%s" % self.id
