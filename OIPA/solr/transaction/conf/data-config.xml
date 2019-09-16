@@ -11,6 +11,7 @@
                     activity_id,
                     ref,
                     CASE WHEN iati_transaction.humanitarian=TRUE THEN '1' ELSE '0' END AS humanitarian,
+                    CASE WHEN iati_activity.humanitarian=TRUE THEN '1' ELSE '0' END AS activity_humanitarian,
                     transaction_type_id,
                     TO_CHAR(transaction_date::timestamp, 'YYYY-MM-DD') AS transaction_date,
                     currency_id, 
@@ -26,6 +27,7 @@
             <field column="iati_identifier" name="iati_identifier"/>
             <field column="ref" name="transaction_ref"/>
             <field column="humanitarian" name="transaction_humanitarian"/>
+            <field column="activity_humanitarian" name="humanitarian"/>
             <field column="transaction_type_id" name="transaction_type"/>
             <field column="transaction_date" name="transaction_date_iso_date"/>
             <field column="currency_id" name="transaction_value_currency"/>
@@ -235,6 +237,59 @@
                     "
                 >
                     <field column="vocabulary_id" name="transaction_aid_type_vocabulary"/>
+                </entity>
+            </entity>
+            <entity name="activity_sector"
+                query="
+                    SELECT
+                        id,
+                        vocabulary_id,
+                        vocabulary_uri,
+                        sector_id,
+                        percentage,
+                        CAST((
+                            SELECT
+                                   ROW_TO_JSON(sector_record) AS sector
+                            FROM (
+                                SELECT
+                                       vocabulary_id AS vocabulary,
+                                       vocabulary_uri AS vocabulary_uri,
+                                       sector_id AS code,
+                                       percentage AS percentage,
+                                       JSON_AGG(ROW_TO_JSON(narrative_record)) AS narrative
+                                FROM (
+                                    SELECT
+                                           language_id AS lang,
+                                           content AS text
+                                    FROM iati_narrative, django_content_type
+                                    WHERE related_object_id = iati_activitysector.id
+                                        AND django_content_type.model = 'activitysector'
+                                        AND related_content_type_id =
+                                            django_content_type.id
+                                ) as narrative_record
+                            ) AS sector_record
+                        ) AS VARCHAR)
+                    FROM iati_activitysector
+                    WHERE activity_id=${activity_transaction.activity_id}
+                "
+            >
+                <field column="sector" name="sector"/>
+                <field column="vocabulary_id" name="sector_vocabulary"/>
+                <field column="vocabulary_uri" name="sector_vocabulary_uri"/>
+                <field column="sector_id" name="sector_code"/>
+                <field column="percentage" name="sector_percentage"/>
+                <entity name="activity_sector_narrative"
+                    query="
+                        SELECT
+                            iati_narrative.content AS content
+                        FROM iati_narrative, django_content_type
+                        WHERE iati_narrative.related_object_id=${activity_sector.id}
+                            AND iati_narrative.activity_id=${activity_transaction.activity_id}
+                            AND django_content_type.model='activitysector'
+                            AND django_content_type.id=iati_narrative.related_content_type_id
+                    "
+                >
+                    <field column="content" name="sector_narrative"/>
                 </entity>
             </entity>
         </entity>                         
