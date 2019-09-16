@@ -320,6 +320,7 @@
 
     <field name="transaction_tied_status_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
 
+    <field name="document_link" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="document_link_format" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="document_link_url" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="document_link_title_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
