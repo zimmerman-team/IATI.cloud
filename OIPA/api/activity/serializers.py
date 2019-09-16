@@ -2572,7 +2572,7 @@ class CrsAddSerializer(ModelSerializerNoValidation):
     other_flags = CrsAddOtherFlagsSerializer(many=True, required=False)
     loan_terms = CrsAddLoanTermsSerializer(required=False)
     loan_status = CrsAddLoanStatusSerializer(required=False)
-    channel_code = serializers.CharField(required=False)
+    channel_code = CodelistSerializer()
     activity = serializers.CharField(write_only=True)
 
     class Meta:
