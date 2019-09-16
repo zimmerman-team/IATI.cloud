@@ -124,7 +124,11 @@
 
     <!--Organisation Core - Start-->
     <field name="organisation_identifier" type="string" multiValued="false" indexed="true" required="true" stored="true"/>
-    <field name="organisation_name" type="string" multiValued="false" indexed="true" required="true" stored="true"/>
+
+    <field name="organisation_name" type="text_general" multiValued="true" indexed="true" required="true" stored="true"/>
+    <field name="organisation_name_lang" type="string" multiValued="true" indexed="true" required="true" stored="true"/>
+    <field name="organisation_name_narrative" type="iati_narrative" multiValued="true" indexed="true" required="true" stored="true"/>
+
     <field name="organisation_type" type="string" multiValued="false" indexed="true" required="true" stored="true"/>
     
     <field name="organisation_reported_in_iati" type="boolean" multiValued="false" indexed="true" required="true" stored="true"/>
@@ -1022,5 +1026,19 @@
        <str name="paramkey">param value</str>
      </similarity>
     -->
+
+    <!-- IATI Narrative -->
+    <fieldType name="iati_narrative" class="solr.SortableTextField" positionIncrementGap="100" multiValued="true">
+      <analyzer type="index">
+        <tokenizer class="solr.StandardTokenizerFactory"/>
+        <filter class="solr.NGramFilterFactory" minGramSize="2" maxGramSize="100"/>
+        <filter class="solr.LowerCaseFilterFactory"/>
+      </analyzer>
+      <analyzer type="query">
+        <tokenizer class="solr.StandardTokenizerFactory"/>
+        <filter class="solr.NGramFilterFactory" minGramSize="2" maxGramSize="100"/>
+        <filter class="solr.LowerCaseFilterFactory"/>
+      </analyzer>
+    </fieldType>
 
 </schema>
