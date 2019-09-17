@@ -13,15 +13,16 @@ from iati_codelists.factory.codelist_factory import (
     ActivityDateTypeFactory, ActivityScopeFactory, ActivityStatusFactory,
     BudgetIdentifierFactory, BudgetStatusFactory, BudgetTypeFactory,
     CollaborationTypeFactory, ConditionTypeFactory, ContactTypeFactory,
-    CurrencyFactory, DescriptionTypeFactory, DocumentCategoryFactory,
-    FileFormatFactory, FinanceTypeFactory, FlowTypeFactory,
-    GeographicExactnessFactory, GeographicLocationClassFactory,
-    GeographicLocationReachFactory, HumanitarianScopeTypeFactory,
-    IndicatorMeasureFactory, LanguageFactory, LoanRepaymentPeriodFactory,
-    LoanRepaymentTypeFactory, LocationTypeFactory, OrganisationRoleFactory,
-    OrganisationTypeFactory, OtherFlagsFactory, OtherIdentifierTypeFactory,
-    PolicyMarkerFactory, PolicySignificanceFactory, RelatedActivityTypeFactory,
-    ResultTypeFactory, SectorFactory, TiedStatusFactory, VersionFactory
+    CRSChannelCodeFactory, CurrencyFactory, DescriptionTypeFactory,
+    DocumentCategoryFactory, FileFormatFactory, FinanceTypeFactory,
+    FlowTypeFactory, GeographicExactnessFactory,
+    GeographicLocationClassFactory, GeographicLocationReachFactory,
+    HumanitarianScopeTypeFactory, IndicatorMeasureFactory, LanguageFactory,
+    LoanRepaymentPeriodFactory, LoanRepaymentTypeFactory, LocationTypeFactory,
+    OrganisationRoleFactory, OrganisationTypeFactory, OtherFlagsFactory,
+    OtherIdentifierTypeFactory, PolicyMarkerFactory, PolicySignificanceFactory,
+    RelatedActivityTypeFactory, ResultTypeFactory, SectorFactory,
+    TiedStatusFactory, VersionFactory
 )
 from iati_vocabulary.factory.vocabulary_factory import (
     BudgetIdentifierVocabularyFactory, GeographicVocabularyFactory,
@@ -930,7 +931,7 @@ class CrsAddFactory(NoDatabaseFactory):
         model = iati.models.CrsAdd
 
     activity = SubFactory(ActivityFactory)
-    channel_code = "21039"
+    channel_code = SubFactory(CRSChannelCodeFactory)
     loan_terms = RelatedFactory(CrsAddLoanTermsFactory, 'crs_add')
     loan_status = RelatedFactory(CrsAddLoanStatusFactory, 'crs_add')
 

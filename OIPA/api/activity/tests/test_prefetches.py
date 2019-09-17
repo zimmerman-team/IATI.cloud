@@ -472,7 +472,7 @@ class ActivitySaveTestCase(TestCase):
         3. Fetch crsaddotherflags objects
         """
 
-        with self.assertNumQueries(3):
+        with self.assertNumQueries(6):
             queryset = Activity.objects.all().prefetch_crs_add()
             serializer = ActivitySerializer(
                 queryset,

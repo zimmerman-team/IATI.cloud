@@ -328,6 +328,7 @@ class CRSChannelCodeFactory(NoDatabaseFactory):
 
     class Meta:
         model = codelist_models.CRSChannelCode
+        django_get_or_create = ('code',)
 
 
 class TransactionTypeFactory(NoDatabaseFactory):
