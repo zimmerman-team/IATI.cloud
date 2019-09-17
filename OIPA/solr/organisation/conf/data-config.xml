@@ -394,7 +394,7 @@
                                     ),
                                     (
                                         SELECT
-                                            ROW_TO_JSON(title_record) AS title
+                                            JSON_AGG(ROW_TO_JSON(title_record)) AS title
                                         FROM (
                                             SELECT
                                                 language_id AS lang,
@@ -411,7 +411,7 @@
                                     ),
                                     (
                                         SELECT
-                                            ROW_TO_JSON(description_record) AS description
+                                            JSON_AGG(ROW_TO_JSON(description_record)) AS description
                                         FROM (
                                             SELECT
                                                 language_id AS lang,
