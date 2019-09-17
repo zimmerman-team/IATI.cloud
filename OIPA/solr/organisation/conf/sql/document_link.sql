@@ -94,4 +94,6 @@
                                 ) as document_link_record
                         ) AS VARCHAR)
                     FROM iati_organisation_organisationdocumentlink
-                    WHERE iati_organisation_organisationdocumentlink.organisation_id = ${organiation.id}
+                    /*
+                    WHERE iati_organisation_organisationdocumentlink.organisation_id = ${organisation.id}
+                     */

@@ -125,56 +125,56 @@
     <!--Organisation Core - Start-->
     <field name="organisation_identifier" type="string" multiValued="false" indexed="true" required="true" stored="true"/>
 
-    <field name="organisation_name" type="text_general" multiValued="true" indexed="true" required="true" stored="true"/>
-    <field name="organisation_name_lang" type="string" multiValued="true" indexed="true" required="true" stored="true"/>
-    <field name="organisation_name_narrative" type="iati_narrative" multiValued="true" indexed="true" required="true" stored="true"/>
-    <field name="organisation_name_narrative_lang" type="string" multiValued="true" indexed="true" required="true" stored="true"/>
+    <field name="organisation_name" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
+    <field name="organisation_name_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="organisation_name_narrative" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="organisation_name_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
 
-    <field name="organisation_type" type="string" multiValued="false" indexed="true" required="true" stored="true"/>
-    
-    <field name="organisation_reported_in_iati" type="boolean" multiValued="false" indexed="true" required="true" stored="true"/>
-    <field name="organisation_published" type="boolean" multiValued="false" indexed="true" required="true" stored="true"/>
+    <field name="organisation_type" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
 
-    <field name="organisation_last_updated_datetime" type="pdate" multiValued="false" indexed="true" required="true" stored="true"/>
-    <field name="organisation_default_currency_code" type="string" multiValued="false" indexed="true" required="true" stored="true"/>
-    <field name="organisation_default_lang_code" type="string" multiValued="false" indexed="true" required="true" stored="true"/>
+    <field name="organisation_reported_in_iati" type="boolean" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="organisation_published" type="boolean" multiValued="false" indexed="true" required="false" stored="true"/>
 
-    <field name="organisation_total_budget" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="organisation_last_updated_datetime" type="pdate" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="organisation_default_currency_code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="organisation_default_lang_code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+
+    <field name="organisation_total_budget" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
     <field name="organisation_total_budget_period_start" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="organisation_total_budget_period_end" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="organisation_total_budget_value" type="pdoubles" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="organisation_total_budget_value_currency" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="organisation_total_budget_value_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
 
-    <field name="organisation_recipient_org_budget" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="organisation_recipient_org_budget" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
     <field name="organisation_recipient_org_budget_period_start" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="organisation_recipient_org_budget_period_end" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="organisation_recipient_org_budget_value" type="pdoubles" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="organisation_recipient_org_budget_value_currency" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="organisation_recipient_org_budget_value_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
 
-    <field name="organisation_recipient_region_budget" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="organisation_recipient_region_budget" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
     <field name="organisation_recipient_region_budget_period_start" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="organisation_recipient_region_budget_period_end" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="organisation_recipient_region_budget_value" type="pdoubles" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="organisation_recipient_region_budget_value_currency" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="organisation_recipient_region_budget_value_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
 
-    <field name="organisation_recipient_country_budget" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="organisation_recipient_country_budget" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
     <field name="organisation_recipient_country_budget_period_start" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="organisation_recipient_country_budget_period_end" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="organisation_recipient_country_budget_value" type="pdoubles" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="organisation_recipient_country_budget_value_currency" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="organisation_recipient_country_budget_value_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
 
-    <field name="organisation_total_expenditure" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="organisation_total_expenditure" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
     <field name="organisation_total_expenditure_period_start" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="organisation_total_expenditure_period_end" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="organisation_total_expenditure_value" type="pdoubles" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="organisation_total_expenditure_value_currency" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="organisation_total_expenditure_value_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
 
-    <field name="organisation_document_link" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="organisation_document_link" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
     <field name="organisation_document_link_url" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="organisation_document_link_format" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="organisation_document_link_document_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>

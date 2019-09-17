@@ -15,5 +15,5 @@
                         ) AS VARCHAR)
                     FROM iati_organisation_organisationname
                     /*
-                    WHERE iati_organisation_organisationname.organisation_id=${organiation.id}
+                    WHERE iati_organisation_organisationname.organisation_id=${organisation.id}
                      */

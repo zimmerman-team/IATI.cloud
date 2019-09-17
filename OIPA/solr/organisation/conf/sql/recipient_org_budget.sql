@@ -44,4 +44,6 @@
                                 ) as recipient_org_budget_record
                         ) AS VARCHAR)
                     FROM iati_organisation_recipientorgbudget
-                    WHERE iati_organisation_recipientorgbudget.organisation_id=${organiation.id}
+                    /*
+                    WHERE iati_organisation_recipientorgbudget.organisation_id=${organisation.id}
+                     */

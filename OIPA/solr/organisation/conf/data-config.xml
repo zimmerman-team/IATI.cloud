@@ -43,7 +43,7 @@
                                 ) as name_record
                         ) AS VARCHAR)
                     FROM iati_organisation_organisationname
-                    WHERE iati_organisation_organisationname.organisation_id=${organiation.id}
+                    WHERE iati_organisation_organisationname.organisation_id=${organisation.id}
                 "
             >
                 <field column="name" name="organisation_name"/>
@@ -111,7 +111,7 @@
                                 ) as total_budget_record
                         ) AS VARCHAR)
                     FROM iati_organisation_totalbudget
-                    WHERE iati_organisation_totalbudget.organisation_id=${organiation.id}
+                    WHERE iati_organisation_totalbudget.organisation_id=${organisation.id}
                 "
             >
                 <field column="period_start" name="organisation_total_budget_period_start"/>
@@ -169,7 +169,7 @@
                                 ) as recipient_org_budget_record
                         ) AS VARCHAR)
                     FROM iati_organisation_recipientorgbudget
-                    WHERE iati_organisation_recipientorgbudget.organisation_id=${organiation.id}
+                    WHERE iati_organisation_recipientorgbudget.organisation_id=${organisation.id}
                 "
             >
                 <field column="period_start" name="organisation_recipient_org_budget_period_start"/>
@@ -177,7 +177,7 @@
                 <field column="value" name="organisation_recipient_org_budget_value"/>
                 <field column="currency_id" name="organisation_recipient_org_budget_value_currency"/>
                 <field column="value_date" name="organisation_recipient_org_budget_value_date"/>
-                <field column="total_budget" name="organisation_recipient_org_budget"/>
+                <field column="recipient_org_budget" name="organisation_recipient_org_budget"/>
             </entity>
             <entity name="organisation_recipient_region_budget"
                 query="
@@ -227,7 +227,7 @@
                                 ) as recipient_region_budget_record
                         ) AS VARCHAR)
                     FROM iati_organisation_recipientregionbudget
-                    WHERE iati_organisation_recipientregionbudget.organisation_id=${organiation.id}
+                    WHERE iati_organisation_recipientregionbudget.organisation_id=${organisation.id}
                 "
             >
                 <field column="period_start" name="organisation_recipient_region_budget_period_start"/>
@@ -235,7 +235,7 @@
                 <field column="value" name="organisation_recipient_region_budget_value"/>
                 <field column="currency_id" name="organisation_recipient_region_budget_value_currency"/>
                 <field column="value_date" name="organisation_recipient_region_budget_value_date"/>
-                <field column="total_budget" name="organisation_recipient_region_budget"/>
+                <field column="recipient_region_budget" name="organisation_recipient_region_budget"/>
             </entity>
             <entity name="organisation_recipient_country_budget"
                 query="
@@ -248,7 +248,7 @@
                         TO_CHAR(value_date::timestamp, 'YYYY-MM-DD') AS value_date,
                         CAST((
                             SELECT
-                                ROW_TO_JSON(recipient_region_budget_record) AS recipient_region_budget
+                                ROW_TO_JSON(recipient_country_budget_record) AS recipient_country_budget
                             FROM (
                                 SELECT
                                     TO_CHAR(period_start::timestamp, 'YYYY-MM-DD') AS period_start,
@@ -282,10 +282,10 @@
                                             WHERE iati_organisation_recipientregionbudgetline.recipient_region_budget_id = iati_organisation_recipientregionbudget.id
                                         ) AS budget_line_record
                                     )
-                                ) as recipient_region_budget_record
+                                ) as recipient_country_budget_record
                         ) AS VARCHAR)
                     FROM iati_organisation_recipientregionbudget
-                    WHERE iati_organisation_recipientregionbudget.organisation_id=${organiation.id}
+                    WHERE iati_organisation_recipientregionbudget.organisation_id=${organisation.id}
                 "
             >
                 <field column="period_start" name="organisation_recipient_country_budget_period_start"/>
@@ -293,7 +293,7 @@
                 <field column="value" name="organisation_recipient_country_budget_value"/>
                 <field column="currency_id" name="organisation_recipient_country_budget_value_currency"/>
                 <field column="value_date" name="organisation_recipient_country_budget_value_date"/>
-                <field column="total_budget" name="organisation_recipient_country_budget"/>
+                <field column="recipient_country_budget" name="organisation_recipient_country_budget"/>
             </entity>
             <entity name="organisation_total_expenditure"
                 query="
@@ -343,7 +343,7 @@
                                 ) AS recipient_total_expenditure_record
                         ) AS VARCHAR)
                     FROM iati_organisation_totalexpenditure
-                    WHERE iati_organisation_totalexpenditure.organisation_id=${organiation.id}
+                    WHERE iati_organisation_totalexpenditure.organisation_id=${organisation.id}
                 "
             >
                 <field column="period_start" name="organisation_total_expenditure_period_start"/>
@@ -451,7 +451,7 @@
                                 ) as document_link_record
                         ) AS VARCHAR)
                     FROM iati_organisation_organisationdocumentlink
-                    WHERE iati_organisation_organisationdocumentlink.organisation_id = ${organiation.id}
+                    WHERE iati_organisation_organisationdocumentlink.organisation_id = ${organisation.id}
                 "
             >
                 <field column="document_link" name="organisation_document_link"/>

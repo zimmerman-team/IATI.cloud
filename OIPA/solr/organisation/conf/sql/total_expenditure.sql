@@ -44,4 +44,6 @@
                                 ) AS recipient_total_expenditure_record
                         ) AS VARCHAR)
                     FROM iati_organisation_totalexpenditure
-                    WHERE iati_organisation_totalexpenditure.organisation_id=${organiation.id}
+                    /*
+                    WHERE iati_organisation_totalexpenditure.organisation_id=${organisation.id}
+                     */
