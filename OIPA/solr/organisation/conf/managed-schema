@@ -159,6 +159,13 @@
     <field name="organisation_recipient_region_budget_value" type="pdoubles" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="organisation_recipient_region_budget_value_currency" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="organisation_recipient_region_budget_value_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
+
+    <field name="organisation_recipient_country_budget" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="organisation_recipient_country_budget_period_start" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="organisation_recipient_country_budget_period_end" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="organisation_recipient_country_budget_value" type="pdoubles" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="organisation_recipient_country_budget_value_currency" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="organisation_recipient_country_budget_value_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
     <!--Organisation Core - End-->
 
     <!-- This can be enabled, in case the client does not know what fields may be searched. It isn't enabled by default
