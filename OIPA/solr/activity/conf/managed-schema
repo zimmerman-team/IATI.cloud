@@ -169,6 +169,10 @@
     <field name="activity_date_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="activity_date_iso_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="activity_date_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
+    <field name="activity_date_start_planned" type="pdate" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="activity_date_start_actual" type="pdate" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="activity_date_end_planned" type="pdate" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="activity_date_end_actual" type="pdate" multiValued="false" indexed="true" required="false" stored="true"/>
 
     <field name="contact_info" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="contact_info_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
