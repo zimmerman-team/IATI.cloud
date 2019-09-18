@@ -114,7 +114,7 @@ class Parse(IatiParser):
         # Here organisation_identifier is a string.
         organisation_identifier = organisation_identifier[0].text
 
-        if organisation_identifier is None:
+        if not organisation_identifier:
             raise RequiredFieldError("Organisation",
                                      "organisation-identifier", "required "
                                                                 "field "
