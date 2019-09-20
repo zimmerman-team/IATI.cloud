@@ -10,7 +10,6 @@
                                        type_id AS type
                             ) AS related_activity_record
                         ) AS VARCHAR)
-
                     FROM iati_relatedactivity
                     /*
                     WHERE current_activity_id=${activity.id}
