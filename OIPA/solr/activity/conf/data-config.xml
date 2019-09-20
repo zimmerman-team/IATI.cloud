@@ -1365,6 +1365,18 @@
                 <field column="disbursement_channel_id" name="transaction_disburstment_channel_code"/>
                 <field column="flow_type_id" name="transaction_flow_type_code"/>
                 <field column="tied_status_id" name="transaction_tied_status_code"/>
+                <entity name="activity_transaction_sector"
+                    query="
+                        SELECT
+                            sector_id,
+                            vocabulary_id
+                        FROM iati_transactionsector
+                        WHERE transaction_id=${activity_transaction.id}
+                    "
+                >
+                    <field column="sector_id" name="transaction_sector_code"/>
+                    <field column="vocabulary_id" name="transaction_sector_vocabulary"/>
+                </entity>
                 <entity name="activity_transaction_provider_org"
                     query="
                         SELECT
