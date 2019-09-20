@@ -211,6 +211,7 @@
     <field name="location_feature_designation_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="location_name_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
     <field name="location_description_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
+    <field name="location_activity_description_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
     <field name="location_administrative_vocabulary" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="location_administrative_level" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="location_administrative_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>

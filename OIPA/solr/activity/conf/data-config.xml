@@ -787,6 +787,28 @@
                         <field column="content" name="location_description_narrative"/>
                     </entity>
                 </entity>
+                <entity name="activity_location_activity_description"
+                    query="
+                        SELECT
+                            id
+                        FROM iati_locationactivitydescription
+                        WHERE location_id=${activity_location.id}
+                    "
+                >
+                    <entity name="activity_location_activity_description_narrative"
+                        query="
+                            SELECT
+                                iati_narrative.content AS content
+                            FROM iati_narrative, django_content_type
+                            WHERE iati_narrative.related_object_id=${activity_location_activity_description.id}
+                                AND iati_narrative.activity_id=${activity.id}
+                                AND django_content_type.model='locationactivitydescription'
+                                AND django_content_type.id=iati_narrative.related_content_type_id
+                        "
+                    >
+                        <field column="content" name="location_activity_description_narrative"/>
+                    </entity>
+                </entity>
                 <entity name="activity_location_administrative"
                     query="
                         SELECT
