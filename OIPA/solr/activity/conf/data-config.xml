@@ -10,7 +10,7 @@
                     last_updated_datetime,
                     default_lang_id,
                     default_currency_id,
-                    CASE WHEN humanitarian=TRUE THEN '1' ELSE '0' END AS humanitarian,
+                    CASE WHEN humanitarian=TRUE THEN '1' ELSE CASE WHEN humanitarian=FALSE THEN '0' END END AS humanitarian,
                     hierarchy,
                     linked_data_uri,
                     activity_status_id,
