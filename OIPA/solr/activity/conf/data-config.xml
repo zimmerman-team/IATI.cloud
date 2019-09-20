@@ -703,6 +703,22 @@
                                        ),
                                        (
                                            SELECT
+                                                  JSON_AGG(ROW_TO_JSON(activity_description_narrative_record)) AS activity_description_narrative
+                                           FROM (
+                                                    SELECT language_id AS lang,
+                                                           content     AS text
+                                                    FROM iati_narrative,
+                                                         django_content_type,
+                                                         iati_locationactivitydescription
+                                                    WHERE related_object_id = iati_locationactivitydescription.id
+                                                      AND iati_locationactivitydescription.location_id = iati_location.id
+                                                      AND django_content_type.model = 'locationactivitydescription'
+                                                      AND related_content_type_id =
+                                                          django_content_type.id
+                                           ) as activity_description_narrative_record
+                                       ),
+                                       (
+                                           SELECT
                                                   JSON_AGG(ROW_TO_JSON(administrative_record)) AS administrative
                                            FROM (
                                                     SELECT vocabulary_id AS vocabulary,
