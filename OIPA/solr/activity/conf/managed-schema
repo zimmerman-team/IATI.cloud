@@ -211,6 +211,7 @@
     <field name="location_feature_designation_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="location_name_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
     <field name="location_description_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
+    <field name="location_activity_description_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
     <field name="location_administrative_vocabulary" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="location_administrative_level" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="location_administrative_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
@@ -335,13 +336,16 @@
     <field name="document_link_language_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="document_link_document_date_iso_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
 
+    <field name="related_activity" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="related_activity_ref" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="related_activity_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
 
+    <field name="legacy_data" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="legacy_data_name" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="legacy_data_value" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="legacy_data_iati_equivalent" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
 
+    <field name="conditions" type="text_general" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="conditions_attached" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="conditions_condition_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="conditions_condition_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>

@@ -10,7 +10,7 @@
                     last_updated_datetime,
                     default_lang_id,
                     default_currency_id,
-                    CASE WHEN humanitarian=TRUE THEN '1' ELSE '0' END AS humanitarian,
+                    CASE WHEN humanitarian=TRUE THEN '1' ELSE CASE WHEN humanitarian=FALSE THEN '0' END END AS humanitarian,
                     hierarchy,
                     linked_data_uri,
                     activity_status_id,
@@ -703,6 +703,22 @@
                                        ),
                                        (
                                            SELECT
+                                                  JSON_AGG(ROW_TO_JSON(activity_description_narrative_record)) AS activity_description_narrative
+                                           FROM (
+                                                    SELECT language_id AS lang,
+                                                           content     AS text
+                                                    FROM iati_narrative,
+                                                         django_content_type,
+                                                         iati_locationactivitydescription
+                                                    WHERE related_object_id = iati_locationactivitydescription.id
+                                                      AND iati_locationactivitydescription.location_id = iati_location.id
+                                                      AND django_content_type.model = 'locationactivitydescription'
+                                                      AND related_content_type_id =
+                                                          django_content_type.id
+                                           ) as activity_description_narrative_record
+                                       ),
+                                       (
+                                           SELECT
                                                   JSON_AGG(ROW_TO_JSON(administrative_record)) AS administrative
                                            FROM (
                                                     SELECT vocabulary_id AS vocabulary,
@@ -769,6 +785,28 @@
                         "
                     >
                         <field column="content" name="location_description_narrative"/>
+                    </entity>
+                </entity>
+                <entity name="activity_location_activity_description"
+                    query="
+                        SELECT
+                            id
+                        FROM iati_locationactivitydescription
+                        WHERE location_id=${activity_location.id}
+                    "
+                >
+                    <entity name="activity_location_activity_description_narrative"
+                        query="
+                            SELECT
+                                iati_narrative.content AS content
+                            FROM iati_narrative, django_content_type
+                            WHERE iati_narrative.related_object_id=${activity_location_activity_description.id}
+                                AND iati_narrative.activity_id=${activity.id}
+                                AND django_content_type.model='locationactivitydescription'
+                                AND django_content_type.id=iati_narrative.related_content_type_id
+                        "
+                    >
+                        <field column="content" name="location_activity_description_narrative"/>
                     </entity>
                 </entity>
                 <entity name="activity_location_administrative"
@@ -1581,12 +1619,23 @@
                 query="
                     SELECT
                         ref,
-                        type_id
+                        type_id,
+                        CAST((
+                            SELECT
+                                   ROW_TO_JSON(related_activity_record) AS related_activity
+                            FROM (
+                                SELECT
+                                       ref AS ref,
+                                       type_id AS type
+                            ) AS related_activity_record
+                        ) AS VARCHAR)
+
                     FROM iati_relatedactivity
                     WHERE current_activity_id=${activity.id}
                     ORDER BY id
                 "
             >
+                <field column="related_activity" name="related_activity"/>
                 <field column="ref" name="related_activity_ref"/>
                 <field column="type_id" name="related_activity_type"/>
             </entity>
@@ -1596,12 +1645,23 @@
                     SELECT
                         name,
                         value,
-                        iati_equivalent
+                        iati_equivalent,
+                        CAST((
+                            SELECT
+                                   ROW_TO_JSON(legacy_data_record) AS legacy_data
+                            FROM (
+                                SELECT
+                                       name AS name,
+                                       value AS value,
+                                       iati_equivalent AS iati_equivalent
+                            ) AS legacy_data_record
+                        ) AS VARCHAR)
                     FROM iati_legacydata
                     WHERE activity_id=${activity.id}
                     ORDER BY id
                 "
             >
+                <field column="legacy_data" name="legacy_data"/>
                 <field column="name" name="legacy_data_name"/>
                 <field column="value" name="legacy_data_value"/>
                 <field column="iati_equivalent" name="legacy_data_iati_equivalent"/>
@@ -1611,7 +1671,39 @@
                 query="
                     SELECT
                         id,
-                        attached
+                        CASE WHEN attached=TRUE THEN '1' ELSE CASE WHEN attached=FALSE THEN '0' END END AS attached,
+                        CAST((
+                            SELECT
+                                   ROW_TO_JSON(conditions_record) AS conditions
+                            FROM (
+                                SELECT
+                                    CASE WHEN attached=TRUE THEN '1' ELSE CASE WHEN attached=FALSE THEN '0' END END AS attached,
+                                    CAST((
+                                        SELECT
+                                            JSON_AGG(ROW_TO_JSON(condition_record)) AS condition
+                                        FROM (
+                                            SELECT
+                                                   iati_condition.type_id AS type,
+                                                   (
+                                                        SELECT
+                                                              JSON_AGG(ROW_TO_JSON(narative_record)) AS narrative
+                                                        FROM (
+                                                            SELECT
+                                                                language_id AS lang,
+                                                                content AS text
+                                                            FROM iati_narrative, django_content_type
+                                                            WHERE related_object_id = iati_condition.id
+                                                                AND iati_narrative.activity_id = iati_conditions.activity_id
+                                                                AND model='condition'
+                                                                AND django_content_type.id = related_content_type_id
+                                                        ) AS narative_record
+                                                    )
+                                            FROM iati_condition
+                                            WHERE iati_condition.conditions_id = iati_conditions.id
+                                        ) AS condition_record
+                                    ) AS VARCHAR)
+                            ) AS conditions_record
+                        ) AS VARCHAR)
                     FROM iati_conditions
                     WHERE activity_id=${activity.id}
                     LIMIT 1
