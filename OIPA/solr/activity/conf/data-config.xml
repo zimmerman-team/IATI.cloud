@@ -1607,12 +1607,23 @@
                 query="
                     SELECT
                         ref,
-                        type_id
+                        type_id,
+                        CAST((
+                            SELECT
+                                   ROW_TO_JSON(related_activity_record) AS related_activity
+                            FROM (
+                                SELECT
+                                       ref AS ref,
+                                       type_id AS type
+                            ) AS related_activity_record
+                        ) AS VARCHAR)
+
                     FROM iati_relatedactivity
                     WHERE current_activity_id=${activity.id}
                     ORDER BY id
                 "
             >
+                <field column="related_activity" name="related_activity"/>
                 <field column="ref" name="related_activity_ref"/>
                 <field column="type_id" name="related_activity_type"/>
             </entity>

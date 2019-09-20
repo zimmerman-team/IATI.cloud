@@ -336,6 +336,7 @@
     <field name="document_link_language_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="document_link_document_date_iso_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
 
+    <field name="related_activity" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="related_activity_ref" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="related_activity_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
 
