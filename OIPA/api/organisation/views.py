@@ -75,7 +75,6 @@ class OrganisationList(DynamicListView):
 
     """
     renderer_classes = (
-        rest_framework.renderers.BrowsableAPIRenderer,
         rest_framework.renderers.JSONRenderer,
         OrganisationIATIXMLRenderer,
         OrganisationIATICSVRenderer,
@@ -88,6 +87,8 @@ class OrganisationList(DynamicListView):
     selectable_fields = ()
     fields = ('url', 'organisation_identifier',
               'last_updated_datetime', 'name')
+
+    ordering_fields = '__all__'
 
 
 class OrganisationDetail(CacheResponseMixin, DynamicDetailView):
@@ -117,7 +118,7 @@ class OrganisationDetail(CacheResponseMixin, DynamicDetailView):
         OrganisationIATIXSLXRenderer,
     )
     queryset = Organisation.objects.all()
-    serializer_class = serializers.OrganisationSerializer
+    serializer_class = serializers.OrganisationDetailSerializer
     fields = ('url', 'organisation_identifier',
               'last_updated_datetime', 'name')
 
@@ -737,3 +738,91 @@ class OrganisationFileOrganisationDocumentLinkList(ListAPIView):
             ).organisationdocumentlink_set.all().order_by('id')
         except Organisation.DoesNotExist:
             return None
+
+
+class TotalBudgetList(DynamicListView):
+
+    serializer_class = serializers.OrganisationTotalBudgetSerializer
+
+    fields = ()
+
+    # filter by 'organisation_identifier'.
+    def get_queryset(self):
+        queryset = TotalBudget.objects.all()
+        organisation_identifier = self.request.query_params.get(
+            'organisation_identifier', None)
+        organisation_identifier = organisation_identifier.split(",")
+
+        if '' not in organisation_identifier:
+            queryset = queryset.filter(
+                organisation__organisation_identifier__in=organisation_identifier  # NOQA 251
+            )
+        return queryset
+
+
+class RecipientRegionBudgetList(DynamicListView):
+    serializer_class = serializers.OrganisationRecipientRegionBudgetSerializer
+
+    fields = ()
+
+    # filter by 'organisation_identifier'.
+    def get_queryset(self):
+        queryset = RecipientRegionBudget.objects.all()
+        organisation_identifier = self.request.query_params.get(
+            'organisation_identifier', None)
+        organisation_identifier = organisation_identifier.split(",")
+
+        if '' not in organisation_identifier:
+            queryset = queryset.filter(
+                organisation__organisation_identifier__in=organisation_identifier)  # NOQA 251
+        return queryset
+
+
+class DocumentLinkList(DynamicListView):
+    serializer_class = serializers.OrganisationDocumentLinkSerializer
+    fields = ()
+
+    def get_queryset(self):
+        queryset = OrganisationDocumentLink.objects.all()
+        organisation_identifier = self.request.query_params.get(
+            'organisation_identifier', None)
+        organisation_identifier = organisation_identifier.split(",")
+
+        if '' not in organisation_identifier:
+            queryset = queryset.filter(
+                organisation__organisation_identifier__in=organisation_identifier)  # NOQA 251
+        return queryset
+
+
+class RecipientOrgBudgetList(DynamicListView):
+    serializer_class = serializers.OrganisationRecipientOrgBudgetSerializer
+    fields = ()
+
+    def get_queryset(self):
+        queryset = RecipientOrgBudget.objects.all()
+        organisation_identifier = self.request.query_params.get(
+            'organisation_identifier', None)
+        organisation_identifier = organisation_identifier.split(",")
+
+        if '' not in organisation_identifier:
+            queryset = queryset.filter(
+                organisation__organisation_identifier__in=organisation_identifier)  # NOQA 251
+
+        return queryset
+
+
+class RecipientCountryBudgetList(DynamicListView):
+    serializer_class = serializers.OrganisationRecipientCountryBudgetSerializer
+    fields = ()
+
+    def get_queryset(self):
+        queryset = RecipientCountryBudget.objects.all()
+        organisation_identifier = self.request.query_params.get(
+            'organisation_identifier', None)
+        organisation_identifier = organisation_identifier.split(",")
+
+        if '' not in organisation_identifier:
+            queryset = queryset.filter(
+                organisation__organisation_identifier__in=organisation_identifier)  # NOQA 251
+
+        return queryset

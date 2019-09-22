@@ -21,38 +21,68 @@
                                        exactness_id AS exactness_code,
                                        location_class_id AS location_class_code,
                                        feature_designation_id AS feature_designation_code,
-                                       JSON_AGG(ROW_TO_JSON(name_narrative_record)) AS name_narrative,
-                                       JSON_AGG(ROW_TO_JSON(description_narrative_record)) AS description_narrative,
-                                       JSON_AGG(ROW_TO_JSON(administrative_record)) AS administrative
-                                FROM (
-                                        SELECT
-                                            language_id AS lang,
-                                            content AS text
-                                        FROM iati_narrative, django_content_type, iati_locationname
-                                        WHERE related_object_id = iati_locationname.id
-                                            AND iati_locationname.location_id = iati_location.id
-                                            AND django_content_type.model = 'locationname'
-                                            AND related_content_type_id = django_content_type.id
-                                    ) as name_narrative_record,
-                                    (
-                                        SELECT
-                                            language_id AS lang,
-                                            content AS text
-                                        FROM iati_narrative, django_content_type, iati_locationdescription
-                                        WHERE related_object_id = iati_locationdescription.id
-                                            AND iati_locationdescription.location_id = iati_location.id
-                                            AND django_content_type.model = 'locationdescription'
-                                            AND related_content_type_id = django_content_type.id
-                                    ) as description_narrative_record,
-                                    (
-                                        SELECT
-                                            vocabulary_id AS vocabulary,
-                                            level AS level,
-                                            code  AS code
-                                        FROM iati_locationadministrative
-                                        WHERE iati_locationadministrative.location_id = iati_location.id
-                                    ) as administrative_record
+                                       (
+                                           SELECT
+                                                  JSON_AGG(ROW_TO_JSON(name_narrative_record)) AS name_narrative
+                                           FROM (
+                                                    SELECT language_id AS lang,
+                                                           content     AS text
+                                                    FROM iati_narrative,
+                                                         django_content_type,
+                                                         iati_locationname
+                                                    WHERE related_object_id = iati_locationname.id
+                                                      AND iati_locationname.location_id = iati_location.id
+                                                      AND django_content_type.model = 'locationname'
+                                                      AND related_content_type_id =
+                                                          django_content_type.id
+                                           ) as name_narrative_record
+                                       ),
+                                       (
+                                           SELECT
+                                                  JSON_AGG(ROW_TO_JSON(description_narrative_record)) AS description_narrative
+                                           FROM (
+                                                    SELECT language_id AS lang,
+                                                           content     AS text
+                                                    FROM iati_narrative,
+                                                         django_content_type,
+                                                         iati_locationdescription
+                                                    WHERE related_object_id = iati_locationdescription.id
+                                                      AND iati_locationdescription.location_id = iati_location.id
+                                                      AND django_content_type.model = 'locationdescription'
+                                                      AND related_content_type_id =
+                                                          django_content_type.id
+                                           ) as description_narrative_record
+                                       ),
+                                       (
+                                           SELECT
+                                                  JSON_AGG(ROW_TO_JSON(activity_description_narrative_record)) AS activity_description_narrative
+                                           FROM (
+                                                    SELECT language_id AS lang,
+                                                           content     AS text
+                                                    FROM iati_narrative,
+                                                         django_content_type,
+                                                         iati_locationactivitydescription
+                                                    WHERE related_object_id = iati_locationactivitydescription.id
+                                                      AND iati_locationactivitydescription.location_id = iati_location.id
+                                                      AND django_content_type.model = 'locationactivitydescription'
+                                                      AND related_content_type_id =
+                                                          django_content_type.id
+                                           ) as activity_description_narrative_record
+                                       ),
+                                       (
+                                           SELECT
+                                                  JSON_AGG(ROW_TO_JSON(administrative_record)) AS administrative
+                                           FROM (
+                                                    SELECT vocabulary_id AS vocabulary,
+                                                           level AS level,
+                                                           code  AS code
+                                                    FROM iati_locationadministrative
+                                                    WHERE iati_locationadministrative.location_id = iati_location.id
+                                           ) as administrative_record
+                                       )
                             ) AS location_record
                         ) AS VARCHAR)
                     FROM iati_location
-                    /* WHERE activity_id=${activity.id} */
+                    /*
+                    WHERE activity_id=${activity.id}
+                     */

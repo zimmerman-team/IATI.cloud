@@ -45,6 +45,10 @@ class ActivityFilter(TogetherFilterSet):
         lookup_expr='in',
     )
 
+    is_secondary_reporter = BooleanFilter(
+        name='reporting_organisations__secondary_reporter',
+        widget=BooleanWidget())
+
     has_crs_add = IsNullBooleanFilter(name='crsadd', lookup_expr='isnull',
                                       distinct=True,
                                       widget=BooleanWidget())
@@ -394,7 +398,7 @@ class ActivityFilter(TogetherFilterSet):
     sector_vocabulary = ToManyFilter(
         qs=ActivitySector,
         lookup_expr='in',
-        name='sector__vocabulary__code',
+        name='vocabulary__code',
         fk='activity',
     )
 
@@ -450,6 +454,13 @@ class ActivityFilter(TogetherFilterSet):
         lookup_expr='in',
         name='organisation__organisation_identifier',
         fk='activity',
+    )
+
+    reporting_organisation_type = ToManyFilter(
+        qs=ActivityReportingOrganisation,
+        lookup_expr='in',
+        name='type',
+        fk='activity'
     )
 
     reporting_organisation_identifier_startswith = ToManyFilter(

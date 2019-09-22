@@ -3994,7 +3994,7 @@ class CrsAddSaveTestCase(TestCase):
                 "principal_arrears": 0,
                 "interest_arrears": 0,
             },
-            "channel_code": 21039,
+
         }
 
         res = self.c.post(
@@ -4078,7 +4078,7 @@ class CrsAddSaveTestCase(TestCase):
                 "principal_arrears": 0,
                 "interest_arrears": 0,
             },
-            "channel_code": 21039,
+
         }
 
         res = self.c.put(

@@ -87,7 +87,7 @@ class DefaultAidTypeReference(ElementReference):
     vocabulary_attr = 'vocabulary'
 
     def create(self):
-        code = self.data.get(self.code_key)
+        code = self.data.get('aid_type').get(self.code_key)
         # We get vocabulary code from AidTypeVocabulary table.
         vocabulary = AidTypeVocabulary.objects.get(code=AidType.objects.get(
             code=code).vocabulary_id).code
@@ -504,9 +504,18 @@ class TransactionReference(ElementReference):
     }
 
     def create(self):
-        transaction_element = etree.SubElement(
-            self.parent_element, self.element
-        )
+        if 'message' in self.data:
+            ns_map = {"zz":
+                      "https://www.zimmermanzimmerman.nl"}
+            transaction_element = etree.SubElement(
+                self.parent_element,
+                "{https://www.zimmermanzimmerman.nl}"+self.element,
+                nsmap=ns_map
+            )
+        else:
+            transaction_element = etree.SubElement(
+                self.parent_element, self.element
+            )
 
         # Ref
         ref_value = self.data.get(self.ref.get('key'))
@@ -982,6 +991,19 @@ class TransactionReference(ElementReference):
                     code
                 )
 
+        # Message to avoid big record
+        message = self.data.get('message')
+        if message:
+            message_element = etree.SubElement(
+                transaction_element, 'message'
+            )
+            message_element.text = message
+
+            path_url_element = etree.SubElement(
+                transaction_element, 'url'
+            )
+            path_url_element.text = self.data.get('url')
+
 
 class SectorReference(ElementWithNarrativeReference):
     """
@@ -1067,9 +1089,15 @@ class SectorReference(ElementWithNarrativeReference):
             self.percentage.get('key')
         )
         if percentage_value:
+            if percentage_value == 100.00:
+                # we don't want decimals in 100.
+                percentage_value_in_str = (str(percentage_value))[:-3]
+            else:
+                percentage_value_in_str = str(percentage_value)
+
             sector_element.set(
                 self.percentage.get('attr'),
-                str(percentage_value)
+                percentage_value_in_str
             )
 
         # Narrative
@@ -1146,9 +1174,18 @@ class BudgetReference(ElementReference):
     # </budget>
 
     def create(self):
-        budget_element = etree.SubElement(
-            self.parent_element, self.element
-        )
+        if 'message' in self.data:
+            ns_map = {"zz":
+                      "https://www.zimmermanzimmerman.nl"}
+            budget_element = etree.SubElement(
+                self.parent_element,
+                "{https://www.zimmermanzimmerman.nl}"+self.element,
+                nsmap=ns_map
+            )
+        else:
+            budget_element = etree.SubElement(
+                self.parent_element, self.element
+            )
 
         # @type
         type_dict = self.data.get(self._type.get('type').get('key'))
@@ -1237,9 +1274,16 @@ class BudgetReference(ElementReference):
 
             # Content
             value = value_dict.get(self.value.get('value').get('key'))
-            if value:
+            if value is not None:
                 # Value type is {Decimal}, then convert it to string
                 value_element.text = str(value)
+
+        message = self.data.get('message')
+        if message:
+            message_element = etree.SubElement(
+                budget_element, 'message'
+            )
+            message_element.text = message
 
 
 class OtherIdentifierReference(ElementReference):
@@ -1832,7 +1876,8 @@ class LocationReference(ElementReference):
             )
 
             # @code
-            code_value = location_reach_dict.get(
+
+            code_value = exactness_dict.get(
                 self.exactness.get('code').get('key')
             )
             if code_value:
@@ -2212,7 +2257,7 @@ class CapitalSpendReference(ElementReference):
     # />
 
     def create(self):
-        if self.data:
+        if self.data is not None:
             # <capital-spend
             capital_spend_element = etree.SubElement(
                 self.parent_element, self.element
@@ -2365,7 +2410,7 @@ class DocumentLinkReference(ElementReference):
 
         # <document-date
         document_date_dict = self.data.get(self.document_date.get('key'))
-        if document_date_dict:
+        if document_date_dict and document_date_dict.get('iso_date'):
             document_date_element = etree.SubElement(
                 document_link_element, self.document_date.get('element')
             )
@@ -2935,6 +2980,11 @@ class ResultReference(BaseReference):
             name='title',
             key='title',
             element_type=ElementWithNarrativeReference
+        ),
+        # <message>
+        ElementRecord(
+            name='message',
+            key='message'
         ),
         # </narrative>
         # </title>
@@ -4353,4 +4403,75 @@ class DocumentLinkOrgReference(BaseReference):
         name='document-link',
         attributes=attributes,
         children=children
+    )
+
+
+class ActivityReference(BaseReference):
+    """
+    http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/
+    """
+    # <iati-activity
+    attributes = [
+        # @last-updated-datetime
+        AttributeRecord(
+            name='last-updated-datetime',
+            key='last_updated_datetime'
+        ),
+        # @default-currency
+        AttributeRecord(
+            name='default-currency',
+            key='code',
+            dict_key='default_currency'
+        ),
+        # @humanitarian
+        AttributeRecord(
+            name='humanitarian',
+            key='humanitarian'
+        ),
+        # @hierarchy
+        AttributeRecord(
+            name='hierarchy',
+            key='hierarchy'
+        ),
+        # @linked-data-uri
+        AttributeRecord(
+            name='linked-data-uri',
+            key='linked_data_uri'
+        ),
+        # @budget-not-provided
+        AttributeRecord(
+            name='budget-not-provided',
+            key='budget_not_provided',
+            dict_key='budget_not_provided'
+        ),
+    ]
+    # >
+    element_record = ElementRecord(
+        name='iati-activity',
+        attributes=attributes
+    )
+
+
+class OrganisationReference(BaseReference):
+    """
+    http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/
+    """
+    # <iati-activity
+    attributes = [
+        # @last-updated-datetime
+        AttributeRecord(
+            name='last-updated-datetime',
+            key='last_updated_datetime'
+        ),
+        # @default-currency
+        AttributeRecord(
+            name='default-currency',
+            key='code',
+            dict_key='default_currency'
+        ),
+    ]
+    # >
+    element_record = ElementRecord(
+        name='iati-organisation',
+        attributes=attributes
     )

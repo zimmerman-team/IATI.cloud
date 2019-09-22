@@ -19,15 +19,16 @@ from rest_framework_csv.renderers import CSVRenderer
 from six import BytesIO
 
 from api.iati.references import (
-    ActivityDateReference, ActivityScopeReference, ActivityStatusReference,
-    BudgetReference, CapitalSpendReference, CollaborationTypeReference,
-    ConditionsReference, ContactInfoReference, CountryBudgetItemsReference,
-    CrsAddReference, DefaultAidTypeReference, DefaultCurrencyOrgReference,
-    DefaultFinanceTypeReference, DefaultFlowTypeReference,
-    DefaultTiedStatusReference, DescriptionReference, DocumentLinkOrgReference,
-    DocumentLinkReference, FssReference, HumanitarianScopeReference,
-    LastUpdatedDatetimeOrgReference, LegacyDataReference, LocationReference,
-    NameOrgReference, OtherIdentifierReference, ParticipatingOrgReference,
+    ActivityDateReference, ActivityReference, ActivityScopeReference,
+    ActivityStatusReference, BudgetReference, CapitalSpendReference,
+    CollaborationTypeReference, ConditionsReference, ContactInfoReference,
+    CountryBudgetItemsReference, CrsAddReference, DefaultAidTypeReference,
+    DefaultCurrencyOrgReference, DefaultFinanceTypeReference,
+    DefaultFlowTypeReference, DefaultTiedStatusReference, DescriptionReference,
+    DocumentLinkOrgReference, DocumentLinkReference, FssReference,
+    HumanitarianScopeReference, LastUpdatedDatetimeOrgReference,
+    LegacyDataReference, LocationReference, NameOrgReference,
+    OrganisationReference, OtherIdentifierReference, ParticipatingOrgReference,
     PlannedDisbursementReference, PolicyMarkerReference,
     RecipientCountryBudgetOrgReference, RecipientCountryReference,
     RecipientOrgBudgetOrgReference, RecipientRegionBudgetOrgReference,
@@ -399,7 +400,7 @@ class UtilRenderer(object):
                     paths[path] = [paths[path]]
                 paths[path].append(0 if node is None else node)
             else:
-                paths[path] = 0 if node is None else node
+                paths[path] = 'null' if node is None else node
 
         return paths
 
@@ -591,6 +592,13 @@ class XlsRenderer(BaseRenderer):
 
             self.selectable_fields = view.selectable_fields
 
+            # if view.field = (), that means fields = all parameter is
+            # passed. So we need to get all the serializer fields.
+            if view.fields == ():
+                fields = tuple(view.serializer_fields)
+            else:
+                fields = view.fields
+
             self.default_fields = list(set(view.fields) - set(self.selectable_fields))  # NOQA: E501
 
             utils = UtilRenderer()
@@ -605,7 +613,7 @@ class XlsRenderer(BaseRenderer):
                 data = activity_data['data']
                 selectable_headers = activity_data['selectable_headers']
                 activity_data.pop('selectable_headers', None)
-                self.rows, self.headers = utils.create_rows_headers(data, view.csv_headers, selectable_headers, view.fields, False)  # NOQA: E501
+                self.rows, self.headers = utils.create_rows_headers(data, view.csv_headers, selectable_headers, fields, False)  # NOQA: E501
 
             elif view_class_name in ['TransactionList', 'TransactionDetail']:
 
@@ -862,27 +870,94 @@ class IATIXMLRenderer(BaseRenderer):
         """
         Renders `data` into serialized XML.
         """
+        view = renderer_context.get('view')
+        view_class_name = view.__class__.__name__
 
-        if data is None:
+        if not data:
             return ''
+        elif view_class_name in ['ActivityList', 'OrganisationList']:
+            if 'results' in data:
+                data = data['results']
+            self.xml = E(self.root_tag_name)
+            self.xml.set('version', self.version)
 
-        if 'results' in data:
-            data = data['results']
+            if hasattr(settings, 'EXPORT_COMMENT'):
+                self.xml.append(
+                    etree.Comment(getattr(settings, 'EXPORT_COMMENT')))
 
-        xml = E(self.root_tag_name)
-        xml.set('version', self.version)
+            self._to_xml(self.xml, data)
 
-        if hasattr(settings, 'EXPORT_COMMENT'):
-            xml.append(etree.Comment(getattr(settings, 'EXPORT_COMMENT')))
+            # the element with namespace must be the last element in the xml.
+            for element in self.xml.iter():
+                if element.tag.find("https://www.zimmermanzimmerman.n") != -1:
+                    print(element.tag)
+                    parent = element.getparent()
+                    parent.remove(element)
+                    parent.append(element)
 
-        self._to_xml(
-            etree.SubElement(
-                xml,
-                self.item_tag_name.replace('_', '-')),
-            data
-        )
+            return etree.tostring(
+                self.xml,
+                encoding=self.charset,
+                pretty_print=True
+            )
 
-        return etree.tostring(xml, encoding=self.charset, pretty_print=True)
+        elif view_class_name in ['ActivityDetail',
+                                 'ActivityDetailByIatiIdentifier',
+                                 ]:
+            self.xml = E(self.root_tag_name)
+            self.xml.set('version', self.version)
+
+            if hasattr(settings, 'EXPORT_COMMENT'):
+                self.xml.append(
+                    etree.Comment(getattr(settings, 'EXPORT_COMMENT')))
+
+            # if requested data is not found, we don't need to create
+            # 'iati-activity' element.
+            if renderer_context.get('response').status_code == 404:
+                self._to_xml(self.xml.find('iati-activity'), data)
+
+            else:
+                element = ActivityReference(parent_element=self.xml,
+                                            data=data)
+                element.create()
+                self._to_xml(
+                    # there is only one 'activity' element in 'DetailView'.
+                    self.xml.find('iati-activity'),
+                    data)
+
+            return etree.tostring(
+                self.xml,
+                encoding=self.charset,
+                pretty_print=True
+            )
+        elif view_class_name in ['OrganisationDetail']:
+            self.xml = E(self.root_tag_name)
+            self.xml.set('version', self.version)
+
+            if hasattr(settings, 'EXPORT_COMMENT'):
+                self.xml.append(
+                    etree.Comment(getattr(settings, 'EXPORT_COMMENT')))
+
+            element = OrganisationReference(parent_element=self.xml,
+                                            data=data)
+            element.create()
+            self._to_xml(
+                # there is only one 'organisation' element in 'DetailView'.
+                self.xml.find('iati-organisation'),
+                data)
+
+            return etree.tostring(
+                self.xml,
+                encoding=self.charset,
+                pretty_print=True
+            )
+        else:
+            self.xml = E('message')
+            self.xml.text = 'The requested endpoint is not available in xml ' \
+                            'format.'
+
+            return etree.tostring(self.xml, encoding=self.charset,
+                                  pretty_print=True)
 
     def _to_xml(self, xml, data, parent_name=None):
         if isinstance(data, (list, tuple)):
@@ -898,7 +973,23 @@ class IATIXMLRenderer(BaseRenderer):
                     self._to_xml(etree.SubElement(
                         xml, parent_name.replace('_', '-')), item)
                 else:
-                    self._to_xml(xml, item)
+                    if self.item_tag_name == 'iati-activity':
+                        element = ActivityReference(
+                            parent_element=self.xml,
+                            data=item
+                        )
+                        element.create()
+                    else:
+                        element = OrganisationReference(
+                            parent_element=self.xml,
+                            data=item
+                        )
+                        element.create()
+
+                    self._to_xml(
+                        self.xml.findall(self.item_tag_name)[-1],
+                        item
+                    )
 
         elif isinstance(data, dict):
             attributes = []

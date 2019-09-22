@@ -177,6 +177,7 @@ class Parse(IatiParser):
         organisation.published = True
         organisation.ready_to_publish = True
         organisation.modified = False
+        organisation.dataset = self.dataset
 
         self.organisation_identifier = organisation.organisation_identifier
         self.default_currency = default_currency

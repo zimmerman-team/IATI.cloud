@@ -1,4 +1,5 @@
 import csv
+from unittest import skip
 
 from django.urls import reverse
 from rest_framework import status
@@ -15,6 +16,7 @@ class TestOrganisationCSVEndpoints(APITestCase):
         user = OrganisationUserFactory.create(user__username='test2')
         self.c.force_authenticate(user.user)
 
+    @skip('NotImplemented')
     def test_organisations_csv_endpoint(self):
         url = reverse('organisations:organisation-list')
 

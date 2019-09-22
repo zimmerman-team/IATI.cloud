@@ -1,5 +1,5 @@
 from datetime import datetime
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 
 from django.conf import settings
 from django.contrib.gis.geos import GEOSGeometry, Point
@@ -842,7 +842,26 @@ class Parse(IatiParser):
         code:AF
         percentage:25
 
-        tag:recipient-country"""
+        tag:recipient-country
+
+        IATI business rule: If transaction/recipient-country AND/OR
+        transaction/recipient-region are used THEN ALL transaction elements
+        MUST contain a recipient-country or
+        recipient-region element AND (iati-activity/recipient-country AND
+        iati-activity/recipient-region
+        MUST NOT be used)
+        """
+
+        transaction_recipient_country = self.root.findall(
+            "./iati-activity/transaction/recipient-country")
+        if len(transaction_recipient_country) > 0:
+            raise ParserError(
+                "iati-activity",
+                "recipient-country",
+                "activity/recipient-country must not used if "
+                "transaction/recipient-country is used."
+
+            )
         code = element.attrib.get('code')
         country = self.get_or_none(Country, code=code)
         percentage = element.attrib.get('percentage')
@@ -861,6 +880,18 @@ class Parse(IatiParser):
                 None,
                 None,
                 element.attrib.get('code'))
+
+        if percentage:
+            try:
+                percentage = Decimal(percentage)
+            except InvalidOperation:
+                raise FieldValidationError(
+                    "recipient-country",
+                    "percentage",
+                    "percentage value is not valid",
+                    None,
+                    None,
+                    percentage)
 
         activity = self.get_model('Activity')
         activity_recipient_country = models.ActivityRecipientCountry()
@@ -883,12 +914,32 @@ class Parse(IatiParser):
         return element
 
     def iati_activities__iati_activity__recipient_region(self, element):
-        """attributes:
+        """
+        attributes:
         code:489
         vocabulary:1
         percentage:25
 
-        tag:recipient-region"""
+        tag:recipient-region
+
+        IATI business rule: If transaction/recipient-country AND/OR
+        transaction/recipient-region are used
+        THEN ALL transaction elements MUST contain a recipient-country or
+        recipient-region element
+        AND (iati-activity/recipient-country AND
+        iati-activity/recipient-region
+        MUST NOT be used).
+        """
+
+        transaction_recipient_region = self.root.findall(
+            "./iati-activity/transaction/recipient-region")
+        if len(transaction_recipient_region) > 0:
+            raise ParserError(
+                "iati-activity",
+                "recipient-region",
+                "activity/recipient-region must not used if transaction/recipient-region is used.",  # NOQA: E501
+
+            )
         code = element.attrib.get('code')
         region = self.get_or_none(Region, code=code)
         # TODO: make defaults more transparant, here: 'OECD-DAC default'
@@ -932,7 +983,7 @@ class Parse(IatiParser):
                     "code is unspecified or invalid")
             region = Region()
             region.code = code
-            region.name = 'Vocubulary 99'
+            region.name = 'Vocabulary 99'
             region.region_vocabulary = region_vocabulary
             region.save()
 
@@ -942,6 +993,18 @@ class Parse(IatiParser):
                 "code",
                 "code is unspecified or invalid"
             )
+
+        if percentage:
+            try:
+                percentage = Decimal(percentage)
+            except InvalidOperation:
+                raise FieldValidationError(
+                    "activity-sector",
+                    "percentage",
+                    "percentage value is not valid",
+                    None,
+                    None,
+                    percentage)
 
         activity = self.get_model('Activity')
         activity_recipient_region = models.ActivityRecipientRegion()
@@ -1356,6 +1419,18 @@ class Parse(IatiParser):
                 "vocabulary",
                 "non implemented vocabulary")
 
+        if percentage:
+            try:
+                percentage = Decimal(percentage)
+            except InvalidOperation:
+                raise FieldValidationError(
+                    "sector",
+                    "percentage",
+                    "percentage value is not valid",
+                    None,
+                    None,
+                    percentage)
+
         activity = self.get_model('Activity')
         activity_sector = models.ActivitySector()
         activity_sector.sector = sector
@@ -1434,6 +1509,18 @@ class Parse(IatiParser):
                 None,
                 None,
                 code)
+
+        if percentage:
+            try:
+                percentage = Decimal(percentage)
+            except InvalidOperation:
+                raise FieldValidationError(
+                    "sector",
+                    "percentage",
+                    "percentage value is not valid",
+                    None,
+                    None,
+                    percentage)
 
         country_budget_item = self.get_model('CountryBudgetItem')
         budget_item = models.BudgetItem()
@@ -2154,6 +2241,20 @@ class Parse(IatiParser):
                 "required element missing",
                 element.sourceline,
                 "-")
+
+        transaction_recipient_country = element.findall('recipient-country')
+        if len(transaction_recipient_country) > 1:
+            raise ParserError(
+                "transaction",
+                "recipient-country",
+                "must occur no more than once")
+
+        transaction_recipient_region = element.findall('recipient-region')
+        if len(transaction_recipient_region) > 1:
+            raise ParserError(
+                "transaction",
+                "recipient-region",
+                "must occur no more than once")
 
         ref = element.attrib.get('ref')
         humanitarian = element.attrib.get('humanitarian')
@@ -3163,11 +3264,6 @@ class Parse(IatiParser):
         value = element.attrib.get('value')
 
         try:
-            value = Decimal(value)
-        except Exception as e:
-            value = None
-
-        try:
             year = int(year)
             if not (year > 1900 and year < 2200):
                 year = None
@@ -3185,8 +3281,7 @@ class Parse(IatiParser):
             raise RequiredFieldError(
                 "result/indicator/baseline",
                 "value",
-                "required attribute missing (note; xsd:decimal is used to \
-                        check instead of xsd:string)")
+                "required attribute missing.")
 
         result_indicator = self.get_model("ResultIndicator")
         result_indicator_baseline = models.ResultIndicatorBaseline()
@@ -3194,7 +3289,8 @@ class Parse(IatiParser):
         result_indicator_baseline.result_indicator = result_indicator
         result_indicator_baseline.iso_date = iso_date
         result_indicator_baseline.year = year
-        result_indicator_baseline.value = value or ''  # can be None
+        result_indicator_baseline.value = value if value else None  # can be
+        # None
 
         self.register_model('ResultIndicatorBaseline',
                             result_indicator_baseline)
@@ -3643,7 +3739,7 @@ class Parse(IatiParser):
         elif len(repayment_type_code) == 1:
             # repayment_type_code is of type string.
             repayment_type_code = repayment_type_code[
-                    0].attrib.get('code')
+                0].attrib.get('code')
             if not repayment_type_code:  # 'code'is required.
                 raise RequiredFieldError(
                     "repayment-type",
@@ -3714,7 +3810,7 @@ class Parse(IatiParser):
                     "iso-date is not in correct range.",
                     None,
                     None,
-                    )
+                )
 
         # repayment_firs_iso_date is of type list.
         repayment_first_iso_date = element.xpath('repayment-first-date')
@@ -3741,7 +3837,7 @@ class Parse(IatiParser):
                     "iso-date is not in correct range.",
                     None,
                     None,
-                    )
+                )
 
         # repayment_final_iso_date is of type list.
         repayment_final_iso_date = element.xpath('repayment-final-date')
@@ -3768,7 +3864,7 @@ class Parse(IatiParser):
                     "iso-date is not in correct range.",
                     None,
                     None,
-                    )
+                )
 
         crs_add = self.get_model('CrsAdd')
         crs_add_loan_terms = models.CrsAddLoanTerms()
@@ -3826,7 +3922,7 @@ class Parse(IatiParser):
                 "is not in correct range.",
                 None,
                 None,
-                )
+            )
 
         # interest-received must occur no more than once. The text in this
         # element must be of type xsd:decimal.
@@ -3950,12 +4046,12 @@ class Parse(IatiParser):
             # attribute.
             if not self.isInt(phaseout_year):
                 raise FieldValidationError(
-                            "fss",
-                            "phaseout-year",
-                            "phaseout-year not of type xsd:decimal",
-                            None,
-                            None,
-                            element.attrib.get('phaseout-year'))
+                    "fss",
+                    "phaseout-year",
+                    "phaseout-year not of type xsd:decimal",
+                    None,
+                    None,
+                    element.attrib.get('phaseout-year'))
 
         priority_bool = self.makeBool(priority)
         fss = models.Fss()
@@ -4043,7 +4139,6 @@ class Parse(IatiParser):
         post_save.set_derived_activity_dates(activity)
         post_save.set_activity_aggregations(activity)
         post_save.update_activity_search_index(activity)
-        post_save.set_country_region_transaction(activity)
         post_save.set_sector_transaction(activity)
         post_save.set_sector_budget(activity)
 

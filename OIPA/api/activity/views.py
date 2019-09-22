@@ -15,19 +15,19 @@ from api.activity.filters import (
     ActivityAggregationFilter, ActivityFilter, RelatedOrderingFilter
 )
 from api.activity.serializers import (
-    ActivityDateSerializer, ActivityPolicyMarkerSerializer,
-    ActivityRecipientRegionSerializer, ActivitySectorSerializer,
-    ActivitySerializer, ActivitySerializerByIatiIdentifier,
-    BudgetItemSerializer, BudgetSerializer, CodelistSerializer,
-    ConditionSerializer, ConditionsSerializer, ContactInfoSerializer,
-    CountryBudgetItemsSerializer, CrsAddOtherFlagsSerializer, CrsAddSerializer,
-    DescriptionSerializer, DocumentLinkCategorySerializer,
-    DocumentLinkLanguageSerializer, DocumentLinkSerializer,
-    FssForecastSerializer, FssSerializer, HumanitarianScopeSerializer,
-    LegacyDataSerializer, LocationSerializer, OtherIdentifierSerializer,
-    ParticipatingOrganisationSerializer, PlannedDisbursementSerializer,
-    RecipientCountrySerializer, RelatedActivitySerializer,
-    ReportingOrganisationSerializer,
+    ActivityDateSerializer, ActivityDetailSerializer,
+    ActivityPolicyMarkerSerializer, ActivityRecipientRegionSerializer,
+    ActivitySectorSerializer, ActivitySerializer,
+    ActivitySerializerByIatiIdentifier, BudgetItemSerializer, BudgetSerializer,
+    CodelistSerializer, ConditionSerializer, ConditionsSerializer,
+    ContactInfoSerializer, CountryBudgetItemsSerializer,
+    CrsAddOtherFlagsSerializer, CrsAddSerializer, DescriptionSerializer,
+    DocumentLinkCategorySerializer, DocumentLinkLanguageSerializer,
+    DocumentLinkSerializer, FssForecastSerializer, FssSerializer,
+    HumanitarianScopeSerializer, LegacyDataSerializer, LocationSerializer,
+    OtherIdentifierSerializer, ParticipatingOrganisationSerializer,
+    PlannedDisbursementSerializer, RecipientCountrySerializer,
+    RelatedActivitySerializer, ReportingOrganisationSerializer,
     ResultIndicatorPeriodActualDimensionSerializer,
     ResultIndicatorPeriodActualLocationSerializer,
     ResultIndicatorPeriodSerializer,
@@ -44,7 +44,6 @@ from api.generics.views import (
     DynamicDetailCRUDView, DynamicDetailView, DynamicListCRUDView,
     DynamicListView, SaveAllSerializer
 )
-from api.organisation.serializers import OrganisationSerializer
 from api.publisher.permissions import PublisherPermissions
 from api.region.serializers import RegionSerializer
 from api.sector.serializers import SectorSerializer
@@ -59,9 +58,9 @@ from iati.models import (
     BudgetItem, CollaborationType, Condition, Conditions, ContactInfo,
     CountryBudgetItem, CrsAdd, CrsAddOtherFlags, Description, DocumentCategory,
     DocumentLink, DocumentLinkCategory, DocumentLinkLanguage, Fss, FssForecast,
-    HumanitarianScope, LegacyData, Location, Organisation, OrganisationType,
-    OtherIdentifier, PlannedDisbursement, PolicySignificance, RelatedActivity,
-    Result, ResultIndicator, ResultIndicatorPeriod,
+    HumanitarianScope, LegacyData, Location, OrganisationType, OtherIdentifier,
+    PlannedDisbursement, PolicySignificance, RelatedActivity, Result,
+    ResultIndicator, ResultIndicatorPeriod,
     ResultIndicatorPeriodActualDimension, ResultIndicatorPeriodTargetDimension,
     ResultIndicatorReference, Sector
 )
@@ -188,11 +187,10 @@ class ActivityAggregations(AggregationView):
         ),
         GroupBy(
             query_param="reporting_organisation",
-            fields="reporting_organisations__organisation__id",
-            renamed_fields="reporting_organisation",
-            queryset=Organisation.objects.all(),
-            serializer=OrganisationSerializer,
-            serializer_main_field='id',
+            fields=("reporting_organisations__organisation__primary_name",
+                    "reporting_organisations__organisation__organisation_identifier"),  # NOQA: E501
+            renamed_fields=("reporting_organisation",
+                            "reporting_organisation_identifier"),
             name_search_field="reporting_organisations__organisation__primary_name",  # NOQA: E501
             renamed_name_search_field="reporting_organisation_name"
         ),
@@ -500,7 +498,7 @@ class ActivityDetail(DynamicDetailView):
 
     # TODO: filter_class, selectable_fields, etc. Is needed for detail?
     filter_class = ActivityFilter
-    serializer_class = ActivitySerializer
+    serializer_class = ActivityDetailSerializer
     selectable_fields = ()
 
     # specification document

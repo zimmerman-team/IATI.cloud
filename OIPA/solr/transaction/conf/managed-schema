@@ -124,6 +124,16 @@
 
     <!--Transaction Core - Start-->
     <field name="iati_identifier" type="string" multiValued="false" indexed="true" required="true" stored="true"/>
+
+    <field name="title_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="title_narrative" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+
+    <field name="description_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="description_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="description_narrative" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+
+    <field name="activity_date_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="activity_date_iso_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
     
     <field name="reporting_org_ref" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="reporting_org_type" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
@@ -143,8 +153,9 @@
     <field name="transaction_provider_org_provider_activity_id" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="transaction_provider_org_type" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="transaction_provider_org_narrative" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+
     <field name="transaction_receiver_org_ref" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-    <field name="transaction_receiver_org_provider_activity_id" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="transaction_receiver_org_receiver_activity_id" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="transaction_receiver_org_type" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="transaction_receiver_org_narrative" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     
@@ -168,6 +179,14 @@
     <field name="transaction_aid_type_vocabulary" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
 
     <field name="transaction_tied_status_code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+
+    <field name="humanitarian" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="sector" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="sector_vocabulary" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="sector_vocabulary_uri" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="sector_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="sector_percentage" type="pdoubles" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="sector_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
     <!--Transaction Core - End-->
     
     <!-- This can be enabled, in case the client does not know what fields may be searched. It isn't enabled by default
@@ -1057,5 +1076,19 @@
        <str name="paramkey">param value</str>
      </similarity>
     -->
+
+    <!-- IATI Narrative -->
+    <fieldType name="iati_narrative" class="solr.SortableTextField" positionIncrementGap="100" multiValued="true">
+      <analyzer type="index">
+        <tokenizer class="solr.StandardTokenizerFactory"/>
+        <filter class="solr.NGramFilterFactory" minGramSize="2" maxGramSize="100"/>
+        <filter class="solr.LowerCaseFilterFactory"/>
+      </analyzer>
+      <analyzer type="query">
+        <tokenizer class="solr.StandardTokenizerFactory"/>
+        <filter class="solr.NGramFilterFactory" minGramSize="2" maxGramSize="100"/>
+        <filter class="solr.LowerCaseFilterFactory"/>
+      </analyzer>
+    </fieldType>
 
 </schema>

@@ -113,7 +113,7 @@ class Parse(IatiParser):
 
     def iati_organisations__iati_organisation(self, element):
         org_id = element.xpath('organisation-identifier/text()')[0]
-        normalized_id = self._normalize(id)
+        normalized_id = self._normalize(org_id)
         last_updated_datetime = self.validate_date(
             element.attrib.get('last-updated-datetime'))
         # default is here to make it default to settings 'DEFAULT_LANG' on no
@@ -176,6 +176,7 @@ class Parse(IatiParser):
         organisation.published = True
         organisation.ready_to_publish = True
         organisation.modified = False
+        organisation.dataset = self.dataset
 
         self.organisation_identifier = organisation.organisation_identifier
         self.default_currency = default_currency
@@ -338,6 +339,7 @@ class Parse(IatiParser):
                 'total-budget/value',
                 element.attrib.get('currency')))
         model.value_date = self.validate_date(element.attrib.get('value-date'))
+        model.value = element.text
         # store element
         return element
 

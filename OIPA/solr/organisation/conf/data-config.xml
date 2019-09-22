@@ -1,10 +1,11 @@
 <dataConfig>
     <dataSource type="JdbcDataSource" driver="org.postgresql.Driver" url="jdbc:postgresql://localhost:5432/defaultdb" user="zimmerman" password="" />
     <document>
-        <entity name="activity" 
+        <entity name="organisation"
             pk="iati_identifier" 
             query="
-                SELECT 
+                SELECT
+                    id,
                     organisation_identifier, 
                     primary_name, 
                     type_id,
@@ -18,13 +19,446 @@
         >  
             <field column="organisation_identifier" name="id"/>
             <field column="organisation_identifier" name="organisation_identifier"/>
-            <field column="primary_name" name="organisation_name"/>
             <field column="type_id" name="organisation_type"/>
             <field column="reported_in_iati" name="organisation_reported_in_iati"/>
             <field column="published" name="organisation_published"/>
             <field column="last_updated_datetime" name="organisation_last_updated_datetime"/>
             <field column="default_currency_id" name="organisation_default_currency_code"/>
             <field column="default_lang_id" name="organisation_default_lang_code"/>
+            <entity name="organisation_name"
+                query="
+                     SELECT
+                        id,
+                        CAST((
+                            SELECT
+                                JSON_AGG(ROW_TO_JSON(name_record)) AS name
+                            FROM (
+                                SELECT
+                                       language_id AS lang,
+                                       content AS narrative
+                                FROM iati_organisation_organisationnarrative, django_content_type
+                                WHERE object_id=iati_organisation_organisationname.id
+                                    AND django_content_type.model='organisationname'
+                                    AND content_type_id=django_content_type.id
+                                ) as name_record
+                        ) AS VARCHAR)
+                    FROM iati_organisation_organisationname
+                    WHERE iati_organisation_organisationname.organisation_id=${organisation.id}
+                "
+            >
+                <field column="name" name="organisation_name"/>
+                <entity name="organisation_name_narrative"
+                    query="
+                        SELECT
+                            iati_organisation_organisationnarrative.content AS content,
+                            iati_organisation_organisationnarrative.language_id AS lang
+                        FROM iati_organisation_organisationnarrative, django_content_type
+                        WHERE iati_organisation_organisationnarrative.object_id=${organisation_name.id}
+                            AND iati_organisation_organisationnarrative.organisation_id=${organisation.id}
+                            AND django_content_type.model='organisationname'
+                            AND django_content_type.id=iati_organisation_organisationnarrative.content_type_id
+                    "
+                >
+                    <field column="content" name="organisation_name_narrative"/>
+                    <field column="lang" name="organisation_name_narrative_lang"/>
+                </entity>
+            </entity>
+            <entity name="organisation_total_budget"
+                query="
+                    SELECT
+                        id,
+                        TO_CHAR(period_start::timestamp, 'YYYY-MM-DD') AS period_start,
+                        TO_CHAR(period_end::timestamp, 'YYYY-MM-DD') AS period_end,
+                        value,
+                        currency_id,
+                        TO_CHAR(value_date::timestamp, 'YYYY-MM-DD') AS value_date,
+                        CAST((
+                            SELECT
+                                ROW_TO_JSON(total_budget_record) AS total_budget
+                            FROM (
+                                SELECT
+                                    TO_CHAR(period_start::timestamp, 'YYYY-MM-DD') AS period_start,
+                                    TO_CHAR(period_end::timestamp, 'YYYY-MM-DD') AS period_end,
+                                    value,
+                                    currency_id AS currency,
+                                    TO_CHAR(value_date::timestamp, 'YYYY-MM-DD') AS value_date,
+                                    (
+                                        SELECT
+                                            JSON_AGG(ROW_TO_JSON(budget_line_record)) AS budget_line
+                                        FROM (
+                                            SELECT
+                                                iati_organisation_totalbudgetline.ref AS ref,
+                                                iati_organisation_totalbudgetline.value AS value,
+                                                TO_CHAR(iati_organisation_totalbudgetline.value_date::timestamp, 'YYYY-MM-DD') AS value_date,
+                                                iati_organisation_totalbudgetline.currency_id AS currency,
+                                                (
+                                                    SELECT
+                                                        JSON_AGG(ROW_TO_JSON(narrative_record)) AS narrative
+                                                    FROM (
+                                                        SELECT
+                                                               language_id AS lang,
+                                                               content AS narrative
+                                                        FROM iati_organisation_organisationnarrative, django_content_type
+                                                        WHERE object_id=iati_organisation_totalbudgetline.id
+                                                            AND django_content_type.model='totalbudgetline'
+                                                            AND content_type_id=django_content_type.id
+                                                    ) as narrative_record
+                                                )
+                                            FROM iati_organisation_totalbudgetline
+                                            WHERE iati_organisation_totalbudgetline.total_budget_id = iati_organisation_totalbudget.id
+                                        ) AS budget_line_record
+                                    )
+                                ) as total_budget_record
+                        ) AS VARCHAR)
+                    FROM iati_organisation_totalbudget
+                    WHERE iati_organisation_totalbudget.organisation_id=${organisation.id}
+                "
+            >
+                <field column="period_start" name="organisation_total_budget_period_start"/>
+                <field column="period_end" name="organisation_total_budget_period_end"/>
+                <field column="value" name="organisation_total_budget_value"/>
+                <field column="currency_id" name="organisation_total_budget_value_currency"/>
+                <field column="value_date" name="organisation_total_budget_value_date"/>
+                <field column="total_budget" name="organisation_total_budget"/>
+            </entity>
+            <entity name="organisation_recipient_org_budget"
+                query="
+                    SELECT
+                        id,
+                        TO_CHAR(period_start::timestamp, 'YYYY-MM-DD') AS period_start,
+                        TO_CHAR(period_end::timestamp, 'YYYY-MM-DD') AS period_end,
+                        value,
+                        currency_id,
+                        TO_CHAR(value_date::timestamp, 'YYYY-MM-DD') AS value_date,
+                        CAST((
+                            SELECT
+                                ROW_TO_JSON(recipient_org_budget_record) AS recipient_org_budget
+                            FROM (
+                                SELECT
+                                    TO_CHAR(period_start::timestamp, 'YYYY-MM-DD') AS period_start,
+                                    TO_CHAR(period_end::timestamp, 'YYYY-MM-DD') AS period_end,
+                                    value,
+                                    currency_id AS currency,
+                                    TO_CHAR(value_date::timestamp, 'YYYY-MM-DD') AS value_date,
+                                    (
+                                        SELECT
+                                            JSON_AGG(ROW_TO_JSON(budget_line_record)) AS budget_line
+                                        FROM (
+                                            SELECT
+                                                iati_organisation_recipientorgbudgetline.ref AS ref,
+                                                iati_organisation_recipientorgbudgetline.value AS value,
+                                                TO_CHAR(iati_organisation_recipientorgbudgetline.value_date::timestamp, 'YYYY-MM-DD') AS value_date,
+                                                iati_organisation_recipientorgbudgetline.currency_id AS currency,
+                                                (
+                                                    SELECT
+                                                        JSON_AGG(ROW_TO_JSON(narrative_record)) AS narrative
+                                                    FROM (
+                                                        SELECT
+                                                               language_id AS lang,
+                                                               content AS narrative
+                                                        FROM iati_organisation_organisationnarrative, django_content_type
+                                                        WHERE object_id=iati_organisation_recipientorgbudgetline.id
+                                                            AND django_content_type.model='recipientorgbudgetline'
+                                                            AND content_type_id=django_content_type.id
+                                                    ) as narrative_record
+                                                )
+                                            FROM iati_organisation_recipientorgbudgetline
+                                            WHERE iati_organisation_recipientorgbudgetline.recipient_org_budget_id = iati_organisation_recipientorgbudget.id
+                                        ) AS budget_line_record
+                                    )
+                                ) as recipient_org_budget_record
+                        ) AS VARCHAR)
+                    FROM iati_organisation_recipientorgbudget
+                    WHERE iati_organisation_recipientorgbudget.organisation_id=${organisation.id}
+                "
+            >
+                <field column="period_start" name="organisation_recipient_org_budget_period_start"/>
+                <field column="period_end" name="organisation_recipient_org_budget_period_end"/>
+                <field column="value" name="organisation_recipient_org_budget_value"/>
+                <field column="currency_id" name="organisation_recipient_org_budget_value_currency"/>
+                <field column="value_date" name="organisation_recipient_org_budget_value_date"/>
+                <field column="recipient_org_budget" name="organisation_recipient_org_budget"/>
+            </entity>
+            <entity name="organisation_recipient_region_budget"
+                query="
+                    SELECT
+                        id,
+                        TO_CHAR(period_start::timestamp, 'YYYY-MM-DD') AS period_start,
+                        TO_CHAR(period_end::timestamp, 'YYYY-MM-DD') AS period_end,
+                        value,
+                        currency_id,
+                        TO_CHAR(value_date::timestamp, 'YYYY-MM-DD') AS value_date,
+                        CAST((
+                            SELECT
+                                ROW_TO_JSON(recipient_region_budget_record) AS recipient_region_budget
+                            FROM (
+                                SELECT
+                                    TO_CHAR(period_start::timestamp, 'YYYY-MM-DD') AS period_start,
+                                    TO_CHAR(period_end::timestamp, 'YYYY-MM-DD') AS period_end,
+                                    value,
+                                    currency_id AS currency,
+                                    TO_CHAR(value_date::timestamp, 'YYYY-MM-DD') AS value_date,
+                                    (
+                                        SELECT
+                                            JSON_AGG(ROW_TO_JSON(budget_line_record)) AS budget_line
+                                        FROM (
+                                            SELECT
+                                                iati_organisation_recipientregionbudgetline.ref AS ref,
+                                                iati_organisation_recipientregionbudgetline.value AS value,
+                                                TO_CHAR(iati_organisation_recipientregionbudgetline.value_date::timestamp, 'YYYY-MM-DD') AS value_date,
+                                                iati_organisation_recipientregionbudgetline.currency_id AS currency,
+                                                (
+                                                    SELECT
+                                                        JSON_AGG(ROW_TO_JSON(narrative_record)) AS narrative
+                                                    FROM (
+                                                        SELECT
+                                                               language_id AS lang,
+                                                               content AS narrative
+                                                        FROM iati_organisation_organisationnarrative, django_content_type
+                                                        WHERE object_id=iati_organisation_recipientregionbudgetline.id
+                                                            AND django_content_type.model='recipientregionbudgetline'
+                                                            AND content_type_id=django_content_type.id
+                                                    ) as narrative_record
+                                                )
+                                            FROM iati_organisation_recipientregionbudgetline
+                                            WHERE iati_organisation_recipientregionbudgetline.recipient_region_budget_id = iati_organisation_recipientregionbudget.id
+                                        ) AS budget_line_record
+                                    )
+                                ) as recipient_region_budget_record
+                        ) AS VARCHAR)
+                    FROM iati_organisation_recipientregionbudget
+                    WHERE iati_organisation_recipientregionbudget.organisation_id=${organisation.id}
+                "
+            >
+                <field column="period_start" name="organisation_recipient_region_budget_period_start"/>
+                <field column="period_end" name="organisation_recipient_region_budget_period_end"/>
+                <field column="value" name="organisation_recipient_region_budget_value"/>
+                <field column="currency_id" name="organisation_recipient_region_budget_value_currency"/>
+                <field column="value_date" name="organisation_recipient_region_budget_value_date"/>
+                <field column="recipient_region_budget" name="organisation_recipient_region_budget"/>
+            </entity>
+            <entity name="organisation_recipient_country_budget"
+                query="
+                    SELECT
+                        id,
+                        TO_CHAR(period_start::timestamp, 'YYYY-MM-DD') AS period_start,
+                        TO_CHAR(period_end::timestamp, 'YYYY-MM-DD') AS period_end,
+                        value,
+                        currency_id,
+                        TO_CHAR(value_date::timestamp, 'YYYY-MM-DD') AS value_date,
+                        CAST((
+                            SELECT
+                                ROW_TO_JSON(recipient_country_budget_record) AS recipient_country_budget
+                            FROM (
+                                SELECT
+                                    TO_CHAR(period_start::timestamp, 'YYYY-MM-DD') AS period_start,
+                                    TO_CHAR(period_end::timestamp, 'YYYY-MM-DD') AS period_end,
+                                    value,
+                                    currency_id AS currency,
+                                    TO_CHAR(value_date::timestamp, 'YYYY-MM-DD') AS value_date,
+                                    (
+                                        SELECT
+                                            JSON_AGG(ROW_TO_JSON(budget_line_record)) AS budget_line
+                                        FROM (
+                                            SELECT
+                                                iati_organisation_recipientregionbudgetline.ref AS ref,
+                                                iati_organisation_recipientregionbudgetline.value AS value,
+                                                TO_CHAR(iati_organisation_recipientregionbudgetline.value_date::timestamp, 'YYYY-MM-DD') AS value_date,
+                                                iati_organisation_recipientregionbudgetline.currency_id AS currency,
+                                                (
+                                                    SELECT
+                                                        JSON_AGG(ROW_TO_JSON(narrative_record)) AS narrative
+                                                    FROM (
+                                                        SELECT
+                                                               language_id AS lang,
+                                                               content AS narrative
+                                                        FROM iati_organisation_organisationnarrative, django_content_type
+                                                        WHERE object_id=iati_organisation_recipientregionbudgetline.id
+                                                            AND django_content_type.model='recipientregionbudgetline'
+                                                            AND content_type_id=django_content_type.id
+                                                    ) as narrative_record
+                                                )
+                                            FROM iati_organisation_recipientregionbudgetline
+                                            WHERE iati_organisation_recipientregionbudgetline.recipient_region_budget_id = iati_organisation_recipientregionbudget.id
+                                        ) AS budget_line_record
+                                    )
+                                ) as recipient_country_budget_record
+                        ) AS VARCHAR)
+                    FROM iati_organisation_recipientregionbudget
+                    WHERE iati_organisation_recipientregionbudget.organisation_id=${organisation.id}
+                "
+            >
+                <field column="period_start" name="organisation_recipient_country_budget_period_start"/>
+                <field column="period_end" name="organisation_recipient_country_budget_period_end"/>
+                <field column="value" name="organisation_recipient_country_budget_value"/>
+                <field column="currency_id" name="organisation_recipient_country_budget_value_currency"/>
+                <field column="value_date" name="organisation_recipient_country_budget_value_date"/>
+                <field column="recipient_country_budget" name="organisation_recipient_country_budget"/>
+            </entity>
+            <entity name="organisation_total_expenditure"
+                query="
+                    SELECT
+                        id,
+                        TO_CHAR(period_start::timestamp, 'YYYY-MM-DD') AS period_start,
+                        TO_CHAR(period_end::timestamp, 'YYYY-MM-DD') AS period_end,
+                        value,
+                        currency_id,
+                        TO_CHAR(value_date::timestamp, 'YYYY-MM-DD') AS value_date,
+                        CAST((
+                            SELECT
+                                ROW_TO_JSON(recipient_total_expenditure_record) AS total_expenditure
+                            FROM (
+                                SELECT
+                                    TO_CHAR(period_start::timestamp, 'YYYY-MM-DD') AS period_start,
+                                    TO_CHAR(period_end::timestamp, 'YYYY-MM-DD') AS period_end,
+                                    value,
+                                    currency_id AS currency,
+                                    TO_CHAR(value_date::timestamp, 'YYYY-MM-DD') AS value_date,
+                                    (
+                                        SELECT
+                                            JSON_AGG(ROW_TO_JSON(budget_line_record)) AS budget_line
+                                        FROM (
+                                            SELECT
+                                                iati_organisation_totalexpenditureline.ref AS ref,
+                                                iati_organisation_totalexpenditureline.value AS value,
+                                                TO_CHAR(iati_organisation_totalexpenditureline.value_date::timestamp, 'YYYY-MM-DD') AS value_date,
+                                                iati_organisation_totalexpenditureline.currency_id AS currency,
+                                                (
+                                                    SELECT
+                                                        JSON_AGG(ROW_TO_JSON(narrative_record)) AS narrative
+                                                    FROM (
+                                                        SELECT
+                                                               language_id AS lang,
+                                                               content AS narrative
+                                                        FROM iati_organisation_organisationnarrative, django_content_type
+                                                        WHERE object_id=iati_organisation_totalexpenditureline.id
+                                                            AND django_content_type.model='totalexpenditureline'
+                                                            AND content_type_id=django_content_type.id
+                                                    ) as narrative_record
+                                                )
+                                            FROM iati_organisation_totalexpenditureline
+                                            WHERE iati_organisation_totalexpenditureline.total_expenditure_id = iati_organisation_totalexpenditure.id
+                                        ) AS budget_line_record
+                                    )
+                                ) AS recipient_total_expenditure_record
+                        ) AS VARCHAR)
+                    FROM iati_organisation_totalexpenditure
+                    WHERE iati_organisation_totalexpenditure.organisation_id=${organisation.id}
+                "
+            >
+                <field column="period_start" name="organisation_total_expenditure_period_start"/>
+                <field column="period_end" name="organisation_total_expenditure_period_end"/>
+                <field column="value" name="organisation_total_expenditure_value"/>
+                <field column="currency_id" name="organisation_total_expenditure_value_currency"/>
+                <field column="value_date" name="organisation_total_expenditure_value_date"/>
+                <field column="total_expenditure" name="organisation_total_expenditure"/>
+            </entity>
+            <entity name="organisation_document_link"
+                query="
+                    SELECT
+                        id,
+                        url,
+                        file_format_id,
+                        language_id,
+                        TO_CHAR(iso_date::timestamp, 'YYYY-MM-DD') AS iso_date,
+                        CAST((
+                            SELECT
+                                ROW_TO_JSON(document_link_record) AS document_link
+                            FROM (
+                                SELECT
+                                    url AS url,
+                                    file_format_id AS format,
+                                    TO_CHAR(iso_date::timestamp, 'YYYY-MM-DD') AS document_date,
+                                    (
+                                        SELECT
+                                            JSON_AGG(ROW_TO_JSON(recipient_country_record)) AS recipient_country
+                                        FROM (
+                                            SELECT
+                                                iati_organisation_documentlinkrecipientcountry.recipient_country_id AS code,
+                                                (
+                                                    SELECT
+                                                        JSON_AGG(ROW_TO_JSON(narrative_record)) AS narrative
+                                                    FROM (
+                                                        SELECT
+                                                               language_id AS lang,
+                                                               content AS narrative
+                                                        FROM iati_organisation_organisationnarrative, django_content_type
+                                                        WHERE object_id=iati_organisation_documentlinkrecipientcountry.id
+                                                            AND django_content_type.model='documentlinkrecipientcountry'
+                                                            AND content_type_id=django_content_type.id
+                                                    ) as narrative_record
+                                                )
+                                            FROM iati_organisation_documentlinkrecipientcountry
+                                            WHERE iati_organisation_documentlinkrecipientcountry.document_link_id = iati_organisation_organisationdocumentlink.id
+                                        ) AS recipient_country_record
+                                    ),
+                                    (
+                                        SELECT
+                                            JSON_AGG(ROW_TO_JSON(title_record)) AS title
+                                        FROM (
+                                            SELECT
+                                                language_id AS lang,
+                                                content AS narrative
+                                            FROM iati_organisation_organisationnarrative,
+                                                 django_content_type,
+                                                 iati_organisation_documentlinktitle
+                                            WHERE object_id=iati_organisation_documentlinktitle.id
+                                                AND django_content_type.model='documentlinktitle'
+                                                AND content_type_id=django_content_type.id
+                                                AND iati_organisation_documentlinktitle.document_link_id = iati_organisation_organisationdocumentlink.id
+
+                                        ) AS title_record
+                                    ),
+                                    (
+                                        SELECT
+                                            JSON_AGG(ROW_TO_JSON(description_record)) AS description
+                                        FROM (
+                                            SELECT
+                                                language_id AS lang,
+                                                content AS narrative
+                                            FROM iati_organisation_organisationnarrative,
+                                                 django_content_type,
+                                                 iati_organisation_documentlinkdescription
+                                            WHERE object_id=iati_organisation_documentlinkdescription.id
+                                                AND django_content_type.model='documentlinkdescription'
+                                                AND content_type_id=django_content_type.id
+                                                AND iati_organisation_documentlinkdescription.document_link_id = iati_organisation_organisationdocumentlink.id
+
+                                        ) AS description_record
+                                    ),
+                                    (
+                                        SELECT
+                                            JSON_AGG(ROW_TO_JSON(category_record)) AS category
+                                        FROM (
+                                            SELECT
+                                                category_id AS code
+                                            FROM iati_organisation_organisationdocumentlinkcategory
+                                            WHERE iati_organisation_organisationdocumentlinkcategory.document_link_id = iati_organisation_organisationdocumentlink.id
+
+                                        ) AS category_record
+                                    ),
+                                    (
+                                        SELECT
+                                            JSON_AGG(ROW_TO_JSON(language_record)) AS language
+                                        FROM (
+                                            SELECT
+                                                language_id AS code
+                                            FROM iati_organisation_organisationdocumentlinklanguage
+                                            WHERE iati_organisation_organisationdocumentlinklanguage.document_link_id = iati_organisation_organisationdocumentlink.id
+
+                                        ) AS language_record
+                                    )
+                                ) as document_link_record
+                        ) AS VARCHAR)
+                    FROM iati_organisation_organisationdocumentlink
+                    WHERE iati_organisation_organisationdocumentlink.organisation_id = ${organisation.id}
+                "
+            >
+                <field column="document_link" name="organisation_document_link"/>
+                <field column="url" name="organisation_document_link_url"/>
+                <field column="file_format_id" name="organisation_document_link_format"/>
+                <field column="iso_date" name="organisation_document_link_document_date"/>
+            </entity>
         </entity>                         
     </document>
 </dataConfig>

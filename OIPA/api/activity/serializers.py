@@ -2572,7 +2572,7 @@ class CrsAddSerializer(ModelSerializerNoValidation):
     other_flags = CrsAddOtherFlagsSerializer(many=True, required=False)
     loan_terms = CrsAddLoanTermsSerializer(required=False)
     loan_status = CrsAddLoanStatusSerializer(required=False)
-    channel_code = serializers.CharField(required=False)
+    channel_code = CodelistSerializer()
     activity = serializers.CharField(write_only=True)
 
     class Meta:
@@ -3286,6 +3286,11 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
         read_only=True,
         view_name='activities:activity-transactions',
     )
+    transaction_url = serializers.HyperlinkedIdentityField(
+        read_only=True,
+        view_name='activities:activity-transactions-by-iati-identifier',
+        lookup_field='iati_identifier'
+    )
 
     related_transactions = TransactionSerializer(
         many=True,
@@ -3475,26 +3480,10 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
         """
         Custom render to avoid auto render of related transaction
         """
-        request = self.context.get('request', None)
-        if request:
-            request_fields = request.GET.get('fields', None)
-        else:
-            request_fields = None
-
         ret = OrderedDict()
         fields = self._readable_fields
 
         for field in fields:
-            # Some activity has many related transaction,
-            # the request will take too long.
-            # So related transaction will be shown if it is on fields request
-            if field.field_name == 'related_transactions':
-                if request_fields:
-                    if 'related_transactions' not in request_fields.split(','):
-                        continue
-                else:
-                    continue
-
             try:
                 attribute = field.get_attribute(instance)
             except SkipField:
@@ -3512,7 +3501,61 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
             if check_for_none is None:
                 ret[field.field_name] = None
             else:
-                ret[field.field_name] = field.to_representation(attribute)
+                # Some activity has many related transaction,
+                # the request will take too long.
+                # So related transaction will be shown if it is on fields
+                # request
+                if field.field_name in ['related_transactions',
+                                        'budgets',
+                                        'results',
+                                        ]:
+
+                    if field.field_name not in ret:
+                        if field.field_name == 'related_transactions' and \
+                                instance.transaction_set.count() > 100:
+                            custom_ret1 = OrderedDict()
+                            custom_ret1['message'] = \
+                                'This activity has more ' \
+                                'than 100 transactions! ' \
+                                'To get all transactions,  ' \
+                                'please use the transaction endpoint ' \
+                                'instead!'
+
+                            ret[field.field_name] = custom_ret1
+
+                        elif field.field_name == 'results' and \
+                                instance.result_set.count() > 100:
+                            custom_ret2 = OrderedDict()
+                            custom_ret2['message'] = \
+                                'This activity has more ' \
+                                'than 100 results! ' \
+                                'To get all results,  ' \
+                                'please use the results ' \
+                                'endpoint instead!'
+
+                            ret[field.field_name] = custom_ret2
+
+                        elif field.field_name == 'budgets' \
+                                and \
+                                instance.budget_set.count() > \
+                                100:
+                            custom_ret3 = OrderedDict()
+                            custom_ret3['message'] = \
+                                'This activity has more ' \
+                                'than 100 budgets! ' \
+                                'To get all budgets,  ' \
+                                'please use the budget ' \
+                                'endpoint instead!'
+
+                            ret[field.field_name] = custom_ret3
+
+                        else:
+                            ret[field.field_name] = field.to_representation(
+                                attribute
+                            )
+
+                else:
+                    ret[field.field_name] = field.to_representation(attribute)
 
         return ret
 
@@ -3569,7 +3612,8 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
             'dataset',
             'publisher',
             'published_state',
-            'transaction_types'
+            'transaction_types',
+            'transaction_url'
         )
 
         validators = []
@@ -3581,3 +3625,9 @@ class ActivitySerializerByIatiIdentifier(ActivitySerializer):
         lookup_field='iati_identifier',
         read_only=True
     )
+
+
+class ActivityDetailSerializer(ActivitySerializer):
+    def to_representation(self, instance):
+        return super(ActivitySerializer, self).to_representation(
+            instance=instance)

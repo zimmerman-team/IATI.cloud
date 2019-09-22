@@ -212,7 +212,6 @@ REST_FRAMEWORK = {
         'rest_framework.parsers.JSONParser',
     ),
     'DEFAULT_RENDERER_CLASSES': (
-        'rest_framework.renderers.BrowsableAPIRenderer',
         'rest_framework.renderers.JSONRenderer',
         'api.renderers.PaginatedCSVRenderer',
         'api.renderers.XlsRenderer',
@@ -272,7 +271,7 @@ REST_AUTH_REGISTER_SERIALIZERS = {
     'REGISTER_SERIALIZER': 'api.permissions.serializers.RegistrationSerializer'
 }
 
-EXPORT_COMMENT = 'Published with tools developed by Zimmerman & Zimmerman'
+# EXPORT_COMMENT = 'Published with tools developed by Zimmerman & Zimmerman'
 
 FIXTURE_DIRS = (
     os.path.join(BASE_DIR, '../fixtures/'),

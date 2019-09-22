@@ -11,6 +11,18 @@ urlpatterns = [
         views.ReportedActivities.as_view(),
         name='organisation-reported-activities'
     ),
+    url(r'^total-budget/', views.TotalBudgetList.as_view(),
+        name='total-budget'),
+    url(r'^recipient-region-budget/',
+        views.RecipientRegionBudgetList.as_view(),
+        name='recipient-region-budget'),
+    url(r'^document-link/', views.DocumentLinkList.as_view(),
+        name='document-link'),
+    url(r'^recipient-org-budget/', views.RecipientOrgBudgetList.as_view(),
+        name='recipient-org-budget'),
+    url(r'^recipient-country-budget/',
+        views.RecipientCountryBudgetList.as_view(),
+        name='recipient-country-budget'),
     url(
         r'^organisation-file/(?P<organisation_identifier>[^@$&+,/:;=?]+)'
         r'/organisation-document-link-list/$',

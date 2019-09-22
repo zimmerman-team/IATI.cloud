@@ -100,8 +100,12 @@ class DataAttribute(object):
 
         # if type data is dict then use the dict key
         if dict_key and isinstance(data, dict):
-            d_data = data.get(dict_key)
-            value = self.convert_to_string(d_data.get(key))
+            try:
+                d_data = data.get(dict_key)
+                if d_data:
+                    value = self.convert_to_string(d_data.get(key))
+            except KeyError:
+                pass
         elif not dict_key and isinstance(data, dict):
             value = self.convert_to_string(data.get(key))
         elif not isinstance(data, list):
