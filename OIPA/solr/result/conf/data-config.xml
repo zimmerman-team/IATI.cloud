@@ -1,5 +1,5 @@
 <dataConfig>
-    <dataSource type="JdbcDataSource" driver="org.postgresql.Driver" url="jdbc:postgresql://localhost:5432/oipa" user="zimmerman" password="" />
+    <dataSource type="JdbcDataSource" driver="org.postgresql.Driver" url="jdbc:postgresql://localhost:5432/defaultdb" user="zimmerman" password="" />
     <document>
         <entity 
             name="activity_result" 
@@ -7,7 +7,7 @@
                 SELECT
                     CONCAT(iati_activity.iati_identifier, '-result-', iati_result.id) AS activity_iati_indentifier_and_result_id,
                     iati_activity.iati_identifier as iati_identifier,
-                    CASE WHEN iati_activity.humanitarian=TRUE THEN '1' ELSE '0' END AS humanitarian,
+                    CASE WHEN humanitarian=TRUE THEN '1' ELSE CASE WHEN humanitarian=FALSE THEN '0' END END AS humanitarian,
                     iati_result.id as id,
                     activity_id,
                     type_id,
@@ -47,11 +47,25 @@
             <entity name="activity_result_title" 
                 query="
                     SELECT
-                        id  
-                    FROM iati_resulttitle 
+                        id,
+                        CAST((
+                            SELECT
+                                JSON_AGG(ROW_TO_JSON(title_records)) as title
+                            FROM (
+                                SELECT
+                                       language_id AS lang,
+                                       content AS narrative
+                                FROM iati_narrative, django_content_type
+                                WHERE related_object_id = iati_resulttitle.id
+                                    AND django_content_type.model = 'resulttitle'
+                                    AND related_content_type_id = django_content_type.id
+                                ) as title_records
+                        ) AS VARCHAR)
+                    FROM iati_resulttitle
                     WHERE result_id=${activity_result.id}
                 "
             >
+                <field column="title" name="result_title"/>
                 <entity name="activity_result_title_narrative" 
                     query="
                         SELECT 
@@ -70,11 +84,25 @@
             <entity name="activity_result_description" 
                 query="
                     SELECT
-                        id  
-                    FROM iati_resultdescription 
+                        id,
+                        CAST((
+                            SELECT
+                                JSON_AGG(ROW_TO_JSON(description_records)) as description
+                            FROM (
+                                SELECT
+                                       language_id AS lang,
+                                       content AS narrative
+                                FROM iati_narrative, django_content_type
+                                WHERE related_object_id = iati_resultdescription.id
+                                    AND django_content_type.model = 'resultdescription'
+                                    AND related_content_type_id = django_content_type.id
+                                ) as description_records
+                        ) AS VARCHAR)
+                    FROM iati_resultdescription
                     WHERE result_id=${activity_result.id}
                 "
             >
+                <field column="description" name="result_description"/>
                 <entity name="activity_result_title_narrative" 
                     query="
                         SELECT 
