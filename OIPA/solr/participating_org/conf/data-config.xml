@@ -1,0 +1,56 @@
+<dataConfig>
+    <dataSource type="JdbcDataSource" driver="org.postgresql.Driver" url="jdbc:postgresql://localhost:5432/defaultdb" user="zimmerman" password="" />
+    <document>
+        <entity name="activity_participating_org"
+            pk="id"
+            query="
+                SELECT
+                    id,
+                    activity_id,
+                    ref,
+                    type_id,
+                    CAST((
+                        SELECT
+                            ROW_TO_JSON(participating_org_record) AS participating_org
+                        FROM (
+                            SELECT
+                                ref AS ref,
+                                type_id AS type,
+                                JSON_AGG(ROW_TO_JSON(narrative_record)) AS narrative
+                            FROM (
+                                SELECT
+                                    language_id AS lang,
+                                    content AS narrative
+                                FROM iati_narrative, django_content_type, iati_activity
+                                WHERE related_object_id = iati_activityparticipatingorganisation.id
+                                    AND django_content_type.model = 'activityparticipatingorganisation'
+                                    AND related_content_type_id = django_content_type.id
+                                    AND activity_id = iati_activity.id
+                                    AND iati_activity.id = iati_activityparticipatingorganisation.activity_id
+                                ) AS narrative_record
+                        ) AS participating_org_record
+                    ) AS VARCHAR)
+                FROM iati_activityparticipatingorganisation
+                ORDER BY id
+            "
+        >
+            <field column="ref" name="id"/>
+            <field column="participating_org" name="participating_org"/>
+            <field column="ref" name="participating_org_ref"/>
+            <field column="type_id" name="participating_org_type"/>
+            <entity name="activity_participating_org_narrative"
+                query="
+                    SELECT
+                        iati_narrative.content AS content
+                    FROM iati_narrative, django_content_type
+                    WHERE iati_narrative.related_object_id=${activity_participating_org.id}
+                        AND iati_narrative.activity_id=${activity_participating_org.activity_id}
+                        AND django_content_type.model='activityparticipatingorganisation'
+                        AND django_content_type.id=iati_narrative.related_content_type_id
+                  "
+            >
+                <field column="content" name="participating_org_narrative"/>
+            </entity>
+        </entity>
+    </document>
+</dataConfig>
