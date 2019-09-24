@@ -1678,7 +1678,7 @@
                             FROM (
                                 SELECT
                                     CASE WHEN attached=TRUE THEN '1' ELSE CASE WHEN attached=FALSE THEN '0' END END AS attached,
-                                    CAST((
+                                    (
                                         SELECT
                                             JSON_AGG(ROW_TO_JSON(condition_record)) AS condition
                                         FROM (
@@ -1701,7 +1701,7 @@
                                             FROM iati_condition
                                             WHERE iati_condition.conditions_id = iati_conditions.id
                                         ) AS condition_record
-                                    ) AS VARCHAR)
+                                    )
                             ) AS conditions_record
                         ) AS VARCHAR)
                     FROM iati_conditions
@@ -1709,6 +1709,7 @@
                     LIMIT 1
                 "
             >
+                <field column="conditions" name="conditions"/>
                 <field column="attached" name="conditions_attached"/>
                 <entity
                     name="activity_conditions_condition"
