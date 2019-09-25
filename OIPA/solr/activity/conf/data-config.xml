@@ -1,5 +1,5 @@
 <dataConfig>
-    <dataSource type="JdbcDataSource" driver="org.postgresql.Driver" url="jdbc:postgresql://localhost:5432/defaultdb" user="zimmerman" password="" />
+    <dataSource type="JdbcDataSource" driver="org.postgresql.Driver" url="jdbc:postgresql://localhost:5432/oipa" user="zimmerman" password="" />
     <document>
         <entity name="activity"
             pk="iati_identifier"
@@ -24,7 +24,14 @@
                     date_created AS dataset_date_created,
                     date_updated AS dataset_date_updated
                 FROM iati_activity, iati_synchroniser_dataset
-                WHERE iati_activity.dataset_id=iati_synchroniser_dataset.id
+                WHERE iati_activity.dataset_id = iati_synchroniser_dataset.id
+            "
+            deltaQuery="
+                SELECT
+                    iati_activity.id AS id
+                FROM iati_activity, iati_synchroniser_dataset
+                WHERE iati_activity.dataset_id = iati_synchroniser_dataset.id
+                    AND iati_synchroniser_dataset.date_updated > '${dataimporter.last_index_time}'
             "
         >
             <field column="iati_identifier" name="id"/>
