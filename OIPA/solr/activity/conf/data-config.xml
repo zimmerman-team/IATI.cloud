@@ -28,7 +28,7 @@
             "
             deltaQuery="
                 SELECT
-                    iati_activity.id AS id
+                    iati_identifier
                 FROM iati_activity, iati_synchroniser_dataset
                 WHERE iati_activity.dataset_id = iati_synchroniser_dataset.id
                     AND iati_synchroniser_dataset.date_updated > '${dataimporter.last_index_time}'
