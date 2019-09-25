@@ -1,8 +1,7 @@
 <dataConfig>
-    <dataSource type="JdbcDataSource" driver="org.postgresql.Driver" url="jdbc:postgresql://localhost:5432/oipa" user="zimmerman" password="" />
+    <dataSource type="JdbcDataSource" driver="org.postgresql.Driver" url="jdbc:postgresql://localhost:5432/defaultdb" user="zimmerman" password="" />
     <document>
         <entity name="activity"
-            pk="iati_identifier"
             query="
                 SELECT
                     iati_activity.id AS id,
@@ -25,13 +24,15 @@
                     date_updated AS dataset_date_updated
                 FROM iati_activity, iati_synchroniser_dataset
                 WHERE iati_activity.dataset_id = iati_synchroniser_dataset.id
+                ORDER BY iati_activity.id
             "
             deltaQuery="
                 SELECT
-                    iati_identifier
+                     iati_activity.id AS id
                 FROM iati_activity, iati_synchroniser_dataset
                 WHERE iati_activity.dataset_id = iati_synchroniser_dataset.id
                     AND iati_activity.last_updated_model > '${dataimporter.last_index_time}'
+                ORDER BY iati_activity.id
             "
             deltaImportQuery="
                 SELECT
@@ -55,10 +56,9 @@
                     date_updated AS dataset_date_updated
                 FROM iati_activity, iati_synchroniser_dataset
                 WHERE iati_activity.dataset_id = iati_synchroniser_dataset.id
-                    AND iati_identifier='${dataimporter.delta.id}'
+                    AND iati_activity.id = '${dataimporter.delta.id}'
             "
         >
-            <field column="iati_identifier" name="id"/>
             <field column="iati_identifier" name="iati_identifier"/>
             <field column="last_updated_datetime" name="last_updated_datetime"/>
             <field column="default_lang_id" name="default_lang"/>

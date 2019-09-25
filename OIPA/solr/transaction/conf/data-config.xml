@@ -20,6 +20,7 @@
                     tied_status_id
                 FROM iati_transaction, iati_activity
                 WHERE activity_id=iati_activity.id
+                ORDER BY iati_transaction.id
             "
             deltaQuery="
                 SELECT
@@ -27,6 +28,7 @@
                 FROM iati_transaction, iati_activity
                 WHERE activity_id = iati_activity.id
                     AND iati_activity.last_updated_model > '${dataimporter.last_index_time}'
+                ORDER BY iati_transaction.id
             "
             deltaImportQuery="
                 SELECT
