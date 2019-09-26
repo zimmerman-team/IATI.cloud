@@ -2,7 +2,6 @@
     <dataSource type="JdbcDataSource" driver="org.postgresql.Driver" url="jdbc:postgresql://localhost:5432/defaultdb" user="zimmerman" password="" />
     <document>
         <entity name="activity"
-            pk="iati_identifier"
             query="
                 SELECT
                     iati_activity.id AS id,
@@ -24,10 +23,42 @@
                     date_created AS dataset_date_created,
                     date_updated AS dataset_date_updated
                 FROM iati_activity, iati_synchroniser_dataset
-                WHERE iati_activity.dataset_id=iati_synchroniser_dataset.id
+                WHERE iati_activity.dataset_id = iati_synchroniser_dataset.id
+                ORDER BY iati_activity.id
+            "
+            deltaQuery="
+                SELECT
+                     iati_activity.id AS id
+                FROM iati_activity, iati_synchroniser_dataset
+                WHERE iati_activity.dataset_id = iati_synchroniser_dataset.id
+                    AND iati_activity.last_updated_model > '${dataimporter.last_index_time}'
+                ORDER BY iati_activity.id
+            "
+            deltaImportQuery="
+                SELECT
+                    iati_activity.id AS id,
+                    iati_identifier,
+                    last_updated_datetime,
+                    default_lang_id,
+                    default_currency_id,
+                    CASE WHEN humanitarian=TRUE THEN '1' ELSE CASE WHEN humanitarian=FALSE THEN '0' END END AS humanitarian,
+                    hierarchy,
+                    linked_data_uri,
+                    activity_status_id,
+                    scope_id,
+                    collaboration_type_id,
+                    default_flow_type_id,
+                    default_finance_type_id,
+                    default_tied_status_id,
+                    capital_spend,
+                    iati_version AS dataset_iati_version,
+                    date_created AS dataset_date_created,
+                    date_updated AS dataset_date_updated
+                FROM iati_activity, iati_synchroniser_dataset
+                WHERE iati_activity.dataset_id = iati_synchroniser_dataset.id
+                    AND iati_activity.id = '${dataimporter.delta.id}'
             "
         >
-            <field column="iati_identifier" name="id"/>
             <field column="iati_identifier" name="iati_identifier"/>
             <field column="last_updated_datetime" name="last_updated_datetime"/>
             <field column="default_lang_id" name="default_lang"/>
