@@ -128,9 +128,11 @@
             </entity>
             <entity name="activity_reporting_org" 
                 query="
-                    SELECT 
-                        organisation_id,
-                        ref 
+                    SELECT
+                        ref,
+                        iati_activityreportingorganisation.type_id AS type_id,
+                        CASE WHEN secondary_reporter=TRUE THEN '1' ELSE CASE WHEN secondary_reporter=FALSE THEN '0' END END AS secondary_reporter,
+                        organisation_id
                     FROM iati_activityreportingorganisation 
                     WHERE activity_id=${activity_transaction.activity_id} LIMIT 1
                 "
