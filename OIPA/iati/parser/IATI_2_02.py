@@ -252,7 +252,8 @@ class Parse(IatiParser):
             self.check_registration_agency_validity(
                 "reporting-org/ref", element, ref)
 
-        normalized_ref = self._normalize(ref)
+        if ref is not None:
+            normalized_ref = self._normalize(ref)
         org_type = self.get_or_none(
             codelist_models.OrganisationType,
             code=element.attrib.get('type'))
@@ -351,7 +352,11 @@ class Parse(IatiParser):
         role = self.get_or_none(
             codelist_models.OrganisationRole, code=element.attrib.get('role'))
 
-        normalized_ref = self._normalize(ref)
+        if ref is not None:
+            normalized_ref = self._normalize(ref)
+        else:
+            normalized_ref = None
+
         organisation = self.get_or_none(
             models.Organisation, organisation_identifier=ref)
         org_type = self.get_or_none(
