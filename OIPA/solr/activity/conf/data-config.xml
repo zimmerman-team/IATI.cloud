@@ -24,6 +24,7 @@
                     date_updated AS dataset_date_updated
                 FROM iati_activity, iati_synchroniser_dataset
                 WHERE iati_activity.dataset_id = iati_synchroniser_dataset.id
+                    AND iati_synchroniser_dataset.filetype = 1
                 ORDER BY iati_activity.id
             "
             deltaQuery="
@@ -31,6 +32,7 @@
                      iati_activity.id AS id
                 FROM iati_activity, iati_synchroniser_dataset
                 WHERE iati_activity.dataset_id = iati_synchroniser_dataset.id
+                    AND iati_synchroniser_dataset.filetype = 1
                     AND iati_activity.last_updated_model > '${dataimporter.last_index_time}'
                 ORDER BY iati_activity.id
             "
