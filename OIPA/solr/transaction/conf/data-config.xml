@@ -17,7 +17,8 @@
                     TO_CHAR(value_date::timestamp, 'YYYY-MM-DD') AS value_date,
                     value,
                     disbursement_channel_id,
-                    tied_status_id
+                    tied_status_id,
+                    flow_type_id
                 FROM iati_transaction, iati_activity
                 WHERE activity_id=iati_activity.id
                 ORDER BY iati_transaction.id
@@ -44,7 +45,8 @@
                     TO_CHAR(value_date::timestamp, 'YYYY-MM-DD') AS value_date,
                     value,
                     disbursement_channel_id,
-                    tied_status_id
+                    tied_status_id,
+                    flow_type_id
                 FROM iati_transaction, iati_activity
                 WHERE activity_id=iati_activity.id
                     AND iati_transaction.id='${dataimporter.delta.id}'
