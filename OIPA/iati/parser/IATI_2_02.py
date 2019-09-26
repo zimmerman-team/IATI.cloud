@@ -345,6 +345,9 @@ class Parse(IatiParser):
 
         tag:participating-org"""
         ref = element.attrib.get('ref', None)
+        if ref == '':
+            ref = None
+            
         activity_id = element.attrib.get('activity-id', None)
 
         org_activity = self.get_or_none(
