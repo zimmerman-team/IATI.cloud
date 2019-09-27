@@ -47,7 +47,8 @@ def reindex_activity(activity):
 
     reporting_org_text = []
     for reporting_org in activity.reporting_organisations.all():
-        reporting_org_text.append(reporting_org.normalized_ref)
+        if reporting_org.normalized_ref:
+            reporting_org_text.append(reporting_org.normalized_ref)
         for narrative in reporting_org.narratives.all():
             reporting_org_text.append(narrative.content)
 
@@ -63,7 +64,8 @@ def reindex_activity(activity):
 
     participating_org_text = []
     for participating_org in activity.participating_organisations.all():
-        participating_org_text.append(participating_org.normalized_ref)
+        if participating_org.normalized_ref:
+            participating_org_text.append(participating_org.normalized_ref)
         for narrative in participating_org.narratives.all():
             participating_org_text.append(narrative.content)
 
