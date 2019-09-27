@@ -36,8 +36,7 @@ def reindex_activity(activity):
     title_text = []
     try:
         for narrative in activity.title.narratives.all():
-            if narrative.content:
-                title_text.append(narrative.content)
+            title_text.append(narrative.content)
     except ObjectDoesNotExist as e:
         pass
 
@@ -51,8 +50,7 @@ def reindex_activity(activity):
         if reporting_org.normalized_ref:
             reporting_org_text.append(reporting_org.normalized_ref)
         for narrative in reporting_org.narratives.all():
-            if narrative.content:
-                reporting_org_text.append(narrative.content)
+            reporting_org_text.append(narrative.content)
 
     # The Publisher of the activity is a Reporting Organisation
     try:
@@ -69,8 +67,7 @@ def reindex_activity(activity):
         if participating_org.normalized_ref:
             participating_org_text.append(participating_org.normalized_ref)
         for narrative in participating_org.narratives.all():
-            if narrative.content:
-                participating_org_text.append(narrative.content)
+            participating_org_text.append(narrative.content)
 
     recipient_country_text = []
     for country in activity.recipient_country.all():
