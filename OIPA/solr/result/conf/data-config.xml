@@ -25,7 +25,8 @@
                 query="
                     SELECT 
                         organisation_id,
-                        ref 
+                        ref,
+                        CASE WHEN secondary_reporter=TRUE THEN '1' ELSE CASE WHEN secondary_reporter=FALSE THEN '0' END END AS secondary_reporter
                     FROM iati_activityreportingorganisation 
                     WHERE activity_id=${activity_result.activity_id} LIMIT 1
                 "
