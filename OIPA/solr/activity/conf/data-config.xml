@@ -2287,11 +2287,13 @@
                 pk="id"
                 query="
                     SELECT
-                        id
+                        id,
+                        channel_code
                     FROM iati_crsadd
                     WHERE activity_id=${activity.id}
                 "
             >
+                <field column="channel_code" name="crs_add_channel_code"/>
                 <entity
                     name="activity_crs_add_other_flags"
                     query="
