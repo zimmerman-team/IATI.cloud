@@ -2,16 +2,15 @@
     <dataSource type="JdbcDataSource" driver="org.postgresql.Driver" url="jdbc:postgresql://localhost:5432/defaultdb" user="zimmerman" password="" />
     <document>
         <entity name="organisation"
-            pk="iati_identifier" 
             query="
                 SELECT
                     id,
-                    organisation_identifier, 
-                    primary_name, 
+                    organisation_identifier,
+                    primary_name,
                     type_id,
-                    reported_in_iati, 
+                    reported_in_iati,
                     published,
-                    last_updated_datetime, 
+                    last_updated_datetime,
                     default_currency_id,
                     default_lang_id
                 FROM iati_organisation_organisation
@@ -36,8 +35,7 @@
                 FROM iati_organisation_organisation
                     WHERE id = '${dataimporter.delta.id}'
             "
-        >  
-            <field column="organisation_identifier" name="id"/>
+        >
             <field column="organisation_identifier" name="organisation_identifier"/>
             <field column="type_id" name="organisation_type"/>
             <field column="reported_in_iati" name="organisation_reported_in_iati"/>
