@@ -16,6 +16,26 @@
                     default_lang_id
                 FROM iati_organisation_organisation
             "
+            deltaQuery="
+                SELECT
+                    id
+                FROM iati_organisation_organisation
+                WHERE last_updated_model > '${dataimporter.last_index_time}'
+            "
+            deltaImportQuery="
+                SELECT
+                    id,
+                    organisation_identifier,
+                    primary_name,
+                    type_id,
+                    reported_in_iati,
+                    published,
+                    last_updated_datetime,
+                    default_currency_id,
+                    default_lang_id
+                FROM iati_organisation_organisation
+                    WHERE id = '${dataimporter.delta.id}'
+            "
         >  
             <field column="organisation_identifier" name="id"/>
             <field column="organisation_identifier" name="organisation_identifier"/>
