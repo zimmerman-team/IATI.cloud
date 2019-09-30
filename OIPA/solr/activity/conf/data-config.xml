@@ -2288,12 +2288,12 @@
                 query="
                     SELECT
                         id,
-                        channel_code
+                        channel_code_id
                     FROM iati_crsadd
                     WHERE activity_id=${activity.id}
                 "
             >
-                <field column="channel_code" name="crs_add_channel_code"/>
+                <field column="channel_code_id" name="crs_add_channel_code"/>
                 <entity
                     name="activity_crs_add_other_flags"
                     query="
