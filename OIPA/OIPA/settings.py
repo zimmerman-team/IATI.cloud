@@ -183,7 +183,8 @@ INSTALLED_APPS = [
     'rest_auth',
     'rest_auth.registration',
     'django_filters',
-    'markdownify'
+    'markdownify',
+    'solr'
 ]
 
 ADMIN_REORDER = (
