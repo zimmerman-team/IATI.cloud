@@ -6,3 +6,17 @@ class ActivityDelete(models.Model):
     last_updated_model = models.DateTimeField(
         null=True, blank=True, auto_now=True
     )
+
+
+class TransactionDelete(models.Model):
+    activity_id = models.IntegerField(default=0)
+    last_updated_model = models.DateTimeField(
+        null=True, blank=True, auto_now=True
+    )
+
+
+class ResultDelete(models.Model):
+    activity_id = models.IntegerField(default=0)
+    last_updated_model = models.DateTimeField(
+        null=True, blank=True, auto_now=True
+    )
