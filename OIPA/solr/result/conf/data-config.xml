@@ -17,7 +17,7 @@
             "
             deletedPkQuery="
                 SELECT
-                     activity_id AS id
+                     result_id AS id
                 FROM solr_resultdelete
                 WHERE last_updated_model > '${dataimporter.last_index_time}'
             "

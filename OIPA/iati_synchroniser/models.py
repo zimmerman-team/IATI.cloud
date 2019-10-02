@@ -169,6 +169,8 @@ class DatasetNote(models.Model):
     message = models.CharField(max_length=255, default='', null=False)
     line_number = models.IntegerField(null=True)
     variable = models.CharField(max_length=255, default=None, null=True)
+    last_updated_model = models.DateTimeField(
+        null=True, blank=True, auto_now=True)
 
 
 class Codelist(models.Model):
