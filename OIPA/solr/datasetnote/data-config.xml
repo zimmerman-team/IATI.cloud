@@ -1,8 +1,7 @@
 <dataConfig>
     <dataSource type="JdbcDataSource" driver="org.postgresql.Driver" url="jdbc:postgresql://localhost:5432/defaultdb" user="" password="" />
     <document>
-        <entity name="activity" 
-            pk="iati_identifier" 
+        <entity name="activity"
             query="
                 SELECT
                     iati_synchroniser_datasetnote.id AS id,
@@ -19,6 +18,40 @@
                 FROM iati_synchroniser_datasetnote, iati_synchroniser_dataset, iati_synchroniser_publisher
                 WHERE iati_synchroniser_datasetnote.dataset_id = iati_synchroniser_dataset.id
                     AND iati_synchroniser_dataset.publisher_id = iati_synchroniser_publisher.id
+                ORDER BY iati_synchroniser_datasetnote.id
+            "
+            deletedPkQuery="
+                SELECT
+                     dataset_note_id AS id
+                FROM solr_datasetnotedelete
+                WHERE last_updated_model > '${dataimporter.last_index_time}'
+            "
+            deltaQuery="
+                SELECT
+                     iati_synchroniser_datasetnote.id AS id
+                FROM iati_synchroniser_datasetnote, iati_synchroniser_dataset, iati_synchroniser_publisher
+                WHERE iati_synchroniser_datasetnote.dataset_id = iati_synchroniser_dataset.id
+                    AND iati_synchroniser_dataset.publisher_id = iati_synchroniser_publisher.id
+                    AND iati_synchroniser_datasetnote.last_updated_model > '${dataimporter.last_index_time}'
+                ORDER BY iati_synchroniser_datasetnote.id
+            "
+            deltaImportQuery="
+                SELECT
+                    iati_synchroniser_datasetnote.id AS id,
+                    iati_synchroniser_datasetnote.iati_identifier AS iati_identifier,
+                    exception_type,
+                    model,
+                    field,
+                    message,
+                    line_number,
+                    variable,
+                    iati_synchroniser_publisher.publisher_iati_id AS publisher_iati_id,
+                    iati_synchroniser_publisher.name AS publisher_name,
+                    iati_synchroniser_publisher.display_name AS publisher_display_name
+                FROM iati_synchroniser_datasetnote, iati_synchroniser_dataset, iati_synchroniser_publisher
+                WHERE iati_synchroniser_datasetnote.dataset_id = iati_synchroniser_dataset.id
+                    AND iati_synchroniser_dataset.publisher_id = iati_synchroniser_publisher.id
+                    AND iati_synchroniser_datasetnote.id = '${dataimporter.delta.id}'
             "
         >
             <field column="iati_identifier" name="iati_identifier"/>

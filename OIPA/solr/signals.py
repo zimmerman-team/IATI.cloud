@@ -3,6 +3,7 @@ from django.dispatch import receiver
 
 from iati.models import Activity, Result
 from iati.transaction.models import Transaction
+from iati_synchroniser.models import DatasetNote
 from solr.models import (
     ActivityDelete, DatasetNoteDelete, ResultDelete, TransactionDelete
 )
@@ -29,7 +30,7 @@ def transaction_pre_delete(sender, instance, **kwargs):
     transaction_delete.save()
 
 
-@receiver(signals.pre_delete, sender=DatasetNoteDelete)
+@receiver(signals.pre_delete, sender=DatasetNote)
 def transaction_pre_delete(sender, instance, **kwargs):
     dataset_note_delete = DatasetNoteDelete()
     dataset_note_delete.dataset_note_id = instance.id
