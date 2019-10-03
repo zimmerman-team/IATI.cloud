@@ -15,6 +15,12 @@
                 WHERE activity_id = iati_activity.id
                 ORDER BY iati_result.id
             "
+            deletedPkQuery="
+                SELECT
+                     result_id AS id
+                FROM solr_resultdelete
+                WHERE last_updated_model > '${dataimporter.last_index_time}'
+            "
             deltaQuery="
                 SELECT
                     iati_result.id AS id

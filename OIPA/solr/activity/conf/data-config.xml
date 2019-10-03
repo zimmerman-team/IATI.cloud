@@ -26,6 +26,12 @@
                 WHERE iati_activity.dataset_id = iati_synchroniser_dataset.id
                 ORDER BY iati_activity.id
             "
+            deletedPkQuery="
+                SELECT
+                     activity_id AS id
+                FROM solr_activitydelete
+                WHERE last_updated_model > '${dataimporter.last_index_time}'
+            "
             deltaQuery="
                 SELECT
                      iati_activity.id AS id
