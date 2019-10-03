@@ -8,4 +8,4 @@ class SolrConfig(AppConfig):
     verbose_name = 'SOLR'
 
     def ready(self):
-        import solr.signals  # NOQA: F401
+        import solr.signals  # NOQA: F401, W0612
