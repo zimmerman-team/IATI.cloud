@@ -31,7 +31,7 @@ def transaction_pre_delete(sender, instance, **kwargs):
 
 
 @receiver(signals.pre_delete, sender=DatasetNote)
-def transaction_pre_delete(sender, instance, **kwargs):
+def datasetnote_pre_delete(sender, instance, **kwargs):
     dataset_note_delete = DatasetNoteDelete()
     dataset_note_delete.dataset_note_id = instance.id
     dataset_note_delete.save()
