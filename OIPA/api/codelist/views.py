@@ -1,4 +1,5 @@
 from django.apps import apps
+from django.core.exceptions import FieldError
 from rest_framework.exceptions import NotFound
 from rest_framework.filters import OrderingFilter
 from rest_framework_extensions.cache.mixins import CacheResponseMixin
@@ -108,7 +109,12 @@ class CodelistItemList(CacheResponseMixin, DynamicListView):
             raise NotFound("Codelist not found")
 
         queryset = model_cls.objects.all()
-
+        vocabulary = self.request.query_params.get('vocabulary', None)
+        if vocabulary is not None:
+            try:
+                queryset = queryset.filter(vocabulary_id=vocabulary)
+            except FieldError:
+                pass
         for f in model_cls._meta.get_fields():
             if f.many_to_one and f.related_model:
                 queryset = queryset.select_related(f.name)
