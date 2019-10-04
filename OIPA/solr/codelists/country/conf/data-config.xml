@@ -5,7 +5,6 @@
             pk="iati_identifier" 
             query="
                 SELECT
-                    id,
                     code,
                     name
                 FROM geodata_country
