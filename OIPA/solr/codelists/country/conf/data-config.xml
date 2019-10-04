@@ -1,0 +1,17 @@
+<dataConfig>
+    <dataSource type="JdbcDataSource" driver="org.postgresql.Driver" url="jdbc:postgresql://localhost:5432/defaultdb" user="" password="" />
+    <document>
+        <entity name="activity" 
+            pk="iati_identifier" 
+            query="
+                SELECT
+                    code,
+                    name
+                FROM geodata_country
+            "
+        >
+            <field column="code" name="code"/>
+            <field column="name" name="name"/>
+        </entity>                         
+    </document>
+</dataConfig>
