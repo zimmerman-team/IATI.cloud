@@ -264,7 +264,10 @@ class Parse(IatiParser):
             self.check_registration_agency_validity(
                 "reporting-org/ref", element, ref)
 
-        normalized_ref = self._normalize(ref)
+        if ref is not None:
+            normalized_ref = self._normalize(ref)
+        else:
+            normalized_ref = None
         org_type = self.get_or_none(
             codelist_models.OrganisationType,
             code=element.attrib.get('type'))
@@ -359,7 +362,10 @@ class Parse(IatiParser):
         activity = self.get_model('Activity')
         participating_organisation = models.ActivityParticipatingOrganisation()
 
-        ref = element.attrib.get('ref', '')
+        ref = element.attrib.get('ref', None)
+        if ref == '':
+            ref = None
+
         activity_id = element.attrib.get('activity-id', None)
 
         org_activity = self.get_or_none(
@@ -367,7 +373,11 @@ class Parse(IatiParser):
         role = self.get_or_none(
             codelist_models.OrganisationRole, code=element.attrib.get('role'))
 
-        normalized_ref = self._normalize(ref)
+        if ref is not None:
+            normalized_ref = self._normalize(ref)
+        else:
+            normalized_ref = None
+
         organisation = self.get_or_none(
             models.Organisation, organisation_identifier=ref)
         org_type = self.get_or_none(

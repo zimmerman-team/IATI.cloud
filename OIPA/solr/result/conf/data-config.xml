@@ -1,50 +1,75 @@
 <dataConfig>
     <dataSource type="JdbcDataSource" driver="org.postgresql.Driver" url="jdbc:postgresql://localhost:5432/defaultdb" user="zimmerman" password="" />
     <document>
-        <entity 
-            name="activity_result" 
+        <entity
+            name="activity_result"
             query="
                 SELECT
-                    CONCAT(iati_activity.iati_identifier, '-result-', iati_result.id) AS activity_iati_indentifier_and_result_id,
+                    iati_result.id as id,
                     iati_activity.iati_identifier as iati_identifier,
                     CASE WHEN humanitarian=TRUE THEN '1' ELSE CASE WHEN humanitarian=FALSE THEN '0' END END AS humanitarian,
-                    iati_result.id as id,
                     activity_id,
                     type_id,
                     CASE WHEN iati_result.aggregation_status=TRUE THEN '1' ELSE '0' END AS aggregation_status
                 FROM iati_result, iati_activity
-                WHERE activity_id=iati_activity.id
+                WHERE activity_id = iati_activity.id
+                ORDER BY iati_result.id
+            "
+            deletedPkQuery="
+                SELECT
+                     result_id AS id
+                FROM solr_resultdelete
+                WHERE last_updated_model > '${dataimporter.last_index_time}'
+            "
+            deltaQuery="
+                SELECT
+                    iati_result.id AS id
+                FROM iati_result, iati_activity
+                WHERE activity_id = iati_activity.id
+                    AND iati_activity.last_updated_model > '${dataimporter.last_index_time}'
+                ORDER BY iati_result.id
+            "
+            deltaImportQuery="
+                SELECT
+                    iati_result.id as id,
+                    iati_activity.iati_identifier as iati_identifier,
+                    CASE WHEN humanitarian=TRUE THEN '1' ELSE CASE WHEN humanitarian=FALSE THEN '0' END END AS humanitarian,
+                    activity_id,
+                    type_id,
+                    CASE WHEN iati_result.aggregation_status=TRUE THEN '1' ELSE '0' END AS aggregation_status
+                FROM iati_result, iati_activity
+                WHERE activity_id = iati_activity.id
+                    AND iati_result.id='${dataimporter.delta.id}'
             "
         >
-            <field column="activity_iati_indentifier_and_result_id" name="id"/>
             <field column="iati_identifier" name="iati_identifier"/>
             <field column="humanitarian" name="humanitarian"/>
             <field column="type_id" name="result_type"/>
             <field column="aggregation_status" name="result_aggregation_status"/>
-            <entity name="activity_reporting_org" 
+            <entity name="activity_reporting_org"
                 query="
-                    SELECT 
+                    SELECT
                         organisation_id,
-                        ref 
-                    FROM iati_activityreportingorganisation 
+                        ref
+                    FROM iati_activityreportingorganisation
                     WHERE activity_id=${activity_result.activity_id} LIMIT 1
                 "
             >
                 <field column="ref" name="reporting_org_ref"/>
                 <field column="type_id" name="reporting_org_type"/>
                 <field column="secondary_reporter" name="reporting_org_secondary_reporter"/>
-                <entity name="activity_reporting_org_narrative" 
+                <entity name="activity_reporting_org_narrative"
                     query="
-                        SELECT 
-                            primary_name 
-                        FROM iati_organisation_organisation 
+                        SELECT
+                            primary_name
+                        FROM iati_organisation_organisation
                         WHERE iati_organisation_organisation.id=${activity_reporting_org.organisation_id}
                     "
                 >
                     <field column="primary_name" name="reporting_org_narrative"/>
-                </entity> 
+                </entity>
             </entity>
-            <entity name="activity_result_title" 
+            <entity name="activity_result_title"
                 query="
                     SELECT
                         id,
@@ -66,22 +91,22 @@
                 "
             >
                 <field column="title" name="result_title"/>
-                <entity name="activity_result_title_narrative" 
+                <entity name="activity_result_title_narrative"
                     query="
-                        SELECT 
-                            iati_narrative.related_object_id AS related_object_id, 
-                            iati_narrative.content AS content 
-                        FROM iati_narrative, django_content_type 
-                        WHERE iati_narrative.related_object_id=${activity_result_title.id} 
-                            AND iati_narrative.activity_id=${activity_result.activity_id} 
-                            AND django_content_type.model='resulttitle' 
+                        SELECT
+                            iati_narrative.related_object_id AS related_object_id,
+                            iati_narrative.content AS content
+                        FROM iati_narrative, django_content_type
+                        WHERE iati_narrative.related_object_id=${activity_result_title.id}
+                            AND iati_narrative.activity_id=${activity_result.activity_id}
+                            AND django_content_type.model='resulttitle'
                             AND django_content_type.id=iati_narrative.related_content_type_id
                     "
                 >
                     <field column="content" name="result_title_narrative"/>
                 </entity>
             </entity>
-            <entity name="activity_result_description" 
+            <entity name="activity_result_description"
                 query="
                     SELECT
                         id,
@@ -103,15 +128,15 @@
                 "
             >
                 <field column="description" name="result_description"/>
-                <entity name="activity_result_title_narrative" 
+                <entity name="activity_result_title_narrative"
                     query="
-                        SELECT 
-                            iati_narrative.related_object_id AS related_object_id, 
-                            iati_narrative.content AS content 
-                        FROM iati_narrative, django_content_type 
-                        WHERE iati_narrative.related_object_id=${activity_result_description.id} 
-                            AND iati_narrative.activity_id=${activity_result.activity_id} 
-                            AND django_content_type.model='resultdescription' 
+                        SELECT
+                            iati_narrative.related_object_id AS related_object_id,
+                            iati_narrative.content AS content
+                        FROM iati_narrative, django_content_type
+                        WHERE iati_narrative.related_object_id=${activity_result_description.id}
+                            AND iati_narrative.activity_id=${activity_result.activity_id}
+                            AND django_content_type.model='resultdescription'
                             AND django_content_type.id=iati_narrative.related_content_type_id
                     "
                 >
@@ -211,7 +236,7 @@
                 <field column="url" name="result_document_link_url"/>
                 <field column="file_format_id" name="result_document_link_format"/>
                 <field column="iso_date" name="result_document_link_document_date_iso_date"/>
-                <entity name="result_document_link_title" 
+                <entity name="result_document_link_title"
                     query="
                         SELECT
                             id
@@ -221,64 +246,64 @@
                 >
                     <entity name="result_document_link_title_narrative"
                         query="
-                            SELECT 
-                                iati_narrative.related_object_id AS related_object_id, 
-                                iati_narrative.content AS content 
-                            FROM iati_narrative, django_content_type 
-                            WHERE iati_narrative.related_object_id=${result_document_link_title.id} 
-                                AND iati_narrative.activity_id=${activity_result.activity_id} 
-                                AND django_content_type.model='documentlinktitle' 
+                            SELECT
+                                iati_narrative.related_object_id AS related_object_id,
+                                iati_narrative.content AS content
+                            FROM iati_narrative, django_content_type
+                            WHERE iati_narrative.related_object_id=${result_document_link_title.id}
+                                AND iati_narrative.activity_id=${activity_result.activity_id}
+                                AND django_content_type.model='documentlinktitle'
                                 AND django_content_type.id=iati_narrative.related_content_type_id
                         "
                     >
                         <field column="content" name="result_document_link_title_narrative"/>
                     </entity>
                 </entity>
-                <entity name="result_document_link_description" 
+                <entity name="result_document_link_description"
                     query="
                         SELECT
-                            id  
-                        FROM iati_documentlinkdescription 
+                            id
+                        FROM iati_documentlinkdescription
                         WHERE document_link_id=${activity_result_document_link.id}
                     "
                 >
-                    <entity name="aesult_document_link_description_narrative" 
+                    <entity name="aesult_document_link_description_narrative"
                         query="
-                            SELECT 
-                                iati_narrative.related_object_id AS related_object_id, 
-                                iati_narrative.content AS content 
-                            FROM iati_narrative, django_content_type 
-                            WHERE iati_narrative.related_object_id=${result_document_link_description.id} 
-                                AND iati_narrative.activity_id=${activity_result.activity_id} 
-                                AND django_content_type.model='documentlinkdescription' 
+                            SELECT
+                                iati_narrative.related_object_id AS related_object_id,
+                                iati_narrative.content AS content
+                            FROM iati_narrative, django_content_type
+                            WHERE iati_narrative.related_object_id=${result_document_link_description.id}
+                                AND iati_narrative.activity_id=${activity_result.activity_id}
+                                AND django_content_type.model='documentlinkdescription'
                                 AND django_content_type.id=iati_narrative.related_content_type_id
                         "
                     >
                         <field column="content" name="result_document_link_description_narrative"/>
                     </entity>
                 </entity>
-                <entity name="result_document_link_category" 
+                <entity name="result_document_link_category"
                     query="
                         SELECT
-                            category_id  
-                        FROM iati_documentlinkcategory 
+                            category_id
+                        FROM iati_documentlinkcategory
                         WHERE document_link_id=${activity_result_document_link.id}
                     "
                 >
                     <field column="category_id" name="result_document_link_category_code"/>
                 </entity>
-                <entity name="result_document_link_language" 
+                <entity name="result_document_link_language"
                     query="
                         SELECT
-                            language_id  
-                        FROM iati_documentlinklanguage 
+                            language_id
+                        FROM iati_documentlinklanguage
                         WHERE document_link_id=${activity_result_document_link.id}
                     "
                 >
                     <field column="language_id" name="result_document_link_language_code"/>
                 </entity>
-            </entity> 
-            <entity name="activity_result_reference" 
+            </entity>
+            <entity name="activity_result_reference"
                 query="
                     SELECT
                         vocabulary_id,
@@ -311,7 +336,7 @@
                 <field column="code" name="result_reference_code"/>
                 <field column="vocabulary_uri" name="result_reference_vocabulary_uri"/>
             </entity>
-            <entity name="activity_result_indicator" 
+            <entity name="activity_result_indicator"
                 query="
                     SELECT
                         iati_resultindicator.id AS id,
@@ -878,46 +903,46 @@
                 <field column="measure_id" name="result_indicator_measure"/>
                 <field column="ascending" name="result_indicator_acsending"/>
                 <field column="aggregation_status" name="result_indicator_aggregation_status"/>
-                <entity name="activity_result_indicator_title" 
+                <entity name="activity_result_indicator_title"
                     query="
                         SELECT
-                            id  
-                        FROM iati_resultindicatortitle 
+                            id
+                        FROM iati_resultindicatortitle
                         WHERE result_indicator_id=${activity_result_indicator.id}
                     "
                 >
-                    <entity name="aesult_document_link_title_narrative" 
+                    <entity name="aesult_document_link_title_narrative"
                         query="
-                            SELECT 
-                                iati_narrative.related_object_id AS related_object_id, 
-                                iati_narrative.content AS content 
-                            FROM iati_narrative, django_content_type 
-                            WHERE iati_narrative.related_object_id=${activity_result_indicator_title.id} 
-                                AND iati_narrative.activity_id=${activity_result.activity_id} 
-                                AND django_content_type.model='resultindicatortitle' 
+                            SELECT
+                                iati_narrative.related_object_id AS related_object_id,
+                                iati_narrative.content AS content
+                            FROM iati_narrative, django_content_type
+                            WHERE iati_narrative.related_object_id=${activity_result_indicator_title.id}
+                                AND iati_narrative.activity_id=${activity_result.activity_id}
+                                AND django_content_type.model='resultindicatortitle'
                                 AND django_content_type.id=iati_narrative.related_content_type_id
                         "
                     >
                         <field column="content" name="result_indicator_title_narrative"/>
                     </entity>
                 </entity>
-                <entity name="activity_result_indicator_description" 
+                <entity name="activity_result_indicator_description"
                     query="
                         SELECT
-                            id  
-                        FROM iati_resultindicatordescription 
+                            id
+                        FROM iati_resultindicatordescription
                         WHERE result_indicator_id=${activity_result_indicator.id}
                     "
                 >
-                    <entity name="activity_result_indicator_description_narrative" 
+                    <entity name="activity_result_indicator_description_narrative"
                         query="
-                            SELECT 
-                                iati_narrative.related_object_id AS related_object_id, 
-                                iati_narrative.content AS content 
-                            FROM iati_narrative, django_content_type 
-                            WHERE iati_narrative.related_object_id=${activity_result_indicator_description.id} 
-                                AND iati_narrative.activity_id=${activity_result.activity_id} 
-                                AND django_content_type.model='resultindicatordescription' 
+                            SELECT
+                                iati_narrative.related_object_id AS related_object_id,
+                                iati_narrative.content AS content
+                            FROM iati_narrative, django_content_type
+                            WHERE iati_narrative.related_object_id=${activity_result_indicator_description.id}
+                                AND iati_narrative.activity_id=${activity_result.activity_id}
+                                AND django_content_type.model='resultindicatordescription'
                                 AND django_content_type.id=iati_narrative.related_content_type_id
                         "
                     >
@@ -931,7 +956,7 @@
                             url,
                             file_format_id,
                             TO_CHAR(iso_date::timestamp, 'YYYY-MM-DD') AS iso_date
-                        FROM iati_documentlink 
+                        FROM iati_documentlink
                         WHERE result_indicator_id=${activity_result_indicator.id}
                             AND activity_id=${activity_result.activity_id}
                     "
@@ -939,117 +964,117 @@
                     <field column="url" name="result_indicator_document_link_url"/>
                     <field column="file_format_id" name="result_indicator_document_link_format"/>
                     <field column="iso_date" name="result_indicator_document_link_document_date_iso_date"/>
-                    <entity name="activity_result_indicator_document_link_title" 
+                    <entity name="activity_result_indicator_document_link_title"
                         query="
                             SELECT
-                                id  
-                            FROM iati_documentlinktitle 
+                                id
+                            FROM iati_documentlinktitle
                             WHERE document_link_id=${activity_result_indicator_document_link.id}
                         "
                     >
-                        <entity name="activity_result_indicator_document_link_title_narrative" 
+                        <entity name="activity_result_indicator_document_link_title_narrative"
                             query="
-                                SELECT 
-                                    iati_narrative.related_object_id AS related_object_id, 
-                                    iati_narrative.content AS content 
-                                FROM iati_narrative, django_content_type 
-                                WHERE iati_narrative.related_object_id=${activity_result_indicator_document_link_title.id} 
-                                    AND iati_narrative.activity_id=${activity_result.activity_id} 
-                                    AND django_content_type.model='documentlinktitle' 
+                                SELECT
+                                    iati_narrative.related_object_id AS related_object_id,
+                                    iati_narrative.content AS content
+                                FROM iati_narrative, django_content_type
+                                WHERE iati_narrative.related_object_id=${activity_result_indicator_document_link_title.id}
+                                    AND iati_narrative.activity_id=${activity_result.activity_id}
+                                    AND django_content_type.model='documentlinktitle'
                                     AND django_content_type.id=iati_narrative.related_content_type_id
                             "
                         >
                             <field column="content" name="result_indicator_document_link_title_narrative"/>
                         </entity>
                     </entity>
-                    <entity name="activity_result_indicator_document_link_description" 
+                    <entity name="activity_result_indicator_document_link_description"
                         query="
                             SELECT
-                                id  
-                            FROM iati_documentlinkdescription 
+                                id
+                            FROM iati_documentlinkdescription
                             WHERE document_link_id=${activity_result_indicator_document_link.id}
                         "
                     >
-                        <entity name="activity_result_indicator_document_link_description_narrative" 
+                        <entity name="activity_result_indicator_document_link_description_narrative"
                             query="
-                                SELECT 
-                                    iati_narrative.related_object_id AS related_object_id, 
-                                    iati_narrative.content AS content 
-                                FROM iati_narrative, django_content_type 
-                                WHERE iati_narrative.related_object_id=${activity_result_indicator_document_link_description.id} 
-                                    AND iati_narrative.activity_id=${activity_result.activity_id} 
-                                    AND django_content_type.model='documentlinkdescription' 
+                                SELECT
+                                    iati_narrative.related_object_id AS related_object_id,
+                                    iati_narrative.content AS content
+                                FROM iati_narrative, django_content_type
+                                WHERE iati_narrative.related_object_id=${activity_result_indicator_document_link_description.id}
+                                    AND iati_narrative.activity_id=${activity_result.activity_id}
+                                    AND django_content_type.model='documentlinkdescription'
                                     AND django_content_type.id=iati_narrative.related_content_type_id
                             "
                         >
                             <field column="content" name="result_indicator_document_link_description_narrative"/>
                         </entity>
                     </entity>
-                    <entity name="activity_result_indicator_document_link_category" 
+                    <entity name="activity_result_indicator_document_link_category"
                         query="
                             SELECT
-                                category_id  
-                            FROM iati_documentlinkcategory 
+                                category_id
+                            FROM iati_documentlinkcategory
                             WHERE document_link_id=${activity_result_indicator_document_link.id}
                         "
                     >
                         <field column="category_id" name="result_indicator_document_link_category_code"/>
                     </entity>
-                    <entity name="activity_result_indicator_document_link_language" 
+                    <entity name="activity_result_indicator_document_link_language"
                         query="
                             SELECT
-                                language_id  
-                            FROM iati_documentlinklanguage 
+                                language_id
+                            FROM iati_documentlinklanguage
                             WHERE document_link_id=${activity_result_indicator_document_link.id}
                         "
                     >
                         <field column="language_id" name="result_indicator_document_link_language_code"/>
                     </entity>
-                </entity> 
-                <entity name="activity_result_indicator_reference" 
+                </entity>
+                <entity name="activity_result_indicator_reference"
                     query="
-                        SELECT 
+                        SELECT
                             vocabulary_id,
                             code,
                             indicator_uri
-                        FROM iati_resultindicatorreference 
+                        FROM iati_resultindicatorreference
                         WHERE result_indicator_id=${activity_result_indicator.id}
                     "
                 >
                     <field column="vocabulary_id" name="result_indicator_reference_vocabulary"/>
                     <field column="code" name="result_indicator_reference_code"/>
                     <field column="vocabulary_uri" name="result_indicator_reference_vocabulary_uri"/>
-                </entity> 
-                <entity name="activity_result_indicator_baseline" 
+                </entity>
+                <entity name="activity_result_indicator_baseline"
                     query="
-                        SELECT 
+                        SELECT
                             id,
                             year,
                             TO_CHAR(iso_date::timestamp, 'YYYY-MM-DD') AS iso_date,
                             value
-                        FROM iati_resultindicatorbaseline 
+                        FROM iati_resultindicatorbaseline
                         WHERE result_indicator_id=${activity_result_indicator.id}
                     "
                 >
                     <field column="year" name="result_indicator_baseline_year"/>
                     <field column="iso_date" name="result_indicator_baseline_iso_date"/>
                     <field column="value" name="result_indicator_baseline_value"/>
-                    <entity name="activity_result_indicator_baseline_location" 
+                    <entity name="activity_result_indicator_baseline_location"
                         query="
-                            SELECT 
+                            SELECT
                                 ref
-                            FROM iati_location 
+                            FROM iati_location
                             WHERE result_indicator_baseline_id=${activity_result_indicator_baseline.id}
                         "
                     >
                         <field column="ref" name="result_indicator_baseline_location_ref"/>
                     </entity>
-                    <entity name="activity_result_indicator_baseline_dimersion" 
+                    <entity name="activity_result_indicator_baseline_dimersion"
                         query="
-                            SELECT 
+                            SELECT
                                 name,
                                 value
-                            FROM iati_resultindicatorbaselinedimension 
+                            FROM iati_resultindicatorbaselinedimension
                             WHERE result_indicator_baseline_id=${activity_result_indicator_baseline.id}
                         "
                     >
@@ -1062,7 +1087,7 @@
                                     url,
                                     file_format_id,
                                     TO_CHAR(iso_date::timestamp, 'YYYY-MM-DD') AS iso_date
-                                FROM iati_documentlink 
+                                FROM iati_documentlink
                                 WHERE result_indicator_baseline_id=${activity_result_indicator.id}
                                     AND activity_id=${activity_result.activity_id}
                             "
@@ -1070,67 +1095,67 @@
                             <field column="url" name="result_indicator_baseline_document_link_url"/>
                             <field column="file_format_id" name="result_indicator_baseline_document_link_format"/>
                             <field column="iso_date" name="result_indicator_baseline_document_link_document_date_iso_date"/>
-                            <entity name="activity_result_indicator_baseline_dimension_document_link_title" 
+                            <entity name="activity_result_indicator_baseline_dimension_document_link_title"
                                 query="
                                     SELECT
-                                        id  
-                                    FROM iati_documentlinktitle 
+                                        id
+                                    FROM iati_documentlinktitle
                                     WHERE document_link_id=${activity_result_indicator_baseline_dimension_document_link.id}
                                 "
                             >
-                                <entity name="activity_result_indicator_baseline_dimension_document_link_title_narrative" 
+                                <entity name="activity_result_indicator_baseline_dimension_document_link_title_narrative"
                                     query="
-                                        SELECT 
-                                            iati_narrative.related_object_id AS related_object_id, 
-                                            iati_narrative.content AS content 
-                                        FROM iati_narrative, django_content_type 
-                                        WHERE iati_narrative.related_object_id=${activity_result_indicator_baseline_dimension_document_link_title.id} 
-                                            AND iati_narrative.activity_id=${activity_result.activity_id} 
-                                            AND django_content_type.model='documentlinktitle' 
+                                        SELECT
+                                            iati_narrative.related_object_id AS related_object_id,
+                                            iati_narrative.content AS content
+                                        FROM iati_narrative, django_content_type
+                                        WHERE iati_narrative.related_object_id=${activity_result_indicator_baseline_dimension_document_link_title.id}
+                                            AND iati_narrative.activity_id=${activity_result.activity_id}
+                                            AND django_content_type.model='documentlinktitle'
                                             AND django_content_type.id=iati_narrative.related_content_type_id
                                     "
                                 >
                                     <field column="content" name="result_indicator_baseline_document_link_title"/>
                                 </entity>
                             </entity>
-                            <entity name="activity_result_indicator_baseline_dimension_document_link_description" 
+                            <entity name="activity_result_indicator_baseline_dimension_document_link_description"
                                 query="
                                     SELECT
-                                        id  
+                                        id
                                     FROM iati_documentlinkdescription
                                     WHERE document_link_id=${activity_result_indicator_baseline_dimension_document_link.id}
                                 "
                             >
-                                <entity name="activity_result_indicator_baseline_dimension_document_link_description_narrative" 
+                                <entity name="activity_result_indicator_baseline_dimension_document_link_description_narrative"
                                     query="
-                                        SELECT 
-                                            iati_narrative.related_object_id AS related_object_id, 
-                                            iati_narrative.content AS content 
-                                        FROM iati_narrative, django_content_type 
-                                        WHERE iati_narrative.related_object_id=${activity_result_indicator_baseline_dimension_document_link_description.id} 
-                                            AND iati_narrative.activity_id=${activity_result.activity_id} 
-                                            AND django_content_type.model='documentlinkdescription' 
+                                        SELECT
+                                            iati_narrative.related_object_id AS related_object_id,
+                                            iati_narrative.content AS content
+                                        FROM iati_narrative, django_content_type
+                                        WHERE iati_narrative.related_object_id=${activity_result_indicator_baseline_dimension_document_link_description.id}
+                                            AND iati_narrative.activity_id=${activity_result.activity_id}
+                                            AND django_content_type.model='documentlinkdescription'
                                             AND django_content_type.id=iati_narrative.related_content_type_id
                                     "
                                 >
                                     <field column="content" name="result_indicator_baseline_document_link_description"/>
                                 </entity>
                             </entity>
-                            <entity name="activity_result_indicator_baseline_dimension_document_link_category" 
+                            <entity name="activity_result_indicator_baseline_dimension_document_link_category"
                                 query="
                                     SELECT
-                                        category_id  
-                                    FROM iati_documentlinkcategory 
+                                        category_id
+                                    FROM iati_documentlinkcategory
                                     WHERE document_link_id=${activity_result_indicator_baseline_dimension_document_link.id}
                                 "
                             >
                                 <field column="category_id" name="result_indicator_baseline_document_link_category_code"/>
                             </entity>
-                            <entity name="activity_result_indicator_baseline_dimension_document_link_language" 
+                            <entity name="activity_result_indicator_baseline_dimension_document_link_language"
                                 query="
                                     SELECT
-                                        language_id  
-                                    FROM iati_documentlinklanguage 
+                                        language_id
+                                    FROM iati_documentlinklanguage
                                     WHERE document_link_id=${activity_result_indicator_baseline_dimension_document_link.id}
                                 "
                             >
@@ -1141,88 +1166,88 @@
                             query="
                                 SELECT
                                     id
-                                FROM iati_resultindicatorbaselinecomment 
+                                FROM iati_resultindicatorbaselinecomment
                                 WHERE result_indicator_baseline_id=${activity_result_indicator.id}
                             "
                         >
-                            <entity name="activity_result_indicator_baseline_comment_narrative" 
+                            <entity name="activity_result_indicator_baseline_comment_narrative"
                                 query="
-                                    SELECT 
-                                        iati_narrative.related_object_id AS related_object_id, 
-                                        iati_narrative.content AS content 
-                                    FROM iati_narrative, django_content_type 
-                                    WHERE iati_narrative.related_object_id=${activity_result_indicator_baseline_comment.id} 
-                                        AND iati_narrative.activity_id=${activity_result.activity_id} 
-                                        AND django_content_type.model='resultindicatorbaselinecomment' 
+                                    SELECT
+                                        iati_narrative.related_object_id AS related_object_id,
+                                        iati_narrative.content AS content
+                                    FROM iati_narrative, django_content_type
+                                    WHERE iati_narrative.related_object_id=${activity_result_indicator_baseline_comment.id}
+                                        AND iati_narrative.activity_id=${activity_result.activity_id}
+                                        AND django_content_type.model='resultindicatorbaselinecomment'
                                         AND django_content_type.id=iati_narrative.related_content_type_id
                                 "
                             >
                                 <field column="content" name="result_indicator_baseline_comment_narrative"/>
                             </entity>
-                        </entity>    
+                        </entity>
                     </entity>
                 </entity>
-                <entity name="activity_result_indicator_period" 
+                <entity name="activity_result_indicator_period"
                     query="
                         SELECT
                             id,
                             TO_CHAR(period_start::timestamp, 'YYYY-MM-DD') AS period_start,
-                            TO_CHAR(period_end::timestamp, 'YYYY-MM-DD') AS period_end  
-                        FROM iati_resultindicatorperiod 
+                            TO_CHAR(period_end::timestamp, 'YYYY-MM-DD') AS period_end
+                        FROM iati_resultindicatorperiod
                         WHERE result_indicator_id=${activity_result_indicator.id}
                     "
                 >
                     <field column="period_start" name="result_indicator_period_period_start_iso_date"/>
                     <field column="period_end" name="result_indicator_period_period_end_iso_date"/>
-                    <entity name="activity_result_indicator_period_target" 
+                    <entity name="activity_result_indicator_period_target"
                         query="
                             SELECT
                                 id,
                                 value
-                            FROM iati_resultindicatorperiodtarget 
+                            FROM iati_resultindicatorperiodtarget
                             WHERE result_indicator_period_id=${activity_result_indicator_period.id}
                         "
                     >
                         <field column="value" name="result_indicator_period_target_value"/>
-                        <entity name="activity_result_indicator_period_target_location" 
+                        <entity name="activity_result_indicator_period_target_location"
                             query="
                                 SELECT
                                     ref
-                                FROM iati_resultindicatorperiodtargetlocation 
+                                FROM iati_resultindicatorperiodtargetlocation
                                 WHERE result_indicator_period_target_id=${activity_result_indicator_period_target.id}
                             "
                         >
-                            <field column="ref" name="result_indicator_period_target_location_ref"/>   
+                            <field column="ref" name="result_indicator_period_target_location_ref"/>
                         </entity>
-                        <entity name="activity_result_indicator_period_target_dimension" 
+                        <entity name="activity_result_indicator_period_target_dimension"
                             query="
                                 SELECT
                                     name,
                                     value
-                                FROM iati_resultindicatorperiodtargetdimension 
+                                FROM iati_resultindicatorperiodtargetdimension
                                 WHERE result_indicator_period_target_id=${activity_result_indicator_period_target.id}
                             "
                         >
-                            <field column="name" name="result_indicator_period_target_dimmension_name"/> 
-                            <field column="value" name="result_indicator_period_target_dimmension_value"/>   
+                            <field column="name" name="result_indicator_period_target_dimmension_name"/>
+                            <field column="value" name="result_indicator_period_target_dimmension_value"/>
                         </entity>
-                        <entity name="activity_result_indicator_period_target_comment" 
+                        <entity name="activity_result_indicator_period_target_comment"
                             query="
                                 SELECT
                                     id
-                                FROM iati_resultindicatorperiodtargetcomment 
+                                FROM iati_resultindicatorperiodtargetcomment
                                 WHERE result_indicator_period_target_id=${activity_result_indicator_period_target.id}
                             "
                         >
-                            <entity name="activity_result_indicator_period_target_comment_narrative" 
+                            <entity name="activity_result_indicator_period_target_comment_narrative"
                                 query="
-                                    SELECT 
-                                        iati_narrative.related_object_id AS related_object_id, 
-                                        iati_narrative.content AS content 
-                                    FROM iati_narrative, django_content_type 
-                                    WHERE iati_narrative.related_object_id=${activity_result_indicator_period_target_comment.id} 
-                                        AND iati_narrative.activity_id=${activity_result.activity_id} 
-                                        AND django_content_type.model='resultindicatorperiodtargetcomment' 
+                                    SELECT
+                                        iati_narrative.related_object_id AS related_object_id,
+                                        iati_narrative.content AS content
+                                    FROM iati_narrative, django_content_type
+                                    WHERE iati_narrative.related_object_id=${activity_result_indicator_period_target_comment.id}
+                                        AND iati_narrative.activity_id=${activity_result.activity_id}
+                                        AND django_content_type.model='resultindicatorperiodtargetcomment'
                                         AND django_content_type.id=iati_narrative.related_content_type_id
                                 "
                             >
@@ -1236,7 +1261,7 @@
                                     url,
                                     file_format_id,
                                     TO_CHAR(iso_date::timestamp, 'YYYY-MM-DD') AS iso_date
-                                FROM iati_documentlink 
+                                FROM iati_documentlink
                                 WHERE result_indicator_period_target_id=${activity_result_indicator_period_target.id}
                                     AND activity_id=${activity_result.activity_id}
                             "
@@ -1244,123 +1269,123 @@
                             <field column="url" name="result_indicator_period_target_document_link_url"/>
                             <field column="file_format_id" name="result_indicator_period_target_document_link_format"/>
                             <field column="iso_date" name="result_indicator_period_target_document_link_document_date_iso_date"/>
-                            <entity name="activity_result_indicator_period_target_document_link_title" 
+                            <entity name="activity_result_indicator_period_target_document_link_title"
                                 query="
                                     SELECT
-                                        id  
-                                    FROM iati_documentlinktitle 
+                                        id
+                                    FROM iati_documentlinktitle
                                     WHERE document_link_id=${activity_result_indicator_period_target_document_link.id}
                                 "
                             >
-                                <entity name="activity_result_indicator_period_target_document_link_title_narrative" 
+                                <entity name="activity_result_indicator_period_target_document_link_title_narrative"
                                     query="
-                                        SELECT 
-                                            iati_narrative.related_object_id AS related_object_id, 
-                                            iati_narrative.content AS content 
-                                        FROM iati_narrative, django_content_type 
-                                        WHERE iati_narrative.related_object_id=${activity_result_indicator_period_target_document_link_title.id} 
-                                            AND iati_narrative.activity_id=${activity_result.activity_id} 
-                                            AND django_content_type.model='documentlinktitle' 
+                                        SELECT
+                                            iati_narrative.related_object_id AS related_object_id,
+                                            iati_narrative.content AS content
+                                        FROM iati_narrative, django_content_type
+                                        WHERE iati_narrative.related_object_id=${activity_result_indicator_period_target_document_link_title.id}
+                                            AND iati_narrative.activity_id=${activity_result.activity_id}
+                                            AND django_content_type.model='documentlinktitle'
                                             AND django_content_type.id=iati_narrative.related_content_type_id
                                     "
                                 >
                                     <field column="content" name="result_indicator_period_target_document_link_title_narrative"/>
                                 </entity>
                             </entity>
-                            <entity name="activity_result_indicator_period_target_document_link_description" 
+                            <entity name="activity_result_indicator_period_target_document_link_description"
                                 query="
                                     SELECT
-                                        id  
-                                    FROM iati_documentlinkdescription 
+                                        id
+                                    FROM iati_documentlinkdescription
                                     WHERE document_link_id=${activity_result_indicator_period_target_document_link.id}
                                 "
                             >
-                                <entity name="activity_result_indicator_period_target_document_link_description_narrative" 
+                                <entity name="activity_result_indicator_period_target_document_link_description_narrative"
                                     query="
-                                        SELECT 
-                                            iati_narrative.related_object_id AS related_object_id, 
-                                            iati_narrative.content AS content 
-                                        FROM iati_narrative, django_content_type 
-                                        WHERE iati_narrative.related_object_id=${activity_result_indicator_period_target_document_link_description.id} 
-                                            AND iati_narrative.activity_id=${activity_result.activity_id} 
-                                            AND django_content_type.model='documentlinkdescription' 
+                                        SELECT
+                                            iati_narrative.related_object_id AS related_object_id,
+                                            iati_narrative.content AS content
+                                        FROM iati_narrative, django_content_type
+                                        WHERE iati_narrative.related_object_id=${activity_result_indicator_period_target_document_link_description.id}
+                                            AND iati_narrative.activity_id=${activity_result.activity_id}
+                                            AND django_content_type.model='documentlinkdescription'
                                             AND django_content_type.id=iati_narrative.related_content_type_id
                                     "
                                 >
                                     <field column="content" name="result_indicator_period_target_document_link_description_narrative"/>
                                 </entity>
                             </entity>
-                            <entity name="activity_result_indicator_period_target_document_link_category" 
+                            <entity name="activity_result_indicator_period_target_document_link_category"
                                 query="
                                     SELECT
-                                        category_id  
-                                    FROM iati_documentlinkcategory 
+                                        category_id
+                                    FROM iati_documentlinkcategory
                                     WHERE document_link_id=${activity_result_indicator_period_target_document_link.id}
                                 "
                             >
                                 <field column="category_id" name="result_indicator_period_target_document_link_category_code"/>
                             </entity>
-                            <entity name="activity_result_indicator_period_target_document_link_language" 
+                            <entity name="activity_result_indicator_period_target_document_link_language"
                                 query="
                                     SELECT
-                                        language_id  
+                                        language_id
                                     FROM iati_documentlinklanguage
                                     WHERE document_link_id=${activity_result_indicator_period_target_document_link.id}
                                 "
                             >
                                 <field column="language_id" name="result_indicator_period_target_document_link_language_code"/>
                             </entity>
-                        </entity>        
+                        </entity>
                     </entity>
-                    <entity name="activity_result_indicator_period_actual" 
+                    <entity name="activity_result_indicator_period_actual"
                         query="
                             SELECT
                                 id,
                                 value
-                            FROM iati_resultindicatorperiodactual 
+                            FROM iati_resultindicatorperiodactual
                             WHERE result_indicator_period_id=${activity_result_indicator_period.id}
                         "
                     >
                         <field column="value" name="result_indicator_period_actual_value"/>
-                        <entity name="activity_result_indicator_period_actual_location" 
+                        <entity name="activity_result_indicator_period_actual_location"
                             query="
                                 SELECT
                                     ref
-                                FROM iati_resultindicatorperiodactuallocation 
+                                FROM iati_resultindicatorperiodactuallocation
                                 WHERE result_indicator_period_actual_id=${activity_result_indicator_period_actual.id}
                             "
                         >
-                            <field column="ref" name="result_indicator_period_actual_location_ref"/>   
+                            <field column="ref" name="result_indicator_period_actual_location_ref"/>
                         </entity>
-                        <entity name="activity_result_indicator_period_actual_dimension" 
+                        <entity name="activity_result_indicator_period_actual_dimension"
                             query="
                                 SELECT
                                     name,
                                     value
-                                FROM iati_resultindicatorperiodactualdimension 
+                                FROM iati_resultindicatorperiodactualdimension
                                 WHERE result_indicator_period_actual_id=${activity_result_indicator_period_actual.id}
                             "
                         >
-                            <field column="name" name="result_indicator_period_actual_dimmension_name"/> 
-                            <field column="value" name="result_indicator_period_actual_dimmension_value"/>   
+                            <field column="name" name="result_indicator_period_actual_dimmension_name"/>
+                            <field column="value" name="result_indicator_period_actual_dimmension_value"/>
                         </entity>
-                        <entity name="activity_result_indicator_period_actual_comment" 
+                        <entity name="activity_result_indicator_period_actual_comment"
                             query="
                                 SELECT
                                     id
-                                FROM iati_resultindicatorperiodactualcomment 
+                                FROM iati_resultindicatorperiodactualcomment
                                 WHERE result_indicator_period_actual_id=${activity_result_indicator_period_actual.id}
                             "
                         >
-                            <entity name="activity_result_indicator_period_actual_comment_narrative" 
+                            <entity name="activity_result_indicator_period_actual_comment_narrative"
                                 query="
-                                    SELECT 
-                                        iati_narrative.related_object_id AS related_object_id, 
-                                        iati_narrative.content AS content 
-                                    FROM iati_narrative, django_content_type 
-                                    WHERE iati_narrative.related_object_id=${activity_result_indicator_period_actual_comment.id} 
-                                        AND iati_narrative.activity_id=${activity_result.activity_id} 
-                                        AND django_content_type.model='resultindicatorperiodactualcomment' 
+                                    SELECT
+                                        iati_narrative.related_object_id AS related_object_id,
+                                        iati_narrative.content AS content
+                                    FROM iati_narrative, django_content_type
+                                    WHERE iati_narrative.related_object_id=${activity_result_indicator_period_actual_comment.id}
+                                        AND iati_narrative.activity_id=${activity_result.activity_id}
+                                        AND django_content_type.model='resultindicatorperiodactualcomment'
                                         AND django_content_type.id=iati_narrative.related_content_type_id
                                 "
                             >
@@ -1374,7 +1399,7 @@
                                     url,
                                     file_format_id,
                                     TO_CHAR(iso_date::timestamp, 'YYYY-MM-DD') AS iso_date
-                                FROM iati_documentlink 
+                                FROM iati_documentlink
                                 WHERE result_indicator_period_actual_id=${activity_result_indicator_period_actual.id}
                                     AND activity_id=${activity_result.activity_id}
                             "
@@ -1382,76 +1407,76 @@
                             <field column="url" name="result_indicator_period_actual_document_link_url"/>
                             <field column="file_format_id" name="result_indicator_period_actual_document_link_format"/>
                             <field column="iso_date" name="result_indicator_period_actual_document_link_document_date_iso_date"/>
-                            <entity name="activity_result_indicator_period_actual_document_link_title" 
+                            <entity name="activity_result_indicator_period_actual_document_link_title"
                                 query="
                                     SELECT
-                                        id  
-                                    FROM iati_documentlinktitle 
+                                        id
+                                    FROM iati_documentlinktitle
                                     WHERE document_link_id=${activity_result_indicator_period_actual_document_link.id}
                                 "
                             >
-                                <entity name="activity_result_indicator_period_actual_document_link_title_narrative" 
+                                <entity name="activity_result_indicator_period_actual_document_link_title_narrative"
                                     query="
-                                        SELECT 
-                                            iati_narrative.related_object_id AS related_object_id, 
-                                            iati_narrative.content AS content 
-                                        FROM iati_narrative, django_content_type 
-                                        WHERE iati_narrative.related_object_id=${activity_result_indicator_period_actual_document_link_title.id} 
-                                            AND iati_narrative.activity_id=${activity_result.activity_id} 
-                                            AND django_content_type.model='documentlinktitle' 
+                                        SELECT
+                                            iati_narrative.related_object_id AS related_object_id,
+                                            iati_narrative.content AS content
+                                        FROM iati_narrative, django_content_type
+                                        WHERE iati_narrative.related_object_id=${activity_result_indicator_period_actual_document_link_title.id}
+                                            AND iati_narrative.activity_id=${activity_result.activity_id}
+                                            AND django_content_type.model='documentlinktitle'
                                             AND django_content_type.id=iati_narrative.related_content_type_id
                                     "
                                 >
                                     <field column="content" name="result_indicator_period_actual_document_link_title_narrative"/>
                                 </entity>
                             </entity>
-                            <entity name="activity_result_indicator_period_actual_document_link_description" 
+                            <entity name="activity_result_indicator_period_actual_document_link_description"
                                 query="
                                     SELECT
-                                        id  
+                                        id
                                     FROM iati_documentlinkdescription
                                     WHERE document_link_id=${activity_result_indicator_period_actual_document_link.id}
                                 "
                             >
-                                <entity name="activity_result_indicator_period_actual_document_link_description_narrative" 
+                                <entity name="activity_result_indicator_period_actual_document_link_description_narrative"
                                     query="
-                                        SELECT 
-                                            iati_narrative.related_object_id AS related_object_id, 
-                                            iati_narrative.content AS content 
-                                        FROM iati_narrative, django_content_type 
-                                        WHERE iati_narrative.related_object_id=${activity_result_indicator_period_actual_document_link_description.id} 
-                                            AND iati_narrative.activity_id=${activity_result.activity_id} 
-                                            AND django_content_type.model='documentlinkdescription' 
+                                        SELECT
+                                            iati_narrative.related_object_id AS related_object_id,
+                                            iati_narrative.content AS content
+                                        FROM iati_narrative, django_content_type
+                                        WHERE iati_narrative.related_object_id=${activity_result_indicator_period_actual_document_link_description.id}
+                                            AND iati_narrative.activity_id=${activity_result.activity_id}
+                                            AND django_content_type.model='documentlinkdescription'
                                             AND django_content_type.id=iati_narrative.related_content_type_id
                                     "
                                 >
                                     <field column="content" name="result_indicator_period_actual_document_link_description_narrative"/>
                                 </entity>
                             </entity>
-                            <entity name="activity_result_indicator_period_actual_document_link_category" 
+                            <entity name="activity_result_indicator_period_actual_document_link_category"
                                 query="
                                     SELECT
-                                        category_id  
-                                    FROM iati_documentlinkcategory 
+                                        category_id
+                                    FROM iati_documentlinkcategory
                                     WHERE document_link_id=${activity_result_indicator_period_actual_document_link.id}
                                 "
                             >
                                 <field column="category_id" name="result_indicator_period_actual_document_link_category_code"/>
                             </entity>
-                            <entity name="activity_result_indicator_period_actual_document_link_language" 
+                            <entity name="activity_result_indicator_period_actual_document_link_language"
                                 query="
                                     SELECT
-                                        language_id  
+                                        language_id
                                     FROM iati_documentlinklanguage
                                     WHERE document_link_id=${activity_result_indicator_period_actual_document_link.id}
                                 "
                             >
                                 <field column="language_id" name="result_indicator_period_actual_document_link_language_code"/>
                             </entity>
-                        </entity>    
-                    </entity>    
-                </entity>      
-            </entity>    
-        </entity>                         
+                        </entity>
+                    </entity>
+                </entity>
+            </entity>
+        </entity>
     </document>
 </dataConfig>

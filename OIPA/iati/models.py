@@ -552,7 +552,7 @@ class ActivityReportingOrganisation(models.Model):
 
 
 class ActivityParticipatingOrganisation(models.Model):
-    ref = models.CharField(max_length=250, null=True, blank=True, default="")
+    ref = models.CharField(max_length=250, null=True, default=None)
     normalized_ref = models.CharField(
         blank=True,
         max_length=120,

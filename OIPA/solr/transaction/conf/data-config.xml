@@ -5,25 +5,59 @@
             name="activity_transaction" 
             query="
                 SELECT
-                    CONCAT(iati_activity.iati_identifier, '-', iati_transaction.id) AS activity_iati_indentifier_and_transaction_id,
                     iati_activity.iati_identifier as iati_identifier,
-                    iati_transaction.id as id,
+                    iati_transaction.id AS id,
                     activity_id,
                     ref,
                     CASE WHEN iati_transaction.humanitarian=TRUE THEN '1' ELSE '0' END AS humanitarian,
                     CASE WHEN iati_activity.humanitarian=TRUE THEN '1' ELSE '0' END AS activity_humanitarian,
                     transaction_type_id,
                     TO_CHAR(transaction_date::timestamp, 'YYYY-MM-DD') AS transaction_date,
-                    currency_id, 
+                    currency_id,
                     TO_CHAR(value_date::timestamp, 'YYYY-MM-DD') AS value_date,
-                    value, 
+                    value,
                     disbursement_channel_id,
-                    tied_status_id
+                    tied_status_id,
+                    flow_type_id
                 FROM iati_transaction, iati_activity
                 WHERE activity_id=iati_activity.id
+                ORDER BY iati_transaction.id
+            "
+            deletedPkQuery="
+                SELECT
+                     transaction_id AS id
+                FROM solr_transactiondelete
+                WHERE last_updated_model > '${dataimporter.last_index_time}'
+            "
+            deltaQuery="
+                SELECT
+                    iati_transaction.id AS id
+                FROM iati_transaction, iati_activity
+                WHERE activity_id = iati_activity.id
+                    AND iati_activity.last_updated_model > '${dataimporter.last_index_time}'
+                ORDER BY iati_transaction.id
+            "
+            deltaImportQuery="
+                SELECT
+                    iati_activity.iati_identifier as iati_identifier,
+                    iati_transaction.id AS id,
+                    activity_id,
+                    ref,
+                    CASE WHEN iati_transaction.humanitarian=TRUE THEN '1' ELSE '0' END AS humanitarian,
+                    CASE WHEN iati_activity.humanitarian=TRUE THEN '1' ELSE '0' END AS activity_humanitarian,
+                    transaction_type_id,
+                    TO_CHAR(transaction_date::timestamp, 'YYYY-MM-DD') AS transaction_date,
+                    currency_id,
+                    TO_CHAR(value_date::timestamp, 'YYYY-MM-DD') AS value_date,
+                    value,
+                    disbursement_channel_id,
+                    tied_status_id,
+                    flow_type_id
+                FROM iati_transaction, iati_activity
+                WHERE activity_id=iati_activity.id
+                    AND iati_transaction.id='${dataimporter.delta.id}'
             "
         >
-            <field column="activity_iati_indentifier_and_transaction_id" name="id"/>
             <field column="iati_identifier" name="iati_identifier"/>
             <field column="ref" name="transaction_ref"/>
             <field column="humanitarian" name="transaction_humanitarian"/>
@@ -100,9 +134,11 @@
             </entity>
             <entity name="activity_reporting_org" 
                 query="
-                    SELECT 
-                        organisation_id,
-                        ref 
+                    SELECT
+                        ref,
+                        iati_activityreportingorganisation.type_id AS type_id,
+                        CASE WHEN secondary_reporter=TRUE THEN '1' ELSE CASE WHEN secondary_reporter=FALSE THEN '0' END END AS secondary_reporter,
+                        organisation_id
                     FROM iati_activityreportingorganisation 
                     WHERE activity_id=${activity_transaction.activity_id} LIMIT 1
                 "

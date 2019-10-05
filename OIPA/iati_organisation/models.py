@@ -98,6 +98,10 @@ class Organisation(models.Model):
     ready_to_publish = models.BooleanField(default=False, db_index=True)
     # is this organisation changed from the originally parsed version?
     modified = models.BooleanField(default=False, db_index=True)
+    # is needed to update indexing
+    last_updated_model = models.DateTimeField(
+        null=True, blank=True, auto_now=True
+    )
 
     objects = OrganisationManager()
 
