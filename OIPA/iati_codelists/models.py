@@ -565,7 +565,7 @@ class BudgetNotProvided(models.Model):
         return "%s" % self.name
 
 
-class CashAndVoucherModalities(models.Model):
+class CashandVoucherModalities(models.Model):
     code = models.CharField(primary_key=True, max_length=2)
     name = models.CharField(max_length=200)
     description = models.TextField()
