@@ -1,4 +1,4 @@
-## OIPA
+## IATI.cloud (fka OIPA)
 --------
 
 [![Codacy Badge](https://api.codacy.com/project/badge/Coverage/66a6772e1f264199830b01a86f9a2b47)](https://www.codacy.com/app/eimantas_4/OIPA?utm_source=github.com&utm_medium=referral&utm_content=zimmerman-zimmerman/OIPA&utm_campaign=Badge_Coverage)
@@ -7,7 +7,7 @@
 [![CircleCI](https://circleci.com/gh/zimmerman-zimmerman/OIPA.svg?style=svg)](https://circleci.com/gh/zimmerman-zimmerman/OIPA)
 
 
-OIPA extracts all published IATI XML files from the [IATI Registry](http://www.iatiregistry.org/publisher) and makes them available in a normalised PostgreSQL database, that you can access using a RESTful API.
+IATI.cloud (fka OIPA) extracts all published IATI XML files from the [IATI Registry](http://www.iatiregistry.org/publisher) and makes them available in a normalised PostgreSQL database, that you can access using a RESTful API.
 
 IATI is a global aid transparency standard and it makes information about aid spending easier to access, re-use and understand the underlying data using a unified open standard. You can find more about the IATI XML standard at: <a href="http://www.iatistandard.org" target="_blank">www.iatistandard.org</a>
 
@@ -57,16 +57,16 @@ For more detailed information, see the [install documentation](http://docs.oipa.
 
 ## Full Documentation
 
-Full documentation (which, at this point, needs an update) on installing, running and using OIPA can be found at <a href="http://docs.oipa.nl" target="_blank">docs.oipa.nl</a>
+Full documentation (which, at this point, needs an update) on installing, running and using IATI.cloud can be found at <a href="http://docs.oipa.nl" target="_blank">docs.oipa.nl</a>
 
 
 ## About the project
-* Website:         <a href="https://yoda.oipa.nl" target="_blank">yoda.oipa.nl</a>
+* Website:         <a href="https://www.iati.cloud" target="_blank">www.iait.cloud</a>
 * Authors:          <a href="https://www.zimmermanzimmerman.nl/" target="_blank">Zimmerman & Zimmerman</a>
 * License:          AGPLv3 (see included <a href="https://github.com/zimmerman-zimmerman/OIPA/blob/master/LICENSE.MD" target="_blank">LICENSE</a> file for full license)
-* Github Repo:      <a href="https://github.com/zimmerman-zimmerman/OIPA/" target="_blank">github.com/zimmerman-zimmerman/OIPA/</a>
+* Github Repo:      <a href="https://github.com/zimmerman-zimmerman/IATI.cloud//" target="_blank">github.com/zimmerman-zimmerman/IATI.cloud/</a>
 * Bug Tracker:      <a href="https://github.com/zimmerman-zimmerman/OIPA/issues" target="_blank">github.com/zimmerman-zimmerman/OIPA/issues</a>
-* Documentation:    <a href="https://github.com/zimmerman-zimmerman/OIPA/wiki" target="_blank">docs.oipa.nl</a>
+* Documentation:    <a href="https://www.iati.cloud/documentation/introductionwiki" target="_blank">docs.iati.cloud</a>
 
 
 ## Can I contribute?
