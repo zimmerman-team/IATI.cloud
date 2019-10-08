@@ -61,7 +61,7 @@ Full documentation (which, at this point, needs an update) on installing, runnin
 
 
 ## About the project
-* Website:         <a href="https://www.iati.cloud" target="_blank">www.iait.cloud</a>
+* Website:         <a href="https://www.iati.cloud" target="_blank">www.iati.cloud</a>
 * Authors:          <a href="https://www.zimmermanzimmerman.nl/" target="_blank">Zimmerman & Zimmerman</a>
 * License:          AGPLv3 (see included <a href="https://github.com/zimmerman-zimmerman/OIPA/blob/master/LICENSE.MD" target="_blank">LICENSE</a> file for full license)
 * Github Repo:      <a href="https://github.com/zimmerman-zimmerman/IATI.cloud//" target="_blank">github.com/zimmerman-zimmerman/IATI.cloud/</a>
