@@ -1,6 +1,7 @@
 import json
 import os
 import urllib
+from datetime import datetime
 
 from OIPA import settings
 
@@ -22,8 +23,12 @@ class PostmanAPIImport(object):
         json_string = response.read()
         result = json.loads(json_string)
         self.simplify(result)
-        with open(self.file_path + '/postman/postman_json.json', 'w') as outfile:     # NOQA: E501
-            json.dump(result, outfile)
+        try:
+            with open(self.file_path + '/postman/postman_json.json', 'w') as outfile:     # NOQA: E501
+                json.dump(result, outfile)
+            print("Postman json file was created on: ", datetime.now())
+        except IOError:
+            pass
 
     def simplify(self, full_json):
         self.remove_fields(full_json['collection'])
