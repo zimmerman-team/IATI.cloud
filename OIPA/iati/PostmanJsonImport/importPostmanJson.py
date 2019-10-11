@@ -1,27 +1,28 @@
-import urllib
 import json
-from OIPA import settings
 import os
+import urllib
+
+from OIPA import settings
 
 
 class PostmanAPIImport(object):
     fields_to_remove = ["event", "response"]
     file_path = os.environ.get(
         'OIPA_STATIC_ROOT',
-    os.path.join(
-        os.path.dirname(settings.BASE_DIR),
-        'public/static'))
+        os.path.join(
+            os.path.dirname(settings.BASE_DIR),
+            'public/static'))
 
     def get_json(self):
 
         request = urllib.request.Request(
-            "https://api.getpostman.com/collections/7423966-c07eebd3-61b2-47b4-9bfd-1bac7ec96c9f",
+            "https://api.getpostman.com/collections/7423966-c07eebd3-61b2-47b4-9bfd-1bac7ec96c9f",     # NOQA: E501
             headers={"x-Api-Key": "55dfaaebcc9448bba40e5ff485305a2b"})
         response = urllib.request.urlopen(request)
         json_string = response.read()
         result = json.loads(json_string)
         self.simplify(result)
-        with open(self.file_path + '/postman/postman_json.json', 'w') as outfile:
+        with open(self.file_path + '/postman/postman_json.json', 'w') as outfile:     # NOQA: E501
             json.dump(result, outfile)
 
     def simplify(self, full_json):
@@ -38,6 +39,3 @@ class PostmanAPIImport(object):
             self.remove_fields(item)
             if 'item' in item:
                 self.recursive_clean(item['item'])
-
-
-

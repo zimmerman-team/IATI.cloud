@@ -1,8 +1,9 @@
 # Create your tasks here
 from __future__ import absolute_import, unicode_literals
-from celery import task
-from iati.PostmanJsonImport.importPostmanJson import PostmanAPIImport
 
+from celery import task
+
+from iati.PostmanJsonImport.importPostmanJson import PostmanAPIImport
 
 
 @task
