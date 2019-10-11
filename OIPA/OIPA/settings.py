@@ -5,9 +5,8 @@ import sys
 from ast import literal_eval
 from os import environ as env
 
-from tzlocal import get_localzone
 from celery.schedules import crontab
-from datetime import timedelta
+from tzlocal import get_localzone
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 DEBUG = literal_eval(env.get('OIPA_DEBUG', 'True'))
@@ -369,10 +368,6 @@ CELERY_BEAT_SCHEDULE = {
     'getting_postman-api': {
         'task': 'iati.PostmanJsonImport.tasks.get_postman_api',
         'schedule': crontab(minute=0, hour=0),
-    },
-    'printing-hello':{
-        'task': 'iati.PostmanJsonImport.tasks.printHello',
-        'schedule': 30.0,
     },
 }
 
