@@ -104,7 +104,7 @@ class ActivitySerializer(serializers.Serializer):
         self.set_field('default_tied_status_code', activity.default_tied_status_id, representation)
         self.set_field(
             'capital_spend_percentage',
-            str(activity.capital_spend) if activity.capital_spend > 0 else None,
+            str(activity.capital_spend) if activity.capital_spend and activity.capital_spend > 0 else None,
             representation
         )
 
@@ -127,7 +127,7 @@ class ActivitySerializer(serializers.Serializer):
             )
             self.set_field('reporting_org_narrative', reporting_org.organisation.primary_name, representation)
 
-    def activity_title(self, activity, representation):
+    def title(self, activity, representation):
         if activity.title:
             title = list()
             title_narrative_lang = list()
@@ -144,7 +144,7 @@ class ActivitySerializer(serializers.Serializer):
             self.set_field('title_narrative_lang', title_narrative_lang, representation)
             self.set_field('title_narrative_text', title_narrative_text, representation)
 
-    def activity_description(self, activity, representation):
+    def description(self, activity, representation):
         descriptions_all = activity.description_set.all()
         if descriptions_all:
             description_list = list()
@@ -167,13 +167,51 @@ class ActivitySerializer(serializers.Serializer):
             self.set_field('description_narrative_lang', description_narrative_lang, representation)
             self.set_field('description_narrative_text', description_narrative_text, representation)
 
+    def participating_org(self, activity, representation):
+        participating_organisations_all = activity.participating_organisations.all()
+        if participating_organisations_all:
+            participating_org = list()
+            participating_org_ref = list()
+            participating_org_type = list()
+            participating_org_role = list()
+            participating_org_narrative = list()
+            participating_org_narrative_lang = list()
+            participating_org_narrative_text = list()
+
+            for participating_organisation in participating_organisations_all:
+                if participating_organisation.ref:
+                    participating_org_ref.append(participating_organisation.ref)
+
+                if participating_organisation.type_id:
+                    participating_org_type.append(participating_organisation.type_id)
+
+                if participating_organisation.role:
+                    participating_org_role.append(participating_organisation.role.code)
+
+                for narrative in participating_organisation.narratives.all():
+                    participating_org_narrative.append(narrative.content)
+                    if narrative.language:
+                        participating_org_narrative_lang.append(narrative.language.code)
+
+                    participating_org_narrative_text.append(narrative.content)
+                    participating_org.append(NarrativeSerializer(narrative).data)
+
+            self.set_field('participating_org', json.dumps(participating_org), representation)
+            self.set_field('participating_org_ref', participating_org_ref, representation)
+            self.set_field('participating_org_type', participating_org_type, representation)
+            self.set_field('participating_org_role', participating_org_role, representation)
+            self.set_field('participating_org_narrative', participating_org_narrative, representation)
+            self.set_field('participating_org_narrative_lang', participating_org_narrative_lang, representation)
+            self.set_field('participating_org_narrative_text', participating_org_narrative_text, representation)
+
     def to_representation(self, activity):
         representation = OrderedDict()
 
         self.activity(activity=activity, representation=representation)
         self.dataset(activity=activity, representation=representation)
         self.reporting_org(activity=activity, representation=representation)
-        self.activity_title(activity=activity, representation=representation)
-        self.activity_description(activity=activity, representation=representation)
+        self.title(activity=activity, representation=representation)
+        self.description(activity=activity, representation=representation)
+        self.participating_org(activity=activity, representation=representation)
 
         return representation
