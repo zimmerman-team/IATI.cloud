@@ -113,6 +113,7 @@ class ActivitySerializer(serializers.Serializer):
             title = list()
             title_narrative_lang = list()
             title_narrative_text = list()
+
             for narrative in activity.title.narratives.all():
                 if narrative.language:
                     title_narrative_lang.append(narrative.language.code)
@@ -123,6 +124,29 @@ class ActivitySerializer(serializers.Serializer):
             self.set_field('title', json.dumps(title), representation)
             self.set_field('title_narrative_lang', title_narrative_lang, representation)
             self.set_field('title_narrative_text', title_narrative_text, representation)
+
+    def activity_description(self, activity, representation):
+        descriptions_all = activity.description_set.all()
+        if descriptions_all:
+            description_list = list()
+            description_type = list()
+            description_narrative_lang = list()
+            description_narrative_text = list()
+
+            for description in descriptions_all:
+                for narrative in description.narratives.all():
+                    description_type.append(description.type_id)
+
+                    if narrative.language:
+                        description_narrative_lang.append(narrative.language.code)
+
+                    description_narrative_text.append(narrative.content)
+                    description_list.append(NarrativeSerializer(narrative).data)
+
+            self.set_field('description', json.dumps(description_list), representation)
+            self.set_field('description_type', description_type, representation)
+            self.set_field('description_narrative_lang', description_narrative_lang, representation)
+            self.set_field('description_narrative_text', description_narrative_text, representation)
 
     def dataset(self, activity, representation):
         self.set_field('dataset_iati_version',  activity.iati_standard_version_id, representation)
@@ -148,6 +172,7 @@ class ActivitySerializer(serializers.Serializer):
 
         self.activity(activity=activity, representation=representation)
         self.activity_title(activity=activity, representation=representation)
+        self.activity_description(activity=activity, representation=representation)
         self.dataset(activity=activity, representation=representation)
         self.reporting_org(activity=activity, representation=representation)
 
