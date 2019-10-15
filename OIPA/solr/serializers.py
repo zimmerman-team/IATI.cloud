@@ -78,6 +78,10 @@ class NarrativeSerializer(serializers.Serializer):
 
 class ActivitySerializer(serializers.Serializer):
 
+    def add_to_list(self, data_list, value):
+        if value:
+            data_list.append(value)
+
     def set_value(self, value):
         if isinstance(value, datetime):
             return value.strftime("%Y-%m-%d")
@@ -179,14 +183,9 @@ class ActivitySerializer(serializers.Serializer):
             participating_org_narrative_text = list()
 
             for participating_organisation in participating_organisations_all:
-                if participating_organisation.ref:
-                    participating_org_ref.append(participating_organisation.ref)
-
-                if participating_organisation.type_id:
-                    participating_org_type.append(participating_organisation.type_id)
-
-                if participating_organisation.role:
-                    participating_org_role.append(participating_organisation.role.code)
+                self.add_to_list(participating_org_ref, participating_organisation.ref)
+                self.add_to_list(participating_org_type, participating_organisation.type_id)
+                self.add_to_list(participating_org_role, participating_organisation.role.code)
 
                 for narrative in participating_organisation.narratives.all():
                     participating_org_narrative.append(narrative.content)
