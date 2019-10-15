@@ -165,6 +165,8 @@
     <field name="other_identifier_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="other_identifier_owner_org_ref" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="other_identifier_owner_org_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
+    <field name="other_identifier_owner_org_narrative_lang" type="string" indexed="true" required="false" stored="true"/>
+    <field name="other_identifier_owner_org_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
 
     <field name="activity_status_code" type="string" indexed="true" required="false" stored="true"/>
 

@@ -111,6 +111,41 @@ class ParticipatingOrgSerializer(serializers.Serializer):
         return representation
 
 
+class OtherIdentifierSerializer(serializers.Serializer):
+
+    def set_value(self, value):
+        if isinstance(value, datetime):
+            return value.strftime("%Y-%m-%d")
+
+        return value
+
+    def set_field(self, name, value, representation):
+        if value:
+            representation[name] = self.set_value(value)
+
+    def narrative(self, other_identifier, representation):
+        narratives_all = other_identifier.narratives.all()
+        if narratives_all:
+            narratives = list()
+            for narrative in narratives_all:
+                narratives.append(NarrativeSerializer(narrative).data)
+
+            self.set_field('narrative', narratives, representation)
+
+    def other_identifier(self, other_identifier, representation):
+        self.set_field('ref', other_identifier.identifier, representation)
+        self.set_field('type', other_identifier.type_id, representation)
+        self.set_field('owner_org_ref', other_identifier.owner_ref, representation)
+
+    def to_representation(self, other_identifier):
+        representation = OrderedDict()
+
+        self.other_identifier(other_identifier, representation)
+        self.narrative(other_identifier, representation)
+
+        return representation
+
+
 class ActivitySerializer(serializers.Serializer):
 
     def add_to_list(self, data_list, value):
@@ -238,6 +273,50 @@ class ActivitySerializer(serializers.Serializer):
             self.set_field('participating_org_narrative_lang', participating_org_narrative_lang, representation)
             self.set_field('participating_org_narrative_text', participating_org_narrative_text, representation)
 
+    def other_identifier(self, activity, representation):
+        other_identifiers_all = activity.otheridentifier_set.all()
+        if other_identifiers_all:
+            other_identifiers_list = list()
+            other_identifier_ref = list()
+            other_identifier_type = list()
+            other_identifier_owner_org_ref = list()
+            other_identifier_owner_org_narrative = list()
+            other_identifier_owner_org_narrative_lang = list()
+            other_identifier_owner_org_narrative_text = list()
+
+            for other_identifier in other_identifiers_all:
+                self.add_to_list(other_identifier_ref, other_identifier.identifier)
+                self.add_to_list(other_identifier_type, other_identifier.type_id)
+                self.add_to_list(other_identifier_owner_org_ref, other_identifier.owner_ref)
+
+                other_identifiers_list.append(OtherIdentifierSerializer(other_identifier).data)
+
+                for narrative in other_identifier.narratives.all():
+                    other_identifier_owner_org_narrative.append(narrative.content)
+                    other_identifier_owner_org_narrative_text.append(narrative.content)
+                    if narrative.language:
+                        other_identifier_owner_org_narrative_lang.append(narrative.language.code)
+
+            self.set_field('other_identifier', json.dumps(other_identifiers_list), representation)
+            self.set_field('other_identifier_ref', other_identifier_ref, representation)
+            self.set_field('other_identifier_type', other_identifier_type, representation)
+            self.set_field('other_identifier_owner_org_ref', other_identifier_owner_org_ref, representation)
+            self.set_field(
+                'other_identifier_owner_org_narrative',
+                other_identifier_owner_org_narrative,
+                representation
+            )
+            self.set_field(
+                'other_identifier_owner_org_narrative_lang',
+                other_identifier_owner_org_narrative_lang,
+                representation
+            )
+            self.set_field(
+                'other_identifier_owner_org_narrative_text',
+                other_identifier_owner_org_narrative_text,
+                representation
+            )
+
     def to_representation(self, activity):
         representation = OrderedDict()
 
@@ -247,5 +326,6 @@ class ActivitySerializer(serializers.Serializer):
         self.title(activity=activity, representation=representation)
         self.description(activity=activity, representation=representation)
         self.participating_org(activity=activity, representation=representation)
+        self.other_identifier(activity=activity, representation=representation)
 
         return representation
