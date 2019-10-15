@@ -55,6 +55,27 @@ class ReportingOrgSerializer(serializers.Serializer):
         return representation
 
 
+class NarrativeSerializer(serializers.Serializer):
+
+    def set_value(self, value):
+        return value
+
+    def set_field(self, name, value, representation):
+        if value:
+            representation[name] = self.set_value(value)
+
+    def narrative(self, narrative, representation):
+        self.set_field('lang', narrative.language.code, representation)
+        self.set_field('text', narrative.content, representation)
+
+    def to_representation(self, reporting_org):
+        representation = OrderedDict()
+
+        self.narrative(reporting_org, representation)
+
+        return representation
+
+
 class ActivitySerializer(serializers.Serializer):
 
     def set_value(self, value):
@@ -87,6 +108,22 @@ class ActivitySerializer(serializers.Serializer):
             representation
         )
 
+    def activity_title(self, activity, representation):
+        if activity.title:
+            title = list()
+            title_narrative_lang = list()
+            title_narrative_text = list()
+            for narrative in activity.title.narratives.all():
+                if narrative.language:
+                    title_narrative_lang.append(narrative.language.code)
+
+                title_narrative_text.append(narrative.content)
+                title.append(NarrativeSerializer(narrative).data)
+
+            self.set_field('title', json.dumps(title), representation)
+            self.set_field('title_narrative_lang', title_narrative_lang, representation)
+            self.set_field('title_narrative_text', title_narrative_text, representation)
+
     def dataset(self, activity, representation):
         self.set_field('dataset_iati_version',  activity.iati_standard_version_id, representation)
         self.set_field('dataset_date_created', activity.dataset.date_created, representation)
@@ -110,6 +147,7 @@ class ActivitySerializer(serializers.Serializer):
         representation = OrderedDict()
 
         self.activity(activity=activity, representation=representation)
+        self.activity_title(activity=activity, representation=representation)
         self.dataset(activity=activity, representation=representation)
         self.reporting_org(activity=activity, representation=representation)
 
