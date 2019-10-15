@@ -146,6 +146,40 @@ class OtherIdentifierSerializer(serializers.Serializer):
         return representation
 
 
+class ActivityDateSerializer(serializers.Serializer):
+
+    def set_value(self, value):
+        if isinstance(value, datetime):
+            return value.strftime("%Y-%m-%d")
+
+        return value
+
+    def set_field(self, name, value, representation):
+        if value:
+            representation[name] = self.set_value(value)
+
+    def narrative(self, activity_date, representation):
+        narratives_all = activity_date.narratives.all()
+        if narratives_all:
+            narratives = list()
+            for narrative in narratives_all:
+                narratives.append(NarrativeSerializer(narrative).data)
+
+            self.set_field('narrative', narratives, representation)
+
+    def activity_date(self, activity_date, representation):
+        self.set_field('type', activity_date.type_id, representation)
+        self.set_field('iso_date', activity_date.iso_date.strftime("%Y-%m-%d"), representation)
+
+    def to_representation(self, activity_date):
+        representation = OrderedDict()
+
+        self.activity_date(activity_date, representation)
+        self.narrative(activity_date, representation)
+
+        return representation
+
+
 class ActivitySerializer(serializers.Serializer):
 
     def add_to_list(self, data_list, value):
@@ -317,6 +351,59 @@ class ActivitySerializer(serializers.Serializer):
                 representation
             )
 
+    def activity_date(self, activity, representation):
+        activity_dates_all = activity.activitydate_set.all()
+        if activity_dates_all:
+            activity_date_list = list()
+            activity_date_type = list()
+            activity_dates_iso_date = list()
+
+            activity_date_start_planned = None
+            activity_date_start_actual = None
+            activity_date_end_planned = None
+            activity_date_end_actual = None
+
+            activity_date_narrative = list()
+            activity_date_narrative_lang = list()
+            activity_date_narrative_text = list()
+
+            for activity_date in activity_dates_all:
+                self.add_to_list(activity_date_type, activity_date.type_id)
+
+                if activity_date.iso_date:
+                    activity_dates_iso_date.append(activity_date.iso_date.strftime("%Y-%m-%d"))
+
+                if activity_date.type_id == '1':
+                    activity_date_start_planned = activity_date.iso_date.strftime("%Y-%m-%d")
+                elif activity_date.type_id == '2':
+                    activity_date_start_actual = activity_date.iso_date.strftime("%Y-%m-%d")
+                elif activity_date.type_id == '3':
+                    activity_date_end_planned = activity_date.iso_date.strftime("%Y-%m-%d")
+                elif activity_date.type_id == '4':
+                    activity_date_end_actual = activity_date.iso_date.strftime("%Y-%m-%d")
+
+                activity_date_list.append(ActivityDateSerializer(activity_date).data)
+
+                for narrative in activity_date.narratives.all():
+                    activity_date_narrative.append(narrative.content)
+                    activity_date_narrative_text.append(narrative.content)
+                    if narrative.language:
+                        activity_date_narrative_lang.append(narrative.language.code)
+
+            print(activity_date_list)
+            self.set_field('activity_date', json.dumps(activity_date_list), representation)
+            self.set_field('activity_date_type', activity_date_type, representation)
+            self.set_field('activity_dates_iso_date', activity_dates_iso_date, representation)
+
+            self.set_field('activity_date_start_planned', activity_date_start_planned, representation)
+            self.set_field('activity_date_start_actual', activity_date_start_actual, representation)
+            self.set_field('activity_date_end_planned', activity_date_end_planned, representation)
+            self.set_field('activity_date_end_actual', activity_date_end_actual, representation)
+
+            self.set_field('activity_date_narrative', activity_date_narrative, representation)
+            self.set_field('activity_date_narrative_lang', activity_date_narrative_lang, representation)
+            self.set_field('activity_date_narrative_text', activity_date_narrative_text, representation)
+
     def to_representation(self, activity):
         representation = OrderedDict()
 
@@ -327,5 +414,6 @@ class ActivitySerializer(serializers.Serializer):
         self.description(activity=activity, representation=representation)
         self.participating_org(activity=activity, representation=representation)
         self.other_identifier(activity=activity, representation=representation)
+        self.activity_date(activity=activity, representation=representation)
 
         return representation
