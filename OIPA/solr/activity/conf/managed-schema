@@ -147,7 +147,6 @@
     <field name="title_narrative_lang" type="string" indexed="true" required="false" stored="true"/>
     <field name="title_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
 
-
     <field name="description" type="text_general" indexed="true" required="false" stored="true"/>
     <field name="description_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="description_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>

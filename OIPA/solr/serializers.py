@@ -108,6 +108,25 @@ class ActivitySerializer(serializers.Serializer):
             representation
         )
 
+    def dataset(self, activity, representation):
+        self.set_field('dataset_iati_version', activity.iati_standard_version_id, representation)
+        self.set_field('dataset_date_created', activity.dataset.date_created, representation)
+        self.set_field('dataset_date_updated', activity.dataset.date_updated, representation)
+
+    def reporting_org(self, activity, representation):
+        reporting_org = activity.reporting_organisations.first()
+        if reporting_org:
+            self.set_field('reporting_org', json.dumps(ReportingOrgSerializer(reporting_org).data), representation)
+            self.set_field('reporting_org_ref', reporting_org.ref, representation)
+            self.set_field('reporting_org_type_code', reporting_org.type_id, representation)
+            self.set_field('reporting_org_type_name', reporting_org.type.name, representation)
+            self.set_field(
+                'reporting_org_secondary_reporter',
+                '1' if reporting_org.secondary_reporter else '0',
+                representation
+            )
+            self.set_field('reporting_org_narrative', reporting_org.organisation.primary_name, representation)
+
     def activity_title(self, activity, representation):
         if activity.title:
             title = list()
@@ -148,32 +167,13 @@ class ActivitySerializer(serializers.Serializer):
             self.set_field('description_narrative_lang', description_narrative_lang, representation)
             self.set_field('description_narrative_text', description_narrative_text, representation)
 
-    def dataset(self, activity, representation):
-        self.set_field('dataset_iati_version',  activity.iati_standard_version_id, representation)
-        self.set_field('dataset_date_created', activity.dataset.date_created, representation)
-        self.set_field('dataset_date_updated', activity.dataset.date_updated, representation)
-
-    def reporting_org(self, activity, representation):
-        reporting_org = activity.reporting_organisations.first()
-        if reporting_org:
-            self.set_field('reporting_org', json.dumps(ReportingOrgSerializer(reporting_org).data), representation)
-            self.set_field('reporting_org_ref', reporting_org.ref, representation)
-            self.set_field('reporting_org_type_code', reporting_org.type_id, representation)
-            self.set_field('reporting_org_type_name', reporting_org.type.name, representation)
-            self.set_field(
-                'reporting_org_secondary_reporter',
-                '1' if reporting_org.secondary_reporter else '0',
-                representation
-            )
-            self.set_field('reporting_org_narrative', reporting_org.organisation.primary_name, representation)
-
     def to_representation(self, activity):
         representation = OrderedDict()
 
         self.activity(activity=activity, representation=representation)
-        self.activity_title(activity=activity, representation=representation)
-        self.activity_description(activity=activity, representation=representation)
         self.dataset(activity=activity, representation=representation)
         self.reporting_org(activity=activity, representation=representation)
+        self.activity_title(activity=activity, representation=representation)
+        self.activity_description(activity=activity, representation=representation)
 
         return representation
