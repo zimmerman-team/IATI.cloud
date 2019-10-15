@@ -99,7 +99,11 @@ class ActivitySerializer(serializers.Serializer):
             self.set_field('reporting_org_ref', reporting_org.ref, representation)
             self.set_field('reporting_org_type_code', reporting_org.type_id, representation)
             self.set_field('reporting_org_type_name', reporting_org.type.name, representation)
-            self.set_field('reporting_org_secondary_reporter', '1' if reporting_org.secondary_reporter else '0', representation)
+            self.set_field(
+                'reporting_org_secondary_reporter',
+                '1' if reporting_org.secondary_reporter else '0',
+                representation
+            )
             self.set_field('reporting_org_narrative', reporting_org.organisation.primary_name, representation)
 
     def to_representation(self, activity):
