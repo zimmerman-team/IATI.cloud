@@ -76,6 +76,41 @@ class NarrativeSerializer(serializers.Serializer):
         return representation
 
 
+class ParticipatingOrgSerializer(serializers.Serializer):
+
+    def set_value(self, value):
+        if isinstance(value, datetime):
+            return value.strftime("%Y-%m-%d")
+
+        return value
+
+    def set_field(self, name, value, representation):
+        if value:
+            representation[name] = self.set_value(value)
+
+    def narrative(self, participating_org, representation):
+        narratives_all = participating_org.narratives.all()
+        if narratives_all:
+            narratives = list()
+            for narrative in narratives_all:
+                narratives.append(NarrativeSerializer(narrative).data)
+
+            self.set_field('narrative', narratives, representation)
+
+    def participating_org(self, participating_org, representation):
+        self.set_field('ref', participating_org.ref, representation)
+        self.set_field('role', participating_org.role_id, representation)
+        self.set_field('type', participating_org.type_id, representation)
+
+    def to_representation(self, participating_org):
+        representation = OrderedDict()
+
+        self.participating_org(participating_org, representation)
+        self.narrative(participating_org, representation)
+
+        return representation
+
+
 class ActivitySerializer(serializers.Serializer):
 
     def add_to_list(self, data_list, value):
@@ -185,15 +220,15 @@ class ActivitySerializer(serializers.Serializer):
             for participating_organisation in participating_organisations_all:
                 self.add_to_list(participating_org_ref, participating_organisation.ref)
                 self.add_to_list(participating_org_type, participating_organisation.type_id)
-                self.add_to_list(participating_org_role, participating_organisation.role.code)
+                self.add_to_list(participating_org_role, participating_organisation.role_id)
+
+                participating_org.append(ParticipatingOrgSerializer(participating_organisation).data)
 
                 for narrative in participating_organisation.narratives.all():
                     participating_org_narrative.append(narrative.content)
+                    participating_org_narrative_text.append(narrative.content)
                     if narrative.language:
                         participating_org_narrative_lang.append(narrative.language.code)
-
-                    participating_org_narrative_text.append(narrative.content)
-                    participating_org.append(NarrativeSerializer(narrative).data)
 
             self.set_field('participating_org', json.dumps(participating_org), representation)
             self.set_field('participating_org_ref', participating_org_ref, representation)
