@@ -183,11 +183,27 @@
 
     <field name="contact_info" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="contact_info_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+
     <field name="contact_info_organisation_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
+    <field name="contact_info_organisation_narrative_lang" type="string" indexed="true" required="false" stored="true"/>
+    <field name="contact_info_organisation_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
+
     <field name="contact_info_department_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
+    <field name="contact_info_department_narrative_lang" type="string" indexed="true" required="false" stored="true"/>
+    <field name="contact_info_department_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
+
     <field name="contact_info_person_name_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
+    <field name="contact_info_person_name_narrative_lang" type="string" indexed="true" required="false" stored="true"/>
+    <field name="contact_info_person_name_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
+
     <field name="contact_info_job_title_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
+    <field name="contact_info_job_title_narrative_lang" type="string" indexed="true" required="false" stored="true"/>
+    <field name="contact_info_job_title_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
+
     <field name="contact_info_mailing_address_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
+    field name="contact_info_mailing_address_narrative_lang" type="iati_narrative" indexed="true" required="false" stored="true"/>
+    field name="contact_info_mailing_address_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
+
     <field name="contact_info_telephone" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="contact_info_email" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="contact_info_website" type="string" multiValued="true" indexed="true" required="false" stored="true"/>

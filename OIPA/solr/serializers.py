@@ -390,7 +390,6 @@ class ActivitySerializer(serializers.Serializer):
                     if narrative.language:
                         activity_date_narrative_lang.append(narrative.language.code)
 
-            print(activity_date_list)
             self.set_field('activity_date', json.dumps(activity_date_list), representation)
             self.set_field('activity_date_type', activity_date_type, representation)
             self.set_field('activity_dates_iso_date', activity_dates_iso_date, representation)
@@ -404,6 +403,123 @@ class ActivitySerializer(serializers.Serializer):
             self.set_field('activity_date_narrative_lang', activity_date_narrative_lang, representation)
             self.set_field('activity_date_narrative_text', activity_date_narrative_text, representation)
 
+    def contact_info(self, activity, representation):
+        contact_infos_all = activity.contactinfo_set.all()
+        if contact_infos_all:
+            contact_info_list = list()
+            contact_info_type = list()
+
+            contact_info_organisation_narrative = list()
+            contact_info_organisation_narrative_lang = list()
+            contact_info_organisation_narrative_text = list()
+
+            contact_info_department_narrative = list()
+            contact_info_department_narrative_lang = list()
+            contact_info_department_narrative_text = list()
+
+            contact_info_person_name_narrative = list()
+            contact_info_person_name_narrative_lang = list()
+            contact_info_person_name_narrative_text = list()
+
+            contact_info_job_title_narrative = list()
+            contact_info_job_title_narrative_lang = list()
+            contact_info_job_title_narrative_text = list()
+
+            contact_info_mailing_address_narrative = list()
+            contact_info_mailing_address_narrative_lang = list()
+            contact_info_mailing_address_narrative_text = list()
+
+            contact_info_telephone = list()
+            contact_info_email = list()
+            contact_info_website = list()
+
+            for contact_info in contact_infos_all:
+                self.add_to_list(contact_info_type, contact_info.type_id)
+                self.add_to_list(contact_info_telephone, contact_info.telephone)
+                self.add_to_list(contact_info_email, contact_info.email)
+                self.add_to_list(contact_info_website, contact_info.website)
+
+                for narrative in contact_info.organisation.narratives.all():
+                    contact_info_organisation_narrative.append(narrative.content)
+                    contact_info_organisation_narrative_text.append(narrative.content)
+                    if narrative.language:
+                        contact_info_organisation_narrative_lang.append(narrative.language.code)
+
+                for narrative in contact_info.department.narratives.all():
+                    contact_info_department_narrative.append(narrative.content)
+                    contact_info_department_narrative_text.append(narrative.content)
+                    if narrative.language:
+                        contact_info_department_narrative_lang.append(narrative.language.code)
+
+                for narrative in contact_info.person_name.narratives.all():
+                    contact_info_person_name_narrative.append(narrative.content)
+                    contact_info_person_name_narrative_text.append(narrative.content)
+                    if narrative.language:
+                        contact_info_person_name_narrative_lang.append(narrative.language.code)
+
+                for narrative in contact_info.job_title.narratives.all():
+                    contact_info_job_title_narrative.append(narrative.content)
+                    contact_info_job_title_narrative_text.append(narrative.content)
+                    if narrative.language:
+                        contact_info_job_title_narrative_lang.append(narrative.language.code)
+
+                for narrative in contact_info.mailing_address.narratives.all():
+                    contact_info_mailing_address_narrative.append(narrative.content)
+                    contact_info_mailing_address_narrative_text.append(narrative.content)
+                    if narrative.language:
+                        contact_info_mailing_address_narrative_lang.append(narrative.language.code)
+
+            self.set_field('contact_info_type', contact_info_type, representation)
+            self.set_field('contact_info_telephone', contact_info_telephone, representation)
+            self.set_field('contact_info_email', contact_info_email, representation)
+            self.set_field('contact_info_website', contact_info_website, representation)
+
+            self.set_field('contact_info_organisation_narrative', contact_info_organisation_narrative, representation)
+            self.set_field(
+                'contact_info_organisation_narrative_lang', contact_info_organisation_narrative_lang, representation
+            )
+            self.set_field(
+                'contact_info_organisation_narrative_text', contact_info_organisation_narrative_text, representation
+            )
+
+            self.set_field('contact_info_department_narrative', contact_info_department_narrative, representation)
+            self.set_field(
+                'contact_info_department_narrative_lang', contact_info_department_narrative_lang, representation
+            )
+            self.set_field(
+                'contact_info_department_narrative_text', contact_info_department_narrative_text, representation
+            )
+
+            self.set_field('contact_info_person_name_narrative', contact_info_person_name_narrative, representation)
+            self.set_field(
+                'contact_info_person_name_narrative_lang', contact_info_person_name_narrative_lang, representation
+            )
+            self.set_field(
+                'contact_info_person_name_narrative_text', contact_info_person_name_narrative_text, representation
+            )
+
+            self.set_field('contact_info_job_title_narrative', contact_info_job_title_narrative, representation)
+            self.set_field(
+                'contact_info_job_title_narrative_lang', contact_info_job_title_narrative_lang, representation
+            )
+            self.set_field(
+                'contact_info_job_title_narrative_text', contact_info_job_title_narrative_text, representation
+            )
+
+            self.set_field(
+                'contact_info_mailing_address_narrative', contact_info_mailing_address_narrative, representation
+            )
+            self.set_field(
+                'contact_info_mailing_address_narrative_lang',
+                contact_info_mailing_address_narrative_lang,
+                representation
+            )
+            self.set_field(
+                'contact_info_mailing_address_narrative_text',
+                contact_info_mailing_address_narrative_text,
+                representation
+            )
+
     def to_representation(self, activity):
         representation = OrderedDict()
 
@@ -415,5 +531,6 @@ class ActivitySerializer(serializers.Serializer):
         self.participating_org(activity=activity, representation=representation)
         self.other_identifier(activity=activity, representation=representation)
         self.activity_date(activity=activity, representation=representation)
+        self.contact_info(activity=activity, representation=representation)
 
         return representation
