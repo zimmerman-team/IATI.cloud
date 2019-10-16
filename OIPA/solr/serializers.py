@@ -259,6 +259,47 @@ class RecipientCountrySerializer(serializers.Serializer):
         return representation
 
 
+class RecipientRegionSerializer(serializers.Serializer):
+
+    def set_value(self, value):
+        if isinstance(value, datetime):
+            return value.strftime("%Y-%m-%d")
+
+        return value
+
+    def set_field(self, name, value, representation):
+        if value:
+            representation[name] = self.set_value(value)
+
+    def narrative(self, recipient_region, representation):
+        narratives_all = recipient_region.narratives.all()
+        if narratives_all:
+            narratives = list()
+            for narrative in narratives_all:
+                narratives.append(NarrativeSerializer(narrative).data)
+
+            self.set_field('narrative', narratives, representation)
+
+    def recipient_region(self, recipient_region, representation):
+        self.set_field('code', recipient_region.region.code, representation)
+        self.set_field('name', recipient_region.region.name, representation)
+        self.set_field('vocabulary', recipient_region.vocabulary.code, representation)
+        self.set_field('vocabulary_uri', recipient_region.vocabulary_uri, representation)
+        self.set_field(
+            'percentage',
+            str(recipient_region.percentage) if recipient_region.percentage > 0 else None,
+            representation
+        )
+
+    def to_representation(self, recipient_region):
+        representation = OrderedDict()
+
+        self.recipient_region(recipient_region, representation)
+        self.narrative(recipient_region, representation)
+
+        return representation
+
+
 class ActivitySerializer(serializers.Serializer):
 
     def add_to_list(self, data_list, value):
@@ -647,6 +688,47 @@ class ActivitySerializer(serializers.Serializer):
             self.set_field('recipient_country_narrative_lang', recipient_country_narrative_lang, representation)
             self.set_field('recipient_country_narrative_text', recipient_country_narrative_text, representation)
 
+    def recipient_region(self, activity, representation):
+        recipient_region_all = activity.activityrecipientregion_set.all()
+        if recipient_region_all:
+            recipient_region_list = list()
+            recipient_region_code = list()
+            recipient_region_name = list()
+            recipient_region_vocabulary = list()
+            recipient_region_vocabulary_uri = list()
+            recipient_region_percentage = list()
+            recipient_region_narrative = list()
+            recipient_region_narrative_lang = list()
+            recipient_region_narrative_text = list()
+
+            for recipient_region in recipient_region_all:
+                self.add_to_list(recipient_region_code, recipient_region.region.code)
+                self.add_to_list(recipient_region_name, recipient_region.region.name)
+                self.add_to_list(recipient_region_vocabulary, recipient_region.vocabulary.code)
+                self.add_to_list(recipient_region_vocabulary_uri, recipient_region.vocabulary_uri)
+                self.add_to_list(
+                    recipient_region_percentage,
+                    str(recipient_region.percentage) if recipient_region.percentage > 0 else None
+                )
+
+                recipient_region_list.append(RecipientRegionSerializer(recipient_region).data)
+
+                for narrative in recipient_region.narratives.all():
+                    recipient_region_narrative.append(narrative.content)
+                    recipient_region_narrative_text.append(narrative.content)
+                    if narrative.language:
+                        recipient_region_narrative_lang.append(narrative.language.code)
+
+            self.set_field('recipient_region', json.dumps(recipient_region_list), representation)
+            self.set_field('recipient_region_code', recipient_region_code, representation)
+            self.set_field('recipient_region_name', recipient_region_name, representation)
+            self.set_field('recipient_region_vocabulary', recipient_region_vocabulary, representation)
+            self.set_field('recipient_region_vocabulary_uri', recipient_region_vocabulary_uri, representation)
+            self.set_field('recipient_region_percentage', recipient_region_percentage, representation)
+            self.set_field('recipient_region_narrative', recipient_region_narrative, representation)
+            self.set_field('recipient_region_narrative_lang', recipient_region_narrative_lang, representation)
+            self.set_field('recipient_region_narrative_text', recipient_region_narrative_text, representation)
+
     def to_representation(self, activity):
         representation = OrderedDict()
 
@@ -661,5 +743,6 @@ class ActivitySerializer(serializers.Serializer):
         self.contact_info(activity=activity, representation=representation)
         self.contact_info(activity=activity, representation=representation)
         self.recipient_country(activity=activity, representation=representation)
+        self.recipient_region(activity=activity, representation=representation)
 
         return representation
