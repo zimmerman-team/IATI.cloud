@@ -3,6 +3,8 @@ from collections import OrderedDict
 from datetime import datetime
 from rest_framework import serializers
 
+from iati.models import CountryBudgetItem
+
 
 class OrganisationTypeSerializer(serializers.Serializer):
 
@@ -417,6 +419,77 @@ class ActivitySectorSerializer(serializers.Serializer):
 
         self.activity_sector(activity_sector, representation)
         self.narrative(activity_sector, representation)
+
+        return representation
+
+
+class BudgetItemSerializer(serializers.Serializer):
+
+    def set_value(self, value):
+        if isinstance(value, datetime):
+            return value.strftime("%Y-%m-%d")
+
+        return value
+
+    def set_field(self, name, value, representation):
+        if value:
+            representation[name] = self.set_value(value)
+
+    def narrative(self, budget_item, representation, field_name='narrative'):
+        narratives_all = budget_item.description.narratives.all()
+        if narratives_all:
+            narratives = list()
+            for narrative in narratives_all:
+                narratives.append(NarrativeSerializer(narrative).data)
+
+            self.set_field(field_name, narratives, representation)
+
+    def budget_item(self, budget_item, representation):
+        self.set_field('code', budget_item.code_id, representation)
+        self.set_field(
+            'percentage',
+            str(budget_item.percentage) if budget_item.percentage > 0 else None,
+            representation
+        )
+
+    def to_representation(self, budget_item):
+        representation = OrderedDict()
+
+        self.budget_item(budget_item, representation)
+        self.narrative(budget_item, representation, 'description')
+
+        return representation
+
+
+class CountryBudgetItemsSerializer(serializers.Serializer):
+
+    def set_value(self, value):
+        if isinstance(value, datetime):
+            return value.strftime("%Y-%m-%d")
+
+        return value
+
+    def set_field(self, name, value, representation):
+        if value:
+            representation[name] = self.set_value(value)
+
+    def country_budget_items(self, country_budget_items, representation):
+        self.set_field('vocabulary', country_budget_items.vocabulary_id, representation)
+
+    def budget_item(self, country_budget_items, representation):
+        budget_item_all = country_budget_items.budgetitem_set.all()
+        if budget_item_all:
+            budget_item_list = list()
+            for budget_item in budget_item_all:
+                budget_item_list.append(BudgetItemSerializer(budget_item).data)
+
+            self.set_field('budget_item', budget_item_list, representation)
+
+    def to_representation(self, country_budget_items):
+        representation = OrderedDict()
+
+        self.country_budget_items(country_budget_items, representation)
+        self.budget_item(country_budget_items, representation)
 
         return representation
 
@@ -953,7 +1026,7 @@ class ActivitySerializer(serializers.Serializer):
             self.set_field('location_administrative_level', location_administrative_level, representation)
             self.set_field('location_administrative_code', location_administrative_code, representation)
 
-    def activity_sector(self, activity, representation):
+    def sector(self, activity, representation):
         activity_sector_all = activity.activitysector_set.all()
         if activity_sector_all:
             sector_list = list()
@@ -991,6 +1064,58 @@ class ActivitySerializer(serializers.Serializer):
             self.set_field('sector_narrative_lang', sector_narrative_lang, representation)
             self.set_field('sector_narrative_text', sector_narrative_text, representation)
 
+    def country_budget_items(self,  activity, representation):
+        try:
+            country_budget_item = activity.country_budget_items
+
+            country_budget_items_budget_item_code = list()
+            country_budget_items_budget_item_percentage = list()
+
+            country_budget_items_budget_description_narrative_lang = list()
+            country_budget_items_budget_description_narrative_text = list()
+
+            for budget_item in country_budget_item.budgetitem_set.all():
+                self.add_to_list(country_budget_items_budget_item_code, budget_item.code_id)
+                self.add_to_list(
+                    country_budget_items_budget_item_percentage,
+                    str(budget_item.percentage) if budget_item.percentage > 0 else None
+                )
+
+                for narrative in budget_item.description.narratives.all():
+                    country_budget_items_budget_description_narrative_text.append(narrative.content)
+                    if narrative.language:
+                        country_budget_items_budget_description_narrative_lang.append(narrative.language.code)
+
+            self.set_field(
+                'country_budget_items',
+                json.dumps(CountryBudgetItemsSerializer(country_budget_item).data),
+                representation
+            )
+            self.set_field('country_budget_items_vocabulary', country_budget_item.vocabulary_id, representation)
+            self.set_field(
+                'country_budget_items_budget_item_code',
+                country_budget_items_budget_item_code,
+                representation
+            )
+            self.set_field(
+                'country_budget_items_budget_item_percentage',
+                country_budget_items_budget_item_percentage,
+                representation
+            )
+            self.set_field(
+                'country_budget_items_budget_description_narrative_lang',
+                country_budget_items_budget_description_narrative_lang,
+                representation
+            )
+            self.set_field(
+                'country_budget_items_budget_description_narrative_text',
+                country_budget_items_budget_description_narrative_text,
+                representation
+            )
+
+        except CountryBudgetItem.DoesNotExist:
+            pass
+
     def to_representation(self, activity):
         representation = OrderedDict()
 
@@ -1007,6 +1132,7 @@ class ActivitySerializer(serializers.Serializer):
         self.recipient_country(activity=activity, representation=representation)
         self.recipient_region(activity=activity, representation=representation)
         self.location(activity=activity, representation=representation)
-        self.activity_sector(activity=activity, representation=representation)
+        self.sector(activity=activity, representation=representation)
+        self.country_budget_items(activity=activity, representation=representation)
 
         return representation
