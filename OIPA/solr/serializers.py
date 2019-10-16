@@ -300,6 +300,87 @@ class RecipientRegionSerializer(serializers.Serializer):
         return representation
 
 
+class AdministrativeSerializer(serializers.Serializer):
+
+    def set_value(self, value):
+        if isinstance(value, datetime):
+            return value.strftime("%Y-%m-%d")
+
+        return value
+
+    def set_field(self, name, value, representation):
+        if value:
+            representation[name] = self.set_value(value)
+
+    def administrative(self, administrative, representation):
+        self.set_field('vocabulary', administrative.vocabulary.code, representation)
+        self.set_field('level', administrative.level, representation)
+        self.set_field('code', administrative.code, representation)
+
+    def to_representation(self, administrative):
+        representation = OrderedDict()
+
+        self.administrative(administrative, representation)
+
+        return representation
+
+
+class LocationSerializer(serializers.Serializer):
+
+    def add_to_list(self, data_list, value):
+        if value:
+            data_list.append(value)
+
+    def set_value(self, value):
+        if isinstance(value, datetime):
+            return value.strftime("%Y-%m-%d")
+
+        return value
+
+    def set_field(self, name, value, representation):
+        if value:
+            representation[name] = self.set_value(value)
+
+    def narrative(self, location_item, representation, field_name='narrative'):
+        narratives_all = location_item.narratives.all()
+        if narratives_all:
+            narratives = list()
+            for narrative in narratives_all:
+                narratives.append(NarrativeSerializer(narrative).data)
+
+            self.set_field(field_name, narratives, representation)
+
+    def location(self, location, representation):
+        self.set_field('ref', location.ref, representation)
+        self.set_field('location_reach_code', location.location_reach.code, representation)
+        self.set_field('location_id_vocabulary', location.location_id_vocabulary.code, representation)
+        self.set_field('location_id_code', location.location_id_code, representation)
+        self.set_field('point_pos', str(location.point_pos.coords), representation)
+        self.set_field('exactness_code', location.exactness.code, representation)
+        self.set_field('location_class_code', location.location_class.code, representation)
+        self.set_field('feature_designation_code', location.feature_designation.code, representation)
+
+    def administrative(self, location, representation):
+        administrative_all = location.locationadministrative_set.all()
+        if administrative_all:
+            administrative_list = list()
+            for administrative in administrative_all:
+                self.add_to_list(administrative_list, AdministrativeSerializer(administrative).data)
+
+            self.set_field('administrative', administrative_list, representation)
+
+    def to_representation(self, location):
+        representation = OrderedDict()
+
+        self.location(location, representation)
+        self.narrative(location.name, representation, 'name')
+        self.narrative(location.description, representation, 'description')
+        self.narrative(location.activity_description, representation, 'activity_description')
+        self.administrative(location, representation)
+
+        return representation
+
+
 class ActivitySerializer(serializers.Serializer):
 
     def add_to_list(self, data_list, value):
@@ -768,6 +849,8 @@ class ActivitySerializer(serializers.Serializer):
                 self.add_to_list(location_class_code, location.location_class.code)
                 self.add_to_list(location_feature_designation_code, location.feature_designation.code)
 
+                location_list.append(LocationSerializer(location).data)
+
                 for narrative in location.name.narratives.all():
                     location_name_narrative.append(narrative.content)
                     location_name_narrative_text.append(narrative.content)
@@ -790,6 +873,8 @@ class ActivitySerializer(serializers.Serializer):
                     self.add_to_list(location_administrative_vocabulary, location_administrative.vocabulary.code)
                     self.add_to_list(location_administrative_level, location_administrative.level)
                     self.add_to_list(location_administrative_code, location_administrative.code)
+
+            self.set_field('location', json.dumps(location_list), representation)
 
             self.set_field('location_ref', location_ref, representation)
             self.set_field('location_reach_code', location_reach_code, representation)
