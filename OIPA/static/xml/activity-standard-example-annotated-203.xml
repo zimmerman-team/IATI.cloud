@@ -103,7 +103,9 @@
   <!--activity-scope ends-->
 
   <!--recipient-country starts-->
-  <recipient-country code="AF" percentage="25" />
+  <recipient-country code="AF" percentage="25">
+      <narrative>Afganistan (As per UNSCR 1244)</narrative>
+  </recipient-country>
   <recipient-country code="AG" percentage="25" />
   <!--recipient-country ends-->
 
