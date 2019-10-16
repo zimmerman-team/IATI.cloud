@@ -530,6 +530,42 @@ class HumanitarianScopeSerializer(serializers.Serializer):
         return representation
 
 
+class PolicyMarkerSerializer(serializers.Serializer):
+
+    def set_value(self, value):
+        if isinstance(value, datetime):
+            return value.strftime("%Y-%m-%d")
+
+        return value
+
+    def set_field(self, name, value, representation):
+        if value:
+            representation[name] = self.set_value(value)
+
+    def narrative(self, policy_maker, representation):
+        narratives_all = policy_maker.narratives.all()
+        if narratives_all:
+            narratives = list()
+            for narrative in narratives_all:
+                narratives.append(NarrativeSerializer(narrative).data)
+
+            self.set_field('narrative', narratives, representation)
+
+    def policy_maker(self, policy_maker, representation):
+        self.set_field('vocabulary', policy_maker.vocabulary_id, representation)
+        self.set_field('vocabulary_uri', policy_maker.vocabulary_uri, representation)
+        self.set_field('code', policy_maker.code_id, representation)
+        self.set_field('significance', policy_maker.significance_id, representation)
+
+    def to_representation(self, policy_maker):
+        representation = OrderedDict()
+
+        self.policy_maker(policy_maker, representation)
+        self.narrative(policy_maker, representation)
+
+        return representation
+
+
 class ActivitySerializer(serializers.Serializer):
 
     def add_to_list(self, data_list, value):
@@ -1179,8 +1215,6 @@ class ActivitySerializer(serializers.Serializer):
                     if narrative.language:
                         humanitarian_scope_narrative_lang.append(narrative.language.code)
 
-            print(humanitarian_scope_list)
-
             self.set_field('humanitarian_scope', json.dumps(humanitarian_scope_list), representation)
             self.set_field('humanitarian_scope_type', humanitarian_scope_type, representation)
             self.set_field('humanitarian_scope_vocabulary', humanitarian_scope_vocabulary, representation)
@@ -1189,6 +1223,41 @@ class ActivitySerializer(serializers.Serializer):
             self.set_field('humanitarian_scope_narrative', humanitarian_scope_narrative, representation)
             self.set_field('humanitarian_scope_narrative_lang', humanitarian_scope_narrative_lang, representation)
             self.set_field('humanitarian_scope_narrative_text', humanitarian_scope_narrative_text, representation)
+
+    def policy_marker(self, activity, representation):
+        policy_marker_all = activity.activitypolicymarker_set.all()
+        if policy_marker_all:
+            policy_marker_list = list()
+            policy_marker_vocabulary = list()
+            policy_marker_vocabulary_uri = list()
+            policy_marker_code = list()
+            policy_marker_significance = list()
+            policy_marker_narrative = list()
+            policy_marker_narrative_lang = list()
+            policy_marker_narrative_text = list()
+
+            for policy_marker in policy_marker_all:
+                self.add_to_list(policy_marker_vocabulary, policy_marker.vocabulary_id)
+                self.add_to_list(policy_marker_vocabulary_uri, policy_marker.vocabulary_uri)
+                self.add_to_list(policy_marker_code, policy_marker.code_id)
+                self.add_to_list(policy_marker_significance, policy_marker.significance_id)
+
+                policy_marker_list.append(PolicyMarkerSerializer(policy_marker).data)
+
+                for narrative in policy_marker.narratives.all():
+                    policy_marker_narrative.append(narrative.content)
+                    policy_marker_narrative_text.append(narrative.content)
+                    if narrative.language:
+                        policy_marker_narrative_lang.append(narrative.language.code)
+
+            self.set_field('policy_marker', json.dumps(policy_marker_list), representation)
+            self.set_field('policy_marker_vocabulary', policy_marker_vocabulary, representation)
+            self.set_field('policy_marker_vocabulary_uri', policy_marker_vocabulary_uri, representation)
+            self.set_field('policy_marker_code', policy_marker_code, representation)
+            self.set_field('policy_marker_significance', policy_marker_significance, representation)
+            self.set_field('policy_marker_narrative', policy_marker_narrative, representation)
+            self.set_field('policy_marker_narrative_lang', policy_marker_narrative_lang, representation)
+            self.set_field('policy_marker_narrative_text', policy_marker_narrative_text, representation)
 
     def to_representation(self, activity):
         representation = OrderedDict()
@@ -1209,5 +1278,6 @@ class ActivitySerializer(serializers.Serializer):
         self.sector(activity=activity, representation=representation)
         self.country_budget_items(activity=activity, representation=representation)
         self.humanitarian_scope(activity=activity, representation=representation)
+        self.policy_marker(activity=activity, representation=representation)
 
         return representation
