@@ -729,6 +729,105 @@ class ActivitySerializer(serializers.Serializer):
             self.set_field('recipient_region_narrative_lang', recipient_region_narrative_lang, representation)
             self.set_field('recipient_region_narrative_text', recipient_region_narrative_text, representation)
 
+    def location(self, activity, representation):
+        locations_all = activity.location_set.all()
+        if locations_all:
+            location_list = list()
+            location_ref = list()
+            location_reach_code = list()
+            location_id_vocabulary = list()
+            location_id_code = list()
+            location_point_pos = list()
+            location_exactness_code = list()
+            location_class_code = list()
+            location_feature_designation_code = list()
+
+            location_name_narrative = list()
+            location_name_narrative_lang = list()
+            location_name_narrative_text = list()
+
+            location_description_narrative = list()
+            location_description_narrative_lang = list()
+            location_description_narrative_text = list()
+
+            location_activity_description_narrative = list()
+            location_activity_description_narrative_lang = list()
+            location_activity_description_narrative_text = list()
+
+            location_administrative_vocabulary = list()
+            location_administrative_level = list()
+            location_administrative_code = list()
+
+            for location in locations_all:
+                self.add_to_list(location_ref, location.ref)
+                self.add_to_list(location_reach_code, location.location_reach.code)
+                self.add_to_list(location_id_vocabulary, location.location_id_vocabulary.code)
+                self.add_to_list(location_id_code, location.location_id_code)
+                self.add_to_list(location_point_pos, str(location.point_pos.coords))
+                self.add_to_list(location_exactness_code, location.exactness.code)
+                self.add_to_list(location_class_code, location.location_class.code)
+                self.add_to_list(location_feature_designation_code, location.feature_designation.code)
+
+                for narrative in location.name.narratives.all():
+                    location_name_narrative.append(narrative.content)
+                    location_name_narrative_text.append(narrative.content)
+                    if narrative.language:
+                        location_name_narrative_lang.append(narrative.language.code)
+
+                for narrative in location.description.narratives.all():
+                    location_description_narrative.append(narrative.content)
+                    location_description_narrative_text.append(narrative.content)
+                    if narrative.language:
+                        location_description_narrative_lang.append(narrative.language.code)
+
+                for narrative in location.activity_description.narratives.all():
+                    location_activity_description_narrative.append(narrative.content)
+                    location_activity_description_narrative_text.append(narrative.content)
+                    if narrative.language:
+                        location_activity_description_narrative_lang.append(narrative.language.code)
+
+                for location_administrative in location.locationadministrative_set.all():
+                    self.add_to_list(location_administrative_vocabulary, location_administrative.vocabulary.code)
+                    self.add_to_list(location_administrative_level, location_administrative.level)
+                    self.add_to_list(location_administrative_code, location_administrative.code)
+
+            self.set_field('location_ref', location_ref, representation)
+            self.set_field('location_reach_code', location_reach_code, representation)
+            self.set_field('location_id_vocabulary', location_id_vocabulary, representation)
+            self.set_field('location_id_code', location_id_code, representation)
+            self.set_field('location_point_pos', location_point_pos, representation)
+            self.set_field('location_exactness_code', location_exactness_code, representation)
+            self.set_field('location_class_code', location_class_code, representation)
+            self.set_field('location_feature_designation_code', location_feature_designation_code, representation)
+
+            self.set_field('location_name_narrative', location_name_narrative, representation)
+            self.set_field('location_name_narrative_lang', location_name_narrative_lang, representation)
+            self.set_field('location_name_narrative_text', location_name_narrative_text, representation)
+
+            self.set_field('location_description_narrative', location_description_narrative, representation)
+            self.set_field('location_name_narrative_lang', location_name_narrative_lang, representation)
+            self.set_field('location_description_narrative_text', location_description_narrative_text, representation)
+
+            self.set_field(
+                'location_activity_description_narrative',
+                location_activity_description_narrative,
+                representation
+            )
+            self.set_field(
+                'location_activity_description_narrative_lang',
+                location_activity_description_narrative_lang,
+                representation
+            )
+            self.set_field(
+                'location_activity_description_narrative_text',
+                location_activity_description_narrative_text,
+                representation
+            )
+
+            self.set_field('location_administrative_vocabulary', location_administrative_vocabulary, representation)
+            self.set_field('location_administrative_level', location_administrative_level, representation)
+            self.set_field('location_administrative_code', location_administrative_code, representation)
+
     def to_representation(self, activity):
         representation = OrderedDict()
 
@@ -744,5 +843,6 @@ class ActivitySerializer(serializers.Serializer):
         self.contact_info(activity=activity, representation=representation)
         self.recipient_country(activity=activity, representation=representation)
         self.recipient_region(activity=activity, representation=representation)
+        self.location(activity=activity, representation=representation)
 
         return representation
