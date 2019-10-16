@@ -180,6 +180,46 @@ class ActivityDateSerializer(serializers.Serializer):
         return representation
 
 
+class ContactInfoSerializer(serializers.Serializer):
+
+    def set_value(self, value):
+        if isinstance(value, datetime):
+            return value.strftime("%Y-%m-%d")
+
+        return value
+
+    def set_field(self, name, value, representation):
+        if value:
+            representation[name] = self.set_value(value)
+
+    def narrative(self, contact_info_item, representation, field_name='narrative'):
+        narratives_all = contact_info_item.narratives.all()
+        if narratives_all:
+            narratives = list()
+            for narrative in narratives_all:
+                narratives.append(NarrativeSerializer(narrative).data)
+
+            self.set_field(field_name, narratives, representation)
+
+    def contact_info(self, contact_info, representation):
+        self.set_field('type', contact_info.type_id, representation)
+        self.set_field('telephone', contact_info.telephone, representation)
+        self.set_field('email', contact_info.email, representation)
+        self.set_field('website', contact_info.website, representation)
+
+    def to_representation(self, contact_info):
+        representation = OrderedDict()
+
+        self.contact_info(contact_info, representation)
+        self.narrative(contact_info.organisation, representation, 'organisation')
+        self.narrative(contact_info.department, representation, 'department')
+        self.narrative(contact_info.person_name, representation, 'person_name')
+        self.narrative(contact_info.job_title, representation, 'job_title')
+        self.narrative(contact_info.mailing_address, representation, 'mailing_address')
+
+        return representation
+
+
 class ActivitySerializer(serializers.Serializer):
 
     def add_to_list(self, data_list, value):
@@ -439,6 +479,8 @@ class ActivitySerializer(serializers.Serializer):
                 self.add_to_list(contact_info_email, contact_info.email)
                 self.add_to_list(contact_info_website, contact_info.website)
 
+                contact_info_list.append(ContactInfoSerializer(contact_info).data)
+
                 for narrative in contact_info.organisation.narratives.all():
                     contact_info_organisation_narrative.append(narrative.content)
                     contact_info_organisation_narrative_text.append(narrative.content)
@@ -468,6 +510,8 @@ class ActivitySerializer(serializers.Serializer):
                     contact_info_mailing_address_narrative_text.append(narrative.content)
                     if narrative.language:
                         contact_info_mailing_address_narrative_lang.append(narrative.language.code)
+
+            self.set_field('contact_info', json.dumps(contact_info_list), representation)
 
             self.set_field('contact_info_type', contact_info_type, representation)
             self.set_field('contact_info_telephone', contact_info_telephone, representation)
