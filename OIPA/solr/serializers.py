@@ -220,6 +220,45 @@ class ContactInfoSerializer(serializers.Serializer):
         return representation
 
 
+class RecipientCountrySerializer(serializers.Serializer):
+
+    def set_value(self, value):
+        if isinstance(value, datetime):
+            return value.strftime("%Y-%m-%d")
+
+        return value
+
+    def set_field(self, name, value, representation):
+        if value:
+            representation[name] = self.set_value(value)
+
+    def narrative(self, recipient_country, representation):
+        narratives_all = recipient_country.narratives.all()
+        if narratives_all:
+            narratives = list()
+            for narrative in narratives_all:
+                narratives.append(NarrativeSerializer(narrative).data)
+
+            self.set_field('narrative', narratives, representation)
+
+    def recipient_country(self, recipient_country, representation):
+        self.set_field('code', recipient_country.country.code, representation)
+        self.set_field('name', recipient_country.country.name, representation)
+        self.set_field(
+            'percentage',
+            str(recipient_country.percentage) if recipient_country.percentage > 0 else None,
+            representation
+        )
+
+    def to_representation(self, recipient_country):
+        representation = OrderedDict()
+
+        self.recipient_country(recipient_country, representation)
+        self.narrative(recipient_country, representation)
+
+        return representation
+
+
 class ActivitySerializer(serializers.Serializer):
 
     def add_to_list(self, data_list, value):
@@ -573,6 +612,41 @@ class ActivitySerializer(serializers.Serializer):
                 representation
             )
 
+    def recipient_country(self, activity, representation):
+        recipient_country_all = activity.activityrecipientcountry_set.all()
+        if recipient_country_all:
+            recipient_country_list = list()
+            recipient_country_code = list()
+            recipient_country_name = list()
+            recipient_country_percentage = list()
+            recipient_country_narrative = list()
+            recipient_country_narrative_lang = list()
+            recipient_country_narrative_text = list()
+
+            for recipient_country in recipient_country_all:
+                self.add_to_list(recipient_country_code, recipient_country.country.code)
+                self.add_to_list(recipient_country_name, recipient_country.country.name)
+                self.add_to_list(
+                    recipient_country_percentage,
+                    str(recipient_country.percentage) if recipient_country.percentage > 0 else None
+                )
+
+                recipient_country_list.append(RecipientCountrySerializer(recipient_country).data)
+
+                for narrative in recipient_country.narratives.all():
+                    recipient_country_narrative.append(narrative.content)
+                    recipient_country_narrative_text.append(narrative.content)
+                    if narrative.language:
+                        recipient_country_narrative_lang.append(narrative.language.code)
+
+            self.set_field('recipient_country', json.dumps(recipient_country_list), representation)
+            self.set_field('recipient_country_code', recipient_country_code, representation)
+            self.set_field('recipient_country_name', recipient_country_name, representation)
+            self.set_field('recipient_country_percentage', recipient_country_percentage, representation)
+            self.set_field('recipient_country_narrative', recipient_country_narrative, representation)
+            self.set_field('recipient_country_narrative_lang', recipient_country_narrative_lang, representation)
+            self.set_field('recipient_country_narrative_text', recipient_country_narrative_text, representation)
+
     def to_representation(self, activity):
         representation = OrderedDict()
 
@@ -585,5 +659,7 @@ class ActivitySerializer(serializers.Serializer):
         self.other_identifier(activity=activity, representation=representation)
         self.activity_date(activity=activity, representation=representation)
         self.contact_info(activity=activity, representation=representation)
+        self.contact_info(activity=activity, representation=representation)
+        self.recipient_country(activity=activity, representation=representation)
 
         return representation
