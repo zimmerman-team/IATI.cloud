@@ -278,6 +278,7 @@ class ActivitySerializer(serializers.Serializer):
     def title(self, activity, representation):
         if activity.title:
             title = list()
+            title_narrative = list()
             title_narrative_lang = list()
             title_narrative_text = list()
 
@@ -285,10 +286,12 @@ class ActivitySerializer(serializers.Serializer):
                 if narrative.language:
                     title_narrative_lang.append(narrative.language.code)
 
+                title_narrative.append(narrative.content)
                 title_narrative_text.append(narrative.content)
                 title.append(NarrativeSerializer(narrative).data)
 
             self.set_field('title', json.dumps(title), representation)
+            self.set_field('title_narrative', title_narrative, representation)
             self.set_field('title_narrative_lang', title_narrative_lang, representation)
             self.set_field('title_narrative_text', title_narrative_text, representation)
 
@@ -297,6 +300,8 @@ class ActivitySerializer(serializers.Serializer):
         if descriptions_all:
             description_list = list()
             description_type = list()
+            description_lang = list()
+            description_narrative = list()
             description_narrative_lang = list()
             description_narrative_text = list()
 
@@ -305,13 +310,17 @@ class ActivitySerializer(serializers.Serializer):
                     description_type.append(description.type_id)
 
                     if narrative.language:
+                        description_lang.append(narrative.language.code)
                         description_narrative_lang.append(narrative.language.code)
 
+                    description_narrative.append(narrative.content)
                     description_narrative_text.append(narrative.content)
                     description_list.append(NarrativeSerializer(narrative).data)
 
             self.set_field('description', json.dumps(description_list), representation)
             self.set_field('description_type', description_type, representation)
+            self.set_field('description_lang', description_lang, representation)
+            self.set_field('description_narrative', description_narrative, representation)
             self.set_field('description_narrative_lang', description_narrative_lang, representation)
             self.set_field('description_narrative_text', description_narrative_text, representation)
 
