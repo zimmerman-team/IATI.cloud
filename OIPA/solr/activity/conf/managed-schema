@@ -259,7 +259,10 @@
     <field name="sector_vocabulary_uri" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="sector_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="sector_percentage" type="pdoubles" multiValued="true" indexed="true" required="false" stored="true"/>
+
     <field name="sector_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
+    <field name="sector_narrative_lang" type="string" indexed="true" required="false" stored="true"/>
+    <field name="sector_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
 
     <field name="tag" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="tag_vocabulary" type="string" multiValued="true" indexed="true" required="false" stored="true"/>

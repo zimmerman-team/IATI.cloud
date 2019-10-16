@@ -381,6 +381,46 @@ class LocationSerializer(serializers.Serializer):
         return representation
 
 
+class ActivitySectorSerializer(serializers.Serializer):
+
+    def set_value(self, value):
+        if isinstance(value, datetime):
+            return value.strftime("%Y-%m-%d")
+
+        return value
+
+    def set_field(self, name, value, representation):
+        if value:
+            representation[name] = self.set_value(value)
+
+    def narrative(self, activity_sector, representation):
+        narratives_all = activity_sector.narratives.all()
+        if narratives_all:
+            narratives = list()
+            for narrative in narratives_all:
+                narratives.append(NarrativeSerializer(narrative).data)
+
+            self.set_field('narrative', narratives, representation)
+
+    def activity_sector(self, activity_sector, representation):
+        self.set_field('vocabulary', activity_sector.vocabulary.code, representation)
+        self.set_field('vocabulary_uri', activity_sector.vocabulary_uri, representation)
+        self.set_field('code', activity_sector.sector.code, representation)
+        self.set_field(
+            'percentage',
+            str(activity_sector.percentage) if activity_sector.percentage > 0 else None,
+            representation
+        )
+
+    def to_representation(self, activity_sector):
+        representation = OrderedDict()
+
+        self.activity_sector(activity_sector, representation)
+        self.narrative(activity_sector, representation)
+
+        return representation
+
+
 class ActivitySerializer(serializers.Serializer):
 
     def add_to_list(self, data_list, value):
@@ -913,6 +953,44 @@ class ActivitySerializer(serializers.Serializer):
             self.set_field('location_administrative_level', location_administrative_level, representation)
             self.set_field('location_administrative_code', location_administrative_code, representation)
 
+    def activity_sector(self, activity, representation):
+        activity_sector_all = activity.activitysector_set.all()
+        if activity_sector_all:
+            sector_list = list()
+            sector_vocabulary = list()
+            sector_vocabulary_uri = list()
+            sector_code = list()
+            sector_percentage = list()
+            sector_narrative = list()
+            sector_narrative_lang = list()
+            sector_narrative_text = list()
+
+            for activity_sector in activity_sector_all:
+                self.add_to_list(sector_vocabulary, activity_sector.vocabulary_id)
+                self.add_to_list(sector_vocabulary_uri, activity_sector.vocabulary_uri)
+                self.add_to_list(sector_code, activity_sector.sector.code)
+                self.add_to_list(
+                    sector_percentage,
+                    str(activity_sector.percentage) if activity_sector.percentage > 0 else None
+                )
+
+                sector_list.append(ActivitySectorSerializer(activity_sector).data)
+
+                for narrative in activity_sector.narratives.all():
+                    sector_narrative.append(narrative.content)
+                    sector_narrative_text.append(narrative.content)
+                    if narrative.language:
+                        sector_narrative_lang.append(narrative.language.code)
+
+            self.set_field('sector', json.dumps(sector_list), representation)
+            self.set_field('sector_vocabulary', sector_vocabulary, representation)
+            self.set_field('sector_vocabulary_uri', sector_vocabulary_uri, representation)
+            self.set_field('sector_code', sector_code, representation)
+            self.set_field('sector_percentage', sector_percentage, representation)
+            self.set_field('sector_narrative', sector_narrative, representation)
+            self.set_field('sector_narrative_lang', sector_narrative_lang, representation)
+            self.set_field('sector_narrative_text', sector_narrative_text, representation)
+
     def to_representation(self, activity):
         representation = OrderedDict()
 
@@ -929,5 +1007,6 @@ class ActivitySerializer(serializers.Serializer):
         self.recipient_country(activity=activity, representation=representation)
         self.recipient_region(activity=activity, representation=representation)
         self.location(activity=activity, representation=representation)
+        self.activity_sector(activity=activity, representation=representation)
 
         return representation
