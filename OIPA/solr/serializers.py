@@ -494,6 +494,42 @@ class CountryBudgetItemsSerializer(serializers.Serializer):
         return representation
 
 
+class HumanitarianScopeSerializer(serializers.Serializer):
+
+    def set_value(self, value):
+        if isinstance(value, datetime):
+            return value.strftime("%Y-%m-%d")
+
+        return value
+
+    def set_field(self, name, value, representation):
+        if value:
+            representation[name] = self.set_value(value)
+
+    def narrative(self, humanitarian_scope, representation):
+        narratives_all = humanitarian_scope.narratives.all()
+        if narratives_all:
+            narratives = list()
+            for narrative in narratives_all:
+                narratives.append(NarrativeSerializer(narrative).data)
+
+            self.set_field('narrative', narratives, representation)
+
+    def humanitarian_scope(self, humanitarian_scope, representation):
+        self.set_field('type', humanitarian_scope.type_id, representation)
+        self.set_field('vocabulary', humanitarian_scope.vocabulary_id, representation)
+        self.set_field('vocabulary_uri', humanitarian_scope.vocabulary_uri, representation)
+        self.set_field('code', humanitarian_scope.code, representation)
+
+    def to_representation(self, humanitarian_scope):
+        representation = OrderedDict()
+
+        self.humanitarian_scope(humanitarian_scope, representation)
+        self.narrative(humanitarian_scope, representation)
+
+        return representation
+
+
 class ActivitySerializer(serializers.Serializer):
 
     def add_to_list(self, data_list, value):
@@ -1064,7 +1100,7 @@ class ActivitySerializer(serializers.Serializer):
             self.set_field('sector_narrative_lang', sector_narrative_lang, representation)
             self.set_field('sector_narrative_text', sector_narrative_text, representation)
 
-    def country_budget_items(self,  activity, representation):
+    def country_budget_items(self, activity, representation):
         try:
             country_budget_item = activity.country_budget_items
 
@@ -1116,6 +1152,44 @@ class ActivitySerializer(serializers.Serializer):
         except CountryBudgetItem.DoesNotExist:
             pass
 
+    def humanitarian_scope(self, activity, representation):
+        humanitarian_scope_all = activity.humanitarianscope_set.all()
+        if humanitarian_scope_all:
+            humanitarian_scope_list = list()
+            humanitarian_scope_type = list()
+            humanitarian_scope_vocabulary = list()
+            humanitarian_scope_vocabulary_uri = list()
+            humanitarian_scope_code = list()
+
+            humanitarian_scope_narrative = list()
+            humanitarian_scope_narrative_lang = list()
+            humanitarian_scope_narrative_text = list()
+
+            for humanitarian_scope in humanitarian_scope_all:
+                self.add_to_list(humanitarian_scope_type, humanitarian_scope.type_id)
+                self.add_to_list(humanitarian_scope_vocabulary, humanitarian_scope.vocabulary_id)
+                self.add_to_list(humanitarian_scope_vocabulary_uri, humanitarian_scope.vocabulary_uri)
+                self.add_to_list(humanitarian_scope_code, humanitarian_scope.code)
+
+                humanitarian_scope_list.append(HumanitarianScopeSerializer(humanitarian_scope).data)
+
+                for narrative in humanitarian_scope.narratives.all():
+                    humanitarian_scope_narrative.append(narrative.content)
+                    humanitarian_scope_narrative_text.append(narrative.content)
+                    if narrative.language:
+                        humanitarian_scope_narrative_lang.append(narrative.language.code)
+
+            print(humanitarian_scope_list)
+
+            self.set_field('humanitarian_scope', json.dumps(humanitarian_scope_list), representation)
+            self.set_field('humanitarian_scope_type', humanitarian_scope_type, representation)
+            self.set_field('humanitarian_scope_vocabulary', humanitarian_scope_vocabulary, representation)
+            self.set_field('humanitarian_scope_vocabulary_uri', humanitarian_scope_vocabulary_uri, representation)
+            self.set_field('humanitarian_scope_code', humanitarian_scope_code, representation)
+            self.set_field('humanitarian_scope_narrative', humanitarian_scope_narrative, representation)
+            self.set_field('humanitarian_scope_narrative_lang', humanitarian_scope_narrative_lang, representation)
+            self.set_field('humanitarian_scope_narrative_text', humanitarian_scope_narrative_text, representation)
+
     def to_representation(self, activity):
         representation = OrderedDict()
 
@@ -1134,5 +1208,6 @@ class ActivitySerializer(serializers.Serializer):
         self.location(activity=activity, representation=representation)
         self.sector(activity=activity, representation=representation)
         self.country_budget_items(activity=activity, representation=representation)
+        self.humanitarian_scope(activity=activity, representation=representation)
 
         return representation
