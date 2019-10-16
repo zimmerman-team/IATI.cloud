@@ -542,8 +542,8 @@ class PolicyMarkerSerializer(serializers.Serializer):
         if value:
             representation[name] = self.set_value(value)
 
-    def narrative(self, policy_maker, representation):
-        narratives_all = policy_maker.narratives.all()
+    def narrative(self, policy_marker, representation):
+        narratives_all = policy_marker.narratives.all()
         if narratives_all:
             narratives = list()
             for narrative in narratives_all:
@@ -551,17 +551,17 @@ class PolicyMarkerSerializer(serializers.Serializer):
 
             self.set_field('narrative', narratives, representation)
 
-    def policy_maker(self, policy_maker, representation):
-        self.set_field('vocabulary', policy_maker.vocabulary_id, representation)
-        self.set_field('vocabulary_uri', policy_maker.vocabulary_uri, representation)
-        self.set_field('code', policy_maker.code_id, representation)
-        self.set_field('significance', policy_maker.significance_id, representation)
+    def policy_marker(self, policy_marker, representation):
+        self.set_field('vocabulary', policy_marker.vocabulary_id, representation)
+        self.set_field('vocabulary_uri', policy_marker.vocabulary_uri, representation)
+        self.set_field('code', policy_marker.code_id, representation)
+        self.set_field('significance', policy_marker.significance_id, representation)
 
-    def to_representation(self, policy_maker):
+    def to_representation(self, policy_marker):
         representation = OrderedDict()
 
-        self.policy_maker(policy_maker, representation)
-        self.narrative(policy_maker, representation)
+        self.policy_marker(policy_marker, representation)
+        self.narrative(policy_marker, representation)
 
         return representation
 
