@@ -1259,6 +1259,47 @@ class ActivitySerializer(serializers.Serializer):
             self.set_field('policy_marker_narrative_lang', policy_marker_narrative_lang, representation)
             self.set_field('policy_marker_narrative_text', policy_marker_narrative_text, representation)
 
+    def budget(self, activity, representation):
+        budget_all = activity.budget_set.all()
+        if budget_all:
+            budget_list = list()
+            budget_type = list()
+            budget_status = list()
+            budget_period_start_iso_date = list()
+            budget_period_end_iso_date = list()
+            budget_value_currency = list()
+            budget_value_date = list()
+            budget_value = list()
+
+            for budget in budget_all:
+                self.add_to_list(budget_type, budget.type_id)
+                self.add_to_list(budget_status, budget.status_id)
+                self.add_to_list(
+                    budget_period_start_iso_date,
+                    str(budget.period_start.strftime("%Y-%m-%d")) if budget.period_start else None
+                )
+                self.add_to_list(
+                    budget_period_end_iso_date,
+                    str(budget.period_end.strftime("%Y-%m-%d")) if budget.period_end else None
+                )
+                self.add_to_list(budget_value_currency, budget.currency_id)
+                self.add_to_list(
+                    budget_value_date,
+                    str(budget.value_date.strftime("%Y-%m-%d")) if budget.value_date else None
+                )
+                self.add_to_list(
+                    budget_value,
+                    str(budget.value) if budget.value > 0 else None
+                )
+
+            self.set_field('budget_type', budget_type, representation)
+            self.set_field('budget_status', budget_status, representation)
+            self.set_field('budget_period_start_iso_date', budget_period_start_iso_date, representation)
+            self.set_field('budget_period_end_iso_date', budget_period_end_iso_date, representation)
+            self.set_field('budget_value_currency', budget_value_currency, representation)
+            self.set_field('budget_value_date', budget_value_date, representation)
+            self.set_field('budget_value', budget_value, representation)
+
     def to_representation(self, activity):
         representation = OrderedDict()
 
@@ -1279,5 +1320,6 @@ class ActivitySerializer(serializers.Serializer):
         self.country_budget_items(activity=activity, representation=representation)
         self.humanitarian_scope(activity=activity, representation=representation)
         self.policy_marker(activity=activity, representation=representation)
+        self.budget(activity=activity, representation=representation)
 
         return representation
