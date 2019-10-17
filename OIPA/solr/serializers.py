@@ -566,6 +566,60 @@ class PolicyMarkerSerializer(serializers.Serializer):
         return representation
 
 
+class BudgetSerializer(serializers.Serializer):
+
+    def set_value(self, value):
+        if isinstance(value, datetime):
+            return value.strftime("%Y-%m-%d")
+
+        return value
+
+    def set_field(self, name, value, representation):
+        if value:
+            representation[name] = self.set_value(value)
+
+    def narrative(self, humanitarian_scope, representation):
+        narratives_all = humanitarian_scope.narratives.all()
+        if narratives_all:
+            narratives = list()
+            for narrative in narratives_all:
+                narratives.append(NarrativeSerializer(narrative).data)
+
+            self.set_field('narrative', narratives, representation)
+
+    def budget(self, budget, representation):
+        self.set_field('type', budget.type_id, representation)
+        self.set_field('status', budget.status_id, representation)
+        self.set_field(
+            'period_start',
+            str(budget.period_start.strftime("%Y-%m-%d")) if budget.period_start else None,
+            representation
+        )
+        self.set_field(
+            'period_end',
+            str(budget.period_end.strftime("%Y-%m-%d")) if budget.period_end else None,
+            representation
+        )
+        self.set_field(
+            'value_date',
+            str(budget.value_date.strftime("%Y-%m-%d")) if budget.value_date else None,
+            representation
+        )
+        self.set_field('currency', budget.currency_id, representation)
+        self.set_field(
+            'value',
+            str(budget.value) if budget.value > 0 else None,
+            representation
+        )
+
+    def to_representation(self, budget):
+        representation = OrderedDict()
+
+        self.budget(budget, representation)
+
+        return representation
+
+
 class ActivitySerializer(serializers.Serializer):
 
     def add_to_list(self, data_list, value):
@@ -1292,6 +1346,9 @@ class ActivitySerializer(serializers.Serializer):
                     str(budget.value) if budget.value > 0 else None
                 )
 
+                budget_list.append(BudgetSerializer(budget).data)
+
+            self.set_field('budget', json.dumps(budget_list) if budget_list else None, representation)
             self.set_field('budget_type', budget_type, representation)
             self.set_field('budget_status', budget_status, representation)
             self.set_field('budget_period_start_iso_date', budget_period_start_iso_date, representation)
