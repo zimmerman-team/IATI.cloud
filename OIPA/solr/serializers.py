@@ -3,7 +3,7 @@ from collections import OrderedDict
 from datetime import datetime
 from rest_framework import serializers
 
-from iati.models import CountryBudgetItem
+from iati.models import CountryBudgetItem, PlannedDisbursementProvider, PlannedDisbursementReceiver
 
 
 class OrganisationTypeSerializer(serializers.Serializer):
@@ -616,6 +616,154 @@ class BudgetSerializer(serializers.Serializer):
         representation = OrderedDict()
 
         self.budget(budget, representation)
+
+        return representation
+
+
+class ProviderOrgSerializer(serializers.Serializer):
+
+    def set_value(self, value):
+        if isinstance(value, datetime):
+            return value.strftime("%Y-%m-%d")
+
+        return value
+
+    def set_field(self, name, value, representation):
+        if value:
+            representation[name] = self.set_value(value)
+
+    def narrative(self, provider_org, representation):
+        narratives_all = provider_org.narratives.all()
+        if narratives_all:
+            narratives = list()
+            for narrative in narratives_all:
+                narratives.append(NarrativeSerializer(narrative).data)
+
+            self.set_field('narrative', narratives, representation)
+
+    def provider_org(self, provider_org, representation):
+        self.set_field('provider_activity_id', provider_org.provider_activity_ref, representation)
+        self.set_field('type', provider_org.type_id, representation)
+        self.set_field('ref', provider_org.ref, representation)
+
+    def to_representation(self, provider_org):
+        representation = OrderedDict()
+
+        self.provider_org(provider_org, representation)
+        self.narrative(provider_org, representation)
+
+        return representation
+
+
+class ReceiverOrgSerializer(serializers.Serializer):
+
+    def set_value(self, value):
+        if isinstance(value, datetime):
+            return value.strftime("%Y-%m-%d")
+
+        return value
+
+    def set_field(self, name, value, representation):
+        if value:
+            representation[name] = self.set_value(value)
+
+    def narrative(self, receiver_org, representation):
+        narratives_all = receiver_org.narratives.all()
+        if narratives_all:
+            narratives = list()
+            for narrative in narratives_all:
+                narratives.append(NarrativeSerializer(narrative).data)
+
+            self.set_field('narrative', narratives, representation)
+
+    def receiver_org(self, receiver_org, representation):
+        self.set_field('receiver_activity_id', receiver_org.receiver_activity_ref, representation)
+        self.set_field('type', receiver_org.type_id, representation)
+        self.set_field('ref', receiver_org.ref, representation)
+
+    def to_representation(self, provider_org):
+        representation = OrderedDict()
+
+        self.receiver_org(provider_org, representation)
+        self.narrative(provider_org, representation)
+
+        return representation
+
+
+class PlannedDisbursementSerializer(serializers.Serializer):
+
+    def set_value(self, value):
+        if isinstance(value, datetime):
+            return value.strftime("%Y-%m-%d")
+
+        return value
+
+    def set_field(self, name, value, representation):
+        if value:
+            representation[name] = self.set_value(value)
+
+    def narrative(self, humanitarian_scope, representation):
+        narratives_all = humanitarian_scope.narratives.all()
+        if narratives_all:
+            narratives = list()
+            for narrative in narratives_all:
+                narratives.append(NarrativeSerializer(narrative).data)
+
+            self.set_field('narrative', narratives, representation)
+
+    def provider_org(self, planned_disbursement, representation):
+        try:
+            self.set_field(
+                'provider_org',
+                ProviderOrgSerializer(planned_disbursement.provider_organisation).data,
+                representation
+            )
+        except PlannedDisbursementProvider.DoesNotExist:
+            pass
+
+    def receiver_org(self, planned_disbursement, representation):
+        try:
+            self.set_field(
+                'receiver_org',
+                ReceiverOrgSerializer(planned_disbursement.receiver_organisation).data,
+                representation
+            )
+        except PlannedDisbursementReceiver.DoesNotExist:
+            pass
+
+    def planned_disbursement(self, planned_disbursement, representation):
+        self.set_field('type', planned_disbursement.type_id, representation)
+        self.set_field(
+            'period_start',
+            str(planned_disbursement.period_start.strftime(
+                "%Y-%m-%d")) if planned_disbursement.period_start else None,
+            representation
+        )
+        self.set_field(
+            'period_end',
+            str(planned_disbursement.period_end.strftime(
+                "%Y-%m-%d")) if planned_disbursement.period_end else None,
+            representation
+        )
+        self.set_field(
+            'value_date',
+            str(planned_disbursement.value_date.strftime(
+                "%Y-%m-%d")) if planned_disbursement.value_date else None,
+            representation
+        )
+        self.set_field('value_currency', planned_disbursement.currency_id, representation)
+        self.set_field(
+            'value',
+            str(planned_disbursement.value) if planned_disbursement.value > 0 else None,
+            representation
+        )
+
+    def to_representation(self, planned_disbursement):
+        representation = OrderedDict()
+
+        self.planned_disbursement(planned_disbursement, representation)
+        self.provider_org(planned_disbursement, representation)
+        self.receiver_org(planned_disbursement, representation)
 
         return representation
 
@@ -1357,6 +1505,180 @@ class ActivitySerializer(serializers.Serializer):
             self.set_field('budget_value_date', budget_value_date, representation)
             self.set_field('budget_value', budget_value, representation)
 
+    def planned_disbursement(self, activity, representation):
+        planned_disbursement_all = activity.planneddisbursement_set.all()
+        if planned_disbursement_all:
+            planned_disbursement_list = list()
+            planned_disbursement_type = list()
+            planned_disbursement_period_start_iso_date = list()
+            planned_disbursement_period_end_iso_date = list()
+            planned_disbursement_value_currency = list()
+            planned_disbursement_value_date = list()
+            planned_disbursement_value = list()
+            planned_disbursement_provider_org_provider_activity_id = list()
+            planned_disbursement_provider_org_type = list()
+            planned_disbursement_provider_org_ref = list()
+
+            planned_disbursement_provider_org_narrative = list()
+            planned_disbursement_provider_org_narrative_lang = list()
+            planned_disbursement_provider_org_narrative_text = list()
+
+            planned_disbursement_receiver_org_provider_activity_id = list()
+            planned_disbursement_receiver_org_type = list()
+            planned_disbursement_receiver_org_ref = list()
+
+            planned_disbursement_receiver_org_narrative = list()
+            planned_disbursement_receiver_org_narrative_lang = list()
+            planned_disbursement_receiver_org_narrative_text = list()
+
+            for planned_disbursement in planned_disbursement_all:
+                self.add_to_list(planned_disbursement_type, planned_disbursement.type_id)
+                self.add_to_list(
+                    planned_disbursement_period_start_iso_date,
+                    str(planned_disbursement.period_start.strftime(
+                        "%Y-%m-%d")) if planned_disbursement.period_start else None
+                )
+                self.add_to_list(
+                    planned_disbursement_period_end_iso_date,
+                    str(planned_disbursement.period_end.strftime(
+                        "%Y-%m-%d")) if planned_disbursement.period_end else None
+                )
+                self.add_to_list(
+                    planned_disbursement_value_date,
+                    str(planned_disbursement.value_date.strftime(
+                        "%Y-%m-%d")) if planned_disbursement.value_date else None
+                )
+                self.add_to_list(planned_disbursement_value_currency, planned_disbursement.currency_id)
+                self.add_to_list(
+                    planned_disbursement_value,
+                    str(planned_disbursement.value) if planned_disbursement.value > 0 else None
+                )
+
+                planned_disbursement_list.append(PlannedDisbursementSerializer(planned_disbursement).data)
+
+                try:
+                    self.add_to_list(
+                        planned_disbursement_provider_org_provider_activity_id,
+                        planned_disbursement.provider_organisation.provider_activity_ref
+                    )
+                    self.add_to_list(
+                        planned_disbursement_provider_org_type,
+                        planned_disbursement.provider_organisation.type_id
+                    )
+                    self.add_to_list(
+                        planned_disbursement_provider_org_ref,
+                        planned_disbursement.provider_organisation.ref
+                    )
+
+                    for narrative in planned_disbursement.provider_organisation.narratives.all():
+                        planned_disbursement_provider_org_narrative.append(narrative.content)
+                        planned_disbursement_provider_org_narrative_text.append(narrative.content)
+                        if narrative.language:
+                            planned_disbursement_provider_org_narrative_lang.append(narrative.language.code)
+
+                except PlannedDisbursementProvider.DoesNotExist:
+                    pass
+
+                try:
+
+                    self.add_to_list(
+                        planned_disbursement_receiver_org_provider_activity_id,
+                        planned_disbursement.receiver_organisation.receiver_activity_ref
+                    )
+                    self.add_to_list(
+                        planned_disbursement_receiver_org_type,
+                        planned_disbursement.receiver_organisation.type_id
+                    )
+                    self.add_to_list(
+                        planned_disbursement_receiver_org_ref,
+                        planned_disbursement.receiver_organisation.ref
+                    )
+
+                    for narrative in planned_disbursement.provider_organisation.narratives.all():
+                        planned_disbursement_receiver_org_narrative.append(narrative.content)
+                        planned_disbursement_receiver_org_narrative_text.append(narrative.content)
+                        if narrative.language:
+                            planned_disbursement_receiver_org_narrative_lang.append(narrative.language.code)
+
+                except PlannedDisbursementReceiver.DoesNotExist:
+                    pass
+
+            self.set_field('planned_disbursement', json.dumps(planned_disbursement_list), representation)
+            self.set_field('planned_disbursement_type', planned_disbursement_type, representation)
+            self.set_field(
+                'planned_disbursement_period_start_iso_date',
+                planned_disbursement_period_start_iso_date,
+                representation
+            )
+            self.set_field(
+                'planned_disbursement_period_end_iso_date',
+                planned_disbursement_period_end_iso_date,
+                representation
+            )
+            self.set_field('planned_disbursement_value_currency', planned_disbursement_value_currency, representation)
+            self.set_field('planned_disbursement_value_date', planned_disbursement_value_date, representation)
+            self.set_field('planned_disbursement_value', planned_disbursement_value, representation)
+            self.set_field(
+                'planned_disbursement_provider_org_provider_activity_id',
+                planned_disbursement_provider_org_provider_activity_id,
+                representation
+            )
+            self.set_field(
+                'planned_disbursement_provider_org_type',
+                planned_disbursement_provider_org_type,
+                representation
+            )
+            self.set_field(
+                'planned_disbursement_provider_org_ref',
+                planned_disbursement_provider_org_ref,
+                representation
+            )
+            self.set_field(
+                'planned_disbursement_provider_org_narrative',
+                planned_disbursement_provider_org_narrative,
+                representation
+            )
+            self.set_field(
+                'planned_disbursement_provider_org_narrative_lang',
+                planned_disbursement_provider_org_narrative_lang,
+                representation
+            )
+            self.set_field(
+                'planned_disbursement_provider_org_narrative_text',
+                planned_disbursement_provider_org_narrative_text,
+                representation
+            )
+            self.set_field(
+                'planned_disbursement_receiver_org_provider_activity_id',
+                planned_disbursement_receiver_org_provider_activity_id,
+                representation
+            )
+            self.set_field(
+                'planned_disbursement_receiver_org_type',
+                planned_disbursement_receiver_org_type,
+                representation
+            )
+            self.set_field(
+                'planned_disbursement_receiver_org_ref',
+                planned_disbursement_receiver_org_ref,
+                representation
+            )
+            self.set_field(
+                'planned_disbursement_receiver_org_narrative',
+                planned_disbursement_receiver_org_narrative,
+                representation
+            )
+            self.set_field(
+                'planned_disbursement_receiver_org_narrative_lang',
+                planned_disbursement_receiver_org_narrative_lang,
+                representation
+            )
+            self.set_field(
+                'planned_disbursement_receiver_org_narrative_text',
+                planned_disbursement_receiver_org_narrative_text,
+                representation
+            )
+
     def to_representation(self, activity):
         representation = OrderedDict()
 
@@ -1378,5 +1700,6 @@ class ActivitySerializer(serializers.Serializer):
         self.humanitarian_scope(activity=activity, representation=representation)
         self.policy_marker(activity=activity, representation=representation)
         self.budget(activity=activity, representation=representation)
+        self.planned_disbursement(activity=activity, representation=representation)
 
         return representation

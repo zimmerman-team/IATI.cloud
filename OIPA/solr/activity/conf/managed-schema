@@ -329,11 +329,17 @@
     <field name="planned_disbursement_provider_org_provider_activity_id" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="planned_disbursement_provider_org_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="planned_disbursement_provider_org_ref" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+
     <field name="planned_disbursement_provider_org_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
+    <field name="planned_disbursement_provider_org_narrative_lang" type="string" indexed="true" required="false" stored="true"/>
+    <field name="planned_disbursement_provider_org_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
+
     <field name="planned_disbursement_receiver_org_provider_activity_id" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="planned_disbursement_receiver_org_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="planned_disbursement_receiver_org_ref" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="planned_disbursement_receiver_org_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
+    <field name="planned_disbursement_receiver_org_narrative_lang" type="string" indexed="true" required="false" stored="true"/>
+    <field name="planned_disbursement_receiver_org_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
 
     <field name="capital_spend_percentage" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
 
