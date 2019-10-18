@@ -4,8 +4,7 @@ from datetime import datetime
 from rest_framework import serializers
 
 from iati.models import CountryBudgetItem, PlannedDisbursementProvider, PlannedDisbursementReceiver
-from iati.transaction.models import TransactionProvider, TransactionReceiver, \
-    TransactionSector, TransactionRecipientCountry, TransactionRecipientRegion
+from iati.transaction.models import TransactionProvider, TransactionReceiver
 
 
 class OrganisationTypeSerializer(serializers.Serializer):
@@ -803,6 +802,41 @@ class AidTypeSerializer(serializers.Serializer):
         return representation
 
 
+class TransactionSectorSerializer(serializers.Serializer):
+
+    def set_value(self, value):
+        if isinstance(value, datetime):
+            return value.strftime("%Y-%m-%d")
+
+        return value
+
+    def set_field(self, name, value, representation):
+        if value:
+            representation[name] = self.set_value(value)
+
+    def narrative(self, transaction_sector, representation):
+        narratives_all = transaction_sector.narratives.all()
+        if narratives_all:
+            narratives = list()
+            for narrative in narratives_all:
+                narratives.append(NarrativeSerializer(narrative).data)
+
+            self.set_field('narrative', narratives, representation)
+
+    def transaction_sector(self, transaction_sector, representation):
+        self.set_field('code', transaction_sector.sector_id, representation)
+        self.set_field('vocabulary', transaction_sector.vocabulary_id, representation)
+        self.set_field('vocabulary_uri', transaction_sector.vocabulary_uri, representation)
+
+    def to_representation(self, transaction_sector):
+        representation = OrderedDict()
+
+        self.transaction_sector(transaction_sector, representation)
+        self.narrative(transaction_sector, representation)
+
+        return representation
+
+
 class TransactionSerializer(serializers.Serializer):
 
     def set_value(self, value):
@@ -875,6 +909,15 @@ class TransactionSerializer(serializers.Serializer):
 
             self.set_field('recipient_region', recipient_region_list, representation)
 
+    def sector(self, transaction, representation):
+        transaction_sector_all = transaction.transactionsector_set.all()
+        if transaction_sector_all:
+            transaction_sector_list = list()
+            for transaction_sector in transaction_sector_all:
+                transaction_sector_list.append(TransactionSectorSerializer(transaction_sector).data)
+
+            self.set_field('sector', transaction_sector_list, representation)
+
     def transaction(self, transaction, representation):
         self.set_field('ref', transaction.ref, representation)
         self.set_field('humanitarian', '1' if transaction.humanitarian else '0', representation)
@@ -906,6 +949,7 @@ class TransactionSerializer(serializers.Serializer):
         self.provider_org(transaction, representation)
         self.receiver_org(transaction, representation)
         self.aid_type(transaction, representation)
+        self.sector(transaction, representation)
         self.recipient_country(transaction, representation)
         self.recipient_region(transaction, representation)
 
