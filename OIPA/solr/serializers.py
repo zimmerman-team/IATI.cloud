@@ -2197,6 +2197,126 @@ class ActivitySerializer(serializers.Serializer):
                 representation
             )
 
+    def document_link(self, activity, representation):
+        document_link_all = activity.documentlink_set.filter(
+            result_id__isnull=True,
+            result_indicator_id__isnull=True,
+            result_indicator_baseline_id__isnull=True,
+            result_indicator_period_actual_id__isnull=True,
+            result_indicator_period_target_id__isnull=True
+        )
+        if document_link_all:
+            document_link = list()
+            document_link_format = list()
+            document_link_url = list()
+
+            document_link_title_narrative = list()
+            document_link_title_narrative_lang = list()
+            document_link_title_narrative_text = list()
+
+            document_link_description_narrative = list()
+            document_link_description_narrative_lang = list()
+            document_link_description_narrative_text = list()
+
+            document_link_category_code = list()
+            document_link_language_code = list()
+            document_link_document_date_iso_date = list()
+
+            for document_link in document_link_all:
+                self.add_to_list(
+                    document_link_format,
+                    document_link.file_format_id
+                )
+                self.add_to_list(
+                    document_link_url,
+                    document_link.url
+                )
+                self.add_to_list(
+                    document_link_document_date_iso_date,
+                    str(document_link.iso_date.strftime(
+                        "%Y-%m-%d")) if document_link.iso_date else None
+                )
+
+                for narrative in document_link.documentlinktitle.narratives.all():
+                    document_link_title_narrative.append(narrative.content)
+                    document_link_title_narrative_text.append(narrative.content)
+                    if narrative.language:
+                        document_link_title_narrative_lang.append(narrative.language.code)
+
+                for narrative in document_link.documentlinkdescription.narratives.all():
+                    document_link_description_narrative.append(narrative.content)
+                    document_link_description_narrative_text.append(narrative.content)
+                    if narrative.language:
+                        document_link_description_narrative_lang.append(narrative.language.code)
+
+                for document_link_category in document_link.documentlinkcategory_set.all():
+                    self.add_to_list(
+                        document_link_category_code,
+                        document_link_category.category_id
+                    )
+
+                for document_link_language in document_link.documentlinklanguage_set.all():
+                    self.add_to_list(
+                        document_link_language_code,
+                        document_link_language.language_id
+                    )
+
+            self.set_field(
+                'document_link_format',
+                document_link_format,
+                representation
+            )
+            self.set_field(
+                'document_link_url',
+                document_link_url,
+                representation
+            )
+            self.set_field(
+                'document_link_title_narrative',
+                document_link_title_narrative,
+                representation
+            )
+            self.set_field(
+                'document_link_title_narrative_lang',
+                document_link_title_narrative_lang,
+                representation
+            )
+            self.set_field(
+                'document_link_title_narrative_text',
+                document_link_title_narrative_text,
+                representation
+            )
+            self.set_field(
+                'document_link_description_narrative',
+                document_link_description_narrative,
+                representation
+            )
+            self.set_field(
+                'document_link_description_narrative_lang',
+                document_link_description_narrative_lang,
+                representation
+            )
+            self.set_field(
+                'document_link_description_narrative_text',
+                document_link_description_narrative_text,
+                representation
+            )
+            self.set_field(
+                'document_link_category_code',
+                document_link_category_code,
+                representation
+            )
+            self.set_field(
+                'document_link_language_code',
+                document_link_language_code,
+                representation
+            )
+            self.set_field(
+                'document_link_document_date_iso_date',
+                document_link_document_date_iso_date,
+                representation
+            )
+
     def to_representation(self, activity):
         representation = OrderedDict()
 
@@ -2220,5 +2340,6 @@ class ActivitySerializer(serializers.Serializer):
         self.budget(activity=activity, representation=representation)
         self.planned_disbursement(activity=activity, representation=representation)
         self.transaction(activity=activity, representation=representation)
+        self.document_link(activity=activity, representation=representation)
 
         return representation

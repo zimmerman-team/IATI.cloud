@@ -393,10 +393,15 @@
     <field name="document_link" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="document_link_format" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="document_link_url" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-    <field name="document_link_title_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+
     <field name="document_link_title_narrative" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
-    <field name="document_link_description_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="document_link_title_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="document_link_title_narrative_text" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
+
     <field name="document_link_description_narrative" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="document_link_description_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="document_link_description_narrative_text" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
+
     <field name="document_link_category_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="document_link_language_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="document_link_document_date_iso_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
