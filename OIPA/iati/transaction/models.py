@@ -277,6 +277,11 @@ class TransactionRecipientCountry(models.Model):
         max_digits=5,
         decimal_places=2)
 
+    narratives = GenericRelation(
+        Narrative,
+        content_type_field='related_content_type',
+        object_id_field='related_object_id')
+
     def __unicode__(self, ):
         return "%s - %s" % (self.transaction.id, self.country)
 
@@ -315,6 +320,11 @@ class TransactionRecipientRegion(models.Model):
     percentage = models.DecimalField(
         max_digits=5,
         decimal_places=2)
+
+    narratives = GenericRelation(
+        Narrative,
+        content_type_field='related_content_type',
+        object_id_field='related_object_id')
 
     def __unicode__(self, ):
         return "%s - %s" % (self.transaction.id, self.region)

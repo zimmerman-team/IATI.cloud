@@ -4,6 +4,8 @@ from datetime import datetime
 from rest_framework import serializers
 
 from iati.models import CountryBudgetItem, PlannedDisbursementProvider, PlannedDisbursementReceiver
+from iati.transaction.models import TransactionProvider, TransactionReceiver, \
+    TransactionSector, TransactionRecipientCountry, TransactionRecipientRegion
 
 
 class OrganisationTypeSerializer(serializers.Serializer):
@@ -764,6 +766,145 @@ class PlannedDisbursementSerializer(serializers.Serializer):
         self.planned_disbursement(planned_disbursement, representation)
         self.provider_org(planned_disbursement, representation)
         self.receiver_org(planned_disbursement, representation)
+
+        return representation
+
+
+class AidTypeSerializer(serializers.Serializer):
+
+    def set_value(self, value):
+        if isinstance(value, datetime):
+            return value.strftime("%Y-%m-%d")
+
+        return value
+
+    def set_field(self, name, value, representation):
+        if value:
+            representation[name] = self.set_value(value)
+
+    def narrative(self, receiver_org, representation):
+        narratives_all = receiver_org.narratives.all()
+        if narratives_all:
+            narratives = list()
+            for narrative in narratives_all:
+                narratives.append(NarrativeSerializer(narrative).data)
+
+            self.set_field('narrative', narratives, representation)
+
+    def aid_type(self, aid_type, representation):
+        self.set_field('code', aid_type.code, representation)
+        self.set_field('vocabulary', aid_type.vocabulary_id, representation)
+
+    def to_representation(self, aid_type):
+        representation = OrderedDict()
+
+        self.aid_type(aid_type, representation)
+
+        return representation
+
+
+class TransactionSerializer(serializers.Serializer):
+
+    def set_value(self, value):
+        if isinstance(value, datetime):
+            return value.strftime("%Y-%m-%d")
+
+        return value
+
+    def set_field(self, name, value, representation):
+        if value:
+            representation[name] = self.set_value(value)
+
+    def narrative(self, humanitarian_scope, representation):
+        narratives_all = humanitarian_scope.narratives.all()
+        if narratives_all:
+            narratives = list()
+            for narrative in narratives_all:
+                narratives.append(NarrativeSerializer(narrative).data)
+
+            self.set_field('narrative', narratives, representation)
+
+    def aid_type(self, transaction, representation):
+        transaction_aid_type_all = transaction.transactionaidtype_set.all()
+        if transaction_aid_type_all:
+            aid_type_list = list()
+            for transaction_aid_type in transaction_aid_type_all:
+                aid_type_list.append(AidTypeSerializer(transaction_aid_type.aid_type).data)
+
+            self.set_field(
+                'aid_type',
+                aid_type_list,
+                representation
+            )
+
+    def provider_org(self, transaction, representation):
+        try:
+            self.set_field(
+                'provider_org',
+                ProviderOrgSerializer(transaction.provider_organisation).data,
+                representation
+            )
+        except TransactionProvider.DoesNotExist:
+            pass
+
+    def receiver_org(self, transaction, representation):
+        try:
+            self.set_field(
+                'receiver_org',
+                ReceiverOrgSerializer(transaction.receiver_organisation).data,
+                representation
+            )
+        except TransactionReceiver.DoesNotExist:
+            pass
+
+    def recipient_country(self, transaction, representation):
+        recipient_country_all = transaction.transactionrecipientcountry_set.all()
+        if recipient_country_all:
+            recipient_country_list = list()
+            for recipient_country in recipient_country_all:
+                recipient_country_list.append(RecipientCountrySerializer(recipient_country).data)
+
+            self.set_field('recipient_country', recipient_country_list, representation)
+
+    def recipient_region(self, transaction, representation):
+        recipient_region_all = transaction.transactionrecipientregion_set.all()
+        if recipient_region_all:
+            recipient_region_list = list()
+            for recipient_region in recipient_region_all:
+                recipient_region_list.append(RecipientRegionSerializer(recipient_region).data)
+
+            self.set_field('recipient_region', recipient_region_list, representation)
+
+    def transaction(self, transaction, representation):
+        self.set_field('ref', transaction.ref, representation)
+        self.set_field('humanitarian', '1' if transaction.humanitarian else '0', representation)
+        self.set_field('transaction_type_code', transaction.transaction_type_id, representation)
+        self.set_field(
+            'transaction_date_iso_date',
+            str(transaction.transaction_date.strftime("%Y-%m-%d")) if transaction.transaction_date else None,
+            representation
+        )
+        self.set_field('value_currency', transaction.currency_id, representation)
+        self.set_field(
+            'value_date',
+            str(transaction.value_date.strftime("%Y-%m-%d")) if transaction.value_date else None,
+            representation
+        )
+        self.set_field(
+            'value',
+            str(transaction.value) if transaction.value > 0 else None,
+            representation
+        )
+
+    def to_representation(self, transaction):
+        representation = OrderedDict()
+
+        self.transaction(transaction, representation)
+        self.provider_org(transaction, representation)
+        self.receiver_org(transaction, representation)
+        self.aid_type(transaction, representation)
+        self.recipient_country(transaction, representation)
+        self.recipient_region(transaction, representation)
 
         return representation
 
@@ -1679,6 +1820,330 @@ class ActivitySerializer(serializers.Serializer):
                 representation
             )
 
+    def transaction(self, activity, representation):
+        transaction_all = activity.transaction_set.all()
+        if transaction_all:
+            transaction_list = list()
+            transaction_ref = list()
+            transaction_humanitarian = list()
+            transaction_type = list()
+            transaction_date_iso_date = list()
+            transaction_value_currency = list()
+            transaction_value_date = list()
+            transaction_value = list()
+
+            transaction_provider_org_provider_activity_id = list()
+            transaction_provider_org_type = list()
+            transaction_provider_org_ref = list()
+
+            transaction_provider_org_narrative = list()
+            transaction_provider_org_narrative_lang = list()
+            transaction_provider_org_narrative_text = list()
+
+            transaction_receiver_org_receiver_activity_id = list()
+            transaction_receiver_org_type = list()
+            transaction_receiver_org_ref = list()
+
+            transaction_receiver_org_narrative = list()
+            transaction_receiver_org_narrative_lang = list()
+            transaction_receiver_org_narrative_text = list()
+
+            transaction_disburstment_channel_code = list()
+            transaction_sector_vocabulary = list()
+            transaction_sector_code = list()
+            transaction_recipient_country_code = list()
+            transaction_recipient_region_code = list()
+            transaction_recipient_region_vocabulary = list()
+            transaction_flow_type_code = list()
+            transaction_finance_type_code = list()
+
+            transaction_aid_type_code = list()
+            transaction_aid_type_vocabulary = list()
+            transaction_tied_status_code = list()
+
+            for transaction in transaction_all:
+                self.add_to_list(transaction_ref, transaction.ref)
+                self.add_to_list(
+                    transaction_humanitarian,
+                    '1' if transaction.humanitarian else '0'
+                )
+                self.add_to_list(transaction_type, transaction.transaction_type_id)
+                self.add_to_list(
+                    transaction_date_iso_date,
+                    str(transaction.transaction_date.strftime(
+                        "%Y-%m-%d")) if transaction.transaction_date else None
+                )
+                self.add_to_list(transaction_value_currency, transaction.currency_id)
+                self.add_to_list(
+                    transaction_value_date,
+                    str(transaction.value_date.strftime(
+                        "%Y-%m-%d")) if transaction.value_date else None
+                )
+                self.add_to_list(
+                    transaction_value,
+                    str(transaction.value) if transaction.value > 0 else None
+                )
+
+                transaction_list.append(TransactionSerializer(transaction).data)
+
+                try:
+                    self.add_to_list(
+                        transaction_provider_org_provider_activity_id,
+                        transaction.provider_organisation.provider_activity_ref
+                    )
+                    self.add_to_list(
+                        transaction_provider_org_type,
+                        transaction.provider_organisation.type_id
+                    )
+                    self.add_to_list(
+                        transaction_provider_org_ref,
+                        transaction.provider_organisation.ref
+                    )
+
+                    for narrative in transaction.provider_organisation.narratives.all():
+                        transaction_provider_org_narrative.append(narrative.content)
+                        transaction_provider_org_narrative_text.append(narrative.content)
+                        if narrative.language:
+                            transaction_provider_org_narrative_lang.append(narrative.language.code)
+
+                except TransactionProvider.DoesNotExist:
+                    pass
+
+                try:
+                    self.add_to_list(
+                        transaction_receiver_org_receiver_activity_id,
+                        transaction.receiver_organisation.receiver_activity_ref
+                    )
+                    self.add_to_list(
+                        transaction_receiver_org_type,
+                        transaction.receiver_organisation.type_id
+                    )
+                    self.add_to_list(
+                        transaction_receiver_org_ref,
+                        transaction.receiver_organisation.ref
+                    )
+
+                    for narrative in transaction.receiver_organisation.narratives.all():
+                        transaction_receiver_org_narrative.append(narrative.content)
+                        transaction_receiver_org_narrative_text.append(narrative.content)
+                        if narrative.language:
+                            transaction_receiver_org_narrative_lang.append(narrative.language.code)
+
+                except TransactionReceiver.DoesNotExist:
+                    pass
+
+                self.add_to_list(
+                    transaction_disburstment_channel_code,
+                    transaction.disbursement_channel_id
+                )
+
+                try:
+                    self.add_to_list(
+                        transaction_sector_vocabulary,
+                        transaction.transaction_sector.vocabulary_id
+                    )
+                    self.add_to_list(
+                        transaction_sector_code,
+                        transaction.transaction_sector.sector_id
+                    )
+                except TransactionSector.DoesNotExist:
+                    pass
+
+                try:
+                    self.add_to_list(
+                        transaction_recipient_country_code,
+                        transaction.transaction_recipient_country.country_id
+                    )
+                except TransactionRecipientCountry.DoesNotExist:
+                    pass
+
+                try:
+                    self.add_to_list(
+                        transaction_recipient_region_code,
+                        transaction.transaction_recipient_region.region_id
+                    )
+                    self.add_to_list(
+                        transaction_recipient_region_vocabulary,
+                        transaction.transaction_recipient_region.vocabulary_id
+                    )
+                except TransactionRecipientRegion.DoesNotExist:
+                    pass
+
+                self.add_to_list(
+                    transaction_flow_type_code,
+                    transaction.flow_type_id
+                )
+                self.add_to_list(
+                    transaction_finance_type_code,
+                    transaction.finance_type_id
+                )
+
+                for transaction_aid_type in transaction.transactionaidtype_set.all():
+                    self.add_to_list(
+                        transaction_aid_type_code,
+                        transaction_aid_type.aid_type.code
+                    )
+                    self.add_to_list(
+                        transaction_aid_type_vocabulary,
+                        transaction_aid_type.aid_type.vocabulary_id
+                    )
+
+                self.add_to_list(
+                    transaction_tied_status_code,
+                    transaction.tied_status_id
+                )
+
+            self.set_field(
+                'transaction',
+                json.dumps(transaction_list),
+                representation
+            )
+            self.set_field(
+                'transaction_ref',
+                transaction_ref,
+                representation
+            )
+            self.set_field(
+                'transaction_humanitarian',
+                transaction_humanitarian,
+                representation
+            )
+            self.set_field(
+                'transaction_type',
+                transaction_type,
+                representation
+            )
+            self.set_field(
+                'transaction_date_iso_date',
+                transaction_date_iso_date,
+                representation
+            )
+            self.set_field(
+                'transaction_value_currency',
+                transaction_value_currency,
+                representation
+            )
+            self.set_field(
+                'transaction_value_date',
+                transaction_value_date,
+                representation
+            )
+            self.set_field(
+                'transaction_value',
+                transaction_value,
+                representation
+            )
+            self.set_field(
+                'transaction_provider_org_provider_activity_id',
+                transaction_provider_org_provider_activity_id,
+                representation
+            )
+            self.set_field(
+                'transaction_provider_org_type',
+                transaction_provider_org_type,
+                representation
+            )
+            self.set_field(
+                'transaction_provider_org_ref',
+                transaction_provider_org_ref,
+                representation
+            )
+            self.set_field(
+                'transaction_provider_org_narrative',
+                transaction_provider_org_narrative,
+                representation
+            )
+            self.set_field(
+                'transaction_provider_org_narrative_lang',
+                transaction_provider_org_narrative_lang,
+                representation
+            )
+            self.set_field(
+                'transaction_provider_org_narrative_text',
+                transaction_provider_org_narrative_text ,
+                representation
+            )
+            self.set_field(
+                'transaction_receiver_org_receiver_activity_id',
+                transaction_receiver_org_receiver_activity_id,
+                representation
+            )
+            self.set_field(
+                'transaction_receiver_org_type',
+                transaction_receiver_org_type,
+                representation
+            )
+            self.set_field(
+                'transaction_receiver_org_ref',
+                transaction_receiver_org_ref,
+                representation
+            )
+            self.set_field(
+                'transaction_receiver_org_narrative',
+                transaction_receiver_org_narrative,
+                representation
+            )
+            self.set_field(
+                'transaction_receiver_org_narrative_lang',
+                transaction_receiver_org_narrative_lang,
+                representation
+            )
+            self.set_field(
+                'transaction_receiver_org_narrative_text',
+                transaction_receiver_org_narrative_text,
+                representation
+            )
+            self.set_field(
+                'transaction_disburstment_channel_code',
+                transaction_disburstment_channel_code,
+                representation
+            )
+            self.set_field(
+                'transaction_sector_vocabulary',
+                transaction_sector_vocabulary,
+                representation
+            )
+            self.set_field(
+                'transaction_sector_code',
+                transaction_sector_code,
+                representation
+            )
+            self.set_field(
+                'transaction_recipient_country_code',
+                transaction_recipient_country_code,
+                representation
+            )
+            self.set_field(
+                'transaction_recipient_region_code',
+                transaction_recipient_region_code,
+                representation
+            )
+            self.set_field(
+                'transaction_recipient_region_vocabulary',
+                transaction_recipient_region_vocabulary,
+                representation
+            )
+            self.set_field(
+                'transaction_flow_type_code',
+                transaction_flow_type_code,
+                representation
+            )
+            self.set_field(
+                'transaction_aid_type_code',
+                transaction_aid_type_code,
+                representation
+            )
+            self.set_field(
+                'transaction_aid_type_vocabulary',
+                transaction_aid_type_vocabulary,
+                representation
+            )
+            self.set_field(
+                'transaction_tied_status_code',
+                transaction_tied_status_code,
+                representation
+            )
+
     def to_representation(self, activity):
         representation = OrderedDict()
 
@@ -1701,5 +2166,6 @@ class ActivitySerializer(serializers.Serializer):
         self.policy_marker(activity=activity, representation=representation)
         self.budget(activity=activity, representation=representation)
         self.planned_disbursement(activity=activity, representation=representation)
+        self.transaction(activity=activity, representation=representation)
 
         return representation
