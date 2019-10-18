@@ -956,6 +956,85 @@ class TransactionSerializer(serializers.Serializer):
         return representation
 
 
+class DocumentLinkSerializer(serializers.Serializer):
+
+    def add_to_list(self, data_list, value):
+        if value:
+            data_list.append(value)
+
+    def set_value(self, value):
+        if isinstance(value, datetime):
+            return value.strftime("%Y-%m-%d")
+
+        return value
+
+    def set_field(self, name, value, representation):
+        if value:
+            representation[name] = self.set_value(value)
+
+    def narrative(self, receiver_org, representation, field_name='narrative'):
+        narratives_all = receiver_org.narratives.all()
+        if narratives_all:
+            narratives = list()
+            for narrative in narratives_all:
+                narratives.append(NarrativeSerializer(narrative).data)
+
+            self.set_field(field_name, narratives, representation)
+
+    def document_link(self, document_link, representation):
+        self.set_field('format', document_link.file_format_id, representation)
+        self.set_field('url', document_link.url, representation)
+        self.set_field(
+            'document_date_iso_date',
+            str(document_link.iso_date.strftime(
+                "%Y-%m-%d")) if document_link.iso_date else None,
+            representation
+        )
+
+    def category(self, document_link, representation):
+        document_link_category_all = document_link.documentlinkcategory_set.all()
+        if document_link_category_all:
+            category_list = list()
+            for document_link_category in document_link_category_all:
+                self.add_to_list(
+                    category_list,
+                    document_link_category.category_id
+                )
+
+            self.set_field(
+                'category_code',
+                category_list,
+                representation
+            )
+
+    def language(self, document_link, representation):
+        document_link_language_all = document_link.documentlinklanguage_set.all()
+        if document_link_language_all:
+            language_list = list()
+            for document_link_language in document_link_language_all:
+                self.add_to_list(
+                    language_list,
+                    document_link_language.language_id
+                )
+
+            self.set_field(
+                'language_code',
+                language_list,
+                representation
+            )
+
+    def to_representation(self, document_link):
+        representation = OrderedDict()
+
+        self.document_link(document_link, representation)
+        self.narrative(document_link.documentlinktitle, representation, 'title')
+        self.narrative(document_link.documentlinkdescription, representation, 'description')
+        self.category(document_link, representation)
+        self.language(document_link, representation)
+
+        return representation
+
+
 class ActivitySerializer(serializers.Serializer):
 
     def add_to_list(self, data_list, value):
@@ -2206,7 +2285,7 @@ class ActivitySerializer(serializers.Serializer):
             result_indicator_period_target_id__isnull=True
         )
         if document_link_all:
-            document_link = list()
+            document_link_list = list()
             document_link_format = list()
             document_link_url = list()
 
@@ -2237,6 +2316,8 @@ class ActivitySerializer(serializers.Serializer):
                         "%Y-%m-%d")) if document_link.iso_date else None
                 )
 
+                document_link_list.append(DocumentLinkSerializer(document_link).data)
+
                 for narrative in document_link.documentlinktitle.narratives.all():
                     document_link_title_narrative.append(narrative.content)
                     document_link_title_narrative_text.append(narrative.content)
@@ -2261,6 +2342,11 @@ class ActivitySerializer(serializers.Serializer):
                         document_link_language.language_id
                     )
 
+            self.set_field(
+                'document_link',
+                json.dumps(document_link_list),
+                representation
+            )
             self.set_field(
                 'document_link_format',
                 document_link_format,
