@@ -1035,6 +1035,85 @@ class DocumentLinkSerializer(serializers.Serializer):
         return representation
 
 
+class ConditionSerializer(serializers.Serializer):
+
+    def set_value(self, value):
+        if isinstance(value, datetime):
+            return value.strftime("%Y-%m-%d")
+
+        return value
+
+    def set_field(self, name, value, representation):
+        if value:
+            representation[name] = self.set_value(value)
+
+    def narrative(self, condition, representation):
+        narratives_all = condition.narratives.all()
+        if narratives_all:
+            narratives = list()
+            for narrative in narratives_all:
+                narratives.append(NarrativeSerializer(narrative).data)
+
+            self.set_field('narrative', narratives, representation)
+
+    def condition(self, condition, representation):
+        self.set_field('type', condition.type_id, representation)
+
+    def to_representation(self, condition):
+        representation = OrderedDict()
+
+        self.condition(condition, representation)
+        self.narrative(condition, representation)
+
+        return representation
+
+
+class ConditionsSerializer(serializers.Serializer):
+
+    def add_to_list(self, data_list, value):
+        if value:
+            data_list.append(value)
+
+    def set_value(self, value):
+        if isinstance(value, datetime):
+            return value.strftime("%Y-%m-%d")
+
+        return value
+
+    def set_field(self, name, value, representation):
+        if value:
+            representation[name] = self.set_value(value)
+
+    def narrative(self, transaction_sector, representation):
+        narratives_all = transaction_sector.narratives.all()
+        if narratives_all:
+            narratives = list()
+            for narrative in narratives_all:
+                narratives.append(NarrativeSerializer(narrative).data)
+
+            self.set_field('narrative', narratives, representation)
+
+    def condition(self, conditions, representation):
+        condition_all = conditions.condition_set.all()
+        if condition_all:
+            condition_list = list()
+            for condition in condition_all:
+                self.add_to_list(condition_list, ConditionSerializer(condition).data)
+
+            self.set_field('condition', condition_list, representation)
+
+    def conditions(self, conditions, representation):
+        self.set_field('attached', conditions.attached, representation)
+
+    def to_representation(self, conditions):
+        representation = OrderedDict()
+
+        self.conditions(conditions, representation)
+        self.condition(conditions, representation)
+
+        return representation
+
+
 class ActivitySerializer(serializers.Serializer):
 
     def add_to_list(self, data_list, value):
@@ -2405,6 +2484,7 @@ class ActivitySerializer(serializers.Serializer):
 
     def conditions(self, activity, representation):
         try:
+            conditions = ConditionsSerializer(activity.conditions).data
             conditions_attached = '1' if activity.conditions.attached else '0'
             conditions_condition_type = list()
             conditions_condition_narrative = list()
@@ -2422,6 +2502,16 @@ class ActivitySerializer(serializers.Serializer):
                     if narrative.language:
                         conditions_condition_narrative_lang.append(narrative.language.code)
 
+            self.set_field(
+                'conditions',
+                conditions,
+                representation
+            )
+            self.set_field(
+                'conditions_attached',
+                conditions_attached,
+                representation
+            )
             self.set_field(
                 'conditions_condition_type',
                 conditions_condition_type,
