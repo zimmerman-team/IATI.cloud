@@ -884,6 +884,9 @@ class TransactionSerializer(serializers.Serializer):
             str(transaction.transaction_date.strftime("%Y-%m-%d")) if transaction.transaction_date else None,
             representation
         )
+        self.set_field('disbursement_channel_code', transaction.disbursement_channel_id, representation)
+        self.set_field('flow_type_code', transaction.flow_type_id, representation)
+        self.set_field('tied_status_code', transaction.tied_status_id, representation)
         self.set_field('value_currency', transaction.currency_id, representation)
         self.set_field(
             'value_date',
@@ -1849,8 +1852,11 @@ class ActivitySerializer(serializers.Serializer):
             transaction_receiver_org_narrative_text = list()
 
             transaction_disburstment_channel_code = list()
+
             transaction_sector_vocabulary = list()
+            transaction_sector_vocabulary_uri = list()
             transaction_sector_code = list()
+
             transaction_recipient_country_code = list()
             transaction_recipient_region_code = list()
             transaction_recipient_region_vocabulary = list()
@@ -1937,37 +1943,35 @@ class ActivitySerializer(serializers.Serializer):
                     transaction.disbursement_channel_id
                 )
 
-                try:
+                for transaction_sector in transaction.transactionsector_set.all():
                     self.add_to_list(
                         transaction_sector_vocabulary,
-                        transaction.transaction_sector.vocabulary_id
+                        transaction_sector.vocabulary_id
+                    )
+                    self.add_to_list(
+                        transaction_sector_vocabulary_uri,
+                        transaction_sector.vocabulary_uri
                     )
                     self.add_to_list(
                         transaction_sector_code,
-                        transaction.transaction_sector.sector_id
+                        transaction_sector.sector_id
                     )
-                except TransactionSector.DoesNotExist:
-                    pass
 
-                try:
+                for transaction_recipient_country in transaction.transactionrecipientcountry_set.all():
                     self.add_to_list(
                         transaction_recipient_country_code,
-                        transaction.transaction_recipient_country.country_id
+                        transaction_recipient_country.country_id
                     )
-                except TransactionRecipientCountry.DoesNotExist:
-                    pass
 
-                try:
+                for transaction_recipient_region in transaction.transactionrecipientregion_set.all():
                     self.add_to_list(
                         transaction_recipient_region_code,
-                        transaction.transaction_recipient_region.region_id
+                        transaction_recipient_region.region_id
                     )
                     self.add_to_list(
                         transaction_recipient_region_vocabulary,
-                        transaction.transaction_recipient_region.vocabulary_id
+                        transaction_recipient_region.vocabulary_id
                     )
-                except TransactionRecipientRegion.DoesNotExist:
-                    pass
 
                 self.add_to_list(
                     transaction_flow_type_code,
@@ -2101,6 +2105,11 @@ class ActivitySerializer(serializers.Serializer):
             self.set_field(
                 'transaction_sector_vocabulary',
                 transaction_sector_vocabulary,
+                representation
+            )
+            self.set_field(
+                'transaction_sector_vocabulary_uri',
+                transaction_sector_vocabulary_uri,
                 representation
             )
             self.set_field(

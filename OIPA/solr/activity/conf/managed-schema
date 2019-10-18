@@ -375,6 +375,7 @@
     <field name="transaction_disburstment_channel_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
 
     <field name="transaction_sector_vocabulary" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="transaction_sector_vocabulary_uri" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="transaction_sector_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
 
     <field name="transaction_recipient_country_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
