@@ -418,8 +418,9 @@
     <field name="conditions" type="text_general" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="conditions_attached" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="conditions_condition_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-    <field name="conditions_condition_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="conditions_condition_narrative" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="conditions_condition_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="conditions_condition_narrative_text" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
 
     <field name="result_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="result_aggregation_status" type="string" multiValued="true" indexed="true" required="false" stored="true"/>

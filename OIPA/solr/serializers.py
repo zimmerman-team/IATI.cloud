@@ -3,7 +3,7 @@ from collections import OrderedDict
 from datetime import datetime
 from rest_framework import serializers
 
-from iati.models import CountryBudgetItem, PlannedDisbursementProvider, PlannedDisbursementReceiver
+from iati.models import CountryBudgetItem, PlannedDisbursementProvider, PlannedDisbursementReceiver, Conditions
 from iati.transaction.models import TransactionProvider, TransactionReceiver
 
 
@@ -2403,6 +2403,48 @@ class ActivitySerializer(serializers.Serializer):
                 representation
             )
 
+    def conditions(self, activity, representation):
+        try:
+            conditions_attached = '1' if activity.conditions.attached else '0'
+            conditions_condition_type = list()
+            conditions_condition_narrative = list()
+            conditions_condition_narrative_lang = list()
+            conditions_condition_narrative_text = list()
+            for condition in activity.conditions.condition_set.all():
+                self.add_to_list(
+                    conditions_condition_type,
+                    condition.type_id
+                )
+
+                for narrative in condition.narratives.all():
+                    conditions_condition_narrative.append(narrative.content)
+                    conditions_condition_narrative_text.append(narrative.content)
+                    if narrative.language:
+                        conditions_condition_narrative_lang.append(narrative.language.code)
+
+            self.set_field(
+                'conditions_condition_type',
+                conditions_condition_type,
+                representation
+            )
+            self.set_field(
+                'conditions_condition_narrative',
+                conditions_condition_narrative,
+                representation
+            )
+            self.set_field(
+                'conditions_condition_narrative_lang',
+                conditions_condition_narrative_lang,
+                representation
+            )
+            self.set_field(
+                'conditions_condition_narrative_text',
+                conditions_condition_narrative_text,
+                representation
+            )
+        except Conditions.DoesNotExist:
+            pass
+
     def to_representation(self, activity):
         representation = OrderedDict()
 
@@ -2427,5 +2469,6 @@ class ActivitySerializer(serializers.Serializer):
         self.planned_disbursement(activity=activity, representation=representation)
         self.transaction(activity=activity, representation=representation)
         self.document_link(activity=activity, representation=representation)
+        self.conditions(activity=activity, representation=representation)
 
         return representation
