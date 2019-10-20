@@ -424,14 +424,27 @@
 
     <field name="result_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="result_aggregation_status" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+
     <field name="result_title_narrative" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_title_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_title_narrative_text" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
+
     <field name="result_description_narrative" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_description_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_description_narrative_text" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
 
     <field name="result_document_link" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="result_document_link_url" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="result_document_link_format" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+
     <field name="result_document_link_title_narrative" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_document_link_title_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_document_link_title_narrative_text" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
+
     <field name="result_document_link_description_narrative" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_document_link_description_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_document_link_description_narrative_text" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
+
     <field name="result_document_link_category_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="result_document_link_language_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="result_document_link_document_date_iso_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
@@ -445,13 +458,26 @@
     <field name="result_indicator_measure" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="result_indicator_acsending" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="result_indicator_aggregation_status" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+
     <field name="result_indicator_title_narrative" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_indicator_title_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_indicator_title_narrative_text" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
+
     <field name="result_indicator_description_narrative" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_indicator_description_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_indicator_description_narrative_text" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
 
     <field name="result_indicator_document_link_url" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="result_indicator_document_link_format" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+
     <field name="result_indicator_document_link_title_narrative" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_indicator_document_link_title_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_indicator_document_link_title_narrative_text" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
+
     <field name="result_indicator_document_link_description_narrative" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_indicator_document_link_description_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_indicator_document_link_description_narrative_text" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
+
     <field name="result_indicator_document_link_category_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="result_indicator_document_link_language_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="result_indicator_document_link_document_date_iso_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
@@ -459,6 +485,8 @@
     <field name="result_indicator_reference" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="result_indicator_reference_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="result_indicator_reference_vocabulary" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_indicator_reference_vocabulary_uri" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+
     <field name="result_indicator_reference_indicator_uri" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
 
     <field name="result_indicator_baseline_year" type="pint" multiValued="true" indexed="true" required="false" stored="true"/>
@@ -467,12 +495,22 @@
     <field name="result_indicator_baseline_location_ref" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="result_indicator_baseline_dimension_name" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="result_indicator_baseline_dimension_value" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+
     <field name="result_indicator_baseline_comment_narrative" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_indicator_baseline_comment_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_indicator_baseline_comment_narrative_text" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
 
     <field name="result_indicator_baseline_document_link_url" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="result_indicator_baseline_document_link_format" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+
     <field name="result_indicator_baseline_document_link_title" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_indicator_baseline_document_link_title_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_indicator_baseline_document_link_title_narrative_text" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
+
     <field name="result_indicator_baseline_document_link_description" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_indicator_baseline_document_link_description_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_indicator_baseline_document_link_description_text" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
+
     <field name="result_indicator_baseline_document_link_category_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="result_indicator_baseline_document_link_language_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="result_indicator_baseline_document_link_document_date_iso_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
@@ -483,14 +521,27 @@
     <field name="result_indicator_period_target_value" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="result_indicator_period_target_location_ref" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
 
+    <field name="result_indicator_period_target_dimension_name" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_indicator_period_target_dimension_value" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+
     <field name="result_indicator_period_target_dimmension_name" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="result_indicator_period_target_dimmension_value" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+
     <field name="result_indicator_period_target_comment_narrative" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_indicator_period_target_comment_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_indicator_period_target_comment_narrative_text" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
 
     <field name="result_indicator_period_target_document_link_url" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="result_indicator_period_target_document_link_format" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+
     <field name="result_indicator_period_target_document_link_title_narrative" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_indicator_period_target_document_link_title_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_indicator_period_target_document_link_title_narrative_text" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
+
     <field name="result_indicator_period_target_document_link_description_narrative" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_indicator_period_target_document_link_description_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_indicator_period_target_document_link_description_narrative_text" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
+
     <field name="result_indicator_period_target_document_link_category_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="result_indicator_period_target_document_link_language_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="result_indicator_period_target_document_link_document_date_iso_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
@@ -498,14 +549,27 @@
     <field name="result_indicator_period_actual_value" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="result_indicator_period_actual_location_ref" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
 
+    <field name="result_indicator_period_actual_dimension_name" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_indicator_period_actual_dimension_value" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+
     <field name="result_indicator_period_actual_dimmension_name" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="result_indicator_period_actual_dimmension_value" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+
     <field name="result_indicator_period_actual_comment_narrative" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_indicator_period_actual_comment_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_indicator_period_actual_comment_narrative_text" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
 
     <field name="result_indicator_period_actual_document_link_url" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="result_indicator_period_actual_document_link_format" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+
     <field name="result_indicator_period_actual_document_link_title_narrative" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_indicator_period_actual_document_link_title_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_indicator_period_actual_document_link_title_narrative_text" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
+
     <field name="result_indicator_period_actual_document_link_description_narrative" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_indicator_period_actual_document_link_description_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_indicator_period_actual_document_link_description_narrative_text" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
+
     <field name="result_indicator_period_actual_document_link_category_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="result_indicator_period_actual_document_link_language_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="result_indicator_period_actual_document_link_document_date_iso_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>

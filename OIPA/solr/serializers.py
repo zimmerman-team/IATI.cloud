@@ -3,7 +3,9 @@ from collections import OrderedDict
 from datetime import datetime
 from rest_framework import serializers
 
-from iati.models import CountryBudgetItem, PlannedDisbursementProvider, PlannedDisbursementReceiver, Conditions
+from iati.models import CountryBudgetItem, PlannedDisbursementProvider, \
+    PlannedDisbursementReceiver, Conditions, ResultTitle, ResultDescription, \
+    DocumentLinkTitle, DocumentLinkDescription, ResultIndicatorTitle, ResultIndicatorBaselineComment
 from iati.transaction.models import TransactionProvider, TransactionReceiver
 
 
@@ -1103,7 +1105,7 @@ class ConditionsSerializer(serializers.Serializer):
             self.set_field('condition', condition_list, representation)
 
     def conditions(self, conditions, representation):
-        self.set_field('attached', conditions.attached, representation)
+        self.set_field('attached', '1' if conditions.attached else '0', representation)
 
     def to_representation(self, conditions):
         representation = OrderedDict()
@@ -2504,7 +2506,7 @@ class ActivitySerializer(serializers.Serializer):
 
             self.set_field(
                 'conditions',
-                conditions,
+                json.dumps(conditions),
                 representation
             )
             self.set_field(
@@ -2535,6 +2537,600 @@ class ActivitySerializer(serializers.Serializer):
         except Conditions.DoesNotExist:
             pass
 
+    def result(self, activity, representation):
+        result_all = activity.result_set.all()
+        if result_all:
+            result_list = list()
+            result_type = list()
+            result_aggregation_status = list()
+
+            result_title_narrative = list()
+            result_title_narrative_lang = list()
+            result_title_narrative_text = list()
+
+            result_description_narrative = list()
+            result_description_narrative_lang = list()
+            result_description_narrative_text = list()
+
+            result_document_link = list()
+            result_document_link_url = list()
+            result_document_link_format = list()
+
+            result_document_link_title_narrative = list()
+            result_document_link_title_narrative_lang = list()
+            result_document_link_title_narrative_text = list()
+
+            result_document_link_description_narrative = list()
+            result_document_link_description_narrative_lang = list()
+            result_document_link_description_narrative_text = list()
+
+            result_document_link_category_code = list()
+            result_document_link_language_code = list()
+            result_document_link_document_date_iso_date = list()
+
+            # result_reference = list()
+            result_reference_code = list()
+            result_reference_vocabulary = list()
+            result_reference_vocabulary_uri = list()
+
+            # result_indicator = list()
+            result_indicator_measure = list()
+            result_indicator_ascending = list()
+            result_indicator_aggregation_status = list()
+
+            result_indicator_title_narrative = list()
+            result_indicator_title_narrative_lang = list()
+            result_indicator_title_narrative_text = list()
+
+            result_indicator_description_narrative = list()
+            result_indicator_description_narrative_lang = list()
+            result_indicator_description_narrative_text = list()
+
+            result_indicator_document_link_url = list()
+            result_indicator_document_link_format = list()
+
+            result_indicator_document_link_title_narrative = list()
+            result_indicator_document_link_title_narrative_lang = list()
+            result_indicator_document_link_title_narrative_text = list()
+
+            result_indicator_document_link_description_narrative = list()
+            result_indicator_document_link_description_narrative_lang = list()
+            result_indicator_document_link_description_narrative_text = list()
+
+            result_indicator_document_link_category_code = list()
+            result_indicator_document_link_language_code = list()
+            result_indicator_document_link_document_date_iso_date = list()
+
+            # result_indicator_reference = list()
+            result_indicator_reference_code = list()
+            result_indicator_reference_vocabulary = list()
+            result_indicator_reference_vocabulary_uri = list()
+
+            result_indicator_baseline_year = list()
+            result_indicator_baseline_iso_date = list()
+            result_indicator_baseline_value = list()
+            result_indicator_baseline_location_ref = list()
+            result_indicator_baseline_dimension_name = list()
+            result_indicator_baseline_dimension_value = list()
+
+            result_indicator_baseline_comment_narrative = list()
+            result_indicator_baseline_comment_narrative_lang = list()
+            result_indicator_baseline_comment_narrative_text = list()
+
+            result_indicator_baseline_document_link_url = list()
+            result_indicator_baseline_document_link_format = list()
+
+            result_indicator_baseline_document_link_title = list()
+            result_indicator_baseline_document_link_title_narrative_lang = list()
+            result_indicator_baseline_document_link_title_narrative_text = list()
+
+            result_indicator_baseline_document_link_description = list()
+            result_indicator_baseline_document_link_description_lang = list()
+            result_indicator_baseline_document_link_description_text = list()
+
+            result_indicator_baseline_document_link_category_code = list()
+            result_indicator_baseline_document_link_language_code = list()
+            result_indicator_baseline_document_link_document_date_iso_date = list()
+
+            result_indicator_period_period_start_iso_date = list()
+            result_indicator_period_period_end_iso_date = list()
+
+            result_indicator_period_target_value = list()
+            result_indicator_period_target_location_ref = list()
+
+            result_indicator_period_target_dimension_name = list()
+            result_indicator_period_target_dimension_value = list()
+
+            result_indicator_period_target_comment_narrative = list()
+            result_indicator_period_target_comment_narrative_lang = list()
+            result_indicator_period_target_comment_narrative_text = list()
+
+            result_indicator_period_target_document_link_url = list()
+            result_indicator_period_target_document_link_format = list()
+
+            result_indicator_period_target_document_link_title_narrative = list()
+            result_indicator_period_target_document_link_title_narrative_lang = list()
+            result_indicator_period_target_document_link_title_narrative_text = list()
+
+            result_indicator_period_target_document_link_description_narrative = list()
+            result_indicator_period_target_document_link_description_narrative_lang = list()
+            result_indicator_period_target_document_link_description_narrative_text = list()
+
+            result_indicator_period_target_document_link_category_code = list()
+            result_indicator_period_target_document_link_language_code = list()
+            result_indicator_period_target_document_link_document_date_iso_date = list()
+
+            result_indicator_period_actual_value = list()
+            result_indicator_period_actual_location_ref = list()
+
+            result_indicator_period_actual_dimension_name = list()
+            result_indicator_period_actual_dimension_value = list()
+
+            result_indicator_period_actual_comment_narrative = list()
+            result_indicator_period_actual_comment_narrative_lang = list()
+            result_indicator_period_actual_comment_narrative_text = list()
+
+            result_indicator_period_actual_document_link_url = list()
+            result_indicator_period_actual_document_link_format = list()
+
+            result_indicator_period_actual_document_link_title_narrative = list()
+            result_indicator_period_actual_document_link_title_narrative_lang = list()
+            result_indicator_period_actual_document_link_title_narrative_text = list()
+
+            result_indicator_period_actual_document_link_description_narrative = list()
+            result_indicator_period_actual_document_link_description_narrative_lang = list()
+            result_indicator_period_actual_document_link_description_narrative_text = list()
+
+            result_indicator_period_actual_document_link_category_code = list()
+            result_indicator_period_actual_document_link_language_code = list()
+            result_indicator_period_actual_document_link_document_date_iso_date = list()
+
+            for result in result_all:
+                self.add_to_list(
+                    result_type,
+                    result.type_id
+                )
+                self.add_to_list(
+                    result_aggregation_status,
+                    '1' if result.aggregation_status else '0'
+                )
+
+                try:
+                    for narrative in result.resulttitle.narratives.all():
+                        result_title_narrative.append(narrative.content)
+                        result_title_narrative_text.append(narrative.content)
+                        if narrative.language:
+                            result_title_narrative_lang.append(narrative.language.code)
+                except ResultTitle.DoesNotExist:
+                    pass
+
+                try:
+                    for narrative in result.resultdescription.narratives.all():
+                        result_description_narrative.append(narrative.content)
+                        result_description_narrative_text.append(narrative.content)
+                        if narrative.language:
+                            result_description_narrative_lang.append(narrative.language.code)
+                except ResultDescription.DoesNotExist:
+                    pass
+
+                for document_link in result.documentlink_set.all():
+                    self.add_to_list(
+                        result_document_link_url,
+                        document_link.url
+                    )
+                    self.add_to_list(
+                        result_document_link_format,
+                        document_link.file_format_id
+                    )
+
+                    try:
+                        for narrative in document_link.documentlinktitle.narratives.all():
+                            result_document_link_title_narrative.append(narrative.content)
+                            result_document_link_title_narrative_text.append(narrative.content)
+                            if narrative.language:
+                                result_document_link_title_narrative_lang.append(narrative.language.code)
+                    except DocumentLinkTitle.DoesNotExist:
+                        pass
+
+                    try:
+                        for narrative in document_link.documentlinkdescription.narratives.all():
+                            result_document_link_description_narrative.append(narrative.content)
+                            result_document_link_description_narrative_text.append(narrative.content)
+                            if narrative.language:
+                                result_document_link_description_narrative_lang.append(narrative.language.code)
+                    except DocumentLinkDescription.DoesNotExist:
+                        pass
+
+                    for document_link_category in document_link.documentlinkcategory_set.all():
+                        self.add_to_list(
+                            result_document_link_category_code,
+                            document_link_category.category_id
+                        )
+
+                    for document_link_language in document_link.documentlinklanguage_set.all():
+                        self.add_to_list(
+                            result_document_link_language_code,
+                            document_link_language.language_id
+                        )
+
+                    self.add_to_list(
+                        result_document_link_document_date_iso_date,
+                        str(document_link.iso_date.strftime(
+                            "%Y-%m-%d")) if document_link.iso_date else None
+                    )
+
+                for result_reference in result.resultreference_set.all():
+                    self.add_to_list(
+                        result_reference_code,
+                        result_reference.code
+                    )
+                    self.add_to_list(
+                        result_reference_vocabulary,
+                        result_reference.vocabulary_id
+                    )
+                    self.add_to_list(
+                        result_reference_vocabulary_uri,
+                        result_reference.vocabulary_uri
+                    )
+
+                for result_indicator in result.resultindicator_set.all():
+                    self.add_to_list(
+                        result_indicator_measure,
+                        result_indicator.measure_id
+                    )
+                    self.add_to_list(
+                        result_indicator_ascending,
+                        '1' if result_indicator.ascending else '0'
+                    )
+                    self.add_to_list(
+                        result_indicator_aggregation_status,
+                        '1' if result_indicator.aggregation_status else '0'
+                    )
+
+                    try:
+                        for narrative in result_indicator.resultindicatortitle.narratives.all():
+                            result_indicator_title_narrative.append(narrative.content)
+                            result_indicator_title_narrative_text.append(narrative.content)
+                            if narrative.language:
+                                result_indicator_title_narrative_lang.append(narrative.language.code)
+                    except ResultIndicatorTitle.DoesNotExist:
+                        pass
+
+                    try:
+                        for narrative in result_indicator.resultindicatordescription.narratives.all():
+                            result_indicator_description_narrative.append(narrative.content)
+                            result_indicator_description_narrative_text.append(narrative.content)
+                            if narrative.language:
+                                result_indicator_description_narrative_lang.append(narrative.language.code)
+                    except ResultIndicatorTitle.DoesNotExist:
+                        pass
+
+                    for result_indicator_document_link in result_indicator.result_indicator_document_links.all():
+                        self.add_to_list(
+                            result_indicator_document_link_url,
+                            result_indicator_document_link.url
+                        )
+                        self.add_to_list(
+                            result_indicator_document_link_format,
+                            result_indicator_document_link.file_format_id
+                        )
+
+                        try:
+                            for narrative in result_indicator_document_link.documentlinktitle.narratives.all():
+                                result_indicator_document_link_title_narrative.append(narrative.content)
+                                result_indicator_document_link_title_narrative_text.append(narrative.content)
+                                if narrative.language:
+                                    result_indicator_document_link_title_narrative_lang.append(narrative.language.code)
+                        except ResultIndicatorTitle.DoesNotExist:
+                            pass
+
+                        try:
+                            for narrative in result_indicator_document_link.documentlinkdescription.narratives.all():
+                                result_indicator_document_link_description_narrative.append(narrative.content)
+                                result_indicator_document_link_description_narrative_text.append(narrative.content)
+                                if narrative.language:
+                                    result_indicator_document_link_description_narrative_lang.append(narrative.language.code)  # NOQA: E501
+                        except ResultIndicatorTitle.DoesNotExist:
+                            pass
+
+                        for document_link_category in result_indicator_document_link.documentlinkcategory_set.all():
+                            self.add_to_list(
+                                result_indicator_document_link_category_code,
+                                document_link_category.category_id
+                            )
+
+                        for document_link_language in result_indicator_document_link.documentlinklanguage_set.all():
+                            self.add_to_list(
+                                result_indicator_document_link_language_code,
+                                document_link_language.language_id
+                            )
+
+                        self.add_to_list(
+                            result_indicator_document_link_document_date_iso_date,
+                            str(result_indicator_document_link.iso_date.strftime(
+                                "%Y-%m-%d")) if result_indicator_document_link.iso_date else None
+                        )
+
+                    for result_indicator_reference in result_indicator.resultindicatorreference_set.all():
+                        self.add_to_list(
+                            result_indicator_reference_code,
+                            result_indicator_reference.code
+                        )
+                        self.add_to_list(
+                            result_indicator_reference_vocabulary,
+                            result_indicator_reference.vocabulary_id
+                        )
+                        self.add_to_list(
+                            result_indicator_reference_vocabulary_uri,
+                            result_indicator_reference.indicator_uri
+                        )
+
+                    for result_indicator_baseline in result_indicator.resultindicatorbaseline_set.all():
+                        self.add_to_list(
+                            result_indicator_baseline_year,
+                            result_indicator_baseline.year
+                        )
+                        self.add_to_list(
+                            result_indicator_baseline_iso_date,
+                            str(result_indicator_baseline.iso_date.strftime(
+                                "%Y-%m-%d")) if result_indicator_baseline.iso_date else None
+                        )
+                        self.add_to_list(
+                            result_indicator_baseline_value,
+                            result_indicator_baseline.value
+                        )
+
+                        for result_indicator_baseline_location in result_indicator_baseline.location_set.all():
+                            self.add_to_list(
+                                result_indicator_baseline_location_ref,
+                                result_indicator_baseline_location.ref
+                            )
+
+                        for result_indicator_baseline_dimension in result_indicator_baseline.resultindicatorbaselinedimension_set.all():  # NOQA: E501
+                            self.add_to_list(
+                                result_indicator_baseline_dimension_name,
+                                result_indicator_baseline_dimension.name
+                            )
+                            self.add_to_list(
+                                result_indicator_baseline_dimension_value,
+                                result_indicator_baseline_dimension.value
+                            )
+
+                        for result_indicator_baseline_dimension in result_indicator_baseline.resultindicatorbaselinedimension_set.all():  # NOQA: E501
+                            self.add_to_list(
+                                result_indicator_baseline_dimension_name,
+                                result_indicator_baseline_dimension.name
+                            )
+                            self.add_to_list(
+                                result_indicator_baseline_dimension_value,
+                                result_indicator_baseline_dimension.value
+                            )
+
+                        try:
+                            for narrative in result_indicator_baseline.resultindicatorbaselinecomment.narratives.all():
+                                result_indicator_baseline_comment_narrative.append(narrative.content)
+                                result_indicator_baseline_comment_narrative_text.append(narrative.content)
+                                if narrative.language:
+                                    result_indicator_baseline_comment_narrative_lang.append(narrative.language.code)  # NOQA: E501
+                        except ResultIndicatorBaselineComment.DoesNotExist:
+                            pass
+
+                        for result_indicator_baseline_document_link in result_indicator_baseline.baseline_document_links.all(): # NOQA: E501
+                            self.add_to_list(
+                                result_indicator_baseline_document_link_url,
+                                result_indicator_baseline_document_link.url
+                            )
+                            self.add_to_list(
+                                result_indicator_baseline_document_link_format,
+                                result_indicator_baseline_document_link.file_format_id
+                            )
+
+                            try:
+                                for narrative in result_indicator_baseline_document_link.documentlinktitle.narratives.all():
+                                    result_indicator_baseline_document_link_title.append(narrative.content)
+                                    result_indicator_baseline_document_link_title_narrative_text.append(narrative.content)
+                                    if narrative.language:
+                                        result_indicator_baseline_document_link_title_narrative_lang.append(
+                                            narrative.language.code)
+                            except ResultIndicatorTitle.DoesNotExist:
+                                pass
+
+                            try:
+                                for narrative in result_indicator_baseline_document_link.documentlinkdescription.narratives.all():
+                                    result_indicator_baseline_document_link_description.append(narrative.content)
+                                    result_indicator_baseline_document_link_description_text.append(narrative.content)
+                                    if narrative.language:
+                                        result_indicator_baseline_document_link_description_lang.append(
+                                            narrative.language.code)  # NOQA: E501
+                            except DocumentLinkTitle.DoesNotExist:
+                                pass
+
+                            for document_link_category in result_indicator_baseline_document_link.documentlinkcategory_set.all():
+                                self.add_to_list(
+                                    result_indicator_baseline_document_link_category_code,
+                                    document_link_category.category_id
+                                )
+
+                            for document_link_language in result_indicator_baseline_document_link.documentlinklanguage_set.all():
+                                self.add_to_list(
+                                    result_indicator_baseline_document_link_language_code,
+                                    document_link_language.language_id
+                                )
+
+                            self.add_to_list(
+                                result_indicator_baseline_document_link_document_date_iso_date,
+                                str(result_indicator_baseline_document_link.iso_date.strftime(
+                                    "%Y-%m-%d")) if result_indicator_baseline_document_link.iso_date else None
+                            )
+
+                for result_period in result_indicator.resultindicatorperiod_set.all():
+                    self.add_to_list(
+                        result_indicator_period_period_start_iso_date,
+                        str(result_period.period_start.strftime(
+                            "%Y-%m-%d")) if result_period.period_start else None
+                    )
+                    self.add_to_list(
+                        result_indicator_period_period_end_iso_date,
+                        str(result_period.period_end.strftime(
+                            "%Y-%m-%d")) if result_period.period_end else None
+                    )
+
+                    for result_period_target in result_period.targets.all():
+                        self.add_to_list(
+                            result_indicator_period_target_value,
+                            result_period_target.value
+                        )
+
+                        for result_period_target_location in result_period_target.resultindicatorperiodtargetlocation_set.all():
+                            self.add_to_list(
+                                result_indicator_period_target_location_ref,
+                                result_period_target_location.ref
+                            )
+
+                        for result_period_target_dimension in result_period_target.resultindicatorperiodtargetdimension_set.all():
+                            self.add_to_list(
+                                result_indicator_period_target_dimension_name,
+                                result_period_target_dimension.name
+                            )
+                            self.add_to_list(
+                                result_indicator_period_target_dimension_value,
+                                result_period_target_dimension.value
+                            )
+
+                        for result_period_target_comment in result_period_target.resultindicatorperiodtargetcomment_set.all():
+                            for narrative in result_period_target_comment.narratives.all():
+                                result_indicator_period_target_comment_narrative.append(narrative.content)
+                                result_indicator_period_target_comment_narrative_text.append(narrative.content)
+                                if narrative.language:
+                                    result_indicator_period_target_comment_narrative_lang.append(
+                                        narrative.language.code)
+
+                        for document_link in result_period_target.period_target_document_links.all(): # NOQA: E501
+                            self.add_to_list(
+                                result_indicator_period_target_document_link_url,
+                                document_link.url
+                            )
+                            self.add_to_list(
+                                result_indicator_period_target_document_link_format,
+                                document_link.file_format_id
+                            )
+
+                            try:
+                                for narrative in document_link.documentlinktitle.narratives.all():
+                                    result_indicator_period_target_document_link_title_narrative.append(narrative.content)
+                                    result_indicator_period_target_document_link_title_narrative_text.append(narrative.content)
+                                    if narrative.language:
+                                        result_indicator_period_target_document_link_title_narrative_lang.append(
+                                            narrative.language.code)
+                            except DocumentLinkTitle.DoesNotExist:
+                                pass
+
+                            try:
+                                for narrative in document_link.documentlinkdescription.narratives.all():
+                                    result_indicator_period_target_document_link_description_narrative.append(narrative.content)
+                                    result_indicator_period_target_document_link_description_narrative_text.append(narrative.content)
+                                    if narrative.language:
+                                        result_indicator_period_target_document_link_description_narrative_lang.append(
+                                            narrative.language.code)  # NOQA: E501
+                            except DocumentLinkTitle.DoesNotExist:
+                                pass
+
+                            for document_link_category in document_link.documentlinkcategory_set.all():
+                                self.add_to_list(
+                                    result_indicator_period_target_document_link_category_code,
+                                    document_link_category.category_id
+                                )
+
+                            for document_link_language in document_link.documentlinklanguage_set.all():
+                                self.add_to_list(
+                                    result_indicator_period_target_document_link_language_code,
+                                    document_link_language.language_id
+                                )
+
+                            self.add_to_list(
+                                result_indicator_period_target_document_link_document_date_iso_date,
+                                str(document_link.iso_date.strftime(
+                                    "%Y-%m-%d")) if document_link.iso_date else None
+                            )
+
+                    for result_period_actual in result_period.actuals.all():
+                        self.add_to_list(
+                            result_indicator_period_actual_value,
+                            result_period_actual.value
+                        )
+
+                        for result_period_actual_location in result_period_actual.resultindicatorperiodactuallocation_set.all():
+                            self.add_to_list(
+                                result_indicator_period_actual_location_ref,
+                                result_period_actual_location.ref
+                            )
+
+                        for result_period_actual_dimension in result_period_actual.resultindicatorperiodactualdimension_set.all():
+                            self.add_to_list(
+                                result_indicator_period_actual_dimension_name,
+                                result_period_actual_dimension.name
+                            )
+                            self.add_to_list(
+                                result_indicator_period_actual_dimension_value,
+                                result_period_actual_dimension.value
+                            )
+
+                        for result_period_actual_comment in result_period_actual.resultindicatorperiodactualcomment_set.all():
+                            for narrative in result_period_actual_comment.narratives.all():
+                                result_indicator_period_actual_comment_narrative.append(narrative.content)
+                                result_indicator_period_actual_comment_narrative_text.append(narrative.content)
+                                if narrative.language:
+                                    result_indicator_period_actual_comment_narrative_lang.append(
+                                        narrative.language.code)
+
+                        for document_link in result_period_actual.period_actual_document_links.all(): # NOQA: E501
+                            self.add_to_list(
+                                result_indicator_period_actual_document_link_url,
+                                document_link.url
+                            )
+                            self.add_to_list(
+                                result_indicator_period_actual_document_link_format,
+                                document_link.file_format_id
+                            )
+
+                            try:
+                                for narrative in document_link.documentlinktitle.narratives.all():
+                                    result_indicator_period_actual_document_link_title_narrative.append(narrative.content)
+                                    result_indicator_period_actual_document_link_title_narrative_text.append(narrative.content)
+                                    if narrative.language:
+                                        result_indicator_period_actual_document_link_title_narrative_lang.append(
+                                            narrative.language.code)
+                            except DocumentLinkTitle.DoesNotExist:
+                                pass
+
+                            try:
+                                for narrative in document_link.documentlinkdescription.narratives.all():
+                                    result_indicator_period_actual_document_link_description_narrative.append(narrative.content)
+                                    result_indicator_period_actual_document_link_description_narrative_text.append(narrative.content)
+                                    if narrative.language:
+                                        result_indicator_period_actual_document_link_description_narrative_lang.append(
+                                            narrative.language.code)  # NOQA: E501
+                            except DocumentLinkTitle.DoesNotExist:
+                                pass
+
+                            for document_link_category in document_link.documentlinkcategory_set.all():
+                                self.add_to_list(
+                                    result_indicator_period_actual_document_link_category_code,
+                                    document_link_category.category_id
+                                )
+
+                            for document_link_language in document_link.documentlinklanguage_set.all():
+                                self.add_to_list(
+                                    result_indicator_period_actual_document_link_language_code,
+                                    document_link_language.language_id
+                                )
+
+                            self.add_to_list(
+                                result_indicator_period_actual_document_link_document_date_iso_date,
+                                str(document_link.iso_date.strftime(
+                                    "%Y-%m-%d")) if document_link.iso_date else None
+                            )
+
     def to_representation(self, activity):
         representation = OrderedDict()
 
@@ -2560,5 +3156,6 @@ class ActivitySerializer(serializers.Serializer):
         self.transaction(activity=activity, representation=representation)
         self.document_link(activity=activity, representation=representation)
         self.conditions(activity=activity, representation=representation)
+        self.result(activity=activity, representation=representation)
 
         return representation
