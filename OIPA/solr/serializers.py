@@ -1116,6 +1116,641 @@ class ConditionsSerializer(serializers.Serializer):
         return representation
 
 
+class ReferenceSerializer(serializers.Serializer):
+
+    def add_to_list(self, data_list, value):
+        if value:
+            data_list.append(value)
+
+    def set_value(self, value):
+        if isinstance(value, datetime):
+            return value.strftime("%Y-%m-%d")
+
+        return value
+
+    def set_field(self, name, value, representation):
+        if value:
+            representation[name] = self.set_value(value)
+
+    def narrative(self, transaction_sector, representation):
+        narratives_all = transaction_sector.narratives.all()
+        if narratives_all:
+            narratives = list()
+            for narrative in narratives_all:
+                narratives.append(NarrativeSerializer(narrative).data)
+
+            self.set_field('narrative', narratives, representation)
+
+    def reference(self, reference, representation):
+        self.set_field('code', reference.code, representation)
+        self.set_field('vocabulary', reference.vocabulary_id, representation)
+        self.set_field('vocabulary_uri', reference.vocabulary_uri, representation)
+
+    def to_representation(self, reference):
+        representation = OrderedDict()
+
+        self.reference(reference, representation)
+
+        return representation
+
+
+class IndicatorReferenceSerializer(serializers.Serializer):
+
+    def add_to_list(self, data_list, value):
+        if value:
+            data_list.append(value)
+
+    def set_value(self, value):
+        if isinstance(value, datetime):
+            return value.strftime("%Y-%m-%d")
+
+        return value
+
+    def set_field(self, name, value, representation):
+        if value:
+            representation[name] = self.set_value(value)
+
+    def narrative(self, transaction_sector, representation):
+        narratives_all = transaction_sector.narratives.all()
+        if narratives_all:
+            narratives = list()
+            for narrative in narratives_all:
+                narratives.append(NarrativeSerializer(narrative).data)
+
+            self.set_field('narrative', narratives, representation)
+
+    def reference(self, reference, representation):
+        self.set_field('code', reference.code, representation)
+        self.set_field('vocabulary', reference.vocabulary_id, representation)
+        self.set_field('vocabulary_uri', reference.indicator_uri, representation)
+
+    def to_representation(self, reference):
+        representation = OrderedDict()
+
+        self.reference(reference, representation)
+
+        return representation
+
+
+class ResultLocationSerializer(serializers.Serializer):
+
+    def add_to_list(self, data_list, value):
+        if value:
+            data_list.append(value)
+
+    def set_value(self, value):
+        if isinstance(value, datetime):
+            return value.strftime("%Y-%m-%d")
+
+        return value
+
+    def set_field(self, name, value, representation):
+        if value:
+            representation[name] = self.set_value(value)
+
+    def narrative(self, transaction_sector, representation):
+        narratives_all = transaction_sector.narratives.all()
+        if narratives_all:
+            narratives = list()
+            for narrative in narratives_all:
+                narratives.append(NarrativeSerializer(narrative).data)
+
+            self.set_field('narrative', narratives, representation)
+
+    def location(self, location, representation):
+        self.set_field('ref', location.ref, representation)
+
+    def to_representation(self, reference):
+        representation = OrderedDict()
+
+        self.location(reference, representation)
+
+        return representation
+
+
+class DimensionSerializer(serializers.Serializer):
+
+    def add_to_list(self, data_list, value):
+        if value:
+            data_list.append(value)
+
+    def set_value(self, value):
+        if isinstance(value, datetime):
+            return value.strftime("%Y-%m-%d")
+
+        return value
+
+    def set_field(self, name, value, representation):
+        if value:
+            representation[name] = self.set_value(value)
+
+    def narrative(self, transaction_sector, representation):
+        narratives_all = transaction_sector.narratives.all()
+        if narratives_all:
+            narratives = list()
+            for narrative in narratives_all:
+                narratives.append(NarrativeSerializer(narrative).data)
+
+            self.set_field('narrative', narratives, representation)
+
+    def dimension(self, dimension, representation):
+        self.set_field('name', dimension.name, representation)
+        self.set_field('value', dimension.value, representation)
+
+    def to_representation(self, dimension):
+        representation = OrderedDict()
+
+        self.dimension(dimension, representation)
+
+        return representation
+
+
+class BaselineSerializer(serializers.Serializer):
+
+    def add_to_list(self, data_list, value):
+        if value:
+            data_list.append(value)
+
+    def set_value(self, value):
+        if isinstance(value, datetime):
+            return value.strftime("%Y-%m-%d")
+
+        return value
+
+    def set_field(self, name, value, representation):
+        if value:
+            representation[name] = self.set_value(value)
+
+    def narrative(self, field, representation, field_name='narrative'):
+        narratives_all = field.narratives.all()
+        if narratives_all:
+            narratives = list()
+            for narrative in narratives_all:
+                narratives.append(NarrativeSerializer(narrative).data)
+
+            self.set_field(field_name, narratives, representation)
+
+    def baseline(self, baseline, representation):
+        self.set_field('year', baseline.year, representation)
+        self.set_field(
+            'iso_date',
+            str(baseline.iso_date.strftime(
+                "%Y-%m-%d")) if baseline.iso_date else None,
+            representation
+        )
+        self.set_field('value', baseline.value, representation)
+
+    def location(self, baseline, representation):
+        location_all = baseline.location_set.all()
+        if location_all:
+            location_list = list()
+
+            for location in location_all:
+                location_list.append(ResultLocationSerializer(location).data)
+
+            self.set_field('location', location_list, representation)
+
+    def dimension(self, baseline, representation):
+        dimension_all = baseline.resultindicatorbaselinedimension_set.all()
+        if dimension_all:
+            dimension_list = list()
+
+            for dimension in dimension_all:
+                dimension_list.append(DimensionSerializer(dimension).data)
+
+            self.set_field('dimension', dimension_list, representation)
+
+    def comment(self, baseline, representation):
+        try:
+            self.narrative(baseline.resultindicatorbaselinecomment, representation, 'comment')
+        except ResultIndicatorBaselineComment.DoesNotExist:
+            pass
+
+    def document_link(self, baseline, representation):
+        document_link_all = baseline.baseline_document_links.all()
+        if document_link_all:
+            document_link_list = list()
+
+            for document_link in document_link_all:
+                document_link_list.append(
+                    DocumentLinkSerializer(document_link).data
+                )
+
+            self.set_field('document_link', document_link_list, representation)
+
+    def to_representation(self, baseline):
+        representation = OrderedDict()
+
+        self.baseline(baseline, representation)
+        self.location(baseline, representation)
+        self.dimension(baseline, representation)
+        self.comment(baseline, representation)
+        self.document_link(baseline, representation)
+
+        return representation
+
+
+class TargetSerializer(serializers.Serializer):
+
+    def add_to_list(self, data_list, value):
+        if value:
+            data_list.append(value)
+
+    def set_value(self, value):
+        if isinstance(value, datetime):
+            return value.strftime("%Y-%m-%d")
+
+        return value
+
+    def set_field(self, name, value, representation):
+        if value:
+            representation[name] = self.set_value(value)
+
+    def narrative(self, field, representation, field_name='narrative'):
+        narratives_all = field.narratives.all()
+        if narratives_all:
+            narratives = list()
+            for narrative in narratives_all:
+                narratives.append(NarrativeSerializer(narrative).data)
+
+            self.set_field(field_name, narratives, representation)
+
+    def location(self, item, representation):
+        location_all = item.resultindicatorperiodtargetlocation_set.all()
+        if location_all:
+            location_list = list()
+
+            for location in location_all:
+                location_list.append(ResultLocationSerializer(location).data)
+
+            self.set_field('location', location_list, representation)
+
+    def dimension(self, item, representation):
+        dimension_all = item.resultindicatorperiodtargetdimension_set.all()
+        if dimension_all:
+            dimension_list = list()
+
+            for dimension in dimension_all:
+                dimension_list.append(DimensionSerializer(dimension).data)
+
+            self.set_field('dimension', dimension_list, representation)
+
+    def comment(self, item, representation):
+        self.narrative(item.resultindicatorperiodtargetcomment_set.first(), representation, 'comment')
+
+    def document_link(self, target, representation):
+        document_link_all = target.period_target_document_links.all()
+        if document_link_all:
+            document_link_list = list()
+
+            for document_link in document_link_all:
+                document_link_list.append(
+                    DocumentLinkSerializer(document_link).data
+                )
+
+            self.set_field('document_link', document_link_list, representation)
+
+    def to_representation(self, target):
+        representation = OrderedDict()
+
+        self.location(target, representation)
+        self.dimension(target, representation)
+        self.comment(target, representation)
+        self.comment(target, representation)
+        self.document_link(target, representation)
+
+        return representation
+
+
+class ActualSerializer(serializers.Serializer):
+
+    def add_to_list(self, data_list, value):
+        if value:
+            data_list.append(value)
+
+    def set_value(self, value):
+        if isinstance(value, datetime):
+            return value.strftime("%Y-%m-%d")
+
+        return value
+
+    def set_field(self, name, value, representation):
+        if value:
+            representation[name] = self.set_value(value)
+
+    def narrative(self, field, representation, field_name='narrative'):
+        narratives_all = field.narratives.all()
+        if narratives_all:
+            narratives = list()
+            for narrative in narratives_all:
+                narratives.append(NarrativeSerializer(narrative).data)
+
+            self.set_field(field_name, narratives, representation)
+
+    def location(self, item, representation):
+        location_all = item.resultindicatorperiodactuallocation_set.all()
+        if location_all:
+            location_list = list()
+
+            for location in location_all:
+                location_list.append(ResultLocationSerializer(location).data)
+
+            self.set_field('location', location_list, representation)
+
+    def dimension(self, item, representation):
+        dimension_all = item.resultindicatorperiodactualdimension_set.all()
+        if dimension_all:
+            dimension_list = list()
+
+            for dimension in dimension_all:
+                dimension_list.append(DimensionSerializer(dimension).data)
+
+            self.set_field('dimension', dimension_list, representation)
+
+    def comment(self, item, representation):
+        self.narrative(item.resultindicatorperiodactualcomment_set.first(), representation, 'comment')
+
+    def document_link(self, target, representation):
+        document_link_all = target.period_actual_document_links.all()
+        if document_link_all:
+            document_link_list = list()
+
+            for document_link in document_link_all:
+                document_link_list.append(
+                    DocumentLinkSerializer(document_link).data
+                )
+
+            self.set_field('document_link', document_link_list, representation)
+
+    def to_representation(self, actual):
+        representation = OrderedDict()
+
+        self.location(actual, representation)
+        self.dimension(actual, representation)
+        self.comment(actual, representation)
+        self.comment(actual, representation)
+        self.document_link(actual, representation)
+
+        return representation
+
+
+class PeriodSerializer(serializers.Serializer):
+
+    def add_to_list(self, data_list, value):
+        if value:
+            data_list.append(value)
+
+    def set_value(self, value):
+        if isinstance(value, datetime):
+            return value.strftime("%Y-%m-%d")
+
+        return value
+
+    def set_field(self, name, value, representation):
+        if value:
+            representation[name] = self.set_value(value)
+
+    def narrative(self, field, representation, field_name='narrative'):
+        narratives_all = field.narratives.all()
+        if narratives_all:
+            narratives = list()
+            for narrative in narratives_all:
+                narratives.append(NarrativeSerializer(narrative).data)
+
+            self.set_field(field_name, narratives, representation)
+
+    def period(self, period, representation):
+        self.set_field(
+            'period_start',
+            str(period.period_start.strftime(
+                "%Y-%m-%d")) if period.period_start else None,
+            representation
+        )
+        self.set_field(
+            'period_end',
+            str(period.period_end.strftime(
+                "%Y-%m-%d")) if period.period_end else None,
+            representation
+        )
+
+    def target(self, item, representation):
+        target_all = item.targets.all()
+        if target_all:
+            target_list = list()
+
+            for target in target_all:
+                target_list.append(TargetSerializer(target).data)
+
+            self.set_field('target', target_list, representation)
+
+    def actual(self, item, representation):
+        actual_all = item.actuals.all()
+        if actual_all:
+            target_list = list()
+
+            for actual in actual_all:
+                target_list.append(ActualSerializer(actual).data)
+
+            self.set_field('actual', target_list, representation)
+
+    def to_representation(self, period):
+        representation = OrderedDict()
+
+        self.period(period, representation)
+        self.target(period, representation)
+        self.actual(period, representation)
+
+        return representation
+
+
+class IndicatorSerializer(serializers.Serializer):
+
+    def add_to_list(self, data_list, value):
+        if value:
+            data_list.append(value)
+
+    def set_value(self, value):
+        if isinstance(value, datetime):
+            return value.strftime("%Y-%m-%d")
+
+        return value
+
+    def set_field(self, name, value, representation):
+        if value:
+            representation[name] = self.set_value(value)
+
+    def narrative(self, transaction_sector, representation, field_name='narrative'):
+        narratives_all = transaction_sector.narratives.all()
+        if narratives_all:
+            narratives = list()
+            for narrative in narratives_all:
+                narratives.append(NarrativeSerializer(narrative).data)
+
+            self.set_field(field_name, narratives, representation)
+
+    def indicator(self, indicator, representation):
+        self.set_field('measure', indicator.measure_id, representation)
+        self.set_field('ascending', '1' if indicator.ascending else '0', representation)
+        self.set_field('aggregation_status', '1' if indicator.aggregation_status else '0', representation)
+
+    def title(self, indicator, representation):
+        try:
+            self.narrative(indicator.resultindicatortitle, representation, 'title')
+        except ResultIndicatorTitle.DoesNotExist:
+            pass
+
+    def description(self, indicator, representation):
+        try:
+            self.narrative(indicator.resultindicatordescription, representation, 'description')
+        except ResultIndicatorTitle.DoesNotExist:
+            pass
+
+    def document_link(self, indicator, representation):
+        document_link_all = indicator.result_indicator_document_links.all()
+        if document_link_all:
+            document_link_list = list()
+
+            for document_link in document_link_all:
+                document_link_list.append(
+                    DocumentLinkSerializer(document_link).data
+                )
+
+            self.set_field('document_link', document_link_list, representation)
+
+    def reference(self, indicator, representation):
+        reference_all = indicator.resultindicatorreference_set.all()
+        if reference_all:
+            reference_list = list()
+
+            for reference in reference_all:
+                reference_list.append(IndicatorReferenceSerializer(reference).data)
+
+            self.set_field('reference', reference_list, representation)
+
+    def baseline(self, indicator, representation):
+        baseline_all = indicator.resultindicatorbaseline_set.all()
+        if baseline_all:
+            baseline_list = list()
+
+            for baseline in baseline_all:
+                baseline_list.append(BaselineSerializer(baseline).data)
+
+            self.set_field('baseline', baseline_list, representation)
+
+    def period(self, indicator, representation):
+        period_all = indicator.resultindicatorperiod_set.all()
+        if period_all:
+            period_list = list()
+
+            for period in period_all:
+                period_list.append(PeriodSerializer(period).data)
+
+            self.set_field('period', period_list, representation)
+
+    def to_representation(self, indicator):
+        representation = OrderedDict()
+
+        self.indicator(indicator, representation)
+        self.title(indicator, representation)
+        self.description(indicator, representation)
+        self.document_link(indicator, representation)
+        self.reference(indicator, representation)
+        self.baseline(indicator, representation)
+        self.period(indicator, representation)
+
+        return representation
+
+
+class ResultSerializer(serializers.Serializer):
+
+    def add_to_list(self, data_list, value):
+        if value:
+            data_list.append(value)
+
+    def set_value(self, value):
+        if isinstance(value, datetime):
+            return value.strftime("%Y-%m-%d")
+
+        return value
+
+    def set_field(self, name, value, representation):
+        if value:
+            representation[name] = self.set_value(value)
+
+    def narrative(self, item, representation, field_name='narrative'):
+        narratives_all = item.narratives.all()
+        if narratives_all:
+            narratives = list()
+            for narrative in narratives_all:
+                narratives.append(NarrativeSerializer(narrative).data)
+
+            self.set_field(field_name, narratives, representation)
+
+    def result(self, result, representation):
+        self.set_field('type', result.type_id, representation)
+        self.set_field(
+            'aggregation_status',
+            '1' if result.aggregation_status else '0',
+            representation
+        )
+
+    def title(self, result, representation):
+        try:
+            self.narrative(result.resulttitle, representation, 'title')
+        except ResultTitle.DoesNotExist:
+            pass
+
+    def description(self, result, representation):
+        try:
+            self.narrative(result.resultdescription, representation, 'description')
+        except ResultTitle.DoesNotExist:
+            pass
+
+    def document_link(self, result, representation):
+        document_link_all = result.documentlink_set.all()
+        if document_link_all:
+            document_link_list = list()
+
+            for document_link in document_link_all:
+                document_link_list.append(
+                    DocumentLinkSerializer(document_link).data
+                )
+
+            self.set_field('document_link', document_link_list, representation)
+
+    def reference(self, result, representation):
+        reference_all = result.resultreference_set.all()
+        if reference_all:
+            reference_list = list()
+
+            for reference in reference_all:
+                reference_list.append(ReferenceSerializer(reference).data)
+
+            self.set_field('reference', reference_list, representation)
+
+    def indicator(self, result, representation):
+        indicator_all = result.resultindicator_set.all()
+        if indicator_all:
+            indicator_list = list()
+
+            for indicator in indicator_all:
+                indicator_list.append(IndicatorSerializer(indicator).data)
+
+            self.set_field('indicator', indicator_list, representation)
+
+    def to_representation(self, result):
+        representation = OrderedDict()
+
+        self.result(result, representation)
+        self.title(result, representation)
+        self.description(result, representation)
+        self.document_link(result, representation)
+        self.reference(result, representation)
+        self.indicator(result, representation)
+
+        return representation
+
+
 class ActivitySerializer(serializers.Serializer):
 
     def add_to_list(self, data_list, value):
@@ -2686,6 +3321,8 @@ class ActivitySerializer(serializers.Serializer):
             result_indicator_period_actual_document_link_document_date_iso_date = list()
 
             for result in result_all:
+                result_list.append(ResultSerializer(result).data)
+
                 self.add_to_list(
                     result_type,
                     result.type_id
@@ -2896,16 +3533,6 @@ class ActivitySerializer(serializers.Serializer):
                                 result_indicator_baseline_dimension.value
                             )
 
-                        for result_indicator_baseline_dimension in result_indicator_baseline.resultindicatorbaselinedimension_set.all():  # NOQA: E501
-                            self.add_to_list(
-                                result_indicator_baseline_dimension_name,
-                                result_indicator_baseline_dimension.name
-                            )
-                            self.add_to_list(
-                                result_indicator_baseline_dimension_value,
-                                result_indicator_baseline_dimension.value
-                            )
-
                         try:
                             for narrative in result_indicator_baseline.resultindicatorbaselinecomment.narratives.all():
                                 result_indicator_baseline_comment_narrative.append(narrative.content)
@@ -2963,173 +3590,686 @@ class ActivitySerializer(serializers.Serializer):
                                     "%Y-%m-%d")) if result_indicator_baseline_document_link.iso_date else None
                             )
 
-                for result_period in result_indicator.resultindicatorperiod_set.all():
-                    self.add_to_list(
-                        result_indicator_period_period_start_iso_date,
-                        str(result_period.period_start.strftime(
-                            "%Y-%m-%d")) if result_period.period_start else None
-                    )
-                    self.add_to_list(
-                        result_indicator_period_period_end_iso_date,
-                        str(result_period.period_end.strftime(
-                            "%Y-%m-%d")) if result_period.period_end else None
-                    )
-
-                    for result_period_target in result_period.targets.all():
+                    for result_period in result_indicator.resultindicatorperiod_set.all():
                         self.add_to_list(
-                            result_indicator_period_target_value,
-                            result_period_target.value
+                            result_indicator_period_period_start_iso_date,
+                            str(result_period.period_start.strftime(
+                                "%Y-%m-%d")) if result_period.period_start else None
+                        )
+                        self.add_to_list(
+                            result_indicator_period_period_end_iso_date,
+                            str(result_period.period_end.strftime(
+                                "%Y-%m-%d")) if result_period.period_end else None
                         )
 
-                        for result_period_target_location in result_period_target.resultindicatorperiodtargetlocation_set.all():
+                        for result_period_target in result_period.targets.all():
                             self.add_to_list(
-                                result_indicator_period_target_location_ref,
-                                result_period_target_location.ref
+                                result_indicator_period_target_value,
+                                result_period_target.value
                             )
 
-                        for result_period_target_dimension in result_period_target.resultindicatorperiodtargetdimension_set.all():
-                            self.add_to_list(
-                                result_indicator_period_target_dimension_name,
-                                result_period_target_dimension.name
-                            )
-                            self.add_to_list(
-                                result_indicator_period_target_dimension_value,
-                                result_period_target_dimension.value
-                            )
+                            for result_period_target_location in result_period_target.resultindicatorperiodtargetlocation_set.all():
+                                self.add_to_list(
+                                    result_indicator_period_target_location_ref,
+                                    result_period_target_location.ref
+                                )
 
-                        for result_period_target_comment in result_period_target.resultindicatorperiodtargetcomment_set.all():
-                            for narrative in result_period_target_comment.narratives.all():
-                                result_indicator_period_target_comment_narrative.append(narrative.content)
-                                result_indicator_period_target_comment_narrative_text.append(narrative.content)
-                                if narrative.language:
-                                    result_indicator_period_target_comment_narrative_lang.append(
-                                        narrative.language.code)
+                            for result_period_target_dimension in result_period_target.resultindicatorperiodtargetdimension_set.all():
+                                self.add_to_list(
+                                    result_indicator_period_target_dimension_name,
+                                    result_period_target_dimension.name
+                                )
+                                self.add_to_list(
+                                    result_indicator_period_target_dimension_value,
+                                    result_period_target_dimension.value
+                                )
 
-                        for document_link in result_period_target.period_target_document_links.all(): # NOQA: E501
-                            self.add_to_list(
-                                result_indicator_period_target_document_link_url,
-                                document_link.url
-                            )
-                            self.add_to_list(
-                                result_indicator_period_target_document_link_format,
-                                document_link.file_format_id
-                            )
-
-                            try:
-                                for narrative in document_link.documentlinktitle.narratives.all():
-                                    result_indicator_period_target_document_link_title_narrative.append(narrative.content)
-                                    result_indicator_period_target_document_link_title_narrative_text.append(narrative.content)
+                            for result_period_target_comment in result_period_target.resultindicatorperiodtargetcomment_set.all():
+                                for narrative in result_period_target_comment.narratives.all():
+                                    result_indicator_period_target_comment_narrative.append(narrative.content)
+                                    result_indicator_period_target_comment_narrative_text.append(narrative.content)
                                     if narrative.language:
-                                        result_indicator_period_target_document_link_title_narrative_lang.append(
+                                        result_indicator_period_target_comment_narrative_lang.append(
                                             narrative.language.code)
-                            except DocumentLinkTitle.DoesNotExist:
-                                pass
 
-                            try:
-                                for narrative in document_link.documentlinkdescription.narratives.all():
-                                    result_indicator_period_target_document_link_description_narrative.append(narrative.content)
-                                    result_indicator_period_target_document_link_description_narrative_text.append(narrative.content)
-                                    if narrative.language:
-                                        result_indicator_period_target_document_link_description_narrative_lang.append(
-                                            narrative.language.code)  # NOQA: E501
-                            except DocumentLinkTitle.DoesNotExist:
-                                pass
-
-                            for document_link_category in document_link.documentlinkcategory_set.all():
+                            for document_link in result_period_target.period_target_document_links.all(): # NOQA: E501
                                 self.add_to_list(
-                                    result_indicator_period_target_document_link_category_code,
-                                    document_link_category.category_id
+                                    result_indicator_period_target_document_link_url,
+                                    document_link.url
+                                )
+                                self.add_to_list(
+                                    result_indicator_period_target_document_link_format,
+                                    document_link.file_format_id
                                 )
 
-                            for document_link_language in document_link.documentlinklanguage_set.all():
+                                try:
+                                    for narrative in document_link.documentlinktitle.narratives.all():
+                                        result_indicator_period_target_document_link_title_narrative.append(narrative.content)
+                                        result_indicator_period_target_document_link_title_narrative_text.append(narrative.content)
+                                        if narrative.language:
+                                            result_indicator_period_target_document_link_title_narrative_lang.append(
+                                                narrative.language.code)
+                                except DocumentLinkTitle.DoesNotExist:
+                                    pass
+
+                                try:
+                                    for narrative in document_link.documentlinkdescription.narratives.all():
+                                        result_indicator_period_target_document_link_description_narrative.append(narrative.content)
+                                        result_indicator_period_target_document_link_description_narrative_text.append(narrative.content)
+                                        if narrative.language:
+                                            result_indicator_period_target_document_link_description_narrative_lang.append(
+                                                narrative.language.code)  # NOQA: E501
+                                except DocumentLinkTitle.DoesNotExist:
+                                    pass
+
+                                for document_link_category in document_link.documentlinkcategory_set.all():
+                                    self.add_to_list(
+                                        result_indicator_period_target_document_link_category_code,
+                                        document_link_category.category_id
+                                    )
+
+                                for document_link_language in document_link.documentlinklanguage_set.all():
+                                    self.add_to_list(
+                                        result_indicator_period_target_document_link_language_code,
+                                        document_link_language.language_id
+                                    )
+
                                 self.add_to_list(
-                                    result_indicator_period_target_document_link_language_code,
-                                    document_link_language.language_id
+                                    result_indicator_period_target_document_link_document_date_iso_date,
+                                    str(document_link.iso_date.strftime(
+                                        "%Y-%m-%d")) if document_link.iso_date else None
                                 )
 
+                        for result_period_actual in result_period.actuals.all():
                             self.add_to_list(
-                                result_indicator_period_target_document_link_document_date_iso_date,
-                                str(document_link.iso_date.strftime(
-                                    "%Y-%m-%d")) if document_link.iso_date else None
+                                result_indicator_period_actual_value,
+                                result_period_actual.value
                             )
 
-                    for result_period_actual in result_period.actuals.all():
-                        self.add_to_list(
-                            result_indicator_period_actual_value,
-                            result_period_actual.value
-                        )
+                            for result_period_actual_location in result_period_actual.resultindicatorperiodactuallocation_set.all():
+                                self.add_to_list(
+                                    result_indicator_period_actual_location_ref,
+                                    result_period_actual_location.ref
+                                )
 
-                        for result_period_actual_location in result_period_actual.resultindicatorperiodactuallocation_set.all():
-                            self.add_to_list(
-                                result_indicator_period_actual_location_ref,
-                                result_period_actual_location.ref
-                            )
+                            for result_period_actual_dimension in result_period_actual.resultindicatorperiodactualdimension_set.all():
+                                self.add_to_list(
+                                    result_indicator_period_actual_dimension_name,
+                                    result_period_actual_dimension.name
+                                )
+                                self.add_to_list(
+                                    result_indicator_period_actual_dimension_value,
+                                    result_period_actual_dimension.value
+                                )
 
-                        for result_period_actual_dimension in result_period_actual.resultindicatorperiodactualdimension_set.all():
-                            self.add_to_list(
-                                result_indicator_period_actual_dimension_name,
-                                result_period_actual_dimension.name
-                            )
-                            self.add_to_list(
-                                result_indicator_period_actual_dimension_value,
-                                result_period_actual_dimension.value
-                            )
-
-                        for result_period_actual_comment in result_period_actual.resultindicatorperiodactualcomment_set.all():
-                            for narrative in result_period_actual_comment.narratives.all():
-                                result_indicator_period_actual_comment_narrative.append(narrative.content)
-                                result_indicator_period_actual_comment_narrative_text.append(narrative.content)
-                                if narrative.language:
-                                    result_indicator_period_actual_comment_narrative_lang.append(
-                                        narrative.language.code)
-
-                        for document_link in result_period_actual.period_actual_document_links.all(): # NOQA: E501
-                            self.add_to_list(
-                                result_indicator_period_actual_document_link_url,
-                                document_link.url
-                            )
-                            self.add_to_list(
-                                result_indicator_period_actual_document_link_format,
-                                document_link.file_format_id
-                            )
-
-                            try:
-                                for narrative in document_link.documentlinktitle.narratives.all():
-                                    result_indicator_period_actual_document_link_title_narrative.append(narrative.content)
-                                    result_indicator_period_actual_document_link_title_narrative_text.append(narrative.content)
+                            for result_period_actual_comment in result_period_actual.resultindicatorperiodactualcomment_set.all():
+                                for narrative in result_period_actual_comment.narratives.all():
+                                    result_indicator_period_actual_comment_narrative.append(narrative.content)
+                                    result_indicator_period_actual_comment_narrative_text.append(narrative.content)
                                     if narrative.language:
-                                        result_indicator_period_actual_document_link_title_narrative_lang.append(
+                                        result_indicator_period_actual_comment_narrative_lang.append(
                                             narrative.language.code)
-                            except DocumentLinkTitle.DoesNotExist:
-                                pass
 
-                            try:
-                                for narrative in document_link.documentlinkdescription.narratives.all():
-                                    result_indicator_period_actual_document_link_description_narrative.append(narrative.content)
-                                    result_indicator_period_actual_document_link_description_narrative_text.append(narrative.content)
-                                    if narrative.language:
-                                        result_indicator_period_actual_document_link_description_narrative_lang.append(
-                                            narrative.language.code)  # NOQA: E501
-                            except DocumentLinkTitle.DoesNotExist:
-                                pass
-
-                            for document_link_category in document_link.documentlinkcategory_set.all():
+                            for document_link in result_period_actual.period_actual_document_links.all(): # NOQA: E501
                                 self.add_to_list(
-                                    result_indicator_period_actual_document_link_category_code,
-                                    document_link_category.category_id
+                                    result_indicator_period_actual_document_link_url,
+                                    document_link.url
+                                )
+                                self.add_to_list(
+                                    result_indicator_period_actual_document_link_format,
+                                    document_link.file_format_id
                                 )
 
-                            for document_link_language in document_link.documentlinklanguage_set.all():
+                                try:
+                                    for narrative in document_link.documentlinktitle.narratives.all():
+                                        result_indicator_period_actual_document_link_title_narrative.append(narrative.content)
+                                        result_indicator_period_actual_document_link_title_narrative_text.append(narrative.content)
+                                        if narrative.language:
+                                            result_indicator_period_actual_document_link_title_narrative_lang.append(
+                                                narrative.language.code)
+                                except DocumentLinkTitle.DoesNotExist:
+                                    pass
+
+                                try:
+                                    for narrative in document_link.documentlinkdescription.narratives.all():
+                                        result_indicator_period_actual_document_link_description_narrative.append(narrative.content)
+                                        result_indicator_period_actual_document_link_description_narrative_text.append(narrative.content)
+                                        if narrative.language:
+                                            result_indicator_period_actual_document_link_description_narrative_lang.append(
+                                                narrative.language.code)  # NOQA: E501
+                                except DocumentLinkTitle.DoesNotExist:
+                                    pass
+
+                                for document_link_category in document_link.documentlinkcategory_set.all():
+                                    self.add_to_list(
+                                        result_indicator_period_actual_document_link_category_code,
+                                        document_link_category.category_id
+                                    )
+
+                                for document_link_language in document_link.documentlinklanguage_set.all():
+                                    self.add_to_list(
+                                        result_indicator_period_actual_document_link_language_code,
+                                        document_link_language.language_id
+                                    )
+
                                 self.add_to_list(
-                                    result_indicator_period_actual_document_link_language_code,
-                                    document_link_language.language_id
+                                    result_indicator_period_actual_document_link_document_date_iso_date,
+                                    str(document_link.iso_date.strftime(
+                                        "%Y-%m-%d")) if document_link.iso_date else None
                                 )
 
-                            self.add_to_list(
-                                result_indicator_period_actual_document_link_document_date_iso_date,
-                                str(document_link.iso_date.strftime(
-                                    "%Y-%m-%d")) if document_link.iso_date else None
-                            )
+            self.set_field(
+                'result',
+                json.dumps(result_list),
+                representation
+            )
+            """
+            self.set_field(
+                'result_type',
+                result_type,
+                representation
+            )
+            self.set_field(
+                'result_aggregation_status',
+                result_aggregation_status,
+                representation
+            )
+            self.set_field(
+                'result_title_narrative',
+                result_title_narrative,
+                representation
+            )
+            self.set_field(
+                'result_title_narrative_lang',
+                result_title_narrative_lang,
+                representation
+            )
+            self.set_field(
+                'result_title_narrative_text',
+                result_title_narrative_text,
+                representation
+            )
+            self.set_field(
+                'result_description_narrative',
+                result_description_narrative,
+                representation
+            )
+            self.set_field(
+                'result_description_narrative_lang',
+                result_description_narrative_lang,
+                representation
+            )
+            self.set_field(
+                'result_description_narrative_text',
+                result_description_narrative_text,
+                representation
+            )
+            self.set_field(
+                'result_document_link_url',
+                result_document_link_url,
+                representation
+            )
+            self.set_field(
+                'result_document_link_format',
+                result_document_link_format,
+                representation
+            )
+            self.set_field(
+                'result_document_link_title_narrative',
+                result_document_link_title_narrative,
+                representation
+            )
+            self.set_field(
+                'result_document_link_title_narrative_lang',
+                result_document_link_title_narrative_lang,
+                representation
+            )
+            self.set_field(
+                'result_document_link_title_narrative_text',
+                result_document_link_title_narrative_text,
+                representation
+            )
+            self.set_field(
+                'result_document_link_description_narrative',
+                result_document_link_description_narrative,
+                representation
+            )
+            self.set_field(
+                'result_document_link_description_narrative_lang',
+                result_document_link_description_narrative_lang,
+                representation
+            )
+            self.set_field(
+                'result_document_link_description_narrative_text',
+                result_document_link_description_narrative_text,
+                representation
+            )
+            self.set_field(
+                'result_document_link_category_code',
+                result_document_link_category_code,
+                representation
+            )
+            self.set_field(
+                'result_document_link_language_code',
+                result_document_link_language_code,
+                representation
+            )
+            self.set_field(
+                'result_document_link_document_date_iso_date',
+                result_document_link_document_date_iso_date,
+                representation
+            )
+            self.set_field(
+                'result_reference_code',
+                result_reference_code,
+                representation
+            )
+            self.set_field(
+                'result_indicator_measure',
+                result_indicator_measure,
+                representation
+            )
+            self.set_field(
+                'result_indicator_ascending',
+                result_indicator_ascending,
+                representation
+            )
+            self.set_field(
+                'result_indicator_aggregation_status',
+                result_indicator_aggregation_status,
+                representation
+            )
+            self.set_field(
+                'result_indicator_title_narrative',
+                result_indicator_title_narrative,
+                representation
+            )
+            self.set_field(
+                'result_indicator_title_narrative_lang',
+                result_indicator_title_narrative_lang,
+                representation
+            )
+            self.set_field(
+                'result_indicator_title_narrative_text',
+                result_indicator_title_narrative_text,
+                representation
+            )
+            self.set_field(
+                'result_indicator_description_narrative',
+                result_indicator_description_narrative,
+                representation
+            )
+            self.set_field(
+                'result_indicator_description_narrative_lang',
+                result_indicator_description_narrative_lang,
+                representation
+            )
+            self.set_field(
+                'result_indicator_description_narrative_text',
+                result_indicator_description_narrative_text,
+                representation
+            )
+            self.set_field(
+                'result_indicator_document_link_url',
+                result_indicator_document_link_url,
+                representation
+            )
+            self.set_field(
+                'result_indicator_document_link_format',
+                result_indicator_document_link_format,
+                representation
+            )
+            self.set_field(
+                'result_indicator_document_link_title_narrative',
+                result_indicator_document_link_title_narrative,
+                representation
+            )
+            self.set_field(
+                'result_indicator_document_link_title_narrative_lang',
+                result_indicator_document_link_title_narrative_lang,
+                representation
+            )
+            self.set_field(
+                'result_indicator_document_link_title_narrative_text',
+                result_indicator_document_link_title_narrative_text,
+                representation
+            )
+            self.set_field(
+                'result_indicator_document_link_description_narrative',
+                result_indicator_document_link_description_narrative,
+                representation
+            )
+            self.set_field(
+                'result_indicator_document_link_description_narrative_lang',
+                result_indicator_document_link_description_narrative_lang,
+                representation
+            )
+            self.set_field(
+                'result_indicator_document_link_description_narrative_text',
+                result_indicator_document_link_description_narrative_text,
+                representation
+            )
+            self.set_field(
+                'result_indicator_document_link_category_code',
+                result_indicator_document_link_category_code,
+                representation
+            )
+            self.set_field(
+                'result_indicator_document_link_language_code',
+                result_indicator_document_link_language_code,
+                representation
+            )
+            self.set_field(
+                'result_indicator_document_link_document_date_iso_date',
+                result_indicator_document_link_document_date_iso_date,
+                representation
+            )
+            self.set_field(
+                'result_indicator_reference_code',
+                result_indicator_reference_code,
+                representation
+            )
+            self.set_field(
+                'result_indicator_reference_vocabulary',
+                result_indicator_reference_vocabulary,
+                representation
+            )
+            self.set_field(
+                'result_indicator_reference_vocabulary_uri',
+                result_indicator_reference_vocabulary_uri,
+                representation
+            )
+            self.set_field(
+                'result_indicator_baseline_year',
+                result_indicator_baseline_year,
+                representation
+            )
+            self.set_field(
+                'result_indicator_baseline_iso_date',
+                result_indicator_baseline_iso_date,
+                representation
+            )
+            self.set_field(
+                'result_indicator_baseline_value',
+                result_indicator_baseline_value,
+                representation
+            )
+            self.set_field(
+                'result_indicator_baseline_location_ref',
+                result_indicator_baseline_location_ref,
+                representation
+            )
+            self.set_field(
+                'result_indicator_baseline_dimension_name',
+                result_indicator_baseline_dimension_name,
+                representation
+            )
+            self.set_field(
+                'result_indicator_baseline_dimension_value',
+                result_indicator_baseline_dimension_value,
+                representation
+            )
+            self.set_field(
+                'result_indicator_baseline_comment_narrative',
+                result_indicator_baseline_comment_narrative,
+                representation
+            )
+            self.set_field(
+                'result_indicator_baseline_comment_narrative_lang',
+                result_indicator_baseline_comment_narrative_lang,
+                representation
+            )
+            self.set_field(
+                'result_indicator_baseline_comment_narrative_text',
+                result_indicator_baseline_comment_narrative_text,
+                representation
+            )
+            self.set_field(
+                'result_indicator_baseline_document_link_url',
+                result_indicator_baseline_document_link_url,
+                representation
+            )
+            self.set_field(
+                'result_indicator_baseline_document_link_format',
+                result_indicator_baseline_document_link_format,
+                representation
+            )
+            self.set_field(
+                'result_indicator_baseline_document_link_title',
+                result_indicator_baseline_document_link_title,
+                representation
+            )
+            self.set_field(
+                'result_indicator_baseline_document_link_title_narrative_lang',
+                result_indicator_baseline_document_link_title_narrative_lang,
+                representation
+            )
+            self.set_field(
+                'result_indicator_baseline_document_link_title_narrative_text',
+                result_indicator_baseline_document_link_title_narrative_text,
+                representation
+            )
+            self.set_field(
+                'result_indicator_baseline_document_link_description',
+                result_indicator_baseline_document_link_description,
+                representation
+            )
+            self.set_field(
+                'result_indicator_baseline_document_link_description_lang',
+                result_indicator_baseline_document_link_description_lang,
+                representation
+            )
+            self.set_field(
+                'result_indicator_baseline_document_link_description_text',
+                result_indicator_baseline_document_link_description_text,
+                representation
+            )
+            self.set_field(
+                'result_indicator_baseline_document_link_category_code',
+                result_indicator_baseline_document_link_category_code,
+                representation
+            )
+            self.set_field(
+                'result_indicator_baseline_document_link_language_code',
+                result_indicator_baseline_document_link_language_code,
+                representation
+            )
+            self.set_field(
+                'result_indicator_baseline_document_link_document_date_iso_date',
+                result_indicator_baseline_document_link_document_date_iso_date,
+                representation
+            )
+            self.set_field(
+                'result_indicator_period_period_start_iso_date',
+                result_indicator_period_period_start_iso_date,
+                representation
+            )
+            self.set_field(
+                'result_indicator_period_period_end_iso_date',
+                result_indicator_period_period_end_iso_date,
+                representation
+            )
+            self.set_field(
+                'result_indicator_period_target_value',
+                result_indicator_period_target_value,
+                representation
+            )
+            self.set_field(
+                'result_indicator_period_target_location_ref',
+                result_indicator_period_target_location_ref,
+                representation
+            )
+            self.set_field(
+                'result_indicator_period_target_dimension_name',
+                result_indicator_period_target_dimension_name,
+                representation
+            )
+            self.set_field(
+                'result_indicator_period_target_dimension_value',
+                result_indicator_period_target_dimension_value,
+                representation
+            )
+            self.set_field(
+                'result_indicator_period_target_comment_narrative',
+                result_indicator_period_target_comment_narrative,
+                representation
+            )
+            self.set_field(
+                'result_indicator_period_target_comment_narrative_lang',
+                result_indicator_period_target_comment_narrative_lang,
+                representation
+            )
+            self.set_field(
+                'result_indicator_period_target_comment_narrative_text',
+                result_indicator_period_target_comment_narrative_text,
+                representation
+            )
+            self.set_field(
+                'result_indicator_period_target_document_link_url',
+                result_indicator_period_target_document_link_url,
+                representation
+            )
+            self.set_field(
+                'result_indicator_period_target_document_link_format',
+                result_indicator_period_target_document_link_format,
+                representation
+            )
+            self.set_field(
+                'result_indicator_period_target_document_link_title_narrative',
+                result_indicator_period_target_document_link_title_narrative,
+                representation
+            )
+            self.set_field(
+                'result_indicator_period_target_document_link_title_narrative_lang',
+                result_indicator_period_target_document_link_title_narrative_lang,
+                representation
+            )
+            self.set_field(
+                'result_indicator_period_target_document_link_title_narrative_text',
+                result_indicator_period_target_document_link_title_narrative_text,
+                representation
+            )
+            self.set_field(
+                'result_indicator_period_target_document_link_description_narrative',
+                result_indicator_period_target_document_link_description_narrative,
+                representation
+            )
+            self.set_field(
+                'result_indicator_period_target_document_link_description_narrative_lang',
+                result_indicator_period_target_document_link_description_narrative_lang,
+                representation
+            )
+            self.set_field(
+                'result_indicator_period_target_document_link_description_narrative_text',
+                result_indicator_period_target_document_link_description_narrative_text,
+                representation
+            )
+            self.set_field(
+                'result_indicator_period_target_document_link_category_code',
+                result_indicator_period_target_document_link_category_code,
+                representation
+            )
+            self.set_field(
+                'result_indicator_period_target_document_link_language_code',
+                result_indicator_period_target_document_link_language_code,
+                representation
+            )
+            self.set_field(
+                'result_indicator_period_target_document_link_document_date_iso_date',
+                result_indicator_period_target_document_link_document_date_iso_date,
+                representation
+            )
+            self.set_field(
+                'result_indicator_period_actual_value',
+                result_indicator_period_actual_value,
+                representation
+            )
+            self.set_field(
+                'result_indicator_period_actual_location_ref',
+                result_indicator_period_actual_location_ref,
+                representation
+            )
+            self.set_field(
+                'result_indicator_period_actual_dimension_name',
+                result_indicator_period_actual_dimension_name,
+                representation
+            )
+            self.set_field(
+                'result_indicator_period_actual_dimension_value',
+                result_indicator_period_actual_dimension_value,
+                representation
+            )
+            self.set_field(
+                'result_indicator_period_actual_comment_narrative',
+                result_indicator_period_actual_comment_narrative,
+                representation
+            )
+            self.set_field(
+                'result_indicator_period_actual_comment_narrative_lang',
+                result_indicator_period_actual_comment_narrative_lang,
+                representation
+            )
+            self.set_field(
+                'result_indicator_period_actual_comment_narrative_text',
+                result_indicator_period_actual_comment_narrative_text,
+                representation
+            )
+            self.set_field(
+                'result_indicator_period_actual_document_link_url',
+                result_indicator_period_actual_document_link_url,
+                representation
+            )
+            self.set_field(
+                'result_indicator_period_actual_document_link_format',
+                result_indicator_period_actual_document_link_format,
+                representation
+            )
+            self.set_field(
+                'result_indicator_period_actual_document_link_title_narrative',
+                result_indicator_period_actual_document_link_title_narrative,
+                representation
+            )
+            self.set_field(
+                'result_indicator_period_actual_document_link_title_narrative_lang',
+                result_indicator_period_actual_document_link_title_narrative_lang,
+                representation
+            )
+            self.set_field(
+                'result_indicator_period_actual_document_link_title_narrative_text',
+                result_indicator_period_actual_document_link_title_narrative_text,
+                representation
+            )
+            self.set_field(
+                'result_indicator_period_actual_document_link_description_narrative',
+                result_indicator_period_actual_document_link_description_narrative,
+                representation
+            )
+            self.set_field(
+                'result_indicator_period_actual_document_link_description_narrative_lang',
+                result_indicator_period_actual_document_link_description_narrative_lang,
+                representation
+            )
+            self.set_field(
+                'result_indicator_period_actual_document_link_description_narrative_text',
+                result_indicator_period_actual_document_link_description_narrative_text,
+                representation
+            )
+            self.set_field(
+                'result_indicator_period_actual_document_link_category_code',
+                result_indicator_period_actual_document_link_category_code,
+                representation
+            )
+            self.set_field(
+                'result_indicator_period_actual_document_link_language_code',
+                result_indicator_period_actual_document_link_language_code,
+                representation
+            )
+            self.set_field(
+                'result_indicator_period_actual_document_link_document_date_iso_date',
+                result_indicator_period_actual_document_link_document_date_iso_date,
+                representation
+            )
+            """
 
     def to_representation(self, activity):
         representation = OrderedDict()
