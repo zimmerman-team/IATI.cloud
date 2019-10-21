@@ -5,7 +5,8 @@ from rest_framework import serializers
 
 from iati.models import CountryBudgetItem, PlannedDisbursementProvider, \
     PlannedDisbursementReceiver, Conditions, ResultTitle, ResultDescription, \
-    DocumentLinkTitle, DocumentLinkDescription, ResultIndicatorTitle, ResultIndicatorBaselineComment
+    DocumentLinkTitle, DocumentLinkDescription, ResultIndicatorTitle, \
+    ResultIndicatorBaselineComment, CrsAddLoanTerms, CrsAddLoanStatus
 from iati.transaction.models import TransactionProvider, TransactionReceiver
 
 
@@ -3763,7 +3764,6 @@ class ActivitySerializer(serializers.Serializer):
                 json.dumps(result_list),
                 representation
             )
-            """
             self.set_field(
                 'result_type',
                 result_type,
@@ -4269,7 +4269,197 @@ class ActivitySerializer(serializers.Serializer):
                 result_indicator_period_actual_document_link_document_date_iso_date,
                 representation
             )
-            """
+
+    def crs_add(self, activity, representation):
+        crs_add_all = activity.crsadd_set.all()
+        if crs_add_all:
+            crs_add_lits = list()
+            crs_add_other_flags_code = list()
+            crs_add_other_flags_significance = list()
+            crs_add_loan_terms_rate_1 = list()
+            crs_add_loan_terms_rate_2 = list()
+            crs_add_loan_terms_repayment_type_code = list()
+            crs_add_loan_terms_repayment_plan_code = list()
+            crs_add_loan_terms_commitment_date_iso_date = list()
+            crs_add_loan_terms_repayment_first_date_iso_date = list()
+            crs_add_loan_terms_repayment_final_date_iso_date = list()
+            crs_add_loan_status_year = list()
+            crs_add_loan_status_currency = list()
+            crs_add_loan_status_value_date = list()
+            crs_add_loan_status_interest_received = list()
+            crs_add_loan_status_principal_outstanding = list()
+            crs_add_loan_status_principal_arrears = list()
+            crs_add_loan_status_interest_arrears = list()
+            crs_add_channel_code = list()
+
+            for crs_add in crs_add_all:
+                self.add_to_list(
+                    crs_add_channel_code,
+                    crs_add.channel_code_id
+                )
+
+                for crs_add_other_flag in crs_add.other_flags.all():
+                    self.add_to_list(
+                        crs_add_other_flags_code,
+                        crs_add_other_flag.other_flags_id
+                    )
+                    self.add_to_list(
+                        crs_add_other_flags_significance,
+                        crs_add_other_flag.significance
+                    )
+
+                try:
+                    self.add_to_list(
+                        crs_add_loan_terms_rate_1,
+                        crs_add.loan_terms.rate_1
+                    )
+                    self.add_to_list(
+                        crs_add_loan_terms_rate_2,
+                        crs_add.loan_terms.rate_2
+                    )
+                    self.add_to_list(
+                        crs_add_loan_terms_repayment_type_code,
+                        crs_add.loan_terms.repayment_type_id
+                    )
+                    self.add_to_list(
+                        crs_add_loan_terms_repayment_plan_code,
+                        crs_add.loan_terms.repayment_plan_id
+                    )
+                    self.add_to_list(
+                        crs_add_loan_terms_commitment_date_iso_date,
+                        str(crs_add.loan_terms.commitment_date.strftime(
+                            "%Y-%m-%d")) if crs_add.loan_terms.commitment_date else None
+                    )
+                    self.add_to_list(
+                        crs_add_loan_terms_repayment_first_date_iso_date,
+                        str(crs_add.loan_terms.repayment_first_date.strftime(
+                            "%Y-%m-%d")) if crs_add.loan_terms.repayment_first_date else None
+                    )
+                    self.add_to_list(
+                        crs_add_loan_terms_repayment_final_date_iso_date,
+                        str(crs_add.loan_terms.repayment_final_date.strftime(
+                            "%Y-%m-%d")) if crs_add.loan_terms.repayment_final_date else None
+                    )
+                except CrsAddLoanTerms.DoesNotExist:
+                    pass
+
+                try:
+                    self.add_to_list(
+                        crs_add_loan_status_year,
+                        crs_add.loan_status.year
+                    )
+                    self.add_to_list(
+                        crs_add_loan_status_currency,
+                        crs_add.loan_status.currency_id
+                    )
+                    self.add_to_list(
+                        crs_add_loan_status_value_date,
+                        crs_add.loan_status.value_date
+                    )
+                    self.add_to_list(
+                        crs_add_loan_status_interest_received,
+                        crs_add.loan_status.interest_received
+                    )
+                    self.add_to_list(
+                        crs_add_loan_status_principal_outstanding,
+                        crs_add.loan_status.principal_outstanding
+                    )
+                    self.add_to_list(
+                        crs_add_loan_status_principal_arrears,
+                        crs_add.loan_status.principal_arrears
+                    )
+                    self.add_to_list(
+                        crs_add_loan_status_interest_arrears,
+                        crs_add.loan_status.interest_arrears
+                    )
+                except CrsAddLoanStatus.DoesNotExist:
+                    pass
+
+            self.set_field(
+                'crs_add_other_flags_code',
+                crs_add_other_flags_code,
+                representation
+            )
+            self.set_field(
+                'crs_add_other_flags_significance',
+                crs_add_other_flags_significance,
+                representation
+            )
+            self.set_field(
+                'crs_add_loan_terms_rate_1',
+                crs_add_loan_terms_rate_1,
+                representation
+            )
+            self.set_field(
+                'crs_add_loan_terms_rate_2',
+                crs_add_loan_terms_rate_2,
+                representation
+            )
+            self.set_field(
+                'crs_add_loan_terms_repayment_type_code',
+                crs_add_loan_terms_repayment_type_code,
+                representation
+            )
+            self.set_field(
+                'crs_add_loan_terms_repayment_plan_code',
+                crs_add_loan_terms_repayment_plan_code,
+                representation
+            )
+            self.set_field(
+                'crs_add_loan_terms_commitment_date_iso_date',
+                crs_add_loan_terms_commitment_date_iso_date,
+                representation
+            )
+            self.set_field(
+                'crs_add_loan_terms_repayment_first_date_iso_date',
+                crs_add_loan_terms_repayment_first_date_iso_date,
+                representation
+            )
+            self.set_field(
+                'crs_add_loan_terms_repayment_final_date_iso_date',
+                crs_add_loan_terms_repayment_final_date_iso_date,
+                representation
+            )
+            self.set_field(
+                'crs_add_loan_status_year',
+                crs_add_loan_status_year,
+                representation
+            )
+            self.set_field(
+                'crs_add_loan_status_currency',
+                crs_add_loan_status_currency,
+                representation
+            )
+            self.set_field(
+                'crs_add_loan_status_value_date',
+                crs_add_loan_status_value_date,
+                representation
+            )
+            self.set_field(
+                'crs_add_loan_status_interest_received',
+                crs_add_loan_status_interest_received,
+                representation
+            )
+            self.set_field(
+                'crs_add_loan_status_principal_outstanding',
+                crs_add_loan_status_principal_outstanding,
+                representation
+            )
+            self.set_field(
+                'crs_add_loan_status_principal_arrears',
+                crs_add_loan_status_principal_arrears,
+                representation
+            )
+            self.set_field(
+                'crs_add_loan_status_interest_arrears',
+                crs_add_loan_status_interest_arrears,
+                representation
+            )
+            self.set_field(
+                'crs_add_channel_code',
+                crs_add_channel_code,
+                representation
+            )
 
     def to_representation(self, activity):
         representation = OrderedDict()
@@ -4297,5 +4487,6 @@ class ActivitySerializer(serializers.Serializer):
         self.document_link(activity=activity, representation=representation)
         self.conditions(activity=activity, representation=representation)
         self.result(activity=activity, representation=representation)
+        self.crs_add(activity=activity, representation=representation)
 
         return representation
