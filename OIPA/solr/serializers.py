@@ -1752,6 +1752,192 @@ class ResultSerializer(serializers.Serializer):
         return representation
 
 
+class OtherFlagSerializer(serializers.Serializer):
+
+    def add_to_list(self, data_list, value):
+        if value:
+            data_list.append(value)
+
+    def set_value(self, value):
+        if isinstance(value, datetime):
+            return value.strftime("%Y-%m-%d")
+
+        return value
+
+    def set_field(self, name, value, representation):
+        if value:
+            representation[name] = self.set_value(value)
+
+    def narrative(self, item, representation, field_name='narrative'):
+        narratives_all = item.narratives.all()
+        if narratives_all:
+            narratives = list()
+            for narrative in narratives_all:
+                narratives.append(NarrativeSerializer(narrative).data)
+
+            self.set_field(field_name, narratives, representation)
+
+    def other_flag(self, other_flag, representation):
+        self.set_field('code', other_flag.other_flags_id, representation)
+        self.set_field('significance', '1' if other_flag.significance else '0', representation)
+
+    def to_representation(self, other_flag):
+        representation = OrderedDict()
+
+        self.other_flag(other_flag, representation)
+
+        return representation
+
+
+class LoanTermsSerializer(serializers.Serializer):
+
+    def add_to_list(self, data_list, value):
+        if value:
+            data_list.append(value)
+
+    def set_value(self, value):
+        if isinstance(value, datetime):
+            return value.strftime("%Y-%m-%d")
+
+        return value
+
+    def set_field(self, name, value, representation):
+        if value:
+            representation[name] = self.set_value(value)
+
+    def narrative(self, item, representation, field_name='narrative'):
+        narratives_all = item.narratives.all()
+        if narratives_all:
+            narratives = list()
+            for narrative in narratives_all:
+                narratives.append(NarrativeSerializer(narrative).data)
+
+            self.set_field(field_name, narratives, representation)
+
+    def loan_terms(self, loan_terms, representation):
+        self.set_field('rate_1', str(loan_terms.rate_1), representation)
+        self.set_field('rate_2', str(loan_terms.rate_2), representation)
+        self.set_field('repayment_type_code', loan_terms.repayment_type_id, representation)
+        self.set_field('repayment_plan_code', loan_terms.repayment_plan_id, representation)
+        self.set_field('commitment_date', str(loan_terms.commitment_date.strftime(
+            "%Y-%m-%d")) if loan_terms.commitment_date else None, representation)
+        self.set_field('repayment_first_date', str(loan_terms.repayment_first_date.strftime(
+            "%Y-%m-%d")) if loan_terms.repayment_first_date else None, representation)
+        self.set_field('repayment_final_date', str(loan_terms.repayment_final_date.strftime(
+            "%Y-%m-%d")) if loan_terms.repayment_final_date else None, representation)
+
+    def to_representation(self, loan_terms):
+        representation = OrderedDict()
+
+        self.loan_terms(loan_terms, representation)
+
+        return representation
+
+
+class LoanStatusSerializer(serializers.Serializer):
+
+    def add_to_list(self, data_list, value):
+        if value:
+            data_list.append(value)
+
+    def set_value(self, value):
+        if isinstance(value, datetime):
+            return value.strftime("%Y-%m-%d")
+
+        return value
+
+    def set_field(self, name, value, representation):
+        if value:
+            representation[name] = self.set_value(value)
+
+    def narrative(self, item, representation, field_name='narrative'):
+        narratives_all = item.narratives.all()
+        if narratives_all:
+            narratives = list()
+            for narrative in narratives_all:
+                narratives.append(NarrativeSerializer(narrative).data)
+
+            self.set_field(field_name, narratives, representation)
+
+    def loan_terms(self, loan_status, representation):
+        self.set_field('year', loan_status.year, representation)
+        self.set_field('currency', loan_status.currency_id, representation)
+        self.set_field('value_date', str(loan_status.value_date.strftime(
+            "%Y-%m-%d")) if loan_status.value_date else None, representation)
+        self.set_field('interest_received', str(loan_status.interest_received), representation)
+        self.set_field('principal_outstanding', str(loan_status.principal_outstanding), representation)
+        self.set_field('principal_arrears', str(loan_status.principal_arrears), representation)
+        self.set_field('interest_arrears', str(loan_status.interest_arrears), representation)
+
+    def to_representation(self, loan_terms):
+        representation = OrderedDict()
+
+        self.loan_terms(loan_terms, representation)
+
+        return representation
+
+
+class CrsAddSerializer(serializers.Serializer):
+
+    def add_to_list(self, data_list, value):
+        if value:
+            data_list.append(value)
+
+    def set_value(self, value):
+        if isinstance(value, datetime):
+            return value.strftime("%Y-%m-%d")
+
+        return value
+
+    def set_field(self, name, value, representation):
+        if value:
+            representation[name] = self.set_value(value)
+
+    def narrative(self, item, representation, field_name='narrative'):
+        narratives_all = item.narratives.all()
+        if narratives_all:
+            narratives = list()
+            for narrative in narratives_all:
+                narratives.append(NarrativeSerializer(narrative).data)
+
+            self.set_field(field_name, narratives, representation)
+
+    def crs_add(self, crs_add, representation):
+        self.set_field('channel_code', crs_add.channel_code_id, representation)
+
+    def other_flag(self, crs_add, representation):
+        other_flag_all = crs_add.other_flags.all()
+        if other_flag_all:
+            other_flag_list = list()
+
+            for other_flag in other_flag_all:
+                other_flag_list.append(OtherFlagSerializer(other_flag).data)
+
+            self.set_field('other_flag', other_flag_list, representation)
+
+    def loan_terms(self, crs_add, representation):
+        try:
+            self.set_field('loan_terms', LoanTermsSerializer(crs_add.loan_terms).data, representation)
+        except CrsAddLoanTerms.DoesNotExist:
+            pass
+
+    def loan_status(self, crs_add, representation):
+        try:
+            self.set_field('loan_status', LoanStatusSerializer(crs_add.loan_status).data, representation)
+        except CrsAddLoanStatus.DoesNotExist:
+            pass
+
+    def to_representation(self, crs_add):
+        representation = OrderedDict()
+
+        self.crs_add(crs_add, representation)
+        self.other_flag(crs_add, representation)
+        self.loan_terms(crs_add, representation)
+        self.loan_status(crs_add, representation)
+
+        return representation
+
+
 class ActivitySerializer(serializers.Serializer):
 
     def add_to_list(self, data_list, value):
@@ -4273,7 +4459,7 @@ class ActivitySerializer(serializers.Serializer):
     def crs_add(self, activity, representation):
         crs_add_all = activity.crsadd_set.all()
         if crs_add_all:
-            crs_add_lits = list()
+            crs_add_list = list()
             crs_add_other_flags_code = list()
             crs_add_other_flags_significance = list()
             crs_add_loan_terms_rate_1 = list()
@@ -4293,6 +4479,8 @@ class ActivitySerializer(serializers.Serializer):
             crs_add_channel_code = list()
 
             for crs_add in crs_add_all:
+                crs_add_list.append(CrsAddSerializer(crs_add).data)
+
                 self.add_to_list(
                     crs_add_channel_code,
                     crs_add.channel_code_id
@@ -4354,7 +4542,8 @@ class ActivitySerializer(serializers.Serializer):
                     )
                     self.add_to_list(
                         crs_add_loan_status_value_date,
-                        crs_add.loan_status.value_date
+                        str(crs_add.loan_status.value_date.strftime(
+                            "%Y-%m-%d")) if crs_add.loan_status.value_date else None
                     )
                     self.add_to_list(
                         crs_add_loan_status_interest_received,
@@ -4375,6 +4564,11 @@ class ActivitySerializer(serializers.Serializer):
                 except CrsAddLoanStatus.DoesNotExist:
                     pass
 
+            self.set_field(
+                'crs_add',
+                json.dumps(crs_add_list),
+                representation
+            )
             self.set_field(
                 'crs_add_other_flags_code',
                 crs_add_other_flags_code,
