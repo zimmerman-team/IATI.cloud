@@ -1938,6 +1938,96 @@ class CrsAddSerializer(serializers.Serializer):
         return representation
 
 
+class ForecastSerializer(serializers.Serializer):
+
+    def add_to_list(self, data_list, value):
+        if value:
+            data_list.append(value)
+
+    def set_value(self, value):
+        if isinstance(value, datetime):
+            return value.strftime("%Y-%m-%d")
+
+        return value
+
+    def set_field(self, name, value, representation):
+        if value:
+            representation[name] = self.set_value(value)
+
+    def narrative(self, item, representation, field_name='narrative'):
+        narratives_all = item.narratives.all()
+        if narratives_all:
+            narratives = list()
+            for narrative in narratives_all:
+                narratives.append(NarrativeSerializer(narrative).data)
+
+            self.set_field(field_name, narratives, representation)
+
+    def forecast(self, forecast, representation):
+        self.set_field('year', str(forecast.year), representation)
+        self.set_field('extraction_date', str(forecast.value_date.strftime(
+            "%Y-%m-%d")) if forecast.value_date else None, representation)
+        self.set_field('currency', forecast.currency_id, representation)
+        self.set_field('value', str(forecast.value), representation)
+
+    def to_representation(self, fss):
+        representation = OrderedDict()
+
+        self.forecast(fss, representation)
+
+        return representation
+
+
+class FssSerializer(serializers.Serializer):
+
+    def add_to_list(self, data_list, value):
+        if value:
+            data_list.append(value)
+
+    def set_value(self, value):
+        if isinstance(value, datetime):
+            return value.strftime("%Y-%m-%d")
+
+        return value
+
+    def set_field(self, name, value, representation):
+        if value:
+            representation[name] = self.set_value(value)
+
+    def narrative(self, item, representation, field_name='narrative'):
+        narratives_all = item.narratives.all()
+        if narratives_all:
+            narratives = list()
+            for narrative in narratives_all:
+                narratives.append(NarrativeSerializer(narrative).data)
+
+            self.set_field(field_name, narratives, representation)
+
+    def fss(self, fss, representation):
+        self.set_field('extraction_date', str(fss.extraction_date.strftime(
+                        "%Y-%m-%d")) if fss.extraction_date else None, representation)
+        self.set_field('fss_priority', '1' if fss.priority else '0', representation)
+        self.set_field('phaseout_year', str(fss.phaseout_year), representation)
+
+    def forecast(self, fss, representation):
+        forecast_all = fss.fssforecast_set.all()
+        if forecast_all:
+            forecast_list = list()
+
+            for forecast in forecast_all:
+                forecast_list.append(ForecastSerializer(forecast).data)
+
+            self.set_field('forecast', forecast_list, representation)
+
+    def to_representation(self, fss):
+        representation = OrderedDict()
+
+        self.fss(fss, representation)
+        self.forecast(fss, representation)
+
+        return representation
+
+
 class ActivitySerializer(serializers.Serializer):
 
     def add_to_list(self, data_list, value):
@@ -4499,11 +4589,11 @@ class ActivitySerializer(serializers.Serializer):
                 try:
                     self.add_to_list(
                         crs_add_loan_terms_rate_1,
-                        crs_add.loan_terms.rate_1
+                        str(crs_add.loan_terms.rate_1)
                     )
                     self.add_to_list(
                         crs_add_loan_terms_rate_2,
-                        crs_add.loan_terms.rate_2
+                        str(crs_add.loan_terms.rate_2)
                     )
                     self.add_to_list(
                         crs_add_loan_terms_repayment_type_code,
@@ -4547,11 +4637,11 @@ class ActivitySerializer(serializers.Serializer):
                     )
                     self.add_to_list(
                         crs_add_loan_status_interest_received,
-                        crs_add.loan_status.interest_received
+                        str(crs_add.loan_status.interest_received)
                     )
                     self.add_to_list(
                         crs_add_loan_status_principal_outstanding,
-                        crs_add.loan_status.principal_outstanding
+                        str(crs_add.loan_status.principal_outstanding)
                     )
                     self.add_to_list(
                         crs_add_loan_status_principal_arrears,
@@ -4669,6 +4759,8 @@ class ActivitySerializer(serializers.Serializer):
             fss_forecast_value = list()
 
             for fss in fss_all:
+                fss_list.append(FssSerializer(fss).data)
+
                 self.add_to_list(
                     fss_extraction_date,
                     str(fss.extraction_date.strftime(
@@ -4680,13 +4772,13 @@ class ActivitySerializer(serializers.Serializer):
                 )
                 self.add_to_list(
                     fss_phaseout_year,
-                    fss.phaseout_year
+                    str(fss.phaseout_year)
                 )
 
                 for forecast in fss.fssforecast_set.all():
                     self.add_to_list(
                         fss_forecast_year,
-                        forecast.year
+                        str(forecast.year)
                     )
                     self.add_to_list(
                         fss_forecast_value_date,
@@ -4702,6 +4794,12 @@ class ActivitySerializer(serializers.Serializer):
                         str(forecast.value)
                     )
 
+            self.set_field(
+                'fss',
+                json.dumps(fss_list),
+                representation
+            )
+            """
             self.set_field(
                 'fss_extraction_date',
                 fss_extraction_date,
@@ -4737,6 +4835,7 @@ class ActivitySerializer(serializers.Serializer):
                 fss_forecast_value,
                 representation
             )
+            """
 
     def to_representation(self, activity):
         representation = OrderedDict()
