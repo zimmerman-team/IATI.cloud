@@ -4655,6 +4655,89 @@ class ActivitySerializer(serializers.Serializer):
                 representation
             )
 
+    def fss(self, activity, representation):
+        fss_all = activity.fss_set.all()
+        if fss_all:
+            fss_list = list()
+            fss_extraction_date = list()
+            fss_priority = list()
+            fss_phaseout_year = list()
+
+            fss_forecast_year = list()
+            fss_forecast_value_date = list()
+            fss_forecast_currency = list()
+            fss_forecast_value = list()
+
+            for fss in fss_all:
+                self.add_to_list(
+                    fss_extraction_date,
+                    str(fss.extraction_date.strftime(
+                        "%Y-%m-%d")) if fss.extraction_date else None
+                )
+                self.add_to_list(
+                    fss_priority,
+                    '1' if fss.priority else '0'
+                )
+                self.add_to_list(
+                    fss_phaseout_year,
+                    fss.phaseout_year
+                )
+
+                for forecast in fss.fssforecast_set.all():
+                    self.add_to_list(
+                        fss_forecast_year,
+                        forecast.year
+                    )
+                    self.add_to_list(
+                        fss_forecast_value_date,
+                        str(forecast.value_date.strftime(
+                            "%Y-%m-%d")) if forecast.value_date else None
+                    )
+                    self.add_to_list(
+                        fss_forecast_currency,
+                        forecast.currency_id
+                    )
+                    self.add_to_list(
+                        fss_forecast_value,
+                        str(forecast.value)
+                    )
+
+            self.set_field(
+                'fss_extraction_date',
+                fss_extraction_date,
+                representation
+            )
+            self.set_field(
+                'fss_priority',
+                fss_priority,
+                representation
+            )
+            self.set_field(
+                'fss_phaseout_year',
+                fss_phaseout_year,
+                representation
+            )
+            self.set_field(
+                'fss_forecast_year',
+                fss_forecast_year,
+                representation
+            )
+            self.set_field(
+                'fss_forecast_value_date',
+                fss_forecast_value_date,
+                representation
+            )
+            self.set_field(
+                'fss_forecast_currency',
+                fss_forecast_currency,
+                representation
+            )
+            self.set_field(
+                'fss_forecast_value',
+                fss_forecast_value,
+                representation
+            )
+
     def to_representation(self, activity):
         representation = OrderedDict()
 
@@ -4682,5 +4765,6 @@ class ActivitySerializer(serializers.Serializer):
         self.conditions(activity=activity, representation=representation)
         self.result(activity=activity, representation=representation)
         self.crs_add(activity=activity, representation=representation)
+        self.fss(activity=activity, representation=representation)
 
         return representation
