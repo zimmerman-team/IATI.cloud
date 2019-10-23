@@ -6,7 +6,10 @@ from rest_framework import serializers
 from iati.models import CountryBudgetItem, PlannedDisbursementProvider, \
     PlannedDisbursementReceiver, Conditions, ResultTitle, ResultDescription, \
     DocumentLinkTitle, DocumentLinkDescription, ResultIndicatorTitle, \
-    ResultIndicatorBaselineComment, CrsAddLoanTerms, CrsAddLoanStatus
+    ResultIndicatorBaselineComment, CrsAddLoanTerms, CrsAddLoanStatus, \
+    ContactInfoDepartment, ContactInfoPersonName, ContactInfoJobTitle, \
+    ContactInfoMailingAddress, LocationName, LocationDescription, LocationActivityDescription, \
+    ResultIndicatorDescription, ContactInfoOrganisation, BudgetItemDescription
 from iati.transaction.models import TransactionProvider, TransactionReceiver
 
 
@@ -217,11 +220,31 @@ class ContactInfoSerializer(serializers.Serializer):
         representation = OrderedDict()
 
         self.contact_info(contact_info, representation)
-        self.narrative(contact_info.organisation, representation, 'organisation')
-        self.narrative(contact_info.department, representation, 'department')
-        self.narrative(contact_info.person_name, representation, 'person_name')
-        self.narrative(contact_info.job_title, representation, 'job_title')
-        self.narrative(contact_info.mailing_address, representation, 'mailing_address')
+
+        try:
+            self.narrative(contact_info.organisation, representation, 'organisation')
+        except ContactInfoOrganisation.DoesNotExist:
+            pass
+
+        try:
+            self.narrative(contact_info.department, representation, 'department')
+        except ContactInfoDepartment.DoesNotExist:
+            pass
+
+        try:
+            self.narrative(contact_info.person_name, representation, 'person_name')
+        except ContactInfoPersonName.DoesNotExist:
+            pass
+
+        try:
+            self.narrative(contact_info.job_title, representation, 'job_title')
+        except ContactInfoJobTitle.DoesNotExist:
+            pass
+
+        try:
+            self.narrative(contact_info.mailing_address, representation, 'mailing_address')
+        except ContactInfoMailingAddress.DoesNotExist:
+            pass
 
         return representation
 
@@ -252,7 +275,7 @@ class RecipientCountrySerializer(serializers.Serializer):
         self.set_field('name', recipient_country.country.name, representation)
         self.set_field(
             'percentage',
-            str(recipient_country.percentage) if recipient_country.percentage > 0 else None,
+            str(recipient_country.percentage) if recipient_country.percentage and recipient_country.percentage > 0 else None,
             representation
         )
 
@@ -293,7 +316,7 @@ class RecipientRegionSerializer(serializers.Serializer):
         self.set_field('vocabulary_uri', recipient_region.vocabulary_uri, representation)
         self.set_field(
             'percentage',
-            str(recipient_region.percentage) if recipient_region.percentage > 0 else None,
+            str(recipient_region.percentage) if recipient_region.percentage and recipient_region.percentage > 0 else None,
             representation
         )
 
@@ -358,13 +381,13 @@ class LocationSerializer(serializers.Serializer):
 
     def location(self, location, representation):
         self.set_field('ref', location.ref, representation)
-        self.set_field('location_reach_code', location.location_reach.code, representation)
-        self.set_field('location_id_vocabulary', location.location_id_vocabulary.code, representation)
+        self.set_field('location_reach_code', location.location_reach_id, representation)
+        self.set_field('location_id_vocabulary', location.location_id_vocabulary_id, representation)
         self.set_field('location_id_code', location.location_id_code, representation)
-        self.set_field('point_pos', str(location.point_pos.coords), representation)
-        self.set_field('exactness_code', location.exactness.code, representation)
-        self.set_field('location_class_code', location.location_class.code, representation)
-        self.set_field('feature_designation_code', location.feature_designation.code, representation)
+        self.set_field('point_pos', str(location.point_pos.coords) if location.point_pos else None, representation)
+        self.set_field('exactness_code', location.exactness_id, representation)
+        self.set_field('location_class_code', location.location_class_id, representation)
+        self.set_field('feature_designation_code', location.feature_designation_id, representation)
 
     def administrative(self, location, representation):
         administrative_all = location.locationadministrative_set.all()
@@ -379,9 +402,21 @@ class LocationSerializer(serializers.Serializer):
         representation = OrderedDict()
 
         self.location(location, representation)
-        self.narrative(location.name, representation, 'name')
-        self.narrative(location.description, representation, 'description')
-        self.narrative(location.activity_description, representation, 'activity_description')
+        try:
+            self.narrative(location.name, representation, 'name')
+        except LocationName.DoesNotExist:
+            pass
+
+        try:
+            self.narrative(location.description, representation, 'description')
+        except LocationDescription.DoesNotExist:
+            pass
+
+        try:
+            self.narrative(location.activity_description, representation, 'activity_description')
+        except LocationActivityDescription.DoesNotExist:
+            pass
+
         self.administrative(location, representation)
 
         return representation
@@ -414,7 +449,7 @@ class ActivitySectorSerializer(serializers.Serializer):
         self.set_field('code', activity_sector.sector.code, representation)
         self.set_field(
             'percentage',
-            str(activity_sector.percentage) if activity_sector.percentage > 0 else None,
+            str(activity_sector.percentage) if activity_sector.percentage and activity_sector.percentage > 0 else None,
             representation
         )
 
@@ -440,19 +475,22 @@ class BudgetItemSerializer(serializers.Serializer):
             representation[name] = self.set_value(value)
 
     def narrative(self, budget_item, representation, field_name='narrative'):
-        narratives_all = budget_item.description.narratives.all()
-        if narratives_all:
-            narratives = list()
-            for narrative in narratives_all:
-                narratives.append(NarrativeSerializer(narrative).data)
+        try:
+            narratives_all = budget_item.description.narratives.all()
+            if narratives_all:
+                narratives = list()
+                for narrative in narratives_all:
+                    narratives.append(NarrativeSerializer(narrative).data)
 
-            self.set_field(field_name, narratives, representation)
+                self.set_field(field_name, narratives, representation)
+        except BudgetItemDescription.DoesNotExist:
+            pass
 
     def budget_item(self, budget_item, representation):
         self.set_field('code', budget_item.code_id, representation)
         self.set_field(
             'percentage',
-            str(budget_item.percentage) if budget_item.percentage > 0 else None,
+            str(budget_item.percentage) if budget_item.percentage and budget_item.percentage > 0 else None,
             representation
         )
 
@@ -612,7 +650,7 @@ class BudgetSerializer(serializers.Serializer):
         self.set_field('currency', budget.currency_id, representation)
         self.set_field(
             'value',
-            str(budget.value) if budget.value > 0 else None,
+            str(budget.value) if budget.value and budget.value > 0 else None,
             representation
         )
 
@@ -758,7 +796,7 @@ class PlannedDisbursementSerializer(serializers.Serializer):
         self.set_field('value_currency', planned_disbursement.currency_id, representation)
         self.set_field(
             'value',
-            str(planned_disbursement.value) if planned_disbursement.value > 0 else None,
+            str(planned_disbursement.value) if planned_disbursement.value and planned_disbursement.value > 0 else None,
             representation
         )
 
@@ -941,7 +979,7 @@ class TransactionSerializer(serializers.Serializer):
         )
         self.set_field(
             'value',
-            str(transaction.value) if transaction.value > 0 else None,
+            str(transaction.value) if transaction.value and transaction.value > 0 else None,
             representation
         )
 
@@ -1030,8 +1068,17 @@ class DocumentLinkSerializer(serializers.Serializer):
         representation = OrderedDict()
 
         self.document_link(document_link, representation)
-        self.narrative(document_link.documentlinktitle, representation, 'title')
-        self.narrative(document_link.documentlinkdescription, representation, 'description')
+
+        try:
+            self.narrative(document_link.documentlinktitle, representation, 'title')
+        except DocumentLinkTitle.DoesNotExist:
+            pass
+
+        try:
+            self.narrative(document_link.documentlinkdescription, representation, 'description')
+        except DocumentLinkDescription.DoesNotExist:
+            pass
+
         self.category(document_link, representation)
         self.language(document_link, representation)
 
@@ -1283,13 +1330,14 @@ class BaselineSerializer(serializers.Serializer):
             representation[name] = self.set_value(value)
 
     def narrative(self, field, representation, field_name='narrative'):
-        narratives_all = field.narratives.all()
-        if narratives_all:
-            narratives = list()
-            for narrative in narratives_all:
-                narratives.append(NarrativeSerializer(narrative).data)
+        if field:
+            narratives_all = field.narratives.all()
+            if narratives_all:
+                narratives = list()
+                for narrative in narratives_all:
+                    narratives.append(NarrativeSerializer(narrative).data)
 
-            self.set_field(field_name, narratives, representation)
+                self.set_field(field_name, narratives, representation)
 
     def baseline(self, baseline, representation):
         self.set_field('year', baseline.year, representation)
@@ -1368,13 +1416,14 @@ class TargetSerializer(serializers.Serializer):
             representation[name] = self.set_value(value)
 
     def narrative(self, field, representation, field_name='narrative'):
-        narratives_all = field.narratives.all()
-        if narratives_all:
-            narratives = list()
-            for narrative in narratives_all:
-                narratives.append(NarrativeSerializer(narrative).data)
+        if field:
+            narratives_all = field.narratives.all()
+            if narratives_all:
+                narratives = list()
+                for narrative in narratives_all:
+                    narratives.append(NarrativeSerializer(narrative).data)
 
-            self.set_field(field_name, narratives, representation)
+                self.set_field(field_name, narratives, representation)
 
     def location(self, item, representation):
         location_all = item.resultindicatorperiodtargetlocation_set.all()
@@ -1440,13 +1489,14 @@ class ActualSerializer(serializers.Serializer):
             representation[name] = self.set_value(value)
 
     def narrative(self, field, representation, field_name='narrative'):
-        narratives_all = field.narratives.all()
-        if narratives_all:
-            narratives = list()
-            for narrative in narratives_all:
-                narratives.append(NarrativeSerializer(narrative).data)
+        if field:
+            narratives_all = field.narratives.all()
+            if narratives_all:
+                narratives = list()
+                for narrative in narratives_all:
+                    narratives.append(NarrativeSerializer(narrative).data)
 
-            self.set_field(field_name, narratives, representation)
+                self.set_field(field_name, narratives, representation)
 
     def location(self, item, representation):
         location_all = item.resultindicatorperiodactuallocation_set.all()
@@ -1512,13 +1562,14 @@ class PeriodSerializer(serializers.Serializer):
             representation[name] = self.set_value(value)
 
     def narrative(self, field, representation, field_name='narrative'):
-        narratives_all = field.narratives.all()
-        if narratives_all:
-            narratives = list()
-            for narrative in narratives_all:
-                narratives.append(NarrativeSerializer(narrative).data)
+        if field:
+            narratives_all = field.narratives.all()
+            if narratives_all:
+                narratives = list()
+                for narrative in narratives_all:
+                    narratives.append(NarrativeSerializer(narrative).data)
 
-            self.set_field(field_name, narratives, representation)
+                self.set_field(field_name, narratives, representation)
 
     def period(self, period, representation):
         self.set_field(
@@ -1603,7 +1654,7 @@ class IndicatorSerializer(serializers.Serializer):
     def description(self, indicator, representation):
         try:
             self.narrative(indicator.resultindicatordescription, representation, 'description')
-        except ResultIndicatorTitle.DoesNotExist:
+        except ResultIndicatorDescription.DoesNotExist:
             pass
 
     def document_link(self, indicator, representation):
@@ -1704,7 +1755,7 @@ class ResultSerializer(serializers.Serializer):
     def description(self, result, representation):
         try:
             self.narrative(result.resultdescription, representation, 'description')
-        except ResultTitle.DoesNotExist:
+        except ResultDescription.DoesNotExist:
             pass
 
     def document_link(self, result, representation):
@@ -2298,35 +2349,50 @@ class ActivitySerializer(serializers.Serializer):
 
                 contact_info_list.append(ContactInfoSerializer(contact_info).data)
 
-                for narrative in contact_info.organisation.narratives.all():
-                    contact_info_organisation_narrative.append(narrative.content)
-                    contact_info_organisation_narrative_text.append(narrative.content)
-                    if narrative.language:
-                        contact_info_organisation_narrative_lang.append(narrative.language.code)
+                try:
+                    for narrative in contact_info.organisation.narratives.all():
+                        contact_info_organisation_narrative.append(narrative.content)
+                        contact_info_organisation_narrative_text.append(narrative.content)
+                        if narrative.language:
+                            contact_info_organisation_narrative_lang.append(narrative.language.code)
+                except ContactInfoOrganisation.DoesNotExist:
+                    pass
 
-                for narrative in contact_info.department.narratives.all():
-                    contact_info_department_narrative.append(narrative.content)
-                    contact_info_department_narrative_text.append(narrative.content)
-                    if narrative.language:
-                        contact_info_department_narrative_lang.append(narrative.language.code)
+                try:
+                    for narrative in contact_info.department.narratives.all():
+                        contact_info_department_narrative.append(narrative.content)
+                        contact_info_department_narrative_text.append(narrative.content)
+                        if narrative.language:
+                            contact_info_department_narrative_lang.append(narrative.language.code)
+                except ContactInfoDepartment.DoesNotExist:
+                    pass
 
-                for narrative in contact_info.person_name.narratives.all():
-                    contact_info_person_name_narrative.append(narrative.content)
-                    contact_info_person_name_narrative_text.append(narrative.content)
-                    if narrative.language:
-                        contact_info_person_name_narrative_lang.append(narrative.language.code)
+                try:
+                    for narrative in contact_info.person_name.narratives.all():
+                        contact_info_person_name_narrative.append(narrative.content)
+                        contact_info_person_name_narrative_text.append(narrative.content)
+                        if narrative.language:
+                            contact_info_person_name_narrative_lang.append(narrative.language.code)
+                except ContactInfoPersonName.DoesNotExist:
+                    pass
 
-                for narrative in contact_info.job_title.narratives.all():
-                    contact_info_job_title_narrative.append(narrative.content)
-                    contact_info_job_title_narrative_text.append(narrative.content)
-                    if narrative.language:
-                        contact_info_job_title_narrative_lang.append(narrative.language.code)
+                try:
+                    for narrative in contact_info.job_title.narratives.all():
+                        contact_info_job_title_narrative.append(narrative.content)
+                        contact_info_job_title_narrative_text.append(narrative.content)
+                        if narrative.language:
+                            contact_info_job_title_narrative_lang.append(narrative.language.code)
+                except ContactInfoJobTitle.DoesNotExist:
+                    pass
 
-                for narrative in contact_info.mailing_address.narratives.all():
-                    contact_info_mailing_address_narrative.append(narrative.content)
-                    contact_info_mailing_address_narrative_text.append(narrative.content)
-                    if narrative.language:
-                        contact_info_mailing_address_narrative_lang.append(narrative.language.code)
+                try:
+                    for narrative in contact_info.mailing_address.narratives.all():
+                        contact_info_mailing_address_narrative.append(narrative.content)
+                        contact_info_mailing_address_narrative_text.append(narrative.content)
+                        if narrative.language:
+                            contact_info_mailing_address_narrative_lang.append(narrative.language.code)
+                except ContactInfoMailingAddress.DoesNotExist:
+                    pass
 
             self.set_field('contact_info', json.dumps(contact_info_list), representation)
 
@@ -2397,7 +2463,7 @@ class ActivitySerializer(serializers.Serializer):
                 self.add_to_list(recipient_country_name, recipient_country.country.name)
                 self.add_to_list(
                     recipient_country_percentage,
-                    str(recipient_country.percentage) if recipient_country.percentage > 0 else None
+                    str(recipient_country.percentage) if recipient_country.percentage and recipient_country.percentage > 0 else None
                 )
 
                 recipient_country_list.append(RecipientCountrySerializer(recipient_country).data)
@@ -2436,7 +2502,7 @@ class ActivitySerializer(serializers.Serializer):
                 self.add_to_list(recipient_region_vocabulary_uri, recipient_region.vocabulary_uri)
                 self.add_to_list(
                     recipient_region_percentage,
-                    str(recipient_region.percentage) if recipient_region.percentage > 0 else None
+                    str(recipient_region.percentage) if recipient_region.percentage and recipient_region.percentage > 0 else None
                 )
 
                 recipient_region_list.append(RecipientRegionSerializer(recipient_region).data)
@@ -2488,33 +2554,42 @@ class ActivitySerializer(serializers.Serializer):
 
             for location in locations_all:
                 self.add_to_list(location_ref, location.ref)
-                self.add_to_list(location_reach_code, location.location_reach.code)
-                self.add_to_list(location_id_vocabulary, location.location_id_vocabulary.code)
+                self.add_to_list(location_reach_code, location.location_reach_id)
+                self.add_to_list(location_id_vocabulary, location.location_id_vocabulary_id)
                 self.add_to_list(location_id_code, location.location_id_code)
-                self.add_to_list(location_point_pos, str(location.point_pos.coords))
-                self.add_to_list(location_exactness_code, location.exactness.code)
-                self.add_to_list(location_class_code, location.location_class.code)
-                self.add_to_list(location_feature_designation_code, location.feature_designation.code)
+                self.add_to_list(location_point_pos, str(location.point_pos.coords) if location.point_pos else None)
+                self.add_to_list(location_exactness_code, location.exactness_id)
+                self.add_to_list(location_class_code, location.location_class_id)
+                self.add_to_list(location_feature_designation_code, location.feature_designation_id)
 
                 location_list.append(LocationSerializer(location).data)
 
-                for narrative in location.name.narratives.all():
-                    location_name_narrative.append(narrative.content)
-                    location_name_narrative_text.append(narrative.content)
-                    if narrative.language:
-                        location_name_narrative_lang.append(narrative.language.code)
+                try:
+                    for narrative in location.name.narratives.all():
+                        location_name_narrative.append(narrative.content)
+                        location_name_narrative_text.append(narrative.content)
+                        if narrative.language:
+                            location_name_narrative_lang.append(narrative.language.code)
+                except LocationName.DoesNotExist:
+                    pass
 
-                for narrative in location.description.narratives.all():
-                    location_description_narrative.append(narrative.content)
-                    location_description_narrative_text.append(narrative.content)
-                    if narrative.language:
-                        location_description_narrative_lang.append(narrative.language.code)
+                try:
+                    for narrative in location.description.narratives.all():
+                        location_description_narrative.append(narrative.content)
+                        location_description_narrative_text.append(narrative.content)
+                        if narrative.language:
+                            location_description_narrative_lang.append(narrative.language.code)
+                except LocationDescription.DoesNotExist:
+                    pass
 
-                for narrative in location.activity_description.narratives.all():
-                    location_activity_description_narrative.append(narrative.content)
-                    location_activity_description_narrative_text.append(narrative.content)
-                    if narrative.language:
-                        location_activity_description_narrative_lang.append(narrative.language.code)
+                try:
+                    for narrative in location.activity_description.narratives.all():
+                        location_activity_description_narrative.append(narrative.content)
+                        location_activity_description_narrative_text.append(narrative.content)
+                        if narrative.language:
+                            location_activity_description_narrative_lang.append(narrative.language.code)
+                except LocationActivityDescription.DoesNotExist:
+                    pass
 
                 for location_administrative in location.locationadministrative_set.all():
                     self.add_to_list(location_administrative_vocabulary, location_administrative.vocabulary.code)
@@ -2578,7 +2653,7 @@ class ActivitySerializer(serializers.Serializer):
                 self.add_to_list(sector_code, activity_sector.sector.code)
                 self.add_to_list(
                     sector_percentage,
-                    str(activity_sector.percentage) if activity_sector.percentage > 0 else None
+                    str(activity_sector.percentage) if activity_sector.percentage and activity_sector.percentage > 0 else None
                 )
 
                 sector_list.append(ActivitySectorSerializer(activity_sector).data)
@@ -2612,13 +2687,16 @@ class ActivitySerializer(serializers.Serializer):
                 self.add_to_list(country_budget_items_budget_item_code, budget_item.code_id)
                 self.add_to_list(
                     country_budget_items_budget_item_percentage,
-                    str(budget_item.percentage) if budget_item.percentage > 0 else None
+                    str(budget_item.percentage) if budget_item.percentage and budget_item.percentage > 0 else None
                 )
 
-                for narrative in budget_item.description.narratives.all():
-                    country_budget_items_budget_description_narrative_text.append(narrative.content)
-                    if narrative.language:
-                        country_budget_items_budget_description_narrative_lang.append(narrative.language.code)
+                try:
+                    for narrative in budget_item.description.narratives.all():
+                        country_budget_items_budget_description_narrative_text.append(narrative.content)
+                        if narrative.language:
+                            country_budget_items_budget_description_narrative_lang.append(narrative.language.code)
+                except BudgetItemDescription.DoesNotExist:
+                    pass
 
             self.set_field(
                 'country_budget_items',
@@ -2751,7 +2829,7 @@ class ActivitySerializer(serializers.Serializer):
                 )
                 self.add_to_list(
                     budget_value,
-                    str(budget.value) if budget.value > 0 else None
+                    str(budget.value) if budget.value and budget.value > 0 else None
                 )
 
                 budget_list.append(BudgetSerializer(budget).data)
@@ -2811,7 +2889,7 @@ class ActivitySerializer(serializers.Serializer):
                 self.add_to_list(planned_disbursement_value_currency, planned_disbursement.currency_id)
                 self.add_to_list(
                     planned_disbursement_value,
-                    str(planned_disbursement.value) if planned_disbursement.value > 0 else None
+                    str(planned_disbursement.value) if planned_disbursement.value and planned_disbursement.value > 0 else None
                 )
 
                 planned_disbursement_list.append(PlannedDisbursementSerializer(planned_disbursement).data)
@@ -2830,37 +2908,16 @@ class ActivitySerializer(serializers.Serializer):
                         planned_disbursement.provider_organisation.ref
                     )
 
-                    for narrative in planned_disbursement.provider_organisation.narratives.all():
-                        planned_disbursement_provider_org_narrative.append(narrative.content)
-                        planned_disbursement_provider_org_narrative_text.append(narrative.content)
-                        if narrative.language:
-                            planned_disbursement_provider_org_narrative_lang.append(narrative.language.code)
+                    try:
+                        for narrative in planned_disbursement.provider_organisation.narratives.all():
+                            planned_disbursement_provider_org_narrative.append(narrative.content)
+                            planned_disbursement_provider_org_narrative_text.append(narrative.content)
+                            if narrative.language:
+                                planned_disbursement_provider_org_narrative_lang.append(narrative.language.code)
+                    except PlannedDisbursementProvider.DoesNotExist:
+                        pass
 
                 except PlannedDisbursementProvider.DoesNotExist:
-                    pass
-
-                try:
-
-                    self.add_to_list(
-                        planned_disbursement_receiver_org_provider_activity_id,
-                        planned_disbursement.receiver_organisation.receiver_activity_ref
-                    )
-                    self.add_to_list(
-                        planned_disbursement_receiver_org_type,
-                        planned_disbursement.receiver_organisation.type_id
-                    )
-                    self.add_to_list(
-                        planned_disbursement_receiver_org_ref,
-                        planned_disbursement.receiver_organisation.ref
-                    )
-
-                    for narrative in planned_disbursement.provider_organisation.narratives.all():
-                        planned_disbursement_receiver_org_narrative.append(narrative.content)
-                        planned_disbursement_receiver_org_narrative_text.append(narrative.content)
-                        if narrative.language:
-                            planned_disbursement_receiver_org_narrative_lang.append(narrative.language.code)
-
-                except PlannedDisbursementReceiver.DoesNotExist:
                     pass
 
             self.set_field('planned_disbursement', json.dumps(planned_disbursement_list), representation)
@@ -3003,7 +3060,7 @@ class ActivitySerializer(serializers.Serializer):
                 )
                 self.add_to_list(
                     transaction_value,
-                    str(transaction.value) if transaction.value > 0 else None
+                    str(transaction.value) if transaction.value and transaction.value > 0 else None
                 )
 
                 transaction_list.append(TransactionSerializer(transaction).data)
@@ -3311,17 +3368,23 @@ class ActivitySerializer(serializers.Serializer):
 
                 document_link_list.append(DocumentLinkSerializer(document_link).data)
 
-                for narrative in document_link.documentlinktitle.narratives.all():
-                    document_link_title_narrative.append(narrative.content)
-                    document_link_title_narrative_text.append(narrative.content)
-                    if narrative.language:
-                        document_link_title_narrative_lang.append(narrative.language.code)
+                try:
+                    for narrative in document_link.documentlinktitle.narratives.all():
+                        document_link_title_narrative.append(narrative.content)
+                        document_link_title_narrative_text.append(narrative.content)
+                        if narrative.language:
+                            document_link_title_narrative_lang.append(narrative.language.code)
+                except DocumentLinkTitle.DoesNotExist:
+                    pass
 
-                for narrative in document_link.documentlinkdescription.narratives.all():
-                    document_link_description_narrative.append(narrative.content)
-                    document_link_description_narrative_text.append(narrative.content)
-                    if narrative.language:
-                        document_link_description_narrative_lang.append(narrative.language.code)
+                try:
+                    for narrative in document_link.documentlinkdescription.narratives.all():
+                        document_link_description_narrative.append(narrative.content)
+                        document_link_description_narrative_text.append(narrative.content)
+                        if narrative.language:
+                            document_link_description_narrative_lang.append(narrative.language.code)
+                except DocumentLinkDescription.DoesNotExist:
+                    pass
 
                 for document_link_category in document_link.documentlinkcategory_set.all():
                     self.add_to_list(
@@ -3716,7 +3779,7 @@ class ActivitySerializer(serializers.Serializer):
                             result_indicator_description_narrative_text.append(narrative.content)
                             if narrative.language:
                                 result_indicator_description_narrative_lang.append(narrative.language.code)
-                    except ResultIndicatorTitle.DoesNotExist:
+                    except ResultIndicatorDescription.DoesNotExist:
                         pass
 
                     for result_indicator_document_link in result_indicator.result_indicator_document_links.all():
@@ -4799,7 +4862,6 @@ class ActivitySerializer(serializers.Serializer):
                 json.dumps(fss_list),
                 representation
             )
-            """
             self.set_field(
                 'fss_extraction_date',
                 fss_extraction_date,
@@ -4835,7 +4897,6 @@ class ActivitySerializer(serializers.Serializer):
                 fss_forecast_value,
                 representation
             )
-            """
 
     def to_representation(self, activity):
         representation = OrderedDict()
@@ -4848,7 +4909,6 @@ class ActivitySerializer(serializers.Serializer):
         self.participating_org(activity=activity, representation=representation)
         self.other_identifier(activity=activity, representation=representation)
         self.activity_date(activity=activity, representation=representation)
-        self.contact_info(activity=activity, representation=representation)
         self.contact_info(activity=activity, representation=representation)
         self.recipient_country(activity=activity, representation=representation)
         self.recipient_region(activity=activity, representation=representation)
