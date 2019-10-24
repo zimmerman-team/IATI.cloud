@@ -2,7 +2,7 @@ from datetime import datetime
 from django.core.exceptions import ObjectDoesNotExist
 
 
-def add_list(data_list=list, value=None):
+def add_value_list(data_list=list, value=None):
     if value:
         data_list.append(value)
 
@@ -41,8 +41,8 @@ def get_narrative_lang_list(data):
     lang_list = list()
     narrative_list = list()
     for narrative in data.narratives.all():
-        add_list(lang_list, narrative.language_id)
-        add_list(narrative_list, narrative.content)
+        add_value_list(lang_list, narrative.language_id)
+        add_value_list(narrative_list, narrative.content)
 
     return lang_list, narrative_list
 

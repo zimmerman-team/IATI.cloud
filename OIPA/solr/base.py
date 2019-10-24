@@ -1,7 +1,7 @@
 from collections import OrderedDict
 from rest_framework import serializers
 
-from solr.utils import add_dict, add_list
+from solr.utils import add_dict, add_value_list
 
 
 class BaseSerializer(serializers.Serializer):
@@ -29,8 +29,8 @@ class IndexingSerializer(BaseSerializer):
     def add_field(self, field, value=None):
         self.indexing[field] = value
 
-    def add_value(self, field, value):
-        add_list(self.indexing[field], value)
+    def add_value_list(self, field, value):
+        add_value_list(self.indexing[field], value)
 
     def build(self):
         for key in self.indexing:
@@ -42,6 +42,6 @@ class IndexingSerializer(BaseSerializer):
             if narratives_all:
                 narratives = list()
                 for narrative in narratives_all:
-                    add_list(narratives, NarrativeSerializer(narrative).data)
+                    add_value_list(narratives, NarrativeSerializer(narrative).data)
 
                 self.set_field(field_name, narratives)

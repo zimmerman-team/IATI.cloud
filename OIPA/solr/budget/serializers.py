@@ -1,5 +1,5 @@
 from solr.base import IndexingSerializer
-from solr.utils import bool_string, value_string, decimal_string, add_reporting_org
+from solr.utils import value_string, decimal_string, add_reporting_org
 
 
 class BudgetSerializer(IndexingSerializer):
