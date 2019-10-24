@@ -45,3 +45,32 @@ def get_narrative_lang_list(data):
         add_list(narrative_list, narrative.content)
 
     return lang_list, narrative_list
+
+
+def add_reporting_org(serializer, activity):
+    reporting_organisation = activity.reporting_organisations.first()
+    if reporting_organisation:
+        serializer.add_field('reporting_org_ref', reporting_organisation.ref)
+        serializer.add_field('reporting_org_type', reporting_organisation.type_id)
+        serializer.add_field(
+            'reporting_org_secondary_reporter',
+            bool_string(reporting_organisation.secondary_reporter)
+        )
+        serializer.add_field(
+            'reporting_org_narrative',
+            getattr(reporting_organisation.organisation, 'primary_name', None)
+        )
+
+
+def get_child_attr(data, field):
+    attrs = field.split('.')
+    value = None
+    for attr in attrs:
+        value = getattr(data, attr, None)
+        if value:
+            data = value
+        else:
+            break
+
+    return value
+

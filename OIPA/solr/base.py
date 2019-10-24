@@ -26,7 +26,7 @@ class NarrativeSerializer(BaseSerializer):
 class IndexingSerializer(BaseSerializer):
     indexing = OrderedDict()
 
-    def add_field(self, field, value=[]):
+    def add_field(self, field, value=None):
         self.indexing[field] = value
 
     def add_value(self, field, value):

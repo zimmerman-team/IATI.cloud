@@ -1,37 +1,39 @@
 from solr.base import IndexingSerializer
-from solr.utils import bool_string, value_string, decimal_string, get_narrative_lang_list
+from solr.utils import bool_string, value_string, decimal_string, \
+    get_narrative_lang_list, add_reporting_org, get_child_attr
 
 
 class TransactionSerializer(IndexingSerializer):
 
     def transaction(self, transaction):
-        self.add_field('iati_identifier')
-        self.add_field('title_lang')
-        self.add_field('title_narrative')
+        self.add_field('iati_identifier', transaction.activity.iati_identifier)
 
-        self.add_field('description_type')
-        self.add_field('description_lang')
-        self.add_field('description_narrative')
+        self.indexing['title_lang'], self.indexing['title_narrative'] = \
+            get_narrative_lang_list(transaction.activity.title)
 
-        self.add_field('activity_date_type')
-        self.add_field('activity_date_iso_date')
+        self.add_field('description_type', [])
+        self.add_field('description_lang', [])
+        self.add_field('description_narrative', [])
 
-        self.add_field('reporting_org_ref')
-        self.add_field('reporting_org_type')
-        self.add_field('reporting_org_secondary_reporter')
-        self.add_field('reporting_org_narrative')
+        self.add_field('activity_date_type', [])
+        self.add_field('activity_date_iso_date', [])
 
-        self.add_field('transaction_ref')
-        self.add_field('transaction_humanitarian')
-        self.add_field('transaction_type')
-        self.add_field('transaction_date_iso_date')
-        self.add_field('transaction_value_currency')
-        self.add_field('transaction_value_date')
-        self.add_field('transaction_value')
+        add_reporting_org(self, transaction.activity)
 
-        self.add_field('transaction_provider_org_provider_activity_id')
-        self.add_field('transaction_provider_org_type')
-        self.add_field('transaction_provider_org_ref')
+        self.add_field('transaction_ref', transaction.ref)
+        self.add_field('transaction_humanitarian', bool_string(transaction.humanitarian))
+        self.add_field('transaction_type', transaction.transaction_type_id)
+        self.add_field('transaction_date_iso_date', value_string(transaction.transaction_date))
+        self.add_field('transaction_value_currency', transaction.currency_id)
+        self.add_field('transaction_value_date', value_string(transaction.value_date))
+        self.add_field('transaction_value', decimal_string(transaction.value))
+
+        self.add_field(
+            'transaction_provider_org_provider_activity_id',
+            get_child_attr(transaction, 'provider_organisation.provider_activity_ref')
+        )
+        self.add_field('transaction_provider_org_type', get_child_attr(transaction, 'provider_organisation.type_id'))
+        self.add_field('transaction_provider_org_ref', get_child_attr(transaction, 'provider_organisation.ref'))
 
         self.add_field('transaction_provider_org_narrative')
         self.add_field('transaction_provider_org_narrative_lang')
@@ -61,10 +63,6 @@ class TransactionSerializer(IndexingSerializer):
         self.add_field('transaction_aid_type_vocabulary')
         self.add_field('transaction_tied_status_code')
 
-        self.indexing['iati_identifier'] = getattr(transaction.activity, 'iati_identifier', None)
-        self.indexing['title_lang'], self.indexing['title_narrative'] = \
-            get_narrative_lang_list(transaction.activity.title)
-
         for description in transaction.activity.description_set.all():
             self.add_value(
                 'description_type',
@@ -79,65 +77,6 @@ class TransactionSerializer(IndexingSerializer):
                     'description_lang',
                     narrative.language_id
                 )
-
-        for reporting_organisation in transaction.activity.reporting_organisations.all():
-            self.add_value(
-                'reporting_org_ref',
-                reporting_organisation.ref
-            )
-            self.add_value(
-                'reporting_org_type',
-                reporting_organisation.type_id
-            )
-            self.add_value(
-                'reporting_org_secondary_reporter',
-                bool_string(reporting_organisation.secondary_reporter)
-            )
-            self.add_value(
-                'reporting_org_narrative',
-                getattr(reporting_organisation.organisation, 'primary_name', None)
-            )
-
-        self.add_value(
-            'transaction_ref',
-            transaction.ref
-        )
-        self.add_value(
-            'transaction_humanitarian',
-            bool_string(transaction.humanitarian)
-        )
-        self.add_value(
-            'transaction_type',
-            transaction.transaction_type_id
-        )
-        self.add_value(
-            'transaction_date_iso_date',
-            value_string(transaction.transaction_date)
-        )
-        self.add_value(
-            'transaction_value_currency',
-            transaction.currency_id
-        )
-        self.add_value(
-            'transaction_value_date',
-            value_string(transaction.value_date)
-        )
-        self.add_value(
-            'transaction_value',
-            decimal_string(transaction.value)
-        )
-        self.add_value(
-            'transaction_provider_org_provider_activity_id',
-            getattr(transaction, 'provider_organisation.provider_activity_ref', None)
-        )
-        self.add_value(
-            'transaction_provider_org_type',
-            getattr(transaction, 'provider_organisation.type_id', None)
-        )
-        self.add_value(
-            'transaction_provider_org_ref',
-            getattr(transaction, 'provider_organisation.ref', None)
-        )
 
         provider_organisation = getattr(transaction, 'provider_organisation', None)
         if provider_organisation:
