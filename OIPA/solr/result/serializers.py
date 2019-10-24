@@ -1,6 +1,8 @@
 import json
 from solr.base import IndexingSerializer, DocumentLinkSerializer, ReferenceSerializer
-from solr.utils import bool_string, add_reporting_org, get_child_attr
+from solr.utils import bool_string, add_reporting_org, get_child_attr, value_string
+
+from iati.models import ResultIndicatorPeriodTarget
 
 
 class ResultSerializer(IndexingSerializer):
@@ -30,20 +32,21 @@ class ResultSerializer(IndexingSerializer):
 
     def document_link(self, document_link_all, prefix='result_document_link'):
         if document_link_all:
-            self.add_field(prefix, [])
-            self.add_field(prefix + '_url', [])
-            self.add_field(prefix + '_format', [])
-            self.add_field(prefix + '_document_date_iso_date', [])
-            self.add_field(prefix + '_description_narrative', [])
-            self.add_field(prefix + '_category_code', [])
-            self.add_field(prefix + '_language_code', [])
+            if prefix not in self.indexing:
+                self.add_field(prefix, [])
+                self.add_field(prefix + '_url', [])
+                self.add_field(prefix + '_format', [])
+                self.add_field(prefix + '_document_date_iso_date', [])
+                self.add_field(prefix + '_description_narrative', [])
+                self.add_field(prefix + '_category_code', [])
+                self.add_field(prefix + '_language_code', [])
 
             for document_link in document_link_all:
                 self.add_value_list(prefix, json.dumps(DocumentLinkSerializer(document_link).data))
 
                 self.add_value_list(prefix + '_url', document_link.url)
                 self.add_value_list(prefix + '_format', document_link.file_format_id)
-                self.add_value_list(prefix + '_document_date_iso_date', document_link.iso_date)
+                self.add_value_list(prefix + '_document_date_iso_date', value_string(document_link.iso_date))
 
                 category_all = document_link.documentlinkcategory_set.all()
                 if category_all:
@@ -57,13 +60,14 @@ class ResultSerializer(IndexingSerializer):
 
     def reference(self, reference_all, prefix='result_reference', is_indicator=False):
         if reference_all:
-            self.add_field(prefix, [])
-            self.add_field(prefix + '_code', [])
-            self.add_field(prefix + '_vocabulary', [])
-            if not is_indicator:
-                self.add_field(prefix + '_vocabulary_uri', [])
-            else:
-                self.add_field(prefix + '_indicator_uri', [])
+            if prefix not in self.indexing:
+                self.add_field(prefix, [])
+                self.add_field(prefix + '_code', [])
+                self.add_field(prefix + '_vocabulary', [])
+                if not is_indicator:
+                    self.add_field(prefix + '_vocabulary_uri', [])
+                else:
+                    self.add_field(prefix + '_indicator_uri', [])
 
             for reference in reference_all:
                 self.add_value_list(prefix, json.dumps(ReferenceSerializer(reference).data))
@@ -75,6 +79,96 @@ class ResultSerializer(IndexingSerializer):
                 else:
                     self.add_value_list(prefix + '_indicator_uri', reference.indicator_uri)
 
+    def indicator_baseline(self, indicator):
+        baseline_all = indicator.resultindicatorbaseline_set.all()
+        if baseline_all:
+            if 'result_indicator_baseline_year' not in self.indexing:
+                self.add_field('result_indicator_baseline_year', [])
+                self.add_field('result_indicator_baseline_iso_date', [])
+                self.add_field('result_indicator_baseline_value', [])
+                self.add_field('result_indicator_baseline_location_ref', [])
+                self.add_field('result_indicator_baseline_dimension_name', [])
+                self.add_field('result_indicator_baseline_dimension_value', [])
+                self.add_field('result_indicator_baseline_comment_narrative', [])
+
+            for baseline in baseline_all:
+                self.add_value_list('result_indicator_baseline_year', baseline.year)
+                self.add_value_list('result_indicator_baseline_iso_date', value_string(baseline.iso_date))
+                self.add_value_list('result_indicator_baseline_value', baseline.value)
+
+                for location in baseline.location_set.all():
+                    self.add_value_list('result_indicator_baseline_location_ref', location.ref)
+
+                for dimension in baseline.resultindicatorbaselinedimension_set.all():
+                    self.add_value_list('result_indicator_baseline_dimension_name', dimension.name)
+                    self.add_value_list('result_indicator_baseline_dimension_value', dimension.value)
+
+                comment = get_child_attr(baseline, 'resultindicatorbaselinecomment')
+                if comment:
+                    for narrative in comment.narratives.all():
+                        self.add_value_list('result_indicator_baseline_comment_narrative', narrative.content)
+
+                self.document_link(
+                    baseline.baseline_document_links.all(),
+                    prefix='result_indicator_baseline_document_link'
+                )
+
+    def indicator_period_related(self, related_all):
+        if related_all:
+            is_target = True if isinstance(related_all.first(), ResultIndicatorPeriodTarget) else False
+            prefix = 'result_indicator_period_target' \
+                if isinstance(related_all.first(), ResultIndicatorPeriodTarget) else 'result_indicator_period_actual'
+
+            if prefix not in self.indexing:
+                self.add_field(prefix + '_value', [])
+                self.add_field(prefix + '_location_ref', [])
+
+                self.add_field(prefix + '_dimmension_name', [])
+                self.add_field(prefix + '_dimmension_value', [])
+                self.add_field(prefix + '_comment_narrative', [])
+
+            for related in related_all:
+                self.add_value_list(prefix + '_value', related.value)
+
+                location_all = related.resultindicatorperiodtargetlocation_set.all() if is_target \
+                    else related.resultindicatorperiodactuallocation_set.all()
+                for location in location_all:
+                    self.add_value_list(prefix + '_location_ref', location.ref)
+
+                dimension_all = related.resultindicatorperiodtargetdimension_set.all() if is_target \
+                    else related.resultindicatorperiodactualdimension_set.all()
+                for dimension in dimension_all:
+                    self.add_value_list(prefix + '_dimmension_name', dimension.name)
+                    self.add_value_list(prefix + '_dimmension_value', dimension.value)
+
+                comment_all = related.resultindicatorperiodtargetcomment_set.all() if is_target \
+                    else related.resultindicatorperiodactualcomment_set.all()
+                for comment in comment_all:
+                    for narrative in comment.narratives.all():
+                        self.add_value_list(prefix + '_comment_narrative', narrative.content)
+
+                document_link_all = related.period_target_document_links.all() if is_target \
+                    else related.period_actual_document_links.all()
+                self.document_link(document_link_all, prefix=prefix + '_document_link')
+
+    def indicator_period(self, indicator):
+        period_all = indicator.resultindicatorperiod_set.all()
+        if period_all:
+            if 'result_indicator_period_period_start_iso_date' not in self.indexing:
+                self.add_field('result_indicator_period_period_start_iso_date', [])
+                self.add_field('result_indicator_period_period_end_iso_date', [])
+
+            for period in period_all:
+                self.add_value_list('result_indicator_period_period_start_iso_date', value_string(period.period_start))
+                self.add_value_list('result_indicator_period_period_end_iso_date', value_string(period.period_end))
+
+                self.indicator_period_related(
+                    period.targets.all()
+                )
+                self.indicator_period_related(
+                    period.actuals.all()
+                )
+
     def indicator(self):
         indicator_all = self.record.resultindicator_set.all()
         if indicator_all:
@@ -84,14 +178,6 @@ class ResultSerializer(IndexingSerializer):
             self.add_field('result_indicator_aggregation_status', [])
             self.add_field('result_indicator_title_narrative', [])
             self.add_field('result_indicator_description_narrative', [])
-
-            self.add_field('result_indicator_document_link_url', [])
-            self.add_field('result_indicator_document_link_format', [])
-            self.add_field('result_indicator_document_link_title_narrative', [])
-            self.add_field('result_indicator_document_link_description_narrative', [])
-            self.add_field('result_indicator_document_link_category_code', [])
-            self.add_field('result_indicator_document_link_language_code', [])
-            self.add_field('result_indicator_document_link_document_date_iso_date', [])
 
             for indicator in indicator_all:
                 self.add_value_list('result_indicator_measure', indicator.measure_id)
@@ -116,6 +202,9 @@ class ResultSerializer(IndexingSerializer):
                     prefix='result_indicator_reference',
                     is_indicator=True
                 )
+
+                self.indicator_baseline(indicator)
+                self.indicator_period(indicator)
 
     def result(self):
         self.add_field('iati_identifier', self.record.activity.iati_identifier)
