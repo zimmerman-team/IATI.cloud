@@ -45,9 +45,11 @@ class IndexingSerializer(BaseSerializer):
             if narratives_all:
                 narratives = list()
                 for narrative in narratives_all:
-                    add_value_list(narratives, NarrativeSerializer(narrative).data)
+                    value = json.dumps(NarrativeSerializer(narrative).data) if is_json_string \
+                        else NarrativeSerializer(narrative).data
+                    add_value_list(narratives, value)
 
-                self.set_field(field_name, json.dumps(narratives) if is_json_string else narratives)
+                self.set_field(field_name, narratives)
 
 
 class DocumentLinkSerializer(IndexingSerializer):

@@ -5,7 +5,7 @@ from solr.utils import bool_string, add_reporting_org, get_child_attr, value_str
 from iati.models import ResultIndicatorPeriodTarget
 
 
-class ResultSerializer(IndexingSerializer):
+class ResultIndexingSerializer(IndexingSerializer):
 
     def field_narrative(self, field, key):
         if field:
