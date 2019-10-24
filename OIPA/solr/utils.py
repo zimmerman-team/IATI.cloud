@@ -2,7 +2,7 @@ from datetime import datetime
 from django.core.exceptions import ObjectDoesNotExist
 
 
-def add_value_list(data_list=list, value=None):
+def add_value_list(data_list, value=None):
     if value:
         data_list.append(value)
 
