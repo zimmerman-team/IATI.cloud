@@ -1,6 +1,8 @@
+import json
 from solr.base import IndexingSerializer
 from solr.utils import bool_string, value_string, decimal_string, \
     get_narrative_lang_list, add_reporting_org, get_child_attr
+from solr.activity.serializers import ActivitySectorSerializer
 
 
 class TransactionSerializer(IndexingSerializer):
@@ -141,7 +143,29 @@ class TransactionSerializer(IndexingSerializer):
 
         self.add_field('transaction_tied_status_code', transaction.tied_status_id)
 
+        self.add_field('humanitarian', bool_string(get_child_attr(transaction, 'activity.humanitarian')))
+
+        self.add_field('sector', [])
+        self.add_field('sector_vocabulary', [])
+        self.add_field('sector_vocabulary_uri', [])
+        self.add_field('sector_code', [])
+        self.add_field('sector_percentage', [])
+        self.add_field('sector_narrative', [])
+        for activity_sector in transaction.activity.activitysector_set.all():
+            self.add_value_list('sector', json.dumps(ActivitySectorSerializer(activity_sector).data))
+
+            self.add_value_list('sector_vocabulary', activity_sector.vocabulary_id)
+            self.add_value_list('sector_vocabulary_uri', activity_sector.vocabulary_uri)
+            self.add_value_list('sector_code', activity_sector.sector_id)
+            self.add_value_list('sector_percentage', decimal_string(activity_sector.percentage))
+
+            for narrative in activity_sector.narratives.all():
+                self.add_value_list('sector_narrative', narrative.content)
+
     def to_representation(self, transaction):
+        self.indexing = {}
+        self.representation = {}
+
         self.transaction(transaction)
         self.build()
 

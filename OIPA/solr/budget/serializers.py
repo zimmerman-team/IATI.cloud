@@ -21,6 +21,9 @@ class BudgetSerializer(IndexingSerializer):
         add_reporting_org(self, budget.activity)
 
     def to_representation(self, transaction):
+        self.indexing = {}
+        self.representation = {}
+
         self.budget(transaction)
         self.build()
 
