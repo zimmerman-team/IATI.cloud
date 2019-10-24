@@ -74,3 +74,10 @@ def get_child_attr(data, field):
 
     return value
 
+
+def field_narrative(serializer, field, key):
+    if field:
+        for narrative in field.narratives.all():
+            serializer.add_value_list(key, narrative.content)
+
+

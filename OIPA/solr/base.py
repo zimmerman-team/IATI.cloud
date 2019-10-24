@@ -76,7 +76,7 @@ class DocumentLinkSerializer(IndexingSerializer):
         if language_all:
             language_list = list()
             for language in language_all:
-                add_value_list(language_list, language.category_id)
+                add_value_list(language_list, language.language_id)
 
             self.set_field('language_code', language_list)
 
@@ -93,4 +93,27 @@ class DocumentLinkSerializer(IndexingSerializer):
         self.language()
 
         return self.representation
+
+
+class ReferenceSerializer(IndexingSerializer):
+
+    def reference(self):
+        self.set_field('code', self.record.code)
+        self.set_field('vocabulary', self.record.vocabulary_id)
+
+        if get_child_attr(self.record, 'vocabulary_uri'):
+            self.set_field('vocabulary_uri', self.record.vocabulary_uri)
+        else:
+            self.set_field('indicator_uri', self.record.indicator_uri)
+
+    def to_representation(self, reference):
+        self.record = reference
+
+        self.representation = {}
+        self.indexing = {}
+
+        self.reference()
+
+        return self.representation
+
 
