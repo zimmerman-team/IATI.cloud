@@ -1,6 +1,7 @@
+from rest_framework.renderers import JSONRenderer
+
 from solr.base import IndexingSerializer
 from solr.utils import bool_string, add_reporting_org, get_child_attr, value_string
-from rest_framework.renderers import JSONRenderer
 
 from iati.models import ResultIndicatorPeriodTarget
 from api.activity.serializers import ResultIndicatorSerializer, DocumentLinkSerializer, \

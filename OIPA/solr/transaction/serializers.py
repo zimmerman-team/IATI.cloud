@@ -1,11 +1,14 @@
 import json
+from rest_framework.renderers import JSONRenderer
+
 from solr.base import IndexingSerializer
 from solr.utils import bool_string, value_string, decimal_string, \
     get_narrative_lang_list, add_reporting_org, get_child_attr
+
 from solr.activity.serializers import ActivitySectorSerializer
 
 
-class TransactionSerializer(IndexingSerializer):
+class TransactionIndexing(IndexingSerializer):
 
     def transaction(self, transaction):
         self.add_field('iati_identifier', transaction.activity.iati_identifier)
@@ -152,7 +155,10 @@ class TransactionSerializer(IndexingSerializer):
         self.add_field('sector_percentage', [])
         self.add_field('sector_narrative', [])
         for activity_sector in transaction.activity.activitysector_set.all():
-            self.add_value_list('sector', json.dumps(ActivitySectorSerializer(activity_sector).data))
+            self.add_value_list(
+                'sector',
+                JSONRenderer().render(ActivitySectorSerializer(activity_sector).data).decode()
+            )
 
             self.add_value_list('sector_vocabulary', activity_sector.vocabulary_id)
             self.add_value_list('sector_vocabulary_uri', activity_sector.vocabulary_uri)
