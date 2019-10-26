@@ -6,16 +6,13 @@ from api.activity.serializers import NarrativeSerializer
 from solr.utils import add_dict, add_value_list, value_string, get_child_attr
 
 
-class BaseSerializer(serializers.Serializer):
+class BaseIndexing(serializers.Serializer):
     representation = {}
+    indexing = {}
+    record = None
 
     def set_field(self, field, value):
         add_dict(self.representation, field, value)
-
-
-class IndexingSerializer(BaseSerializer):
-    indexing = {}
-    record = None
 
     def add_field(self, field, value=None):
         self.indexing[field] = value

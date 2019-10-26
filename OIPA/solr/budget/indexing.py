@@ -1,10 +1,12 @@
-from solr.base import IndexingSerializer
+from solr.base import BaseIndexing
 from solr.utils import value_string, decimal_string, add_reporting_org
 
 
-class BudgetSerializer(IndexingSerializer):
+class BudgetIndexing(BaseIndexing):
 
-    def budget(self, budget):
+    def budget(self):
+        budget = self.record
+
         self.add_field('id', budget.id)
         self.add_field('iati_identifier', budget.activity.iati_identifier)
 
@@ -20,11 +22,12 @@ class BudgetSerializer(IndexingSerializer):
 
         add_reporting_org(self, budget.activity)
 
-    def to_representation(self, transaction):
+    def to_representation(self, budget):
+        self.record = budget
         self.indexing = {}
         self.representation = {}
 
-        self.budget(transaction)
+        self.budget()
         self.build()
 
         return self.representation

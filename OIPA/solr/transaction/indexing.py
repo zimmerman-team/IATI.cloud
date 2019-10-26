@@ -1,15 +1,17 @@
 from rest_framework.renderers import JSONRenderer
 
-from solr.base import IndexingSerializer
+from solr.base import BaseIndexing
 from solr.utils import bool_string, value_string, decimal_string, \
     get_narrative_lang_list, add_reporting_org, get_child_attr
 
 from solr.activity.serializers import ActivitySectorSerializer
 
 
-class TransactionIndexing(IndexingSerializer):
+class TransactionIndexing(BaseIndexing):
 
-    def transaction(self, transaction):
+    def transaction(self):
+        transaction = self.record
+
         self.add_field('iati_identifier', transaction.activity.iati_identifier)
 
         self.indexing['title_lang'], self.indexing['title_narrative'] = \
@@ -168,6 +170,8 @@ class TransactionIndexing(IndexingSerializer):
                 self.add_value_list('sector_narrative', narrative.content)
 
     def to_representation(self, transaction):
+        self.record = transaction
+
         self.indexing = {}
         self.representation = {}
 

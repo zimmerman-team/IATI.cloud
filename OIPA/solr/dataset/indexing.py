@@ -1,14 +1,15 @@
 from rest_framework.renderers import JSONRenderer
 
-from solr.base import IndexingSerializer
+from solr.base import BaseIndexing
 from solr.utils import get_child_attr, value_string
 
 from api.publisher.serializers import PublisherSerializer
 
 
-class DatasetIndexing(IndexingSerializer):
+class DatasetIndexing(BaseIndexing):
 
-    def dataset_publisher(self, publisher):
+    def dataset_publisher(self):
+        publisher = get_child_attr(self.record, 'publisher')
         if publisher:
             self.add_field(
                 'publisher',
@@ -30,7 +31,9 @@ class DatasetIndexing(IndexingSerializer):
             self.add_field('publisher_name', publisher.name)
             self.add_field('publisher_display_name', publisher.display_name)
 
-    def dataset(self, dataset):
+    def dataset(self):
+        dataset = self.record
+
         self.add_field('id', dataset.id)
         self.add_field('name', dataset.name)
         self.add_field('title', dataset.title)
@@ -40,13 +43,15 @@ class DatasetIndexing(IndexingSerializer):
         self.add_field('iati_version', dataset.iati_version)
         self.add_field('source_url', dataset.source_url)
 
-        self.dataset_publisher(get_child_attr(dataset, 'publisher'))
+        self.dataset_publisher()
 
     def to_representation(self, dataset):
+        self.record = dataset
+
         self.indexing = {}
         self.representation = {}
 
-        self.dataset(dataset)
+        self.dataset()
         self.build()
 
         return self.representation
