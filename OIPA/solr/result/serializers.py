@@ -1,38 +1,10 @@
-import json
-from solr.base import IndexingSerializer, ReferenceSerializer
+from solr.base import IndexingSerializer
 from solr.utils import bool_string, add_reporting_org, get_child_attr, value_string
 from rest_framework.renderers import JSONRenderer
 
 from iati.models import ResultIndicatorPeriodTarget
 from api.activity.serializers import ResultIndicatorSerializer, DocumentLinkSerializer, \
     ResultIndicatorReferenceSerializer
-
-
-class IndicatorSerializer(IndexingSerializer):
-
-    def indicator(self):
-        self.add_field('measure', self.record.measure_id)
-        self.add_field('ascending', bool_string(self.record.ascending))
-        self.add_field('aggregation_status', bool_string(self.record.aggregation_status))
-
-    def title(self):
-        self.narrative(get_child_attr(self.record, 'resultindicatortitle'), field_name='title')
-
-    def description(self):
-        self.narrative(get_child_attr(self.record, 'resultindicatordescription'), field_name='description')
-
-    def to_representation(self, indicator):
-        self.record = indicator
-
-        self.indexing = {}
-        self.representation = {}
-
-        self.indicator()
-        self.title()
-        self.description()
-        self.build()
-
-        return self.representation
 
 
 class ResultIndexing(IndexingSerializer):
@@ -72,7 +44,7 @@ class ResultIndexing(IndexingSerializer):
                 self.add_field(prefix + '_language_code', [])
 
             for document_link in document_link_all:
-                self.add_value_list(prefix, JSONRenderer().render(DocumentLinkSerializer(document_link).data))
+                self.add_value_list(prefix, JSONRenderer().render(DocumentLinkSerializer(document_link).data).decode())
 
                 self.add_value_list(prefix + '_url', document_link.url)
                 self.add_value_list(prefix + '_format', document_link.file_format_id)
@@ -100,7 +72,10 @@ class ResultIndexing(IndexingSerializer):
                     self.add_field(prefix + '_indicator_uri', [])
 
             for reference in reference_all:
-                self.add_value_list(prefix, JSONRenderer().render(ResultIndicatorReferenceSerializer(reference).data))
+                self.add_value_list(
+                    prefix,
+                    JSONRenderer().render(ResultIndicatorReferenceSerializer(reference).data).decode()
+                )
 
                 self.add_value_list(prefix + '_code', reference.code)
                 self.add_value_list(prefix + '_vocabulary', reference.vocabulary_id)
@@ -212,7 +187,7 @@ class ResultIndexing(IndexingSerializer):
             for indicator in indicator_all:
                 self.add_value_list(
                     'result_indicator',
-                    JSONRenderer().render(ResultIndicatorSerializer(indicator).data)
+                    JSONRenderer().render(ResultIndicatorSerializer(indicator).data).decode()
                 )
 
                 self.add_value_list('result_indicator_measure', indicator.measure_id)
