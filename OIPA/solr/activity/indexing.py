@@ -8,7 +8,7 @@ from solr.activity.serializers import RecipientCountrySerializer, ActivityRecipi
 from api.activity.serializers import ReportingOrganisationSerializer, TitleSerializer, DescriptionSerializer, \
     ParticipatingOrganisationSerializer, OtherIdentifierSerializer, ActivityDateSerializer, ContactInfoSerializer, \
     CountryBudgetItemsSerializer, HumanitarianScopeSerializer, BudgetSerializer, PlannedDisbursementSerializer, \
-    DocumentLinkSerializer, ConditionSerializer, CrsAddSerializer, FssSerializer
+    DocumentLinkSerializer, ConditionSerializer, CrsAddSerializer, FssSerializer, TransactionSerializer
 
 
 class ActivityIndexing(BaseIndexing):
@@ -594,6 +594,120 @@ class ActivityIndexing(BaseIndexing):
                     'planned_disbursement_provider_org_narrative_lang'
                 )
 
+    def transaction(self):
+        transaction_all = self.record.transaction_set.all()
+        if transaction_all:
+            self.add_field('transaction', [])
+            self.add_field('transaction_ref', [])
+            self.add_field('transaction_humanitarian', [])
+            self.add_field('transaction_type', [])
+            self.add_field('transaction_date_iso_date', [])
+            self.add_field('transaction_value_currency', [])
+            self.add_field('transaction_value_date', [])
+            self.add_field('transaction_value', [])
+            self.add_field('transaction_provider_org_provider_activity_id', [])
+            self.add_field('transaction_provider_org_type', [])
+            self.add_field('transaction_provider_org_ref', [])
+            self.add_field('transaction_provider_org_narrative', [])
+            self.add_field('transaction_provider_org_narrative_lang', [])
+            self.add_field('transaction_provider_org_narrative_text', [])
+            self.add_field('transaction_receiver_org_receiver_activity_id', [])
+            self.add_field('transaction_receiver_org_type', [])
+            self.add_field('transaction_receiver_org_ref', [])
+            self.add_field('transaction_receiver_org_narrative', [])
+            self.add_field('transaction_receiver_org_narrative_lang', [])
+            self.add_field('transaction_receiver_org_narrative_text', [])
+            self.add_field('transaction_disburstment_channel_code', [])
+            self.add_field('transaction_sector_vocabulary', [])
+            self.add_field('transaction_sector_vocabulary_uri', [])
+            self.add_field('transaction_sector_code', [])
+            self.add_field('transaction_recipient_country_code', [])
+            self.add_field('transaction_recipient_region_code', [])
+            self.add_field('transaction_recipient_region_vocabulary', [])
+            self.add_field('transaction_flow_type_code', [])
+            self.add_field('transaction_finance_type_code', [])
+            self.add_field('transaction_aid_type_code', [])
+            self.add_field('transaction_aid_type_vocabulary', [])
+            self.add_field('transaction_tied_status_code', [])
+
+            for transaction in transaction_all:
+                self.add_value_list(
+                    'transaction',
+                    JSONRenderer().render(TransactionSerializer(transaction).data).decode()
+                )
+
+                self.add_value_list('transaction_ref', transaction.ref)
+                self.add_value_list('transaction_humanitarian', bool_string(transaction.humanitarian))
+                self.add_value_list('transaction_type', value_string(transaction.transaction_type_id))
+                self.add_value_list('transaction_date_iso_date', value_string(transaction.transaction_date))
+                self.add_value_list('transaction_value_currency', transaction.currency_id)
+                self.add_value_list('transaction_value_date', value_string(transaction.value_date))
+                self.add_value_list('transaction_value', decimal_string(transaction.value))
+
+                provider_organisation = get_child_attr(transaction, 'provider_organisation')
+                if provider_organisation:
+                    self.add_value_list(
+                        'transaction_provider_org_provider_activity_id',
+                        provider_organisation.provider_activity_ref
+                    )
+                    self.add_value_list('transaction_provider_org_type', provider_organisation.type_id)
+                    self.add_value_list('transaction_provider_org_ref', provider_organisation.ref)
+
+                    self.related_narrative(
+                        provider_organisation,
+                        'transaction_provider_org_narrative',
+                        'transaction_provider_org_narrative_text',
+                        'transaction_provider_org_narrative_lang'
+                    )
+
+                receiver_organisation = get_child_attr(transaction, 'receiver_organisation')
+                if receiver_organisation:
+                    self.add_value_list(
+                        'transaction_receiver_org_receiver_activity_id',
+                        receiver_organisation.receiver_activity_ref
+                    )
+                    self.add_value_list('transaction_receiver_org_type', receiver_organisation.type_id)
+                    self.add_value_list('transaction_receiver_org_ref', receiver_organisation.ref)
+
+                    self.related_narrative(
+                        receiver_organisation,
+                        'transaction_receiver_org_narrative',
+                        'transaction_receiver_org_narrative_text',
+                        'transaction_receiver_org_narrative_lang'
+                    )
+
+                self.add_value_list('transaction_disburstment_channel_code', transaction.disbursement_channel_id)
+
+                for transaction_sector in transaction.transactionsector_set.all():
+                    self.add_value_list('transaction_sector_vocabulary', transaction_sector.vocabulary_id)
+                    self.add_value_list('transaction_sector_vocabulary_uri', transaction_sector.vocabulary_uri)
+                    self.add_value_list('transaction_sector_code', transaction_sector.sector_id)
+
+                for transaction_recipient_country in transaction.transactionrecipientcountry_set.all():
+                    self.add_value_list(
+                        'transaction_recipient_country_code',
+                        transaction_recipient_country.country_id
+                    )
+
+                for transaction_recipient_region in transaction.transactionrecipientregion_set.all():
+                    self.add_value_list(
+                        'transaction_recipient_region_code',
+                        transaction_recipient_region.region_id
+                    )
+                    self.add_value_list(
+                        'transaction_recipient_region_vocabulary',
+                        transaction_recipient_region.vocabulary_id
+                    )
+
+                self.add_value_list('transaction_flow_type_code', transaction.flow_type_id)
+                self.add_value_list('transaction_finance_type_code', transaction.finance_type_id)
+
+                for transaction_aid_type in transaction.transactionaidtype_set.all():
+                    self.add_value_list('transaction_aid_type_code', transaction_aid_type.aid_type.code)
+                    self.add_value_list('transaction_aid_type_vocabulary', transaction_aid_type.aid_type.vocabulary_id)
+
+                self.add_value_list('transaction_tied_status_code', transaction.tied_status_id)
+
     def document_link(self):
         document_link_all = self.record.documentlink_set.filter(
             result_id__isnull=True,
@@ -834,6 +948,7 @@ class ActivityIndexing(BaseIndexing):
         self.humanitarian_scope()
         self.budget()
         self.planned_disbursement()
+        self.transaction()
         self.document_link()
         self.conditions()
         self.crs_add()
