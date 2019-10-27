@@ -626,6 +626,7 @@ class ActivityIndexing(BaseIndexing):
         self.country_budget_items()
         self.humanitarian_scope()
         self.budget()
+        self.planned_disbursement()
 
     def to_representation(self, activity):
         self.record = activity
