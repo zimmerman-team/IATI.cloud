@@ -7,7 +7,7 @@ from solr.activity.serializers import RecipientCountrySerializer, ActivityRecipi
 
 from api.activity.serializers import ReportingOrganisationSerializer, TitleSerializer, DescriptionSerializer, \
     ParticipatingOrganisationSerializer, OtherIdentifierSerializer, ActivityDateSerializer, ContactInfoSerializer, \
-    CountryBudgetItemsSerializer, HumanitarianScopeSerializer
+    CountryBudgetItemsSerializer, HumanitarianScopeSerializer, BudgetSerializer
 
 
 class ActivityIndexing(BaseIndexing):
@@ -495,6 +495,34 @@ class ActivityIndexing(BaseIndexing):
                     'humanitarian_scope_narrative_lang'
                 )
 
+    def budget(self):
+        budget_all = self.record.budget_set.all()
+        if budget_all:
+            self.add_field('budget', [])
+            self.add_field('budget_type', [])
+            self.add_field('budget_status', [])
+            self.add_field('budget_period_start_iso_date', [])
+            self.add_field('budget_period_end_iso_date', [])
+            self.add_field('budget_value_currency', [])
+            self.add_field('budget_value_date', [])
+            self.add_field('budget_value', [])
+
+            for budget in budget_all:
+                self.add_value_list(
+                    'budget',
+                    JSONRenderer().render(
+                        BudgetSerializer(budget).data
+                    ).decode()
+                )
+
+                self.add_value_list('budget_type', budget.type_id)
+                self.add_value_list('budget_status', budget.status_id)
+                self.add_value_list('budget_period_start_iso_date', value_string(budget.period_start))
+                self.add_value_list('budget_period_end_iso_date', value_string(budget.period_end))
+                self.add_value_list('budget_value_currency', budget.currency_id)
+                self.add_value_list('budget_value_date', value_string(budget.value_date) )
+                self.add_value_list('budget_value', decimal_string(budget.value))
+
     def activity(self):
         activity = self.record
 
@@ -527,6 +555,7 @@ class ActivityIndexing(BaseIndexing):
         self.sector()
         self.country_budget_items()
         self.humanitarian_scope()
+        self.budget()
 
     def to_representation(self, activity):
         self.record = activity
