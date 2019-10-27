@@ -7,7 +7,7 @@ from solr.activity.serializers import RecipientCountrySerializer, ActivityRecipi
 
 from api.activity.serializers import ReportingOrganisationSerializer, TitleSerializer, DescriptionSerializer, \
     ParticipatingOrganisationSerializer, OtherIdentifierSerializer, ActivityDateSerializer, ContactInfoSerializer, \
-    CountryBudgetItemsSerializer
+    CountryBudgetItemsSerializer, HumanitarianScopeSerializer
 
 
 class ActivityIndexing(BaseIndexing):
@@ -461,6 +461,40 @@ class ActivityIndexing(BaseIndexing):
                     'country_budget_items_budget_description_narrative_lang'
                 )
 
+    def humanitarian_scope(self):
+        humanitarian_scope_all = self.record.humanitarianscope_set.all()
+        if humanitarian_scope_all:
+            self.add_field('humanitarian_scope', [])
+
+            self.add_field('humanitarian_scope_type', [])
+            self.add_field('humanitarian_scope_vocabulary', [])
+            self.add_field('humanitarian_scope_vocabulary_uri', [])
+            self.add_field('humanitarian_scope_code', [])
+
+            self.add_field('humanitarian_scope_narrative', [])
+            self.add_field('humanitarian_scope_narrative_lang', [])
+            self.add_field('humanitarian_scope_narrative_text', [])
+
+            for humanitarian_scope in humanitarian_scope_all:
+                self.add_value_list(
+                    'humanitarian_scope',
+                    JSONRenderer().render(
+                        HumanitarianScopeSerializer(humanitarian_scope).data
+                    ).decode()
+                )
+
+                self.add_value_list('humanitarian_scope_type', humanitarian_scope.type_id)
+                self.add_value_list('humanitarian_scope_vocabulary', humanitarian_scope.vocabulary_id)
+                self.add_value_list('humanitarian_scope_vocabulary_uri', humanitarian_scope.vocabulary_uri)
+                self.add_value_list('humanitarian_scope_code', humanitarian_scope.code)
+
+                self.related_narrative(
+                    humanitarian_scope,
+                    'humanitarian_scope_narrative',
+                    'humanitarian_scope_narrative_text',
+                    'humanitarian_scope_narrative_lang'
+                )
+
     def activity(self):
         activity = self.record
 
@@ -492,6 +526,7 @@ class ActivityIndexing(BaseIndexing):
         self.location()
         self.sector()
         self.country_budget_items()
+        self.humanitarian_scope()
 
     def to_representation(self, activity):
         self.record = activity
