@@ -7,7 +7,7 @@ from solr.activity.serializers import RecipientCountrySerializer, ActivityRecipi
 
 from api.activity.serializers import ReportingOrganisationSerializer, TitleSerializer, DescriptionSerializer, \
     ParticipatingOrganisationSerializer, OtherIdentifierSerializer, ActivityDateSerializer, ContactInfoSerializer, \
-    CountryBudgetItemsSerializer, HumanitarianScopeSerializer, BudgetSerializer
+    CountryBudgetItemsSerializer, HumanitarianScopeSerializer, BudgetSerializer, PlannedDisbursementSerializer
 
 
 class ActivityIndexing(BaseIndexing):
@@ -522,6 +522,76 @@ class ActivityIndexing(BaseIndexing):
                 self.add_value_list('budget_value_currency', budget.currency_id)
                 self.add_value_list('budget_value_date', value_string(budget.value_date) )
                 self.add_value_list('budget_value', decimal_string(budget.value))
+
+    def planned_disbursement(self):
+        planned_disbursement_all = self.record.planneddisbursement_set.all()
+        if planned_disbursement_all:
+            self.add_field('planned_disbursement', [])
+            self.add_field('planned_disbursement_type', [])
+            self.add_field('planned_disbursement_period_start_iso_date', [])
+            self.add_field('planned_disbursement_period_end_iso_date', [])
+            self.add_field('planned_disbursement_value_currency', [])
+            self.add_field('planned_disbursement_value_date', [])
+            self.add_field('planned_disbursement_value', [])
+            self.add_field('planned_disbursement_provider_org_provider_activity_id', [])
+            self.add_field('planned_disbursement_provider_org_type', [])
+            self.add_field('planned_disbursement_provider_org_ref', [])
+            self.add_field('planned_disbursement_provider_org_narrative', [])
+            self.add_field('planned_disbursement_provider_org_narrative_lang', [])
+            self.add_field('planned_disbursement_provider_org_narrative_text', [])
+            self.add_field('planned_disbursement_receiver_org_provider_activity_id', [])
+            self.add_field('planned_disbursement_receiver_org_type', [])
+            self.add_field('planned_disbursement_receiver_org_ref', [])
+            self.add_field('planned_disbursement_receiver_org_narrative', [])
+            self.add_field('planned_disbursement_receiver_org_narrative_lang', [])
+            self.add_field('planned_disbursement_receiver_org_narrative_text',[])
+
+            for planned_disbursement in planned_disbursement_all:
+                self.add_value_list(
+                    'planned_disbursement',
+                    JSONRenderer().render(
+                        PlannedDisbursementSerializer(planned_disbursement).data
+                    ).decode()
+                )
+
+                self.add_value_list('planned_disbursement_type', planned_disbursement.type_id)
+                self.add_value_list(
+                    'planned_disbursement_period_start_iso_date',
+                    value_string(planned_disbursement.period_start)
+                )
+                self.add_value_list(
+                    'planned_disbursement_period_end_iso_date',
+                    value_string(planned_disbursement.period_end)
+                )
+                self.add_value_list(
+                    'planned_disbursement_value_date',
+                    value_string(planned_disbursement.value_date)
+                )
+                self.add_value_list('planned_disbursement_value_currency', planned_disbursement.currency_id)
+                self.add_value_list(
+                    'planned_disbursement_value',
+                    decimal_string(planned_disbursement.value)
+                )
+
+                self.add_value_list(
+                    'planned_disbursement_provider_org_provider_activity_id',
+                    get_child_attr(planned_disbursement, 'provider_organisation.provider_activity_ref')
+                )
+                self.add_value_list(
+                    'planned_disbursement_provider_org_type',
+                    get_child_attr(planned_disbursement, 'provider_organisation.type_id')
+                )
+                self.add_value_list(
+                    'planned_disbursement_provider_org_ref',
+                    get_child_attr(planned_disbursement, 'provider_organisation.ref')
+                )
+
+                self.related_narrative(
+                    get_child_attr(planned_disbursement, 'provider_organisation'),
+                    'planned_disbursement_provider_org_narrative',
+                    'planned_disbursement_provider_org_narrative_text',
+                    'planned_disbursement_provider_org_narrative_lang'
+                )
 
     def activity(self):
         activity = self.record
