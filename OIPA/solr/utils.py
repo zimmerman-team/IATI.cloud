@@ -1,4 +1,3 @@
-from datetime import datetime
 from django.core.exceptions import ObjectDoesNotExist
 
 
@@ -79,5 +78,3 @@ def field_narrative(serializer, field, key):
     if field:
         for narrative in field.narratives.all():
             serializer.add_value_list(key, narrative.content)
-
-

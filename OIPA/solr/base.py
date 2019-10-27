@@ -35,3 +35,12 @@ class BaseIndexing(serializers.Serializer):
                     add_value_list(narratives, value)
 
                 self.set_field(field_name, narratives)
+
+    def related_narrative(self, related, narrative_key, narrative_text_key, narrative_lang_key):
+        if related:
+            for narrative in related.narratives.all():
+                self.add_value_list(narrative_key, narrative.content)
+                self.add_value_list(narrative_text_key, narrative.content)
+
+                if narrative.language:
+                    self.add_value_list(narrative_lang_key, narrative.language.code)
