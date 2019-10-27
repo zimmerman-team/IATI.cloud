@@ -8,7 +8,7 @@ from solr.activity.serializers import RecipientCountrySerializer, ActivityRecipi
 from api.activity.serializers import ReportingOrganisationSerializer, TitleSerializer, DescriptionSerializer, \
     ParticipatingOrganisationSerializer, OtherIdentifierSerializer, ActivityDateSerializer, ContactInfoSerializer, \
     CountryBudgetItemsSerializer, HumanitarianScopeSerializer, BudgetSerializer, PlannedDisbursementSerializer, \
-    DocumentLinkSerializer, ConditionSerializer
+    DocumentLinkSerializer, ConditionSerializer, CrsAddSerializer
 
 
 class ActivityIndexing(BaseIndexing):
@@ -678,18 +678,101 @@ class ActivityIndexing(BaseIndexing):
 
             self.add_field('conditions_condition_type', [])
 
-            self.set_field('conditions_condition_narrative', [])
-            self.set_field('conditions_condition_narrative_lang', [])
-            self.set_field('conditions_condition_narrative_text', [])
+            self.add_field('conditions_condition_narrative', [])
+            self.add_field('conditions_condition_narrative_lang', [])
+            self.add_field('conditions_condition_narrative_text', [])
 
             for condition in activity_condition.condition_set.all():
                 self.add_value_list('conditions_condition_type', condition.type_id)
 
                 self.related_narrative(
                     condition,
-                    'document_link_description_narrative',
-                    'document_link_description_narrative_text',
-                    'document_link_description_narrative_lang'
+                    'conditions_condition_narrative',
+                    'conditions_condition_narrative_text',
+                    'conditions_condition_narrative_lang'
+                )
+
+    def crs_add(self):
+        crs_add_all = self.record.crsadd_set.all()
+        if crs_add_all:
+            self.add_field('crs_add', [])
+            self.add_field('crs_add_other_flags_code', [])
+            self.add_field('crs_add_other_flags_significance', [])
+            self.add_field('crs_add_loan_terms_rate_1', [])
+            self.add_field('crs_add_loan_terms_rate_2', [])
+            self.add_field('crs_add_loan_terms_repayment_type_code', [])
+            self.add_field('crs_add_loan_terms_repayment_plan_code', [])
+            self.add_field('crs_add_loan_terms_commitment_date_iso_date', [])
+            self.add_field('crs_add_loan_terms_repayment_first_date_iso_date', [])
+            self.add_field('crs_add_loan_terms_repayment_final_date_iso_date', [])
+            self.add_field('crs_add_loan_status_year', [])
+            self.add_field('crs_add_loan_status_currency', [])
+            self.add_field('crs_add_loan_status_value_date', [])
+            self.add_field('crs_add_loan_status_interest_received', [])
+            self.add_field('crs_add_loan_status_principal_outstanding', [])
+            self.add_field('crs_add_loan_status_principal_arrears', [])
+            self.add_field('crs_add_loan_status_interest_arrears', [])
+            self.add_field('crs_add_channel_code', [])
+
+            for crs_add in crs_add_all:
+                self.add_value_list('crs_add', JSONRenderer().render(CrsAddSerializer(crs_add).data).decode())
+
+                self.add_value_list('crs_add_channel_code', crs_add.channel_code_id)
+
+                for crs_add_other_flag in crs_add.other_flags.all():
+                    self.add_value_list('crs_add_other_flags_code', crs_add_other_flag.other_flags_id)
+                    self.add_value_list('crs_add_other_flags_significance', crs_add_other_flag.significance)
+
+                self.add_value_list(
+                    'crs_add_loan_terms_rate_1',
+                    value_string(get_child_attr(crs_add, 'loan_terms.rate_1'))
+                )
+                self.add_value_list(
+                    'crs_add_loan_terms_rate_2',
+                    value_string(get_child_attr(crs_add, 'loan_terms.rate_2'))
+                )
+                self.add_value_list(
+                    'crs_add_loan_terms_repayment_type_code',
+                    get_child_attr(crs_add, 'loan_terms.repayment_type_id')
+                )
+                self.add_value_list(
+                    'crs_add_loan_terms_repayment_plan_code',
+                    get_child_attr(crs_add, 'loan_terms.repayment_plan_id')
+                )
+                self.add_value_list(
+                    'crs_add_loan_terms_commitment_date_iso_date',
+                    value_string(get_child_attr(crs_add, 'loan_terms.commitment_date'))
+                )
+                self.add_value_list(
+                    'crs_add_loan_terms_repayment_first_date_iso_date',
+                    value_string(get_child_attr(crs_add, 'loan_terms.repayment_first_date'))
+                )
+                self.add_value_list(
+                    'crs_add_loan_terms_repayment_final_date_iso_date',
+                    value_string(get_child_attr(crs_add, 'loan_terms.repayment_final_date'))
+                )
+
+                self.add_value_list('crs_add_loan_status_year', get_child_attr(crs_add, 'loan_status.year'))
+                self.add_value_list('crs_add_loan_status_currency',get_child_attr(crs_add, 'loan_status.currency_id'))
+                self.add_value_list(
+                    'crs_add_loan_status_value_date',
+                    value_string(get_child_attr(crs_add, 'loan_status.value_date'))
+                )
+                self.add_value_list(
+                    'crs_add_loan_status_interest_received',
+                    value_string(get_child_attr(crs_add, 'loan_status.interest_received'))
+                )
+                self.add_value_list(
+                    'crs_add_loan_status_principal_outstanding',
+                    str(get_child_attr(crs_add, 'loan_status.principal_outstanding'))
+                )
+                self.add_value_list(
+                    'crs_add_loan_status_principal_arrears',
+                    get_child_attr(crs_add, 'loan_status.principal_arrears')
+                )
+                self.add_value_list(
+                    'crs_add_loan_status_interest_arrears',
+                    get_child_attr(crs_add, 'loan_status.interest_arrears')
                 )
 
     def activity(self):
@@ -728,6 +811,7 @@ class ActivityIndexing(BaseIndexing):
         self.planned_disbursement()
         self.document_link()
         self.conditions()
+        self.crs_add()
 
     def to_representation(self, activity):
         self.record = activity
