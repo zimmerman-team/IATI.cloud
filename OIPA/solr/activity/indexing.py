@@ -7,7 +7,8 @@ from solr.activity.serializers import RecipientCountrySerializer, ActivityRecipi
 
 from api.activity.serializers import ReportingOrganisationSerializer, TitleSerializer, DescriptionSerializer, \
     ParticipatingOrganisationSerializer, OtherIdentifierSerializer, ActivityDateSerializer, ContactInfoSerializer, \
-    CountryBudgetItemsSerializer, HumanitarianScopeSerializer, BudgetSerializer, PlannedDisbursementSerializer
+    CountryBudgetItemsSerializer, HumanitarianScopeSerializer, BudgetSerializer, PlannedDisbursementSerializer, \
+    DocumentLinkSerializer, ConditionSerializer
 
 
 class ActivityIndexing(BaseIndexing):
@@ -593,6 +594,104 @@ class ActivityIndexing(BaseIndexing):
                     'planned_disbursement_provider_org_narrative_lang'
                 )
 
+    def document_link(self):
+        document_link_all = self.record.documentlink_set.filter(
+            result_id__isnull=True,
+            result_indicator_id__isnull=True,
+            result_indicator_baseline_id__isnull=True,
+            result_indicator_period_actual_id__isnull=True,
+            result_indicator_period_target_id__isnull=True
+        )
+        if document_link_all:
+            self.add_field('document_link', [])
+            self.add_field('document_link_format', [])
+            self.add_field('document_link_url', [])
+            self.add_field('document_link_title_narrative', [])
+            self.add_field('document_link_title_narrative_lang', [])
+            self.add_field('document_link_title_narrative_text', [])
+            self.add_field('document_link_description_narrative', [])
+            self.add_field('document_link_description_narrative_lang', [])
+            self.add_field('document_link_description_narrative_text', [])
+            self.add_field('document_link_category_code', [])
+            self.add_field('document_link_language_code', [])
+            self.add_field('document_link_document_date_iso_date', [])
+
+            for document_link in document_link_all:
+                self.add_value_list(
+                    'document_link',
+                    JSONRenderer().render(
+                        DocumentLinkSerializer(
+                            instance=document_link,
+                            fields=[
+                                'format',
+                                'categories',
+                                'languages',
+                                'title',
+                                'document_date',
+                                'description'
+                            ]
+                        ).data
+                    ).decode()
+                )
+
+                self.add_value_list('document_link_format', document_link.file_format_id)
+                self.add_value_list('document_link_url', document_link.url)
+                self.add_value_list('document_link_document_date_iso_date', value_string(document_link.iso_date))
+
+                self.related_narrative(
+                    get_child_attr(document_link, 'documentlinktitle'),
+                    'document_link_title_narrative',
+                    'document_link_title_narrative_text',
+                    'document_link_title_narrative_lang'
+                )
+
+                self.related_narrative(
+                    get_child_attr(document_link, 'documentlinkdescription'),
+                    'document_link_description_narrative',
+                    'document_link_description_narrative_text',
+                    'document_link_description_narrative_lang'
+                )
+
+                for document_link_category in document_link.documentlinkcategory_set.all():
+                    self.add_value_list(
+                        'document_link_category_code',
+                        document_link_category.category_id
+                    )
+
+                for document_link_language in document_link.documentlinklanguage_set.all():
+                    self.add_value_list(
+                        'document_link_language_code',
+                        document_link_language.language_id
+                    )
+
+    def conditions(self):
+        activity_condition = get_child_attr(self.record, 'conditions')
+        if activity_condition:
+            self.add_field(
+                'conditions',
+                JSONRenderer().render(
+                    ConditionSerializer(activity_condition).data
+                ).decode()
+            )
+
+            self.add_field('conditions_attached', bool_string(activity_condition.attached))
+
+            self.add_field('conditions_condition_type', [])
+
+            self.set_field('conditions_condition_narrative', [])
+            self.set_field('conditions_condition_narrative_lang', [])
+            self.set_field('conditions_condition_narrative_text', [])
+
+            for condition in activity_condition.condition_set.all():
+                self.add_value_list('conditions_condition_type', condition.type_id)
+
+                self.related_narrative(
+                    condition,
+                    'document_link_description_narrative',
+                    'document_link_description_narrative_text',
+                    'document_link_description_narrative_lang'
+                )
+
     def activity(self):
         activity = self.record
 
@@ -627,6 +726,8 @@ class ActivityIndexing(BaseIndexing):
         self.humanitarian_scope()
         self.budget()
         self.planned_disbursement()
+        self.document_link()
+        self.conditions()
 
     def to_representation(self, activity):
         self.record = activity
