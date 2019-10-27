@@ -8,7 +8,7 @@ from solr.activity.serializers import RecipientCountrySerializer, ActivityRecipi
 from api.activity.serializers import ReportingOrganisationSerializer, TitleSerializer, DescriptionSerializer, \
     ParticipatingOrganisationSerializer, OtherIdentifierSerializer, ActivityDateSerializer, ContactInfoSerializer, \
     CountryBudgetItemsSerializer, HumanitarianScopeSerializer, BudgetSerializer, PlannedDisbursementSerializer, \
-    DocumentLinkSerializer, ConditionSerializer, CrsAddSerializer
+    DocumentLinkSerializer, ConditionSerializer, CrsAddSerializer, FssSerializer
 
 
 class ActivityIndexing(BaseIndexing):
@@ -775,6 +775,31 @@ class ActivityIndexing(BaseIndexing):
                     get_child_attr(crs_add, 'loan_status.interest_arrears')
                 )
 
+    def fss(self):
+        fss_all = self.record.fss_set.all()
+        if fss_all:
+            self.add_field('fss', [])
+            self.add_field('fss_extraction_date', [])
+            self.add_field('fss_priority', [])
+            self.add_field('fss_phaseout_year', [])
+            self.add_field('fss_forecast_year', [])
+            self.add_field('fss_forecast_value_date', [])
+            self.add_field('fss_forecast_currency', [])
+            self.add_field('fss_forecast_value', [])
+
+            for fss in fss_all:
+                self.add_value_list('fss', JSONRenderer().render(FssSerializer(fss).data).decode())
+
+                self.add_value_list('fss_extraction_date', value_string(fss.extraction_date))
+                self.add_value_list('fss_priority', bool_string(fss.priority))
+                self.add_value_list('fss_phaseout_year', value_string(fss.phaseout_year))
+
+                for forecast in fss.fssforecast_set.all():
+                    self.add_value_list('fss_forecast_year', value_string(forecast.year))
+                    self.add_value_list('fss_forecast_value_date', value_string(forecast.value_date))
+                    self.add_value_list('fss_forecast_currency', forecast.currency_id)
+                    self.add_value_list('fss_forecast_value', value_string(forecast.value))
+
     def activity(self):
         activity = self.record
 
@@ -812,6 +837,7 @@ class ActivityIndexing(BaseIndexing):
         self.document_link()
         self.conditions()
         self.crs_add()
+        self.fss()
 
     def to_representation(self, activity):
         self.record = activity
