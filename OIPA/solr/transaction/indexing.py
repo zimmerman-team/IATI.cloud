@@ -175,7 +175,7 @@ class TransactionIndexing(BaseIndexing):
         self.indexing = {}
         self.representation = {}
 
-        self.transaction(transaction)
+        self.transaction()
         self.build()
 
         return self.representation
