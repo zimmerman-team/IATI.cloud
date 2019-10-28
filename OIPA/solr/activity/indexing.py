@@ -1420,6 +1420,7 @@ class ActivityIndexing(BaseIndexing):
         self.transaction()
         self.document_link()
         self.conditions()
+        self.result()
         self.crs_add()
         self.fss()
 
