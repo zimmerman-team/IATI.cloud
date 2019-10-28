@@ -1388,7 +1388,6 @@ class ActivityIndexing(BaseIndexing):
     def activity(self):
         activity = self.record
 
-        """
         self.add_field('id', value_string(activity.id))
         self.add_field('iati_identifier', activity.iati_identifier)
         self.add_field('default_lang', activity.default_lang_id)
@@ -1403,7 +1402,7 @@ class ActivityIndexing(BaseIndexing):
         self.add_field('default_finance_type_code', activity.default_finance_type_id)
         self.add_field('default_tied_status_code', activity.default_tied_status_id)
         self.add_field('capital_spend_percentage', decimal_string(activity.capital_spend))
-        
+
         self.dataset()
         self.reporting_org()
         self.title()
@@ -1423,12 +1422,9 @@ class ActivityIndexing(BaseIndexing):
         self.transaction()
         self.document_link()
         self.conditions()
-        """
         self.result()
-        """
         self.crs_add()
         self.fss()
-        """
 
     def to_representation(self, activity):
         self.record = activity

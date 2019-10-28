@@ -1,5 +1,6 @@
 from api.country.serializers import CountrySerializer
 from api.region.serializers import BasicRegionSerializer
+
 from api.activity import serializers
 
 
@@ -30,3 +31,4 @@ class LocationSerializer(serializers.LocationSerializer):
             'narratives'
         ]
     )
+
