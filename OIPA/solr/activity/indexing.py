@@ -4,12 +4,12 @@ from solr.base import BaseIndexing
 from solr.utils import bool_string, get_child_attr, value_string, decimal_string
 from solr.activity.serializers import RecipientCountrySerializer, ActivityRecipientRegionSerializer, \
     LocationSerializer, ActivitySectorSerializer
+from solr.result.serializers import ResultSerializer
 
 from api.activity.serializers import ReportingOrganisationSerializer, TitleSerializer, DescriptionSerializer, \
     ParticipatingOrganisationSerializer, OtherIdentifierSerializer, ActivityDateSerializer, ContactInfoSerializer, \
     CountryBudgetItemsSerializer, HumanitarianScopeSerializer, BudgetSerializer, PlannedDisbursementSerializer, \
-    DocumentLinkSerializer, ConditionSerializer, CrsAddSerializer, FssSerializer, TransactionSerializer, \
-    ResultSerializer
+    DocumentLinkSerializer, ConditionSerializer, CrsAddSerializer, FssSerializer, TransactionSerializer
 
 
 class ActivityIndexing(BaseIndexing):
@@ -831,6 +831,8 @@ class ActivityIndexing(BaseIndexing):
             self.add_field('result_document_link_language_code', [])
             self.add_field('result_document_link_document_date_iso_date', [])
             self.add_field('result_reference_code', [])
+            self.add_field('result_reference_vocabulary', [])
+            self.add_field('result_reference_vocabulary_uri', [])
             self.add_field('result_indicator_measure', [])
             self.add_field('result_indicator_ascending', [])
             self.add_field('result_indicator_aggregation_status', [])
@@ -1386,6 +1388,7 @@ class ActivityIndexing(BaseIndexing):
     def activity(self):
         activity = self.record
 
+        """
         self.add_field('id', value_string(activity.id))
         self.add_field('iati_identifier', activity.iati_identifier)
         self.add_field('default_lang', activity.default_lang_id)
@@ -1400,7 +1403,7 @@ class ActivityIndexing(BaseIndexing):
         self.add_field('default_finance_type_code', activity.default_finance_type_id)
         self.add_field('default_tied_status_code', activity.default_tied_status_id)
         self.add_field('capital_spend_percentage', decimal_string(activity.capital_spend))
-
+        
         self.dataset()
         self.reporting_org()
         self.title()
@@ -1420,9 +1423,12 @@ class ActivityIndexing(BaseIndexing):
         self.transaction()
         self.document_link()
         self.conditions()
+        """
         self.result()
+        """
         self.crs_add()
         self.fss()
+        """
 
     def to_representation(self, activity):
         self.record = activity
