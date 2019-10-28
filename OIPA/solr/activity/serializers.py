@@ -31,4 +31,3 @@ class LocationSerializer(serializers.LocationSerializer):
             'narratives'
         ]
     )
-

@@ -5,11 +5,12 @@ from solr.utils import bool_string, get_child_attr, value_string, decimal_string
 from solr.activity.serializers import RecipientCountrySerializer, ActivityRecipientRegionSerializer, \
     LocationSerializer, ActivitySectorSerializer
 from solr.result.serializers import ResultSerializer
+from solr.transaction.serializers import TransactionSerializer
 
 from api.activity.serializers import ReportingOrganisationSerializer, TitleSerializer, DescriptionSerializer, \
     ParticipatingOrganisationSerializer, OtherIdentifierSerializer, ActivityDateSerializer, ContactInfoSerializer, \
     CountryBudgetItemsSerializer, HumanitarianScopeSerializer, BudgetSerializer, PlannedDisbursementSerializer, \
-    DocumentLinkSerializer, ConditionSerializer, CrsAddSerializer, FssSerializer, TransactionSerializer
+    DocumentLinkSerializer, ConditionSerializer, CrsAddSerializer, FssSerializer
 
 
 class ActivityIndexing(BaseIndexing):
@@ -634,7 +635,39 @@ class ActivityIndexing(BaseIndexing):
             for transaction in transaction_all:
                 self.add_value_list(
                     'transaction',
-                    JSONRenderer().render(TransactionSerializer(transaction).data).decode()
+                    JSONRenderer().render(
+                        TransactionSerializer(
+                            instance=transaction,
+                            fields=[
+                                'id',
+                                'activity_id',
+                                'ref',
+                                'humanitarian',
+                                'transaction_type',
+                                'transaction_date',
+                                'value',
+                                'value_date',
+                                'currency',
+                                'description',
+                                'currency',
+                                'description',
+                                'provider_organisation',
+                                'receiver_organisation',
+                                'disbursement_channel',
+                                'sector',
+                                'recipient_country',
+                                'recipient_region',
+                                'flow_type',
+                                'finance_type',
+                                'aid_type',
+                                'tied_status',
+                                'sectors',
+                                'iati_identifier',
+                                'recipient_countries',
+                                'recipient_regions'
+                            ]
+                        ).data
+                    ).decode()
                 )
 
                 self.add_value_list('transaction_ref', transaction.ref)
@@ -1386,7 +1419,7 @@ class ActivityIndexing(BaseIndexing):
                     self.add_value_list('fss_forecast_value', value_string(forecast.value))
 
     def activity(self):
-        activity = self.record
+        """activity = self.record
 
         self.add_field('id', value_string(activity.id))
         self.add_field('iati_identifier', activity.iati_identifier)
@@ -1424,7 +1457,8 @@ class ActivityIndexing(BaseIndexing):
         self.conditions()
         self.result()
         self.crs_add()
-        self.fss()
+        self.fss()"""
+        self.transaction()
 
     def to_representation(self, activity):
         self.record = activity
