@@ -371,6 +371,14 @@ CELERY_BEAT_SCHEDULE = {
     },
 }
 
+SOLR = {
+    'url': 'http://localhost:8983/solr',
+    'cores': {
+        'activity': 'activity',
+        'transaction': 'transaction'
+    }
+}
+
 try:
     from .local_settings import *  # noqa: F401, F403
 except ImportError:
