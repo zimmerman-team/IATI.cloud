@@ -5563,7 +5563,7 @@ class Parse(IatiParser):
         # Currently if something issue in the Solr indexing we just pass it, so not blocking the current parsing
         try:
             ActivityTaskIndexing(activity=activity, related_indexing=True).run_indexing()
-        except:
+        except Exception as e:
             pass
 
     def post_save_file(self, dataset):
