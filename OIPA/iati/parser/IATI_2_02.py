@@ -4157,7 +4157,7 @@ class Parse(IatiParser):
 
         # Currently if something issue in the Solr indexing we just pass it, so not blocking the current parsing
         try:
-            ActivityTaskIndexing(activity=activity, related=True).run()
+            ActivityTaskIndexing(instance=activity, related=True).run()
         except Exception as e:
             logger.exception(e)
 

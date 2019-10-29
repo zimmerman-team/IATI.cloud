@@ -12,17 +12,15 @@ class BaseTaskIndexing(object):
     indexing = None
     model = None
 
-    def __init__(self, indexing=None, instance=None, related=False, model=None):
-        self.indexing = indexing
+    def __init__(self, instance=None, related=False):
         self.instance = instance
         self.related = related
-        self.model = model
 
     def run_related(self):
         pass
 
     def run(self):
-        solr.add([self.indexing(self.activity).data])
+        solr.add([self.indexing(self.instance).data])
 
         if self.related:
             self.run_related()
