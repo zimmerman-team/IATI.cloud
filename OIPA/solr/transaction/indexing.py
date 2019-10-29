@@ -12,6 +12,7 @@ class TransactionIndexing(BaseIndexing):
     def transaction(self):
         transaction = self.record
 
+        self.add_field('id', transaction.id)
         self.add_field('iati_identifier', transaction.activity.iati_identifier)
 
         self.indexing['title_lang'], self.indexing['title_narrative'] = \

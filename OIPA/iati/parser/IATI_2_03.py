@@ -21,6 +21,8 @@ from iati_codelists import models as codelist_models
 from iati_organisation import models as organisation_models
 from iati_vocabulary import models as vocabulary_models
 
+from solr.activity.tasks import ActivityTaskIndexing
+
 
 class Parse(IatiParser):
     # FIXME: not all methods validate required arguments (f. ex
@@ -5557,6 +5559,12 @@ class Parse(IatiParser):
         # post_save.set_sector_transaction(activity)
 
         post_save.set_sector_budget(activity)
+
+        # Currently if something issue in the Solr indexing we just pass it, so not blocking the current parsing
+        try:
+            ActivityTaskIndexing(activity=activity, related_indexing=True).run_indexing()
+        except:
+            pass
 
     def post_save_file(self, dataset):
         """Perform all actions that need to happen after a single IATI
