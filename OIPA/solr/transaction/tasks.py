@@ -14,6 +14,7 @@ solr = pysolr.Solr('http://localhost:8983/solr/transaction', always_commit=True)
 class TransactionTaskIndexing(BaseTaskIndexing):
     indexing = TransactionIndexing
     model = Transaction
+    solr = solr
 
     def run_from_activity(self, activity):
         for transaction in activity.transaction_set.all():

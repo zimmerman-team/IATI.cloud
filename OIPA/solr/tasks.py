@@ -11,6 +11,7 @@ class BaseTaskIndexing(object):
     related = False
     indexing = None
     model = None
+    solr = solr
 
     def __init__(self, instance=None, related=False):
         self.instance = instance
@@ -20,13 +21,13 @@ class BaseTaskIndexing(object):
         pass
 
     def run(self):
-        solr.add([self.indexing(self.instance).data])
+        self.solr.add([self.indexing(self.instance).data])
 
         if self.related:
             self.run_related()
 
     def delete(self):
-        solr.delete(q='id:{id}'.format(id=self.instance.id))
+        self.solr.delete(q='id:{id}'.format(id=self.instance.id))
 
     def run_all(self):
         for instance in self.model.objects.all():

@@ -15,6 +15,7 @@ solr = pysolr.Solr('http://localhost:8983/solr/activity', always_commit=True)
 class ActivityTaskIndexing(BaseTaskIndexing):
     indexing = ActivityIndexing
     model = Activity
+    solr = solr
 
     def run_related(self):
         TransactionTaskIndexing().run_from_activity(self.instance)
