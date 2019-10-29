@@ -368,7 +368,10 @@ class ActivityIndexing(BaseIndexing):
                 self.add_value_list('location_reach_code', location.location_reach_id)
                 self.add_value_list('location_id_vocabulary', location.location_id_vocabulary_id)
                 self.add_value_list('location_id_code', location.location_id_code)
-                self.add_value_list('location_point_pos', value_string(location.point_pos.coords))
+                self.add_value_list(
+                    'location_point_pos',
+                    value_string(get_child_attr(location, 'point_pos.coords'))
+                )
                 self.add_value_list('location_exactness_code', location.exactness_id)
                 self.add_value_list('location_class_code', location.location_class_id)
                 self.add_value_list('location_feature_designation_code', location.feature_designation_id)
@@ -1419,7 +1422,7 @@ class ActivityIndexing(BaseIndexing):
                     self.add_value_list('fss_forecast_value', value_string(forecast.value))
 
     def activity(self):
-        """activity = self.record
+        activity = self.record
 
         self.add_field('id', value_string(activity.id))
         self.add_field('iati_identifier', activity.iati_identifier)
@@ -1457,8 +1460,7 @@ class ActivityIndexing(BaseIndexing):
         self.conditions()
         self.result()
         self.crs_add()
-        self.fss()"""
-        self.transaction()
+        self.fss()
 
     def to_representation(self, activity):
         self.record = activity
