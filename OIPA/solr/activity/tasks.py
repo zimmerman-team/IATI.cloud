@@ -27,7 +27,7 @@ class ActivityTaskIndexing(object):
     def delete(self):
         solr.delete(q='id:{id}'.format(id=self.activity.id))
 
-    def run_all_indexing(self):
+    def run_all(self):
         for activity in Activity.objects.all():
             self.activity = activity
             self.run()
