@@ -5569,7 +5569,6 @@ class Parse(IatiParser):
             ActivityTaskIndexing(activity=activity, related=True).run()
         except Exception as e:
             logger.exception(e)
-            pass
 
     def post_save_file(self, dataset):
         """Perform all actions that need to happen after a single IATI
