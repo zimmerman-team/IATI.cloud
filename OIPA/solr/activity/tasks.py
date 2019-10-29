@@ -12,22 +12,22 @@ solr = pysolr.Solr('http://localhost:8983/solr/activity', always_commit=True)
 
 class ActivityTaskIndexing(object):
     activity = None
-    related_indexing = False
+    related = False
 
-    def __init__(self, activity, related_indexing=False):
+    def __init__(self, activity, related=False):
         self.activity = activity
-        self.related_indexing = related_indexing
+        self.related = related
 
-    def run_indexing(self):
+    def run(self):
         solr.add([ActivityIndexing(self.activity).data])
 
-        if self.related_indexing:
-            TransactionTaskIndexing().run_indexing_from_activity(self.activity)
+        if self.related:
+            TransactionTaskIndexing().run_from_activity(self.activity)
 
-    def delete_indexing(self):
+    def delete(self):
         solr.delete(q='id:{id}'.format(id=self.activity.id))
 
     def run_all_indexing(self):
         for activity in Activity.objects.all():
             self.activity = activity
-            self.run_indexing()
+            self.run()

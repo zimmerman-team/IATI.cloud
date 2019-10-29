@@ -15,19 +15,19 @@ class TransactionTaskIndexing(object):
     def __init__(self, transaction=None):
         self.transaction = transaction
 
-    def run_indexing(self):
+    def run(self):
         solr.add([TransactionIndexing(self.transaction).data])
 
-    def delete_indexing(self):
+    def delete(self):
         solr.delete(q='id:{id}'.format(id=self.transaction.id))
 
-    def run_indexing_from_activity(self, activity):
+    def run_from_activity(self, activity):
         for transaction in activity.transaction_set.all():
             self.transaction = transaction
-            self.run_indexing()
+            self.run()
 
-    def run_all_indexing(self):
+    def run_all(self):
         for transaction in Transaction.objects.all():
             self.transaction = transaction
-            self.run_indexing()
+            self.run()
 

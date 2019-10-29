@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime
 from decimal import Decimal, InvalidOperation
 
@@ -21,6 +22,9 @@ from iati_organisation import models as organisation_models
 from iati_vocabulary import models as vocabulary_models
 
 from solr.activity.tasks import ActivityTaskIndexing
+
+# Get an instance of a logger
+logger = logging.getLogger(__name__)
 
 
 class Parse(IatiParser):
@@ -4153,8 +4157,9 @@ class Parse(IatiParser):
 
         # Currently if something issue in the Solr indexing we just pass it, so not blocking the current parsing
         try:
-            ActivityTaskIndexing(activity=activity, related_indexing=True).run_indexing()
+            ActivityTaskIndexing(activity=activity, related=True).run()
         except Exception as e:
+            logger.exception(e)
             pass
 
     def post_save_file(self, dataset):
