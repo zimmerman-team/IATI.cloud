@@ -376,6 +376,15 @@ SOLR = {
     'cores': {
         'activity': 'activity',
         'budget': 'budget',
+        'codelist': {
+            'country': 'country',
+            'region': 'region'
+        },
+        'dataset': 'dataset',
+        'datasetnote': 'datasetnote',
+        'organisation': 'organisation',
+        'publisher': 'publisher',
+        'result': 'result',
         'transaction': 'transaction'
     }
 }

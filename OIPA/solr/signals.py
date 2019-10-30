@@ -1,11 +1,12 @@
 from django.db.models import signals
 from django.dispatch import receiver
 
-from iati.models import Activity, Budget
+from iati.models import Activity, Budget, Result
 from iati.transaction.models import Transaction
 
 from solr.activity.tasks import ActivityTaskIndexing
 from solr.budget.tasks import BudgetTaskIndexing
+from solr.result.tasks import ResultTaskIndexing
 from solr.transaction.tasks import TransactionTaskIndexing
 
 
@@ -17,6 +18,11 @@ def activity_pre_delete(sender, instance, **kwargs):
 @receiver(signals.pre_delete, sender=Budget)
 def budget_pre_delete(sender, instance, **kwargs):
     BudgetTaskIndexing(instance=instance).delete()
+
+
+@receiver(signals.pre_delete, sender=Result)
+def result_pre_delete(sender, instance, **kwargs):
+    ResultTaskIndexing(instance=instance).delete()
 
 
 @receiver(signals.pre_delete, sender=Transaction)

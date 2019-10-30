@@ -9,6 +9,7 @@ from solr.tasks import BaseTaskIndexing
 from iati.models import Activity
 from solr.transaction.tasks import TransactionTaskIndexing
 from solr.budget.tasks import BudgetTaskIndexing
+from solr.result.tasks import ResultTaskIndexing
 from solr.activity.indexing import ActivityIndexing
 
 solr = pysolr.Solr(
@@ -27,3 +28,4 @@ class ActivityTaskIndexing(BaseTaskIndexing):
     def run_related(self):
         TransactionTaskIndexing().run_from_activity(self.instance)
         BudgetTaskIndexing().run_from_activity(self.instance)
+        ResultTaskIndexing().run_from_activity(self.instance)
