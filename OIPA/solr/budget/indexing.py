@@ -1,5 +1,5 @@
 from solr.indexing import BaseIndexing
-from solr.utils import value_string, decimal_string, add_reporting_org
+from solr.utils import add_reporting_org, decimal_string, value_string
 
 
 class BudgetIndexing(BaseIndexing):

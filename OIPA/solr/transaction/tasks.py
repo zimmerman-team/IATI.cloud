@@ -4,9 +4,8 @@ from __future__ import print_function
 import pysolr
 from django.conf import settings
 
-from solr.tasks import BaseTaskIndexing
-
 from iati.transaction.models import Transaction
+from solr.tasks import BaseTaskIndexing
 from solr.transaction.indexing import TransactionIndexing
 
 solr = pysolr.Solr(

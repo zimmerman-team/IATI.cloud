@@ -1,10 +1,11 @@
 from rest_framework.renderers import JSONRenderer
 
-from solr.indexing import BaseIndexing
-from solr.utils import bool_string, value_string, decimal_string, \
-    get_narrative_lang_list, add_reporting_org, get_child_attr
-
 from solr.activity.serializers import ActivitySectorSerializer
+from solr.indexing import BaseIndexing
+from solr.utils import (
+    add_reporting_org, bool_string, decimal_string, get_child_attr,
+    get_narrative_lang_list, value_string
+)
 
 
 class TransactionIndexing(BaseIndexing):

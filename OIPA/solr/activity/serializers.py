@@ -1,7 +1,6 @@
+from api.activity import serializers
 from api.country.serializers import CountrySerializer
 from api.region.serializers import BasicRegionSerializer
-
-from api.activity import serializers
 
 
 class ActivitySectorSerializer(serializers.ActivitySectorSerializer):

@@ -1,7 +1,9 @@
-from iati.models import Result
 from api.activity import serializers
-from solr.activity.serializers import ActivitySectorSerializer, RecipientCountrySerializer, \
-    ActivityRecipientRegionSerializer
+from iati.models import Result
+from solr.activity.serializers import (
+    ActivityRecipientRegionSerializer, ActivitySectorSerializer,
+    RecipientCountrySerializer
+)
 
 
 class ResultSerializer(serializers.ResultSerializer):

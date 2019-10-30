@@ -1,15 +1,13 @@
 from rest_framework import serializers
+
+import api.activity.serializers
+import api.sector.serializers
+import api.transaction.serializers
 from api.codelist.serializers import (
     CodelistSerializer, NarrativeSerializer, VocabularySerializer
 )
-
 from api.country.serializers import CountrySerializer
 from api.region.serializers import BasicRegionSerializer
-
-import api.sector.serializers
-import api.transaction.serializers
-import api.activity.serializers
-
 from iati.transaction import models
 
 

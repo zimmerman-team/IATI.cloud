@@ -1,12 +1,19 @@
 from rest_framework.renderers import JSONRenderer
 
+from api.organisation.serializers import (
+    OrganisationDocumentLinkSerializer, OrganisationNameSerializer,
+    OrganisationRecipientOrgBudgetSerializer,
+    OrganisationTotalBudgetSerializer
+)
 from solr.indexing import BaseIndexing
-from solr.utils import value_string, decimal_string, bool_string, get_narrative_lang_list, get_child_attr
-
-from solr.organisation.serializers import OrganisationRecipientRegionBudgetSerializer, \
-    OrganisationRecipientCountryBudgetSerializer
-from api.organisation.serializers import OrganisationNameSerializer, OrganisationTotalBudgetSerializer, \
-    OrganisationRecipientOrgBudgetSerializer, OrganisationDocumentLinkSerializer
+from solr.organisation.serializers import (
+    OrganisationRecipientCountryBudgetSerializer,
+    OrganisationRecipientRegionBudgetSerializer
+)
+from solr.utils import (
+    bool_string, decimal_string, get_child_attr, get_narrative_lang_list,
+    value_string
+)
 
 
 class OrganisationIndexing(BaseIndexing):

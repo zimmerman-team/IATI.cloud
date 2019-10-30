@@ -4,10 +4,9 @@ from __future__ import print_function
 import pysolr
 from django.conf import settings
 
-from solr.tasks import BaseTaskIndexing
-
 from iati_organisation.models import Organisation
 from solr.organisation.indexing import OrganisationIndexing
+from solr.tasks import BaseTaskIndexing
 
 solr = pysolr.Solr(
     '{url}/{core}'.format(

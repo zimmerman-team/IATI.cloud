@@ -4,13 +4,12 @@ from __future__ import print_function
 import pysolr
 from django.conf import settings
 
-from solr.tasks import BaseTaskIndexing
-
 from iati.models import Activity
-from solr.transaction.tasks import TransactionTaskIndexing
+from solr.activity.indexing import ActivityIndexing
 from solr.budget.tasks import BudgetTaskIndexing
 from solr.result.tasks import ResultTaskIndexing
-from solr.activity.indexing import ActivityIndexing
+from solr.tasks import BaseTaskIndexing
+from solr.transaction.tasks import TransactionTaskIndexing
 
 solr = pysolr.Solr(
     '{url}/{core}'.format(

@@ -4,10 +4,9 @@ from __future__ import print_function
 import pysolr
 from django.conf import settings
 
-from solr.tasks import BaseTaskIndexing
-
 from iati_synchroniser.models import DatasetNote
 from solr.datasetnote.indexing import DatasetNoteIndexing
+from solr.tasks import BaseTaskIndexing
 
 solr = pysolr.Solr(
     '{url}/{core}'.format(

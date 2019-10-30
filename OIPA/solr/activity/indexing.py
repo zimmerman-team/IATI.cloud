@@ -1,16 +1,23 @@
 from rest_framework.renderers import JSONRenderer
 
+from api.activity.serializers import (
+    ActivityDateSerializer, BudgetSerializer, ConditionSerializer,
+    ContactInfoSerializer, CountryBudgetItemsSerializer, CrsAddSerializer,
+    DescriptionSerializer, DocumentLinkSerializer, FssSerializer,
+    HumanitarianScopeSerializer, OtherIdentifierSerializer,
+    ParticipatingOrganisationSerializer, PlannedDisbursementSerializer,
+    ReportingOrganisationSerializer, TitleSerializer
+)
+from solr.activity.serializers import (
+    ActivityRecipientRegionSerializer, ActivitySectorSerializer,
+    LocationSerializer, RecipientCountrySerializer
+)
 from solr.indexing import BaseIndexing
-from solr.utils import bool_string, get_child_attr, value_string, decimal_string
-from solr.activity.serializers import RecipientCountrySerializer, ActivityRecipientRegionSerializer, \
-    LocationSerializer, ActivitySectorSerializer
 from solr.result.serializers import ResultSerializer
 from solr.transaction.serializers import TransactionSerializer
-
-from api.activity.serializers import ReportingOrganisationSerializer, TitleSerializer, DescriptionSerializer, \
-    ParticipatingOrganisationSerializer, OtherIdentifierSerializer, ActivityDateSerializer, ContactInfoSerializer, \
-    CountryBudgetItemsSerializer, HumanitarianScopeSerializer, BudgetSerializer, PlannedDisbursementSerializer, \
-    DocumentLinkSerializer, ConditionSerializer, CrsAddSerializer, FssSerializer
+from solr.utils import (
+    bool_string, decimal_string, get_child_attr, value_string
+)
 
 
 class ActivityIndexing(BaseIndexing):
