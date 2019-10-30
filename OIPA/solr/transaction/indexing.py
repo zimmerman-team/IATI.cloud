@@ -1,6 +1,6 @@
 from rest_framework.renderers import JSONRenderer
 
-from solr.base import BaseIndexing
+from solr.indexing import BaseIndexing
 from solr.utils import bool_string, value_string, decimal_string, \
     get_narrative_lang_list, add_reporting_org, get_child_attr
 

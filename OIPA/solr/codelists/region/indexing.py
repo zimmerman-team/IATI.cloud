@@ -1,4 +1,4 @@
-from solr.base import BaseIndexing
+from solr.indexing import BaseIndexing
 
 
 class RegionIndexing(BaseIndexing):

@@ -1,4 +1,4 @@
-from solr.base import BaseIndexing
+from solr.indexing import BaseIndexing
 from solr.utils import get_child_attr
 
 

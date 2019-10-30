@@ -1,6 +1,6 @@
 from rest_framework.renderers import JSONRenderer
 
-from solr.base import BaseIndexing
+from solr.indexing import BaseIndexing
 from solr.utils import value_string, decimal_string, bool_string, get_narrative_lang_list, get_child_attr
 
 from solr.organisation.serializers import OrganisationRecipientRegionBudgetSerializer, \

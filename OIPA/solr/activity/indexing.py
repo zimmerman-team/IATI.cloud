@@ -1,6 +1,6 @@
 from rest_framework.renderers import JSONRenderer
 
-from solr.base import BaseIndexing
+from solr.indexing import BaseIndexing
 from solr.utils import bool_string, get_child_attr, value_string, decimal_string
 from solr.activity.serializers import RecipientCountrySerializer, ActivityRecipientRegionSerializer, \
     LocationSerializer, ActivitySectorSerializer

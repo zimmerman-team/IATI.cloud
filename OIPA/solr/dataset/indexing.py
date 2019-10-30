@@ -1,6 +1,6 @@
 from rest_framework.renderers import JSONRenderer
 
-from solr.base import BaseIndexing
+from solr.indexing import BaseIndexing
 from solr.utils import get_child_attr, value_string
 
 from api.publisher.serializers import PublisherSerializer
