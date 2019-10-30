@@ -2,7 +2,7 @@ from rest_framework import serializers
 from rest_framework.renderers import JSONRenderer
 
 from api.activity.serializers import NarrativeSerializer
-from solr.utils import add_dict, add_value_list, value_string, get_child_attr
+from solr.utils import add_dict, add_value_list
 
 
 class BaseIndexing(serializers.Serializer):
