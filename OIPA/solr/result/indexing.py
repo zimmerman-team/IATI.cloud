@@ -218,6 +218,7 @@ class ResultIndexing(BaseIndexing):
                 self.indicator_period(indicator)
 
     def result(self):
+        self.add_field('id', self.record.id)
         self.add_field('iati_identifier', self.record.activity.iati_identifier)
         self.add_field('humanitarian', bool_string(get_child_attr(self.record, 'activity.humanitarian')))
 
