@@ -1288,8 +1288,11 @@ class Parse(IatiParser):
         srs_name = element.attrib.get('srsName')
 
         # TODO: make this field required?
-        # if not srs_name: raise RequiredFieldError("srsName",
-        # "location_point: srsName is required")
+        if not srs_name:
+            raise RequiredFieldError(
+                "srsName",
+                "location_point: srsName is required")
+
         if not srs_name:
             srs_name = "http://www.opengis.net/def/crs/EPSG/0/4326"
 
@@ -5565,10 +5568,10 @@ class Parse(IatiParser):
         post_save.set_sector_budget(activity)
 
         # Currently if something issue in the Solr indexing we just pass it, so not blocking the current parsing
-        try:
+        """try:
             ActivityTaskIndexing(instance=activity, related=True).run()
         except Exception as e:
-            logger.exception(e)
+            logger.exception(e)"""
 
     def post_save_file(self, dataset):
         """Perform all actions that need to happen after a single IATI

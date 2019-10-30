@@ -1619,7 +1619,7 @@ class Location(models.Model):
         default=None,
         related_name="feature_designation", on_delete=models.CASCADE)
 
-    point_srs_name = models.CharField(blank=True, max_length=255, default=None)
+    point_srs_name = models.CharField(null=True, blank=True, max_length=255, default=None)
     point_pos = PointField(
         null=True,
         blank=False,
