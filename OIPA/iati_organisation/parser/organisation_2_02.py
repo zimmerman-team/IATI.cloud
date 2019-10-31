@@ -1085,12 +1085,11 @@ class Parse(IatiParser):
         post_save.set_publisher_fk(organisation)
 
         # Currently if something issue in the Solr indexing we just pass it, so not blocking the current parsing
-        OrganisationTaskIndexing(instance=organisation).run()
-        """if settings.SOLR.get('indexing'):
+        if settings.SOLR.get('indexing'):
             try:
                 OrganisationTaskIndexing(instance=organisation).run()
             except Exception as e:
-                logger.exception(e)"""
+                logger.exception(e)
 
     def post_save_file(self, xml_source):
         pass
