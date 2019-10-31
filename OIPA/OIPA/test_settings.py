@@ -55,3 +55,22 @@ LOGGING = {
         },
     },
 }
+
+SOLR = {
+    'indexing': False,
+    'url': 'http://localhost:8983/solr',
+    'cores': {
+        'activity': 'activity',
+        'budget': 'budget',
+        'codelist': {
+            'country': 'codelist-country',
+            'region': 'codelist-region'
+        },
+        'dataset': 'dataset',
+        'datasetnote': 'datasetnote',
+        'organisation': 'organisation',
+        'publisher': 'publisher',
+        'result': 'result',
+        'transaction': 'transaction'
+    }
+}
