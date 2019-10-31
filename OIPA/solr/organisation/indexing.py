@@ -50,16 +50,16 @@ class OrganisationIndexing(BaseIndexing):
             self.add_field(prefix + '_value_date', [])
             self.add_field(prefix, [])
 
-            for related_budge in related_budget_all:
-                self.add_value_list(prefix + '_period_start', value_string(related_budge.period_start))
-                self.add_value_list(prefix + '_period_end', value_string(related_budge.period_end))
-                self.add_value_list(prefix + '_value', decimal_string(related_budge.value))
-                self.add_value_list(prefix + '_value_currency', related_budge.currency_id)
-                self.add_value_list(prefix + '_value_date', value_string(related_budge.value_date))
+            for related_budget in related_budget_all:
+                self.add_value_list(prefix + '_period_start', value_string(related_budget.period_start))
+                self.add_value_list(prefix + '_period_end', value_string(related_budget.period_end))
+                self.add_value_list(prefix + '_value', decimal_string(related_budget.value))
+                self.add_value_list(prefix + '_value_currency', related_budget.currency_id)
+                self.add_value_list(prefix + '_value_date', value_string(related_budget.value_date))
 
                 self.add_value_list(
-                    'organisation_total_budget',
-                    JSONRenderer().render(serializer(related_budge).data).decode()
+                    prefix,
+                    JSONRenderer().render(serializer(related_budget).data).decode()
                 )
 
     def name(self):
@@ -81,7 +81,7 @@ class OrganisationIndexing(BaseIndexing):
         self.add_field('organisation_type', organisation.type_id)
         self.add_field('organisation_reported_in_iati', bool_string(organisation.reported_in_iati))
         self.add_field('organisation_published', bool_string(organisation.published))
-        self.add_field('organisation_last_updated_datetime', value_string(organisation.published))
+        self.add_field('organisation_last_updated_datetime', value_string(organisation.last_updated_datetime))
         self.add_field('organisation_default_currency_code', organisation.default_currency_id)
         self.add_field('organisation_default_lang_code', organisation.default_lang_id)
 

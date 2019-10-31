@@ -16,7 +16,7 @@ solr = pysolr.Solr(
 )
 
 
-class DatasetNoteTaskIndexing(BaseTaskIndexing):
+class OrganisationTaskIndexing(BaseTaskIndexing):
     indexing = OrganisationIndexing
     model = Organisation
     solr = solr
