@@ -372,6 +372,7 @@ CELERY_BEAT_SCHEDULE = {
 }
 
 SOLR = {
+    'indexing': False,
     'url': 'http://localhost:8983/solr',
     'cores': {
         'activity': 'activity',
