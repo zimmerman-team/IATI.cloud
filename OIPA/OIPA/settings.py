@@ -378,8 +378,8 @@ SOLR = {
         'activity': 'activity',
         'budget': 'budget',
         'codelist': {
-            'country': 'country',
-            'region': 'region'
+            'country': 'codelist-country',
+            'region': 'codelist-region'
         },
         'dataset': 'dataset',
         'datasetnote': 'datasetnote',
