@@ -23,7 +23,7 @@ def value_string(value):
 
 
 def decimal_string(value):
-    if value and value > 0:
+    if value:
         return str(value)
 
     return None

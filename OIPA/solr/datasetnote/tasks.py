@@ -20,3 +20,9 @@ class DatasetNoteTaskIndexing(BaseTaskIndexing):
     indexing = DatasetNoteIndexing
     model = DatasetNote
     solr = solr
+
+    def run_from_dataset(self, dataset):
+        if settings.SOLR.get('indexing'):
+            for dataset_note in dataset.datasetnote_set.all():
+                self.instance = dataset_note
+                self.run()

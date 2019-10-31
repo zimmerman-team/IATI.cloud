@@ -1,4 +1,5 @@
 import logging
+
 from django.conf import settings
 
 from geodata.models import Country, Region
@@ -18,7 +19,6 @@ from iati_organisation.models import (
 )
 from iati_organisation.parser import post_save
 from iati_vocabulary.models import RegionVocabulary
-
 from solr.organisation.tasks import OrganisationTaskIndexing
 
 # Get an instance of a logger
@@ -1085,11 +1085,10 @@ class Parse(IatiParser):
         post_save.set_publisher_fk(organisation)
 
         # Currently if something issue in the Solr indexing we just pass it, so not blocking the current parsing
-        if settings.SOLR.get('indexing'):
-            try:
-                OrganisationTaskIndexing(instance=organisation).run()
-            except Exception as e:
-                logger.exception(e)
+        try:
+            OrganisationTaskIndexing(instance=organisation).run()
+        except Exception as e:
+            logger.exception(e)
 
     def post_save_file(self, xml_source):
         pass

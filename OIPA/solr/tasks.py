@@ -2,6 +2,7 @@
 from __future__ import print_function
 
 import pysolr
+from django.conf import settings
 
 solr = pysolr.Solr('', always_commit=True)
 
@@ -21,13 +22,15 @@ class BaseTaskIndexing(object):
         pass
 
     def run(self):
-        self.solr.add([self.indexing(self.instance).data])
+        if settings.SOLR.get('indexing'):
+            self.solr.add([self.indexing(self.instance).data])
 
-        if self.related:
-            self.run_related()
+            if self.related:
+                self.run_related()
 
     def delete(self):
-        self.solr.delete(q='id:{id}'.format(id=self.instance.id))
+        if settings.SOLR.get('indexing'):
+            self.solr.delete(q='id:{id}'.format(id=self.instance.id))
 
     def run_all(self):
         for instance in self.model.objects.all():
