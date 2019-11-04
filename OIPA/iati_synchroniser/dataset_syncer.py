@@ -14,13 +14,12 @@ from iati_synchroniser.create_publisher_organisation import (
 )
 from iati_synchroniser.models import Dataset, Publisher, filetype_choices
 
-from solr.dataset.tasks import DatasetTaskIndexing
-
 DATASET_URL = 'https://iatiregistry.org/api/action/package_search?rows=200&{options}'  # NOQA: E501
 PUBLISHER_URL = 'https://iatiregistry.org/api/action/organization_list?all_fields=true&include_extras=true&limit=200&{options}'  # NOQA: E501
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
+
 
 class DatasetSyncer(object):
     is_download_datasets = False
@@ -175,11 +174,6 @@ class DatasetSyncer(object):
             # this also returns internal URL for the Dataset:
             obj.internal_url = self.download_dataset(dataset) or ''
             obj.save()
-
-            try:
-                DatasetTaskIndexing(instance=obj).run()
-            except Exception as e:
-                logger.exception(e)
 
     def download_dataset(self, dataset_data):
         """Based on dataset URL, downloads and saves it in the server

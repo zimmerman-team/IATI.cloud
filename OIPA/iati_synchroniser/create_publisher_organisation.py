@@ -6,9 +6,6 @@ from iati_organisation.models import (
     OrganisationReportingOrganisation
 )
 
-from solr.organisation.tasks import OrganisationTaskIndexing
-from solr.publisher.tasks import PublisherTaskIndexing
-
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
 
@@ -58,15 +55,5 @@ def create_publisher_organisation(publisher, publisher_organization_type):
 
     publisher.organisation = org
     publisher.save()
-
-    try:
-        OrganisationTaskIndexing(instance=publisher.organisation).run()
-    except Exception as e:
-        logger.exception(e)
-
-    try:
-        PublisherTaskIndexing(instance=publisher).run()
-    except Exception as e:
-        logger.exception(e)
 
     return publisher
