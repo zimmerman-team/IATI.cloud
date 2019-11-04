@@ -123,7 +123,7 @@
     <field name="_text_" type="text_general" indexed="true" stored="false" multiValued="true"/>
 
     <!--Organisation Core - Start-->
-    <field name="organisation_identifier" type="string" multiValued="false" indexed="true" required="true" stored="true"/>
+    <field name="organisation_identifier" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
 
     <field name="organisation_name" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="organisation_name_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>

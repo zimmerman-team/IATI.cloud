@@ -11,7 +11,7 @@ from solr.tasks import BaseTaskIndexing
 solr = pysolr.Solr(
     '{url}/{core}'.format(
         url=settings.SOLR.get('url'),
-        core=settings.SOLR.get('cores').get('codelist').country('country')
+        core=settings.SOLR.get('cores').get('codelist').get('country')
     ), always_commit=True
 )
 
