@@ -20,3 +20,7 @@ class CodeListCountryTaskIndexing(BaseTaskIndexing):
     indexing = CountryIndexing
     model = Country
     solr = solr
+
+    def delete(self):
+        if settings.SOLR.get('indexing'):
+            self.solr.delete(q='id:{code}'.format(code=self.instance.code))

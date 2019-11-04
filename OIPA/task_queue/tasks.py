@@ -94,9 +94,12 @@ def add_new_sources_from_registry_and_parse_all():
 
 @job
 def perform_initial_tasks():
+    # TODO: this gus is not ued anymore, because the second
+    # (get_new_sources_from_iati_api) needed "code-list Version" from the
+    # first task, so this task can not run together in the same time.
     queue = django_rq.get_queue("default")
     queue.enqueue(update_iati_codelists)
-    queue.enqueue(get_new_sources_from_iati_api)
+    # queue.enqueue(get_new_sources_from_iati_api)
 
 
 @job

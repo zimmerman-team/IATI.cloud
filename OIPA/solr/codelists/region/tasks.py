@@ -20,3 +20,7 @@ class CodeListRegionTaskIndexing(BaseTaskIndexing):
     indexing = RegionIndexing
     model = Region
     solr = solr
+
+    def delete(self):
+        if settings.SOLR.get('indexing'):
+            self.solr.delete(q='id:{code}'.format(code=self.instance.code))
