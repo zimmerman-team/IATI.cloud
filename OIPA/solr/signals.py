@@ -1,9 +1,9 @@
 from django.db.models import signals
 from django.dispatch import receiver
 
-from iati.models import Activity, Budget, Result, Publisher
+from iati.models import Activity, Budget, Result
 from iati.transaction.models import Transaction
-from iati_synchroniser.models import Dataset, DatasetNote
+from iati_synchroniser.models import Dataset, DatasetNote, Publisher
 from iati_organisation.models import Organisation
 
 from geodata.models import Country, Region
