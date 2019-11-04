@@ -20,6 +20,9 @@ from iati_synchroniser.models import Codelist
 from iati_synchroniser.sdg_sector_importer import SdgSectorImporter
 from iati_vocabulary.models import RegionVocabulary, SectorVocabulary
 
+from solr.codelists.country.tasks import CodeListCountryTaskIndexing
+from solr.codelists.region.tasks import CodeListRegionTaskIndexing
+
 logger = logging.getLogger(__name__)
 
 
@@ -252,7 +255,20 @@ class CodeListImporter():
             pk=item.code
         ).exists():
             try:
-                item.save()
+                item = item.save()
+
+                if tag == 'Country':
+                    try:
+                        CodeListCountryTaskIndexing(instance=item).run()
+                    except Exception as e:
+                        logger.exception(e)
+
+                elif tag == 'Region':
+                    try:
+                        CodeListRegionTaskIndexing(instance=item).run()
+                    except Exception as e:
+                        logger.exception(e)
+
             except IntegrityError as err:
                 print("Error: {}".format(err))
                 pass
