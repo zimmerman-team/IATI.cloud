@@ -25,9 +25,17 @@ class ActivityIndexing(BaseIndexing):
     def dataset(self):
         activity = self.record
 
-        self.add_field('dataset_iati_version', activity.iati_standard_version_id)
-        self.add_field('dataset_date_created', value_string(get_child_attr(activity, 'dataset.date_created')))
-        self.add_field('dataset_date_updated', value_string(get_child_attr(activity, 'dataset.date_updated')))
+        self.add_field(
+            'dataset_iati_version',
+            activity.iati_standard_version_id)
+        self.add_field(
+            'dataset_date_created',
+            value_string(get_child_attr(activity, 'dataset.date_created'))
+        )
+        self.add_field(
+            'dataset_date_updated',
+            value_string(get_child_attr(activity, 'dataset.date_updated'))
+        )
 
     def reporting_org(self):
         reporting_org = self.record.reporting_organisations.first()
@@ -48,13 +56,22 @@ class ActivityIndexing(BaseIndexing):
             self.add_field('reporting_org_ref', reporting_org.ref)
             self.add_field('reporting_org_type_code', reporting_org.type_id)
             self.add_field('reporting_org_type_name', reporting_org.type.name)
-            self.add_field('reporting_org_secondary_reporter',bool_string(reporting_org.secondary_reporter))
-            self.add_field('reporting_org_narrative', reporting_org.organisation.primary_name)
+            self.add_field(
+                'reporting_org_secondary_reporter',
+                bool_string(reporting_org.secondary_reporter)
+            )
+            self.add_field(
+                'reporting_org_narrative',
+                reporting_org.organisation.primary_name
+            )
 
     def title(self):
         title = get_child_attr(self.record, 'title')
         if title:
-            self.add_field('title', JSONRenderer().render(TitleSerializer(title).data).decode())
+            self.add_field(
+                'title',
+                JSONRenderer().render(TitleSerializer(title).data).decode()
+            )
 
             self.add_field('title_narrative', [])
             self.add_field('title_narrative_lang', [])
@@ -80,7 +97,9 @@ class ActivityIndexing(BaseIndexing):
             for description in description_all:
                 self.add_value_list(
                     'description',
-                    JSONRenderer().render(DescriptionSerializer(description).data).decode()
+                    JSONRenderer().render(
+                        DescriptionSerializer(description).data
+                    ).decode()
                 )
                 self.add_value_list('description_type', description.type_id)
 
@@ -92,7 +111,8 @@ class ActivityIndexing(BaseIndexing):
                 )
 
     def participating_org(self):
-        participating_organisation_all = self.record.participating_organisations.all()
+        participating_organisation_all = \
+            self.record.participating_organisations.all()
         if participating_organisation_all:
             self.add_field('participating_org', [])
             self.add_field('participating_org_ref', [])
@@ -106,13 +126,24 @@ class ActivityIndexing(BaseIndexing):
                 self.add_value_list(
                     'participating_org',
                     JSONRenderer().render(
-                        ParticipatingOrganisationSerializer(participating_organisation).data
+                        ParticipatingOrganisationSerializer(
+                            participating_organisation
+                        ).data
                     ).decode()
                 )
 
-                self.add_value_list('participating_org_ref', participating_organisation.ref)
-                self.add_value_list('participating_org_type', participating_organisation.type_id)
-                self.add_value_list('participating_org_role', participating_organisation.role_id)
+                self.add_value_list(
+                    'participating_org_ref',
+                    participating_organisation.ref
+                )
+                self.add_value_list(
+                    'participating_org_type',
+                    participating_organisation.type_id
+                )
+                self.add_value_list(
+                    'participating_org_role',
+                    participating_organisation.role_id
+                )
 
                 self.related_narrative(
                     participating_organisation,
@@ -140,9 +171,18 @@ class ActivityIndexing(BaseIndexing):
                     ).decode()
                 )
 
-                self.add_value_list('other_identifier_ref', other_identifier.identifier)
-                self.add_value_list('other_identifier_type', other_identifier.type_id)
-                self.add_value_list('other_identifier_owner_org_ref', other_identifier.owner_ref)
+                self.add_value_list(
+                    'other_identifier_ref',
+                    other_identifier.identifier
+                )
+                self.add_value_list(
+                    'other_identifier_type',
+                    other_identifier.type_id
+                )
+                self.add_value_list(
+                    'other_identifier_owner_org_ref',
+                    other_identifier.owner_ref
+                )
 
                 self.related_narrative(
                     other_identifier,
@@ -173,16 +213,31 @@ class ActivityIndexing(BaseIndexing):
                 self.add_value_list('activity_date_type', activity_date.type_id)
 
                 if activity_date.iso_date:
-                    self.add_value_list('activity_dates_iso_date', value_string(activity_date.iso_date))
+                    self.add_value_list(
+                        'activity_dates_iso_date',
+                        value_string(activity_date.iso_date)
+                    )
 
                 if activity_date.type_id == '1':
-                    self.add_field('activity_date_start_planned', value_string(activity_date.iso_date))
+                    self.add_field(
+                        'activity_date_start_planned',
+                        value_string(activity_date.iso_date)
+                    )
                 elif activity_date.type_id == '2':
-                    self.add_field('activity_date_start_actual', value_string(activity_date.iso_date))
+                    self.add_field(
+                        'activity_date_start_actual',
+                        value_string(activity_date.iso_date)
+                    )
                 elif activity_date.type_id == '3':
-                    self.add_field('activity_date_end_planned', value_string(activity_date.iso_date))
+                    self.add_field(
+                        'activity_date_end_planned',
+                        value_string(activity_date.iso_date)
+                    )
                 elif activity_date.type_id == '4':
-                    self.add_field('activity_date_end_actual', value_string(activity_date.iso_date))
+                    self.add_field(
+                        'activity_date_end_actual',
+                        value_string(activity_date.iso_date)
+                    )
 
                 self.related_narrative(
                     activity_date,
@@ -230,9 +285,15 @@ class ActivityIndexing(BaseIndexing):
                 )
 
                 self.add_value_list('contact_info_type', contact_info.type_id)
-                self.add_value_list('contact_info_telephone', contact_info.telephone)
+                self.add_value_list(
+                    'contact_info_telephone',
+                    contact_info.telephone
+                )
                 self.add_value_list('contact_info_email', contact_info.email)
-                self.add_value_list('contact_info_website', contact_info.website)
+                self.add_value_list(
+                    'contact_info_website',
+                    contact_info.website
+                )
 
                 self.related_narrative(
                     get_child_attr(contact_info, 'organisation'),
@@ -286,9 +347,18 @@ class ActivityIndexing(BaseIndexing):
                     ).decode()
                 )
 
-                self.add_value_list('recipient_country_code', recipient_country.country.code)
-                self.add_value_list('recipient_country_name', recipient_country.country.name)
-                self.add_value_list('recipient_country_percentage', decimal_string(recipient_country.percentage))
+                self.add_value_list(
+                    'recipient_country_code',
+                    recipient_country.country.code
+                )
+                self.add_value_list(
+                    'recipient_country_name',
+                    recipient_country.country.name
+                )
+                self.add_value_list(
+                    'recipient_country_percentage',
+                    decimal_string(recipient_country.percentage)
+                )
 
                 self.related_narrative(
                     recipient_country,
@@ -320,11 +390,26 @@ class ActivityIndexing(BaseIndexing):
                     ).decode()
                 )
 
-                self.add_value_list('recipient_region_code', recipient_region.region.code)
-                self.add_value_list('recipient_region_name', recipient_region.region.name)
-                self.add_value_list('recipient_region_vocabulary', recipient_region.vocabulary.code)
-                self.add_value_list('recipient_region_vocabulary_uri', recipient_region.vocabulary_uri)
-                self.add_value_list('recipient_region_percentage', decimal_string(recipient_region.percentage))
+                self.add_value_list(
+                    'recipient_region_code',
+                    recipient_region.region.code
+                )
+                self.add_value_list(
+                    'recipient_region_name',
+                    recipient_region.region.name
+                )
+                self.add_value_list(
+                    'recipient_region_vocabulary',
+                    recipient_region.vocabulary.code
+                )
+                self.add_value_list(
+                    'recipient_region_vocabulary_uri',
+                    recipient_region.vocabulary_uri
+                )
+                self.add_value_list(
+                    'recipient_region_percentage',
+                    decimal_string(recipient_region.percentage)
+                )
 
                 self.related_narrative(
                     recipient_region,
@@ -372,16 +457,33 @@ class ActivityIndexing(BaseIndexing):
                 )
 
                 self.add_value_list('location_ref', location.ref)
-                self.add_value_list('location_reach_code', location.location_reach_id)
-                self.add_value_list('location_id_vocabulary', location.location_id_vocabulary_id)
-                self.add_value_list('location_id_code', location.location_id_code)
+                self.add_value_list(
+                    'location_reach_code',
+                    location.location_reach_id
+                )
+                self.add_value_list(
+                    'location_id_vocabulary',
+                    location.location_id_vocabulary_id
+                )
+                self.add_value_list(
+                    'location_id_code', location.location_id_code
+                )
                 self.add_value_list(
                     'location_point_pos',
                     value_string(get_child_attr(location, 'point_pos.coords'))
                 )
-                self.add_value_list('location_exactness_code', location.exactness_id)
-                self.add_value_list('location_class_code', location.location_class_id)
-                self.add_value_list('location_feature_designation_code', location.feature_designation_id)
+                self.add_value_list(
+                    'location_exactness_code',
+                    location.exactness_id
+                )
+                self.add_value_list(
+                    'location_class_code',
+                    location.location_class_id
+                )
+                self.add_value_list(
+                    'location_feature_designation_code',
+                    location.feature_designation_id
+                )
 
                 self.related_narrative(
                     get_child_attr(location, 'name'),
@@ -402,10 +504,20 @@ class ActivityIndexing(BaseIndexing):
                     'location_activity_description_narrative_lang'
                 )
 
-                for location_administrative in location.locationadministrative_set.all():
-                    self.add_value_list('location_administrative_vocabulary', location_administrative.vocabulary.code)
-                    self.add_value_list('location_administrative_level', location_administrative.level)
-                    self.add_value_list('location_administrative_code', location_administrative.code)
+                for location_administrative in \
+                        location.locationadministrative_set.all():
+                    self.add_value_list(
+                        'location_administrative_vocabulary',
+                        location_administrative.vocabulary.code
+                    )
+                    self.add_value_list(
+                        'location_administrative_level',
+                        location_administrative.level
+                    )
+                    self.add_value_list(
+                        'location_administrative_code',
+                        location_administrative.code
+                    )
 
     def sector(self):
         activity_sector_all = self.record.activitysector_set.all()
@@ -429,10 +541,22 @@ class ActivityIndexing(BaseIndexing):
                     ).decode()
                 )
 
-                self.add_value_list('sector_vocabulary', activity_sector.vocabulary_id)
-                self.add_value_list('sector_vocabulary_uri', activity_sector.vocabulary_uri)
-                self.add_value_list('sector_code', activity_sector.sector.code)
-                self.add_value_list('sector_percentage', decimal_string(activity_sector.percentage))
+                self.add_value_list(
+                    'sector_vocabulary',
+                    activity_sector.vocabulary_id
+                )
+                self.add_value_list(
+                    'sector_vocabulary_uri',
+                    activity_sector.vocabulary_uri
+                )
+                self.add_value_list(
+                    'sector_code',
+                    activity_sector.sector.code
+                )
+                self.add_value_list(
+                    'sector_percentage',
+                    decimal_string(activity_sector.percentage)
+                )
 
                 self.related_narrative(
                     activity_sector,
@@ -442,7 +566,10 @@ class ActivityIndexing(BaseIndexing):
                 )
 
     def country_budget_items(self):
-        country_budget_item = get_child_attr(self.record, 'country_budget_items')
+        country_budget_item = get_child_attr(
+            self.record,
+            'country_budget_items'
+        )
         if country_budget_item:
             self.add_field(
                 'country_budget_items',
@@ -451,17 +578,32 @@ class ActivityIndexing(BaseIndexing):
                 ).decode()
             )
 
-            self.add_field('country_budget_items_vocabulary', country_budget_item.vocabulary_id)
+            self.add_field(
+                'country_budget_items_vocabulary',
+                country_budget_item.vocabulary_id
+            )
 
             self.add_field('country_budget_items_budget_item_code', [])
             self.add_field('country_budget_items_budget_item_percentage', [])
 
-            self.add_field('country_budget_items_budget_description_narrative', [])
-            self.add_field('country_budget_items_budget_description_narrative_lang', [])
-            self.add_field('country_budget_items_budget_description_narrative_text', [])
+            self.add_field(
+                'country_budget_items_budget_description_narrative',
+                []
+            )
+            self.add_field(
+                'country_budget_items_budget_description_narrative_lang',
+                []
+            )
+            self.add_field(
+                'country_budget_items_budget_description_narrative_text',
+                []
+            )
 
             for budget_item in country_budget_item.budgetitem_set.all():
-                self.add_value_list('country_budget_items_budget_item_code', budget_item.code_id)
+                self.add_value_list(
+                    'country_budget_items_budget_item_code',
+                    budget_item.code_id
+                )
                 self.add_value_list(
                     'country_budget_items_budget_item_percentage',
                     decimal_string(budget_item.percentage)
@@ -496,10 +638,22 @@ class ActivityIndexing(BaseIndexing):
                     ).decode()
                 )
 
-                self.add_value_list('humanitarian_scope_type', humanitarian_scope.type_id)
-                self.add_value_list('humanitarian_scope_vocabulary', humanitarian_scope.vocabulary_id)
-                self.add_value_list('humanitarian_scope_vocabulary_uri', humanitarian_scope.vocabulary_uri)
-                self.add_value_list('humanitarian_scope_code', humanitarian_scope.code)
+                self.add_value_list(
+                    'humanitarian_scope_type',
+                    humanitarian_scope.type_id
+                )
+                self.add_value_list(
+                    'humanitarian_scope_vocabulary',
+                    humanitarian_scope.vocabulary_id
+                )
+                self.add_value_list(
+                    'humanitarian_scope_vocabulary_uri',
+                    humanitarian_scope.vocabulary_uri
+                )
+                self.add_value_list(
+                    'humanitarian_scope_code',
+                    humanitarian_scope.code
+                )
 
                 self.related_narrative(
                     humanitarian_scope,
@@ -530,11 +684,26 @@ class ActivityIndexing(BaseIndexing):
 
                 self.add_value_list('budget_type', budget.type_id)
                 self.add_value_list('budget_status', budget.status_id)
-                self.add_value_list('budget_period_start_iso_date', value_string(budget.period_start))
-                self.add_value_list('budget_period_end_iso_date', value_string(budget.period_end))
-                self.add_value_list('budget_value_currency', budget.currency_id)
-                self.add_value_list('budget_value_date', value_string(budget.value_date) )
-                self.add_value_list('budget_value', decimal_string(budget.value))
+                self.add_value_list(
+                    'budget_period_start_iso_date',
+                    value_string(budget.period_start)
+                )
+                self.add_value_list(
+                    'budget_period_end_iso_date',
+                    value_string(budget.period_end)
+                )
+                self.add_value_list(
+                    'budget_value_currency',
+                    budget.currency_id
+                )
+                self.add_value_list(
+                    'budget_value_date',
+                    value_string(budget.value_date)
+                )
+                self.add_value_list(
+                    'budget_value',
+                    decimal_string(budget.value)
+                )
 
     def planned_disbursement(self):
         planned_disbursement_all = self.record.planneddisbursement_set.all()
@@ -546,28 +715,51 @@ class ActivityIndexing(BaseIndexing):
             self.add_field('planned_disbursement_value_currency', [])
             self.add_field('planned_disbursement_value_date', [])
             self.add_field('planned_disbursement_value', [])
-            self.add_field('planned_disbursement_provider_org_provider_activity_id', [])
+            self.add_field(
+                'planned_disbursement_provider_org_provider_activity_id',
+                []
+            )
             self.add_field('planned_disbursement_provider_org_type', [])
             self.add_field('planned_disbursement_provider_org_ref', [])
             self.add_field('planned_disbursement_provider_org_narrative', [])
-            self.add_field('planned_disbursement_provider_org_narrative_lang', [])
-            self.add_field('planned_disbursement_provider_org_narrative_text', [])
-            self.add_field('planned_disbursement_receiver_org_provider_activity_id', [])
+            self.add_field(
+                'planned_disbursement_provider_org_narrative_lang',
+                []
+            )
+            self.add_field(
+                'planned_disbursement_provider_org_narrative_text',
+                []
+            )
+            self.add_field(
+                'planned_disbursement_receiver_org_provider_activity_id',
+                []
+            )
             self.add_field('planned_disbursement_receiver_org_type', [])
             self.add_field('planned_disbursement_receiver_org_ref', [])
             self.add_field('planned_disbursement_receiver_org_narrative', [])
-            self.add_field('planned_disbursement_receiver_org_narrative_lang', [])
-            self.add_field('planned_disbursement_receiver_org_narrative_text',[])
+            self.add_field(
+                'planned_disbursement_receiver_org_narrative_lang',
+                []
+            )
+            self.add_field(
+                'planned_disbursement_receiver_org_narrative_text',
+                []
+            )
 
             for planned_disbursement in planned_disbursement_all:
                 self.add_value_list(
                     'planned_disbursement',
                     JSONRenderer().render(
-                        PlannedDisbursementSerializer(planned_disbursement).data
+                        PlannedDisbursementSerializer(
+                            planned_disbursement
+                        ).data
                     ).decode()
                 )
 
-                self.add_value_list('planned_disbursement_type', planned_disbursement.type_id)
+                self.add_value_list(
+                    'planned_disbursement_type',
+                    planned_disbursement.type_id
+                )
                 self.add_value_list(
                     'planned_disbursement_period_start_iso_date',
                     value_string(planned_disbursement.period_start)
@@ -580,7 +772,10 @@ class ActivityIndexing(BaseIndexing):
                     'planned_disbursement_value_date',
                     value_string(planned_disbursement.value_date)
                 )
-                self.add_value_list('planned_disbursement_value_currency', planned_disbursement.currency_id)
+                self.add_value_list(
+                    'planned_disbursement_value_currency',
+                    planned_disbursement.currency_id
+                )
                 self.add_value_list(
                     'planned_disbursement_value',
                     decimal_string(planned_disbursement.value)
@@ -588,19 +783,31 @@ class ActivityIndexing(BaseIndexing):
 
                 self.add_value_list(
                     'planned_disbursement_provider_org_provider_activity_id',
-                    get_child_attr(planned_disbursement, 'provider_organisation.provider_activity_ref')
+                    get_child_attr(
+                        planned_disbursement,
+                        'provider_organisation.provider_activity_ref'
+                    )
                 )
                 self.add_value_list(
                     'planned_disbursement_provider_org_type',
-                    get_child_attr(planned_disbursement, 'provider_organisation.type_id')
+                    get_child_attr(
+                        planned_disbursement,
+                        'provider_organisation.type_id'
+                    )
                 )
                 self.add_value_list(
                     'planned_disbursement_provider_org_ref',
-                    get_child_attr(planned_disbursement, 'provider_organisation.ref')
+                    get_child_attr(
+                        planned_disbursement,
+                        'provider_organisation.ref'
+                    )
                 )
 
                 self.related_narrative(
-                    get_child_attr(planned_disbursement, 'provider_organisation'),
+                    get_child_attr(
+                        planned_disbursement,
+                        'provider_organisation'
+                    ),
                     'planned_disbursement_provider_org_narrative',
                     'planned_disbursement_provider_org_narrative_text',
                     'planned_disbursement_provider_org_narrative_lang'
@@ -681,21 +888,48 @@ class ActivityIndexing(BaseIndexing):
                 )
 
                 self.add_value_list('transaction_ref', transaction.ref)
-                self.add_value_list('transaction_humanitarian', bool_string(transaction.humanitarian))
-                self.add_value_list('transaction_type', value_string(transaction.transaction_type_id))
-                self.add_value_list('transaction_date_iso_date', value_string(transaction.transaction_date))
-                self.add_value_list('transaction_value_currency', transaction.currency_id)
-                self.add_value_list('transaction_value_date', value_string(transaction.value_date))
-                self.add_value_list('transaction_value', decimal_string(transaction.value))
+                self.add_value_list(
+                    'transaction_humanitarian',
+                    bool_string(transaction.humanitarian)
+                )
+                self.add_value_list(
+                    'transaction_type',
+                    value_string(transaction.transaction_type_id)
+                )
+                self.add_value_list(
+                    'transaction_date_iso_date',
+                    value_string(transaction.transaction_date)
+                )
+                self.add_value_list(
+                    'transaction_value_currency',
+                    transaction.currency_id
+                )
+                self.add_value_list(
+                    'transaction_value_date',
+                    value_string(transaction.value_date)
+                )
+                self.add_value_list(
+                    'transaction_value',
+                    decimal_string(transaction.value)
+                )
 
-                provider_organisation = get_child_attr(transaction, 'provider_organisation')
+                provider_organisation = get_child_attr(
+                    transaction,
+                    'provider_organisation'
+                )
                 if provider_organisation:
                     self.add_value_list(
                         'transaction_provider_org_provider_activity_id',
                         provider_organisation.provider_activity_ref
                     )
-                    self.add_value_list('transaction_provider_org_type', provider_organisation.type_id)
-                    self.add_value_list('transaction_provider_org_ref', provider_organisation.ref)
+                    self.add_value_list(
+                        'transaction_provider_org_type',
+                        provider_organisation.type_id
+                    )
+                    self.add_value_list(
+                        'transaction_provider_org_ref',
+                        provider_organisation.ref
+                    )
 
                     self.related_narrative(
                         provider_organisation,
@@ -704,14 +938,23 @@ class ActivityIndexing(BaseIndexing):
                         'transaction_provider_org_narrative_lang'
                     )
 
-                receiver_organisation = get_child_attr(transaction, 'receiver_organisation')
+                receiver_organisation = get_child_attr(
+                    transaction,
+                    'receiver_organisation'
+                )
                 if receiver_organisation:
                     self.add_value_list(
                         'transaction_receiver_org_receiver_activity_id',
                         receiver_organisation.receiver_activity_ref
                     )
-                    self.add_value_list('transaction_receiver_org_type', receiver_organisation.type_id)
-                    self.add_value_list('transaction_receiver_org_ref', receiver_organisation.ref)
+                    self.add_value_list(
+                        'transaction_receiver_org_type',
+                        receiver_organisation.type_id
+                    )
+                    self.add_value_list(
+                        'transaction_receiver_org_ref',
+                        receiver_organisation.ref
+                    )
 
                     self.related_narrative(
                         receiver_organisation,
@@ -720,20 +963,35 @@ class ActivityIndexing(BaseIndexing):
                         'transaction_receiver_org_narrative_lang'
                     )
 
-                self.add_value_list('transaction_disburstment_channel_code', transaction.disbursement_channel_id)
+                self.add_value_list(
+                    'transaction_disburstment_channel_code',
+                    transaction.disbursement_channel_id
+                )
 
-                for transaction_sector in transaction.transactionsector_set.all():
-                    self.add_value_list('transaction_sector_vocabulary', transaction_sector.vocabulary_id)
-                    self.add_value_list('transaction_sector_vocabulary_uri', transaction_sector.vocabulary_uri)
-                    self.add_value_list('transaction_sector_code', transaction_sector.sector_id)
+                for transaction_sector in \
+                        transaction.transactionsector_set.all():
+                    self.add_value_list(
+                        'transaction_sector_vocabulary',
+                        transaction_sector.vocabulary_id
+                    )
+                    self.add_value_list(
+                        'transaction_sector_vocabulary_uri',
+                        transaction_sector.vocabulary_uri
+                    )
+                    self.add_value_list(
+                        'transaction_sector_code',
+                        transaction_sector.sector_id
+                    )
 
-                for transaction_recipient_country in transaction.transactionrecipientcountry_set.all():
+                for transaction_recipient_country in \
+                        transaction.transactionrecipientcountry_set.all():
                     self.add_value_list(
                         'transaction_recipient_country_code',
                         transaction_recipient_country.country_id
                     )
 
-                for transaction_recipient_region in transaction.transactionrecipientregion_set.all():
+                for transaction_recipient_region in \
+                        transaction.transactionrecipientregion_set.all():
                     self.add_value_list(
                         'transaction_recipient_region_code',
                         transaction_recipient_region.region_id
@@ -743,14 +1001,30 @@ class ActivityIndexing(BaseIndexing):
                         transaction_recipient_region.vocabulary_id
                     )
 
-                self.add_value_list('transaction_flow_type_code', transaction.flow_type_id)
-                self.add_value_list('transaction_finance_type_code', transaction.finance_type_id)
+                self.add_value_list(
+                    'transaction_flow_type_code',
+                    transaction.flow_type_id
+                )
+                self.add_value_list(
+                    'transaction_finance_type_code',
+                    transaction.finance_type_id
+                )
 
-                for transaction_aid_type in transaction.transactionaidtype_set.all():
-                    self.add_value_list('transaction_aid_type_code', transaction_aid_type.aid_type.code)
-                    self.add_value_list('transaction_aid_type_vocabulary', transaction_aid_type.aid_type.vocabulary_id)
+                for transaction_aid_type in \
+                        transaction.transactionaidtype_set.all():
+                    self.add_value_list(
+                        'transaction_aid_type_code',
+                        transaction_aid_type.aid_type.code
+                    )
+                    self.add_value_list(
+                        'transaction_aid_type_vocabulary',
+                        transaction_aid_type.aid_type.vocabulary_id
+                    )
 
-                self.add_value_list('transaction_tied_status_code', transaction.tied_status_id)
+                self.add_value_list(
+                    'transaction_tied_status_code',
+                    transaction.tied_status_id
+                )
 
     def document_link(self):
         document_link_all = self.record.documentlink_set.filter(
@@ -792,9 +1066,15 @@ class ActivityIndexing(BaseIndexing):
                     ).decode()
                 )
 
-                self.add_value_list('document_link_format', document_link.file_format_id)
+                self.add_value_list(
+                    'document_link_format',
+                    document_link.file_format_id
+                )
                 self.add_value_list('document_link_url', document_link.url)
-                self.add_value_list('document_link_document_date_iso_date', value_string(document_link.iso_date))
+                self.add_value_list(
+                    'document_link_document_date_iso_date',
+                    value_string(document_link.iso_date)
+                )
 
                 self.related_narrative(
                     get_child_attr(document_link, 'documentlinktitle'),
@@ -810,13 +1090,15 @@ class ActivityIndexing(BaseIndexing):
                     'document_link_description_narrative_lang'
                 )
 
-                for document_link_category in document_link.documentlinkcategory_set.all():
+                for document_link_category in \
+                        document_link.documentlinkcategory_set.all():
                     self.add_value_list(
                         'document_link_category_code',
                         document_link_category.category_id
                     )
 
-                for document_link_language in document_link.documentlinklanguage_set.all():
+                for document_link_language in \
+                        document_link.documentlinklanguage_set.all():
                     self.add_value_list(
                         'document_link_language_code',
                         document_link_language.language_id
@@ -832,7 +1114,10 @@ class ActivityIndexing(BaseIndexing):
                 ).decode()
             )
 
-            self.add_field('conditions_attached', bool_string(activity_condition.attached))
+            self.add_field(
+                'conditions_attached',
+                bool_string(activity_condition.attached)
+            )
 
             self.add_field('conditions_condition_type', [])
 
@@ -841,7 +1126,10 @@ class ActivityIndexing(BaseIndexing):
             self.add_field('conditions_condition_narrative_text', [])
 
             for condition in activity_condition.condition_set.all():
-                self.add_value_list('conditions_condition_type', condition.type_id)
+                self.add_value_list(
+                    'conditions_condition_type',
+                    condition.type_id
+                )
 
                 self.related_narrative(
                     condition,
@@ -868,8 +1156,14 @@ class ActivityIndexing(BaseIndexing):
             self.add_field('result_document_link_title_narrative_lang', [])
             self.add_field('result_document_link_title_narrative_text', [])
             self.add_field('result_document_link_description_narrative', [])
-            self.add_field('result_document_link_description_narrative_lang', [])
-            self.add_field('result_document_link_description_narrative_text', [])
+            self.add_field(
+                'result_document_link_description_narrative_lang',
+                []
+            )
+            self.add_field(
+                'result_document_link_description_narrative_text',
+                []
+            )
             self.add_field('result_document_link_category_code', [])
             self.add_field('result_document_link_language_code', [])
             self.add_field('result_document_link_document_date_iso_date', [])
@@ -888,14 +1182,32 @@ class ActivityIndexing(BaseIndexing):
             self.add_field('result_indicator_document_link_url', [])
             self.add_field('result_indicator_document_link_format', [])
             self.add_field('result_indicator_document_link_title_narrative', [])
-            self.add_field('result_indicator_document_link_title_narrative_lang', [])
-            self.add_field('result_indicator_document_link_title_narrative_text', [])
-            self.add_field('result_indicator_document_link_description_narrative', [])
-            self.add_field('result_indicator_document_link_description_narrative_lang', [])
-            self.add_field('result_indicator_document_link_description_narrative_text', [])
+            self.add_field(
+                'result_indicator_document_link_title_narrative_lang',
+                []
+            )
+            self.add_field(
+                'result_indicator_document_link_title_narrative_text',
+                []
+            )
+            self.add_field(
+                'result_indicator_document_link_description_narrative',
+                []
+            )
+            self.add_field(
+                'result_indicator_document_link_description_narrative_lang',
+                []
+            )
+            self.add_field(
+                'result_indicator_document_link_description_narrative_text',
+                []
+            )
             self.add_field('result_indicator_document_link_category_code', [])
             self.add_field('result_indicator_document_link_language_code', [])
-            self.add_field('result_indicator_document_link_document_date_iso_date', [])
+            self.add_field(
+                'result_indicator_document_link_document_date_iso_date',
+                []
+            )
             self.add_field('result_indicator_reference_code', [])
             self.add_field('result_indicator_reference_vocabulary', [])
             self.add_field('result_indicator_reference_vocabulary_uri', [])
@@ -906,19 +1218,48 @@ class ActivityIndexing(BaseIndexing):
             self.add_field('result_indicator_baseline_dimension_name', [])
             self.add_field('result_indicator_baseline_dimension_value', [])
             self.add_field('result_indicator_baseline_comment_narrative', [])
-            self.add_field('result_indicator_baseline_comment_narrative_lang', [])
-            self.add_field('result_indicator_baseline_comment_narrative_text', [])
+            self.add_field(
+                'result_indicator_baseline_comment_narrative_lang',
+                []
+            )
+            self.add_field(
+                'result_indicator_baseline_comment_narrative_text',
+                []
+            )
             self.add_field('result_indicator_baseline_document_link_url', [])
-            self.add_field('result_indicator_baseline_document_link_format', [])
+            self.add_field(
+                'result_indicator_baseline_document_link_format', []
+            )
             self.add_field('result_indicator_baseline_document_link_title', [])
-            self.add_field('result_indicator_baseline_document_link_title_narrative_lang', [])
-            self.add_field('result_indicator_baseline_document_link_title_narrative_text', [])
-            self.add_field('result_indicator_baseline_document_link_description', [])
-            self.add_field('result_indicator_baseline_document_link_description_lang', [])
-            self.add_field('result_indicator_baseline_document_link_description_text', [])
-            self.add_field('result_indicator_baseline_document_link_category_code', [])
-            self.add_field('result_indicator_baseline_document_link_language_code', [])
-            self.add_field('result_indicator_baseline_document_link_document_date_iso_date', [])
+            self.add_field(
+                'result_indicator_baseline_document_link_title_narrative_lang',
+                []
+            )
+            self.add_field(
+                'result_indicator_baseline_document_link_title_narrative_text',
+                []
+            )
+            self.add_field(
+                'result_indicator_baseline_document_link_description',
+                []
+            )
+            self.add_field(
+                'result_indicator_baseline_document_link_description_lang',
+                []
+            )
+            self.add_field(
+                'result_indicator_baseline_document_link_description_text',
+                []
+            )
+            self.add_field(
+                'result_indicator_baseline_document_link_category_code',
+                []
+            )
+            self.add_field(
+                'result_indicator_baseline_document_link_language_code',
+                []
+            )
+            self.add_field('result_indicator_baseline_document_link_document_date_iso_date', [])  # NOQA: E501
             self.add_field('result_indicator_period_period_start_iso_date', [])
             self.add_field('result_indicator_period_period_end_iso_date', [])
             self.add_field('result_indicator_period_target_value', [])
@@ -926,43 +1267,93 @@ class ActivityIndexing(BaseIndexing):
             self.add_field('result_indicator_period_target_dimension_name', [])
             self.add_field('result_indicator_period_target_dimension_value', [])
             self.add_field('result_indicator_period_target_comment_narrative', [])
-            self.add_field('result_indicator_period_target_comment_narrative_lang', [])
-            self.add_field('result_indicator_period_target_comment_narrative_text', [])
-            self.add_field('result_indicator_period_target_document_link_url', [])
-            self.add_field('result_indicator_period_target_document_link_format', [])
-            self.add_field('result_indicator_period_target_document_link_title_narrative', [])
-            self.add_field('result_indicator_period_target_document_link_title_narrative_lang', [])
-            self.add_field('result_indicator_period_target_document_link_title_narrative_text', [])
-            self.add_field('result_indicator_period_target_document_link_description_narrative', [])
-            self.add_field('result_indicator_period_target_document_link_description_narrative_lang', [])
-            self.add_field('result_indicator_period_target_document_link_description_narrative_text', [])
-            self.add_field('result_indicator_period_target_document_link_category_code', [])
-            self.add_field('result_indicator_period_target_document_link_language_code', [])
-            self.add_field('result_indicator_period_target_document_link_document_date_iso_date', [])
+            self.add_field(
+                'result_indicator_period_target_comment_narrative_lang',
+                []
+            )
+            self.add_field(
+                'result_indicator_period_target_comment_narrative_text',
+                []
+            )
+            self.add_field(
+                'result_indicator_period_target_document_link_url',
+                []
+            )
+            self.add_field(
+                'result_indicator_period_target_document_link_format',
+                []
+            )
+            self.add_field(
+                'result_indicator_period_target_document_link_title_narrative',
+                []
+            )
+            self.add_field('result_indicator_period_target_document_link_title_narrative_lang', [])  # NOQA: E501
+            self.add_field('result_indicator_period_target_document_link_title_narrative_text', [])  # NOQA: E501
+            self.add_field('result_indicator_period_target_document_link_description_narrative', [])  # NOQA: E501
+            self.add_field('result_indicator_period_target_document_link_description_narrative_lang', [])  # NOQA: E501
+            self.add_field('result_indicator_period_target_document_link_description_narrative_text', [])  # NOQA: E501
+            self.add_field(
+                'result_indicator_period_target_document_link_category_code',
+                []
+            )
+            self.add_field(
+                'result_indicator_period_target_document_link_language_code',
+                []
+            )
+            self.add_field('result_indicator_period_target_document_link_document_date_iso_date', [])  # NOQA: E501
             self.add_field('result_indicator_period_actual_value', [])
             self.add_field('result_indicator_period_actual_location_ref', [])
             self.add_field('result_indicator_period_actual_dimension_name', [])
             self.add_field('result_indicator_period_actual_dimension_value', [])
             self.add_field('result_indicator_period_actual_comment_narrative', [])
-            self.add_field('result_indicator_period_actual_comment_narrative_lang', [])
-            self.add_field('result_indicator_period_actual_comment_narrative_text', [])
-            self.add_field('result_indicator_period_actual_document_link_url', [])
-            self.add_field('result_indicator_period_actual_document_link_format', [])
-            self.add_field('result_indicator_period_actual_document_link_title_narrative', [])
-            self.add_field('result_indicator_period_actual_document_link_title_narrative_lang', [])
-            self.add_field('result_indicator_period_actual_document_link_title_narrative_text', [])
-            self.add_field('result_indicator_period_actual_document_link_description_narrative', [])
-            self.add_field('result_indicator_period_actual_document_link_description_narrative_lang', [])
-            self.add_field('result_indicator_period_actual_document_link_description_narrative_text', [])
-            self.add_field('result_indicator_period_actual_document_link_category_code', [])
-            self.add_field('result_indicator_period_actual_document_link_language_code', [])
-            self.add_field('result_indicator_period_actual_document_link_document_date_iso_date', [])
+            self.add_field(
+                'result_indicator_period_actual_comment_narrative_lang',
+                []
+            )
+            self.add_field(
+                'result_indicator_period_actual_comment_narrative_text',
+                []
+            )
+            self.add_field(
+                'result_indicator_period_actual_document_link_url',
+                []
+            )
+            self.add_field(
+                'result_indicator_period_actual_document_link_format',
+                []
+            )
+            self.add_field(
+                'result_indicator_period_actual_document_link_title_narrative',
+                []
+            )
+            self.add_field('result_indicator_period_actual_document_link_title_narrative_lang', [])  # NOQA: E501
+            self.add_field('result_indicator_period_actual_document_link_title_narrative_text', [])  # NOQA: E501
+            self.add_field('result_indicator_period_actual_document_link_description_narrative', [])  # NOQA: E501
+            self.add_field('result_indicator_period_actual_document_link_description_narrative_lang', [])  # NOQA: E501
+            self.add_field('result_indicator_period_actual_document_link_description_narrative_text', [])  # NOQA: E501
+            self.add_field(
+                'result_indicator_period_actual_document_link_category_code',
+                []
+            )
+            self.add_field(
+                'result_indicator_period_actual_document_link_language_code',
+                []
+            )
+            self.add_field('result_indicator_period_actual_document_link_document_date_iso_date', [])  # NOQA: E501
 
             for result in result_all:
-                self.add_value_list('result', JSONRenderer().render(ResultSerializer(result).data).decode())
+                self.add_value_list(
+                    'result',
+                    JSONRenderer().render(
+                        ResultSerializer(result).data
+                    ).decode()
+                )
 
                 self.add_value_list('result_type', result.type_id)
-                self.add_value_list('result_aggregation_status', bool_string(result.aggregation_status))
+                self.add_value_list(
+                    'result_aggregation_status',
+                    bool_string(result.aggregation_status)
+                )
 
                 self.related_narrative(
                     get_child_attr(result, 'resulttitle'),
@@ -979,8 +1370,14 @@ class ActivityIndexing(BaseIndexing):
                 )
 
                 for document_link in result.documentlink_set.all():
-                    self.add_value_list('result_document_link_url', document_link.url)
-                    self.add_value_list('result_document_link_format', document_link.file_format_id)
+                    self.add_value_list(
+                        'result_document_link_url',
+                        document_link.url
+                    )
+                    self.add_value_list(
+                        'result_document_link_format',
+                        document_link.file_format_id
+                    )
 
                     self.related_narrative(
                         get_child_attr(document_link, 'documentlinktitle'),
@@ -990,17 +1387,28 @@ class ActivityIndexing(BaseIndexing):
                     )
 
                     self.related_narrative(
-                        get_child_attr(document_link, 'documentlinkdescription'),
+                        get_child_attr(
+                            document_link,
+                            'documentlinkdescription'
+                        ),
                         'result_document_link_description_narrative',
                         'result_document_link_description_narrative_text',
                         'result_document_link_description_narrative_lang'
                     )
 
-                    for document_link_category in document_link.documentlinkcategory_set.all():
-                        self.add_value_list('result_document_link_category_code', document_link_category.category_id)
+                    for document_link_category in \
+                            document_link.documentlinkcategory_set.all():
+                        self.add_value_list(
+                            'result_document_link_category_code',
+                            document_link_category.category_id
+                        )
 
-                    for document_link_language in document_link.documentlinklanguage_set.all():
-                        self.add_value_list('result_document_link_language_code', document_link_language.language_id)
+                    for document_link_language in \
+                            document_link.documentlinklanguage_set.all():
+                        self.add_value_list(
+                            'result_document_link_language_code',
+                            document_link_language.language_id
+                        )
 
                     self.add_value_list(
                         'result_document_link_document_date_iso_date',
@@ -1008,33 +1416,53 @@ class ActivityIndexing(BaseIndexing):
                     )
 
                 for result_reference in result.resultreference_set.all():
-                    self.add_value_list('result_reference_code', result_reference.code)
-                    self.add_value_list('result_reference_vocabulary', result_reference.vocabulary_id)
-                    self.add_value_list('result_reference_vocabulary_uri', result_reference.vocabulary_uri)
+                    self.add_value_list(
+                        'result_reference_code', result_reference.code
+                    )
+                    self.add_value_list(
+                        'result_reference_vocabulary',
+                        result_reference.vocabulary_id
+                    )
+                    self.add_value_list(
+                        'result_reference_vocabulary_uri',
+                        result_reference.vocabulary_uri
+                    )
 
                 for result_indicator in result.resultindicator_set.all():
-                    self.add_value_list('result_indicator_measure', result_indicator.measure_id)
-                    self.add_value_list('result_indicator_ascending', bool_string(result_indicator.ascending))
+                    self.add_value_list(
+                        'result_indicator_measure',
+                        result_indicator.measure_id
+                    )
+                    self.add_value_list(
+                        'result_indicator_ascending',
+                        bool_string(result_indicator.ascending)
+                    )
                     self.add_value_list(
                         'result_indicator_aggregation_status',
                         bool_string(result_indicator.aggregation_status)
                     )
 
                     self.related_narrative(
-                        get_child_attr(result_indicator, 'resultindicatortitle'),
+                        get_child_attr(
+                            result_indicator,
+                            'resultindicatortitle'
+                        ),
                         'result_indicator_title_narrative',
                         'result_indicator_title_narrative_text',
                         'result_indicator_title_narrative_lang'
                     )
 
                     self.related_narrative(
-                        get_child_attr(result_indicator, 'resultindicatordescription'),
+                        get_child_attr(
+                            result_indicator,
+                            'resultindicatordescription'
+                        ),
                         'result_indicator_description_narrative',
                         'result_indicator_description_narrative_text',
                         'result_indicator_description_narrative_lang'
                     )
 
-                    for result_indicator_document_link in result_indicator.result_indicator_document_links.all():
+                    for result_indicator_document_link in result_indicator.result_indicator_document_links.all():  # NOQA: E501
                         self.add_value_list(
                             'result_indicator_document_link_url',
                             result_indicator_document_link.url
@@ -1045,37 +1473,43 @@ class ActivityIndexing(BaseIndexing):
                         )
 
                         self.related_narrative(
-                            get_child_attr(result_indicator_document_link, 'documentlinktitle'),
+                            get_child_attr(
+                                result_indicator_document_link, 
+                                'documentlinktitle'
+                            ),
                             'result_indicator_document_link_title_narrative',
-                            'result_indicator_document_link_title_narrative_text',
-                            'result_indicator_document_link_title_narrative_lang'
+                            'result_indicator_document_link_title_narrative_text',  # NOQA: E501
+                            'result_indicator_document_link_title_narrative_lang'  # NOQA: E501
                         )
 
                         self.related_narrative(
-                            get_child_attr(result_indicator_document_link, 'documentlinkdescription'),
-                            'result_indicator_document_link_description_narrative',
-                            'result_indicator_document_link_description_narrative_text',
-                            'result_indicator_document_link_description_narrative_lang'
+                            get_child_attr(
+                                result_indicator_document_link, 
+                                'documentlinkdescription'
+                            ),
+                            'result_indicator_document_link_description_narrative',  # NOQA: E501
+                            'result_indicator_document_link_description_narrative_text',  # NOQA: E501
+                            'result_indicator_document_link_description_narrative_lang'  # NOQA: E501
                         )
 
-                        for document_link_category in result_indicator_document_link.documentlinkcategory_set.all():
+                        for document_link_category in result_indicator_document_link.documentlinkcategory_set.all():  # NOQA: E501
                             self.add_value_list(
                                 'result_indicator_document_link_category_code',
                                 document_link_category.category_id
                             )
 
-                        for document_link_language in result_indicator_document_link.documentlinklanguage_set.all():
+                        for document_link_language in result_indicator_document_link.documentlinklanguage_set.all():  # NOQA: E501
                             self.add_value_list(
                                 'result_indicator_document_link_language_code',
                                 document_link_language.language_id
                             )
 
                         self.add_value_list(
-                            'result_indicator_document_link_document_date_iso_date',
-                            value_string(result_indicator_document_link.iso_date)
+                            'result_indicator_document_link_document_date_iso_date',  # NOQA: E501
+                            value_string(result_indicator_document_link.iso_date)  # NOQA: E501
                         )
 
-                    for result_indicator_reference in result_indicator.resultindicatorreference_set.all():
+                    for result_indicator_reference in result_indicator.resultindicatorreference_set.all():  # NOQA: E501
                         self.add_value_list(
                             'result_indicator_reference_code',
                             result_indicator_reference.code
@@ -1089,7 +1523,7 @@ class ActivityIndexing(BaseIndexing):
                             result_indicator_reference.indicator_uri
                         )
 
-                    for result_indicator_baseline in result_indicator.resultindicatorbaseline_set.all():
+                    for result_indicator_baseline in result_indicator.resultindicatorbaseline_set.all():  # NOQA: E501
                         self.add_value_list(
                             'result_indicator_baseline_year',
                             result_indicator_baseline.year
@@ -1103,7 +1537,8 @@ class ActivityIndexing(BaseIndexing):
                             result_indicator_baseline.value
                         )
 
-                        for result_indicator_baseline_location in result_indicator_baseline.location_set.all():
+                        for result_indicator_baseline_location in \
+                                result_indicator_baseline.location_set.all():
                             self.add_value_list(
                                 'result_indicator_baseline_location_ref',
                                 result_indicator_baseline_location.ref
@@ -1120,7 +1555,10 @@ class ActivityIndexing(BaseIndexing):
                             )
 
                         self.related_narrative(
-                            get_child_attr(result_indicator_baseline, 'resultindicatorbaselinecomment'),
+                            get_child_attr(
+                                result_indicator_baseline, 
+                                'resultindicatorbaselinecomment'
+                            ),
                             'result_indicator_baseline_comment_narrative',
                             'result_indicator_baseline_comment_narrative_text',
                             'result_indicator_baseline_comment_narrative_lang'
@@ -1132,42 +1570,49 @@ class ActivityIndexing(BaseIndexing):
                                 result_indicator_baseline_document_link.url
                             )
                             self.add_value_list(
-                                'result_indicator_baseline_document_link_format',
-                                result_indicator_baseline_document_link.file_format_id
+                                'result_indicator_baseline_document_link_format',  # NOQA: E501
+                                result_indicator_baseline_document_link.file_format_id  # NOQA: E501
                             )
 
                             self.related_narrative(
-                                get_child_attr(result_indicator_baseline_document_link, 'documentlinktitle'),
-                                'result_indicator_baseline_document_link_title',
-                                'result_indicator_baseline_document_link_title_narrative_text',
-                                'result_indicator_baseline_document_link_title_narrative_lang'
+                                get_child_attr(
+                                    result_indicator_baseline_document_link, 
+                                    'documentlinktitle'
+                                ),
+                                'result_indicator_baseline_document_link_title',  # NOQA: E501
+                                'result_indicator_baseline_document_link_title_narrative_text',  # NOQA: E501
+                                'result_indicator_baseline_document_link_title_narrative_lang'  # NOQA: E501
                             )
 
                             self.related_narrative(
-                                get_child_attr(result_indicator_baseline_document_link, 'documentlinkdescription'),
-                                'result_indicator_baseline_document_link_description',
-                                'result_indicator_baseline_document_link_description_text',
-                                'result_indicator_baseline_document_link_description_lang'
+                                get_child_attr(
+                                    result_indicator_baseline_document_link, 
+                                    'documentlinkdescription'
+                                ),
+                                'result_indicator_baseline_document_link_description',  # NOQA: E501
+                                'result_indicator_baseline_document_link_description_text',  # NOQA: E501
+                                'result_indicator_baseline_document_link_description_lang'  # NOQA: E501
                             )
 
                             for document_link_category in result_indicator_baseline_document_link.documentlinkcategory_set.all():  # NOQA: E501
                                 self.add_value_list(
-                                    'result_indicator_baseline_document_link_category_code',
+                                    'result_indicator_baseline_document_link_category_code',  # NOQA: E501
                                     document_link_category.category_id
                                 )
 
                             for document_link_language in result_indicator_baseline_document_link.documentlinklanguage_set.all():  # NOQA: E501
                                 self.add_value_list(
-                                    'result_indicator_baseline_document_link_language_code',
+                                    'result_indicator_baseline_document_link_language_code',  # NOQA: E501
                                     document_link_language.language_id
                                 )
 
                             self.add_value_list(
-                                'result_indicator_baseline_document_link_document_date_iso_date',
-                                value_string(result_indicator_baseline_document_link.iso_date)
+                                'result_indicator_baseline_document_link_document_date_iso_date',  # NOQA: E501
+                                value_string(result_indicator_baseline_document_link.iso_date)  # NOQA: E501
                             )
 
-                    for result_period in result_indicator.resultindicatorperiod_set.all():
+                    for result_period in \
+                            result_indicator.resultindicatorperiod_set.all():
                         self.add_value_list(
                             'result_indicator_period_period_start_iso_date',
                             value_string(result_period.period_start)
@@ -1177,7 +1622,8 @@ class ActivityIndexing(BaseIndexing):
                             value_string(result_period.period_end)
                         )
 
-                        for result_period_target in result_period.targets.all():
+                        for result_period_target in \
+                                result_period.targets.all():
                             self.add_value_list(
                                 'result_indicator_period_target_value',
                                 result_period_target.value
@@ -1185,70 +1631,76 @@ class ActivityIndexing(BaseIndexing):
 
                             for result_period_target_location in result_period_target.resultindicatorperiodtargetlocation_set.all():  # NOQA: E501
                                 self.add_value_list(
-                                    'result_indicator_period_target_location_ref',
+                                    'result_indicator_period_target_location_ref',  # NOQA: E501
                                     result_period_target_location.ref
                                 )
 
                             for result_period_target_dimension in result_period_target.resultindicatorperiodtargetdimension_set.all():  # NOQA: E501
                                 self.add_value_list(
-                                    'result_indicator_period_target_dimension_name',
+                                    'result_indicator_period_target_dimension_name',  # NOQA: E501
                                     result_period_target_dimension.name
                                 )
                                 self.add_value_list(
-                                    'result_indicator_period_target_dimension_value',
+                                    'result_indicator_period_target_dimension_value',  # NOQA: E501
                                     result_period_target_dimension.value
                                 )
 
                             for result_period_target_comment in result_period_target.resultindicatorperiodtargetcomment_set.all():  # NOQA: E501
                                 self.related_narrative(
                                     result_period_target_comment,
-                                    'result_indicator_period_target_comment_narrative',
-                                    'result_indicator_period_target_comment_narrative_text',
-                                    'result_indicator_period_target_comment_narrative_lang'
+                                    'result_indicator_period_target_comment_narrative',  # NOQA: E501
+                                    'result_indicator_period_target_comment_narrative_text',  # NOQA: E501
+                                    'result_indicator_period_target_comment_narrative_lang'  # NOQA: E501
                                 )
 
                             for document_link in result_period_target.period_target_document_links.all():  # NOQA: E501
                                 self.add_value_list(
-                                    'result_indicator_period_target_document_link_url',
+                                    'result_indicator_period_target_document_link_url',  # NOQA: E501
                                     document_link.url
                                 )
                                 self.add_value_list(
-                                    'result_indicator_period_target_document_link_format',
+                                    'result_indicator_period_target_document_link_format',  # NOQA: E501
                                     document_link.file_format_id
                                 )
 
                                 self.related_narrative(
-                                    get_child_attr(document_link, 'documentlinktitle'),
-                                    'result_indicator_period_target_document_link_title_narrative',
-                                    'result_indicator_period_target_document_link_title_narrative_text',
-                                    'result_indicator_period_target_document_link_title_narrative_lang'
+                                    get_child_attr(
+                                        document_link, 'documentlinktitle'
+                                    ),
+                                    'result_indicator_period_target_document_link_title_narrative',  # NOQA: E501
+                                    'result_indicator_period_target_document_link_title_narrative_text',  # NOQA: E501
+                                    'result_indicator_period_target_document_link_title_narrative_lang'  # NOQA: E501
                                 )
 
                                 self.related_narrative(
-                                    get_child_attr(document_link, 'documentlinkdescription'),
-                                    'result_indicator_period_target_document_link_description_narrative',
-                                    'result_indicator_period_target_document_link_description_narrative_text',
-                                    'result_indicator_period_target_document_link_description_narrative_lang'
+                                    get_child_attr(
+                                        document_link, 
+                                        'documentlinkdescription'
+                                    ),
+                                    'result_indicator_period_target_document_link_description_narrative',  # NOQA: E501
+                                    'result_indicator_period_target_document_link_description_narrative_text',  # NOQA: E501
+                                    'result_indicator_period_target_document_link_description_narrative_lang'  # NOQA: E501
                                 )
 
-                                for document_link_category in document_link.documentlinkcategory_set.all():
+                                for document_link_category in document_link.documentlinkcategory_set.all():  # NOQA: E501
                                     self.add_value_list(
-                                        'result_indicator_period_target_document_link_category_code',
+                                        'result_indicator_period_target_document_link_category_code',  # NOQA: E501
                                         document_link_category.category_id
                                     )
 
-                                for document_link_language in document_link.documentlinklanguage_set.all():
+                                for document_link_language in document_link.documentlinklanguage_set.all():  # NOQA: E501
                                     self.add_value_list(
-                                        'result_indicator_period_target_document_link_language_code',
+                                        'result_indicator_period_target_document_link_language_code',  # NOQA: E501
                                         document_link_language.language_id
                                     )
 
                                 self.add_value_list(
-                                    'result_indicator_period_target_document_link_document_date_iso_date',
+                                    'result_indicator_period_target_document_link_document_date_iso_date',  # NOQA: E501
                                     value_string(document_link.iso_date)
                                 )
 
-                        for result_period_actual in result_period.actuals.all():
+                        for result_period_actual in \
+                                result_period.actuals.all():
                             self.add_value_list(
                                 'result_indicator_period_actual_value',
                                 result_period_actual.value
@@ -1256,68 +1708,73 @@ class ActivityIndexing(BaseIndexing):
 
                             for result_period_actual_location in result_period_actual.resultindicatorperiodactuallocation_set.all():  # NOQA: E501
                                 self.add_value_list(
-                                    'result_indicator_period_actual_location_ref',
+                                    'result_indicator_period_actual_location_ref',  # NOQA: E501
                                     result_period_actual_location.ref
                                 )
 
                             for result_period_actual_dimension in result_period_actual.resultindicatorperiodactualdimension_set.all(): # NOQA: E501
                                 self.add_value_list(
-                                    'result_indicator_period_actual_dimension_name',
+                                    'result_indicator_period_actual_dimension_name',  # NOQA: E501
                                     result_period_actual_dimension.name
                                 )
                                 self.add_value_list(
-                                    'result_indicator_period_actual_dimension_value',
+                                    'result_indicator_period_actual_dimension_value',  # NOQA: E501
                                     result_period_actual_dimension.value
                                 )
 
                             for result_period_actual_comment in result_period_actual.resultindicatorperiodactualcomment_set.all():  # NOQA: E501
                                 self.related_narrative(
                                     result_period_actual_comment,
-                                    'result_indicator_period_actual_comment_narrative',
-                                    'result_indicator_period_actual_comment_narrative_text',
-                                    'result_indicator_period_actual_comment_narrative_lang'
+                                    'result_indicator_period_actual_comment_narrative',  # NOQA: E501
+                                    'result_indicator_period_actual_comment_narrative_text',  # NOQA: E501
+                                    'result_indicator_period_actual_comment_narrative_lang'  # NOQA: E501
                                 )
 
-                            for document_link in result_period_actual.period_actual_document_links.all():
+                            for document_link in result_period_actual.period_actual_document_links.all():  # NOQA: E501
                                 self.add_value_list(
-                                    'result_indicator_period_actual_document_link_url',
+                                    'result_indicator_period_actual_document_link_url',  # NOQA: E501
                                     document_link.url
                                 )
                                 self.add_value_list(
-                                    'result_indicator_period_actual_document_link_format',
+                                    'result_indicator_period_actual_document_link_format',  # NOQA: E501
                                     document_link.file_format_id
                                 )
 
                                 self.related_narrative(
-                                    get_child_attr(document_link, 'documentlinktitle'),
-                                    'result_indicator_period_actual_document_link_title_narrative',
-                                    'result_indicator_period_actual_document_link_title_narrative_text',
-                                    'result_indicator_period_actual_document_link_title_narrative_lang'
+                                    get_child_attr(
+                                        document_link, 
+                                        'documentlinktitle'
+                                    ),
+                                    'result_indicator_period_actual_document_link_title_narrative',  # NOQA: E501
+                                    'result_indicator_period_actual_document_link_title_narrative_text',  # NOQA: E501
+                                    'result_indicator_period_actual_document_link_title_narrative_lang'  # NOQA: E501
                                 )
 
                                 self.related_narrative(
-                                    get_child_attr(document_link, 'documentlinkdescription'),
-                                    'result_indicator_period_actual_document_link_description_narrative',
-                                    'result_indicator_period_actual_document_link_description_narrative_text',
-                                    'result_indicator_period_actual_document_link_description_narrative_lang'
+                                    get_child_attr(
+                                        document_link, 
+                                        'documentlinkdescription'
+                                    ),
+                                    'result_indicator_period_actual_document_link_description_narrative',  # NOQA: E501
+                                    'result_indicator_period_actual_document_link_description_narrative_text',  # NOQA: E501
+                                    'result_indicator_period_actual_document_link_description_narrative_lang'  # NOQA: E501
                                 )
 
-                                for document_link_category in document_link.documentlinkcategory_set.all():
+                                for document_link_category in document_link.documentlinkcategory_set.all():  # NOQA: E501
                                     self.add_value_list(
-                                        'result_indicator_period_actual_document_link_category_code',
+                                        'result_indicator_period_actual_document_link_category_code',  # NOQA: E501
                                         document_link_category.category_id
                                     )
 
-                                for document_link_language in document_link.documentlinklanguage_set.all():
+                                for document_link_language in document_link.documentlinklanguage_set.all():  # NOQA: E501
                                     self.add_value_list(
-                                        'result_indicator_period_actual_document_link_language_code',
+                                        'result_indicator_period_actual_document_link_language_code',  # NOQA: E501
                                         document_link_language.language_id
                                     )
 
                                 self.add_value_list(
-                                    'result_indicator_period_actual_document_link_document_date_iso_date',
-                                    str(document_link.iso_date.strftime(
-                                        "%Y-%m-%d")) if document_link.iso_date else None
+                                    'result_indicator_period_actual_document_link_document_date_iso_date',  # NOQA: E501
+                                    str(document_link.iso_date.strftime("%Y-%m-%d")) if document_link.iso_date else None  # NOQA: E501
                                 )
 
     def crs_add(self):
@@ -1331,8 +1788,14 @@ class ActivityIndexing(BaseIndexing):
             self.add_field('crs_add_loan_terms_repayment_type_code', [])
             self.add_field('crs_add_loan_terms_repayment_plan_code', [])
             self.add_field('crs_add_loan_terms_commitment_date_iso_date', [])
-            self.add_field('crs_add_loan_terms_repayment_first_date_iso_date', [])
-            self.add_field('crs_add_loan_terms_repayment_final_date_iso_date', [])
+            self.add_field(
+                'crs_add_loan_terms_repayment_first_date_iso_date', 
+                []
+            )
+            self.add_field(
+                'crs_add_loan_terms_repayment_final_date_iso_date', 
+                []
+            )
             self.add_field('crs_add_loan_status_year', [])
             self.add_field('crs_add_loan_status_currency', [])
             self.add_field('crs_add_loan_status_value_date', [])
@@ -1343,56 +1806,127 @@ class ActivityIndexing(BaseIndexing):
             self.add_field('crs_add_channel_code', [])
 
             for crs_add in crs_add_all:
-                self.add_value_list('crs_add', JSONRenderer().render(CrsAddSerializer(crs_add).data).decode())
+                self.add_value_list(
+                    'crs_add', 
+                    JSONRenderer().render(
+                        CrsAddSerializer(crs_add).data
+                    ).decode()
+                )
 
-                self.add_value_list('crs_add_channel_code', crs_add.channel_code_id)
+                self.add_value_list(
+                    'crs_add_channel_code', 
+                    crs_add.channel_code_id
+                )
 
                 for crs_add_other_flag in crs_add.other_flags.all():
-                    self.add_value_list('crs_add_other_flags_code', crs_add_other_flag.other_flags_id)
-                    self.add_value_list('crs_add_other_flags_significance', crs_add_other_flag.significance)
+                    self.add_value_list(
+                        'crs_add_other_flags_code', 
+                        crs_add_other_flag.other_flags_id
+                    )
+                    self.add_value_list(
+                        'crs_add_other_flags_significance', 
+                        crs_add_other_flag.significance
+                    )
 
                 self.add_value_list(
                     'crs_add_loan_terms_rate_1',
-                    value_string(get_child_attr(crs_add, 'loan_terms.rate_1'))
+                    value_string(
+                        get_child_attr(
+                            crs_add,
+                            'loan_terms.rate_1'
+                        )
+                    )
                 )
                 self.add_value_list(
                     'crs_add_loan_terms_rate_2',
-                    value_string(get_child_attr(crs_add, 'loan_terms.rate_2'))
+                    value_string(
+                        get_child_attr(
+                            crs_add,
+                            'loan_terms.rate_2'
+                        )
+                    )
                 )
                 self.add_value_list(
                     'crs_add_loan_terms_repayment_type_code',
-                    get_child_attr(crs_add, 'loan_terms.repayment_type_id')
+                    get_child_attr(
+                        crs_add, 
+                        'loan_terms.repayment_type_id'
+                    )
                 )
                 self.add_value_list(
                     'crs_add_loan_terms_repayment_plan_code',
-                    get_child_attr(crs_add, 'loan_terms.repayment_plan_id')
+                    get_child_attr(
+                        crs_add, 
+                        'loan_terms.repayment_plan_id'
+                    )
                 )
                 self.add_value_list(
                     'crs_add_loan_terms_commitment_date_iso_date',
-                    value_string(get_child_attr(crs_add, 'loan_terms.commitment_date'))
+                    value_string(
+                        get_child_attr(
+                            crs_add, 
+                            'loan_terms.commitment_date'
+                        )
+                    )
                 )
                 self.add_value_list(
                     'crs_add_loan_terms_repayment_first_date_iso_date',
-                    value_string(get_child_attr(crs_add, 'loan_terms.repayment_first_date'))
+                    value_string(
+                        get_child_attr(
+                            crs_add,
+                            'loan_terms.repayment_first_date'
+                        )
+                    )
                 )
                 self.add_value_list(
                     'crs_add_loan_terms_repayment_final_date_iso_date',
-                    value_string(get_child_attr(crs_add, 'loan_terms.repayment_final_date'))
+                    value_string(
+                        get_child_attr(
+                            crs_add,
+                            'loan_terms.repayment_final_date'
+                        )
+                    )
                 )
 
-                self.add_value_list('crs_add_loan_status_year', get_child_attr(crs_add, 'loan_status.year'))
-                self.add_value_list('crs_add_loan_status_currency',get_child_attr(crs_add, 'loan_status.currency_id'))
+                self.add_value_list(
+                    'crs_add_loan_status_year', 
+                    get_child_attr(
+                        crs_add, 'loan_status.year'
+                    )
+                )
+                self.add_value_list(
+                    'crs_add_loan_status_currency',
+                    get_child_attr(
+                        crs_add, 
+                        'loan_status.currency_id'
+                    )
+                )
                 self.add_value_list(
                     'crs_add_loan_status_value_date',
-                    value_string(get_child_attr(crs_add, 'loan_status.value_date'))
+                    value_string(
+                        get_child_attr(
+                            crs_add,
+                            'loan_status.value_date'
+                        )
+                    )
                 )
                 self.add_value_list(
                     'crs_add_loan_status_interest_received',
-                    value_string(get_child_attr(crs_add, 'loan_status.interest_received'))
+                    value_string(
+                        get_child_attr(
+                            crs_add, 
+                            'loan_status.interest_received'
+                        )
+                    )
                 )
                 self.add_value_list(
                     'crs_add_loan_status_principal_outstanding',
-                    str(get_child_attr(crs_add, 'loan_status.principal_outstanding'))
+                    str(
+                        get_child_attr(
+                            crs_add,
+                            'loan_status.principal_outstanding'
+                        )
+                    )
                 )
                 self.add_value_list(
                     'crs_add_loan_status_principal_arrears',
@@ -1416,17 +1950,41 @@ class ActivityIndexing(BaseIndexing):
             self.add_field('fss_forecast_value', [])
 
             for fss in fss_all:
-                self.add_value_list('fss', JSONRenderer().render(FssSerializer(fss).data).decode())
+                self.add_value_list(
+                    'fss',
+                    JSONRenderer().render(FssSerializer(fss).data).decode()
+                )
 
-                self.add_value_list('fss_extraction_date', value_string(fss.extraction_date))
-                self.add_value_list('fss_priority', bool_string(fss.priority))
-                self.add_value_list('fss_phaseout_year', value_string(fss.phaseout_year))
+                self.add_value_list(
+                    'fss_extraction_date',
+                    value_string(fss.extraction_date)
+                )
+                self.add_value_list(
+                    'fss_priority',
+                    bool_string(fss.priority)
+                )
+                self.add_value_list(
+                    'fss_phaseout_year',
+                    value_string(fss.phaseout_year)
+                )
 
                 for forecast in fss.fssforecast_set.all():
-                    self.add_value_list('fss_forecast_year', value_string(forecast.year))
-                    self.add_value_list('fss_forecast_value_date', value_string(forecast.value_date))
-                    self.add_value_list('fss_forecast_currency', forecast.currency_id)
-                    self.add_value_list('fss_forecast_value', value_string(forecast.value))
+                    self.add_value_list(
+                        'fss_forecast_year',
+                        value_string(forecast.year)
+                    )
+                    self.add_value_list(
+                        'fss_forecast_value_date',
+                        value_string(forecast.value_date)
+                    )
+                    self.add_value_list(
+                        'fss_forecast_currency',
+                        forecast.currency_id
+                    )
+                    self.add_value_list(
+                        'fss_forecast_value',
+                        value_string(forecast.value)
+                    )
 
     def activity(self):
         activity = self.record
@@ -1440,11 +1998,23 @@ class ActivityIndexing(BaseIndexing):
         self.add_field('linked_data_uri', activity.linked_data_uri)
         self.add_field('activity_status_code', activity.activity_status_id)
         self.add_field('activity_scope_code', activity.scope_id)
-        self.add_field('collaboration_type_code', activity.collaboration_type_id)
+        self.add_field(
+            'collaboration_type_code',
+            activity.collaboration_type_id
+        )
         self.add_field('default_flow_type_code', activity.default_flow_type_id)
-        self.add_field('default_finance_type_code', activity.default_finance_type_id)
-        self.add_field('default_tied_status_code', activity.default_tied_status_id)
-        self.add_field('capital_spend_percentage', decimal_string(activity.capital_spend))
+        self.add_field(
+            'default_finance_type_code',
+            activity.default_finance_type_id
+        )
+        self.add_field(
+            'default_tied_status_code',
+            activity.default_tied_status_id
+        )
+        self.add_field(
+            'capital_spend_percentage',
+            decimal_string(activity.capital_spend)
+        )
 
         self.dataset()
         self.reporting_org()
