@@ -1680,14 +1680,8 @@ class ActivityIndexing(BaseIndexing):
                                 )
 
                             for document_link in result_period_actual.period_actual_document_links.all():  # NOQA: E501
-                                self.add_value_list(
-                                    'result_indicator_period_actual_document_link_url',  # NOQA: E501
-                                    document_link.url
-                                )
-                                self.add_value_list(
-                                    'result_indicator_period_actual_document_link_format',  # NOQA: E501
-                                    document_link.file_format_id
-                                )
+                                self.add_value_list('result_indicator_period_actual_document_link_url', document_link.url)  # NOQA: E501
+                                self.add_value_list('result_indicator_period_actual_document_link_format', document_link.file_format_id)  # NOQA: E501
 
                                 self.related_narrative(get_child_attr(document_link, 'documentlinktitle'), 'result_indicator_period_actual_document_link_title_narrative', 'result_indicator_period_actual_document_link_title_narrative_text', 'result_indicator_period_actual_document_link_title_narrative_lang')  # NOQA: E501
                                 self.related_narrative(get_child_attr(document_link, 'documentlinkdescription'), 'result_indicator_period_actual_document_link_description_narrative', 'result_indicator_period_actual_document_link_description_narrative_text', 'result_indicator_period_actual_document_link_description_narrative_lang')  # NOQA: E501
