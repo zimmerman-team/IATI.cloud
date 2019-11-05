@@ -1623,7 +1623,7 @@ class ActivityIndexing(BaseIndexing):
 
                                 self.related_narrative(
                                     get_child_attr(
-                                        document_link, 
+                                        document_link,
                                         'documentlinkdescription'
                                     ),
                                     'result_indicator_period_target_document_link_description_narrative',  # NOQA: E501
@@ -1727,24 +1727,24 @@ class ActivityIndexing(BaseIndexing):
 
             for crs_add in crs_add_all:
                 self.add_value_list(
-                    'crs_add', 
+                    'crs_add',
                     JSONRenderer().render(
                         CrsAddSerializer(crs_add).data
                     ).decode()
                 )
 
                 self.add_value_list(
-                    'crs_add_channel_code', 
+                    'crs_add_channel_code',
                     crs_add.channel_code_id
                 )
 
                 for crs_add_other_flag in crs_add.other_flags.all():
                     self.add_value_list(
-                        'crs_add_other_flags_code', 
+                        'crs_add_other_flags_code',
                         crs_add_other_flag.other_flags_id
                     )
                     self.add_value_list(
-                        'crs_add_other_flags_significance', 
+                        'crs_add_other_flags_significance',
                         crs_add_other_flag.significance
                     )
 
@@ -1834,7 +1834,7 @@ class ActivityIndexing(BaseIndexing):
                     'crs_add_loan_status_interest_received',
                     value_string(
                         get_child_attr(
-                            crs_add, 
+                            crs_add,
                             'loan_status.interest_received'
                         )
                     )
