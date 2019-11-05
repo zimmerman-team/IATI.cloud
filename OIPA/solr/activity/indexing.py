@@ -1784,7 +1784,7 @@ class ActivityIndexing(BaseIndexing):
                     'crs_add_loan_terms_commitment_date_iso_date',
                     value_string(
                         get_child_attr(
-                            crs_add, 
+                            crs_add,
                             'loan_terms.commitment_date'
                         )
                     )

@@ -9,4 +9,5 @@ class SolrConfig(AppConfig):
 
     # pylint: disable=no-self-use
     def ready(self):   # NOQA: R0201
-        import solr.signals  # NOQA: W0612
+        # pylint: disable=unused-variable
+        import solr.signals

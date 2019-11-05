@@ -23,7 +23,8 @@ class BaseTaskIndexing(object):
 
     def run(self):
         if settings.SOLR.get('indexing'):
-            self.solr.add([self.indexing(self.instance).data])  # NOQA: E1102
+            # pylint: disable=not-callable
+            self.solr.add([self.indexing(self.instance).data])
 
             if self.related:
                 self.run_related()
