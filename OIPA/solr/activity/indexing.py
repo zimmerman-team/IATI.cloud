@@ -1490,25 +1490,8 @@ class ActivityIndexing(BaseIndexing):
                             result_indicator_document_link.file_format_id
                         )
 
-                        self.related_narrative(
-                            get_child_attr(
-                                result_indicator_document_link, 
-                                'documentlinktitle'
-                            ),
-                            'result_indicator_document_link_title_narrative',
-                            'result_indicator_document_link_title_narrative_text',  # NOQA: E501
-                            'result_indicator_document_link_title_narrative_lang'  # NOQA: E501
-                        )
-
-                        self.related_narrative(
-                            get_child_attr(
-                                result_indicator_document_link, 
-                                'documentlinkdescription'
-                            ),
-                            'result_indicator_document_link_description_narrative',  # NOQA: E501
-                            'result_indicator_document_link_description_narrative_text',  # NOQA: E501
-                            'result_indicator_document_link_description_narrative_lang'  # NOQA: E501
-                        )
+                        self.related_narrative(get_child_attr(result_indicator_document_link, 'documentlinktitle'), 'result_indicator_document_link_title_narrative', 'result_indicator_document_link_title_narrative_text', 'result_indicator_document_link_title_narrative_lang')  # NOQA: E501
+                        self.related_narrative(get_child_attr(result_indicator_document_link, 'documentlinkdescription'), 'result_indicator_document_link_description_narrative',  'result_indicator_document_link_description_narrative_text', 'result_indicator_document_link_description_narrative_lang')  # NOQA: E501
 
                         for document_link_category in result_indicator_document_link.documentlinkcategory_set.all():  # NOQA: E501
                             self.add_value_list(
@@ -1587,47 +1570,17 @@ class ActivityIndexing(BaseIndexing):
                                 'result_indicator_baseline_document_link_url',
                                 result_indicator_baseline_document_link.url
                             )
-                            self.add_value_list(
-                                'result_indicator_baseline_document_link_format',  # NOQA: E501
-                                result_indicator_baseline_document_link.file_format_id  # NOQA: E501
-                            )
-
-                            self.related_narrative(
-                                get_child_attr(
-                                    result_indicator_baseline_document_link, 
-                                    'documentlinktitle'
-                                ),
-                                'result_indicator_baseline_document_link_title',  # NOQA: E501
-                                'result_indicator_baseline_document_link_title_narrative_text',  # NOQA: E501
-                                'result_indicator_baseline_document_link_title_narrative_lang'  # NOQA: E501
-                            )
-
-                            self.related_narrative(
-                                get_child_attr(
-                                    result_indicator_baseline_document_link, 
-                                    'documentlinkdescription'
-                                ),
-                                'result_indicator_baseline_document_link_description',  # NOQA: E501
-                                'result_indicator_baseline_document_link_description_text',  # NOQA: E501
-                                'result_indicator_baseline_document_link_description_lang'  # NOQA: E501
-                            )
+                            self.add_value_list('result_indicator_baseline_document_link_format',  result_indicator_baseline_document_link.file_format_id)  # NOQA: E501
+                            self.related_narrative(get_child_attr(result_indicator_baseline_document_link, 'documentlinktitle'), 'result_indicator_baseline_document_link_title',  'result_indicator_baseline_document_link_title_narrative_text', 'result_indicator_baseline_document_link_title_narrative_lang')  # NOQA: E501
+                            self.related_narrative(get_child_attr(result_indicator_baseline_document_link, 'documentlinkdescription'), 'result_indicator_baseline_document_link_description',  'result_indicator_baseline_document_link_description_text',  'result_indicator_baseline_document_link_description_lang')  # NOQA: E501
 
                             for document_link_category in result_indicator_baseline_document_link.documentlinkcategory_set.all():  # NOQA: E501
-                                self.add_value_list(
-                                    'result_indicator_baseline_document_link_category_code',  # NOQA: E501
-                                    document_link_category.category_id
-                                )
+                                self.add_value_list('result_indicator_baseline_document_link_category_code', document_link_category.category_id)  # NOQA: E501
 
                             for document_link_language in result_indicator_baseline_document_link.documentlinklanguage_set.all():  # NOQA: E501
-                                self.add_value_list(
-                                    'result_indicator_baseline_document_link_language_code',  # NOQA: E501
-                                    document_link_language.language_id
-                                )
+                                self.add_value_list('result_indicator_baseline_document_link_language_code', document_link_language.language_id)  # NOQA: E501
 
-                            self.add_value_list(
-                                'result_indicator_baseline_document_link_document_date_iso_date',  # NOQA: E501
-                                value_string(result_indicator_baseline_document_link.iso_date)  # NOQA: E501
-                            )
+                            self.add_value_list('result_indicator_baseline_document_link_document_date_iso_date', value_string(result_indicator_baseline_document_link.iso_date))  # NOQA: E501
 
                     for result_period in \
                             result_indicator.resultindicatorperiod_set.all():
@@ -1648,28 +1601,14 @@ class ActivityIndexing(BaseIndexing):
                             )
 
                             for result_period_target_location in result_period_target.resultindicatorperiodtargetlocation_set.all():  # NOQA: E501
-                                self.add_value_list(
-                                    'result_indicator_period_target_location_ref',  # NOQA: E501
-                                    result_period_target_location.ref
-                                )
+                                self.add_value_list('result_indicator_period_target_location_ref', result_period_target_location.ref)
 
                             for result_period_target_dimension in result_period_target.resultindicatorperiodtargetdimension_set.all():  # NOQA: E501
-                                self.add_value_list(
-                                    'result_indicator_period_target_dimension_name',  # NOQA: E501
-                                    result_period_target_dimension.name
-                                )
-                                self.add_value_list(
-                                    'result_indicator_period_target_dimension_value',  # NOQA: E501
-                                    result_period_target_dimension.value
-                                )
+                                self.add_value_list('result_indicator_period_target_dimension_name', result_period_target_dimension.name)
+                                self.add_value_list('result_indicator_period_target_dimension_value', result_period_target_dimension.value)
 
                             for result_period_target_comment in result_period_target.resultindicatorperiodtargetcomment_set.all():  # NOQA: E501
-                                self.related_narrative(
-                                    result_period_target_comment,
-                                    'result_indicator_period_target_comment_narrative',  # NOQA: E501
-                                    'result_indicator_period_target_comment_narrative_text',  # NOQA: E501
-                                    'result_indicator_period_target_comment_narrative_lang'  # NOQA: E501
-                                )
+                                self.related_narrative(result_period_target_comment, 'result_indicator_period_target_comment_narrative', 'result_indicator_period_target_comment_narrative_text', 'result_indicator_period_target_comment_narrative_lang')  # NOQA: E501
 
                             for document_link in result_period_target.period_target_document_links.all():  # NOQA: E501
                                 self.add_value_list(
