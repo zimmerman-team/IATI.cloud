@@ -5,6 +5,7 @@ import sys
 from ast import literal_eval
 from os import environ as env
 
+from celery.schedules import crontab
 from tzlocal import get_localzone
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
@@ -355,6 +356,20 @@ DATA_PLUGINS = {}
 # A setting indicating whether to save XML datasets (files) to local machine or
 # not:
 DOWNLOAD_DATASETS = False
+
+# CELERY CONFIG
+
+CELERY_BROKER_URL = 'amqp://localhost'
+CELERY_RESULT_BACKEND = 'amqp://localhost'
+CELERY_ALWAYS_EAGER = True
+CELERY_EAGER_PROPAGATES_EXCEPTIONS = True
+CELERY_IMPORTS = 'iati.PostmanJsonImport.tasks'
+CELERY_BEAT_SCHEDULE = {
+    'getting_postman-api': {
+        'task': 'iati.PostmanJsonImport.tasks.get_postman_api',
+        'schedule': crontab(minute=0, hour=0),
+    },
+}
 
 try:
     from .local_settings import *  # noqa: F401, F403

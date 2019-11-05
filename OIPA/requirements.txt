@@ -5,6 +5,8 @@
 # An API for interacting with the Comprehensive Knowledge Archive Network (CKAN):
 ckanapi==4.1
 
+celery==4.3.0
+
 Django==2.0.13
 
 django-grappelli==2.11.1

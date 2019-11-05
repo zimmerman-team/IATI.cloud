@@ -10,6 +10,7 @@ from rq.job import Job
 from rq.registry import FinishedJobRegistry
 from rq_scheduler import Scheduler
 
+from iati.PostmanJsonImport import tasks as celery_task
 from task_queue import tasks
 
 # TODO: all these custok views have to be tested, see: #968
@@ -23,7 +24,12 @@ def add_task(request):
     parameters2 = request.GET.get('parameters2')
     queue_to_be_added_to = request.GET.get('queue')
     queue = django_rq.get_queue(queue_to_be_added_to)
-    func = getattr(tasks, task)
+    # this is for cellery task. There are only one task for celery currently.
+    if task == 'get_postman_api':
+        func = getattr(celery_task, task)
+        func.delay()  # calling celery task, which is 'get_postman_api' here.
+    else:
+        func = getattr(tasks, task)
 
     if parameters and parameters2:
         queue.enqueue(func, args=(parameters, parameters2))
