@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime
 from decimal import Decimal, InvalidOperation
 
@@ -20,6 +21,10 @@ from iati.transaction import models as transaction_models
 from iati_codelists import models as codelist_models
 from iati_organisation import models as organisation_models
 from iati_vocabulary import models as vocabulary_models
+from solr.activity.tasks import ActivityTaskIndexing
+
+# Get an instance of a logger
+logger = logging.getLogger(__name__)
 
 
 class Parse(IatiParser):
@@ -1282,8 +1287,11 @@ class Parse(IatiParser):
         srs_name = element.attrib.get('srsName')
 
         # TODO: make this field required?
-        # if not srs_name: raise RequiredFieldError("srsName",
-        # "location_point: srsName is required")
+        if not srs_name:
+            raise RequiredFieldError(
+                "srsName",
+                "location_point: srsName is required")
+
         if not srs_name:
             srs_name = "http://www.opengis.net/def/crs/EPSG/0/4326"
 
@@ -5557,6 +5565,13 @@ class Parse(IatiParser):
         # post_save.set_sector_transaction(activity)
 
         post_save.set_sector_budget(activity)
+
+        # Currently if something issue in the Solr indexing we just pass it,
+        # so not blocking the current parsing
+        try:
+            ActivityTaskIndexing(instance=activity, related=True).run()
+        except Exception as e:
+            logger.exception(e)
 
     def post_save_file(self, dataset):
         """Perform all actions that need to happen after a single IATI

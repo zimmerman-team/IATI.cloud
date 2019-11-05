@@ -1,8 +1,13 @@
+import logging
+
 from iati_codelists.models import Language, OrganisationType, Version
 from iati_organisation.models import (
     Organisation, OrganisationName, OrganisationNarrative,
     OrganisationReportingOrganisation
 )
+
+# Get an instance of a logger
+logger = logging.getLogger(__name__)
 
 
 def create_publisher_organisation(publisher, publisher_organization_type):
@@ -50,4 +55,5 @@ def create_publisher_organisation(publisher, publisher_organization_type):
 
     publisher.organisation = org
     publisher.save()
+
     return publisher

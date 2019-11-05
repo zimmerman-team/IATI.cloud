@@ -17,6 +17,7 @@ from iati.parser.exceptions import (
 )
 from iati_codelists import models as codelist_models
 from iati_synchroniser.models import DatasetNote
+from solr.datasetnote.tasks import DatasetNoteTaskIndexing
 
 log = logging.getLogger(__name__)
 
@@ -211,6 +212,8 @@ class IatiParser(object):
 
             DatasetNote.objects.filter(dataset=self.dataset).delete()
             DatasetNote.objects.bulk_create(self.errors)
+
+            DatasetNoteTaskIndexing().run_from_dataset(dataset=self.dataset)
 
     def post_save_models(self):
         print("override in children")
