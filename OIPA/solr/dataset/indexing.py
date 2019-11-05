@@ -1,5 +1,5 @@
-from rest_framework.renderers import JSONRenderer
 
+from rest_framework.renderers import JSONRenderer
 from api.publisher.serializers import PublisherSerializer
 from solr.indexing import BaseIndexing
 from solr.utils import get_child_attr, value_string
@@ -37,8 +37,14 @@ class DatasetIndexing(BaseIndexing):
         self.add_field('name', dataset.name)
         self.add_field('title', dataset.title)
         self.add_field('filetype', dataset.filetype)
-        self.add_field('date_created', value_string(dataset.date_created).split(' ')[0])
-        self.add_field('date_updated', value_string(dataset.date_updated).split(' ')[0])
+        self.add_field(
+            'date_created',
+            value_string(dataset.date_created).split(' ')[0]
+        )
+        self.add_field(
+            'date_updated',
+            value_string(dataset.date_updated).split(' ')[0]
+        )
         self.add_field('iati_version', dataset.iati_version)
         self.add_field('source_url', dataset.source_url)
 

@@ -15,9 +15,27 @@ class DatasetNoteIndexing(BaseIndexing):
         self.add_field('message', dataset_note.message)
         self.add_field('line_number', dataset_note.line_number)
         self.add_field('variable', dataset_note.variable)
-        self.add_field('publisher_iati_id', get_child_attr(dataset_note, '.dataset.publisher.publisher_iati_id'))
-        self.add_field('publisher_name', get_child_attr(dataset_note, '.dataset.publisher.name'))
-        self.add_field('publisher_name', get_child_attr(dataset_note, '.dataset.publisher.display_name'))
+        self.add_field(
+            'publisher_iati_id',
+            get_child_attr(
+                dataset_note,
+                '.dataset.publisher.publisher_iati_id'
+            )
+        )
+        self.add_field(
+            'publisher_name',
+            get_child_attr(
+                dataset_note,
+                '.dataset.publisher.name'
+            )
+        )
+        self.add_field(
+            'publisher_name',
+            get_child_attr(
+                dataset_note,
+                '.dataset.publisher.display_name'
+            )
+        )
 
     def to_representation(self, dataset_note):
         self.record = dataset_note

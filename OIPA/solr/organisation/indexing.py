@@ -27,13 +27,24 @@ class OrganisationIndexing(BaseIndexing):
             self.add_field('organisation_document_link_document_date', [])
 
             for document_link in document_link_all:
-                self.add_value_list('organisation_document_link_url', document_link.url)
-                self.add_value_list('organisation_document_link_format', document_link.file_format_id)
-                self.add_value_list('organisation_document_link_document_date', value_string(document_link.iso_date))
+                self.add_value_list(
+                    'organisation_document_link_url',
+                    document_link.url
+                )
+                self.add_value_list(
+                    'organisation_document_link_format',
+                    document_link.file_format_id
+                )
+                self.add_value_list(
+                    'organisation_document_link_document_date',
+                    value_string(document_link.iso_date)
+                )
 
                 self.add_value_list(
                     'organisation_document_link',
-                    JSONRenderer().render(OrganisationDocumentLinkSerializer(document_link).data).decode()
+                    JSONRenderer().render(
+                        OrganisationDocumentLinkSerializer(document_link).data
+                    ).decode()
                 )
 
     def related_budget(
@@ -51,15 +62,32 @@ class OrganisationIndexing(BaseIndexing):
             self.add_field(prefix, [])
 
             for related_budget in related_budget_all:
-                self.add_value_list(prefix + '_period_start', value_string(related_budget.period_start))
-                self.add_value_list(prefix + '_period_end', value_string(related_budget.period_end))
-                self.add_value_list(prefix + '_value', decimal_string(related_budget.value))
-                self.add_value_list(prefix + '_value_currency', related_budget.currency_id)
-                self.add_value_list(prefix + '_value_date', value_string(related_budget.value_date))
+                self.add_value_list(
+                    prefix + '_period_start',
+                    value_string(related_budget.period_start)
+                )
+                self.add_value_list(
+                    prefix + '_period_end',
+                    value_string(related_budget.period_end)
+                )
+                self.add_value_list(
+                    prefix + '_value',
+                    decimal_string(related_budget.value)
+                )
+                self.add_value_list(
+                    prefix + '_value_currency',
+                    related_budget.currency_id
+                )
+                self.add_value_list(
+                    prefix + '_value_date',
+                    value_string(related_budget.value_date)
+                )
 
                 self.add_value_list(
                     prefix,
-                    JSONRenderer().render(serializer(related_budget).data).decode()
+                    JSONRenderer().render(
+                        serializer(related_budget).data
+                    ).decode()
                 )
 
     def name(self):
@@ -67,23 +95,46 @@ class OrganisationIndexing(BaseIndexing):
         if name:
             self.add_field(
                 'organisation_name',
-                JSONRenderer().render(OrganisationNameSerializer(name).data).decode()
+                JSONRenderer().render(
+                    OrganisationNameSerializer(name).data
+                ).decode()
             )
 
-            self.indexing['organisation_name_narrative_lang'], self.indexing['organisation_name_narrative'] = \
-                get_narrative_lang_list(name)
+            self.indexing[
+                'organisation_name_narrative_lang'
+            ], self.indexing[
+                'organisation_name_narrative'
+            ] = get_narrative_lang_list(name)
 
     def organisation(self):
         organisation = self.record
 
         self.add_field('id', organisation.id)
-        self.add_field('organisation_identifier', organisation.organisation_identifier)
+        self.add_field(
+            'organisation_identifier',
+            organisation.organisation_identifier
+        )
         self.add_field('organisation_type', organisation.type_id)
-        self.add_field('organisation_reported_in_iati', bool_string(organisation.reported_in_iati))
-        self.add_field('organisation_published', bool_string(organisation.published))
-        self.add_field('organisation_last_updated_datetime', value_string(organisation.last_updated_datetime))
-        self.add_field('organisation_default_currency_code', organisation.default_currency_id)
-        self.add_field('organisation_default_lang_code', organisation.default_lang_id)
+        self.add_field(
+            'organisation_reported_in_iati',
+            bool_string(organisation.reported_in_iati)
+        )
+        self.add_field(
+            'organisation_published',
+            bool_string(organisation.published)
+        )
+        self.add_field(
+            'organisation_last_updated_datetime',
+            value_string(organisation.last_updated_datetime)
+        )
+        self.add_field(
+            'organisation_default_currency_code',
+            organisation.default_currency_id
+        )
+        self.add_field(
+            'organisation_default_lang_code',
+            organisation.default_lang_id
+        )
 
         self.name()
         self.related_budget(

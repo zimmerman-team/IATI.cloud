@@ -25,7 +25,10 @@ class ResultIndexing(BaseIndexing):
 
             self.add_field('result_title_narrative', [])
             for narrative in title.narratives.all():
-                self.add_value_list('result_title_narrative', narrative.content)
+                self.add_value_list(
+                    'result_title_narrative',
+                    narrative.content
+                )
 
     def description(self):
         description = get_child_attr(self.record, 'resultdescription')
@@ -34,7 +37,10 @@ class ResultIndexing(BaseIndexing):
 
             self.add_field('result_description_narrative', [])
             for narrative in description.narratives.all():
-                self.add_value_list('result_description_narrative', narrative.content)
+                self.add_value_list(
+                    'result_description_narrative',
+                    narrative.content
+                )
 
     def document_link(self, document_link_all, prefix='result_document_link'):
         if document_link_all:
@@ -48,23 +54,45 @@ class ResultIndexing(BaseIndexing):
                 self.add_field(prefix + '_language_code', [])
 
             for document_link in document_link_all:
-                self.add_value_list(prefix, JSONRenderer().render(DocumentLinkSerializer(document_link).data).decode())
+                self.add_value_list(
+                    prefix,
+                    JSONRenderer().render(
+                        DocumentLinkSerializer(document_link).data
+                    ).decode()
+                )
 
                 self.add_value_list(prefix + '_url', document_link.url)
-                self.add_value_list(prefix + '_format', document_link.file_format_id)
-                self.add_value_list(prefix + '_document_date_iso_date', value_string(document_link.iso_date))
+                self.add_value_list(
+                    prefix + '_format',
+                    document_link.file_format_id
+                )
+                self.add_value_list(
+                    prefix + '_document_date_iso_date',
+                    value_string(document_link.iso_date)
+                )
 
                 category_all = document_link.documentlinkcategory_set.all()
                 if category_all:
                     for category in category_all:
-                        self.add_value_list(prefix + '_category_code', category.category_id)
+                        self.add_value_list(
+                            prefix + '_category_code',
+                            category.category_id
+                        )
 
                 language_all = document_link.documentlinklanguage_set.all()
                 if language_all:
                     for language in language_all:
-                        self.add_value_list(prefix + '_language_code', language.language_id)
+                        self.add_value_list(
+                            prefix + '_language_code',
+                            language.language_id
+                        )
 
-    def reference(self, reference_all, prefix='result_reference', is_indicator=False):
+    def reference(
+            self,
+            reference_all,
+            prefix='result_reference',
+            is_indicator=False
+    ):
         if reference_all:
             if prefix not in self.indexing:
                 self.add_field(prefix, [])
@@ -78,15 +106,26 @@ class ResultIndexing(BaseIndexing):
             for reference in reference_all:
                 self.add_value_list(
                     prefix,
-                    JSONRenderer().render(ResultIndicatorReferenceSerializer(reference).data).decode()
+                    JSONRenderer().render(
+                        ResultIndicatorReferenceSerializer(reference).data
+                    ).decode()
                 )
 
                 self.add_value_list(prefix + '_code', reference.code)
-                self.add_value_list(prefix + '_vocabulary', reference.vocabulary_id)
+                self.add_value_list(
+                    prefix + '_vocabulary',
+                    reference.vocabulary_id
+                )
                 if not is_indicator:
-                    self.add_value_list(prefix + '_vocabulary_uri', reference.vocabulary_uri)
+                    self.add_value_list(
+                        prefix + '_vocabulary_uri',
+                        reference.vocabulary_uri
+                    )
                 else:
-                    self.add_value_list(prefix + '_indicator_uri', reference.indicator_uri)
+                    self.add_value_list(
+                        prefix + '_indicator_uri',
+                        reference.indicator_uri
+                    )
 
     def indicator_baseline(self, indicator):
         baseline_all = indicator.resultindicatorbaseline_set.all()
@@ -98,24 +137,52 @@ class ResultIndexing(BaseIndexing):
                 self.add_field('result_indicator_baseline_location_ref', [])
                 self.add_field('result_indicator_baseline_dimension_name', [])
                 self.add_field('result_indicator_baseline_dimension_value', [])
-                self.add_field('result_indicator_baseline_comment_narrative', [])
+                self.add_field(
+                    'result_indicator_baseline_comment_narrative',
+                    []
+                )
 
             for baseline in baseline_all:
-                self.add_value_list('result_indicator_baseline_year', baseline.year)
-                self.add_value_list('result_indicator_baseline_iso_date', value_string(baseline.iso_date))
-                self.add_value_list('result_indicator_baseline_value', baseline.value)
+                self.add_value_list(
+                    'result_indicator_baseline_year',
+                    baseline.year
+                )
+                self.add_value_list(
+                    'result_indicator_baseline_iso_date',
+                    value_string(baseline.iso_date)
+                )
+                self.add_value_list(
+                    'result_indicator_baseline_value',
+                    baseline.value
+                )
 
                 for location in baseline.location_set.all():
-                    self.add_value_list('result_indicator_baseline_location_ref', location.ref)
+                    self.add_value_list(
+                        'result_indicator_baseline_location_ref',
+                        location.ref
+                    )
 
-                for dimension in baseline.resultindicatorbaselinedimension_set.all():
-                    self.add_value_list('result_indicator_baseline_dimension_name', dimension.name)
-                    self.add_value_list('result_indicator_baseline_dimension_value', dimension.value)
+                for dimension in \
+                        baseline.resultindicatorbaselinedimension_set.all():
+                    self.add_value_list(
+                        'result_indicator_baseline_dimension_name',
+                        dimension.name
+                    )
+                    self.add_value_list(
+                        'result_indicator_baseline_dimension_value',
+                        dimension.value
+                    )
 
-                comment = get_child_attr(baseline, 'resultindicatorbaselinecomment')
+                comment = get_child_attr(
+                    baseline,
+                    'resultindicatorbaselinecomment'
+                )
                 if comment:
                     for narrative in comment.narratives.all():
-                        self.add_value_list('result_indicator_baseline_comment_narrative', narrative.content)
+                        self.add_value_list(
+                            'result_indicator_baseline_comment_narrative',
+                            narrative.content
+                        )
 
                 self.document_link(
                     baseline.baseline_document_links.all(),
@@ -124,9 +191,12 @@ class ResultIndexing(BaseIndexing):
 
     def indicator_period_related(self, related_all):
         if related_all:
-            is_target = True if isinstance(related_all.first(), ResultIndicatorPeriodTarget) else False
-            prefix = 'result_indicator_period_target' \
-                if isinstance(related_all.first(), ResultIndicatorPeriodTarget) else 'result_indicator_period_actual'
+            is_target = True if isinstance(
+                related_all.first(),
+                ResultIndicatorPeriodTarget
+            ) else False
+
+            prefix = 'result_indicator_period_target' if isinstance(related_all.first(), ResultIndicatorPeriodTarget) else 'result_indicator_period_actual'  # NOQA: E501
 
             if prefix not in self.indexing:
                 self.add_field(prefix + '_value', [])
@@ -139,37 +209,57 @@ class ResultIndexing(BaseIndexing):
             for related in related_all:
                 self.add_value_list(prefix + '_value', related.value)
 
-                location_all = related.resultindicatorperiodtargetlocation_set.all() if is_target \
-                    else related.resultindicatorperiodactuallocation_set.all()
+                location_all = related.resultindicatorperiodtargetlocation_set.all() if is_target else related.resultindicatorperiodactuallocation_set.all()  # NOQA: E501
                 for location in location_all:
                     self.add_value_list(prefix + '_location_ref', location.ref)
 
-                dimension_all = related.resultindicatorperiodtargetdimension_set.all() if is_target \
-                    else related.resultindicatorperiodactualdimension_set.all()
+                dimension_all = related.resultindicatorperiodtargetdimension_set.all() if is_target else related.resultindicatorperiodactualdimension_set.all()  # NOQA: E501
                 for dimension in dimension_all:
-                    self.add_value_list(prefix + '_dimmension_name', dimension.name)
-                    self.add_value_list(prefix + '_dimmension_value', dimension.value)
+                    self.add_value_list(
+                        prefix + '_dimmension_name',
+                        dimension.name
+                    )
+                    self.add_value_list(
+                        prefix + '_dimmension_value',
+                        dimension.value
+                    )
 
-                comment_all = related.resultindicatorperiodtargetcomment_set.all() if is_target \
-                    else related.resultindicatorperiodactualcomment_set.all()
+                comment_all = related.resultindicatorperiodtargetcomment_set.all() if is_target else related.resultindicatorperiodactualcomment_set.all()  # NOQA: E501
                 for comment in comment_all:
                     for narrative in comment.narratives.all():
-                        self.add_value_list(prefix + '_comment_narrative', narrative.content)
+                        self.add_value_list(
+                            prefix + '_comment_narrative',
+                            narrative.content
+                        )
 
-                document_link_all = related.period_target_document_links.all() if is_target \
-                    else related.period_actual_document_links.all()
-                self.document_link(document_link_all, prefix=prefix + '_document_link')
+                document_link_all = related.period_target_document_links.all() if is_target else related.period_actual_document_links.all()  # NOQA: E501
+                self.document_link(
+                    document_link_all,
+                    prefix=prefix + '_document_link'
+                )
 
     def indicator_period(self, indicator):
         period_all = indicator.resultindicatorperiod_set.all()
         if period_all:
-            if 'result_indicator_period_period_start_iso_date' not in self.indexing:
-                self.add_field('result_indicator_period_period_start_iso_date', [])
-                self.add_field('result_indicator_period_period_end_iso_date', [])
+            if 'result_indicator_period_period_start_iso_date' not in self.indexing:  # NOQA: E501
+                self.add_field(
+                    'result_indicator_period_period_start_iso_date',
+                    []
+                )
+                self.add_field(
+                    'result_indicator_period_period_end_iso_date',
+                    []
+                )
 
             for period in period_all:
-                self.add_value_list('result_indicator_period_period_start_iso_date', value_string(period.period_start))
-                self.add_value_list('result_indicator_period_period_end_iso_date', value_string(period.period_end))
+                self.add_value_list(
+                    'result_indicator_period_period_start_iso_date',
+                    value_string(period.period_start)
+                )
+                self.add_value_list(
+                    'result_indicator_period_period_end_iso_date',
+                    value_string(period.period_end)
+                )
 
                 self.indicator_period_related(
                     period.targets.all()
@@ -191,12 +281,23 @@ class ResultIndexing(BaseIndexing):
             for indicator in indicator_all:
                 self.add_value_list(
                     'result_indicator',
-                    JSONRenderer().render(ResultIndicatorSerializer(indicator).data).decode()
+                    JSONRenderer().render(
+                        ResultIndicatorSerializer(indicator).data
+                    ).decode()
                 )
 
-                self.add_value_list('result_indicator_measure', indicator.measure_id)
-                self.add_value_list('result_indicator_ascending', bool_string(indicator.ascending))
-                self.add_value_list('result_indicator_aggregation_status', bool_string(indicator.aggregation_status))
+                self.add_value_list(
+                    'result_indicator_measure',
+                    indicator.measure_id
+                )
+                self.add_value_list(
+                    'result_indicator_ascending',
+                    bool_string(indicator.ascending)
+                )
+                self.add_value_list(
+                    'result_indicator_aggregation_status',
+                    bool_string(indicator.aggregation_status)
+                )
 
                 self.field_narrative(
                     get_child_attr(indicator, 'resultindicatortitle'),
@@ -223,7 +324,10 @@ class ResultIndexing(BaseIndexing):
     def result(self):
         self.add_field('id', self.record.id)
         self.add_field('iati_identifier', self.record.activity.iati_identifier)
-        self.add_field('humanitarian', bool_string(get_child_attr(self.record, 'activity.humanitarian')))
+        self.add_field(
+            'humanitarian',
+            bool_string(get_child_attr(self.record, 'activity.humanitarian'))
+        )
 
         add_reporting_org(self, self.record.activity)
 

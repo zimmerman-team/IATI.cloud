@@ -1,0 +1,22 @@
+<dataConfig>
+    <dataSource type="JdbcDataSource" driver="org.postgresql.Driver" url="jdbc:postgresql://localhost:5432/defaultdb" user="zimmerman" password="" />
+    <document>
+        <entity name="activity" 
+            pk="iati_identifier" 
+            query="
+                SELECT 
+                    iati_id, 
+                    publisher_iati_id, 
+                    name, 
+                    display_name 
+                FROM iati_synchroniser_publisher
+            "
+        >  
+            <field column="iati_id" name="id"/>
+            <field column="iati_id" name="publisher_iati_id"/>
+            <field column="publisher_iati_id" name="publisher_organisation_identifier"/>
+            <field column="name" name="publisher_name"/>
+            <field column="display_name" name="publisher_display_name"/>
+        </entity>                         
+    </document>
+</dataConfig>

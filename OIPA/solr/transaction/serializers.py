@@ -1,3 +1,4 @@
+
 from rest_framework import serializers
 
 import api.sector.serializers
@@ -46,17 +47,23 @@ class TransactionReceiverSerializer(serializers.ModelSerializer):
         )
 
 
-class TransactionRecipientCountrySerializer(api.transaction.serializers.TransactionRecipientCountrySerializer):
+class TransactionRecipientCountrySerializer(
+    api.transaction.serializers.TransactionRecipientCountrySerializer
+):
     country = CountrySerializer(fields=('code', 'name'))
 
 
-class TransactionRecipientRegionSerializer(api.transaction.serializers.TransactionRecipientRegionSerializer):
+class TransactionRecipientRegionSerializer(
+    api.transaction.serializers.TransactionRecipientRegionSerializer
+):
     region = BasicRegionSerializer(
         fields=('code', 'name'),
     )
 
 
-class TransactionSectorSerializer(api.transaction.serializers.TransactionSectorSerializer):
+class TransactionSectorSerializer(
+    api.transaction.serializers.TransactionSectorSerializer
+):
     sector = api.sector.serializers.SectorSerializer(fields=('code', 'name'))
 
 
@@ -65,17 +72,33 @@ class TransactionSerializer(api.transaction.serializers.TransactionSerializer):
         required=False, source="transaction_sector"
     )
     sectors = TransactionSectorSerializer(
-        many=True, read_only=True, required=False, source="transactionsector_set")
+        many=True,
+        read_only=True,
+        required=False,
+        source="transactionsector_set"
+    )
     recipient_countries = TransactionRecipientCountrySerializer(
-        many=True, read_only=True, required=False, source="transactionrecipientcountry_set")  # NOQA: E501
+        many=True,
+        read_only=True,
+        required=False,
+        source="transactionrecipientcountry_set"
+    )
 
     recipient_regions = TransactionRecipientRegionSerializer(
-        many=True, read_only=True, required=False, source="transactionrecipientregion_set")  # NOQA: E501
+        many=True,
+        read_only=True,
+        required=False,
+        source="transactionrecipientregion_set"
+    )
 
     recipient_country = TransactionRecipientCountrySerializer(
-        required=False, source="transaction_recipient_country")
+        required=False,
+        source="transaction_recipient_country"
+    )
     recipient_region = TransactionRecipientRegionSerializer(
-        required=False, source="transaction_recipient_region")
+        required=False,
+        source="transaction_recipient_region"
+    )
 
     provider_organisation = TransactionProviderSerializer(required=False)
     receiver_organisation = TransactionReceiverSerializer(required=False)
