@@ -1809,7 +1809,7 @@ class ActivityIndexing(BaseIndexing):
                 )
 
                 self.add_value_list(
-                    'crs_add_loan_status_year', 
+                    'crs_add_loan_status_year',
                     get_child_attr(
                         crs_add, 'loan_status.year'
                     )
@@ -1817,7 +1817,7 @@ class ActivityIndexing(BaseIndexing):
                 self.add_value_list(
                     'crs_add_loan_status_currency',
                     get_child_attr(
-                        crs_add, 
+                        crs_add,
                         'loan_status.currency_id'
                     )
                 )
