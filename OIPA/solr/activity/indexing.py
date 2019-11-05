@@ -1601,11 +1601,11 @@ class ActivityIndexing(BaseIndexing):
                             )
 
                             for result_period_target_location in result_period_target.resultindicatorperiodtargetlocation_set.all():  # NOQA: E501
-                                self.add_value_list('result_indicator_period_target_location_ref', result_period_target_location.ref)
+                                self.add_value_list('result_indicator_period_target_location_ref', result_period_target_location.ref)  # NOQA: E501
 
                             for result_period_target_dimension in result_period_target.resultindicatorperiodtargetdimension_set.all():  # NOQA: E501
-                                self.add_value_list('result_indicator_period_target_dimension_name', result_period_target_dimension.name)
-                                self.add_value_list('result_indicator_period_target_dimension_value', result_period_target_dimension.value)
+                                self.add_value_list('result_indicator_period_target_dimension_name', result_period_target_dimension.name)  # NOQA: E501
+                                self.add_value_list('result_indicator_period_target_dimension_value', result_period_target_dimension.value)  # NOQA: E501
 
                             for result_period_target_comment in result_period_target.resultindicatorperiodtargetcomment_set.all():  # NOQA: E501
                                 self.related_narrative(result_period_target_comment, 'result_indicator_period_target_comment_narrative', 'result_indicator_period_target_comment_narrative_text', 'result_indicator_period_target_comment_narrative_lang')  # NOQA: E501
