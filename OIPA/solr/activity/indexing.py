@@ -1555,15 +1555,7 @@ class ActivityIndexing(BaseIndexing):
                                 result_indicator_baseline_dimension.value
                             )
 
-                        self.related_narrative(
-                            get_child_attr(
-                                result_indicator_baseline, 
-                                'resultindicatorbaselinecomment'
-                            ),
-                            'result_indicator_baseline_comment_narrative',
-                            'result_indicator_baseline_comment_narrative_text',
-                            'result_indicator_baseline_comment_narrative_lang'
-                        )
+                        self.related_narrative(get_child_attr(result_indicator_baseline, 'resultindicatorbaselinecomment'), 'result_indicator_baseline_comment_narrative', 'result_indicator_baseline_comment_narrative_text', 'result_indicator_baseline_comment_narrative_lang')  # NOQA: E501
 
                         for result_indicator_baseline_document_link in result_indicator_baseline.baseline_document_links.all():  # NOQA: E501
                             self.add_value_list(
@@ -1697,25 +1689,8 @@ class ActivityIndexing(BaseIndexing):
                                     document_link.file_format_id
                                 )
 
-                                self.related_narrative(
-                                    get_child_attr(
-                                        document_link, 
-                                        'documentlinktitle'
-                                    ),
-                                    'result_indicator_period_actual_document_link_title_narrative',  # NOQA: E501
-                                    'result_indicator_period_actual_document_link_title_narrative_text',  # NOQA: E501
-                                    'result_indicator_period_actual_document_link_title_narrative_lang'  # NOQA: E501
-                                )
-
-                                self.related_narrative(
-                                    get_child_attr(
-                                        document_link, 
-                                        'documentlinkdescription'
-                                    ),
-                                    'result_indicator_period_actual_document_link_description_narrative',  # NOQA: E501
-                                    'result_indicator_period_actual_document_link_description_narrative_text',  # NOQA: E501
-                                    'result_indicator_period_actual_document_link_description_narrative_lang'  # NOQA: E501
-                                )
+                                self.related_narrative(get_child_attr(document_link, 'documentlinktitle'), 'result_indicator_period_actual_document_link_title_narrative', 'result_indicator_period_actual_document_link_title_narrative_text', 'result_indicator_period_actual_document_link_title_narrative_lang')  # NOQA: E501
+                                self.related_narrative(get_child_attr(document_link, 'documentlinkdescription'), 'result_indicator_period_actual_document_link_description_narrative', 'result_indicator_period_actual_document_link_description_narrative_text', 'result_indicator_period_actual_document_link_description_narrative_lang')  # NOQA: E501
 
                                 for document_link_category in document_link.documentlinkcategory_set.all():  # NOQA: E501
                                     self.add_value_list(
@@ -1745,14 +1720,8 @@ class ActivityIndexing(BaseIndexing):
             self.add_field('crs_add_loan_terms_repayment_type_code', [])
             self.add_field('crs_add_loan_terms_repayment_plan_code', [])
             self.add_field('crs_add_loan_terms_commitment_date_iso_date', [])
-            self.add_field(
-                'crs_add_loan_terms_repayment_first_date_iso_date', 
-                []
-            )
-            self.add_field(
-                'crs_add_loan_terms_repayment_final_date_iso_date', 
-                []
-            )
+            self.add_field('crs_add_loan_terms_repayment_first_date_iso_date', [])  # NOQA: E501
+            self.add_field('crs_add_loan_terms_repayment_final_date_iso_date', [])  # NOQA: E501
             self.add_field('crs_add_loan_status_year', [])
             self.add_field('crs_add_loan_status_currency', [])
             self.add_field('crs_add_loan_status_value_date', [])
