@@ -389,7 +389,9 @@ class ActivityIndexing(BaseIndexing):
                 self.add_value_list(
                     'recipient_region',
                     JSONRenderer().render(
-                        ActivityRecipientRegionSerializer(recipient_region).data
+                        ActivityRecipientRegionSerializer(
+                            recipient_region
+                        ).data
                     ).decode()
                 )
 
@@ -1661,7 +1663,7 @@ class ActivityIndexing(BaseIndexing):
                                     result_period_actual_location.ref
                                 )
 
-                            for result_period_actual_dimension in result_period_actual.resultindicatorperiodactualdimension_set.all(): # NOQA: E501
+                            for result_period_actual_dimension in result_period_actual.resultindicatorperiodactualdimension_set.all():  # NOQA: E501
                                 self.add_value_list(
                                     'result_indicator_period_actual_dimension_name',  # NOQA: E501
                                     result_period_actual_dimension.name
