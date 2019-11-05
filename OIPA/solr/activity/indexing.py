@@ -1769,7 +1769,7 @@ class ActivityIndexing(BaseIndexing):
                 self.add_value_list(
                     'crs_add_loan_terms_repayment_type_code',
                     get_child_attr(
-                        crs_add, 
+                        crs_add,
                         'loan_terms.repayment_type_id'
                     )
                 )
