@@ -50,7 +50,10 @@ def add_reporting_org(serializer, activity):
     reporting_organisation = activity.reporting_organisations.first()
     if reporting_organisation:
         serializer.add_field('reporting_org_ref', reporting_organisation.ref)
-        serializer.add_field('reporting_org_type', reporting_organisation.type_id)
+        serializer.add_field(
+            'reporting_org_type',
+            reporting_organisation.type_id
+        )
         serializer.add_field(
             'reporting_org_secondary_reporter',
             bool_string(reporting_organisation.secondary_reporter)

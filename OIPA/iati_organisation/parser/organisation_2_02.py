@@ -1084,7 +1084,8 @@ class Parse(IatiParser):
         post_save.set_activity_reporting_organisation(organisation)
         post_save.set_publisher_fk(organisation)
 
-        # Currently if something issue in the Solr indexing we just pass it, so not blocking the current parsing
+        # Currently if something issue in the Solr indexing we just pass it,
+        # so not blocking the current parsing
         try:
             OrganisationTaskIndexing(instance=organisation).run()
         except Exception as e:

@@ -1,23 +1,21 @@
 from django.db.models import signals
 from django.dispatch import receiver
 
+from geodata.models import Country, Region
 from iati.models import Activity, Budget, Result
 from iati.transaction.models import Transaction
-from iati_synchroniser.models import Dataset, DatasetNote, Publisher
 from iati_organisation.models import Organisation
-
-from geodata.models import Country, Region
-
+from iati_synchroniser.models import Dataset, DatasetNote, Publisher
 from solr.activity.tasks import ActivityTaskIndexing
 from solr.budget.tasks import BudgetTaskIndexing
-from solr.dataset.tasks import DatasetTaskIndexing
-from solr.datasetnote.tasks import DatasetNoteTaskIndexing
-from solr.result.tasks import ResultTaskIndexing
-from solr.transaction.tasks import TransactionTaskIndexing
-from solr.publisher.tasks import PublisherTaskIndexing
-from solr.organisation.tasks import OrganisationTaskIndexing
 from solr.codelists.country.tasks import CodeListCountryTaskIndexing
 from solr.codelists.region.tasks import CodeListRegionTaskIndexing
+from solr.dataset.tasks import DatasetTaskIndexing
+from solr.datasetnote.tasks import DatasetNoteTaskIndexing
+from solr.organisation.tasks import OrganisationTaskIndexing
+from solr.publisher.tasks import PublisherTaskIndexing
+from solr.result.tasks import ResultTaskIndexing
+from solr.transaction.tasks import TransactionTaskIndexing
 
 
 @receiver(signals.post_save, sender=Dataset)

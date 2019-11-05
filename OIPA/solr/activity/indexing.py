@@ -210,7 +210,10 @@ class ActivityIndexing(BaseIndexing):
                     ).decode()
                 )
 
-                self.add_value_list('activity_date_type', activity_date.type_id)
+                self.add_value_list(
+                    'activity_date_type',
+                    activity_date.type_id
+                )
 
                 if activity_date.iso_date:
                     self.add_value_list(
@@ -1181,7 +1184,10 @@ class ActivityIndexing(BaseIndexing):
             self.add_field('result_indicator_description_narrative_text', [])
             self.add_field('result_indicator_document_link_url', [])
             self.add_field('result_indicator_document_link_format', [])
-            self.add_field('result_indicator_document_link_title_narrative', [])
+            self.add_field(
+                'result_indicator_document_link_title_narrative',
+                []
+            )
             self.add_field(
                 'result_indicator_document_link_title_narrative_lang',
                 []
@@ -1265,8 +1271,14 @@ class ActivityIndexing(BaseIndexing):
             self.add_field('result_indicator_period_target_value', [])
             self.add_field('result_indicator_period_target_location_ref', [])
             self.add_field('result_indicator_period_target_dimension_name', [])
-            self.add_field('result_indicator_period_target_dimension_value', [])
-            self.add_field('result_indicator_period_target_comment_narrative', [])
+            self.add_field(
+                'result_indicator_period_target_dimension_value',
+                []
+            )
+            self.add_field(
+                'result_indicator_period_target_comment_narrative',
+                []
+            )
             self.add_field(
                 'result_indicator_period_target_comment_narrative_lang',
                 []
@@ -1304,8 +1316,14 @@ class ActivityIndexing(BaseIndexing):
             self.add_field('result_indicator_period_actual_value', [])
             self.add_field('result_indicator_period_actual_location_ref', [])
             self.add_field('result_indicator_period_actual_dimension_name', [])
-            self.add_field('result_indicator_period_actual_dimension_value', [])
-            self.add_field('result_indicator_period_actual_comment_narrative', [])
+            self.add_field(
+                'result_indicator_period_actual_dimension_value',
+                []
+            )
+            self.add_field(
+                'result_indicator_period_actual_comment_narrative',
+                []
+            )
             self.add_field(
                 'result_indicator_period_actual_comment_narrative_lang',
                 []

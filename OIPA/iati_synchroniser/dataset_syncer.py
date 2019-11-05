@@ -1,7 +1,7 @@
-import logging
 import datetime
 import errno
 import json
+import logging
 import os
 import ssl
 import urllib
