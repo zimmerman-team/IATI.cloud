@@ -8,6 +8,7 @@ class SolrConfig(AppConfig):
     verbose_name = 'SOLR'
 
     # pylint: disable=no-self-use
-    def ready(self):   # NOQA: R0201
+    def ready(self):
+
         # pylint: disable=unused-variable
         import solr.signals
