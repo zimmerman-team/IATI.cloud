@@ -57,6 +57,12 @@ Happy Hunting!
 
 For more detailed information, see the [install documentation](http://docs.oipa.nl/en/latest/installing/)
 
+## IATI Query Builder
+
+The IATI Query Builder runs on top the the iati.cloud API application. It will allow users to interact with all the IATI data that is available in the IATI Registry using a form based interface which enables a user to select what IATI fields to extract, select dates and output formats.
+
+More information on how to get the IATI Query Builder up and running can be found in the <a href="https://github.com/zimmerman-zimmerman/query-builder-iati.cloud">query-builder-iati.cloud</a> repository.
+
 
 ## Full Documentation
 
