@@ -261,7 +261,7 @@
     <field name="sector_percentage" type="pdoubles" multiValued="true" indexed="true" required="false" stored="true"/>
 
     <field name="sector_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
-    <field name="sector_narrative_lang" type="string" indexed="true" required="false" stored="true"/>
+    <field name="sector_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="sector_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
 
     <field name="tag" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
@@ -275,7 +275,7 @@
     <field name="country_budget_items_budget_item_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="country_budget_items_budget_item_percentage" type="pdoubles" multiValued="true" indexed="true" required="false" stored="true"/>
 
-    <field name="country_budget_items_budget_description_narrative_lang" type="string" indexed="true" required="false" stored="true"/>
+    <field name="country_budget_items_budget_description_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="country_budget_items_budget_description_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
 
     <field name="humanitarian_scope" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
@@ -285,7 +285,7 @@
     <field name="humanitarian_scope_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
 
     <field name="humanitarian_scope_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
-    <field name="humanitarian_scope_narrative_lang" type="string" indexed="true" required="false" stored="true"/>
+    <field name="humanitarian_scope_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="humanitarian_scope_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
 
     <field name="policy_marker" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
@@ -295,7 +295,7 @@
     <field name="policy_marker_significance" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
 
     <field name="policy_marker_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
-    <field name="policy_marker_narrative_lang" type="string" indexed="true" required="false" stored="true"/>
+    <field name="policy_marker_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="policy_marker_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
 
     <field name="collaboration_type_code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
@@ -331,14 +331,14 @@
     <field name="planned_disbursement_provider_org_ref" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
 
     <field name="planned_disbursement_provider_org_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
-    <field name="planned_disbursement_provider_org_narrative_lang" type="string" indexed="true" required="false" stored="true"/>
+    <field name="planned_disbursement_provider_org_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="planned_disbursement_provider_org_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
 
     <field name="planned_disbursement_receiver_org_provider_activity_id" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="planned_disbursement_receiver_org_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="planned_disbursement_receiver_org_ref" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="planned_disbursement_receiver_org_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
-    <field name="planned_disbursement_receiver_org_narrative_lang" type="string" indexed="true" required="false" stored="true"/>
+    <field name="planned_disbursement_receiver_org_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="planned_disbursement_receiver_org_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
 
     <field name="capital_spend_percentage" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
