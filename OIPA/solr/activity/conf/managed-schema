@@ -204,8 +204,8 @@
     <field name="contact_info_job_title_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
 
     <field name="contact_info_mailing_address_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
-    field name="contact_info_mailing_address_narrative_lang" type="iati_narrative" indexed="true" required="false" stored="true"/>
-    field name="contact_info_mailing_address_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
+    <field name="contact_info_mailing_address_narrative_lang" type="iati_narrative" indexed="true" required="false" stored="true"/>
+    <field name="contact_info_mailing_address_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
 
     <field name="contact_info_telephone" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="contact_info_email" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
