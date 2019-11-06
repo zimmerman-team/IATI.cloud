@@ -168,7 +168,7 @@
     <field name="other_identifier_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="other_identifier_owner_org_ref" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="other_identifier_owner_org_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
-    <field name="other_identifier_owner_org_narrative_lang" type="string" indexed="true" required="false" stored="true"/>
+    <field name="other_identifier_owner_org_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="other_identifier_owner_org_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
 
     <field name="activity_status_code" type="string" indexed="true" required="false" stored="true"/>
@@ -177,7 +177,7 @@
     <field name="activity_date_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="activity_date_iso_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="activity_date_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
-    <field name="activity_date_narrative_lang" type="string" indexed="true" required="false" stored="true"/>
+    <field name="activity_date_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="activity_date_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
     <field name="activity_date_start_planned" type="pdate" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="activity_date_start_actual" type="pdate" multiValued="false" indexed="true" required="false" stored="true"/>
@@ -188,19 +188,19 @@
     <field name="contact_info_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
 
     <field name="contact_info_organisation_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
-    <field name="contact_info_organisation_narrative_lang" type="string" indexed="true" required="false" stored="true"/>
+    <field name="contact_info_organisation_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="contact_info_organisation_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
 
     <field name="contact_info_department_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
-    <field name="contact_info_department_narrative_lang" type="string" indexed="true" required="false" stored="true"/>
+    <field name="contact_info_department_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="contact_info_department_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
 
     <field name="contact_info_person_name_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
-    <field name="contact_info_person_name_narrative_lang" type="string" indexed="true" required="false" stored="true"/>
+    <field name="contact_info_person_name_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="contact_info_person_name_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
 
     <field name="contact_info_job_title_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
-    <field name="contact_info_job_title_narrative_lang" type="string" indexed="true" required="false" stored="true"/>
+    <field name="contact_info_job_title_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="contact_info_job_title_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
 
     <field name="contact_info_mailing_address_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
@@ -218,7 +218,7 @@
     <field name="recipient_country_name" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="recipient_country_percentage" type="pdoubles" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="recipient_country_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
-    <field name="recipient_country_narrative_lang" type="string" indexed="true" required="false" stored="true"/>
+    <field name="recipient_country_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="recipient_country_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
 
     <field name="recipient_region" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
@@ -239,15 +239,15 @@
     <field name="location_feature_designation_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
 
     <field name="location_name_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
-    <field name="location_name_narrative_lang" type="string" indexed="true" required="false" stored="true"/>
+    <field name="location_name_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="location_name_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
 
     <field name="location_description_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
-    <field name="location_description_narrative_lang" type="string" indexed="true" required="false" stored="true"/>
+    <field name="location_description_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="location_description_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
 
     <field name="location_activity_description_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
-    <field name="location_activity_description_narrative_lang" type="string" indexed="true" required="false" stored="true"/>
+    <field name="location_activity_description_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="location_activity_description_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
 
     <field name="location_administrative_vocabulary" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
