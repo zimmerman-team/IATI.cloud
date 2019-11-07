@@ -24,7 +24,7 @@ def value_string(value):
 
 def date_string(value):
     if value:
-        return value.strftime('%Y-%m-%dT00:00:00Z')
+        return value.strftime('%Y-%m-%dT%H:%M:%SZ')
 
     return None
 
