@@ -22,6 +22,13 @@ def value_string(value):
     return None
 
 
+def date_string(value):
+    if value:
+        return value.strftime('%Y-%m-%dT00:00:00Z')
+
+    return None
+
+
 def decimal_string(value):
     if value:
         return str(value)
