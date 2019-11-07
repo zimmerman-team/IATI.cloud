@@ -63,9 +63,7 @@ If you don't have Docker:
 9. Create a superuser account: `python manage.py createsuperuser`
 10. Start the process control centre (Supervisor): ```python manage.py supervisor```
 11. Open your browser at <a href="http://localhost:8000" target="_blank">localhost:8000</a>
-12. Follow instructions for signing-in: <a href="http://docs.oipa.nl/en/latest/admin_interface/" target="_blank">http://docs.oipa.nl/en/latest/admin_interface</a>
-13. Finally, follow the instructions from here: <a href="http://docs.oipa.nl/en/latest/where_to_start/" target="_blank">http://docs.oipa.nl/en/latest/where_to_start</a>
-14. Start the crontab for OIPA data - basically go to your oipa folder 'OIPA', activate the python virtual environment ```source env/bin/activate```. Ant add the cron job by going into the deeper OIPA folder and running 
+12. Start the crontab for OIPA data - basically go to your oipa folder 'OIPA', activate the python virtual environment ```source env/bin/activate```. Ant add the cron job by going into the deeper OIPA folder and running 
 ```./manage.py crontab add```
 
 ## Deployment
@@ -77,14 +75,6 @@ If you don't have Docker:
    * Start the crontab for OIPA data - basically go to your oipa folder 'OIPA', activate the python virtual environment source env/bin/activate . Ant add the cron job by going into the deeper OIPA folder and running ./manage.py crontab add 
 
 Happy Hunting!
-
-For more detailed information, see the [install documentation](http://docs.oipa.nl/en/latest/installing/)
-
-
-## Full Documentation
-
-Full documentation (which, at this point, needs an update) on installing, running and using OIPA can be found at <a href="http://docs.oipa.nl" target="_blank">docs.oipa.nl</a>
-
 
 ## About the project
 * Website:         <a href="https://yoda.oipa.nl" target="_blank">yoda.oipa.nl</a>
