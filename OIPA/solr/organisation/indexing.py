@@ -3,8 +3,7 @@ from rest_framework.renderers import JSONRenderer
 from api.organisation.serializers import (
     OrganisationDocumentLinkSerializer, OrganisationNameSerializer,
     OrganisationRecipientOrgBudgetSerializer,
-    OrganisationTotalBudgetSerializer,
-    OrganisationTotalExpenditureSerializer
+    OrganisationTotalBudgetSerializer, OrganisationTotalExpenditureSerializer
 )
 from solr.indexing import BaseIndexing
 from solr.organisation.serializers import (
@@ -12,8 +11,8 @@ from solr.organisation.serializers import (
     OrganisationRecipientRegionBudgetSerializer
 )
 from solr.utils import (
-    bool_string, decimal_string, get_child_attr, get_narrative_lang_list,
-    value_string, date_string
+    bool_string, date_string, decimal_string, get_child_attr,
+    get_narrative_lang_list, value_string
 )
 
 
