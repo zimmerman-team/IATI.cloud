@@ -162,7 +162,7 @@ class TransactionIndexing(BaseIndexing):
             'transaction_recipient_country_code',
             get_child_attr(
                 transaction,
-                'transaction_recipient_region.region_id'
+                'transaction_recipient_country.country_id'
             )
         )
         self.add_field(
