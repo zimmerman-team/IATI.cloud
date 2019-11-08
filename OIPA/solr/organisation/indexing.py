@@ -31,15 +31,6 @@ class OrganisationIndexing(BaseIndexing):
 
             for total_expenditure in total_expenditure_all:
                 self.add_value_list(
-                    'organisation_total_expenditure',
-                    JSONRenderer().render(
-                        OrganisationTotalExpenditureSerializer(
-                            instance=total_expenditure
-                        ).data
-                    ).decode()
-                )
-
-                self.add_value_list(
                     'organisation_total_expenditure_period_start',
                     date_string(total_expenditure.period_start)
                 )
@@ -58,6 +49,15 @@ class OrganisationIndexing(BaseIndexing):
                 self.add_value_list(
                     'organisation_total_expenditure_value_date',
                     value_string(total_expenditure.value_date)
+                )
+
+                self.add_value_list(
+                    'organisation_total_expenditure',
+                    JSONRenderer().render(
+                        OrganisationTotalExpenditureSerializer(
+                            instance=total_expenditure
+                        ).data
+                    ).decode()
                 )
 
     def document_links(self):
