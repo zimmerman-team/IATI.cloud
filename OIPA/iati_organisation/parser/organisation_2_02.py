@@ -1084,7 +1084,7 @@ class Parse(IatiParser):
         post_save.set_activity_reporting_organisation(organisation)
         post_save.set_publisher_fk(organisation)
 
-        ## Solr indexing
+        # Solr indexing
         OrganisationTaskIndexing(instance=organisation).run()
 
     def post_save_file(self, xml_source):
