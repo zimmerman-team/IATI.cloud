@@ -223,10 +223,13 @@
 
     <field name="recipient_region" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="recipient_region_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="recipient_region_name" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="recipient_region_vocabulary" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="recipient_region_vocabulary_uri" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="recipient_region_percentage" type="pdoubles" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="recipient_region_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
+    <field name="recipient_region_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="recipient_region_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
 
     <field name="location" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="location_ref" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
@@ -422,6 +425,7 @@
     <field name="conditions_condition_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="conditions_condition_narrative_text" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
 
+    <field name="result" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="result_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="result_aggregation_status" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
 
@@ -456,7 +460,7 @@
 
     <field name="result_indicator" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="result_indicator_measure" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-    <field name="result_indicator_acsending" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_indicator_ascending" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="result_indicator_aggregation_status" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
 
     <field name="result_indicator_title_narrative" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>

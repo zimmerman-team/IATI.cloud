@@ -16,7 +16,7 @@ from solr.indexing import BaseIndexing
 from solr.result.serializers import ResultSerializer
 from solr.transaction.serializers import TransactionSerializer
 from solr.utils import (
-    bool_string, decimal_string, get_child_attr, value_string
+    bool_string, date_string, decimal_string, get_child_attr, value_string
 )
 
 
@@ -30,11 +30,11 @@ class ActivityIndexing(BaseIndexing):
             activity.iati_standard_version_id)
         self.add_field(
             'dataset_date_created',
-            value_string(get_child_attr(activity, 'dataset.date_created'))
+            date_string(get_child_attr(activity, 'dataset.date_created'))
         )
         self.add_field(
             'dataset_date_updated',
-            value_string(get_child_attr(activity, 'dataset.date_updated'))
+            date_string(get_child_attr(activity, 'dataset.date_updated'))
         )
 
     def reporting_org(self):
@@ -196,7 +196,7 @@ class ActivityIndexing(BaseIndexing):
         if activity_dates_all:
             self.add_field('activity_date', [])
             self.add_field('activity_date_type', [])
-            self.add_field('activity_dates_iso_date', [])
+            self.add_field('activity_date_iso_date', [])
 
             self.add_field('activity_date_narrative', [])
             self.add_field('activity_date_narrative_lang', [])
@@ -217,29 +217,29 @@ class ActivityIndexing(BaseIndexing):
 
                 if activity_date.iso_date:
                     self.add_value_list(
-                        'activity_dates_iso_date',
-                        value_string(activity_date.iso_date)
+                        'activity_date_iso_date',
+                        date_string(activity_date.iso_date)
                     )
 
                 if activity_date.type_id == '1':
                     self.add_field(
                         'activity_date_start_planned',
-                        value_string(activity_date.iso_date)
+                        date_string(activity_date.iso_date)
                     )
                 elif activity_date.type_id == '2':
                     self.add_field(
                         'activity_date_start_actual',
-                        value_string(activity_date.iso_date)
+                        date_string(activity_date.iso_date)
                     )
                 elif activity_date.type_id == '3':
                     self.add_field(
                         'activity_date_end_planned',
-                        value_string(activity_date.iso_date)
+                        date_string(activity_date.iso_date)
                     )
                 elif activity_date.type_id == '4':
                     self.add_field(
                         'activity_date_end_actual',
-                        value_string(activity_date.iso_date)
+                        date_string(activity_date.iso_date)
                     )
 
                 self.related_narrative(
@@ -691,11 +691,11 @@ class ActivityIndexing(BaseIndexing):
                 self.add_value_list('budget_status', budget.status_id)
                 self.add_value_list(
                     'budget_period_start_iso_date',
-                    value_string(budget.period_start)
+                    date_string(budget.period_start)
                 )
                 self.add_value_list(
                     'budget_period_end_iso_date',
-                    value_string(budget.period_end)
+                    date_string(budget.period_end)
                 )
                 self.add_value_list(
                     'budget_value_currency',
@@ -703,7 +703,7 @@ class ActivityIndexing(BaseIndexing):
                 )
                 self.add_value_list(
                     'budget_value_date',
-                    value_string(budget.value_date)
+                    date_string(budget.value_date)
                 )
                 self.add_value_list(
                     'budget_value',
@@ -767,15 +767,15 @@ class ActivityIndexing(BaseIndexing):
                 )
                 self.add_value_list(
                     'planned_disbursement_period_start_iso_date',
-                    value_string(planned_disbursement.period_start)
+                    date_string(planned_disbursement.period_start)
                 )
                 self.add_value_list(
                     'planned_disbursement_period_end_iso_date',
-                    value_string(planned_disbursement.period_end)
+                    date_string(planned_disbursement.period_end)
                 )
                 self.add_value_list(
                     'planned_disbursement_value_date',
-                    value_string(planned_disbursement.value_date)
+                    date_string(planned_disbursement.value_date)
                 )
                 self.add_value_list(
                     'planned_disbursement_value_currency',
@@ -903,7 +903,7 @@ class ActivityIndexing(BaseIndexing):
                 )
                 self.add_value_list(
                     'transaction_date_iso_date',
-                    value_string(transaction.transaction_date)
+                    date_string(transaction.transaction_date)
                 )
                 self.add_value_list(
                     'transaction_value_currency',
@@ -911,7 +911,7 @@ class ActivityIndexing(BaseIndexing):
                 )
                 self.add_value_list(
                     'transaction_value_date',
-                    value_string(transaction.value_date)
+                    date_string(transaction.value_date)
                 )
                 self.add_value_list(
                     'transaction_value',
@@ -1078,7 +1078,7 @@ class ActivityIndexing(BaseIndexing):
                 self.add_value_list('document_link_url', document_link.url)
                 self.add_value_list(
                     'document_link_document_date_iso_date',
-                    value_string(document_link.iso_date)
+                    date_string(document_link.iso_date)
                 )
 
                 self.related_narrative(
@@ -1432,7 +1432,7 @@ class ActivityIndexing(BaseIndexing):
 
                     self.add_value_list(
                         'result_document_link_document_date_iso_date',
-                        value_string(document_link.iso_date)
+                        date_string(document_link.iso_date)
                     )
 
                 for result_reference in result.resultreference_set.all():
@@ -1509,7 +1509,7 @@ class ActivityIndexing(BaseIndexing):
 
                         self.add_value_list(
                             'result_indicator_document_link_document_date_iso_date',  # NOQA: E501
-                            value_string(result_indicator_document_link.iso_date)  # NOQA: E501
+                            date_string(result_indicator_document_link.iso_date)  # NOQA: E501
                         )
 
                     for result_indicator_reference in result_indicator.resultindicatorreference_set.all():  # NOQA: E501
@@ -1533,7 +1533,7 @@ class ActivityIndexing(BaseIndexing):
                         )
                         self.add_value_list(
                             'result_indicator_baseline_iso_date',
-                            value_string(result_indicator_baseline.iso_date)
+                            date_string(result_indicator_baseline.iso_date)
                         )
                         self.add_value_list(
                             'result_indicator_baseline_value',
@@ -1574,17 +1574,17 @@ class ActivityIndexing(BaseIndexing):
                             for document_link_language in result_indicator_baseline_document_link.documentlinklanguage_set.all():  # NOQA: E501
                                 self.add_value_list('result_indicator_baseline_document_link_language_code', document_link_language.language_id)  # NOQA: E501
 
-                            self.add_value_list('result_indicator_baseline_document_link_document_date_iso_date', value_string(result_indicator_baseline_document_link.iso_date))  # NOQA: E501
+                            self.add_value_list('result_indicator_baseline_document_link_document_date_iso_date', date_string(result_indicator_baseline_document_link.iso_date))  # NOQA: E501
 
                     for result_period in \
                             result_indicator.resultindicatorperiod_set.all():
                         self.add_value_list(
                             'result_indicator_period_period_start_iso_date',
-                            value_string(result_period.period_start)
+                            date_string(result_period.period_start)
                         )
                         self.add_value_list(
                             'result_indicator_period_period_end_iso_date',
-                            value_string(result_period.period_end)
+                            date_string(result_period.period_end)
                         )
 
                         for result_period_target in \
@@ -1647,7 +1647,7 @@ class ActivityIndexing(BaseIndexing):
 
                                 self.add_value_list(
                                     'result_indicator_period_target_document_link_document_date_iso_date',  # NOQA: E501
-                                    value_string(document_link.iso_date)
+                                    date_string(document_link.iso_date)
                                 )
 
                         for result_period_actual in \
@@ -1702,7 +1702,7 @@ class ActivityIndexing(BaseIndexing):
 
                                 self.add_value_list(
                                     'result_indicator_period_actual_document_link_document_date_iso_date',  # NOQA: E501
-                                    str(document_link.iso_date.strftime("%Y-%m-%d")) if document_link.iso_date else None  # NOQA: E501
+                                    date_string(document_link.iso_date)
                                 )
 
     def crs_add(self):
@@ -1784,7 +1784,7 @@ class ActivityIndexing(BaseIndexing):
                 )
                 self.add_value_list(
                     'crs_add_loan_terms_commitment_date_iso_date',
-                    value_string(
+                    date_string(
                         get_child_attr(
                             crs_add,
                             'loan_terms.commitment_date'
@@ -1793,7 +1793,7 @@ class ActivityIndexing(BaseIndexing):
                 )
                 self.add_value_list(
                     'crs_add_loan_terms_repayment_first_date_iso_date',
-                    value_string(
+                    date_string(
                         get_child_attr(
                             crs_add,
                             'loan_terms.repayment_first_date'
@@ -1802,7 +1802,7 @@ class ActivityIndexing(BaseIndexing):
                 )
                 self.add_value_list(
                     'crs_add_loan_terms_repayment_final_date_iso_date',
-                    value_string(
+                    date_string(
                         get_child_attr(
                             crs_add,
                             'loan_terms.repayment_final_date'
