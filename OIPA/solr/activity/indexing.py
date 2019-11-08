@@ -1843,7 +1843,7 @@ class ActivityIndexing(BaseIndexing):
                 )
                 self.add_value_list(
                     'crs_add_loan_status_principal_outstanding',
-                    str(
+                    value_string(
                         get_child_attr(
                             crs_add,
                             'loan_status.principal_outstanding'
