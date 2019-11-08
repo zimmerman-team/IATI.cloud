@@ -755,6 +755,10 @@ class ActivityRecipientRegion(models.Model):
     vocabulary = models.ForeignKey(
         RegionVocabulary, default=1, on_delete=models.CASCADE)
     vocabulary_uri = models.URLField(null=True, blank=True)
+    narratives = GenericRelation(
+        Narrative,
+        content_type_field='related_content_type',
+        object_id_field='related_object_id')
     percentage = models.DecimalField(
         max_digits=5,
         decimal_places=2,

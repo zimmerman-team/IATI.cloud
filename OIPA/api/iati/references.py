@@ -1447,7 +1447,7 @@ class RecipientCountryReference(ElementReference):
             )
 
 
-class RecipientRegionReference(ElementReference):
+class RecipientRegionReference(ElementWithNarrativeReference):
     """
     http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/recipient-region/
     """
@@ -1526,7 +1526,7 @@ class RecipientRegionReference(ElementReference):
                 vocabulary_uri_value
             )
         # />
-
+        self.create_narrative(recipient_region_element)
 
 class LocationReference(ElementReference):
     """
