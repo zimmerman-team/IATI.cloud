@@ -681,6 +681,10 @@ class ActivityRecipientCountry(models.Model):
         null=True,
         blank=True,
         default=None)
+    narratives = GenericRelation(
+        Narrative,
+        content_type_field='related_content_type',
+        object_id_field='related_object_id')
 
     def __unicode__(self,):
         return "name: %s" % self.country.name
@@ -765,6 +769,10 @@ class ActivityRecipientRegion(models.Model):
         null=True,
         blank=True,
         default=None)
+    narratives = GenericRelation(
+        Narrative,
+        content_type_field='related_content_type',
+        object_id_field='related_object_id')
 
     def __unicode__(self,):
         return "name: %s" % self.region
@@ -1615,7 +1623,12 @@ class Location(models.Model):
         default=None,
         related_name="feature_designation", on_delete=models.CASCADE)
 
-    point_srs_name = models.CharField(blank=True, max_length=255, default=None)
+    point_srs_name = models.CharField(
+        null=True,
+        blank=True,
+        max_length=255,
+        default=None
+    )
     point_pos = PointField(
         null=True,
         blank=False,

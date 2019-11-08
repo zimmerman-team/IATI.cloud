@@ -1,6 +1,7 @@
 import datetime
 import errno
 import json
+import logging
 import os
 import ssl
 import urllib
@@ -15,6 +16,9 @@ from iati_synchroniser.models import Dataset, Publisher, filetype_choices
 
 DATASET_URL = 'https://iatiregistry.org/api/action/package_search?rows=200&{options}'  # NOQA: E501
 PUBLISHER_URL = 'https://iatiregistry.org/api/action/organization_list?all_fields=true&include_extras=true&limit=200&{options}'  # NOQA: E501
+
+# Get an instance of a logger
+logger = logging.getLogger(__name__)
 
 
 class DatasetSyncer(object):

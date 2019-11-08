@@ -371,6 +371,25 @@ CELERY_BEAT_SCHEDULE = {
     },
 }
 
+SOLR = {
+    'indexing': False,
+    'url': 'http://localhost:8983/solr',
+    'cores': {
+        'activity': 'activity',
+        'budget': 'budget',
+        'codelist': {
+            'country': 'codelist-country',
+            'region': 'codelist-region'
+        },
+        'dataset': 'dataset',
+        'datasetnote': 'datasetnote',
+        'organisation': 'organisation',
+        'publisher': 'publisher',
+        'result': 'result',
+        'transaction': 'transaction'
+    }
+}
+
 try:
     from .local_settings import *  # noqa: F401, F403
 except ImportError:

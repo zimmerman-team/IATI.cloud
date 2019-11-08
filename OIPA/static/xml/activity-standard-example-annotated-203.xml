@@ -103,13 +103,17 @@
   <!--activity-scope ends-->
 
   <!--recipient-country starts-->
-  <recipient-country code="AF" percentage="25" />
+  <recipient-country code="AF" percentage="25">
+      <narrative>Afganistan (As per UNSCR 1244)</narrative>
+  </recipient-country>
   <recipient-country code="AG" percentage="25" />
   <!--recipient-country ends-->
 
   <!--recipient-region starts-->
   <recipient-region code="489" vocabulary="1" percentage="25" />
-  <recipient-region code="A1" vocabulary="99" vocabulary-uri="http://example.com/vocab.html" percentage="25" />
+  <recipient-region code="A1" vocabulary="99" vocabulary-uri="http://example.com/vocab.html" percentage="25">
+     <narrative>Where is the region with code A1</narrative>
+  </recipient-region>
   <!--recipient-region ends-->
 
   <!--location-single starts-->

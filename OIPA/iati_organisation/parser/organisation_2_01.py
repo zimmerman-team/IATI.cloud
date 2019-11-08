@@ -1,3 +1,5 @@
+import logging
+
 from django.conf import settings
 
 from geodata.models import Country
@@ -15,6 +17,10 @@ from iati_organisation.models import (
     RecipientRegionBudget, TotalBudget, TotalBudgetLine, TotalExpenditure
 )
 from iati_organisation.parser import post_save
+from solr.organisation.tasks import OrganisationTaskIndexing
+
+# Get an instance of a logger
+logger = logging.getLogger(__name__)
 
 
 class Parse(IatiParser):
@@ -744,6 +750,9 @@ class Parse(IatiParser):
 
         post_save.set_activity_reporting_organisation(organisation)
         post_save.set_publisher_fk(organisation)
+
+        # Solr indexing
+        OrganisationTaskIndexing(instance=organisation).run()
 
     def post_save_file(self, dataset):
         pass
