@@ -4,8 +4,8 @@ from rest_framework.renderers import JSONRenderer
 from solr.activity.serializers import ActivitySectorSerializer
 from solr.indexing import BaseIndexing
 from solr.utils import (
-    add_reporting_org, bool_string, decimal_string, get_child_attr,
-    get_narrative_lang_list, value_string
+    add_reporting_org, bool_string, date_string, decimal_string,
+    get_child_attr, get_narrative_lang_list
 )
 
 
@@ -51,12 +51,12 @@ class TransactionIndexing(BaseIndexing):
         self.add_field('transaction_type', transaction.transaction_type_id)
         self.add_field(
             'transaction_date_iso_date',
-            value_string(transaction.transaction_date)
+            date_string(transaction.transaction_date)
         )
         self.add_field('transaction_value_currency', transaction.currency_id)
         self.add_field(
             'transaction_value_date',
-            value_string(transaction.value_date)
+            date_string(transaction.value_date)
         )
         self.add_field('transaction_value', decimal_string(transaction.value))
 

@@ -4154,12 +4154,8 @@ class Parse(IatiParser):
         post_save.set_sector_transaction(activity)
         post_save.set_sector_budget(activity)
 
-        # Currently if something issue in the Solr indexing we just pass it,
-        # so not blocking the current parsing
-        try:
-            ActivityTaskIndexing(instance=activity, related=True).run()
-        except Exception as e:
-            logger.exception(e)
+        # Solr indexing
+        ActivityTaskIndexing(instance=activity, related=True).run()
 
     def post_save_file(self, dataset):
         """Perform all actions that need to happen after a single IATI
