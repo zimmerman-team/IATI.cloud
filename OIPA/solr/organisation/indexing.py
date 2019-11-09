@@ -39,7 +39,7 @@ class OrganisationIndexing(BaseIndexing):
                 )
                 self.add_value_list(
                     'organisation_total_expenditure_value',
-                    value_string(total_expenditure.period_end)
+                    value_string(total_expenditure.value)
                 )
                 self.add_value_list(
                     'organisation_total_expenditure_value_currency',
@@ -47,7 +47,7 @@ class OrganisationIndexing(BaseIndexing):
                 )
                 self.add_value_list(
                     'organisation_total_expenditure_value_date',
-                    value_string(total_expenditure.value_date)
+                    date_string(total_expenditure.value_date)
                 )
 
                 self.add_value_list(
