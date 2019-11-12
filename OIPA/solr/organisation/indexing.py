@@ -3,7 +3,7 @@ from rest_framework.renderers import JSONRenderer
 from api.organisation.serializers import (
     OrganisationDocumentLinkSerializer, OrganisationNameSerializer,
     OrganisationRecipientOrgBudgetSerializer,
-    OrganisationTotalBudgetSerializer
+    OrganisationTotalBudgetSerializer, OrganisationTotalExpenditureSerializer
 )
 from solr.indexing import BaseIndexing
 from solr.organisation.serializers import (
@@ -11,12 +11,53 @@ from solr.organisation.serializers import (
     OrganisationRecipientRegionBudgetSerializer
 )
 from solr.utils import (
-    bool_string, decimal_string, get_child_attr, get_narrative_lang_list,
-    value_string
+    bool_string, date_string, decimal_string, get_child_attr,
+    get_narrative_lang_list, value_string
 )
 
 
 class OrganisationIndexing(BaseIndexing):
+
+    def total_expenditure(self):
+        total_expenditure_all = self.record.total_expenditure.all()
+        if total_expenditure_all:
+            self.add_field('organisation_total_expenditure', [])
+            self.add_field('organisation_total_expenditure_period_start', [])
+            self.add_field('organisation_total_expenditure_period_end', [])
+            self.add_field('organisation_total_expenditure_value', [])
+            self.add_field('organisation_total_expenditure_value_currency', [])
+            self.add_field('organisation_total_expenditure_value_date', [])
+
+            for total_expenditure in total_expenditure_all:
+                self.add_value_list(
+                    'organisation_total_expenditure_period_start',
+                    date_string(total_expenditure.period_start)
+                )
+                self.add_value_list(
+                    'organisation_total_expenditure_period_end',
+                    date_string(total_expenditure.period_end)
+                )
+                self.add_value_list(
+                    'organisation_total_expenditure_value',
+                    value_string(total_expenditure.value)
+                )
+                self.add_value_list(
+                    'organisation_total_expenditure_value_currency',
+                    total_expenditure.currency_id
+                )
+                self.add_value_list(
+                    'organisation_total_expenditure_value_date',
+                    date_string(total_expenditure.value_date)
+                )
+
+                self.add_value_list(
+                    'organisation_total_expenditure',
+                    JSONRenderer().render(
+                        OrganisationTotalExpenditureSerializer(
+                            instance=total_expenditure
+                        ).data
+                    ).decode()
+                )
 
     def document_links(self):
         document_link_all = self.record.organisationdocumentlink_set.all()
@@ -158,6 +199,7 @@ class OrganisationIndexing(BaseIndexing):
             prefix="organisation_recipient_country_budget"
         )
         self.document_links()
+        self.total_expenditure()
 
     def to_representation(self, organisation):
         self.record = organisation
