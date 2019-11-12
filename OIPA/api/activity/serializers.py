@@ -1576,6 +1576,7 @@ class RecipientCountrySerializer(DynamicFieldsModelSerializer):
         coerce_to_string=False
     )
     activity = serializers.CharField(write_only=True)
+    narratives = NarrativeSerializer(many=True, required=True)
 
     def validate(self, data):
         activity = get_or_raise(Activity, data, 'activity')
@@ -1622,6 +1623,7 @@ class RecipientCountrySerializer(DynamicFieldsModelSerializer):
             'activity',
             'country',
             'percentage',
+            'narratives',
         )
 
 
