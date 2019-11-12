@@ -1528,6 +1528,7 @@ class RecipientRegionReference(ElementWithNarrativeReference):
         # />
         self.create_narrative(recipient_region_element)
 
+
 class LocationReference(ElementReference):
     """
     http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/location/
