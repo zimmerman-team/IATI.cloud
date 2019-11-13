@@ -22,7 +22,7 @@ from iati.activity_aggregation_calculation import (
 )
 from iati.models import Activity, Document, DocumentLink
 from iati_synchroniser.models import Dataset
-from solr.activity.tasks import solr, ActivityTaskIndexing
+from solr.activity.tasks import ActivityTaskIndexing, solr
 
 redis_conn = Redis.from_url(settings.RQ_REDIS_URL)
 
