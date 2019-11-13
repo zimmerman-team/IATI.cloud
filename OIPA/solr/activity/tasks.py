@@ -28,16 +28,3 @@ class ActivityTaskIndexing(BaseTaskIndexing):
         TransactionTaskIndexing().run_from_activity(self.instance)
         BudgetTaskIndexing().run_from_activity(self.instance)
         ResultTaskIndexing().run_from_activity(self.instance)
-
-
-class ActivitySynchronizeIndexing(object):
-    solr = solr
-
-    def run(self):
-        for activity in Activity.objects.all():
-            indexing = solr.search(
-                q='id:{id}'.format(id=activity.id)
-            )
-
-            if not indexing.docs:
-                ActivityTaskIndexing(instance=activity, related=True).run()
