@@ -22,6 +22,7 @@ from iati.activity_aggregation_calculation import (
 )
 from iati.models import Activity, Document, DocumentLink
 from iati_synchroniser.models import Dataset
+from solr.activity.tasks import solr, ActivityTaskIndexing
 
 redis_conn = Redis.from_url(settings.RQ_REDIS_URL)
 
@@ -501,3 +502,26 @@ def download_file(d):
 def update_activity_count():
     for dataset in Dataset.objects.all():
         dataset.update_activities_count()
+
+
+@job
+def synchronize_all_activity_to_solr_indexing():
+    queue = django_rq.get_queue('solr')
+    for activity in Activity.objects.all():
+        indexing = solr.search(
+            q='id:{id}'.format(id=activity.id)
+        )
+
+        if not indexing.docs:
+            queue.enqueue(
+                synchronize_activity_to_solr_indexing_by_id,
+                args=(activity.id,)
+            )
+
+
+@job
+def synchronize_activity_to_solr_indexing_by_id(activity_id):
+    ActivityTaskIndexing(
+        instance=Activity.objects.get(id=activity_id),
+        related=True
+    ).run()
