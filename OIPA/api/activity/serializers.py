@@ -43,7 +43,7 @@ from iati.models import (
     ResultIndicatorPeriodActualDimension, ResultIndicatorPeriodActualLocation,
     ResultIndicatorPeriodTarget, ResultIndicatorPeriodTargetDimension,
     ResultIndicatorPeriodTargetLocation, ResultIndicatorReference,
-    ResultIndicatorTitle, ResultTitle, ResultType, Title
+    ResultIndicatorTitle, ResultReference, ResultTitle, ResultType, Title
 )
 from iati.parser import validators
 from iati.transaction.models import (
@@ -2372,12 +2372,68 @@ class ContactInfoSerializer(ModelSerializerNoValidation):
         )
 
 
+class ResultReferenceSerializer(ModelSerializerNoValidation):
+    vocabulary = VocabularySerializer()
+    code = serializers.CharField(required=False)
+
+    result = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = ResultReference
+        fields = (
+            'result',
+            'id',
+            'vocabulary',
+            'code',
+            'vocabulary_uri',
+        )
+
+    def validate(self, data):
+        result = get_or_raise(
+            Result, data, 'result')
+
+        validated = validators.activity_result_reference(
+            result,
+            data.get('vocabulary', {}).get('code'),
+            data.get('code'),
+            data.get('vocabulary_uri'),
+        )
+
+        return handle_errors(validated)
+
+    def create(self, validated_data):
+        result = validated_data.get('result')
+
+        instance = ResultReference.objects.create(
+            **validated_data)
+
+        result.activity.modified = True
+        result.activity.save()
+
+        return instance
+
+    def update(self, instance, validated_data):
+        result = validated_data.get('result')
+
+        update_instance = ResultReference(
+            **validated_data)
+        update_instance.id = instance.id
+        update_instance.save()
+
+        result.activity.modified = True
+        result.activity.save()
+
+        return update_instance
+
+
 class ResultSerializer(ModelSerializerNoValidation):
     type = CodelistSerializer()
     title = NarrativeContainerSerializer(source="resulttitle")
     description = NarrativeContainerSerializer(source="resultdescription")
     indicators = ResultIndicatorSerializer(
         source='resultindicator_set', many=True, read_only=True)
+    reference = ResultReferenceSerializer(
+        source='resultreference_set', many=True, read_only=True)
 
     activity = serializers.CharField(write_only=True)
 
@@ -2423,7 +2479,8 @@ class ResultSerializer(ModelSerializerNoValidation):
             'sectors',
             'recipient_countries',
             'recipient_regions',
-            'iati_identifier'
+            'iati_identifier',
+            'reference',
         )
 
     def validate(self, data):
