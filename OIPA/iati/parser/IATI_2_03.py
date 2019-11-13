@@ -1039,8 +1039,8 @@ class Parse(IatiParser):
                     "code",
                     "code is unspecified or invalid")
 
-            code = slugify(code)
-            region = self.get_or_none(Region, code=code)
+            slugified_code = slugify(code)
+            region = self.get_or_none(Region, code=slugified_code)
 
             if not region:
                 region = Region()
