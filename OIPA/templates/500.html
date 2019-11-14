@@ -1,6 +1,8 @@
 {% load staticfiles %}
 {% load rest_framework %}
 <!DOCTYPE html>
+<html>Sorry 500 error</html>
+{% comment %}
 <html>
     <head>
     {% block head %}
@@ -58,7 +60,7 @@
         <section class="middle">
             <div class="row">
                 <div class="columns small-12 large-12" style="margin: 40px 0 270px;">
-                    <h1>Looks like something went wrong!</h1>
+                    <h1>Looks like something went fucking wrong!</h1>
                     <p>We track these errors automatically, but if the problem persists feel free to contact us.</p>
                 </div>
             </div>
@@ -101,8 +103,9 @@
             var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
         })();
 
-    </script>  
+    </script>
 
 {% endblock %}
 
 </html>
+{% endcomment %}
