@@ -1457,6 +1457,7 @@ class ActivityRecipientRegionSerializer(DynamicFieldsModelSerializer):
     vocabulary_uri = serializers.URLField(required=False)
 
     activity = serializers.CharField(write_only=True)
+    narratives = NarrativeSerializer(many=True, required=True)
 
     class Meta:
         model = ActivityRecipientRegion
@@ -1467,6 +1468,7 @@ class ActivityRecipientRegionSerializer(DynamicFieldsModelSerializer):
             'percentage',
             'vocabulary',
             'vocabulary_uri',
+            'narratives',
         )
 
     def validate(self, data):
