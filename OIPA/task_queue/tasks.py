@@ -20,9 +20,14 @@ from common.download_file import DownloadFile, hash_file
 from iati.activity_aggregation_calculation import (
     ActivityAggregationCalculation
 )
-from iati.models import Activity, Document, DocumentLink
+from iati.models import Activity, Budget, Document, DocumentLink, Result
+from iati.transaction.models import Transaction
 from iati_synchroniser.models import Dataset
-from solr.activity.tasks import ActivityTaskIndexing, solr
+from solr.activity.tasks import ActivityTaskIndexing
+from solr.activity.tasks import solr as solr_activity
+from solr.budget.tasks import solr as solr_budget
+from solr.result.tasks import solr as solr_result
+from solr.transaction.tasks import solr as solr_transaction
 
 redis_conn = Redis.from_url(settings.RQ_REDIS_URL)
 
@@ -505,22 +510,99 @@ def update_activity_count():
 
 
 @job
-def synchronize_all_activity_to_solr_indexing():
+def synchronize_solr_indexing():
     queue = django_rq.get_queue('solr')
-    for activity in Activity.objects.all():
-        indexing = solr.search(
-            q='id:{id}'.format(id=activity.id)
-        )
 
-        if not indexing.docs:
-            queue.enqueue(
-                synchronize_activity_to_solr_indexing_by_id,
-                args=(activity.id,)
-            )
+    # Budget
+    list_budget_id = list(
+        Budget.objects.all().values_list('id', flat=True)
+    )
+    budget_hits = solr_budget.search(q='*:*', fl='id').hits
+    budget_docs = solr_budget.search(
+        q='*:*',  fl='id', rows=budget_hits
+    ).docs
+    list_budget_doc_id = [
+        int(budget_doc['id']) for budget_doc in budget_docs
+    ]
+
+    for budget_doc_id in (list(set(list_budget_doc_id) - set(list_budget_id))):
+        queue.enqueue(delete_budget_in_solr, args=(budget_doc_id,))
+
+    # Result
+    list_result_id = list(
+        Result.objects.all().values_list('id', flat=True)
+    )
+    result_hits = solr_result.search(q='*:*', fl='id').hits
+    result_docs = solr_result.search(
+        q='*:*', fl='id', rows=result_hits
+    ).docs
+    list_result_doc_id = [
+        int(result_doc['id']) for result_doc in result_docs
+    ]
+
+    for result_doc_id in (list(set(list_result_doc_id) - set(list_result_id))):
+        queue.enqueue(delete_result_in_solr, args=(result_doc_id,))
+
+    # Transaction
+    list_transaction_id = list(
+        Transaction.objects.all().values_list('id', flat=True)
+    )
+    transaction_hits = solr_transaction.search(q='*:*', fl='id').hits
+    transaction_docs = solr_transaction.search(
+        q='*:*', fl='id', rows=transaction_hits
+    ).docs
+    list_transaction_doc_id = [
+        int(transaction_doc['id']) for transaction_doc in transaction_docs
+    ]
+
+    for transaction_doc_id in (
+        list(set(list_transaction_doc_id) - set(list_transaction_id))
+    ):
+        queue.enqueue(delete_transaction_in_solr, args=(transaction_doc_id,))
+
+    # Activity
+    list_activity_id = list(
+        Activity.objects.all().values_list('id', flat=True)
+    )
+    activity_hits = solr_activity.search(q='*:*', fl='id').hits
+    activity_docs = solr_activity.search(
+        q='*:*', fl='id', rows=activity_hits
+    ).docs
+    list_activity_doc_id = [
+        int(activity_doc['id']) for activity_doc in activity_docs
+    ]
+
+    for doc_id in (list(set(list_activity_doc_id) - set(list_activity_id))):
+        queue.enqueue(delete_activity_in_solr, args=(doc_id,))
+
+    for activity_id in (
+        list(set(list_activity_id) - set(list_activity_doc_id))
+    ):
+        queue.enqueue(add_activity_to_solr, args=(activity_id,))
 
 
 @job
-def synchronize_activity_to_solr_indexing_by_id(activity_id):
+def delete_transaction_in_solr(transaction_doc_id):
+    solr_transaction.delete(q='id:{id}'.format(id=transaction_doc_id))
+
+
+@job
+def delete_result_in_solr(result_doc_id):
+    solr_result.delete(q='id:{id}'.format(id=result_doc_id))
+
+
+@job
+def delete_budget_in_solr(budget_doc_id):
+    solr_budget.delete(q='id:{id}'.format(id=budget_doc_id))
+
+
+@job
+def delete_activity_in_solr(activity_id):
+    solr_activity.delete(q='id:{id}'.format(id=activity_id))
+
+
+@job
+def add_activity_to_solr(activity_id):
     ActivityTaskIndexing(
         instance=Activity.objects.get(id=activity_id),
         related=True
