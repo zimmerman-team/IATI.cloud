@@ -6,7 +6,7 @@ from api.activity.serializers import (
     CrsAddSerializer, DescriptionSerializer, DocumentLinkSerializer,
     FssSerializer, HumanitarianScopeSerializer, OtherIdentifierSerializer,
     ParticipatingOrganisationSerializer, PlannedDisbursementSerializer,
-    ReportingOrganisationSerializer, TitleSerializer
+    ReportingOrganisationSerializer, TitleSerializer, ActivityTagSerializer
 )
 from solr.activity.serializers import (
     ActivityRecipientRegionSerializer, ActivitySectorSerializer,
@@ -568,6 +568,46 @@ class ActivityIndexing(BaseIndexing):
                     'sector_narrative',
                     'sector_narrative_text',
                     'sector_narrative_lang'
+                )
+
+    def tag(self):
+        tag_all = self.record.activitytag_set.all()
+        if tag_all:
+            self.add_field('tag', [])
+            self.add_field('tag_vocabulary', [])
+            self.add_field('tag_vocabulary_uri', [])
+            self.add_field('tag_code', [])
+
+            self.add_field('tag_narrative', [])
+            self.add_field('tag_narrative_lang', [])
+            self.add_field('tag_narrative_text', [])
+
+            for tag in tag_all:
+                self.add_value_list(
+                    'tag',
+                    JSONRenderer().render(
+                        ActivityTagSerializer(tag).data
+                    ).decode()
+                )
+
+                self.add_value_list(
+                    'tag_vocabulary',
+                    tag.vocabulary_id
+                )
+                self.add_value_list(
+                    'tag_vocabulary_uri',
+                    tag.vocabulary_uri
+                )
+                self.add_value_list(
+                    'tag_code',
+                    tag.code
+                )
+
+                self.related_narrative(
+                    tag,
+                    'tag_narrative',
+                    'tag_narrative_text',
+                    'tag_narrative_lang'
                 )
 
     def country_budget_items(self):
@@ -1995,6 +2035,7 @@ class ActivityIndexing(BaseIndexing):
         self.recipient_region()
         self.location()
         self.sector()
+        self.tag()
         self.country_budget_items()
         self.humanitarian_scope()
         self.policy_marker()
