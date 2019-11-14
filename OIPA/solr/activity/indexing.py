@@ -1,12 +1,13 @@
 from rest_framework.renderers import JSONRenderer
 
 from api.activity.serializers import (
-    ActivityDateSerializer, ActivityPolicyMarkerSerializer, BudgetSerializer,
-    ConditionSerializer, ContactInfoSerializer, CountryBudgetItemsSerializer,
-    CrsAddSerializer, DescriptionSerializer, DocumentLinkSerializer,
-    FssSerializer, HumanitarianScopeSerializer, OtherIdentifierSerializer,
+    ActivityDateSerializer, ActivityPolicyMarkerSerializer,
+    ActivityTagSerializer, BudgetSerializer, ConditionSerializer,
+    ContactInfoSerializer, CountryBudgetItemsSerializer, CrsAddSerializer,
+    DescriptionSerializer, DocumentLinkSerializer, FssSerializer,
+    HumanitarianScopeSerializer, OtherIdentifierSerializer,
     ParticipatingOrganisationSerializer, PlannedDisbursementSerializer,
-    ReportingOrganisationSerializer, TitleSerializer, ActivityTagSerializer
+    ReportingOrganisationSerializer, TitleSerializer
 )
 from solr.activity.serializers import (
     ActivityRecipientRegionSerializer, ActivitySectorSerializer,
