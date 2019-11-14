@@ -1401,7 +1401,7 @@ class ActivityStatusReference(ElementReference):
         # />
 
 
-class RecipientCountryReference(ElementReference):
+class RecipientCountryReference(ElementWithNarrativeReference):
     """
     http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/recipient-country/
     """
@@ -1445,6 +1445,7 @@ class RecipientCountryReference(ElementReference):
                 # Percentage value type is {Decimal}, then convert it to string
                 str(percentage_value)
             )
+        self.create_narrative(recipient_country_element)
 
 
 class RecipientRegionReference(ElementWithNarrativeReference):
