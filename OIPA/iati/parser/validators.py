@@ -2017,6 +2017,61 @@ def activity_result(
     }
 
 
+def activity_result_reference(
+        result,
+        result_code,
+        vocabulary_code,
+        vocabulary_uri,
+        instance=None,  # only set on update
+):
+    warnings = []
+    errors = []
+
+    vocabulary = get_or_none(models.ResultVocabulary, code=vocabulary_code)
+    if not result_code:
+        errors.append(
+            RequiredFieldError(
+                "result-indicator-reference",
+                "code",
+                apiField="code",
+            ))
+    if not vocabulary_code:
+        errors.append(
+            RequiredFieldError(
+                "result-reference",
+                "vocabulary",
+                apiField="vocabulary.code",
+            ))
+    elif not vocabulary:
+        errors.append(
+            FieldValidationError(
+                "result-reference",
+                "vocabulary",
+                "vocabulary not found for code {}".format(vocabulary_code),
+                apiField="vocabulary.code",
+            ))
+
+    if vocabulary_code == "99" and not vocabulary_uri:
+        errors.append(
+            RequiredFieldError(
+                "result-reference",
+                "vocabulary_uri",
+                "vocabulary_uri is required when vocabulary code is 99",
+                apiField="vocabulary.code",
+            ))
+
+    return {
+        "warnings": warnings,
+        "errors": errors,
+        "validated_data": {
+            "result": result,
+            "code": result_code,
+            "vocabulary": vocabulary,
+            "vocabulary_uri": vocabulary_uri,
+        },
+    }
+
+
 def activity_result_indicator(
         result,
         measure_code,

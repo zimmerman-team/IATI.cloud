@@ -1,10 +1,10 @@
 from rest_framework.renderers import JSONRenderer
 
 from api.activity.serializers import (
-    ActivityDateSerializer, BudgetSerializer, ConditionSerializer,
-    ContactInfoSerializer, CountryBudgetItemsSerializer, CrsAddSerializer,
-    DescriptionSerializer, DocumentLinkSerializer, FssSerializer,
-    HumanitarianScopeSerializer, OtherIdentifierSerializer,
+    ActivityDateSerializer, ActivityPolicyMarkerSerializer, BudgetSerializer,
+    ConditionSerializer, ContactInfoSerializer, CountryBudgetItemsSerializer,
+    CrsAddSerializer, DescriptionSerializer, DocumentLinkSerializer,
+    FssSerializer, HumanitarianScopeSerializer, OtherIdentifierSerializer,
     ParticipatingOrganisationSerializer, PlannedDisbursementSerializer,
     ReportingOrganisationSerializer, TitleSerializer
 )
@@ -665,6 +665,51 @@ class ActivityIndexing(BaseIndexing):
                     'humanitarian_scope_narrative',
                     'humanitarian_scope_narrative_text',
                     'humanitarian_scope_narrative_lang'
+                )
+
+    def policy_marker(self):
+        policy_marker_all = self.record.activitypolicymarker_set.all()
+        if policy_marker_all:
+            self.add_field('policy_marker', [])
+            self.add_field('policy_marker_vocabulary', [])
+            self.add_field('policy_marker_vocabulary_uri', [])
+            self.add_field('policy_marker_code', [])
+            self.add_field('policy_marker_significance', [])
+
+            self.add_field('policy_marker_narrative', [])
+            self.add_field('policy_marker_narrative_lang', [])
+            self.add_field('policy_marker_narrative_text', [])
+
+            for policy_marker in policy_marker_all:
+                self.add_value_list(
+                    'policy_marker',
+                    JSONRenderer().render(
+                        ActivityPolicyMarkerSerializer(policy_marker).data
+                    ).decode()
+                )
+
+                self.add_value_list(
+                    'policy_marker_vocabulary',
+                    policy_marker.vocabulary_id
+                )
+                self.add_value_list(
+                    'policy_marker_vocabulary_uri',
+                    policy_marker.vocabulary_uri
+                )
+                self.add_value_list(
+                    'policy_marker_code',
+                    policy_marker.code_id
+                )
+                self.add_value_list(
+                    'policy_marker_significance',
+                    policy_marker.significance_id
+                )
+
+                self.related_narrative(
+                    policy_marker,
+                    'policy_marker_narrative',
+                    'policy_marker_narrative_text',
+                    'policy_marker_narrative_lang'
                 )
 
     def budget(self):
@@ -1952,6 +1997,7 @@ class ActivityIndexing(BaseIndexing):
         self.sector()
         self.country_budget_items()
         self.humanitarian_scope()
+        self.policy_marker()
         self.budget()
         self.planned_disbursement()
         self.transaction()

@@ -1039,15 +1039,11 @@ class Parse(IatiParser):
                     "code",
                     "code is unspecified or invalid")
 
-            code = slugify(code)
-            region = self.get_or_none(Region, code=code)
-
-            if not region:
-                region = Region()
-                region.code = code
-                region.name = 'Vocabulary 99'
-                region.region_vocabulary = region_vocabulary
-                region.save()
+            region = Region()
+            region.code = code
+            region.name = 'Vocabulary 99'
+            region.region_vocabulary = region_vocabulary
+            region.save()
 
         elif not region:
             raise IgnoredVocabularyError(

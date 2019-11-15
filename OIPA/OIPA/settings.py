@@ -244,6 +244,10 @@ RQ_QUEUES = {
     'document_collector': {
         'URL': RQ_REDIS_URL,
         'DEFAULT_TIMEOUT': 5400,
+    },
+    'solr': {
+        'URL': RQ_REDIS_URL,
+        'DEFAULT_TIMEOUT': 10800,
     }
 }
 
