@@ -129,7 +129,7 @@
 
     <field name="date_created" type="pdate" multiValued="false" indexed="true" required="true" stored="true"/>
     <field name="date_updated" type="pdate" multiValued="false" indexed="true" required="true" stored="true"/>
-    <field name="iati_version" type="string" multiValued="false" indexed="true" required="true" stored="true"/>
+    <field name="iati_version" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
 
     <field name="source_url" type="string" multiValued="false" indexed="true" required="true" stored="true"/>
     <field name="publisher" type="text_general" multiValued="false" indexed="true" required="true" stored="true"/>
