@@ -20,7 +20,7 @@ from iati.transaction import models as transaction_models
 from iati_codelists import models as codelist_models
 from iati_organisation import models as organisation_models
 from iati_vocabulary import models as vocabulary_models
-from solr.activity.tasks import ActivityTaskIndexing
+from task_queue.tasks import synchronize_solr_activity
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
@@ -4155,7 +4155,7 @@ class Parse(IatiParser):
         post_save.set_sector_budget(activity)
 
         # Solr indexing
-        ActivityTaskIndexing(instance=activity, related=True).run()
+        synchronize_solr_activity(activity_id=activity.id)
 
     def post_save_file(self, dataset):
         """Perform all actions that need to happen after a single IATI

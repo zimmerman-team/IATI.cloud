@@ -1,6 +1,7 @@
 import datetime
 import logging
 from pathlib import Path
+from io import BytesIO
 
 from django.conf import settings
 from django.db import models
@@ -84,28 +85,32 @@ class Dataset(models.Model):
         return self.name
 
     def process(self, force_reparse=False):
-        from iati.parser.parse_manager import ParseManager
-        start_datetime = datetime.datetime.now()
+        if not self.iati_version:
+            self.update_activities_count()
 
-        parser = ParseManager(self, force_reparse=force_reparse)
-        parser.parse_all()
-        self.is_parsed = True
+        if self.iati_version in ['2.01', '2.02', '2.03']:
+            from iati.parser.parse_manager import ParseManager
+            start_datetime = datetime.datetime.now()
 
-        self.date_updated = datetime.datetime.now()
+            parser = ParseManager(self, force_reparse=force_reparse)
+            parser.parse_all()
+            self.is_parsed = True
 
-        time_diff = self.date_updated - start_datetime
-        hours, remainder = divmod(time_diff.seconds, 3600)
-        minutes, seconds = divmod(remainder, 60)
+            self.date_updated = datetime.datetime.now()
 
-        def prepend_zero(time_period):
-            if time_period < 10:
-                return '0' + str(time_period)
-            return time_period
+            time_diff = self.date_updated - start_datetime
+            hours, remainder = divmod(time_diff.seconds, 3600)
+            minutes, seconds = divmod(remainder, 60)
 
-        self.time_to_parse = '%s:%s:%s' % (prepend_zero(
-            hours), prepend_zero(minutes), prepend_zero(seconds))
+            def prepend_zero(time_period):
+                if time_period < 10:
+                    return '0' + str(time_period)
+                return time_period
 
-        self.save(process=False)
+            self.time_to_parse = '%s:%s:%s' % (prepend_zero(
+                hours), prepend_zero(minutes), prepend_zero(seconds))
+
+            self.save(process=False)
 
     def process_activity(self, activity_id):
         """
@@ -143,6 +148,20 @@ class Dataset(models.Model):
 
             # Parse to XML tree
             tree = etree.fromstring(response.content)
+
+            # Get version from the XML
+            if not self.iati_version:
+                parser = etree.XMLParser(huge_tree=True, encoding='utf-8')
+                parser_tree = etree.parse(BytesIO(response.content), parser)
+                root = parser_tree.getroot()
+
+                # Continue parsing if version is 2.01 or above
+                iati_version = root.xpath('@version')
+                if len(iati_version) > 0:
+                    iati_version = iati_version[0]
+
+                self.iati_version = iati_version
+
             count = len(tree.getchildren())
             self.activities_count_in_xml = count - 1 if count > 0 else count
 

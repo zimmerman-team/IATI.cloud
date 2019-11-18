@@ -582,6 +582,11 @@ def synchronize_solr_indexing():
 
 
 @job
+def synchronize_solr_activity(activity_id):
+    queue = django_rq.get_queue('solr')
+    queue.enqueue(add_activity_to_solr, args=(activity_id,))
+
+@job
 def delete_transaction_in_solr(transaction_doc_id):
     solr_transaction.delete(q='id:{id}'.format(id=transaction_doc_id))
 
