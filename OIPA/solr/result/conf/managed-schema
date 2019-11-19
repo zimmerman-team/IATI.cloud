@@ -126,7 +126,7 @@
     <field name="iati_identifier" type="string" multiValued="false" indexed="true" required="true" stored="true"/>
     <field name="humanitarian" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
 
-    <field name="reporting_org_ref" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="reporting_org_ref" type="non_case_sensitive" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="reporting_org_type" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="reporting_org_secondary_reporter" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="reporting_org_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
@@ -1125,4 +1125,16 @@
         <filter class="solr.LowerCaseFilterFactory"/>
       </analyzer>
     </fieldType>
+
+    <fieldType name="non_case_sensitive" class="solr.TextField">
+      <analyzer type="index">
+          <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+          <filter class="solr.LowerCaseFilterFactory"/>
+      </analyzer>
+      <analyzer type="query">
+          <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+          <filter class="solr.LowerCaseFilterFactory"/>
+      </analyzer>
+    </fieldType>
+
 </schema>
