@@ -2,7 +2,7 @@ from rest_framework.renderers import JSONRenderer
 
 from api.activity.serializers import (
     DocumentLinkSerializer, ResultIndicatorReferenceSerializer,
-    ResultIndicatorSerializer
+    ResultIndicatorSerializer, ResultReferenceSerializer
 )
 from iati.models import ResultIndicatorPeriodTarget
 from solr.indexing import BaseIndexing
@@ -107,7 +107,7 @@ class ResultIndexing(BaseIndexing):
                 self.add_value_list(
                     prefix,
                     JSONRenderer().render(
-                        ResultIndicatorReferenceSerializer(reference).data
+                        ResultIndicatorReferenceSerializer(reference).data if not is_indicator else ResultReferenceSerializer(reference).data  # NOQA: E501
                     ).decode()
                 )
 
