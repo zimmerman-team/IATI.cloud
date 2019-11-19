@@ -1147,6 +1147,7 @@ class ActivityIndexing(BaseIndexing):
                             instance=document_link,
                             fields=[
                                 'format',
+                                'url',
                                 'categories',
                                 'languages',
                                 'title',
