@@ -2,6 +2,7 @@ import logging
 from datetime import datetime
 from decimal import Decimal, InvalidOperation
 
+import django_rq
 from django.conf import settings
 from django.contrib.gis.geos import GEOSGeometry, Point
 from django.template.defaultfilters import slugify
@@ -20,7 +21,7 @@ from iati.transaction import models as transaction_models
 from iati_codelists import models as codelist_models
 from iati_organisation import models as organisation_models
 from iati_vocabulary import models as vocabulary_models
-from task_queue.tasks import synchronize_solr_activity
+from task_queue.tasks import add_activity_to_solr
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
@@ -4155,7 +4156,8 @@ class Parse(IatiParser):
         post_save.set_sector_budget(activity)
 
         # Solr indexing
-        synchronize_solr_activity(activity_id=activity.id)
+        queue = django_rq.get_queue('solr')
+        queue.enqueue(add_activity_to_solr, args=(activity.id,))
 
     def post_save_file(self, dataset):
         """Perform all actions that need to happen after a single IATI
