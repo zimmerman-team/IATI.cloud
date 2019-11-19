@@ -22,7 +22,7 @@ from iati.transaction import models as transaction_models
 from iati_codelists import models as codelist_models
 from iati_organisation import models as organisation_models
 from iati_vocabulary import models as vocabulary_models
-from task_queue.tasks import add_activity_to_solr, synchronize_solr_activity
+from task_queue.tasks import add_activity_to_solr
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
