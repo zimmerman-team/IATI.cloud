@@ -135,7 +135,7 @@
     <field name="activity_date_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="activity_date_iso_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
 
-    <field name="reporting_org_ref" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="reporting_org_ref" type="non_case_sensitive" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="reporting_org_type" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="reporting_org_secondary_reporter" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="reporting_org_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
@@ -149,7 +149,7 @@
     <field name="transaction_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="transaction_description_narrative" type="iati_narrative" multiValued="false" indexed="true" required="false" stored="true"/>
 
-    <field name="transaction_provider_org_ref" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="transaction_provider_org_ref" type="non_case_sensitive" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="transaction_provider_org_provider_activity_id" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="transaction_provider_org_type" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
 
@@ -157,7 +157,7 @@
     <field name="transaction_provider_org_narrative_text" type="iati_narrative" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="transaction_provider_org_narrative_lang" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
 
-    <field name="transaction_receiver_org_ref" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="transaction_receiver_org_ref" type="non_case_sensitive" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="transaction_receiver_org_receiver_activity_id" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="transaction_receiver_org_type" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
 
@@ -1094,6 +1094,17 @@
         <tokenizer class="solr.StandardTokenizerFactory"/>
         <filter class="solr.NGramFilterFactory" minGramSize="2" maxGramSize="100"/>
         <filter class="solr.LowerCaseFilterFactory"/>
+      </analyzer>
+    </fieldType>
+
+    <fieldType name="non_case_sensitive" class="solr.TextField">
+      <analyzer type="index">
+          <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+          <filter class="solr.LowerCaseFilterFactory"/>
+      </analyzer>
+      <analyzer type="query">
+          <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+          <filter class="solr.LowerCaseFilterFactory"/>
       </analyzer>
     </fieldType>
 

@@ -1,10 +1,11 @@
 from rest_framework.renderers import JSONRenderer
 
 from api.activity.serializers import (
-    ActivityDateSerializer, ActivityPolicyMarkerSerializer, BudgetSerializer,
-    ConditionSerializer, ContactInfoSerializer, CountryBudgetItemsSerializer,
-    CrsAddSerializer, DescriptionSerializer, DocumentLinkSerializer,
-    FssSerializer, HumanitarianScopeSerializer, OtherIdentifierSerializer,
+    ActivityDateSerializer, ActivityPolicyMarkerSerializer,
+    ActivityTagSerializer, BudgetSerializer, ConditionsSerializer,
+    ContactInfoSerializer, CountryBudgetItemsSerializer, CrsAddSerializer,
+    DescriptionSerializer, DocumentLinkSerializer, FssSerializer,
+    HumanitarianScopeSerializer, OtherIdentifierSerializer,
     ParticipatingOrganisationSerializer, PlannedDisbursementSerializer,
     ReportingOrganisationSerializer, TitleSerializer
 )
@@ -570,6 +571,46 @@ class ActivityIndexing(BaseIndexing):
                     'sector_narrative_lang'
                 )
 
+    def tag(self):
+        tag_all = self.record.activitytag_set.all()
+        if tag_all:
+            self.add_field('tag', [])
+            self.add_field('tag_vocabulary', [])
+            self.add_field('tag_vocabulary_uri', [])
+            self.add_field('tag_code', [])
+
+            self.add_field('tag_narrative', [])
+            self.add_field('tag_narrative_lang', [])
+            self.add_field('tag_narrative_text', [])
+
+            for tag in tag_all:
+                self.add_value_list(
+                    'tag',
+                    JSONRenderer().render(
+                        ActivityTagSerializer(tag).data
+                    ).decode()
+                )
+
+                self.add_value_list(
+                    'tag_vocabulary',
+                    tag.vocabulary_id
+                )
+                self.add_value_list(
+                    'tag_vocabulary_uri',
+                    tag.vocabulary_uri
+                )
+                self.add_value_list(
+                    'tag_code',
+                    tag.code
+                )
+
+                self.related_narrative(
+                    tag,
+                    'tag_narrative',
+                    'tag_narrative_text',
+                    'tag_narrative_lang'
+                )
+
     def country_budget_items(self):
         country_budget_item = get_child_attr(
             self.record,
@@ -1106,6 +1147,7 @@ class ActivityIndexing(BaseIndexing):
                             instance=document_link,
                             fields=[
                                 'format',
+                                'url',
                                 'categories',
                                 'languages',
                                 'title',
@@ -1160,7 +1202,7 @@ class ActivityIndexing(BaseIndexing):
             self.add_field(
                 'conditions',
                 JSONRenderer().render(
-                    ConditionSerializer(activity_condition).data
+                    ConditionsSerializer(activity_condition).data
                 ).decode()
             )
 
@@ -1995,6 +2037,7 @@ class ActivityIndexing(BaseIndexing):
         self.recipient_region()
         self.location()
         self.sector()
+        self.tag()
         self.country_budget_items()
         self.humanitarian_scope()
         self.policy_marker()
