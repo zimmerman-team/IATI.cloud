@@ -2,7 +2,7 @@ from rest_framework.renderers import JSONRenderer
 
 from api.activity.serializers import (
     ActivityDateSerializer, ActivityPolicyMarkerSerializer,
-    ActivityTagSerializer, BudgetSerializer, ConditionSerializer,
+    ActivityTagSerializer, BudgetSerializer, ConditionsSerializer,
     ContactInfoSerializer, CountryBudgetItemsSerializer, CrsAddSerializer,
     DescriptionSerializer, DocumentLinkSerializer, FssSerializer,
     HumanitarianScopeSerializer, OtherIdentifierSerializer,
@@ -1202,7 +1202,7 @@ class ActivityIndexing(BaseIndexing):
             self.add_field(
                 'conditions',
                 JSONRenderer().render(
-                    ConditionSerializer(activity_condition).data
+                    ConditionsSerializer(activity_condition).data
                 ).decode()
             )
 
