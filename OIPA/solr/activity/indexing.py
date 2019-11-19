@@ -1,12 +1,8 @@
 from rest_framework.renderers import JSONRenderer
 
 from api.activity.serializers import (
-    ActivityDateSerializer, ActivityPolicyMarkerSerializer, BudgetSerializer,
-    ConditionsSerializer, ContactInfoSerializer, CountryBudgetItemsSerializer,
-    CrsAddSerializer, DescriptionSerializer, DocumentLinkSerializer,
-    FssSerializer, HumanitarianScopeSerializer, OtherIdentifierSerializer,
     ActivityDateSerializer, ActivityPolicyMarkerSerializer,
-    ActivityTagSerializer, BudgetSerializer, ConditionSerializer,
+    ActivityTagSerializer, BudgetSerializer, ConditionsSerializer,
     ContactInfoSerializer, CountryBudgetItemsSerializer, CrsAddSerializer,
     DescriptionSerializer, DocumentLinkSerializer, FssSerializer,
     HumanitarianScopeSerializer, OtherIdentifierSerializer,
