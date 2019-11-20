@@ -55,6 +55,7 @@ class PostmanAPIImport(object):
             if 'item' in item:
                 self.recursive_clean(item['item'], url_string_to_replace_with)
 
+    @staticmethod
     def url_replacing(self, element_string_to_be_replaced, url_string_to_replace_with):  # NOQA: E501
         new_url = element_string_to_be_replaced['request']['url']['raw'].replace('iati.cloud', url_string_to_replace_with)  # NOQA: E501
         element_string_to_be_replaced['request']['url']['raw'] = new_url
