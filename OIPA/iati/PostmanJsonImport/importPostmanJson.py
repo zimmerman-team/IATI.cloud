@@ -21,26 +21,41 @@ class PostmanAPIImport(object):
             headers={"x-Api-Key": "55dfaaebcc9448bba40e5ff485305a2b"})
         response = urllib.request.urlopen(request)
         json_string = response.read()
-        result = json.loads(json_string)
-        self.simplify(result)
+        result_for_test_datastore_iatistandard_org = json.loads(json_string)
+        result_for_iati_cloud = json.loads(json_string)
+
+        self.simplify(result_for_iati_cloud, 'iati.cloud')
+        self.simplify(result_for_test_datastore_iatistandard_org, 'test-datastore.iatistandard.org')  # NOQA: E501
         try:
-            with open(self.file_path + '/postman/postman_json.json', 'w') as outfile:     # NOQA: E501
-                json.dump(result, outfile)
-            print("Postman json file was created on: ", datetime.now())
+            with open(self.file_path + '/postman/postman_json_iati_cloud.json', 'w') as outfile:     # NOQA: E501
+                json.dump(result_for_iati_cloud, outfile)
+            print("Postman json file for iati.cloud was created on: ", datetime.now())  # NOQA: E501
+
+            with open(self.file_path + '/postman/postman_json_test_datastore_iatistandard_org.json',  # NOQA: E501
+                      'w') as outfile:     # NOQA: E501
+                json.dump(result_for_test_datastore_iatistandard_org, outfile)
+            print("Postman json file for test-datastore.iatistandard.org was created on: ", datetime.now())  # NOQA:E501
         except IOError:
             pass
 
-    def simplify(self, full_json):
-        self.remove_fields(full_json['collection'])
-        self.recursive_clean(full_json['collection']['item'])
+    def simplify(self, full_json, url_string_to_replace_with):
+        self.remove_fields(full_json['collection'], url_string_to_replace_with)
+        self.recursive_clean(full_json['collection']['item'], url_string_to_replace_with)  # NOQA: E501
 
-    def remove_fields(self, before_remove_event):
+    def remove_fields(self, before_remove_event, url_string_to_replace_with):
         for fields in self.fields_to_remove:
             if fields in before_remove_event:
                 del before_remove_event[fields]
+            if 'request' in before_remove_event:
+                self.url_replacing(before_remove_event, url_string_to_replace_with)  # NOQA: E501
 
-    def recursive_clean(self, before_remove_response):
+    def recursive_clean(self, before_remove_response, url_string_to_replace_with):  # NOQA: E501
         for item in before_remove_response:
-            self.remove_fields(item)
+            self.remove_fields(item, url_string_to_replace_with)
             if 'item' in item:
-                self.recursive_clean(item['item'])
+                self.recursive_clean(item['item'], url_string_to_replace_with)
+
+    @staticmethod
+    def url_replacing(self, element_string_to_be_replaced, url_string_to_replace_with):  # NOQA: E501
+        new_url = element_string_to_be_replaced['request']['url']['raw'].replace('iati.cloud', url_string_to_replace_with)  # NOQA: E501
+        element_string_to_be_replaced['request']['url']['raw'] = new_url
