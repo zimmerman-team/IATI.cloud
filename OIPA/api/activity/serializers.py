@@ -3221,7 +3221,7 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
     id = serializers.CharField(required=False)
     iati_identifier = serializers.CharField()
 
-    reporting_organisation = ReportingOrganisationDataSerializer(
+    reporting_org = ReportingOrganisationDataSerializer(
         read_only=True,
         source="reporting_organisations.first"
     )
@@ -3626,7 +3626,7 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
             'url',
             'id',
             'iati_identifier',
-            'reporting_organisation',
+            'reporting_org',
             'title',
             'descriptions',
             'participating_organisations',
