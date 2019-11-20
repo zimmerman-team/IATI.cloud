@@ -47,7 +47,7 @@ class TestActivityEndpoints(APITestCase):
         )
 
         url = reverse('activities:activity-list')
-        endpoint_url = "%s?format=json&reporting_organisation_identifier=%s" % (  # NOQA: E501
+        endpoint_url = "%s?format=json&reporting_org_identifier=%s" % (  # NOQA: E501
             url, reporting_organisation.ref
         )
 
@@ -87,7 +87,7 @@ class TestActivityEndpoints(APITestCase):
         )
 
         url = reverse('activities:activity-list')
-        endpoint_url = "%s?format=json&reporting_organisation_identifier=%s,%s" % (  # NOQA: E501
+        endpoint_url = "%s?format=json&reporting_org_identifier=%s,%s" % (  # NOQA: E501
             url,
             first_reporting_organisation.ref,
             second_reporting_organisation.ref
