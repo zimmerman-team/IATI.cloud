@@ -24,7 +24,7 @@ class PostmanAPIImport(object):
         result_for_test_datastore_iatistandard_org = json.loads(json_string.decode('utf-8-sig'))
         result_for_iati_cloud = json.loads(json_string.decode('utf-8-sig'))
 
-        self.simplify(result_for_iati_cloud, 'iati.cloud')
+        self.simplify(result_for_iati_cloud, 'iatidatastore.iatistandard.org')
         self.simplify(result_for_test_datastore_iatistandard_org, 'test-datastore.iatistandard.org')  # NOQA: E501
         try:
             with open(self.file_path + '/postman/postman_json_iati_cloud.json', 'w') as outfile:     # NOQA: E501
