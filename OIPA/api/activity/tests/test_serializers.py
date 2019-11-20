@@ -670,7 +670,7 @@ class ActivitySerializerTestCase(TestCase):
             'default_currency',
             'hierarchy',
             'linked_data_uri',
-            'reporting_organisation',
+            'reporting_org',
             'participating_organisations',
             'related_activities',
             'activity_status',

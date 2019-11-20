@@ -47,14 +47,14 @@ class TestActivityEndpoints(APITestCase):
         )
 
         url = reverse('activities:activity-list')
-        endpoint_url = "%s?format=json&reporting_organisation_identifier=%s" % (  # NOQA: E501
+        endpoint_url = "%s?format=json&reporting_org_identifier=%s" % (  # NOQA: E501
             url, reporting_organisation.ref
         )
 
         response = self.c.get(endpoint_url)
         self.assertEqual(response.status_code, 200)
 
-        resp_data = json.loads(response.content)
+        resp_data = json.loads(response.content.decode("utf-8"))
         self.assertEqual(resp_data['count'], 1)
         self.assertEqual(
             resp_data['results'][0]['iati_identifier'],
@@ -87,7 +87,7 @@ class TestActivityEndpoints(APITestCase):
         )
 
         url = reverse('activities:activity-list')
-        endpoint_url = "%s?format=json&reporting_organisation_identifier=%s,%s" % (  # NOQA: E501
+        endpoint_url = "%s?format=json&reporting_org_identifier=%s,%s" % (  # NOQA: E501
             url,
             first_reporting_organisation.ref,
             second_reporting_organisation.ref
@@ -96,7 +96,7 @@ class TestActivityEndpoints(APITestCase):
         response = self.c.get(endpoint_url)
         self.assertEqual(response.status_code, 200)
 
-        resp_data = json.loads(response.content)
+        resp_data = json.loads(response.content.decode("utf-8"))
         self.assertEqual(resp_data['count'], 2)
 
         self.assertEqual(
