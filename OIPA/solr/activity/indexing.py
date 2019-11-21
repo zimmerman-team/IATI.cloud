@@ -1,7 +1,8 @@
 from rest_framework.renderers import JSONRenderer
 
 from api.activity.serializers import (
-    ActivityDateSerializer, BudgetSerializer, ConditionSerializer,
+    ActivityDateSerializer, ActivityPolicyMarkerSerializer,
+    ActivityTagSerializer, BudgetSerializer, ConditionsSerializer,
     ContactInfoSerializer, CountryBudgetItemsSerializer, CrsAddSerializer,
     DescriptionSerializer, DocumentLinkSerializer, FssSerializer,
     HumanitarianScopeSerializer, OtherIdentifierSerializer,
@@ -570,6 +571,46 @@ class ActivityIndexing(BaseIndexing):
                     'sector_narrative_lang'
                 )
 
+    def tag(self):
+        tag_all = self.record.activitytag_set.all()
+        if tag_all:
+            self.add_field('tag', [])
+            self.add_field('tag_vocabulary', [])
+            self.add_field('tag_vocabulary_uri', [])
+            self.add_field('tag_code', [])
+
+            self.add_field('tag_narrative', [])
+            self.add_field('tag_narrative_lang', [])
+            self.add_field('tag_narrative_text', [])
+
+            for tag in tag_all:
+                self.add_value_list(
+                    'tag',
+                    JSONRenderer().render(
+                        ActivityTagSerializer(tag).data
+                    ).decode()
+                )
+
+                self.add_value_list(
+                    'tag_vocabulary',
+                    tag.vocabulary_id
+                )
+                self.add_value_list(
+                    'tag_vocabulary_uri',
+                    tag.vocabulary_uri
+                )
+                self.add_value_list(
+                    'tag_code',
+                    tag.code
+                )
+
+                self.related_narrative(
+                    tag,
+                    'tag_narrative',
+                    'tag_narrative_text',
+                    'tag_narrative_lang'
+                )
+
     def country_budget_items(self):
         country_budget_item = get_child_attr(
             self.record,
@@ -665,6 +706,51 @@ class ActivityIndexing(BaseIndexing):
                     'humanitarian_scope_narrative',
                     'humanitarian_scope_narrative_text',
                     'humanitarian_scope_narrative_lang'
+                )
+
+    def policy_marker(self):
+        policy_marker_all = self.record.activitypolicymarker_set.all()
+        if policy_marker_all:
+            self.add_field('policy_marker', [])
+            self.add_field('policy_marker_vocabulary', [])
+            self.add_field('policy_marker_vocabulary_uri', [])
+            self.add_field('policy_marker_code', [])
+            self.add_field('policy_marker_significance', [])
+
+            self.add_field('policy_marker_narrative', [])
+            self.add_field('policy_marker_narrative_lang', [])
+            self.add_field('policy_marker_narrative_text', [])
+
+            for policy_marker in policy_marker_all:
+                self.add_value_list(
+                    'policy_marker',
+                    JSONRenderer().render(
+                        ActivityPolicyMarkerSerializer(policy_marker).data
+                    ).decode()
+                )
+
+                self.add_value_list(
+                    'policy_marker_vocabulary',
+                    policy_marker.vocabulary_id
+                )
+                self.add_value_list(
+                    'policy_marker_vocabulary_uri',
+                    policy_marker.vocabulary_uri
+                )
+                self.add_value_list(
+                    'policy_marker_code',
+                    policy_marker.code_id
+                )
+                self.add_value_list(
+                    'policy_marker_significance',
+                    policy_marker.significance_id
+                )
+
+                self.related_narrative(
+                    policy_marker,
+                    'policy_marker_narrative',
+                    'policy_marker_narrative_text',
+                    'policy_marker_narrative_lang'
                 )
 
     def budget(self):
@@ -1061,6 +1147,7 @@ class ActivityIndexing(BaseIndexing):
                             instance=document_link,
                             fields=[
                                 'format',
+                                'url',
                                 'categories',
                                 'languages',
                                 'title',
@@ -1115,7 +1202,7 @@ class ActivityIndexing(BaseIndexing):
             self.add_field(
                 'conditions',
                 JSONRenderer().render(
-                    ConditionSerializer(activity_condition).data
+                    ConditionsSerializer(activity_condition).data
                 ).decode()
             )
 
@@ -1843,7 +1930,7 @@ class ActivityIndexing(BaseIndexing):
                 )
                 self.add_value_list(
                     'crs_add_loan_status_principal_outstanding',
-                    str(
+                    value_string(
                         get_child_attr(
                             crs_add,
                             'loan_status.principal_outstanding'
@@ -1913,6 +2000,10 @@ class ActivityIndexing(BaseIndexing):
 
         self.add_field('id', value_string(activity.id))
         self.add_field('iati_identifier', activity.iati_identifier)
+        self.add_field(
+            'last_updated_datetime',
+            value_string(activity.last_updated_datetime)
+        )
         self.add_field('default_lang', activity.default_lang_id)
         self.add_field('default_currency', activity.default_currency_id)
         self.add_field('humanitarian', bool_string(activity.humanitarian))
@@ -1950,8 +2041,10 @@ class ActivityIndexing(BaseIndexing):
         self.recipient_region()
         self.location()
         self.sector()
+        self.tag()
         self.country_budget_items()
         self.humanitarian_scope()
+        self.policy_marker()
         self.budget()
         self.planned_disbursement()
         self.transaction()

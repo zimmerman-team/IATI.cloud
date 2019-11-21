@@ -1029,6 +1029,14 @@ class ActivityRecipientCountrySaveTestCase(TestCase):
                 "name": 'irrelevant',
             },
             "percentage": 100,
+            "narratives": [
+                {
+                    "text": "test1"
+                },
+                {
+                    "text": "test2"
+                }
+            ]
         }
 
         res = self.c.post(
@@ -1060,6 +1068,14 @@ class ActivityRecipientCountrySaveTestCase(TestCase):
                 "name": 'irrelevant',
             },
             "percentage": 100,
+            "narratives": [
+                {
+                    "text": "test1"
+                },
+                {
+                    "text": "test2"
+                }
+            ]
         }
 
         res = self.c.put(
@@ -1133,6 +1149,14 @@ class ActivityRecipientRegionSaveTestCase(TestCase):
             },
             "vocabulary_uri": "https://twitter.com/",
             "percentage": 100,
+            "narratives": [
+                {
+                    "text": "test1"
+                },
+                {
+                    "text": "test2"
+                }
+            ]
         }
 
         res = self.c.post(
@@ -1170,6 +1194,14 @@ class ActivityRecipientRegionSaveTestCase(TestCase):
             },
             "vocabulary_uri": "https://twitter.com/",
             "percentage": 100,
+            "narratives": [
+                {
+                    "text": "test1"
+                },
+                {
+                    "text": "test2"
+                }
+            ]
         }
 
         res = self.c.put(

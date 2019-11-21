@@ -177,7 +177,7 @@ class ActivitySaveTestCase(TestCase):
         2. Fetch ActivityRecipientCountry objects
         """
 
-        with self.assertNumQueries(2):
+        with self.assertNumQueries(11):
             queryset = Activity.objects.all().prefetch_recipient_countries()
             serializer = ActivitySerializer(
                 queryset,
@@ -195,7 +195,7 @@ class ActivitySaveTestCase(TestCase):
         2. Fetch ActivityRecipientRegion objects
         """
 
-        with self.assertNumQueries(2):
+        with self.assertNumQueries(11):
             queryset = Activity.objects.all().prefetch_recipient_regions()
             serializer = ActivitySerializer(
                 queryset,
