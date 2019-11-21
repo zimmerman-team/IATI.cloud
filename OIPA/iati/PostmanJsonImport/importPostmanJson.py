@@ -21,7 +21,7 @@ class PostmanAPIImport(object):
             headers={"x-Api-Key": "55dfaaebcc9448bba40e5ff485305a2b"})
         response = urllib.request.urlopen(request)
         json_string = response.read()
-        result_for_test_datastore_iatistandard_org = json.loads(json_string.decode('utf-8-sig'))
+        result_for_test_datastore_iatistandard_org = json.loads(json_string.decode('utf-8-sig'))  # NOQA: E501
         result_for_iati_cloud = json.loads(json_string.decode('utf-8-sig'))
 
         self.simplify(result_for_iati_cloud, 'iatidatastore.iatistandard.org')
