@@ -5,10 +5,10 @@ from api.activity.serializers import (
     ActivityPolicyMarkerSerializer, ActivityTagSerializer, BudgetSerializer,
     ConditionsSerializer, ContactInfoSerializer, CountryBudgetItemsSerializer,
     CrsAddSerializer, DescriptionSerializer, DocumentLinkSerializer,
-    FssSerializer, HumanitarianScopeSerializer, OtherIdentifierSerializer,
-    ParticipatingOrganisationSerializer, PlannedDisbursementSerializer,
-    RelatedActivitySerializer, ReportingOrganisationSerializer,
-    TitleSerializer, LegacyDataSerializer
+    FssSerializer, HumanitarianScopeSerializer, LegacyDataSerializer,
+    OtherIdentifierSerializer, ParticipatingOrganisationSerializer,
+    PlannedDisbursementSerializer, RelatedActivitySerializer,
+    ReportingOrganisationSerializer, TitleSerializer
 )
 from solr.activity.serializers import (
     ActivityRecipientRegionSerializer, ActivitySectorSerializer,
