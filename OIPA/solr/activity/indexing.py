@@ -5,10 +5,10 @@ from api.activity.serializers import (
     ActivityPolicyMarkerSerializer, ActivityTagSerializer, BudgetSerializer,
     ConditionsSerializer, ContactInfoSerializer, CountryBudgetItemsSerializer,
     CrsAddSerializer, DescriptionSerializer, DocumentLinkSerializer,
-    FssSerializer, HumanitarianScopeSerializer, OtherIdentifierSerializer,
-    ParticipatingOrganisationSerializer, PlannedDisbursementSerializer,
-    RelatedActivitySerializer, ReportingOrganisationSerializer,
-    TitleSerializer
+    FssSerializer, HumanitarianScopeSerializer, LegacyDataSerializer,
+    OtherIdentifierSerializer, ParticipatingOrganisationSerializer,
+    PlannedDisbursementSerializer, RelatedActivitySerializer,
+    ReportingOrganisationSerializer, TitleSerializer
 )
 from solr.activity.serializers import (
     ActivityRecipientRegionSerializer, ActivitySectorSerializer,
@@ -1248,6 +1248,37 @@ class ActivityIndexing(BaseIndexing):
                     relate_activity.type_id
                 )
 
+    def legacy_data(self):
+        legacy_data_all = self.record.legacydata_set.all()
+        if legacy_data_all:
+            self.add_field('legacy_data', [])
+            self.add_field('legacy_data_name', [])
+            self.add_field('legacy_data_value', [])
+            self.add_field('legacy_data_iati_equivalent', [])
+
+            for legacy_data in legacy_data_all:
+                self.add_value_list(
+                    'legacy_data',
+                    JSONRenderer().render(
+                        LegacyDataSerializer(
+                            instance=legacy_data
+                        ).data
+                    ).decode()
+                )
+
+                self.add_value_list(
+                    'legacy_data_name',
+                    legacy_data.name
+                )
+                self.add_value_list(
+                    'legacy_data_value',
+                    legacy_data.value
+                )
+                self.add_value_list(
+                    'legacy_data_iati_equivalent',
+                    legacy_data.iati_equivalent
+                )
+
     def conditions(self):
         activity_condition = get_child_attr(self.record, 'conditions')
         if activity_condition:
@@ -2103,6 +2134,7 @@ class ActivityIndexing(BaseIndexing):
         self.transaction()
         self.document_link()
         self.related_activity()
+        self.legacy_data()
         self.conditions()
         self.result()
         self.crs_add()
