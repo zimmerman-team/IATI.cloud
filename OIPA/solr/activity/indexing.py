@@ -7,7 +7,7 @@ from api.activity.serializers import (
     DescriptionSerializer, DocumentLinkSerializer, FssSerializer,
     HumanitarianScopeSerializer, OtherIdentifierSerializer,
     ParticipatingOrganisationSerializer, PlannedDisbursementSerializer,
-    ReportingOrganisationSerializer, TitleSerializer
+    ReportingOrganisationSerializer, TitleSerializer, RelatedActivitySerializer
 )
 from solr.activity.serializers import (
     ActivityRecipientRegionSerializer, ActivitySectorSerializer,
@@ -1196,6 +1196,36 @@ class ActivityIndexing(BaseIndexing):
                         document_link_language.language_id
                     )
 
+    def related_activity(self):
+        related_activity_all = self.record.relatedactivity_set.all()
+        if related_activity_all:
+            self.add_field('related_activity', [])
+            self.add_field('related_activity_ref', [])
+            self.add_field('related_activity_type', [])
+
+            for relate_activity in related_activity_all:
+                self.add_value_list(
+                    'related_activity',
+                    JSONRenderer().render(
+                        RelatedActivitySerializer(
+                            instance=relate_activity,
+                            fields=[
+                                'ref',
+                                'type'
+                            ]
+                        ).data
+                    ).decode()
+                )
+
+                self.add_value_list(
+                    'related_activity_ref',
+                    relate_activity.ref
+                )
+                self.add_value_list(
+                    'related_activity_type',
+                    relate_activity.type_id
+                )
+
     def conditions(self):
         activity_condition = get_child_attr(self.record, 'conditions')
         if activity_condition:
@@ -2049,6 +2079,7 @@ class ActivityIndexing(BaseIndexing):
         self.planned_disbursement()
         self.transaction()
         self.document_link()
+        self.related_activity()
         self.conditions()
         self.result()
         self.crs_add()
