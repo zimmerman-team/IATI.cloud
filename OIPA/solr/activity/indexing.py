@@ -7,7 +7,8 @@ from api.activity.serializers import (
     DescriptionSerializer, DocumentLinkSerializer, FssSerializer,
     HumanitarianScopeSerializer, OtherIdentifierSerializer,
     ParticipatingOrganisationSerializer, PlannedDisbursementSerializer,
-    ReportingOrganisationSerializer, TitleSerializer, RelatedActivitySerializer
+    RelatedActivitySerializer, ReportingOrganisationSerializer,
+    TitleSerializer
 )
 from solr.activity.serializers import (
     ActivityRecipientRegionSerializer, ActivitySectorSerializer,
