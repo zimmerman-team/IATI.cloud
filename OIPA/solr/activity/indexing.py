@@ -1,11 +1,11 @@
 from rest_framework.renderers import JSONRenderer
 
 from api.activity.serializers import (
-    ActivityDateSerializer, ActivityPolicyMarkerSerializer,
-    ActivityTagSerializer, BudgetSerializer, ConditionsSerializer,
-    ContactInfoSerializer, CountryBudgetItemsSerializer, CrsAddSerializer,
-    DescriptionSerializer, DocumentLinkSerializer, FssSerializer,
-    HumanitarianScopeSerializer, OtherIdentifierSerializer,
+    ActivityDateSerializer, ActivityDefaultAidTypeSerializer,
+    ActivityPolicyMarkerSerializer, ActivityTagSerializer, BudgetSerializer,
+    ConditionsSerializer, ContactInfoSerializer, CountryBudgetItemsSerializer,
+    CrsAddSerializer, DescriptionSerializer, DocumentLinkSerializer,
+    FssSerializer, HumanitarianScopeSerializer, OtherIdentifierSerializer,
     ParticipatingOrganisationSerializer, PlannedDisbursementSerializer,
     RelatedActivitySerializer, ReportingOrganisationSerializer,
     TitleSerializer
@@ -752,6 +752,27 @@ class ActivityIndexing(BaseIndexing):
                     'policy_marker_narrative',
                     'policy_marker_narrative_text',
                     'policy_marker_narrative_lang'
+                )
+
+    def default_aid_type(self):
+        default_aid_type_all = self.record.default_aid_types.all()
+        if default_aid_type_all:
+            self.add_field('default_aid_type', [])
+            self.add_field('default_aid_type_code', [])
+
+            for default_aid_type in default_aid_type_all:
+                self.add_value_list(
+                    'default_aid_type',
+                    JSONRenderer().render(
+                        ActivityDefaultAidTypeSerializer(
+                            default_aid_type
+                        ).data
+                    ).decode()
+                )
+
+                self.add_value_list(
+                    'default_aid_type_code',
+                    default_aid_type.aid_type_id
                 )
 
     def budget(self):
@@ -2076,6 +2097,7 @@ class ActivityIndexing(BaseIndexing):
         self.country_budget_items()
         self.humanitarian_scope()
         self.policy_marker()
+        self.default_aid_type()
         self.budget()
         self.planned_disbursement()
         self.transaction()
