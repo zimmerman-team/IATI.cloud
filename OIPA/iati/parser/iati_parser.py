@@ -1,8 +1,10 @@
 import datetime
+import json
 import logging
 import re
 from collections import OrderedDict
 from decimal import Decimal, InvalidOperation
+import xmltodict
 
 import dateutil.parser
 from django.conf import settings
@@ -17,9 +19,13 @@ from iati.parser.exceptions import (
 )
 from iati_codelists import models as codelist_models
 from iati_synchroniser.models import DatasetNote
+from iati.models import NameSpaceElement
 from solr.datasetnote.tasks import DatasetNoteTaskIndexing
 
 log = logging.getLogger(__name__)
+
+
+
 
 
 class IatiParser(object):
@@ -274,6 +280,11 @@ class IatiParser(object):
             return
         if element.tag == etree.Comment:
             return
+        if element.prefix is not None:  # checking if the element is a namespace element
+
+            self.namespace_element_parsing(element)
+            pass
+
 
         x_path = self.root.getroottree().getpath(element)
         function_name = self.generate_function_name(x_path)
@@ -284,6 +295,14 @@ class IatiParser(object):
 
             try:
                 element_method(element)
+                # here we check if the element has namespaced attribute(s)
+                attributes = element.attrib.items()
+                dict_attrib = dict(attributes)
+                for i in dict_attrib.keys():
+                    for namespace_url in element.nsmap.values():
+                        if namespace_url in i:
+                            namesapce_dict = {i: dict_attrib[i]}
+                            self.namespace_element_parsing(element, namesapce_dict)
             except RequiredFieldError as e:
                 log.exception(e)
                 self.append_error(
@@ -412,6 +431,13 @@ class IatiParser(object):
                     self.update_related(model)
 
                     model.save()
+                    try:
+                        if len(model.namespace) != 0:
+                            for namespace in model.namespace:
+                                namespace.parent_element_id = model.pk
+                                namespace.save()
+                    except AttributeError:
+                        pass
 
                 except Exception as e:
                     log.exception(e)
@@ -428,3 +454,228 @@ class IatiParser(object):
             if c == "]":
                 flag = True
         return result
+
+    def namespace_element_parsing(self, element, attribute_dict=None):
+        print("hello")
+
+
+        function_model_mapping = {
+            # activity
+            "iati_activities__iati_activity": "Activity",
+            "iati_activities__iati_activity__iati_identifier": "Activity",
+            "iati_activities__iati_activity__reporting_org": "ActivityReportingOrganisation",
+            "iati_activities__iati_activity__participating_org": "ActivityParticipatingOrganisation",
+            "iati_activities__iati_activity__title": "Title",
+            "iati_activities__iati_activity__description": "Description",
+            "iati_activities__iati_activity__other_identifier": "OtherIdentifier",
+            "iati_activities__iati_activity__other_identifier__owner_org": "OtherIdentifier",
+            "iati_activities__iati_activity__activity_status": "Activity",
+            "iati_activities__iati_activity__activity_date": "ActivityDate",
+            "iati_activities__iati_activity__contact_info": "ContactInfo",
+            "iati_activities__iati_activity__contact_info__organisation": "ContactInfoOrganisation",
+            "iati_activities__iati_activity__contact_info__department": "ContactInfoDepartment",
+            "iati_activities__iati_activity__contact_info__person_name": "ContactInfoPersonName",
+            "iati_activities__iati_activity__contact_info__job_title": "ContactInfoJobTitle",
+            "iati_activities__iati_activity__contact_info__telephone": "ContactInfo",
+            "iati_activities__iati_activity__contact_info__email": "ContactInfo",
+            "iati_activities__iati_activity__contact_info__website": "ContactInfo",
+            "iati_activities__iati_activity__contact_info__mailing_address": "ContactInfoMailingAddress",
+            "iati_activities__iati_activity__activity_scope": "Activity",
+            "iati_activities__iati_activity__recipient_country": "ActivityRecipientCountry",
+            "iati_activities__iati_activity__recipient_region": "ActivityRecipientRegion",
+            "iati_activities__iati_activity__location": "Location",
+            "iati_activities__iati_activity__location__location_reach": "Location",
+            "iati_activities__iati_activity__location__location_id": "Location",
+            "iati_activities__iati_activity__location__name": "LocationName",
+            "iati_activities__iati_activity__location__description": "LocationDescription",
+            "iati_activities__iati_activity__location__activity_description": "LocationActivityDescription",
+            "iati_activities__iati_activity__location__administrative": "LocationAdministrative",
+            "iati_activities__iati_activity__location__point": "Location",
+            "iati_activities__iati_activity__location__point__pos": "Location",
+            "iati_activities__iati_activity__location__exactness": "Location",
+            "iati_activities__iati_activity__location__location_class": "Location",
+            "iati_activities__iati_activity__location__feature_designation": "Location",
+            "iati_activities__iati_activity__sector": "ActivitySector",
+            "iati_activities__iati_activity__country_budget_items": "CountryBudgetItem",
+            "iati_activities__iati_activity__country_budget_items__budget_item": "BudgetItem",
+            "iati_activities__iati_activity__country_budget_items__budget_item__description": "BudgetItemDescription",
+            "iati_activities__iati_activity__humanitarian_scope": "HumanitarianScope",
+            "iati_activities__iati_activity__policy_marker": "ActivityPolicyMarker",
+            "iati_activities__iati_activity__collaboration_type": "Activity",
+            "iati_activities__iati_activity__default_flow_type": "Activity",
+            "iati_activities__iati_activity__default_finance_type" : "Activity",
+            "iati_activities__iati_activity__default_aid_type": "ActivityDefaultAidType",
+            "iati_activities__iati_activity__default_tied_status": "Activity",
+            "iati_activities__iati_activity__budget": "Budget",
+            "iati_activities__iati_activity__budget__period_start": "Budget",
+            "iati_activities__iati_activity__budget__period_end": "Budget",
+            "iati_activities__iati_activity__budget__value": "Budget",
+            "iati_activities__iati_activity__planned_disbursement": "PlannedDisbursement",
+            "iati_activities__iati_activity__planned_disbursement__period_start": "PlannedDisbursement",
+            "iati_activities__iati_activity__planned_disbursement__period_end": "PlannedDisbursement",
+            "iati_activities__iati_activity__planned_disbursement__value": "PlannedDisbursement",
+            "iati_activities__iati_activity__planned_disbursement__provider_org": "PlannedDisbursementProvider",
+            "iati_activities__iati_activity__planned_disbursement__receiver_org": "PlannedDisbursementReceiver",
+            "iati_activities__iati_activity__capital_spend": "Activity",
+            "iati_activities__iati_activity__transaction": "Transaction",
+            "iati_activities__iati_activity__transaction__transaction_type": "Transaction",
+            "iati_activities__iati_activity__transaction__transaction_date": "Transaction",
+            "ati_activities__iati_activity__transaction__value": "Transaction",
+            "iati_activities__iati_activity__transaction__description": "TransactionDescription",
+            "iati_activities__iati_activity__transaction__provider_org": "TransactionProvider",
+            "iati_activities__iati_activity__transaction__receiver_org": "TransactionReceiver",
+            "iati_activities__iati_activity__transaction__disbursement_channel": "Transaction",
+            "iati_activities__iati_activity__transaction__sector": "TransactionSector",
+            "iati_activities__iati_activity__transaction__recipient_country": "TransactionRecipientCountry",
+            "iati_activities__iati_activity__transaction__recipient_region": "TransactionRecipientRegion",
+            "iati_activities__iati_activity__transaction__flow_type": "Transaction",
+            "iati_activities__iati_activity__transaction__finance_type": "Transaction",
+            "iati_activities__iati_activity__transaction__aid_type": "TransactionAidType",
+            "iati_activities__iati_activity__transaction__tied_status": "Transaction",
+            "iati_activities__iati_activity__document_link": "DocumentLink",
+            "iati_activities__iati_activity__document_link__document_date": "DocumentLink",
+            "iati_activities__iati_activity__document_link__title": "DocumentLinkTitle",
+            "iati_activities__iati_activity__document_link__description": "DocumentLinkDescription",
+            "iati_activities__iati_activity__document_link__category": "DocumentLinkCategory",
+            "iati_activities__iati_activity__document_link__language": "DocumentLinkLanguage",
+            "iati_activities__iati_activity__related_activity": "RelatedActivity",
+            "iati_activities__iati_activity__legacy_data": "LegacyData",
+            "iati_activities__iati_activity__conditions": "Conditions",
+            "iati_activities__iati_activity__conditions__condition": "Condition",
+            "iati_activities__iati_activity__result": "Result",
+            "iati_activities__iati_activity__result__reference": "ResultReference",
+            "iati_activities__iati_activity__result__title": "ResultTitle",
+            "iati_activities__iati_activity__result__description": "ResultDescription",
+            "iati_activities__iati_activity__result__document_link": "DocumentLink",
+            "iati_activities__iati_activity__result__document_link__title": "DocumentLinkTitle",
+            "iati_activities__iati_activity__result__document_link__description": "DocumentLinkDescription",
+            "iati_activities__iati_activity__result__document_link__category": "DocumentLinkCategory",
+            "iati_activities__iati_activity__result__document_link__language": "DocumentLinkLanguage",
+            "iati_activities__iati_activity__result__document_link__document_date": "DocumentLink",
+            "iati_activities__iati_activity__result__indicator": "ResultIndicator",
+            "iati_activities__iati_activity__result__indicator__reference": "ResultIndicatorReference",
+            "iati_activities__iati_activity__result__indicator__title": "ResultIndicatorTitle",
+            "iati_activities__iati_activity__result__indicator__description": "ResultIndicatorDescription",
+            "iati_activities__iati_activity__result__indicator__document_link": "DocumentLink",
+            "iati_activities__iati_activity__result__indicator__document_link__document_date": "DocumentLink",
+            "iati_activities__iati_activity__result__indicator__document_link__title": "DocumentLinkTitle",
+            "iati_activities__iati_activity__result__indicator__document_link__description": "DocumentLinkDescription",
+            "iati_activities__iati_activity__result__indicator__document_link__category": "DocumentLinkCategory",
+            "iati_activities__iati_activity__result__indicator__document_link__language": "DocumentLinkLanguage",
+            "iati_activities__iati_activity__result__indicator__baseline": "ResultIndicatorBaseline",
+            "iati_activities__iati_activity__result__indicator__baseline__comment": "ResultIndicatorBaselineComment",
+            "iati_activities__iati_activity__result__indicator__baseline__location": "Location",
+            "iati_activities__iati_activity__result__indicator__baseline__dimension":
+                "ResultIndicatorBaselineDimension",
+            "iati_activities__iati_activity__result__indicator__baseline__document_link": "DocumentLink",
+            "iati_activities__iati_activity__result__indicator__baseline__document_link__document_date":
+                "DocumentLink",
+            "iati_activities__iati_activity__result__indicator__baseline__document_link__title": "DocumentLinkTitle",
+            "iati_activities__iati_activity__result__indicator__baseline__document_link__description":
+                "DocumentLinkDescription",
+            "iati_activities__iati_activity__result__indicator__baseline__document_link__category":
+                "DocumentLinkCategory",
+            "iati_activities__iati_activity__result__indicator__baseline__document_link__language":
+                "DocumentLinkLanguage",
+            "iati_activities__iati_activity__result__indicator__period": "ResultIndicatorPeriod",
+            "iati_activities__iati_activity__result__indicator__period__period_start": "ResultIndicatorPeriod",
+            "iati_activities__iati_activity__result__indicator__period__period_end": "ResultIndicatorPeriod",
+            "iati_activities__iati_activity__result__indicator__period__target": "ResultIndicatorPeriodTarget",
+            "iati_activities__iati_activity__result__indicator__period__target__location":
+                "ResultIndicatorPeriodTargetLocation",
+            "iati_activities__iati_activity__result__indicator__period__target__dimension":
+                "ResultIndicatorPeriodTargetDimension",
+            "iati_activities__iati_activity__result__indicator__period__target__comment":
+                "ResultIndicatorPeriodTargetComment",
+            "iati_activities__iati_activity__result__indicator__period__target__document_link": "DocumentLink",
+            "iati_activities__iati_activity__result__indicator__period__target__document_link__title":
+                "DocumentLinkTitle",
+            "iati_activities__iati_activity__result__indicator__period__target__document_link__description":
+                "DocumentLinkDescription",
+            "iati_activities__iati_activity__result__indicator__period__target__document_link__category":
+                "DocumentLinkCategory",
+            "iati_activities__iati_activity__result__indicator__period__target__document_link__language":
+                "DocumentLinkLanguage",
+            "iati_activities__iati_activity__result__indicator__period__target__document_link__document_date":
+                "DocumentLink",
+            "iati_activities__iati_activity__result__indicator__period__actual": "ResultIndicatorPeriodActual",
+            "iati_activities__iati_activity__result__indicator__period__actual__location":
+                "ResultIndicatorPeriodActualLocation",
+            "iati_activities__iati_activity__result__indicator__period__actual__dimension":
+                "ResultIndicatorPeriodActualDimension",
+            "iati_activities__iati_activity__result__indicator__period__actual__comment":
+                "ResultIndicatorPeriodActualComment",
+            "iati_activities__iati_activity__result__indicator__period__actual__document_link": "DocumentLink",
+            "iati_activities__iati_activity__result__indicator__period__actual__document_link__title":
+                "DocumentLinkTitle",
+            "iati_activities__iati_activity__result__indicator__period__actual__document_link__description":
+                "DocumentLinkDescription",
+            "iati_activities__iati_activity__result__indicator__period__actual__document_link__category":
+                "DocumentLinkCategory",
+            "iati_activities__iati_activity__result__indicator__period__actual__document_link__language":
+                "DocumentLinkLanguage",
+            "iati_activities__iati_activity__result__indicator__period__actual__document_link__document_date":
+                "DocumentLink",
+            "iati_activities__iati_activity__tag": "ActivityTag",
+            "iati_activities__iati_activity__crs_add": "CrsAdd",
+            "iati_activities__iati_activity__crs_add__loan_terms": "CrsAddLoanTerms",
+            "iati_activities__iati_activity__crs_add__other_flags": "CrsAddOtherFlags",
+            "iati_activities__iati_activity__crs_add__loan_status": "CrsAddLoanStatus",
+            "iati_activities__iati_activity__fss": "Fss",
+            "iati_activities__iati_activity__fss__forecast": "FssForecast",
+
+            # organisation
+            "iati_organisations__iati_organisation": "Organisation",
+            "iati_organisations__iati_organisation__name": "OrganisationName",
+            "iati_organisations__iati_organisation__reporting_org": "OrganisationReportingOrganisation",
+            "iati_organisations__iati_organisation__total_budget": "TotalBudget",
+            "iati_organisations__iati_organisation__total_budget__budget_line": "TotalBudgetLine",
+            "iati_organisations__iati_organisation__recipient_org_budget": "RecipientOrgBudget",
+            "iati_organisations__iati_organisation__recipient_org_budget__budget_line": "RecipientOrgBudgetLine",
+            "iati_organisations__iati_organisation__recipient_region_budget": "RecipientRegionBudget",
+            "iati_organisations__iati_organisation__recipient_region_budget__budget_line": "RecipientRegionBudgetLine",
+            "iati_organisations__iati_organisation__recipient_country_budget": "RecipientCountryBudget",
+            "iati_organisations__iati_organisation__recipient_country_budget__budget_line":
+                "RecipientCountryBudgetLine",
+            "iati_organisations__iati_organisation__total_expenditure": "TotalExpenditure",
+            "iati_organisations__iati_organisation__total_expenditure__expense_line": "TotalExpenditureLine",
+            "iati_organisations__iati_organisation__document_link": "OrganisationDocumentLink",
+            "iati_organisations__iati_organisation__document_link__title": "DocumentLinkTitle",
+            "iati_organisations__iati_organisation__document_link__description": "DocumentLinkDescription",
+            "iati_organisations__iati_organisation__document_link__category": "OrganisationDocumentLinkCategory",
+            "iati_organisations__iati_organisation__document_link__language": "OrganisationDocumentLinkLanguage",
+            "iati_organisations__iati_organisation__document_link__document_date": "OrganisationDocumentLink",
+            "iati_organisations__iati_organisation__document_link__recipient_country": "DocumentLinkRecipientCountry",
+
+            }
+
+        namespace = NameSpaceElement()
+        namespace_list = []
+        if attribute_dict is None:
+            parent_element = element.getparent()
+            x_path = self.root.getroottree().getpath(parent_element)
+            function_name = self.generate_function_name(x_path)
+
+            parent_element_name = function_model_mapping[function_name]
+            namespace.parent_element_name = parent_element_name
+            namespace.nsmap = element.nsmap
+
+            xml_to_dict = xmltodict.parse(etree.tostring(element), process_namespaces=True)
+            namespace.namespace = xml_to_dict #etree.tostring(element).decode('utf-8')
+        else:
+            parent_element = element  # when namespace is attribute of the element, the parent element is itself.
+            x_path = self.root.getroottree().getpath(parent_element)
+            function_name = self.generate_function_name(x_path)
+
+            parent_element_name = function_model_mapping[function_name]
+            namespace.parent_element_name = parent_element_name
+            namespace.nsmap = element.nsmap
+            namespace.namespace = attribute_dict
+        if hasattr(next(reversed(self.model_store[parent_element_name])), 'namespace'):
+            next(reversed(self.model_store[parent_element_name])).namespace.append(namespace)
+        else:
+            namespace_list.append(namespace)
+            setattr(next(reversed(self.model_store[parent_element_name])), 'namespace', namespace_list)
+        pass
+
+

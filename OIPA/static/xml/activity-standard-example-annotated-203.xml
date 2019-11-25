@@ -2,7 +2,8 @@
 <!--This is example XML for the IATI activity standard.  No reference to actual data, real organisations or development cooperation models is intended.-->
 
 <!--iati-activities starts-->
-<iati-activities generated-datetime="2014-09-10T07:15:37Z" version="2.03" linked-data-default="http://data.example.org/">
+<iati-activities xmlns:akvo="http://akvo.org/iati-activities"
+                 generated-datetime="2014-09-10T07:15:37Z" version="2.03" linked-data-default="http://data.example.org/">
 
  <!--iati-activity starts-->
  <iati-activity xml:lang="en" default-currency="USD" last-updated-datetime="2014-09-10T07:15:37Z" humanitarian="1" linked-data-uri="http://data.example.org/123456789" hierarchy="1" budget-not-provided="1">
@@ -15,6 +16,7 @@
   <reporting-org ref="AA-AAA-123456789" type="40" secondary-reporter="0">
    <narrative>Organisation name</narrative>
    <narrative xml:lang="fr">Nom de l'organisme</narrative>
+      <akvo:risk-level>3</akvo:risk-level>
   </reporting-org>
   <!--reporting-org ends-->
 
@@ -125,6 +127,7 @@
    </name>
    <description>
   <narrative>Location description</narrative>
+       <akvo:risk-level>3</akvo:risk-level>
    </description>
    <activity-description>
   <narrative>A description that qualifies the activity taking place at the location.</narrative>
@@ -469,7 +472,7 @@
    <forecast year="2014" value-date="2013-07-03" currency="GBP">10000</forecast>
   </fss>
   <!--fss ends-->
-
+<akvo:risk-level>3</akvo:risk-level>
  </iati-activity>
   <!--iati-activity ends-->
 

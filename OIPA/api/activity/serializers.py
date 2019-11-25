@@ -6,6 +6,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.fields import SkipField
 from rest_framework.relations import PKOnlyObject
 from rest_framework.reverse import reverse
+from django.core.exceptions import ObjectDoesNotExist
 
 from api.activity.filters import RelatedActivityFilter
 from api.codelist.serializers import (
@@ -43,7 +44,7 @@ from iati.models import (
     ResultIndicatorPeriodActualDimension, ResultIndicatorPeriodActualLocation,
     ResultIndicatorPeriodTarget, ResultIndicatorPeriodTargetDimension,
     ResultIndicatorPeriodTargetLocation, ResultIndicatorReference,
-    ResultIndicatorTitle, ResultReference, ResultTitle, ResultType, Title
+    ResultIndicatorTitle, ResultReference, ResultTitle, ResultType, Title, NameSpaceElement
 )
 from iati.parser import validators
 from iati.transaction.models import (
@@ -106,6 +107,17 @@ class DocumentLinkCategorySerializer(ModelSerializerNoValidation):
     category = CodelistSerializer()
 
     document_link = serializers.CharField(write_only=True)
+    name_space = serializers.SerializerMethodField(required=False)
+
+    def get_name_space(self, obj):
+        try:
+            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+                parent_element_name='DocumentLinkCategory')
+            namespace_serializer = NameSpaceSerializer(name_space, many=True)
+        except NameSpaceElement.DoesNotExist:
+            return None
+            pass
+        return namespace_serializer.data
 
     class Meta:
         model = DocumentLinkCategory
@@ -113,6 +125,7 @@ class DocumentLinkCategorySerializer(ModelSerializerNoValidation):
             'document_link',
             'id',
             'category',
+            'name_space',
         )
 
     def validate(self, data):
@@ -156,6 +169,17 @@ class DocumentLinkCategorySerializer(ModelSerializerNoValidation):
 
 class DocumentLinkLanguageSerializer(ModelSerializerNoValidation):
     language = CodelistSerializer()
+    name_space = serializers.SerializerMethodField(required=False)
+
+    def get_name_space(self, obj):
+        try:
+            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+                parent_element_name='DocumentLinkLanguage')
+            namespace_serializer = NameSpaceSerializer(name_space, many=True)
+        except NameSpaceElement.DoesNotExist:
+            return None
+            pass
+        return namespace_serializer.data
 
     document_link = serializers.CharField(write_only=True)
 
@@ -165,6 +189,7 @@ class DocumentLinkLanguageSerializer(ModelSerializerNoValidation):
             'document_link',
             'id',
             'language',
+            'name_space',
         )
 
     def validate(self, data):
@@ -224,6 +249,17 @@ class DocumentLinkSerializer(ModelSerializerNoValidation):
     description = NarrativeContainerSerializer(
         source='documentlinkdescription'
     )
+    name_space = serializers.SerializerMethodField(required=False)
+
+    def get_name_space(self, obj):
+        try:
+            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+                parent_element_name='DocumentLink')
+            namespace_serializer = NameSpaceSerializer(name_space, many=True)
+        except NameSpaceElement.DoesNotExist:
+            return None
+            pass
+        return namespace_serializer.data
 
     class Meta:
         model = DocumentLink
@@ -236,7 +272,8 @@ class DocumentLinkSerializer(ModelSerializerNoValidation):
             'languages',
             'title',
             'document_date',
-            'description'
+            'description',
+            'name_space',
         )
 
     def validate(self, data):
@@ -318,6 +355,17 @@ class BudgetSerializer(ModelSerializerNoValidation):
         source='activity.iati_identifier',
         read_only=True
     )
+    name_space = serializers.SerializerMethodField(required=False)
+
+    def get_name_space(self, obj):
+        try:
+            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+                parent_element_name='Budget')
+            namespace_serializer = NameSpaceSerializer(name_space, many=True)
+        except NameSpaceElement.DoesNotExist:
+            return None
+            pass
+        return namespace_serializer.data
 
     class Meta:
         model = Budget
@@ -337,7 +385,8 @@ class BudgetSerializer(ModelSerializerNoValidation):
             'gbp_value',
             'jpy_value',
             'cad_value',
-            'activity_id'
+            'activity_id',
+            'name_space',
         )
 
     def validate(self, data):
@@ -441,6 +490,17 @@ class PlannedDisbursementSerializer(ModelSerializerNoValidation):
     receiver_organisation = PlannedDisbursementReceiverSerializer(
         required=False
     )
+    name_space = serializers.SerializerMethodField(required=False)
+
+    def get_name_space(self, obj):
+        try:
+            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+                parent_element_name='PlannedDisbursement')
+            namespace_serializer = NameSpaceSerializer(name_space, many=True)
+        except NameSpaceElement.DoesNotExist:
+            return None
+            pass
+        return namespace_serializer.data
 
     class Meta:
         model = PlannedDisbursement
@@ -454,6 +514,7 @@ class PlannedDisbursementSerializer(ModelSerializerNoValidation):
             'value',
             'provider_organisation',
             'receiver_organisation',
+            'name_space',
         )
 
         validators = []
@@ -558,6 +619,17 @@ class ActivityDateSerializer(ModelSerializerNoValidation):
     iso_date = serializers.DateField()
     narratives = NarrativeSerializer(many=True)
     activity = serializers.CharField(write_only=True)
+    name_space = serializers.SerializerMethodField(required=False)
+
+    def get_name_space(self, obj):
+        try:
+            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+                parent_element_name='ActivityDate')
+            namespace_serializer = NameSpaceSerializer(name_space, many=True)
+        except NameSpaceElement.DoesNotExist:
+            return None
+            pass
+        return namespace_serializer.data
 
     def validate(self, data):
         activity = get_or_raise(Activity, data, 'activity')
@@ -594,7 +666,14 @@ class ActivityDateSerializer(ModelSerializerNoValidation):
 
     class Meta:
         model = ActivityDate
-        fields = ('id', 'activity', 'iso_date', 'type', 'narratives')
+        fields = (
+            'id',
+            'activity',
+            'iso_date',
+            'type',
+            'narratives',
+            'name_space'
+        )
 
 
 class ActivityAggregationSerializer(DynamicFieldsSerializer):
@@ -740,7 +819,7 @@ class ReportingOrganisationDataSerializer(DynamicFieldsModelSerializer):  # NOQA
     type = CodelistSerializer()
     secondary_reporter = serializers.BooleanField(required=False)
 
-    activity = serializers.CharField(write_only=True)
+    activity = serializers.CharField(write_only=True,required=True)
 
     # TODO: please check this why in narrative in Reporting org is empty
     # So to get narratives should be from organisation
@@ -749,6 +828,17 @@ class ReportingOrganisationDataSerializer(DynamicFieldsModelSerializer):  # NOQA
         many=True,
         required=False
     )
+    name_space = serializers.SerializerMethodField(required=False)
+
+    def get_name_space(self, obj):
+        try:
+            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+                parent_element_name='ActivityReportingOrganisation')
+            namespace_serializer = NameSpaceSerializer(name_space, many=True)
+        except NameSpaceElement.DoesNotExist:
+            return None
+            pass
+        return namespace_serializer.data
 
     class Meta:
         model = ActivityReportingOrganisation
@@ -759,6 +849,7 @@ class ReportingOrganisationDataSerializer(DynamicFieldsModelSerializer):  # NOQA
             'type',
             'secondary_reporter',
             'narratives',
+            'name_space',
             'activity',
         )
 
@@ -775,6 +866,17 @@ class ParticipatingOrganisationSerializer(ModelSerializerNoValidation):
     narratives = NarrativeSerializer(many=True, required=False)
 
     activity = serializers.CharField(write_only=True)
+    name_space = serializers.SerializerMethodField(required=False)
+
+    def get_name_space(self, obj):
+        try:
+            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+                parent_element_name='ActivityParticipatingOrganisation')
+            namespace_serializer = NameSpaceSerializer(name_space, many=True)
+        except NameSpaceElement.DoesNotExist:
+            return None
+            pass
+        return namespace_serializer.data
 
     def validate(self, data):
         activity = get_or_raise(Activity, data, 'activity')
@@ -832,6 +934,7 @@ class ParticipatingOrganisationSerializer(ModelSerializerNoValidation):
             'activity_id',
             'activity',
             'narratives',
+            'name_space',
         )
 
 
@@ -846,6 +949,17 @@ class OtherIdentifierSerializer(ModelSerializerNoValidation):
     owner_org = OwnerOrgSerializer(source="*")
 
     activity = serializers.CharField(write_only=True)
+    name_space = serializers.SerializerMethodField(required=False)
+
+    def get_name_space(self, obj):
+        try:
+            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+                parent_element_name='OtherIdentifier')
+            namespace_serializer = NameSpaceSerializer(name_space, many=True)
+        except NameSpaceElement.DoesNotExist:
+            return None
+            pass
+        return namespace_serializer.data
 
     class Meta:
         model = OtherIdentifier
@@ -854,7 +968,8 @@ class OtherIdentifierSerializer(ModelSerializerNoValidation):
             'activity',
             'ref',
             'type',
-            'owner_org'
+            'owner_org',
+            'name_space',
         )
 
     def validate(self, data):
@@ -907,6 +1022,17 @@ class ActivityPolicyMarkerSerializer(ModelSerializerNoValidation):
     narratives = NarrativeSerializer(many=True)
 
     activity = serializers.CharField(write_only=True)
+    name_space = serializers.SerializerMethodField(required=False)
+
+    def get_name_space(self, obj):
+        try:
+            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+                parent_element_name='ActivityPolicyMarker')
+            namespace_serializer = NameSpaceSerializer(name_space, many=True)
+        except NameSpaceElement.DoesNotExist:
+            return None
+            pass
+        return namespace_serializer.data
 
     def validate(self, data):
         activity = get_or_raise(Activity, data, 'activity')
@@ -962,16 +1088,28 @@ class ActivityPolicyMarkerSerializer(ModelSerializerNoValidation):
             'policy_marker',
             'significance',
             'narratives',
+            'name_space',
         )
 
 
 # TODO: change to NarrativeContainer
 class TitleSerializer(ModelSerializerNoValidation):
     narratives = NarrativeSerializer(many=True)
+    name_space = serializers.SerializerMethodField(required=False)
+
+    def get_name_space(self, obj):
+        try:
+            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+                parent_element_name='Title')
+            namespace_serializer = NameSpaceSerializer(name_space, many=True)
+        except NameSpaceElement.DoesNotExist:
+            return None
+            pass
+        return namespace_serializer.data
 
     class Meta:
         model = Title
-        fields = ('id', 'narratives',)
+        fields = ('id', 'narratives', 'name_space')
 
 
 class DescriptionSerializer(ModelSerializerNoValidation):
@@ -979,6 +1117,17 @@ class DescriptionSerializer(ModelSerializerNoValidation):
     narratives = NarrativeSerializer(many=True)
 
     activity = serializers.CharField(write_only=True)
+    name_space = serializers.SerializerMethodField(required=False)
+
+    def get_name_space(self, obj):
+        try:
+            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+                parent_element_name='Description')
+            namespace_serializer = NameSpaceSerializer(name_space, many=True)
+        except NameSpaceElement.DoesNotExist:
+            return None
+            pass
+        return namespace_serializer.data
 
     def validate(self, data):
         activity = get_or_raise(Activity, data, 'activity')
@@ -1026,6 +1175,7 @@ class DescriptionSerializer(ModelSerializerNoValidation):
             'type',
             'narratives',
             'activity',
+            'name_space',
         )
 
 
@@ -1041,6 +1191,17 @@ class RelatedActivitySerializer(ModelSerializerNoValidation):
         write_only=True,
         source="current_activity"
     )
+    name_space = serializers.SerializerMethodField(required=False)
+
+    def get_name_space(self, obj):
+        try:
+            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+                parent_element_name='RelatedActivity')
+            namespace_serializer = NameSpaceSerializer(name_space, many=True)
+        except NameSpaceElement.DoesNotExist:
+            return None
+            pass
+        return namespace_serializer.data
 
     class Meta:
         model = RelatedActivity
@@ -1052,6 +1213,7 @@ class RelatedActivitySerializer(ModelSerializerNoValidation):
             'ref_activity_id',
             'ref',
             'type',
+            'name_space',
         )
 
     def validate(self, data):
@@ -1090,6 +1252,17 @@ class RelatedActivitySerializer(ModelSerializerNoValidation):
 
 class LegacyDataSerializer(ModelSerializerNoValidation):
     activity = serializers.CharField(write_only=True)
+    name_space = serializers.SerializerMethodField(required=False)
+
+    def get_name_space(self, obj):
+        try:
+            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+                parent_element_name='LegacyData')
+            namespace_serializer = NameSpaceSerializer(name_space, many=True)
+        except NameSpaceElement.DoesNotExist:
+            return None
+            pass
+        return namespace_serializer.data
 
     class Meta:
         model = LegacyData
@@ -1099,6 +1272,7 @@ class LegacyDataSerializer(ModelSerializerNoValidation):
             'name',
             'value',
             'iati_equivalent',
+            'name_space',
         )
 
     def validate(self, data):
@@ -1148,6 +1322,17 @@ class ActivitySectorSerializer(ModelSerializerNoValidation):
 
     activity = serializers.CharField(write_only=True)
     narratives = NarrativeSerializer(many=True)
+    name_space = serializers.SerializerMethodField(required=False)
+
+    def get_name_space(self, obj):
+        try:
+            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+                parent_element_name='ActivitySector')
+            namespace_serializer = NameSpaceSerializer(name_space, many=True)
+        except NameSpaceElement.DoesNotExist:
+            return None
+            pass
+        return namespace_serializer.data
 
     class Meta:
         model = ActivitySector
@@ -1159,6 +1344,7 @@ class ActivitySectorSerializer(ModelSerializerNoValidation):
             'vocabulary',
             'vocabulary_uri',
             'narratives',
+            'name_space',
         )
 
     def validate(self, data):
@@ -1277,6 +1463,17 @@ class CountryBudgetItemsSerializer(ModelSerializerNoValidation):
         source='budgetitem_set',
         read_only=True,
     )
+    name_space = serializers.SerializerMethodField(required=False)
+
+    def get_name_space(self, obj):
+        try:
+            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+                parent_element_name='CountryBudgetItem')
+            namespace_serializer = NameSpaceSerializer(name_space, many=True)
+        except NameSpaceElement.DoesNotExist:
+            return None
+            pass
+        return namespace_serializer.data
 
     class Meta:
         model = CountryBudgetItem
@@ -1335,6 +1532,17 @@ class ConditionSerializer(ModelSerializerNoValidation):
     narratives = NarrativeSerializer(many=True, required=False)
 
     conditions = serializers.CharField(write_only=True)
+    name_space = serializers.SerializerMethodField(required=False)
+
+    def get_name_space(self, obj):
+        try:
+            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+                parent_element_name='Condition')
+            namespace_serializer = NameSpaceSerializer(name_space, many=True)
+        except NameSpaceElement.DoesNotExist:
+            return None
+            pass
+        return namespace_serializer.data
 
     class Meta:
         model = Condition
@@ -1343,6 +1551,7 @@ class ConditionSerializer(ModelSerializerNoValidation):
             'conditions',
             'type',
             'narratives',
+            'name_space',
         )
 
     def validate(self, data):
@@ -1394,6 +1603,17 @@ class ConditionsSerializer(ModelSerializerNoValidation):
     )
     attached = serializers.CharField()
     activity = serializers.CharField(write_only=True)
+    name_space = serializers.SerializerMethodField(required=False)
+
+    def get_name_space(self, obj):
+        try:
+            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+                parent_element_name='Conditions')
+            namespace_serializer = NameSpaceSerializer(name_space, many=True)
+        except NameSpaceElement.DoesNotExist:
+            return None
+            pass
+        return namespace_serializer.data
 
     class Meta:
         model = Conditions
@@ -1402,6 +1622,7 @@ class ConditionsSerializer(ModelSerializerNoValidation):
             'activity',
             'attached',
             'condition',
+            'name_space',
         )
 
     def validate(self, data):
@@ -1458,6 +1679,17 @@ class ActivityRecipientRegionSerializer(DynamicFieldsModelSerializer):
 
     activity = serializers.CharField(write_only=True)
     narratives = NarrativeSerializer(many=True, required=True)
+    name_space = serializers.SerializerMethodField(required=False)
+
+    def get_name_space(self, obj):
+        try:
+            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+                parent_element_name='ActivityRecipientRegion')
+            namespace_serializer = NameSpaceSerializer(name_space, many=True)
+        except NameSpaceElement.DoesNotExist:
+            return None
+            pass
+        return namespace_serializer.data
 
     class Meta:
         model = ActivityRecipientRegion
@@ -1469,6 +1701,7 @@ class ActivityRecipientRegionSerializer(DynamicFieldsModelSerializer):
             'vocabulary',
             'vocabulary_uri',
             'narratives',
+            'name_space',
         )
 
     def validate(self, data):
@@ -1517,6 +1750,17 @@ class HumanitarianScopeSerializer(DynamicFieldsModelSerializer):
     code = serializers.CharField()
     activity = serializers.CharField(write_only=True)
     narratives = NarrativeSerializer(many=True, required=False)
+    name_space = serializers.SerializerMethodField(required=False)
+
+    def get_name_space(self, obj):
+        try:
+            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+                parent_element_name='HumanitarianScope')
+            namespace_serializer = NameSpaceSerializer(name_space, many=True)
+        except NameSpaceElement.DoesNotExist:
+            return None
+            pass
+        return namespace_serializer.data
 
     class Meta:
         model = HumanitarianScope
@@ -1577,6 +1821,17 @@ class RecipientCountrySerializer(DynamicFieldsModelSerializer):
     )
     activity = serializers.CharField(write_only=True)
     narratives = NarrativeSerializer(many=True, required=True)
+    name_space = serializers.SerializerMethodField(required=False)
+
+    def get_name_space(self, obj):
+        try:
+            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+                parent_element_name='ActivityRecipientCountry')
+            namespace_serializer = NameSpaceSerializer(name_space, many=True)
+        except NameSpaceElement.DoesNotExist:
+            return None
+            pass
+        return namespace_serializer.data
 
     def validate(self, data):
         activity = get_or_raise(Activity, data, 'activity')
@@ -1624,6 +1879,7 @@ class RecipientCountrySerializer(DynamicFieldsModelSerializer):
             'country',
             'percentage',
             'narratives',
+            'name_space',
         )
 
 
@@ -2102,6 +2358,17 @@ class ResultIndicatorSerializer(ModelSerializerNoValidation):
         read_only=True,
         source='result_indicator_document_links'
     )
+    name_space = serializers.SerializerMethodField(required=False)
+
+    def get_name_space(self, obj):
+        try:
+            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+                parent_element_name='ResultIndicator')
+            namespace_serializer = NameSpaceSerializer(name_space, many=True)
+        except NameSpaceElement.DoesNotExist:
+            return None
+            pass
+        return namespace_serializer.data
 
     class Meta:
         model = ResultIndicator
@@ -2116,7 +2383,8 @@ class ResultIndicatorSerializer(ModelSerializerNoValidation):
             'measure',
             'ascending',
             'aggregation_status',
-            'document_links'
+            'document_links',
+            'name_space',
         )
 
     def validate(self, data):
@@ -2190,6 +2458,17 @@ class ContactInfoSerializer(ModelSerializerNoValidation):
     mailing_address = NarrativeContainerSerializer()
 
     activity = serializers.CharField(write_only=True)
+    name_space = serializers.SerializerMethodField(required=False)
+
+    def get_name_space(self, obj):
+        try:
+            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+                parent_element_name='ContactInfo')
+            namespace_serializer = NameSpaceSerializer(name_space, many=True)
+        except NameSpaceElement.DoesNotExist:
+            return None
+            pass
+        return namespace_serializer.data
 
     def validate(self, data):
         activity = get_or_raise(Activity, data, 'activity')
@@ -2373,6 +2652,7 @@ class ContactInfoSerializer(ModelSerializerNoValidation):
             'email',
             'website',
             'mailing_address',
+            'name_space',
         )
 
 
@@ -2381,6 +2661,17 @@ class ResultReferenceSerializer(ModelSerializerNoValidation):
     code = serializers.CharField(required=False)
 
     result = serializers.CharField(write_only=True)
+    name_space = serializers.SerializerMethodField(required=False)
+
+    def get_name_space(self, obj):
+        try:
+            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+                parent_element_name='ResultReference')
+            namespace_serializer = NameSpaceSerializer(name_space, many=True)
+        except NameSpaceElement.DoesNotExist:
+            return None
+            pass
+        return namespace_serializer.data
 
     class Meta:
         model = ResultReference
@@ -2390,6 +2681,7 @@ class ResultReferenceSerializer(ModelSerializerNoValidation):
             'vocabulary',
             'code',
             'vocabulary_uri',
+            'name_space',
         )
 
     def validate(self, data):
@@ -2469,6 +2761,18 @@ class ResultSerializer(ModelSerializerNoValidation):
 
     iati_identifier = serializers.CharField(source='activity.iati_identifier', required=False)  # NOQA: E501
 
+    name_space = serializers.SerializerMethodField(required=False)
+
+    def get_name_space(self, obj):
+        try:
+            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+                parent_element_name='Result')
+            namespace_serializer = NameSpaceSerializer(name_space, many=True)
+        except NameSpaceElement.DoesNotExist:
+            return None
+            pass
+        return namespace_serializer.data
+
     class Meta:
         model = Result
         fields = (
@@ -2485,6 +2789,7 @@ class ResultSerializer(ModelSerializerNoValidation):
             'recipient_regions',
             'iati_identifier',
             'reference',
+            'name_space',
         )
 
     def validate(self, data):
@@ -2548,6 +2853,17 @@ class CrsAddLoanTermsSerializer(ModelSerializerNoValidation):
     commitment_date = serializers.CharField()
     repayment_first_date = serializers.CharField()
     repayment_final_date = serializers.CharField()
+    name_space = serializers.SerializerMethodField(required=False)
+
+    def get_name_space(self, obj):
+        try:
+            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+                parent_element_name='CrsAddLoanTerms')
+            namespace_serializer = NameSpaceSerializer(name_space, many=True)
+        except NameSpaceElement.DoesNotExist:
+            return None
+            pass
+        return namespace_serializer.data
 
     class Meta:
         model = CrsAddLoanTerms
@@ -2559,12 +2875,24 @@ class CrsAddLoanTermsSerializer(ModelSerializerNoValidation):
             'commitment_date',
             'repayment_first_date',
             'repayment_final_date',
+            'name_space',
         )
 
 
 class CrsAddLoanStatusSerializer(ModelSerializerNoValidation):
     value_date = serializers.CharField()
     currency = CodelistSerializer()
+    name_space = serializers.SerializerMethodField(required=False)
+
+    def get_name_space(self, obj):
+        try:
+            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+                parent_element_name='CrsAddLoanStatus')
+            namespace_serializer = NameSpaceSerializer(name_space, many=True)
+        except NameSpaceElement.DoesNotExist:
+            return None
+            pass
+        return namespace_serializer.data
 
     class Meta:
         model = CrsAddLoanStatus
@@ -2576,6 +2904,7 @@ class CrsAddLoanStatusSerializer(ModelSerializerNoValidation):
             'principal_outstanding',
             'principal_arrears',
             'interest_arrears',
+            'name_space',
         )
 
 
@@ -2584,6 +2913,17 @@ class CrsAddOtherFlagsSerializer(ModelSerializerNoValidation):
     significance = serializers.CharField()
 
     crs_add = serializers.CharField(write_only=True)
+    name_space = serializers.SerializerMethodField(required=False)
+
+    def get_name_space(self, obj):
+        try:
+            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+                parent_element_name='CrsAddOtherFlags')
+            namespace_serializer = NameSpaceSerializer(name_space, many=True)
+        except NameSpaceElement.DoesNotExist:
+            return None
+            pass
+        return namespace_serializer.data
 
     class Meta:
         model = CrsAddOtherFlags
@@ -2592,6 +2932,7 @@ class CrsAddOtherFlagsSerializer(ModelSerializerNoValidation):
             'id',
             'other_flags',
             'significance',
+            'name_space',
         )
 
     def validate(self, data):
@@ -2635,6 +2976,17 @@ class CrsAddSerializer(ModelSerializerNoValidation):
     loan_status = CrsAddLoanStatusSerializer(required=False)
     channel_code = CodelistSerializer()
     activity = serializers.CharField(write_only=True)
+    name_space = serializers.SerializerMethodField(required=False)
+
+    def get_name_space(self, obj):
+        try:
+            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+                parent_element_name='CrsAdd')
+            namespace_serializer = NameSpaceSerializer(name_space, many=True)
+        except NameSpaceElement.DoesNotExist:
+            return None
+            pass
+        return namespace_serializer.data
 
     class Meta:
         model = CrsAdd
@@ -2645,6 +2997,7 @@ class CrsAddSerializer(ModelSerializerNoValidation):
             'other_flags',
             'loan_terms',
             'loan_status',
+            'name_space',
         )
 
     def validate(self, data):
@@ -2729,6 +3082,17 @@ class FssForecastSerializer(ModelSerializerNoValidation):
     currency = CodelistSerializer()
 
     fss = serializers.CharField(write_only=True)
+    name_space = serializers.SerializerMethodField(required=False)
+
+    def get_name_space(self, obj):
+        try:
+            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+                parent_element_name='FssForecast')
+            namespace_serializer = NameSpaceSerializer(name_space, many=True)
+        except NameSpaceElement.DoesNotExist:
+            return None
+            pass
+        return namespace_serializer.data
 
     class Meta:
         model = FssForecast
@@ -2739,6 +3103,7 @@ class FssForecastSerializer(ModelSerializerNoValidation):
             'value_date',
             'currency',
             'value',
+            'name_space',
         )
 
     def validate(self, data):
@@ -2787,6 +3152,18 @@ class FssSerializer(ModelSerializerNoValidation):
 
     activity = serializers.CharField(write_only=True)
 
+    name_space = serializers.SerializerMethodField(required=False)
+
+    def get_name_space(self, obj):
+        try:
+            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+                parent_element_name='Fss')
+            namespace_serializer = NameSpaceSerializer(name_space, many=True)
+        except NameSpaceElement.DoesNotExist:
+            return None
+            pass
+        return namespace_serializer.data
+
     class Meta:
         model = Fss
         fields = (
@@ -2796,6 +3173,7 @@ class FssSerializer(ModelSerializerNoValidation):
             'priority',
             'phaseout_year',
             'forecasts',
+            'name_space',
         )
 
     def validate(self, data):
@@ -2906,6 +3284,17 @@ class LocationSerializer(DynamicFieldsModelSerializer):
 
     )
     iati_identifier = serializers.CharField(source='activity.iati_identifier', required=False)  # NOQA: E501
+    name_space = serializers.SerializerMethodField(required=False)
+
+    def get_name_space(self, obj):
+        try:
+            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+                parent_element_name='Location')
+            namespace_serializer = NameSpaceSerializer(name_space, many=True)
+        except NameSpaceElement.DoesNotExist:
+            return None
+            pass
+        return namespace_serializer.data
 
     def validate(self, data):
         activity = get_or_raise(Activity, data, 'activity')
@@ -3005,6 +3394,7 @@ class LocationSerializer(DynamicFieldsModelSerializer):
             # 'recipient_countries',
             # 'recipient_regions'
             'reporting_organisations',
+            'name_space',
         )
 
 
@@ -3030,6 +3420,17 @@ class TransactionProviderSerializer(serializers.ModelSerializer):
         view_name='activities:activity-detail')
     provider_activity_id = serializers.CharField(
         source="provider_activity_ref", required=False)
+    name_space = serializers.SerializerMethodField(required=False)
+
+    def get_name_space(self, obj):
+        try:
+            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+                parent_element_name='TransactionProvider')
+            namespace_serializer = NameSpaceSerializer(name_space, many=True)
+        except NameSpaceElement.DoesNotExist:
+            return None
+            pass
+        return namespace_serializer.data
 
     class Meta:
         model = TransactionProvider
@@ -3038,7 +3439,8 @@ class TransactionProviderSerializer(serializers.ModelSerializer):
             'type',
             'provider_activity',
             'provider_activity_id',
-            'narratives'
+            'narratives',
+            'name_space',
         )
 
 
@@ -3052,6 +3454,17 @@ class TransactionReceiverSerializer(serializers.ModelSerializer):
     receiver_activity_id = serializers.CharField(
         source="receiver_activity_ref"
     )
+    name_space = serializers.SerializerMethodField(required=False)
+
+    def get_name_space(self, obj):
+        try:
+            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+                parent_element_name='TransactionReceiver')
+            namespace_serializer = NameSpaceSerializer(name_space, many=True)
+        except NameSpaceElement.DoesNotExist:
+            return None
+            pass
+        return namespace_serializer.data
 
     class Meta:
         model = TransactionReceiver
@@ -3060,18 +3473,31 @@ class TransactionReceiverSerializer(serializers.ModelSerializer):
             'type',
             'receiver_activity',
             'receiver_activity_id',
-            'narratives'
+            'narratives',
+            'name_space',
         )
 
 
 class TransactionRecipientCountrySerializer(serializers.ModelSerializer):
     country = CountrySerializer(fields=('code', ))
+    name_space = serializers.SerializerMethodField(required=False)
+
+    def get_name_space(self, obj):
+        try:
+            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+                parent_element_name='TransactionRecipientCountry')
+            namespace_serializer = NameSpaceSerializer(name_space, many=True)
+        except NameSpaceElement.DoesNotExist:
+            return None
+            pass
+        return namespace_serializer.data
 
     class Meta:
         model = TransactionRecipientCountry
         fields = (
             'country',
-            'percentage'
+            'percentage',
+            'name_space',
         )
 
 
@@ -3080,44 +3506,92 @@ class TransactionRecipientRegionSerializer(serializers.ModelSerializer):
         fields=('code', ),
     )
     vocabulary = VocabularySerializer()
+    name_space = serializers.SerializerMethodField(required=False)
+
+    def get_name_space(self, obj):
+        try:
+            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+                parent_element_name='TransactionRecipientRegion')
+            namespace_serializer = NameSpaceSerializer(name_space, many=True)
+        except NameSpaceElement.DoesNotExist:
+            return None
+            pass
+        return namespace_serializer.data
 
     class Meta:
         model = TransactionRecipientRegion
         fields = (
             'region',
             'vocabulary',
+            'name_space',
         )
 
 
 class TransactionSectorSerializer(serializers.ModelSerializer):
     sector = SectorSerializer(fields=('code', ))
     vocabulary = VocabularySerializer()
+    name_space = serializers.SerializerMethodField(required=False)
+
+    def get_name_space(self, obj):
+        try:
+            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+                parent_element_name='TransactionSector')
+            namespace_serializer = NameSpaceSerializer(name_space, many=True)
+        except NameSpaceElement.DoesNotExist:
+            return None
+            pass
+        return namespace_serializer.data
 
     class Meta:
         model = TransactionSector
         fields = (
             'sector',
             'vocabulary',
+            'name_space',
         )
 
 
 class TransactionDescriptionSerializer(serializers.ModelSerializer):
     narratives = NarrativeSerializer(many=True)
+    name_space = serializers.SerializerMethodField(required=False)
+
+    def get_name_space(self, obj):
+        try:
+            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+                parent_element_name='TransactionDescription')
+            namespace_serializer = NameSpaceSerializer(name_space, many=True)
+        except NameSpaceElement.DoesNotExist:
+            return None
+            pass
+        return namespace_serializer.data
 
     class Meta:
         model = TransactionDescription
         fields = (
             'narratives',
+            'name_space',
         )
 
 
 class TransactionAidTypeSerializer(serializers.ModelSerializer):
     aid_type = AidTypeSerializer()
+    name_space = serializers.SerializerMethodField(required=False)
+
+    def get_name_space(self, obj):
+        try:
+            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+                parent_element_name='TransactionAidtype')
+            namespace_serializer = NameSpaceSerializer(name_space, many=True)
+        except NameSpaceElement.DoesNotExist:
+            return None
+            pass
+        return namespace_serializer.data
 
     class Meta:
         model = TransactionAidType
         fields = (
             'aid_type',
+            'name_space',
         )
 
 
@@ -3162,6 +3636,17 @@ class TransactionSerializer(serializers.ModelSerializer):
     description = TransactionDescriptionSerializer(
         read_only=True
     )
+    name_space = serializers.SerializerMethodField(required=False)
+
+    def get_name_space(self, obj):
+        try:
+            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+                parent_element_name='Transaction')
+            namespace_serializer = NameSpaceSerializer(name_space, many=True)
+        except NameSpaceElement.DoesNotExist:
+            return None
+            pass
+        return namespace_serializer.data
 
     class Meta:
         model = Transaction
@@ -3185,12 +3670,24 @@ class TransactionSerializer(serializers.ModelSerializer):
             'aid_types',
             'aid_type',
             'tied_status',
+            'name_space',
         )
 
 
 class ActivityTagSerializer(ModelSerializerNoValidation):
     vocabulary = VocabularySerializer()
     narratives = NarrativeSerializer(many=True)
+    name_space = serializers.SerializerMethodField(required=False)
+
+    def get_name_space(self, obj):
+        try:
+            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+                parent_element_name='ActivityTag')
+            namespace_serializer = NameSpaceSerializer(name_space, many=True)
+        except NameSpaceElement.DoesNotExist:
+            return None
+            pass
+        return namespace_serializer.data
 
     class Meta:
         model = ActivityTag
@@ -3206,11 +3703,32 @@ class ActivityTagSerializer(ModelSerializerNoValidation):
 
 class ActivityDefaultAidTypeSerializer(ModelSerializerNoValidation):
     aid_type = AidTypeSerializer()
+    name_space = serializers.SerializerMethodField(required=False)
+
+    def get_name_space(self, obj):
+        try:
+            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+                parent_element_name='ActivityDefaultAidType')
+            namespace_serializer = NameSpaceSerializer(name_space, many=True)
+        except NameSpaceElement.DoesNotExist:
+            return None
+            pass
+        return namespace_serializer.data
 
     class Meta:
         model = ActivityDefaultAidType
         fields = (
             'aid_type',
+            'name_space',
+        )
+
+class NameSpaceSerializer(ModelSerializerNoValidation):
+
+    class Meta:
+        model = NameSpaceElement
+        fields = (
+            'namespace',
+            'nsmap',
         )
 
 
@@ -3220,6 +3738,18 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
 
     id = serializers.CharField(required=False)
     iati_identifier = serializers.CharField()
+
+    name_space = serializers.SerializerMethodField(required=False)
+
+    def get_name_space(self, obj):
+        try:
+            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+                parent_element_name='Activity')
+            namespace_serializer = NameSpaceSerializer(name_space, many=True)
+        except NameSpaceElement.DoesNotExist:
+            return None
+            pass
+        return namespace_serializer.data
 
     reporting_org = ReportingOrganisationDataSerializer(
         read_only=True,
@@ -3674,7 +4204,8 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
             'publisher',
             'published_state',
             'transaction_types',
-            'transaction_url'
+            'transaction_url',
+            'name_space'
         )
 
         validators = []

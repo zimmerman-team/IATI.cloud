@@ -9,6 +9,7 @@ from django.contrib.postgres.indexes import GinIndex
 from django.contrib.postgres.search import SearchVectorField
 from django.db import models
 from djorm_pgfulltext.fields import VectorField
+from django.contrib.postgres.fields import JSONField
 
 from geodata.models import Country, Region
 from iati_codelists.models import (
@@ -56,6 +57,16 @@ class Narrative(models.Model):
 
     class Meta:
         index_together = [('related_content_type', 'related_object_id')]
+
+
+class NameSpaceElement(models.Model):
+    parent_element_name = models.TextField(null=False)
+    parent_element_id = models.IntegerField(null=False)
+    namespace = JSONField(null=True, default=None)
+    nsmap = JSONField(null=True)
+
+    def __unicode__(self,):
+        return "NameSpaceElement"
 
 
 class ActivitySearch(models.Model):
