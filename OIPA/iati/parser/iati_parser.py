@@ -1,31 +1,29 @@
+
 import datetime
 import json
 import logging
 import re
 from collections import OrderedDict
 from decimal import Decimal, InvalidOperation
-import xmltodict
 
 import dateutil.parser
+import xmltodict
 from django.conf import settings
 from django.db.models import Model
 from django.db.models.fields.related import ForeignKey, OneToOneField
 from lxml import etree
 
 from common.util import findnth_occurence_in_string, normalise_unicode_string
+from iati.models import NameSpaceElement
 from iati.parser.exceptions import (
     FieldValidationError, IgnoredVocabularyError, NoUpdateRequired,
     ParserError, RequiredFieldError, ValidationError
 )
 from iati_codelists import models as codelist_models
 from iati_synchroniser.models import DatasetNote
-from iati.models import NameSpaceElement
 from solr.datasetnote.tasks import DatasetNoteTaskIndexing
 
 log = logging.getLogger(__name__)
-
-
-
 
 
 class IatiParser(object):
@@ -282,14 +280,13 @@ class IatiParser(object):
             return
         if element.prefix is not None:  # checking if the element is a namespace element
 
-            self.namespace_element_parsing(element)
+            self.attach_namespace_to_model(element)
             pass
-
 
         x_path = self.root.getroottree().getpath(element)
         function_name = self.generate_function_name(x_path)
 
-        if hasattr(self, function_name)\
+        if hasattr(self, function_name) \
                 and callable(getattr(self, function_name)):
             element_method = getattr(self, function_name)
 
@@ -302,7 +299,8 @@ class IatiParser(object):
                     for namespace_url in element.nsmap.values():
                         if namespace_url in i:
                             namesapce_dict = {i: dict_attrib[i]}
-                            self.namespace_element_parsing(element, namesapce_dict)
+                            self.attach_namespace_to_model(element,
+                                                           namesapce_dict)
             except RequiredFieldError as e:
                 log.exception(e)
                 self.append_error(
@@ -455,11 +453,10 @@ class IatiParser(object):
                 flag = True
         return result
 
-    def namespace_element_parsing(self, element, attribute_dict=None):
-        print("hello")
-
+    def attach_namespace_to_model(self, element, attribute_dict=None):
 
         function_model_mapping = {
+            # flake8: noqa E501
             # activity
             "iati_activities__iati_activity": "Activity",
             "iati_activities__iati_activity__iati_identifier": "Activity",
@@ -503,7 +500,7 @@ class IatiParser(object):
             "iati_activities__iati_activity__policy_marker": "ActivityPolicyMarker",
             "iati_activities__iati_activity__collaboration_type": "Activity",
             "iati_activities__iati_activity__default_flow_type": "Activity",
-            "iati_activities__iati_activity__default_finance_type" : "Activity",
+            "iati_activities__iati_activity__default_finance_type": "Activity",
             "iati_activities__iati_activity__default_aid_type": "ActivityDefaultAidType",
             "iati_activities__iati_activity__default_tied_status": "Activity",
             "iati_activities__iati_activity__budget": "Budget",
@@ -647,7 +644,7 @@ class IatiParser(object):
             "iati_organisations__iati_organisation__document_link__document_date": "OrganisationDocumentLink",
             "iati_organisations__iati_organisation__document_link__recipient_country": "DocumentLinkRecipientCountry",
 
-            }
+        }
 
         namespace = NameSpaceElement()
         namespace_list = []
@@ -659,9 +656,11 @@ class IatiParser(object):
             parent_element_name = function_model_mapping[function_name]
             namespace.parent_element_name = parent_element_name
             namespace.nsmap = element.nsmap
+            namespace.sub_element = True
 
-            xml_to_dict = xmltodict.parse(etree.tostring(element), process_namespaces=True)
-            namespace.namespace = xml_to_dict #etree.tostring(element).decode('utf-8')
+            xml_to_dict = xmltodict.parse(etree.tostring(element),
+                                          process_namespaces=True)
+            namespace.namespace = xml_to_dict  # etree.tostring(element).decode('utf-8')
         else:
             parent_element = element  # when namespace is attribute of the element, the parent element is itself.
             x_path = self.root.getroottree().getpath(parent_element)
@@ -671,11 +670,14 @@ class IatiParser(object):
             namespace.parent_element_name = parent_element_name
             namespace.nsmap = element.nsmap
             namespace.namespace = attribute_dict
-        if hasattr(next(reversed(self.model_store[parent_element_name])), 'namespace'):
-            next(reversed(self.model_store[parent_element_name])).namespace.append(namespace)
+            namespace.sub_element = False
+        if hasattr(next(reversed(self.model_store[parent_element_name])),
+                   'namespace'):
+            next(reversed(
+                self.model_store[parent_element_name])).namespace.append(
+                namespace)
         else:
             namespace_list.append(namespace)
-            setattr(next(reversed(self.model_store[parent_element_name])), 'namespace', namespace_list)
+            setattr(next(reversed(self.model_store[parent_element_name])),
+                    'namespace', namespace_list)
         pass
-
-

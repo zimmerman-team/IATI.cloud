@@ -64,6 +64,7 @@ class NameSpaceElement(models.Model):
     parent_element_id = models.IntegerField(null=False)
     namespace = JSONField(null=True, default=None)
     nsmap = JSONField(null=True)
+    sub_element = models.BooleanField(default=False)
 
     def __unicode__(self,):
         return "NameSpaceElement"

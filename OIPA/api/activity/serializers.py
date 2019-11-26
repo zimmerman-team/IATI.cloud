@@ -3729,6 +3729,7 @@ class NameSpaceSerializer(ModelSerializerNoValidation):
         fields = (
             'namespace',
             'nsmap',
+            'sub_element',
         )
 
 
