@@ -603,7 +603,10 @@ def delete_activity_in_solr(activity_id):
 
 @job
 def add_activity_to_solr(activity_id):
-    ActivityTaskIndexing(
-        instance=Activity.objects.get(id=activity_id),
-        related=True
-    ).run()
+    try:
+        ActivityTaskIndexing(
+            instance=Activity.objects.get(id=activity_id),
+            related=True
+        ).run()
+    except Activity.DoesNotExist:
+        pass
