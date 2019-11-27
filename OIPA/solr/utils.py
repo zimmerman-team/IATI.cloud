@@ -31,7 +31,7 @@ def date_time_string(value):
 
 def date_string(value):
     if value:
-        return value.strftime('%Y-%m-%d')
+        return value.strftime('%Y-%m-%d') + 'T00:00:00Z'
 
     return None
 
