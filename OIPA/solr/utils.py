@@ -22,9 +22,16 @@ def value_string(value):
     return None
 
 
-def date_string(value):
+def date_time_string(value):
     if value:
         return value.strftime('%Y-%m-%dT%H:%M:%SZ')
+
+    return None
+
+
+def date_string(value):
+    if value:
+        return value.strftime('%Y-%m-%d')
 
     return None
 
