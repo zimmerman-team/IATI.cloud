@@ -16,6 +16,7 @@ from solr.activity.serializers import (
 )
 from solr.indexing import BaseIndexing
 from solr.result.serializers import ResultSerializer
+from solr.transaction.references import TransactionReference
 from solr.transaction.serializers import TransactionSerializer
 from solr.utils import (
     bool_string, date_string, decimal_string, get_child_attr, value_string
@@ -930,6 +931,7 @@ class ActivityIndexing(BaseIndexing):
         transaction_all = self.record.transaction_set.all()
         if transaction_all:
             self.add_field('transaction', [])
+            self.add_field('transaction_xml', [])
             self.add_field('transaction_ref', [])
             self.add_field('transaction_humanitarian', [])
             self.add_field('transaction_type', [])
@@ -998,6 +1000,10 @@ class ActivityIndexing(BaseIndexing):
                             ]
                         ).data
                     ).decode()
+                )
+                self.add_value_list(
+                    'transaction_xml',
+                    TransactionReference(transaction=transaction).to_string()
                 )
 
                 self.add_value_list('transaction_ref', transaction.ref)
