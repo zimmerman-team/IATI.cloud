@@ -1,6 +1,7 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError
 from django.db.models import Sum
+from django.db.utils import IntegrityError as Integrity
 
 from iati.models import (
     Activity, ActivityAggregation, ActivityPlusChildAggregation,
@@ -24,7 +25,10 @@ class ActivityAggregationCalculation():
         self.calculate_child_aggregations(activity)
         self.calculate_activity_plus_child_aggregations(activity)
         self.update_parents_child_budgets(activity)
-        activity.save()
+        try:
+            activity.save()
+        except Integrity():
+            activity.update()
 
     def update_parents_child_budgets(self, activity):
 
@@ -53,7 +57,8 @@ class ActivityAggregationCalculation():
         """
 
         currency = None
-        value = 0
+
+        value = (0, None)[len(aggregation_object) <= 0]
 
         for agg_item in aggregation_object:
             currency = agg_item[0]
@@ -349,7 +354,14 @@ class ActivityAggregationCalculation():
         elif activity_value == 0 and child_value != 0:
             total_aggregation_currency = child_currency
 
-        total_aggregation_value = activity_value + child_value
+        if (activity_value is not None) and (child_value is not None):
+            total_aggregation_value = activity_value + child_value
+        elif (activity_value is not None) and (child_value is None):
+            total_aggregation_value = activity_value
+        elif (activity_value is None) and (child_value is not None):
+            total_aggregation_value = child_value
+        else:
+            total_aggregation_value = None
 
         setattr(total_aggregation, aggregation_type +
                 '_currency', total_aggregation_currency)
