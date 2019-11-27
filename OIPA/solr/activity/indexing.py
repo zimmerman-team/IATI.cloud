@@ -2085,7 +2085,7 @@ class ActivityIndexing(BaseIndexing):
         self.add_field('iati_identifier', activity.iati_identifier)
         self.add_field(
             'last_updated_datetime',
-            value_string(activity.last_updated_datetime)
+            date_string(activity.last_updated_datetime)
         )
         self.add_field('default_lang', activity.default_lang_id)
         self.add_field('default_currency', activity.default_currency_id)
