@@ -1,8 +1,8 @@
 # pylint: disable=B410
-from xml.etree import ElementTree  # NOQA: B410
+from xml.etree import ElementTree  # NOQA: B405
 
 # pylint: disable=B410
-from lxml.builder import E  # NOQA: B410
+from lxml.builder import E  # NOQA: B405
 
 from api.iati.elements import ElementReference
 
