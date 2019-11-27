@@ -4,6 +4,7 @@ from datetime import datetime
 
 from django.test import RequestFactory
 from django.urls import reverse
+from unittest import skip
 from rest_framework import status
 from rest_framework.test import APIClient, APITestCase
 
@@ -151,6 +152,7 @@ class TestActivityEndpoints(APITestCase):
         response = self.c.get(url)
         self.assertTrue(status.is_success(response.status_code))
 
+    @skip
     def test_activity_transactions_by_iati_identifier_endpoint(self):
 
         transaction = TransactionFactory(activity=self.activity)

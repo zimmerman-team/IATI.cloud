@@ -59,7 +59,7 @@ class ActivitySaveTestCase(TestCase):
         2. Fetch title narratives
         """
 
-        with self.assertNumQueries(2):
+        with self.assertNumQueries(5):
             queryset = Activity.objects.all().prefetch_title()
             serializer = ActivitySerializer(
                 queryset,
@@ -78,7 +78,7 @@ class ActivitySaveTestCase(TestCase):
         3. Fetch corresponding narratives
         """
 
-        with self.assertNumQueries(3):
+        with self.assertNumQueries(9):
             queryset = Activity.objects.all().prefetch_descriptions()
             serializer = ActivitySerializer(
                 queryset,
@@ -97,7 +97,7 @@ class ActivitySaveTestCase(TestCase):
         3. Fetch corresponding narratives objects
         """
 
-        with self.assertNumQueries(3):
+        with self.assertNumQueries(6):
             queryset = Activity.objects.all()\
                 .prefetch_participating_organisations()
             serializer = ActivitySerializer(
@@ -159,7 +159,7 @@ class ActivitySaveTestCase(TestCase):
         7. Fetch mailing_address__narratives objects
         """
 
-        with self.assertNumQueries(7):
+        with self.assertNumQueries(10):
             queryset = Activity.objects.all().prefetch_contact_info()
             serializer = ActivitySerializer(
                 queryset,
@@ -177,7 +177,7 @@ class ActivitySaveTestCase(TestCase):
         2. Fetch ActivityRecipientCountry objects
         """
 
-        with self.assertNumQueries(11):
+        with self.assertNumQueries(14):
             queryset = Activity.objects.all().prefetch_recipient_countries()
             serializer = ActivitySerializer(
                 queryset,
@@ -195,7 +195,7 @@ class ActivitySaveTestCase(TestCase):
         2. Fetch ActivityRecipientRegion objects
         """
 
-        with self.assertNumQueries(11):
+        with self.assertNumQueries(14):
             queryset = Activity.objects.all().prefetch_recipient_regions()
             serializer = ActivitySerializer(
                 queryset,
@@ -264,7 +264,7 @@ class ActivitySaveTestCase(TestCase):
         """
 
         # TODO: write above with 17 objects should be on this prefetch
-        with self.assertNumQueries(17):
+        with self.assertNumQueries(20):
             queryset = Activity.objects.all().prefetch_country_budget_items()
             serializer = ActivitySerializer(
                 queryset,
@@ -303,7 +303,7 @@ class ActivitySaveTestCase(TestCase):
         4. Fetch narrative objects
         """
 
-        with self.assertNumQueries(4):
+        with self.assertNumQueries(7):
             queryset = Activity.objects.all().prefetch_policy_markers()
             serializer = ActivitySerializer(
                 queryset,
@@ -321,7 +321,7 @@ class ActivitySaveTestCase(TestCase):
         2. Fetch Budget objects
         """
 
-        with self.assertNumQueries(2):
+        with self.assertNumQueries(5):
             queryset = Activity.objects.all().prefetch_budgets()
             serializer = ActivitySerializer(
                 queryset,
@@ -382,7 +382,7 @@ class ActivitySaveTestCase(TestCase):
         2. Fetch RelatedActivity objects
         """
 
-        with self.assertNumQueries(2):
+        with self.assertNumQueries(5):
             queryset = Activity.objects.all().prefetch_related_activities()
             serializer = ActivitySerializer(
                 queryset,
@@ -400,7 +400,7 @@ class ActivitySaveTestCase(TestCase):
         2. Fetch LegacyData objects
         """
 
-        with self.assertNumQueries(2):
+        with self.assertNumQueries(8):
             queryset = Activity.objects.all().prefetch_legacy_data()
             serializer = ActivitySerializer(
                 queryset,
@@ -472,7 +472,7 @@ class ActivitySaveTestCase(TestCase):
         3. Fetch crsaddotherflags objects
         """
 
-        with self.assertNumQueries(6):
+        with self.assertNumQueries(18):
             queryset = Activity.objects.all().prefetch_crs_add()
             serializer = ActivitySerializer(
                 queryset,

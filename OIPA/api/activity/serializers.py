@@ -867,6 +867,7 @@ class ParticipatingOrganisationSerializer(ModelSerializerNoValidation):
 
     activity = serializers.CharField(write_only=True)
     name_space = serializers.SerializerMethodField(required=False)
+    crs_channel_code = CodelistSerializer()
 
     def get_name_space(self, obj):
         try:
@@ -935,6 +936,7 @@ class ParticipatingOrganisationSerializer(ModelSerializerNoValidation):
             'activity',
             'narratives',
             'name_space',
+            'crs_channel_code',
         )
 
 
@@ -1481,7 +1483,8 @@ class CountryBudgetItemsSerializer(ModelSerializerNoValidation):
             'id',
             'activity',
             'vocabulary',
-            'budget_items'
+            'budget_items',
+            'name_space'
         )
 
     def validate(self, data):
@@ -1771,7 +1774,8 @@ class HumanitarianScopeSerializer(DynamicFieldsModelSerializer):
             'vocabulary',
             'vocabulary_uri',
             'code',
-            'narratives'
+            'narratives',
+            'name_space',
         )
 
     def validate(self, data):

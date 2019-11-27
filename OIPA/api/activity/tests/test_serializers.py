@@ -100,13 +100,13 @@ class ActivitySerializerTestCase(TestCase):
 
     def test_DocumentLinkCategorySerializer(self):
 
-        doc_category = iati_factory.DocumentCategoryFactory.create()
+        doc_link_category = iati_factory.DocumentLinkCategoryFactory.create()
         serializer = serializers.DocumentLinkCategorySerializer(
-            {"category": doc_category})
+            doc_link_category)
 
         self.assertEqual(serializer.data[
             'category'
-        ]['code'], doc_category.code),\
+        ]['code'], doc_link_category.category.code),\
             """
             'document_category.code' should be serialized to a field called
             'code'
