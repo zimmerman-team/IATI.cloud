@@ -318,6 +318,7 @@
     <field name="default_tied_status_code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
 
     <field name="budget" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="budget_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
     <field name="budget_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="budget_status" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="budget_period_start_iso_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
@@ -351,6 +352,7 @@
     <field name="capital_spend_percentage" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
 
     <field name="transaction" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="transaction_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
     <field name="transaction_ref" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="transaction_humanitarian" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="transaction_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
