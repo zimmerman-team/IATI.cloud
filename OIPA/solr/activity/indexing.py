@@ -57,7 +57,10 @@ class ActivityIndexing(BaseIndexing):
             )
             self.add_field('reporting_org_ref', reporting_org.ref)
             self.add_field('reporting_org_type_code', reporting_org.type_id)
-            self.add_field('reporting_org_type_name', reporting_org.type.name)
+            self.add_field(
+                'reporting_org_type_name',
+                get_child_attr(reporting_org, 'type.name')
+            )
             self.add_field(
                 'reporting_org_secondary_reporter',
                 bool_string(reporting_org.secondary_reporter)
@@ -2085,7 +2088,7 @@ class ActivityIndexing(BaseIndexing):
         self.add_field('iati_identifier', activity.iati_identifier)
         self.add_field(
             'last_updated_datetime',
-            value_string(activity.last_updated_datetime)
+            date_string(activity.last_updated_datetime)
         )
         self.add_field('default_lang', activity.default_lang_id)
         self.add_field('default_currency', activity.default_currency_id)
