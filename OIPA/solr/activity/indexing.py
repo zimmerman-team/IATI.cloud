@@ -14,10 +14,10 @@ from solr.activity.serializers import (
     ActivityRecipientRegionSerializer, ActivitySectorSerializer,
     LocationSerializer, RecipientCountrySerializer
 )
+from solr.budget.references import BudgetReference
 from solr.indexing import BaseIndexing
 from solr.result.serializers import ResultSerializer
 from solr.transaction.references import TransactionReference
-from solr.budget.references import BudgetReference
 from solr.transaction.serializers import TransactionSerializer
 from solr.utils import (
     bool_string, date_string, decimal_string, get_child_attr, value_string
