@@ -432,6 +432,7 @@
     <field name="conditions_condition_narrative_text" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
 
     <field name="result" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="result_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
     <field name="result_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="result_aggregation_status" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
 
