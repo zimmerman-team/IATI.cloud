@@ -39,17 +39,9 @@
       <iati-identifier>
         <xsl:value-of select="str[@name='iati_identifier']"/>
       </iati-identifier>
-      <reporting-org>
-        <xsl:attribute name="ref">
-          <xsl:value-of select="str[@name='reporting_org_ref']"/>
-        </xsl:attribute>
-        <xsl:attribute name="type">
-          <xsl:value-of select="str[@name='reporting_org_type_code']"/>
-        </xsl:attribute>
-        <xsl:attribute name="secondary-reporter">
-          <xsl:value-of select="str[@name='reporting_org_secondary_reporter']"/>
-        </xsl:attribute>
-      </reporting-org>
+      <xsl:for-each select="arr[@name='reporting_org_xml">
+        <xsl:value-of disable-output-escaping="yes" select="."/>
+      </xsl:for-each>
       <xsl:for-each select="arr[@name='budget_xml']">
         <xsl:value-of disable-output-escaping="yes" select="."/>
       </xsl:for-each>

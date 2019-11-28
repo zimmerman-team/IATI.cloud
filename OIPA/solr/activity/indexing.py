@@ -10,6 +10,7 @@ from api.activity.serializers import (
     PlannedDisbursementSerializer, RelatedActivitySerializer,
     ReportingOrganisationSerializer, TitleSerializer
 )
+from solr.activity.references import ReportingOrgReference
 from solr.activity.serializers import (
     ActivityRecipientRegionSerializer, ActivitySectorSerializer,
     LocationSerializer, RecipientCountrySerializer
@@ -58,6 +59,13 @@ class ActivityIndexing(BaseIndexing):
                     ]
                 ).data).decode()
             )
+            self.add_field(
+                'reporting_org_xml',
+                ReportingOrgReference(
+                    reporting_org=get_child_attr(reporting_org, 'organisation')
+                ).to_string()
+            )
+
             self.add_field('reporting_org_ref', reporting_org.ref)
             self.add_field('reporting_org_type_code', reporting_org.type_id)
             self.add_field('reporting_org_type_name', reporting_org.type.name)
