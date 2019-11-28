@@ -1,6 +1,6 @@
+from api.activity.serializers import BudgetSerializer
 from api.iati.references import BudgetReference as ElementReference
 from solr.references import ConvertElementReference
-from api.activity.serializers import BudgetSerializer
 
 
 class BudgetReference(ConvertElementReference, ElementReference):
