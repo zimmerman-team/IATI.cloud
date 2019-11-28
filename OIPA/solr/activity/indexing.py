@@ -14,6 +14,7 @@ from solr.activity.serializers import (
     ActivityRecipientRegionSerializer, ActivitySectorSerializer,
     LocationSerializer, RecipientCountrySerializer
 )
+from solr.budget.references import BudgetReference
 from solr.indexing import BaseIndexing
 from solr.result.serializers import ResultSerializer
 from solr.transaction.references import TransactionReference
@@ -780,6 +781,7 @@ class ActivityIndexing(BaseIndexing):
         budget_all = self.record.budget_set.all()
         if budget_all:
             self.add_field('budget', [])
+            self.add_field('budget_xml', [])
             self.add_field('budget_type', [])
             self.add_field('budget_status', [])
             self.add_field('budget_period_start_iso_date', [])
@@ -794,6 +796,10 @@ class ActivityIndexing(BaseIndexing):
                     JSONRenderer().render(
                         BudgetSerializer(budget).data
                     ).decode()
+                )
+                self.add_value_list(
+                    'budget_xml',
+                    BudgetReference(budget=budget).to_string()
                 )
 
                 self.add_value_list('budget_type', budget.type_id)

@@ -318,6 +318,7 @@
     <field name="default_tied_status_code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
 
     <field name="budget" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="budget_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
     <field name="budget_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="budget_status" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="budget_period_start_iso_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
