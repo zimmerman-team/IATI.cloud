@@ -16,6 +16,7 @@ from solr.activity.serializers import (
 )
 from solr.budget.references import BudgetReference
 from solr.indexing import BaseIndexing
+from solr.result.references import ResultReference
 from solr.result.serializers import ResultSerializer
 from solr.transaction.references import TransactionReference
 from solr.transaction.serializers import TransactionSerializer
@@ -1329,6 +1330,7 @@ class ActivityIndexing(BaseIndexing):
         result_all = self.record.result_set.all()
         if result_all:
             self.add_field('result', [])
+            self.add_field('result_xml', [])
             self.add_field('result_type', [])
             self.add_field('result_aggregation_status', [])
             self.add_field('result_title_narrative', [])
@@ -1549,6 +1551,10 @@ class ActivityIndexing(BaseIndexing):
                     JSONRenderer().render(
                         ResultSerializer(result).data
                     ).decode()
+                )
+                self.add_value_list(
+                    'result_xml',
+                    ResultReference(result=result).to_string()
                 )
 
                 self.add_value_list('result_type', result.type_id)
