@@ -21,7 +21,6 @@ from iati_codelists import models as codelist_models
 from iati_organisation import models as organisation_models
 from iati_vocabulary import models as vocabulary_models
 
-
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
 
