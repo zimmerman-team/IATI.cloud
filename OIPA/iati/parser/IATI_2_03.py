@@ -24,6 +24,7 @@ from iati_organisation import models as organisation_models
 from iati_vocabulary import models as vocabulary_models
 # from task_queue.tasks import add_activity_to_solr
 
+
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
 
