@@ -48,6 +48,9 @@
       <xsl:for-each select="arr[@name='description_xml']">
         <xsl:value-of disable-output-escaping="yes" select="."/>
       </xsl:for-each>
+      <xsl:for-each select="arr[@name='participating_org_xml']">
+        <xsl:value-of disable-output-escaping="yes" select="."/>
+      </xsl:for-each>
       <xsl:for-each select="arr[@name='budget_xml']">
         <xsl:value-of disable-output-escaping="yes" select="."/>
       </xsl:for-each>

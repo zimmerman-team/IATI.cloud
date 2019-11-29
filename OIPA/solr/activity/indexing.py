@@ -11,7 +11,8 @@ from api.activity.serializers import (
     ReportingOrganisationSerializer, TitleSerializer
 )
 from solr.activity.references import (
-    DescriptionReference, ReportingOrgReference, TitleReference
+    DescriptionReference, ParticipatingOrgReference, ReportingOrgReference,
+    TitleReference
 )
 from solr.activity.serializers import (
     ActivityRecipientRegionSerializer, ActivitySectorSerializer,
@@ -139,6 +140,7 @@ class ActivityIndexing(BaseIndexing):
             self.record.participating_organisations.all()
         if participating_organisation_all:
             self.add_field('participating_org', [])
+            self.add_field('participating_org_xml', [])
             self.add_field('participating_org_ref', [])
             self.add_field('participating_org_type', [])
             self.add_field('participating_org_role', [])
@@ -154,6 +156,12 @@ class ActivityIndexing(BaseIndexing):
                             participating_organisation
                         ).data
                     ).decode()
+                )
+                self.add_field(
+                    'participating_org_xml',
+                    ParticipatingOrgReference(
+                        participating_org=participating_organisation
+                    ).to_string()
                 )
 
                 self.add_value_list(

@@ -159,6 +159,7 @@
     <field name="description_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
 
     <field name="participating_org" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="participating_org_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
     <field name="participating_org_ref" type="non_case_sensitive" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="participating_org_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="participating_org_role" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
