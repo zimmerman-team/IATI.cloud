@@ -10,7 +10,7 @@ from api.activity.serializers import (
     PlannedDisbursementSerializer, RelatedActivitySerializer,
     ReportingOrganisationSerializer, TitleSerializer
 )
-from solr.activity.references import ReportingOrgReference
+from solr.activity.references import ReportingOrgReference, TitleReference
 from solr.activity.serializers import (
     ActivityRecipientRegionSerializer, ActivitySectorSerializer,
     LocationSerializer, RecipientCountrySerializer
@@ -84,6 +84,10 @@ class ActivityIndexing(BaseIndexing):
             self.add_field(
                 'title',
                 JSONRenderer().render(TitleSerializer(title).data).decode()
+            )
+            self.add_field(
+                'title_xml',
+                TitleReference(title=title).to_string()
             )
 
             self.add_field('title_narrative', [])

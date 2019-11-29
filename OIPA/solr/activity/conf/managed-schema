@@ -145,6 +145,7 @@
     <field name="reporting_org_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
 
     <field name="title" type="text_general" indexed="true" required="false" stored="true"/>
+    <field name="title_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
     <field name="title_narrative" type="text_general" indexed="true" required="false" stored="true"/>
     <field name="title_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="title_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
