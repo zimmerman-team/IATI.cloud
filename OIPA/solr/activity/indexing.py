@@ -11,8 +11,9 @@ from api.activity.serializers import (
     ReportingOrganisationSerializer, TitleSerializer
 )
 from solr.activity.references import (
-    ActivityStatusReference, DescriptionReference, OtherIdentifierReference,
-    ParticipatingOrgReference, ReportingOrgReference, TitleReference
+    ActivityDateReference, ActivityStatusReference, DescriptionReference,
+    OtherIdentifierReference, ParticipatingOrgReference, ReportingOrgReference,
+    TitleReference
 )
 from solr.activity.serializers import (
     ActivityRecipientRegionSerializer, ActivitySectorSerializer,
@@ -234,6 +235,7 @@ class ActivityIndexing(BaseIndexing):
         activity_dates_all = self.record.activitydate_set.all()
         if activity_dates_all:
             self.add_field('activity_date', [])
+            self.add_field('activity_date_xml', [])
             self.add_field('activity_date_type', [])
             self.add_field('activity_date_iso_date', [])
 
@@ -247,6 +249,12 @@ class ActivityIndexing(BaseIndexing):
                     JSONRenderer().render(
                         ActivityDateSerializer(activity_date).data
                     ).decode()
+                )
+                self.add_field(
+                    'activity_date_xml',
+                    ActivityDateReference(
+                        activity_date=activity_date
+                    ).to_string()
                 )
 
                 self.add_value_list(
