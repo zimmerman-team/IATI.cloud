@@ -11,9 +11,9 @@ from api.activity.serializers import (
     ReportingOrganisationSerializer, TitleSerializer
 )
 from solr.activity.references import (
-    ActivityDateReference, ActivityStatusReference, DescriptionReference,
-    OtherIdentifierReference, ParticipatingOrgReference, ReportingOrgReference,
-    TitleReference
+    ActivityDateReference, ActivityStatusReference, ContactInfoReference,
+    DescriptionReference, OtherIdentifierReference, ParticipatingOrgReference,
+    ReportingOrgReference, TitleReference
 )
 from solr.activity.serializers import (
     ActivityRecipientRegionSerializer, ActivitySectorSerializer,
@@ -300,6 +300,7 @@ class ActivityIndexing(BaseIndexing):
         contact_info_all = self.record.contactinfo_set.all()
         if contact_info_all:
             self.add_field('contact_info', [])
+            self.add_field('contact_info_xml', [])
 
             self.add_field('contact_info_type', [])
             self.add_field('contact_info_telephone', [])
@@ -332,6 +333,12 @@ class ActivityIndexing(BaseIndexing):
                     JSONRenderer().render(
                         ContactInfoSerializer(contact_info).data
                     ).decode()
+                )
+                self.add_value_list(
+                    'contact_info_xml',
+                    ContactInfoReference(
+                        contact_info=contact_info
+                    ).to_string()
                 )
 
                 self.add_value_list('contact_info_type', contact_info.type_id)

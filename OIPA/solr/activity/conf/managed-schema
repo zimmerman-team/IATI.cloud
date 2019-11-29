@@ -192,6 +192,7 @@
     <field name="activity_date_end_actual" type="pdate" multiValued="false" indexed="true" required="false" stored="true"/>
 
     <field name="contact_info" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="contact_info_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
     <field name="contact_info_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
 
     <field name="contact_info_organisation_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
