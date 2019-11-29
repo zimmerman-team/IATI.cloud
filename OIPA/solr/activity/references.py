@@ -7,6 +7,8 @@ from api.activity.serializers import (
 from api.iati.references import \
     ActivityDateReference as BaseActivityDateReference
 from api.iati.references import \
+    ActivityScopeReference as BaseActivityScopeReference
+from api.iati.references import \
     ActivityStatusReference as BaseActivityStatusReference
 from api.iati.references import \
     ContactInfoReference as BaseContactInfoReference
@@ -106,6 +108,17 @@ class ContactInfoReference(ConvertElementReference,
     def __init__(self, contact_info=None):
         data = ContactInfoSerializer(
             instance=contact_info
+        ).data
+
+        super().__init__(parent_element=None, data=data)
+
+
+class ActivityScopeReference(ConvertElementReference,
+                             BaseActivityScopeReference):
+
+    def __init__(self, activity_scope=None):
+        data = CodelistSerializer(
+            instance=activity_scope
         ).data
 
         super().__init__(parent_element=None, data=data)
