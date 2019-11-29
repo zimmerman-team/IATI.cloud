@@ -11,8 +11,8 @@ from api.activity.serializers import (
     ReportingOrganisationSerializer, TitleSerializer
 )
 from solr.activity.references import (
-    DescriptionReference, ParticipatingOrgReference, ReportingOrgReference,
-    TitleReference
+    DescriptionReference, OtherIdentifierReference, ParticipatingOrgReference,
+    ReportingOrgReference, TitleReference
 )
 from solr.activity.serializers import (
     ActivityRecipientRegionSerializer, ActivitySectorSerializer,
@@ -188,6 +188,7 @@ class ActivityIndexing(BaseIndexing):
         other_identifier_all = self.record.otheridentifier_set.all()
         if other_identifier_all:
             self.add_field('other_identifier', [])
+            self.add_field('other_identifier_xml', [])
             self.add_field('other_identifier_ref', [])
             self.add_field('other_identifier_type', [])
             self.add_field('other_identifier_owner_org_ref', [])
@@ -201,6 +202,12 @@ class ActivityIndexing(BaseIndexing):
                     JSONRenderer().render(
                         OtherIdentifierSerializer(other_identifier).data
                     ).decode()
+                )
+                self.add_field(
+                    'other_identifier_xml',
+                    OtherIdentifierReference(
+                        other_identifier=other_identifier
+                    ).to_string()
                 )
 
                 self.add_value_list(

@@ -1,9 +1,12 @@
 from api.activity.serializers import (
-    DescriptionSerializer, ParticipatingOrganisationSerializer,
-    ReportingOrganisationSerializer, TitleSerializer
+    DescriptionSerializer, OtherIdentifierSerializer,
+    ParticipatingOrganisationSerializer, ReportingOrganisationSerializer,
+    TitleSerializer
 )
 from api.iati.references import \
     DescriptionReference as BaseDescriptionReference
+from api.iati.references import \
+    OtherIdentifierReference as BaseOtherIdentifierReference
 from api.iati.references import \
     ParticipatingOrgReference as BaseParticipatingOrgReference
 from api.iati.references import \
@@ -52,6 +55,17 @@ class ParticipatingOrgReference(ConvertElementReference,
     def __init__(self, participating_org=None):
         data = ParticipatingOrganisationSerializer(
             instance=participating_org
+        ).data
+
+        super().__init__(parent_element=None, data=data)
+
+
+class OtherIdentifierReference(ConvertElementReference,
+                               BaseOtherIdentifierReference):
+
+    def __init__(self, other_identifier=None):
+        data = OtherIdentifierSerializer(
+            instance=other_identifier
         ).data
 
         super().__init__(parent_element=None, data=data)
