@@ -19,8 +19,11 @@ from api.iati.references import \
 from api.iati.references import \
     ParticipatingOrgReference as BaseParticipatingOrgReference
 from api.iati.references import \
+    RecipientCountryReference as BaseRecipientCountryReference
+from api.iati.references import \
     ReportingOrgOrgReference as BaseReportingOrgElementReference
 from api.iati.references import TitleReference as BaseTitleReference
+from solr.activity.serializers import RecipientCountrySerializer
 from solr.references import ConvertElementReference
 
 
@@ -119,6 +122,17 @@ class ActivityScopeReference(ConvertElementReference,
     def __init__(self, activity_scope=None):
         data = CodelistSerializer(
             instance=activity_scope
+        ).data
+
+        super().__init__(parent_element=None, data=data)
+
+
+class RecipientCountryReference(ConvertElementReference,
+                                BaseRecipientCountryReference):
+
+    def __init__(self, recipient_country=None):
+        data = RecipientCountrySerializer(
+            instance=recipient_country
         ).data
 
         super().__init__(parent_element=None, data=data)
