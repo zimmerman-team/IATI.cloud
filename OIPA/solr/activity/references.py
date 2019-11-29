@@ -1,9 +1,14 @@
-from api.activity.serializers import ReportingOrganisationSerializer
-from api.iati.references import ReportingOrgOrgReference as ElementReference
+from api.activity.serializers import (
+    ReportingOrganisationSerializer, TitleSerializer
+)
+from api.iati.references import \
+    ReportingOrgOrgReference as BaseReportingOrgElementReference
+from api.iati.references import TitleReference as BaseTitleReference
 from solr.references import ConvertElementReference
 
 
-class ReportingOrgReference(ConvertElementReference, ElementReference):
+class ReportingOrgReference(ConvertElementReference,
+                            BaseReportingOrgElementReference):
 
     def __init__(self, reporting_org=None):
         data = ReportingOrganisationSerializer(
@@ -16,5 +21,13 @@ class ReportingOrgReference(ConvertElementReference, ElementReference):
                 'narratives'
             ]
         ).data
+
+        super().__init__(parent_element=None, data=data)
+
+
+class TitleReference(ConvertElementReference, BaseTitleReference):
+
+    def __init__(self, title=None):
+        data = TitleSerializer(instance=title).data
 
         super().__init__(parent_element=None, data=data)
