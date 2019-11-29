@@ -1,6 +1,8 @@
 from api.activity.serializers import (
-    ReportingOrganisationSerializer, TitleSerializer
+    DescriptionSerializer, ReportingOrganisationSerializer, TitleSerializer
 )
+from api.iati.references import \
+    DescriptionReference as BaseDescriptionReference
 from api.iati.references import \
     ReportingOrgOrgReference as BaseReportingOrgElementReference
 from api.iati.references import TitleReference as BaseTitleReference
@@ -29,5 +31,13 @@ class TitleReference(ConvertElementReference, BaseTitleReference):
 
     def __init__(self, title=None):
         data = TitleSerializer(instance=title).data
+
+        super().__init__(parent_element=None, data=data)
+
+
+class DescriptionReference(ConvertElementReference, BaseDescriptionReference):
+
+    def __init__(self, description=None):
+        data = DescriptionSerializer(instance=description).data
 
         super().__init__(parent_element=None, data=data)
