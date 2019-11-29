@@ -10,7 +10,9 @@ from api.activity.serializers import (
     PlannedDisbursementSerializer, RelatedActivitySerializer,
     ReportingOrganisationSerializer, TitleSerializer
 )
-from solr.activity.references import ReportingOrgReference, TitleReference
+from solr.activity.references import (
+    DescriptionReference, ReportingOrgReference, TitleReference
+)
 from solr.activity.serializers import (
     ActivityRecipientRegionSerializer, ActivitySectorSerializer,
     LocationSerializer, RecipientCountrySerializer
@@ -105,6 +107,7 @@ class ActivityIndexing(BaseIndexing):
         description_all = self.record.description_set.all()
         if description_all:
             self.add_field('description', [])
+            self.add_field('description_xml', [])
             self.add_field('description_type', [])
             self.add_field('description_lang', [])
             self.add_field('description_narrative', [])
@@ -117,6 +120,10 @@ class ActivityIndexing(BaseIndexing):
                     JSONRenderer().render(
                         DescriptionSerializer(description).data
                     ).decode()
+                )
+                self.add_field(
+                    'description_xml',
+                    DescriptionReference(description=description).to_string()
                 )
                 self.add_value_list('description_type', description.type_id)
 
