@@ -11,8 +11,8 @@ from api.activity.serializers import (
     ReportingOrganisationSerializer, TitleSerializer
 )
 from solr.activity.references import (
-    DescriptionReference, OtherIdentifierReference, ParticipatingOrgReference,
-    ReportingOrgReference, TitleReference
+    ActivityStatusReference, DescriptionReference, OtherIdentifierReference,
+    ParticipatingOrgReference, ReportingOrgReference, TitleReference
 )
 from solr.activity.serializers import (
     ActivityRecipientRegionSerializer, ActivitySectorSerializer,
@@ -2144,6 +2144,12 @@ class ActivityIndexing(BaseIndexing):
         self.add_field('humanitarian', bool_string(activity.humanitarian))
         self.add_field('hierarchy', value_string(activity.hierarchy))
         self.add_field('linked_data_uri', activity.linked_data_uri)
+        self.add_field(
+            'activity_status_xml',
+            ActivityStatusReference(
+                activity_status=activity.activity_status
+            ).to_string()
+        )
         self.add_field('activity_status_code', activity.activity_status_id)
         self.add_field('activity_scope_code', activity.scope_id)
         self.add_field(

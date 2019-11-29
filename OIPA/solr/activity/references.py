@@ -1,8 +1,10 @@
 from api.activity.serializers import (
-    DescriptionSerializer, OtherIdentifierSerializer,
+    CodelistSerializer, DescriptionSerializer, OtherIdentifierSerializer,
     ParticipatingOrganisationSerializer, ReportingOrganisationSerializer,
     TitleSerializer
 )
+from api.iati.references import \
+    ActivityStatusReference as BaseActivityStatusReference
 from api.iati.references import \
     DescriptionReference as BaseDescriptionReference
 from api.iati.references import \
@@ -66,6 +68,17 @@ class OtherIdentifierReference(ConvertElementReference,
     def __init__(self, other_identifier=None):
         data = OtherIdentifierSerializer(
             instance=other_identifier
+        ).data
+
+        super().__init__(parent_element=None, data=data)
+
+
+class ActivityStatusReference(ConvertElementReference,
+                              BaseActivityStatusReference):
+
+    def __init__(self, activity_status=None):
+        data = CodelistSerializer(
+            instance=activity_status
         ).data
 
         super().__init__(parent_element=None, data=data)
