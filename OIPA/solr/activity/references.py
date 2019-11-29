@@ -1,12 +1,15 @@
 from api.activity.serializers import (
-    ActivityDateSerializer, CodelistSerializer, DescriptionSerializer,
-    OtherIdentifierSerializer, ParticipatingOrganisationSerializer,
-    ReportingOrganisationSerializer, TitleSerializer
+    ActivityDateSerializer, CodelistSerializer, ContactInfoSerializer,
+    DescriptionSerializer, OtherIdentifierSerializer,
+    ParticipatingOrganisationSerializer, ReportingOrganisationSerializer,
+    TitleSerializer
 )
 from api.iati.references import \
     ActivityDateReference as BaseActivityDateReference
 from api.iati.references import \
     ActivityStatusReference as BaseActivityStatusReference
+from api.iati.references import \
+    ContactInfoReference as BaseContactInfoReference
 from api.iati.references import \
     DescriptionReference as BaseDescriptionReference
 from api.iati.references import \
@@ -92,6 +95,17 @@ class ActivityDateReference(ConvertElementReference,
     def __init__(self, activity_date=None):
         data = ActivityDateSerializer(
             instance=activity_date
+        ).data
+
+        super().__init__(parent_element=None, data=data)
+
+
+class ContactInfoReference(ConvertElementReference,
+                           BaseContactInfoReference):
+
+    def __init__(self, contact_info=None):
+        data = ContactInfoSerializer(
+            instance=contact_info
         ).data
 
         super().__init__(parent_element=None, data=data)
