@@ -11,9 +11,9 @@ from api.activity.serializers import (
     ReportingOrganisationSerializer, TitleSerializer
 )
 from solr.activity.references import (
-    ActivityDateReference, ActivityStatusReference, ContactInfoReference,
-    DescriptionReference, OtherIdentifierReference, ParticipatingOrgReference,
-    ReportingOrgReference, TitleReference
+    ActivityDateReference, ActivityScopeReference, ActivityStatusReference,
+    ContactInfoReference, DescriptionReference, OtherIdentifierReference,
+    ParticipatingOrgReference, ReportingOrgReference, TitleReference
 )
 from solr.activity.serializers import (
     ActivityRecipientRegionSerializer, ActivitySectorSerializer,
@@ -2166,6 +2166,12 @@ class ActivityIndexing(BaseIndexing):
             ).to_string()
         )
         self.add_field('activity_status_code', activity.activity_status_id)
+        self.add_field(
+            'activity_scope_xml',
+            ActivityScopeReference(
+                activity_scope=activity.scope
+            ).to_string()
+        )
         self.add_field('activity_scope_code', activity.scope_id)
         self.add_field(
             'collaboration_type_code',
