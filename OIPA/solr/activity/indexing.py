@@ -13,7 +13,8 @@ from api.activity.serializers import (
 from solr.activity.references import (
     ActivityDateReference, ActivityScopeReference, ActivityStatusReference,
     ContactInfoReference, DescriptionReference, OtherIdentifierReference,
-    ParticipatingOrgReference, ReportingOrgReference, TitleReference
+    ParticipatingOrgReference, RecipientCountryReference,
+    ReportingOrgReference, TitleReference
 )
 from solr.activity.serializers import (
     ActivityRecipientRegionSerializer, ActivitySectorSerializer,
@@ -387,6 +388,7 @@ class ActivityIndexing(BaseIndexing):
         recipient_country_all = self.record.activityrecipientcountry_set.all()
         if recipient_country_all:
             self.add_field('recipient_country', [])
+            self.add_field('recipient_country_xml', [])
 
             self.add_field('recipient_country_code', [])
             self.add_field('recipient_country_name', [])
@@ -402,6 +404,12 @@ class ActivityIndexing(BaseIndexing):
                     JSONRenderer().render(
                         RecipientCountrySerializer(recipient_country).data
                     ).decode()
+                )
+                self.add_value_list(
+                    'recipient_country_xml',
+                    RecipientCountryReference(
+                        recipient_country=recipient_country
+                    ).to_string()
                 )
 
                 self.add_value_list(
