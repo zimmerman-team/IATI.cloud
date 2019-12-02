@@ -232,6 +232,7 @@
     <field name="recipient_country_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
 
     <field name="recipient_region" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="recipient_region_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
     <field name="recipient_region_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="recipient_region_name" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="recipient_region_vocabulary" type="string" multiValued="true" indexed="true" required="false" stored="true"/>

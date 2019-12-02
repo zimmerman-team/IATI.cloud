@@ -21,9 +21,12 @@ from api.iati.references import \
 from api.iati.references import \
     RecipientCountryReference as BaseRecipientCountryReference
 from api.iati.references import \
+    RecipientRegionReference as BaseRecipientRegionReference
+from api.iati.references import \
     ReportingOrgOrgReference as BaseReportingOrgElementReference
 from api.iati.references import TitleReference as BaseTitleReference
 from solr.activity.serializers import RecipientCountrySerializer
+from solr.activity.serializers import ActivityRecipientRegionSerializer
 from solr.references import ConvertElementReference
 
 
@@ -133,6 +136,17 @@ class RecipientCountryReference(ConvertElementReference,
     def __init__(self, recipient_country=None):
         data = RecipientCountrySerializer(
             instance=recipient_country
+        ).data
+
+        super().__init__(parent_element=None, data=data)
+
+
+class RecipientRegionReference(ConvertElementReference,
+                               BaseRecipientRegionReference):
+
+    def __init__(self, recipient_region=None):
+        data = ActivityRecipientRegionSerializer(
+            instance=recipient_region
         ).data
 
         super().__init__(parent_element=None, data=data)

@@ -14,7 +14,7 @@ from solr.activity.references import (
     ActivityDateReference, ActivityScopeReference, ActivityStatusReference,
     ContactInfoReference, DescriptionReference, OtherIdentifierReference,
     ParticipatingOrgReference, RecipientCountryReference,
-    ReportingOrgReference, TitleReference
+    ReportingOrgReference, TitleReference, RecipientRegionReference
 )
 from solr.activity.serializers import (
     ActivityRecipientRegionSerializer, ActivitySectorSerializer,
@@ -436,6 +436,7 @@ class ActivityIndexing(BaseIndexing):
         recipient_region_all = self.record.activityrecipientregion_set.all()
         if recipient_region_all:
             self.add_field('recipient_region', [])
+            self.add_field('recipient_region_xml', [])
 
             self.add_field('recipient_region_code', [])
             self.add_field('recipient_region_name', [])
@@ -455,6 +456,12 @@ class ActivityIndexing(BaseIndexing):
                             recipient_region
                         ).data
                     ).decode()
+                )
+                self.add_value_list(
+                    'recipient_region_xml',
+                    RecipientRegionReference(
+                        recipient_region=recipient_region
+                    ).to_string()
                 )
 
                 self.add_value_list(
