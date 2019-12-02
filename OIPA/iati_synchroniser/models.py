@@ -85,8 +85,8 @@ class Dataset(models.Model):
         return self.name
 
     def process(self, force_reparse=False):
-        if not self.iati_version:
-            self.update_activities_count()
+        """if not self.iati_version:
+            self.update_activities_count()"""
 
         if self.iati_version in ['2.01', '2.02', '2.03']:
             from iati.parser.parse_manager import ParseManager
