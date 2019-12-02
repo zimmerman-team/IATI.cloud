@@ -25,8 +25,9 @@ from api.iati.references import \
 from api.iati.references import \
     ReportingOrgOrgReference as BaseReportingOrgElementReference
 from api.iati.references import TitleReference as BaseTitleReference
-from solr.activity.serializers import RecipientCountrySerializer
-from solr.activity.serializers import ActivityRecipientRegionSerializer
+from solr.activity.serializers import (
+    ActivityRecipientRegionSerializer, RecipientCountrySerializer
+)
 from solr.references import ConvertElementReference
 
 

@@ -14,7 +14,7 @@ from solr.activity.references import (
     ActivityDateReference, ActivityScopeReference, ActivityStatusReference,
     ContactInfoReference, DescriptionReference, OtherIdentifierReference,
     ParticipatingOrgReference, RecipientCountryReference,
-    ReportingOrgReference, TitleReference, RecipientRegionReference
+    RecipientRegionReference, ReportingOrgReference, TitleReference
 )
 from solr.activity.serializers import (
     ActivityRecipientRegionSerializer, ActivitySectorSerializer,
