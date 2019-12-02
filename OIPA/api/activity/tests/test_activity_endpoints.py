@@ -1,10 +1,10 @@
 import json
 from collections import OrderedDict
 from datetime import datetime
+from unittest import skip
 
 from django.test import RequestFactory
 from django.urls import reverse
-from unittest import skip
 from rest_framework import status
 from rest_framework.test import APIClient, APITestCase
 

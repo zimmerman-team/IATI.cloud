@@ -5,11 +5,10 @@ from api.generics.serializers import (
     DynamicFieldsModelSerializer, ModelSerializerNoValidation,
     SerializerNoValidation
 )
-from iati.models import DocumentCategory, Narrative, NameSpaceElement
+from iati.models import DocumentCategory, NameSpaceElement, Narrative
 from iati_codelists.models import AidType
 from iati_organisation.models import OrganisationNarrative
 from iati_synchroniser.models import Codelist
-
 
 
 class VocabularySerializer(SerializerNoValidation):
