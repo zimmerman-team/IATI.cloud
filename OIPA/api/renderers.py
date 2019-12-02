@@ -25,7 +25,7 @@ from api.iati.references import (
     CountryBudgetItemsReference, CrsAddReference, DefaultAidTypeReference,
     DefaultCurrencyOrgReference, DefaultFinanceTypeReference,
     DefaultFlowTypeReference, DefaultTiedStatusReference, DescriptionReference,
-    DocumentLinkOrgReference, DocumentLinkReference, FssReference,
+    DocumentLinkBaseReference, DocumentLinkOrgReference, FssReference,
     HumanitarianScopeReference, LastUpdatedDatetimeOrgReference,
     LegacyDataReference, LocationReference, NameOrgReference,
     OrganisationReference, OtherIdentifierReference, ParticipatingOrgReference,
@@ -829,12 +829,13 @@ class IATIXMLRenderer(BaseRenderer):
     default_references = {
         'iati_identifier': None,
     }
+    element_to_be_last = {}
 
     element_references = {
         'title': TitleReference,
         'descriptions': DescriptionReference,
         'activity_dates': ActivityDateReference,
-        'reporting_organisation': ReportingOrgReference,
+        'reporting_org': ReportingOrgReference,
         'participating_organisations': ParticipatingOrgReference,
         'contact_info': ContactInfoReference,
         'activity_scope': ActivityScopeReference,
@@ -853,7 +854,7 @@ class IATIXMLRenderer(BaseRenderer):
         'default_tied_status': DefaultTiedStatusReference,
         'planned_disbursements': PlannedDisbursementReference,
         'capital_spend': CapitalSpendReference,
-        'document_links': DocumentLinkReference,
+        'document_links': DocumentLinkBaseReference,
         'legacy_data': LegacyDataReference,
         'crs_add': CrsAddReference,
         'results': ResultReference,
@@ -889,11 +890,13 @@ class IATIXMLRenderer(BaseRenderer):
 
             # the element with namespace must be the last element in the xml.
             for element in self.xml.iter():
-                if element.tag.find("https://www.zimmermanzimmerman.n") != -1:
-                    print(element.tag)
+                if element.prefix is not None:
                     parent = element.getparent()
-                    parent.remove(element)
-                    parent.append(element)
+                    self.element_to_be_last[parent] = element
+
+            for key, value in self.element_to_be_last.items():
+                key.remove(value)
+                key.append(value)
 
             return etree.tostring(
                 self.xml,
@@ -924,6 +927,17 @@ class IATIXMLRenderer(BaseRenderer):
                     # there is only one 'activity' element in 'DetailView'.
                     self.xml.find('iati-activity'),
                     data)
+
+                # the element with namespace must be the last element
+                # in the xml.
+                for element in self.xml.iter():
+                    if element.prefix is not None:
+                        parent = element.getparent()
+                        self.element_to_be_last[parent] = element
+
+                for key, value in self.element_to_be_last.items():
+                    key.remove(value)
+                    key.append(value)
 
             return etree.tostring(
                 self.xml,

@@ -5,11 +5,11 @@ from django.contrib.contenttypes.fields import (
 )
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.gis.db.models import PointField
+from django.contrib.postgres.fields import JSONField
 from django.contrib.postgres.indexes import GinIndex
 from django.contrib.postgres.search import SearchVectorField
 from django.db import models
 from djorm_pgfulltext.fields import VectorField
-from django.contrib.postgres.fields import JSONField
 
 from geodata.models import Country, Region
 from iati_codelists.models import (
@@ -65,6 +65,8 @@ class NameSpaceElement(models.Model):
     namespace = JSONField(null=True, default=None)
     nsmap = JSONField(null=True)
     sub_element = models.BooleanField(default=False)
+    activity = models.ForeignKey('Activity',
+                                 default=None, on_delete=models.CASCADE)
 
     def __unicode__(self,):
         return "NameSpaceElement"

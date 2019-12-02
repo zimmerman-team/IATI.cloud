@@ -6,7 +6,6 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.fields import SkipField
 from rest_framework.relations import PKOnlyObject
 from rest_framework.reverse import reverse
-from django.core.exceptions import ObjectDoesNotExist
 
 from api.activity.filters import RelatedActivityFilter
 from api.codelist.serializers import (
@@ -36,15 +35,16 @@ from iati.models import (
     DocumentLink, DocumentLinkCategory, DocumentLinkLanguage,
     DocumentLinkTitle, Fss, FssForecast, HumanitarianScope, LegacyData,
     Location, LocationActivityDescription, LocationAdministrative,
-    LocationDescription, LocationName, Narrative, Organisation,
-    OtherIdentifier, PlannedDisbursement, PlannedDisbursementProvider,
-    PlannedDisbursementReceiver, RelatedActivity, Result, ResultDescription,
-    ResultIndicator, ResultIndicatorBaseline, ResultIndicatorBaselineDimension,
-    ResultIndicatorDescription, ResultIndicatorPeriod,
-    ResultIndicatorPeriodActualDimension, ResultIndicatorPeriodActualLocation,
-    ResultIndicatorPeriodTarget, ResultIndicatorPeriodTargetDimension,
-    ResultIndicatorPeriodTargetLocation, ResultIndicatorReference,
-    ResultIndicatorTitle, ResultReference, ResultTitle, ResultType, Title, NameSpaceElement
+    LocationDescription, LocationName, NameSpaceElement, Narrative,
+    Organisation, OtherIdentifier, PlannedDisbursement,
+    PlannedDisbursementProvider, PlannedDisbursementReceiver, RelatedActivity,
+    Result, ResultDescription, ResultIndicator, ResultIndicatorBaseline,
+    ResultIndicatorBaselineDimension, ResultIndicatorDescription,
+    ResultIndicatorPeriod, ResultIndicatorPeriodActualDimension,
+    ResultIndicatorPeriodActualLocation, ResultIndicatorPeriodTarget,
+    ResultIndicatorPeriodTargetDimension, ResultIndicatorPeriodTargetLocation,
+    ResultIndicatorReference, ResultIndicatorTitle, ResultReference,
+    ResultTitle, ResultType, Title
 )
 from iati.parser import validators
 from iati.transaction.models import (
@@ -111,7 +111,8 @@ class DocumentLinkCategorySerializer(ModelSerializerNoValidation):
 
     def get_name_space(self, obj):
         try:
-            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+            name_space = NameSpaceElement.objects.filter(
+                parent_element_id=obj.pk).filter(
                 parent_element_name='DocumentLinkCategory')
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
@@ -173,7 +174,8 @@ class DocumentLinkLanguageSerializer(ModelSerializerNoValidation):
 
     def get_name_space(self, obj):
         try:
-            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+            name_space = NameSpaceElement.objects.filter(
+                parent_element_id=obj.pk).filter(
                 parent_element_name='DocumentLinkLanguage')
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
@@ -253,7 +255,8 @@ class DocumentLinkSerializer(ModelSerializerNoValidation):
 
     def get_name_space(self, obj):
         try:
-            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+            name_space = NameSpaceElement.objects.filter(
+                parent_element_id=obj.pk).filter(
                 parent_element_name='DocumentLink')
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
@@ -359,7 +362,8 @@ class BudgetSerializer(ModelSerializerNoValidation):
 
     def get_name_space(self, obj):
         try:
-            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+            name_space = NameSpaceElement.objects.filter(
+                parent_element_id=obj.pk).filter(
                 parent_element_name='Budget')
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
@@ -494,7 +498,8 @@ class PlannedDisbursementSerializer(ModelSerializerNoValidation):
 
     def get_name_space(self, obj):
         try:
-            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+            name_space = NameSpaceElement.objects.filter(
+                parent_element_id=obj.pk).filter(
                 parent_element_name='PlannedDisbursement')
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
@@ -623,7 +628,8 @@ class ActivityDateSerializer(ModelSerializerNoValidation):
 
     def get_name_space(self, obj):
         try:
-            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+            name_space = NameSpaceElement.objects.filter(
+                parent_element_id=obj.pk).filter(
                 parent_element_name='ActivityDate')
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
@@ -819,7 +825,7 @@ class ReportingOrganisationDataSerializer(DynamicFieldsModelSerializer):  # NOQA
     type = CodelistSerializer()
     secondary_reporter = serializers.BooleanField(required=False)
 
-    activity = serializers.CharField(write_only=True,required=True)
+    activity = serializers.CharField(write_only=True, required=True)
 
     # TODO: please check this why in narrative in Reporting org is empty
     # So to get narratives should be from organisation
@@ -832,7 +838,8 @@ class ReportingOrganisationDataSerializer(DynamicFieldsModelSerializer):  # NOQA
 
     def get_name_space(self, obj):
         try:
-            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+            name_space = NameSpaceElement.objects.filter(
+                parent_element_id=obj.pk).filter(
                 parent_element_name='ActivityReportingOrganisation')
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
@@ -871,7 +878,8 @@ class ParticipatingOrganisationSerializer(ModelSerializerNoValidation):
 
     def get_name_space(self, obj):
         try:
-            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+            name_space = NameSpaceElement.objects.filter(
+                parent_element_id=obj.pk).filter(
                 parent_element_name='ActivityParticipatingOrganisation')
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
@@ -955,7 +963,8 @@ class OtherIdentifierSerializer(ModelSerializerNoValidation):
 
     def get_name_space(self, obj):
         try:
-            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+            name_space = NameSpaceElement.objects.filter(
+                parent_element_id=obj.pk).filter(
                 parent_element_name='OtherIdentifier')
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
@@ -1028,7 +1037,8 @@ class ActivityPolicyMarkerSerializer(ModelSerializerNoValidation):
 
     def get_name_space(self, obj):
         try:
-            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+            name_space = NameSpaceElement.objects.filter(
+                parent_element_id=obj.pk).filter(
                 parent_element_name='ActivityPolicyMarker')
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
@@ -1101,7 +1111,8 @@ class TitleSerializer(ModelSerializerNoValidation):
 
     def get_name_space(self, obj):
         try:
-            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+            name_space = NameSpaceElement.objects.filter(
+                parent_element_id=obj.pk).filter(
                 parent_element_name='Title')
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
@@ -1123,7 +1134,8 @@ class DescriptionSerializer(ModelSerializerNoValidation):
 
     def get_name_space(self, obj):
         try:
-            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+            name_space = NameSpaceElement.objects.filter(
+                parent_element_id=obj.pk).filter(
                 parent_element_name='Description')
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
@@ -1197,7 +1209,8 @@ class RelatedActivitySerializer(ModelSerializerNoValidation):
 
     def get_name_space(self, obj):
         try:
-            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+            name_space = NameSpaceElement.objects.filter(
+                parent_element_id=obj.pk).filter(
                 parent_element_name='RelatedActivity')
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
@@ -1258,7 +1271,8 @@ class LegacyDataSerializer(ModelSerializerNoValidation):
 
     def get_name_space(self, obj):
         try:
-            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+            name_space = NameSpaceElement.objects.filter(
+                parent_element_id=obj.pk).filter(
                 parent_element_name='LegacyData')
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
@@ -1328,7 +1342,8 @@ class ActivitySectorSerializer(ModelSerializerNoValidation):
 
     def get_name_space(self, obj):
         try:
-            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+            name_space = NameSpaceElement.objects.filter(
+                parent_element_id=obj.pk).filter(
                 parent_element_name='ActivitySector')
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
@@ -1469,7 +1484,8 @@ class CountryBudgetItemsSerializer(ModelSerializerNoValidation):
 
     def get_name_space(self, obj):
         try:
-            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+            name_space = NameSpaceElement.objects.filter(
+                parent_element_id=obj.pk).filter(
                 parent_element_name='CountryBudgetItem')
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
@@ -1539,7 +1555,8 @@ class ConditionSerializer(ModelSerializerNoValidation):
 
     def get_name_space(self, obj):
         try:
-            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+            name_space = NameSpaceElement.objects.filter(
+                parent_element_id=obj.pk).filter(
                 parent_element_name='Condition')
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
@@ -1610,7 +1627,8 @@ class ConditionsSerializer(ModelSerializerNoValidation):
 
     def get_name_space(self, obj):
         try:
-            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+            name_space = NameSpaceElement.objects.filter(
+                parent_element_id=obj.pk).filter(
                 parent_element_name='Conditions')
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
@@ -1686,7 +1704,8 @@ class ActivityRecipientRegionSerializer(DynamicFieldsModelSerializer):
 
     def get_name_space(self, obj):
         try:
-            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+            name_space = NameSpaceElement.objects.filter(
+                parent_element_id=obj.pk).filter(
                 parent_element_name='ActivityRecipientRegion')
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
@@ -1757,7 +1776,8 @@ class HumanitarianScopeSerializer(DynamicFieldsModelSerializer):
 
     def get_name_space(self, obj):
         try:
-            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+            name_space = NameSpaceElement.objects.filter(
+                parent_element_id=obj.pk).filter(
                 parent_element_name='HumanitarianScope')
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
@@ -1829,7 +1849,8 @@ class RecipientCountrySerializer(DynamicFieldsModelSerializer):
 
     def get_name_space(self, obj):
         try:
-            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+            name_space = NameSpaceElement.objects.filter(
+                parent_element_id=obj.pk).filter(
                 parent_element_name='ActivityRecipientCountry')
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
@@ -1928,6 +1949,18 @@ class ResultTitleSerializer(ModelSerializerNoValidation):
 class ResultIndicatorPeriodActualLocationSerializer(ModelSerializerNoValidation):  # NOQA: E501
     ref = serializers.CharField()
     result_indicator_period = serializers.CharField(write_only=True)
+    name_space = serializers.SerializerMethodField(required=False)
+
+    def get_name_space(self, obj):
+        try:
+            name_space = NameSpaceElement.objects.filter(
+                parent_element_id=obj.pk).filter(
+                parent_element_name=obj.__class__.__name__)
+            namespace_serializer = NameSpaceSerializer(name_space, many=True)
+        except NameSpaceElement.DoesNotExist:
+            return None
+            pass
+        return namespace_serializer.data
 
     class Meta:
         model = ResultIndicatorPeriodActualLocation
@@ -1935,6 +1968,7 @@ class ResultIndicatorPeriodActualLocationSerializer(ModelSerializerNoValidation)
             'id',
             'result_indicator_period',
             'ref',
+            'name_space'
         )
 
     def validate(self, data):
@@ -1960,6 +1994,18 @@ class ResultIndicatorPeriodTargetLocationSerializer(ModelSerializerNoValidation)
         write_only=True,
         source='result_indicator_period_target__result_indicator_period'
     )
+    name_space = serializers.SerializerMethodField(required=False)
+
+    def get_name_space(self, obj):
+        try:
+            name_space = NameSpaceElement.objects.filter(
+                parent_element_id=obj.pk).filter(
+                parent_element_name=obj.__class__.__name__)
+            namespace_serializer = NameSpaceSerializer(name_space, many=True)
+        except NameSpaceElement.DoesNotExist:
+            return None
+            pass
+        return namespace_serializer.data
 
     class Meta:
         model = ResultIndicatorPeriodTargetLocation
@@ -1968,6 +2014,7 @@ class ResultIndicatorPeriodTargetLocationSerializer(ModelSerializerNoValidation)
             'result_indicator_period_target',
             'result_indicator_period',
             'ref',
+            'name_space',
         )
 
     def validate(self, data):
@@ -2029,6 +2076,18 @@ class ResultIndicatorPeriodActualDimensionSerializer(ModelSerializerNoValidation
     name = serializers.CharField()
     value = serializers.CharField()
     result_indicator_period = serializers.CharField(write_only=True)
+    name_space = serializers.SerializerMethodField(required=False)
+
+    def get_name_space(self, obj):
+        try:
+            name_space = NameSpaceElement.objects.filter(
+                parent_element_id=obj.pk).filter(
+                parent_element_name=obj.__class__.__name__)
+            namespace_serializer = NameSpaceSerializer(name_space, many=True)
+        except NameSpaceElement.DoesNotExist:
+            return None
+            pass
+        return namespace_serializer.data
 
     class Meta:
         model = ResultIndicatorPeriodActualDimension
@@ -2037,6 +2096,7 @@ class ResultIndicatorPeriodActualDimensionSerializer(ModelSerializerNoValidation
             'id',
             'name',
             'value',
+            'name_space'
         )
 
     def validate(self, data):
@@ -2081,6 +2141,18 @@ class ResultIndicatorPeriodTargetDimensionSerializer(ModelSerializerNoValidation
     name = serializers.CharField()
     value = serializers.CharField()
     result_indicator_period = serializers.CharField(write_only=True)
+    name_space = serializers.SerializerMethodField(required=False)
+
+    def get_name_space(self, obj):
+        try:
+            name_space = NameSpaceElement.objects.filter(
+                parent_element_id=obj.pk).filter(
+                parent_element_name=obj.__class__.__name__)
+            namespace_serializer = NameSpaceSerializer(name_space, many=True)
+        except NameSpaceElement.DoesNotExist:
+            return None
+            pass
+        return namespace_serializer.data
 
     class Meta:
         model = ResultIndicatorPeriodTargetDimension
@@ -2089,6 +2161,7 @@ class ResultIndicatorPeriodTargetDimensionSerializer(ModelSerializerNoValidation
             'id',
             'name',
             'value',
+            'name_space'
         )
 
     def validate(self, data):
@@ -2154,6 +2227,18 @@ class ResultIndicatorPeriodTargetSerializer(SerializerNoValidation):
         read_only=True,
         source='period_target_document_links'
     )
+    name_space = serializers.SerializerMethodField(required=False)
+
+    def get_name_space(self, obj):
+        try:
+            name_space = NameSpaceElement.objects.filter(
+                parent_element_id=obj.pk).filter(
+                parent_element_name=obj.__class__.__name__)
+            namespace_serializer = NameSpaceSerializer(name_space, many=True)
+        except NameSpaceElement.DoesNotExist:
+            return None
+            pass
+        return namespace_serializer.data
 
 
 class ResultIndicatorPeriodActualSerializer(SerializerNoValidation):
@@ -2177,6 +2262,18 @@ class ResultIndicatorPeriodActualSerializer(SerializerNoValidation):
         read_only=True,
         source='period_actual_document_links'
     )
+    name_space = serializers.SerializerMethodField(required=False)
+
+    def get_name_space(self, obj):
+        try:
+            name_space = NameSpaceElement.objects.filter(
+                parent_element_id=obj.pk).filter(
+                parent_element_name=obj.__class__.__name__)
+            namespace_serializer = NameSpaceSerializer(name_space, many=True)
+        except NameSpaceElement.DoesNotExist:
+            return None
+            pass
+        return namespace_serializer.data
 
 
 class ResultIndicatorPeriodSerializer(ModelSerializerNoValidation):
@@ -2187,6 +2284,18 @@ class ResultIndicatorPeriodSerializer(ModelSerializerNoValidation):
     period_end = serializers.CharField(required=False)
 
     result_indicator = serializers.CharField(write_only=True)
+    name_space = serializers.SerializerMethodField(required=False)
+
+    def get_name_space(self, obj):
+        try:
+            name_space = NameSpaceElement.objects.filter(
+                parent_element_id=obj.pk).filter(
+                parent_element_name=obj.__class__.__name__)
+            namespace_serializer = NameSpaceSerializer(name_space, many=True)
+        except NameSpaceElement.DoesNotExist:
+            return None
+            pass
+        return namespace_serializer.data
 
     class Meta:
         model = ResultIndicatorPeriod
@@ -2197,6 +2306,7 @@ class ResultIndicatorPeriodSerializer(ModelSerializerNoValidation):
             'period_end',
             'targets',
             'actuals',
+            'name_space'
         )
 
     def validate(self, data):
@@ -2271,6 +2381,18 @@ class ResultIndicatorBaselineSerializer(ModelSerializerNoValidation):
         read_only=True,
         source='location_set'
     )
+    name_space = serializers.SerializerMethodField(required=False)
+
+    def get_name_space(self, obj):
+        try:
+            name_space = NameSpaceElement.objects.filter(
+                parent_element_id=obj.pk).filter(
+                parent_element_name=obj.__class__.__name__)
+            namespace_serializer = NameSpaceSerializer(name_space, many=True)
+        except NameSpaceElement.DoesNotExist:
+            return None
+            pass
+        return namespace_serializer.data
 
     class Meta:
         model = ResultIndicatorBaseline
@@ -2281,7 +2403,8 @@ class ResultIndicatorBaselineSerializer(ModelSerializerNoValidation):
             'dimensions',
             'document_links',
             'iso_date',
-            'locations'
+            'locations',
+            'name_space',
         )
 
 
@@ -2366,7 +2489,8 @@ class ResultIndicatorSerializer(ModelSerializerNoValidation):
 
     def get_name_space(self, obj):
         try:
-            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+            name_space = NameSpaceElement.objects.filter(
+                parent_element_id=obj.pk).filter(
                 parent_element_name='ResultIndicator')
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
@@ -2466,7 +2590,8 @@ class ContactInfoSerializer(ModelSerializerNoValidation):
 
     def get_name_space(self, obj):
         try:
-            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+            name_space = NameSpaceElement.objects.filter(
+                parent_element_id=obj.pk).filter(
                 parent_element_name='ContactInfo')
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
@@ -2669,7 +2794,8 @@ class ResultReferenceSerializer(ModelSerializerNoValidation):
 
     def get_name_space(self, obj):
         try:
-            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+            name_space = NameSpaceElement.objects.filter(
+                parent_element_id=obj.pk).filter(
                 parent_element_name='ResultReference')
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
@@ -2769,7 +2895,8 @@ class ResultSerializer(ModelSerializerNoValidation):
 
     def get_name_space(self, obj):
         try:
-            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+            name_space = NameSpaceElement.objects.filter(
+                parent_element_id=obj.pk).filter(
                 parent_element_name='Result')
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
@@ -2861,7 +2988,8 @@ class CrsAddLoanTermsSerializer(ModelSerializerNoValidation):
 
     def get_name_space(self, obj):
         try:
-            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+            name_space = NameSpaceElement.objects.filter(
+                parent_element_id=obj.pk).filter(
                 parent_element_name='CrsAddLoanTerms')
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
@@ -2890,7 +3018,8 @@ class CrsAddLoanStatusSerializer(ModelSerializerNoValidation):
 
     def get_name_space(self, obj):
         try:
-            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+            name_space = NameSpaceElement.objects.filter(
+                parent_element_id=obj.pk).filter(
                 parent_element_name='CrsAddLoanStatus')
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
@@ -2921,7 +3050,8 @@ class CrsAddOtherFlagsSerializer(ModelSerializerNoValidation):
 
     def get_name_space(self, obj):
         try:
-            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+            name_space = NameSpaceElement.objects.filter(
+                parent_element_id=obj.pk).filter(
                 parent_element_name='CrsAddOtherFlags')
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
@@ -2984,7 +3114,8 @@ class CrsAddSerializer(ModelSerializerNoValidation):
 
     def get_name_space(self, obj):
         try:
-            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+            name_space = NameSpaceElement.objects.filter(
+                parent_element_id=obj.pk).filter(
                 parent_element_name='CrsAdd')
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
@@ -3090,7 +3221,8 @@ class FssForecastSerializer(ModelSerializerNoValidation):
 
     def get_name_space(self, obj):
         try:
-            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+            name_space = NameSpaceElement.objects.filter(
+                parent_element_id=obj.pk).filter(
                 parent_element_name='FssForecast')
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
@@ -3160,7 +3292,8 @@ class FssSerializer(ModelSerializerNoValidation):
 
     def get_name_space(self, obj):
         try:
-            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+            name_space = NameSpaceElement.objects.filter(
+                parent_element_id=obj.pk).filter(
                 parent_element_name='Fss')
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
@@ -3292,7 +3425,8 @@ class LocationSerializer(DynamicFieldsModelSerializer):
 
     def get_name_space(self, obj):
         try:
-            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+            name_space = NameSpaceElement.objects.filter(
+                parent_element_id=obj.pk).filter(
                 parent_element_name='Location')
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
@@ -3428,7 +3562,8 @@ class TransactionProviderSerializer(serializers.ModelSerializer):
 
     def get_name_space(self, obj):
         try:
-            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+            name_space = NameSpaceElement.objects.filter(
+                parent_element_id=obj.pk).filter(
                 parent_element_name='TransactionProvider')
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
@@ -3462,7 +3597,8 @@ class TransactionReceiverSerializer(serializers.ModelSerializer):
 
     def get_name_space(self, obj):
         try:
-            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+            name_space = NameSpaceElement.objects.filter(
+                parent_element_id=obj.pk).filter(
                 parent_element_name='TransactionReceiver')
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
@@ -3488,7 +3624,8 @@ class TransactionRecipientCountrySerializer(serializers.ModelSerializer):
 
     def get_name_space(self, obj):
         try:
-            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+            name_space = NameSpaceElement.objects.filter(
+                parent_element_id=obj.pk).filter(
                 parent_element_name='TransactionRecipientCountry')
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
@@ -3514,7 +3651,8 @@ class TransactionRecipientRegionSerializer(serializers.ModelSerializer):
 
     def get_name_space(self, obj):
         try:
-            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+            name_space = NameSpaceElement.objects.filter(
+                parent_element_id=obj.pk).filter(
                 parent_element_name='TransactionRecipientRegion')
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
@@ -3538,7 +3676,8 @@ class TransactionSectorSerializer(serializers.ModelSerializer):
 
     def get_name_space(self, obj):
         try:
-            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+            name_space = NameSpaceElement.objects.filter(
+                parent_element_id=obj.pk).filter(
                 parent_element_name='TransactionSector')
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
@@ -3561,7 +3700,8 @@ class TransactionDescriptionSerializer(serializers.ModelSerializer):
 
     def get_name_space(self, obj):
         try:
-            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+            name_space = NameSpaceElement.objects.filter(
+                parent_element_id=obj.pk).filter(
                 parent_element_name='TransactionDescription')
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
@@ -3583,7 +3723,8 @@ class TransactionAidTypeSerializer(serializers.ModelSerializer):
 
     def get_name_space(self, obj):
         try:
-            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+            name_space = NameSpaceElement.objects.filter(
+                parent_element_id=obj.pk).filter(
                 parent_element_name='TransactionAidtype')
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
@@ -3644,7 +3785,8 @@ class TransactionSerializer(serializers.ModelSerializer):
 
     def get_name_space(self, obj):
         try:
-            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+            name_space = NameSpaceElement.objects.filter(
+                parent_element_id=obj.pk).filter(
                 parent_element_name='Transaction')
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
@@ -3685,7 +3827,8 @@ class ActivityTagSerializer(ModelSerializerNoValidation):
 
     def get_name_space(self, obj):
         try:
-            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+            name_space = NameSpaceElement.objects.filter(
+                parent_element_id=obj.pk).filter(
                 parent_element_name='ActivityTag')
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
@@ -3711,7 +3854,8 @@ class ActivityDefaultAidTypeSerializer(ModelSerializerNoValidation):
 
     def get_name_space(self, obj):
         try:
-            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+            name_space = NameSpaceElement.objects.filter(
+                parent_element_id=obj.pk).filter(
                 parent_element_name='ActivityDefaultAidType')
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
@@ -3725,6 +3869,7 @@ class ActivityDefaultAidTypeSerializer(ModelSerializerNoValidation):
             'aid_type',
             'name_space',
         )
+
 
 class NameSpaceSerializer(ModelSerializerNoValidation):
 
@@ -3748,7 +3893,8 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
 
     def get_name_space(self, obj):
         try:
-            name_space = NameSpaceElement.objects.filter(parent_element_id=obj.pk).filter(
+            name_space = NameSpaceElement.objects.filter(
+                parent_element_id=obj.pk).filter(
                 parent_element_name='Activity')
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:

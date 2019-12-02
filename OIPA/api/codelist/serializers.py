@@ -5,10 +5,11 @@ from api.generics.serializers import (
     DynamicFieldsModelSerializer, ModelSerializerNoValidation,
     SerializerNoValidation
 )
-from iati.models import DocumentCategory, Narrative
+from iati.models import DocumentCategory, Narrative, NameSpaceElement
 from iati_codelists.models import AidType
 from iati_organisation.models import OrganisationNarrative
 from iati_synchroniser.models import Codelist
+
 
 
 class VocabularySerializer(SerializerNoValidation):
@@ -58,6 +59,19 @@ class OrganisationNarrativeSerializer(ModelSerializerNoValidation):
 
 class NarrativeContainerSerializer(SerializerNoValidation):
     narratives = NarrativeSerializer(many=True)
+    name_space = serializers.SerializerMethodField(required=False)
+
+    def get_name_space(self, obj):
+        try:
+            name_space = NameSpaceElement.objects.filter(
+                parent_element_id=obj.pk).filter(
+                parent_element_name=obj.__class__.__name__)
+            from api.activity.serializers import NameSpaceSerializer
+            namespace_serializer = NameSpaceSerializer(name_space, many=True)
+        except NameSpaceElement.DoesNotExist:
+            return None
+            pass
+        return namespace_serializer.data
 
 
 class OrganisationNarrativeContainerSerializer(SerializerNoValidation):

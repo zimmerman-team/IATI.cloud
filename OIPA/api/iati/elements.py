@@ -12,10 +12,12 @@ class ElementReference(object):
     children = []
     element_record = None
 
-    def __init__(self, parent_element, data, element=None):
+    def __init__(self, parent_element, data, nsmap=None, element=None, ):
+        if nsmap is None:
+            nsmap = {}
         self.parent_element = parent_element
         self.data = data
-
+        self.nsmap = nsmap
         if element:
             self.element = element
 
@@ -63,11 +65,17 @@ class ElementWithNarrativeReference(ElementReference):
 
     def create(self):
         if self.data:
+            namespace_list = self.data.get('name_space')
             # Narrative can be inside of the new element or
             # inside of the parent element
             if self.element:
+                narrative_container_element = etree.SubElement(
+                    self.parent_element, self.element, nsmap=self.nsmap)
+                from api.iati.references import NameSpaceCreate
+                NameSpaceCreate.create_namespace_attr_or_elememnt(
+                    namespace_list, narrative_container_element)
                 self.create_narrative(
-                    etree.SubElement(self.parent_element, self.element)
+                    narrative_container_element
                 )
             else:
                 self.create_narrative(self.parent_element)
@@ -177,12 +185,23 @@ class ElementBase(object):
 
     def create(self):
         if self.data:
+            # get nsmap in the data to use it in creating xml element.
+            ns_map = {}
+            namespace_list = self.data.get('name_space')
+            if namespace_list is not None:
+                for namespace in namespace_list:
+                    ns_map.update(namespace.get('nsmap'))
+
             if not self.element_record.element_type:
                 if self.element_record.name:
                     self.element = etree.SubElement(
                         self.parent_element,
-                        self.element_record.name
+                        self.element_record.name, nsmap=ns_map
                     )
+                    from api.iati.references import NameSpaceCreate
+                    NameSpaceCreate.create_namespace_attr_or_elememnt(
+                        namespace_list, self.element)
+
                 else:
                     self.element = self.parent_element
 

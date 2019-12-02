@@ -13,6 +13,31 @@ from iati_codelists.models import AidType
 from iati_vocabulary.models import AidTypeVocabulary
 
 
+class NameSpaceCreate:
+    def __init__(self):
+        pass
+
+    @staticmethod
+    def create_namespace_attr_or_elememnt(namespace_list, element):
+        if namespace_list is None:
+            return
+        for namespace in namespace_list:
+            if not namespace.get('sub_element'):
+                for key in namespace.get('namespace').keys():
+                    element.set(key, namespace.get(
+                        'namespace').get(key))
+            else:
+                for key in namespace.get('namespace').keys():
+                    tag_name = next(reversed(key.split(':')))
+                    namespace_url = key.replace(':' + tag_name, "")
+
+                    namespace_element = etree.SubElement(
+                        element, etree.QName(
+                            namespace_url, tag_name))
+                    namespace_element.text = namespace.get(
+                        'namespace').get(key)
+
+
 class TitleReference(ElementWithNarrativeReference):
     """
     http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/title/
@@ -35,8 +60,15 @@ class DescriptionReference(ElementWithNarrativeReference):
     }
 
     def create(self):
+        # get namespace dictionary to use it in creating description element.
+        ns_map = {}
+        namespace_list = self.data.get('name_space')
+        if namespace_list is not None:
+            for namespace in namespace_list:
+                ns_map.update(namespace.get('nsmap'))
+
         description_element = etree.SubElement(
-            self.parent_element, self.element
+            self.parent_element, self.element, nsmap=ns_map
         )
 
         # Set attribute type
@@ -49,6 +81,8 @@ class DescriptionReference(ElementWithNarrativeReference):
             )
 
         self.create_narrative(description_element)
+        NameSpaceCreate.create_namespace_attr_or_elememnt(namespace_list,
+                                                          description_element)
 
 
 class ActivityDateReference(ElementReference):
@@ -60,11 +94,18 @@ class ActivityDateReference(ElementReference):
     type_value_key = 'code'
 
     def create(self):
+        # get namespace dictionary to use it in creating date element.
+        ns_map = {}
+        namespace_list = self.data.get('name_space')
+        if namespace_list is not None:
+            for namespace in namespace_list:
+                ns_map.update(namespace.get('nsmap'))
+
         # Only has iso date
         iso_date = self.data.get(self.iso_date_key)
         if iso_date:
             iso_date_element = etree.SubElement(
-                self.parent_element, self.element
+                self.parent_element, self.element, nsmap=ns_map
             )
 
             # Set attribute iso date
@@ -79,6 +120,9 @@ class ActivityDateReference(ElementReference):
                 if type_value:
                     iso_date_element.set(self.type_attr, type_value)
 
+        NameSpaceCreate.create_namespace_attr_or_elememnt(namespace_list,
+                                                          iso_date_element)
+
 
 class DefaultAidTypeReference(ElementReference):
     element = 'default-aid-type'
@@ -87,17 +131,27 @@ class DefaultAidTypeReference(ElementReference):
     vocabulary_attr = 'vocabulary'
 
     def create(self):
+        # get namespace dictionary to use it in creating default-aid-type
+        # element.
+        ns_map = {}
+        namespace_list = self.data.get('name_space')
+        if namespace_list is not None:
+            for namespace in namespace_list:
+                ns_map.update(namespace.get('nsmap'))
+
         code = self.data.get('aid_type').get(self.code_key)
         # We get vocabulary code from AidTypeVocabulary table.
         vocabulary = AidTypeVocabulary.objects.get(code=AidType.objects.get(
             code=code).vocabulary_id).code
         if code:
             default_aid_type_element = etree.SubElement(
-                self.parent_element, self.element
+                self.parent_element, self.element, nsmap=ns_map
             )
         default_aid_type_element.set(self.code_attr, code)
 
         default_aid_type_element.set(self.vocabulary_attr, vocabulary)
+        NameSpaceCreate.create_namespace_attr_or_elememnt(
+            namespace_list, default_aid_type_element)
 
 
 class ReportingOrgReference(ElementWithNarrativeReference):
@@ -114,8 +168,16 @@ class ReportingOrgReference(ElementWithNarrativeReference):
     secondary_reporter_attr = 'secondary-reporter'
 
     def create(self):
+        # get namespace dictionary to use it in creating default-aid-type
+        # element.
+        ns_map = {}
+        namespace_list = self.data.get('name_space')
+        if namespace_list is not None:
+            for namespace in namespace_list:
+                ns_map.update(namespace.get('nsmap'))
+
         reporting_org_element = etree.SubElement(
-            self.parent_element, self.element
+            self.parent_element, self.element, nsmap=ns_map
         )
         ref_value = self.data.get(self.ref_key)
         if ref_value:
@@ -135,6 +197,9 @@ class ReportingOrgReference(ElementWithNarrativeReference):
             )
 
         self.create_narrative(reporting_org_element)
+        NameSpaceCreate.create_namespace_attr_or_elememnt(namespace_list,
+                                                          reporting_org_element
+                                                          )
 
 
 class ParticipatingOrgReference(ElementWithNarrativeReference):
@@ -152,6 +217,14 @@ class ParticipatingOrgReference(ElementWithNarrativeReference):
     role_attr = 'role'
 
     def create(self):
+        # get namespace dictionary to use it in creating default-aid-type
+        # element.
+        ns_map = {}
+        namespace_list = self.data.get('name_space')
+        if namespace_list is not None:
+            for namespace in namespace_list:
+                ns_map.update(namespace.get('nsmap'))
+
         participating_org_element = etree.SubElement(
             self.parent_element, self.element
         )
@@ -172,6 +245,8 @@ class ParticipatingOrgReference(ElementWithNarrativeReference):
                 participating_org_element.set(self.role_attr, role_value)
 
         self.create_narrative(participating_org_element)
+        NameSpaceCreate.create_namespace_attr_or_elememnt(
+            namespace_list, participating_org_element)
 
 
 class ContactInfoReference(ElementReference):
@@ -209,8 +284,16 @@ class ContactInfoReference(ElementReference):
     job_title_element = 'job-title'
 
     def create(self):
+        # get namespace dictionary to use it in creating default-aid-type
+        # element.
+        ns_map = {}
+        namespace_list = self.data.get('name_space')
+        if namespace_list is not None:
+            for namespace in namespace_list:
+                ns_map.update(namespace.get('nsmap'))
+
         contact_info_element = etree.SubElement(
-            self.parent_element, self.element
+            self.parent_element, self.element, nsmap=ns_map
         )
 
         # Type attribute
@@ -222,9 +305,17 @@ class ContactInfoReference(ElementReference):
         # Organisation element
         organisation_dict = self.data.get(self.organisation_dict_key)
         if organisation_dict:
+            contactinfo_organisation_ns_map = {}
+            contactinfo_organisation_namespace_list = organisation_dict.get(
+                'name_space')
+            if contactinfo_organisation_namespace_list is not None:
+                for namespace in contactinfo_organisation_namespace_list:
+                    contactinfo_organisation_ns_map.update(namespace.get(
+                        'nsmap'))
             organisation_narrative = ElementWithNarrativeReference(
                 parent_element=contact_info_element,
-                data=organisation_dict
+                data=organisation_dict,
+                nsmap=contactinfo_organisation_ns_map
             )
             organisation_narrative.element = self.organisation_element
             organisation_narrative.create()
@@ -232,9 +323,17 @@ class ContactInfoReference(ElementReference):
         # Department element
         department_dict = self.data.get(self.department_dict_key)
         if department_dict:
+            contactinfo_department_ns_map = {}
+            contactinfo_department_namespace_list = department_dict.get(
+                'name_space')
+            if contactinfo_department_namespace_list is not None:
+                for namespace in contactinfo_department_namespace_list:
+                    contactinfo_department_ns_map.update(namespace.get(
+                        'nsmap'))
             department_narrative = ElementWithNarrativeReference(
                 parent_element=contact_info_element,
-                data=department_dict
+                data=department_dict,
+                nsmap=contactinfo_department_ns_map,
             )
             department_narrative.element = self.department_element
             department_narrative.create()
@@ -242,9 +341,18 @@ class ContactInfoReference(ElementReference):
         # Person name element
         person_name_dict = self.data.get(self.person_name_dict_key)
         if person_name_dict:
+            contactinfo_person_name_ns_map = {}
+            contactinfo_person_name_namespace_list = person_name_dict.get(
+                'name_space')
+            if contactinfo_person_name_namespace_list is not None:
+                for namespace in contactinfo_person_name_namespace_list:
+                    contactinfo_person_name_ns_map.update(namespace.get(
+                        'nsmap'))
+
             person_name_narrative = ElementWithNarrativeReference(
                 parent_element=contact_info_element,
-                data=person_name_dict
+                data=person_name_dict,
+                nsmap=contactinfo_person_name_ns_map
             )
             person_name_narrative.element = self.person_name_element
             person_name_narrative.create()
@@ -252,9 +360,18 @@ class ContactInfoReference(ElementReference):
         # Job title element
         job_title_dict = self.data.get(self.job_title_dict_key)
         if job_title_dict:
+            contactinfo_job_title_ns_map = {}
+            contactinfo_job_title_namespace_list = job_title_dict.get(
+                'name_space')
+            if contactinfo_job_title_namespace_list is not None:
+                for namespace in contactinfo_job_title_namespace_list:
+                    contactinfo_job_title_ns_map.update(namespace.get(
+                        'nsmap'))
+
             job_title_narrative = ElementWithNarrativeReference(
                 parent_element=contact_info_element,
-                data=job_title_dict
+                data=job_title_dict,
+                nsmap=contactinfo_job_title_ns_map
             )
             job_title_narrative.element = self.job_title_element
             job_title_narrative.create()
@@ -286,12 +403,23 @@ class ContactInfoReference(ElementReference):
         # Mailing address element
         mailing_address_dict = self.data.get(self.mailing_address_dict_key)
         if mailing_address_dict:
+            contactinfo_mailing_address_ns_map = {}
+            contactinfo_mailing_address_namespace_list = \
+                mailing_address_dict.get('name_space')
+            if contactinfo_mailing_address_namespace_list is not None:
+                for namespace in contactinfo_mailing_address_namespace_list:
+                    contactinfo_mailing_address_ns_map.update(namespace.get(
+                        'nsmap'))
             mailing_address_narrative = ElementWithNarrativeReference(
                 parent_element=contact_info_element,
-                data=mailing_address_dict
+                data=mailing_address_dict,
+                nsmap=contactinfo_mailing_address_ns_map
             )
             mailing_address_narrative.element = self.mailing_address_element
             mailing_address_narrative.create()
+
+        NameSpaceCreate.create_namespace_attr_or_elememnt(namespace_list,
+                                                          contact_info_element)
 
 
 class TransactionReference(ElementReference):
@@ -504,6 +632,7 @@ class TransactionReference(ElementReference):
     }
 
     def create(self):
+
         if 'message' in self.data:
             ns_map = {"zz":
                       "https://www.zimmermanzimmerman.nl"}
@@ -513,16 +642,26 @@ class TransactionReference(ElementReference):
                 nsmap=ns_map
             )
         else:
-            transaction_element = etree.SubElement(
-                self.parent_element, self.element
-            )
+            # get namespace dictionary to use it in creating transaction
+            # element.
+            trans_ns_map = {}
+            trans_namespace_list = self.data.get('name_space')
+            if trans_namespace_list is not None:
+                for namespace in trans_namespace_list:
+                    trans_ns_map.update(namespace.get('nsmap'))
 
-        # Ref
+            transaction_element = etree.SubElement(
+                self.parent_element, self.element, nsmap=trans_ns_map
+                )
+            NameSpaceCreate.create_namespace_attr_or_elememnt(
+                trans_namespace_list, transaction_element)
+
+        # Ref attribute
         ref_value = self.data.get(self.ref.get('key'))
         if ref_value:
             transaction_element.set(self.ref.get('attr'), ref_value)
 
-        # Humanitarian
+        # Humanitarian attribute
         humanitarian_value = self.data.get(
             self.humanitarian.get('key')
         )
@@ -599,9 +738,17 @@ class TransactionReference(ElementReference):
         # Description element
         description_dict = self.data.get(self.description.get('key'))
         if description_dict:
+            trans_description_ns_map = {}
+            trans_description_namespace_list = description_dict.get(
+                'name_space')
+            if trans_description_namespace_list is not None:
+                for namespace in trans_description_namespace_list:
+                    trans_description_ns_map.update(namespace.get(
+                        'nsmap'))
             description_narrative = ElementWithNarrativeReference(
                 parent_element=transaction_element,
-                data=description_dict
+                data=description_dict,
+                nsmap=trans_description_ns_map
             )
             description_narrative.element = self.description.get(
                 'element'
@@ -613,8 +760,18 @@ class TransactionReference(ElementReference):
             self.provider_organisation.get('key')
         )
         if provider_organisation_dict:
+            # get namespace dictionary to use it in creating default-aid-type
+            # element.
+            provider_ns_map = {}
+            provider_namespace_list = provider_organisation_dict.get(
+                'name_space')
+            if provider_namespace_list is not None:
+                for namespace in provider_namespace_list:
+                    provider_ns_map.update(namespace.get('nsmap'))
+
             provider_organisation_element = etree.SubElement(
-                transaction_element, self.provider_organisation.get('element')
+                transaction_element, self.provider_organisation.get(
+                    'element'), nsmap=provider_ns_map
             )
 
             # Attributes
@@ -670,14 +827,27 @@ class TransactionReference(ElementReference):
                 parent_element=provider_organisation_element
             )
 
+            NameSpaceCreate.create_namespace_attr_or_elememnt(
+                provider_namespace_list, provider_organisation_element)
+
         # Receiver Organisation
         receiver_organisation_dict = self.data.get(
             self.receiver_organisation.get('key')
         )
         if receiver_organisation_dict:
+            # get namespace dictionary to use it in creating default-aid-type
+            # element.
+            receiver_ns_map = {}
+            receiver_namespace_list = receiver_organisation_dict.get(
+                'name_space')
+            if receiver_namespace_list is not None:
+                for namespace in receiver_namespace_list:
+                    receiver_ns_map.update(namespace.get('nsmap'))
+
             receiver_organisation_element = etree.SubElement(
                 transaction_element,
-                self.receiver_organisation.get('element')
+                self.receiver_organisation.get('element'),
+                nsmap=receiver_ns_map
             )
 
             # Attributes
@@ -733,6 +903,9 @@ class TransactionReference(ElementReference):
                 parent_element=receiver_organisation_element
             )
 
+            NameSpaceCreate.create_namespace_attr_or_elememnt(
+                receiver_namespace_list, receiver_organisation_element)
+
         # Disbursement channel
         disbursement_channel_dict = self.data.get(
             self.disbursement_channel.get('key')
@@ -759,9 +932,18 @@ class TransactionReference(ElementReference):
         )
         if sectors_list:
             for sector_dict in sectors_list:
+                # get namespace dictionary to use it in creating
+                # default-aid-type element.
+                sector_ns_map = {}
+                sector_namespace_list = sector_dict.get(
+                    'name_space')
+                if sector_namespace_list is not None:
+                    for namespace in sector_namespace_list:
+                        sector_ns_map.update(namespace.get('nsmap'))
+
                 sector_element = etree.SubElement(
                     transaction_element,
-                    self.sectors.get('element')
+                    self.sectors.get('element'), nsmap=sector_ns_map
                 )
 
                 # Attribute
@@ -803,6 +985,8 @@ class TransactionReference(ElementReference):
                             ).get('code').get('attr'),
                             code
                         )
+                NameSpaceCreate.create_namespace_attr_or_elememnt(
+                    sector_namespace_list, sector_element)
 
         # Recipient country
         recipient_countries_list = self.data.get(
@@ -810,9 +994,21 @@ class TransactionReference(ElementReference):
         )
         if recipient_countries_list:
             for recipient_country in recipient_countries_list:
+                # get namespace dictionary to use it in creating recipient
+                # country element.
+
+                recipient_countries_ns_map = {}
+                recipient_countries_namespace_list = recipient_country.get(
+                    'name_space')
+                if recipient_countries_namespace_list is not None:
+                    for namespace in recipient_countries_namespace_list:
+                        recipient_countries_ns_map.update(
+                            namespace.get('nsmap'))
+
                 recipient_country_element = etree.SubElement(
                     transaction_element,
-                    self.recipient_countries.get('element')
+                    self.recipient_countries.get('element'),
+                    nsmap=recipient_countries_ns_map
                 )
 
                 # Attribute
@@ -834,6 +1030,9 @@ class TransactionReference(ElementReference):
                             ).get('code').get('attr'),
                             code
                         )
+                NameSpaceCreate.create_namespace_attr_or_elememnt(
+                    recipient_countries_namespace_list,
+                    recipient_country_element)
 
         # Recipient region
         recipient_regions_list = self.data.get(
@@ -841,9 +1040,19 @@ class TransactionReference(ElementReference):
         )
         if recipient_regions_list:
             for recipient_region in recipient_regions_list:
+                # get namespace dictionary to use it in creating
+                # default-aid-type element.
+                recipient_regions_ns_map = {}
+                recipient_regions_namespace_list = recipient_region.get(
+                    'name_space')
+                if recipient_regions_namespace_list is not None:
+                    for namespace in recipient_regions_namespace_list:
+                        recipient_regions_ns_map.update(namespace.get('nsmap'))
+
                 recipient_region_element = etree.SubElement(
                     transaction_element,
-                    self.recipient_regions.get('element')
+                    self.recipient_regions.get('element'),
+                    nsmap=recipient_regions_ns_map
                 )
 
                 # Attribute
@@ -883,6 +1092,8 @@ class TransactionReference(ElementReference):
                         ).get('code').get('attr'),
                         vocabulary_value
                     )
+                NameSpaceCreate.create_namespace_attr_or_elememnt(
+                    recipient_regions_namespace_list, recipient_region_element)
 
         # Flow type
         flow_type_dict = self.data.get(
@@ -928,8 +1139,18 @@ class TransactionReference(ElementReference):
         )
         if aid_type_list:
             for aid_type_dict in aid_type_list:
+                # get namespace dictionary to use it in creating aid-type
+                # element.
+                aid_type_ns_map = {}
+                aid_type_namespace_list = aid_type_dict.get(
+                    'name_space')
+                if aid_type_namespace_list is not None:
+                    for namespace in aid_type_namespace_list:
+                        aid_type_ns_map.update(namespace.get('nsmap'))
+
                 aid_type_element = etree.SubElement(
-                    transaction_element, self.aid_types.get('element')
+                    transaction_element, self.aid_types.get('element'),
+                    nsmap=aid_type_ns_map
                 )
 
                 aid_type = aid_type_dict.get(
@@ -970,6 +1191,8 @@ class TransactionReference(ElementReference):
                                 ).get('code').get('attr'),
                                 code
                             )
+                NameSpaceCreate.create_namespace_attr_or_elememnt(
+                    aid_type_namespace_list, aid_type_element)
 
         # Tied status
         tied_status_dict = self.data.get(
@@ -1042,8 +1265,14 @@ class SectorReference(ElementWithNarrativeReference):
     }
 
     def create(self):
+        sector_ns_map = {}
+        sector_namespace_list = self.data.get('name_space')
+        if sector_namespace_list is not None:
+            for namespace in sector_namespace_list:
+                sector_ns_map.update(namespace.get('nsmap'))
+
         sector_element = etree.SubElement(
-            self.parent_element, self.element
+            self.parent_element, self.element, nsmap=sector_ns_map
         )
 
         # @code
@@ -1102,6 +1331,9 @@ class SectorReference(ElementWithNarrativeReference):
 
         # Narrative
         self.create_narrative(sector_element)
+
+        NameSpaceCreate.create_namespace_attr_or_elememnt(
+            sector_namespace_list, sector_element)
 
 
 class BudgetReference(ElementReference):
@@ -1183,9 +1415,19 @@ class BudgetReference(ElementReference):
                 nsmap=ns_map
             )
         else:
+            # get namespace dictionary to use it in creating budget
+            # element.
+            budget_ns_map = {}
+            budget_namespace_list = self.data.get('name_space')
+            if budget_namespace_list is not None:
+                for namespace in budget_namespace_list:
+                    budget_ns_map.update(namespace.get('nsmap'))
+
             budget_element = etree.SubElement(
-                self.parent_element, self.element
+                self.parent_element, self.element, nsmap=budget_ns_map
             )
+            NameSpaceCreate.create_namespace_attr_or_elememnt(
+                budget_namespace_list, budget_element)
 
         # @type
         type_dict = self.data.get(self._type.get('type').get('key'))
@@ -1323,8 +1565,14 @@ class OtherIdentifierReference(ElementReference):
     # </other-identifier>
 
     def create(self):
+        other_identifier_ns_map = {}
+        other_identifier_namespace_list = self.data.get('name_space')
+        if other_identifier_namespace_list is not None:
+            for namespace in other_identifier_namespace_list:
+                other_identifier_ns_map.update(namespace.get('nsmap'))
+
         other_identifier_element = etree.SubElement(
-            self.parent_element, self.element
+            self.parent_element, self.element, nsmap=other_identifier_ns_map
         )
 
         # @ref
@@ -1369,6 +1617,8 @@ class OtherIdentifierReference(ElementReference):
             )
             narrative_element.create_narrative(owner_org_element)
             # </narrative>
+            NameSpaceCreate.create_namespace_attr_or_elememnt(
+                other_identifier_namespace_list, other_identifier_element)
 
 
 class ActivityStatusReference(ElementReference):
@@ -1385,9 +1635,15 @@ class ActivityStatusReference(ElementReference):
     # />
 
     def create(self):
+        activity_status_ns_map = {}
+        activity_status_namespace_list = self.data.get('name_space')
+        if activity_status_namespace_list is not None:
+            for namespace in activity_status_namespace_list:
+                activity_status_ns_map.update(namespace.get('nsmap'))
+
         # <activity-status
         activity_status_element = etree.SubElement(
-            self.parent_element, self.element
+            self.parent_element, self.element, nsmap=activity_status_ns_map
         )
 
         # @code
@@ -1422,9 +1678,15 @@ class RecipientCountryReference(ElementWithNarrativeReference):
     }
 
     def create(self):
+        recipient_country_ns_map = {}
+        recipient_country_namespace_list = self.data.get('name_space')
+        if recipient_country_namespace_list is not None:
+            for namespace in recipient_country_namespace_list:
+                recipient_country_ns_map.update(namespace.get('nsmap'))
+
         # <recipient-country
         recipient_country_element = etree.SubElement(
-            self.parent_element, self.element
+            self.parent_element, self.element, nsmap=recipient_country_ns_map
         )
 
         # @code
@@ -1446,6 +1708,8 @@ class RecipientCountryReference(ElementWithNarrativeReference):
                 str(percentage_value)
             )
         self.create_narrative(recipient_country_element)
+        NameSpaceCreate.create_namespace_attr_or_elememnt(
+            recipient_country_namespace_list, recipient_country_element)
 
 
 class RecipientRegionReference(ElementWithNarrativeReference):
@@ -1483,9 +1747,15 @@ class RecipientRegionReference(ElementWithNarrativeReference):
     # />
 
     def create(self):
-        # <recipient-country
+        recipient_region_ns_map = {}
+        recipient_region_namespace_list = self.data.get('name_space')
+        if recipient_region_namespace_list is not None:
+            for namespace in recipient_region_namespace_list:
+                recipient_region_ns_map.update(namespace.get('nsmap'))
+
+        # <recipient-region
         recipient_region_element = etree.SubElement(
-            self.parent_element, self.element
+            self.parent_element, self.element, nsmap=recipient_region_ns_map
         )
 
         # @code
@@ -1528,6 +1798,8 @@ class RecipientRegionReference(ElementWithNarrativeReference):
             )
         # />
         self.create_narrative(recipient_region_element)
+        NameSpaceCreate.create_namespace_attr_or_elememnt(
+            recipient_region_namespace_list, recipient_region_element)
 
 
 class LocationReference(ElementReference):
@@ -1684,10 +1956,18 @@ class LocationReference(ElementReference):
     # </location>
 
     def create(self):
+        location_ns_map = {}
+        location_namespace_list = self.data.get('name_space')
+        if location_namespace_list is not None:
+            for namespace in location_namespace_list:
+                location_ns_map.update(namespace.get('nsmap'))
+
         # <location
         location_element = etree.SubElement(
-            self.parent_element, self.element
+            self.parent_element, self.element, nsmap=location_ns_map
         )
+        NameSpaceCreate.create_namespace_attr_or_elememnt(
+            location_namespace_list, location_element)
 
         # @ref
         ref_value = self.data.get(self.ref.get('key'))
@@ -1749,9 +2029,17 @@ class LocationReference(ElementReference):
         # <name>
         name_dict = self.data.get(self.name.get('key'))
         if name_dict:
+            location_name_ns_map = {}
+            location_name_namespace_list = name_dict.get('name_space')
+            if location_name_namespace_list is not None:
+                for namespace in location_name_namespace_list:
+                    location_name_ns_map.update(namespace.get('nsmap'))
+
             # <narrative>
             ElementWithNarrativeReference(
-                location_element, name_dict, self.name.get('element')
+                location_element, name_dict, nsmap=location_name_ns_map,
+                element=self.name.get('element')
+
             ).create()
             # </narrative>
         # </name>
@@ -1759,11 +2047,19 @@ class LocationReference(ElementReference):
         # <description>
         description_dict = self.data.get(self.description.get('key'))
         if description_dict:
+            location_description_ns_map = {}
+            location_description_namespace_list = name_dict.get(
+                'name_space')
+            if location_description_namespace_list is not None:
+                for namespace in location_description_namespace_list:
+                    location_description_ns_map.update(namespace.get(
+                        'nsmap'))
             # <narrative>
             ElementWithNarrativeReference(
                 location_element,
                 description_dict,
-                self.description.get('element')
+                nsmap=location_description_ns_map,
+                element=self.description.get('element')
             ).create()
             # </narrative>
         # </description>
@@ -1773,11 +2069,20 @@ class LocationReference(ElementReference):
             self.activity_description.get('key')
         )
         if activity_description_dict:
+            location_activity_description_ns_map = {}
+            location_activity_description_namespace_list = name_dict.get(
+                'name_space')
+            if location_activity_description_namespace_list is not None:
+                for namespace in location_activity_description_namespace_list:
+                    location_activity_description_ns_map.update(namespace.get(
+                        'nsmap'))
+
             # <narrative>
             ElementWithNarrativeReference(
                 location_element,
                 activity_description_dict,
-                self.activity_description.get('element')
+                nsmap=location_activity_description_ns_map,
+                element=self.activity_description.get('element')
             ).create()
             # </narrative>
         # </activity-description>
@@ -1973,9 +2278,18 @@ class PolicyMarkerReference(ElementReference):
 
     def create(self):
         # <policy-marker
+        policy_marker_ns_map = {}
+        policy_marker_namespace_list = self.data.get(
+            'name_space')
+        if policy_marker_namespace_list is not None:
+            for namespace in policy_marker_namespace_list:
+                policy_marker_ns_map.update(namespace.get(
+                    'nsmap'))
         policy_marker_element = etree.SubElement(
-            self.parent_element, self.element
+            self.parent_element, self.element, nsmap=policy_marker_ns_map
         )
+        NameSpaceCreate.create_namespace_attr_or_elememnt(
+            policy_marker_namespace_list, policy_marker_element)
 
         # @vocabulary
         vocabulary_dict = self.data.get(self.vocabulary.get('key'))
@@ -2046,9 +2360,16 @@ class AttributeReference(ElementReference):
 
     def create(self):
         if self.data:
+            ns_map = {}
+            namespace_list = self.data.get(
+                'name_space')
+            if namespace_list is not None:
+                for namespace in namespace_list:
+                    ns_map.update(namespace.get(
+                        'nsmap'))
             # <element
             attr_element = etree.SubElement(
-                self.parent_element, self.element
+                self.parent_element, self.element, nsmap=ns_map
             )
 
             # @code
@@ -2165,9 +2486,17 @@ class PlannedDisbursementReference(ElementReference):
     # </budget>
 
     def create(self):
+        planned_disbursement_ns_map = {}
+        planned_disbursement_namespace_list = self.data.get(
+            'name_space')
+        if planned_disbursement_namespace_list is not None:
+            for namespace in planned_disbursement_namespace_list:
+                planned_disbursement_ns_map.update(namespace.get(
+                    'nsmap'))
         # <planned-disbursement
         planned_disbursement_element = etree.SubElement(
-            self.parent_element, self.element
+            self.parent_element, self.element,
+            nsmap=planned_disbursement_ns_map
         )
 
         # @type
@@ -2273,160 +2602,6 @@ class CapitalSpendReference(ElementReference):
             # />
 
 
-class DocumentLinkReference(ElementReference):
-    """
-    http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/document-link/
-    """
-    # <document-link
-    element = 'document-link'
-    # @url
-    url = {
-        'key': 'url',
-        'attr': 'url'
-    }
-    # @format
-    format = {
-        'key': 'format',
-        'code': {
-            'key': 'code',
-            'attr': 'format'
-        }
-    }
-    # <title>
-    title = {
-        'element': 'title',
-        'key': 'title'
-    }
-    # <narrative>
-    # Title narrative
-    # </narrative>
-    # </title>
-    # <title>
-    description = {
-        'element': 'description',
-        'key': 'description'
-    }
-    # <narrative>
-    # Title narrative
-    # </narrative>
-    # </title>
-    # <category>
-    category = {
-        # category data in list
-        'list': 'categories',
-        'element': 'category',
-        'key': 'category',
-        'code': {
-            'key': 'code',
-            'attr': 'code'
-        }
-    }
-    # />
-    # <language
-    language = {
-        # category data in list
-        'list': 'languages',
-        'element': 'language',
-        'key': 'language',
-        'code': {
-            'key': 'code',
-            'attr': 'code'
-        }
-    }
-    # />
-    # <document-date
-    document_date = {
-        'element': 'document-date',
-        'key': 'document_date',
-        # @iso-date
-        'iso_date': {
-            'key': 'iso_date',
-            'attr': 'iso-date'
-        }
-    }
-    # />
-
-    def create(self):
-        # <document-link
-        document_link_element = etree.SubElement(
-            self.parent_element, self.element
-        )
-
-        # @url
-        DataAttribute(
-            document_link_element,
-            self.url.get('attr'),
-            self.data,
-            self.url.get('key')
-        ).set()
-
-        # @format
-        format_dict = self.data.get(self.format.get('key'))
-        if format_dict:
-            DataAttribute(
-                document_link_element,
-                self.format.get('code').get('attr'),
-                format_dict,
-                self.format.get('code').get('key')
-            ).set()
-
-        # <title>
-        # <narrative>
-        ElementWithNarrativeReference(
-            parent_element=document_link_element,
-            data=self.data.get(self.title.get('key')),
-            element=self.title.get('element')
-        ).create()
-        # </narrative>
-        # </title>
-
-        # <description>
-        # <narrative>
-        ElementWithNarrativeReference(
-            parent_element=document_link_element,
-            data=self.data.get(self.description.get('key')),
-            element=self.description.get('element')
-        ).create()
-        # </narrative>
-        # </description>
-
-        categories = self.data.get(self.category.get('list'))
-        for category in categories:
-            category_dict = category.get(
-                self.category.get('key')
-            )
-            if category_dict:
-                # <category
-                category_element = etree.SubElement(
-                    document_link_element,
-                    self.category.get('element')
-                )
-                # @code
-                DataAttribute(
-                    category_element,
-                    self.category.get('code').get('attr'),
-                    category_dict,
-                    self.category.get('code').get('key')
-                ).set()
-                # />
-
-        # <document-date
-        document_date_dict = self.data.get(self.document_date.get('key'))
-        if document_date_dict and document_date_dict.get('iso_date'):
-            document_date_element = etree.SubElement(
-                document_link_element, self.document_date.get('element')
-            )
-
-            # @iso-date
-            DataAttribute(
-                document_date_element,
-                self.document_date.get('iso_date').get('attr'),
-                document_date_dict,
-                self.document_date.get('iso_date').get('key')
-            ).set()
-        # />
-
-
 class LegacyDataReference(ElementReference):
     """
     http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/legacy-data/
@@ -2455,10 +2630,18 @@ class LegacyDataReference(ElementReference):
     # />
 
     def create(self):
-        # <document-link
+        legacy_data_ns_map = {}
+        legacy_data_namespace_list = self.data.get('name_space')
+        if legacy_data_namespace_list is not None:
+            for namespace in legacy_data_namespace_list:
+                legacy_data_ns_map.update(namespace.get('nsmap'))
+
+        # <legacy-data
         legacy_data_element = etree.SubElement(
             self.parent_element, self.element
         )
+        NameSpaceCreate.create_namespace_attr_or_elememnt(
+            legacy_data_namespace_list, legacy_data_element)
 
         # @name
         DataAttribute(
@@ -2625,17 +2808,33 @@ class CrsAddReference(ElementReference):
     # <crs-add/>
 
     def create(self):
+        crs_add_ns_map = {}
+        crs_add_namespace_list = self.data.get('name_space')
+        if crs_add_namespace_list is not None:
+            for namespace in crs_add_namespace_list:
+                crs_add_ns_map.update(namespace.get('nsmap'))
+
         # <crs-add>
         crs_add_element = etree.SubElement(
             self.parent_element, self.element
         )
+        NameSpaceCreate.create_namespace_attr_or_elememnt(
+            crs_add_namespace_list, crs_add_element)
 
         other_flags_list = self.data.get(self.other_flags.get('list'))
         for other_flags_dict in other_flags_list:
+            other_flags_ns_map = {}
+            other_flags_namespace_list = self.data.get('name_space')
+            if other_flags_namespace_list is not None:
+                for namespace in other_flags_namespace_list:
+                    other_flags_ns_map.update(namespace.get('nsmap'))
+
             # <other-flags
             other_flags_element = etree.SubElement(
                 crs_add_element, self.other_flags.get('element')
             )
+            NameSpaceCreate.create_namespace_attr_or_elememnt(
+                other_flags_namespace_list, other_flags_element)
 
             code_dict = other_flags_dict.get(
                 self.other_flags.get('code').get('dict')
@@ -2661,10 +2860,18 @@ class CrsAddReference(ElementReference):
 
         loan_terms_dict = self.data.get(self.loan_terms.get('key'))
         if loan_terms_dict:
+            loan_terms_ns_map = {}
+            loan_terms_namespace_list = self.data.get('name_space')
+            if loan_terms_namespace_list is not None:
+                for namespace in loan_terms_namespace_list:
+                    loan_terms_ns_map.update(namespace.get('nsmap'))
+
             # <loan-terms
             loan_terms_element = etree.SubElement(
                 crs_add_element, self.loan_terms.get('element')
             )
+            NameSpaceCreate.create_namespace_attr_or_elememnt(
+                loan_terms_namespace_list, loan_terms_element)
 
             # @rate-1
             DataAttribute(
@@ -2749,10 +2956,18 @@ class CrsAddReference(ElementReference):
 
         loan_status_dict = self.data.get(self.loan_status.get('key'))
         if loan_status_dict:
+            loan_status_ns_map = {}
+            loan_status_namespace_list = self.data.get('name_space')
+            if loan_status_namespace_list is not None:
+                for namespace in loan_status_namespace_list:
+                    loan_status_ns_map.update(namespace.get('nsmap'))
+
             # <loan-status
             loan_status_element = etree.SubElement(
                 crs_add_element, self.loan_status.get('element')
             )
+            NameSpaceCreate.create_namespace_attr_or_elememnt(
+                loan_status_namespace_list, loan_status_element)
 
             # @year
             year_value = loan_status_dict.get(

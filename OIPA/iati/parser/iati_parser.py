@@ -431,8 +431,10 @@ class IatiParser(object):
                     model.save()
                     try:
                         if len(model.namespace) != 0:
+                            activity = self.get_model('Activity')
                             for namespace in model.namespace:
                                 namespace.parent_element_id = model.pk
+                                namespace.activity = activity
                                 namespace.save()
                     except AttributeError:
                         pass

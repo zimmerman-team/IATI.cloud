@@ -159,7 +159,7 @@ class ActivitySaveTestCase(TestCase):
         7. Fetch mailing_address__narratives objects
         """
 
-        with self.assertNumQueries(10):
+        with self.assertNumQueries(25):
             queryset = Activity.objects.all().prefetch_contact_info()
             serializer = ActivitySerializer(
                 queryset,
