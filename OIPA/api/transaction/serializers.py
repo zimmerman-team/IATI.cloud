@@ -36,7 +36,6 @@ class TransactionProviderSerializer(serializers.ModelSerializer):
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except iati_models.NameSpaceElement.DoesNotExist:
             return None
-            pass
         return namespace_serializer.data
 
     class Meta:
@@ -71,7 +70,6 @@ class TransactionReceiverSerializer(serializers.ModelSerializer):
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except iati_models.NameSpaceElement.DoesNotExist:
             return None
-            pass
         return namespace_serializer.data
 
     class Meta:
@@ -98,7 +96,6 @@ class TransactionDescriptionSerializer(serializers.ModelSerializer):
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except iati_models.NameSpaceElement.DoesNotExist:
             return None
-            pass
         return namespace_serializer.data
 
     class Meta:
@@ -123,7 +120,6 @@ class TransactionSectorSerializer(serializers.ModelSerializer):
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except iati_models.NameSpaceElement.DoesNotExist:
             return None
-            pass
         return namespace_serializer.data
 
     class Meta:
@@ -149,7 +145,6 @@ class TransactionRecipientCountrySerializer(DynamicFieldsModelSerializer):
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except iati_models.NameSpaceElement.DoesNotExist:
             return None
-            pass
         return namespace_serializer.data
 
     class Meta:
@@ -177,7 +172,6 @@ class TransactionRecipientRegionSerializer(DynamicFieldsModelSerializer):
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except iati_models.NameSpaceElement.DoesNotExist:
             return None
-            pass
         return namespace_serializer.data
 
     class Meta:
