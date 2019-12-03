@@ -301,6 +301,7 @@
     <field name="country_budget_items_budget_description_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
 
     <field name="humanitarian_scope" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="humanitarian_scope_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
     <field name="humanitarian_scope_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="humanitarian_scope_vocabulary" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="humanitarian_scope_vocabulary_uri" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
