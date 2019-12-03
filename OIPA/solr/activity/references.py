@@ -3,7 +3,8 @@ from api.activity.serializers import (
     ActivityTagSerializer, CodelistSerializer, ContactInfoSerializer,
     CountryBudgetItemsSerializer, DescriptionSerializer,
     OtherIdentifierSerializer, ParticipatingOrganisationSerializer,
-    ReportingOrganisationSerializer, TitleSerializer
+    ReportingOrganisationSerializer, TitleSerializer,
+    HumanitarianScopeSerializer
 )
 from api.iati.references import \
     ActivityDateReference as BaseActivityDateReference
@@ -17,6 +18,8 @@ from api.iati.references import \
     CountryBudgetItemsReference as BaseCountryBudgetItemsReference
 from api.iati.references import \
     DescriptionReference as BaseDescriptionReference
+from api.iati.references import \
+    HumanitarianScopeReference as BaseHumanitarianScopeReference
 from api.iati.references import LocationReference as BaseLocationReference
 from api.iati.references import \
     OtherIdentifierReference as BaseOtherIdentifierReference
@@ -209,6 +212,17 @@ class PolicyMarkerReference(ConvertElementReference,
     def __init__(self, policy_marker=None):
         data = ActivityPolicyMarkerSerializer(
             instance=policy_marker
+        ).data
+
+        super().__init__(parent_element=None, data=data)
+
+
+class HumanitarianScopeReference(ConvertElementReference,
+                                 BaseHumanitarianScopeReference):
+
+    def __init__(self, humanitarian_scope=None):
+        data = HumanitarianScopeSerializer(
+            instance=humanitarian_scope
         ).data
 
         super().__init__(parent_element=None, data=data)

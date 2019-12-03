@@ -13,9 +13,10 @@ from api.activity.serializers import (
 from solr.activity.references import (
     ActivityDateReference, ActivityScopeReference, ActivityStatusReference,
     ContactInfoReference, CountryBudgetItemsReference, DescriptionReference,
-    LocationReference, OtherIdentifierReference, ParticipatingOrgReference,
-    PolicyMarkerReference, RecipientCountryReference, RecipientRegionReference,
-    ReportingOrgReference, SectorReference, TagReference, TitleReference
+    HumanitarianScopeReference, LocationReference, OtherIdentifierReference,
+    ParticipatingOrgReference, PolicyMarkerReference,
+    RecipientCountryReference, RecipientRegionReference, ReportingOrgReference,
+    SectorReference, TagReference, TitleReference
 )
 from solr.activity.serializers import (
     ActivityRecipientRegionSerializer, ActivitySectorSerializer,
@@ -762,6 +763,7 @@ class ActivityIndexing(BaseIndexing):
         humanitarian_scope_all = self.record.humanitarianscope_set.all()
         if humanitarian_scope_all:
             self.add_field('humanitarian_scope', [])
+            self.add_field('humanitarian_scope_xml', [])
 
             self.add_field('humanitarian_scope_type', [])
             self.add_field('humanitarian_scope_vocabulary', [])
@@ -778,6 +780,12 @@ class ActivityIndexing(BaseIndexing):
                     JSONRenderer().render(
                         HumanitarianScopeSerializer(humanitarian_scope).data
                     ).decode()
+                )
+                self.add_field(
+                    'humanitarian_scope_xml',
+                    HumanitarianScopeReference(
+                        humanitarian_scope=humanitarian_scope
+                    ).to_string()
                 )
 
                 self.add_value_list(
