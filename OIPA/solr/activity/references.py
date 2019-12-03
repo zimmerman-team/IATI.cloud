@@ -1,8 +1,8 @@
 from api.activity.serializers import (
     ActivityDateSerializer, ActivityTagSerializer, CodelistSerializer,
-    ContactInfoSerializer, DescriptionSerializer, OtherIdentifierSerializer,
-    ParticipatingOrganisationSerializer, ReportingOrganisationSerializer,
-    TitleSerializer
+    ContactInfoSerializer, CountryBudgetItemsSerializer, DescriptionSerializer,
+    OtherIdentifierSerializer, ParticipatingOrganisationSerializer,
+    ReportingOrganisationSerializer, TitleSerializer
 )
 from api.iati.references import \
     ActivityDateReference as BaseActivityDateReference
@@ -12,6 +12,8 @@ from api.iati.references import \
     ActivityStatusReference as BaseActivityStatusReference
 from api.iati.references import \
     ContactInfoReference as BaseContactInfoReference
+from api.iati.references import \
+    CountryBudgetItemsReference as BaseCountryBudgetItemsReference
 from api.iati.references import \
     DescriptionReference as BaseDescriptionReference
 from api.iati.references import LocationReference as BaseLocationReference
@@ -182,6 +184,17 @@ class TagReference(ConvertElementReference, BaseTagReference):
     def __init__(self, tag=None):
         data = ActivityTagSerializer(
             instance=tag
+        ).data
+
+        super().__init__(parent_element=None, data=data)
+
+
+class CountryBudgetItemsReference(ConvertElementReference,
+                                  BaseCountryBudgetItemsReference):
+
+    def __init__(self, country_budget_items=None):
+        data = CountryBudgetItemsSerializer(
+            instance=country_budget_items
         ).data
 
         super().__init__(parent_element=None, data=data)

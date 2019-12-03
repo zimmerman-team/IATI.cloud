@@ -12,8 +12,8 @@ from api.activity.serializers import (
 )
 from solr.activity.references import (
     ActivityDateReference, ActivityScopeReference, ActivityStatusReference,
-    ContactInfoReference, DescriptionReference, LocationReference,
-    OtherIdentifierReference, ParticipatingOrgReference,
+    ContactInfoReference, CountryBudgetItemsReference, DescriptionReference,
+    LocationReference, OtherIdentifierReference, ParticipatingOrgReference,
     RecipientCountryReference, RecipientRegionReference, ReportingOrgReference,
     SectorReference, TagReference, TitleReference
 )
@@ -712,6 +712,12 @@ class ActivityIndexing(BaseIndexing):
                 JSONRenderer().render(
                     CountryBudgetItemsSerializer(country_budget_item).data
                 ).decode()
+            )
+            self.add_field(
+                'country_budget_items_xml',
+                CountryBudgetItemsReference(
+                    country_budget_items=country_budget_item
+                ).to_string()
             )
 
             self.add_field(
