@@ -243,11 +243,10 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
         try:
             name_space = iati_models.NameSpaceElement.objects.filter(
                 parent_element_id=obj.pk).filter(
-                parent_element_name='Transaction')
+                parent_element_name=obj.__class__.__name__)
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except iati_models.NameSpaceElement.DoesNotExist:
             return None
-            pass
         return namespace_serializer.data
 
     class Meta:

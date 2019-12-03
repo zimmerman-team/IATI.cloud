@@ -69,7 +69,6 @@ class NarrativeContainerSerializer(SerializerNoValidation):
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
             return None
-            pass
         return namespace_serializer.data
 
 
