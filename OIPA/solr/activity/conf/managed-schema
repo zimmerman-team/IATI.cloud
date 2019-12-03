@@ -270,6 +270,7 @@
     <field name="location_administrative_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
 
     <field name="sector" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="sector_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
     <field name="sector_vocabulary" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="sector_vocabulary_uri" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="sector_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
