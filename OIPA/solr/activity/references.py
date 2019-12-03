@@ -2,9 +2,9 @@ from api.activity.serializers import (
     ActivityDateSerializer, ActivityPolicyMarkerSerializer,
     ActivityTagSerializer, CodelistSerializer, ContactInfoSerializer,
     CountryBudgetItemsSerializer, DescriptionSerializer,
-    OtherIdentifierSerializer, ParticipatingOrganisationSerializer,
-    ReportingOrganisationSerializer, TitleSerializer,
-    HumanitarianScopeSerializer
+    HumanitarianScopeSerializer, OtherIdentifierSerializer,
+    ParticipatingOrganisationSerializer, ReportingOrganisationSerializer,
+    TitleSerializer
 )
 from api.iati.references import \
     ActivityDateReference as BaseActivityDateReference
