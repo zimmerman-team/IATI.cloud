@@ -1,6 +1,6 @@
 from api.activity.serializers import (
-    ActivityDateSerializer, CodelistSerializer, ContactInfoSerializer,
-    DescriptionSerializer, OtherIdentifierSerializer,
+    ActivityDateSerializer, ActivityTagSerializer, CodelistSerializer,
+    ContactInfoSerializer, DescriptionSerializer, OtherIdentifierSerializer,
     ParticipatingOrganisationSerializer, ReportingOrganisationSerializer,
     TitleSerializer
 )
@@ -26,6 +26,7 @@ from api.iati.references import \
 from api.iati.references import \
     ReportingOrgOrgReference as BaseReportingOrgElementReference
 from api.iati.references import SectorReference as BaseSectorReference
+from api.iati.references import TagReference as BaseTagReference
 from api.iati.references import TitleReference as BaseTitleReference
 from solr.activity.serializers import (
     ActivityRecipientRegionSerializer, ActivitySectorSerializer,
@@ -171,6 +172,16 @@ class SectorReference(ConvertElementReference, BaseSectorReference):
     def __init__(self, sector=None):
         data = ActivitySectorSerializer(
             instance=sector
+        ).data
+
+        super().__init__(parent_element=None, data=data)
+
+
+class TagReference(ConvertElementReference, BaseTagReference):
+
+    def __init__(self, tag=None):
+        data = ActivityTagSerializer(
+            instance=tag
         ).data
 
         super().__init__(parent_element=None, data=data)

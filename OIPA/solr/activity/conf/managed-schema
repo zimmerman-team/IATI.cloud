@@ -281,6 +281,7 @@
     <field name="sector_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
 
     <field name="tag" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="tag_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
     <field name="tag_vocabulary" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="tag_vocabulary_uri" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="tag_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
