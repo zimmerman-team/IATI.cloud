@@ -28,11 +28,12 @@ class TransactionProviderSerializer(serializers.ModelSerializer):
 
     name_space = serializers.SerializerMethodField(required=False)
 
-    def get_name_space(self, obj):
+    @classmethod
+    def get_name_space(cls, obj):
         try:
             name_space = iati_models.NameSpaceElement.objects.filter(
                 parent_element_id=obj.pk).filter(
-                parent_element_name='TransactionProvider')
+                parent_element_name=obj.__class__.__name__)
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except iati_models.NameSpaceElement.DoesNotExist:
             return None
@@ -62,11 +63,12 @@ class TransactionReceiverSerializer(serializers.ModelSerializer):
     )
     name_space = serializers.SerializerMethodField(required=False)
 
-    def get_name_space(self, obj):
+    @classmethod
+    def get_name_space(cls, obj):
         try:
             name_space = iati_models.NameSpaceElement.objects.filter(
                 parent_element_id=obj.pk).filter(
-                parent_element_name='TransactionReceiver')
+                parent_element_name=obj.__class__.__name__)
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except iati_models.NameSpaceElement.DoesNotExist:
             return None
@@ -88,11 +90,12 @@ class TransactionDescriptionSerializer(serializers.ModelSerializer):
     narratives = NarrativeSerializer(many=True)
     name_space = serializers.SerializerMethodField(required=False)
 
-    def get_name_space(self, obj):
+    @classmethod
+    def get_name_space(cls, obj):
         try:
             name_space = iati_models.NameSpaceElement.objects.filter(
                 parent_element_id=obj.pk).filter(
-                parent_element_name='TransactionDescription')
+                parent_element_name=obj.__class__.__name__)
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except iati_models.NameSpaceElement.DoesNotExist:
             return None
@@ -112,11 +115,12 @@ class TransactionSectorSerializer(serializers.ModelSerializer):
     vocabulary_uri = serializers.URLField()
     name_space = serializers.SerializerMethodField(required=False)
 
-    def get_name_space(self, obj):
+    @classmethod
+    def get_name_space(cls, obj):
         try:
             name_space = iati_models.NameSpaceElement.objects.filter(
                 parent_element_id=obj.pk).filter(
-                parent_element_name='TransactionSector')
+                parent_element_name=obj.__class__.__name__)
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except iati_models.NameSpaceElement.DoesNotExist:
             return None
@@ -141,7 +145,7 @@ class TransactionRecipientCountrySerializer(DynamicFieldsModelSerializer):
         try:
             name_space = iati_models.NameSpaceElement.objects.filter(
                 parent_element_id=obj.pk).filter(
-                parent_element_name='TransactionRecipientCountry')
+                parent_element_name=obj.__class__.__name__)
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except iati_models.NameSpaceElement.DoesNotExist:
             return None
@@ -164,11 +168,12 @@ class TransactionRecipientRegionSerializer(DynamicFieldsModelSerializer):
     vocabulary_uri = serializers.URLField(required=False)
     name_space = serializers.SerializerMethodField(required=False)
 
-    def get_name_space(self, obj):
+    @staticmethod
+    def get_name_space(obj):
         try:
             name_space = iati_models.NameSpaceElement.objects.filter(
                 parent_element_id=obj.pk).filter(
-                parent_element_name='TransactionRecipientRegion')
+                parent_element_name=obj.__class__.__name__)
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except iati_models.NameSpaceElement.DoesNotExist:
             return None
@@ -233,7 +238,8 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
     iati_identifier = serializers.CharField(source='activity.iati_identifier', required=False)  # NOQA: E501
     name_space = serializers.SerializerMethodField(required=False)
 
-    def get_name_space(self, obj):
+    @classmethod
+    def get_name_space(cls, obj):
         try:
             name_space = iati_models.NameSpaceElement.objects.filter(
                 parent_element_id=obj.pk).filter(

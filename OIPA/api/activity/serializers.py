@@ -109,7 +109,8 @@ class DocumentLinkCategorySerializer(ModelSerializerNoValidation):
     document_link = serializers.CharField(write_only=True)
     name_space = serializers.SerializerMethodField(required=False)
 
-    def get_name_space(self, obj):
+    @classmethod
+    def get_name_space(cls, obj):
         try:
             name_space = NameSpaceElement.objects.filter(
                 parent_element_id=obj.pk).filter(
@@ -171,7 +172,8 @@ class DocumentLinkLanguageSerializer(ModelSerializerNoValidation):
     language = CodelistSerializer()
     name_space = serializers.SerializerMethodField(required=False)
 
-    def get_name_space(self, obj):
+    @classmethod
+    def get_name_space(cls, obj):
         try:
             name_space = NameSpaceElement.objects.filter(
                 parent_element_id=obj.pk).filter(
@@ -251,7 +253,8 @@ class DocumentLinkSerializer(ModelSerializerNoValidation):
     )
     name_space = serializers.SerializerMethodField(required=False)
 
-    def get_name_space(self, obj):
+    @classmethod
+    def get_name_space(cls, obj):
         try:
             name_space = NameSpaceElement.objects.filter(
                 parent_element_id=obj.pk).filter(
@@ -357,7 +360,8 @@ class BudgetSerializer(ModelSerializerNoValidation):
     )
     name_space = serializers.SerializerMethodField(required=False)
 
-    def get_name_space(self, obj):
+    @classmethod
+    def get_name_space(cls, obj):
         try:
             name_space = NameSpaceElement.objects.filter(
                 parent_element_id=obj.pk).filter(
@@ -492,7 +496,8 @@ class PlannedDisbursementSerializer(ModelSerializerNoValidation):
     )
     name_space = serializers.SerializerMethodField(required=False)
 
-    def get_name_space(self, obj):
+    @classmethod
+    def get_name_space(cls, obj):
         try:
             name_space = NameSpaceElement.objects.filter(
                 parent_element_id=obj.pk).filter(
@@ -621,7 +626,8 @@ class ActivityDateSerializer(ModelSerializerNoValidation):
     activity = serializers.CharField(write_only=True)
     name_space = serializers.SerializerMethodField(required=False)
 
-    def get_name_space(self, obj):
+    @classmethod
+    def get_name_space(cls, obj):
         try:
             name_space = NameSpaceElement.objects.filter(
                 parent_element_id=obj.pk).filter(
@@ -830,7 +836,8 @@ class ReportingOrganisationDataSerializer(DynamicFieldsModelSerializer):  # NOQA
     )
     name_space = serializers.SerializerMethodField(required=False)
 
-    def get_name_space(self, obj):
+    @classmethod
+    def get_name_space(cls, obj):
         try:
             name_space = NameSpaceElement.objects.filter(
                 parent_element_id=obj.pk).filter(
@@ -869,7 +876,8 @@ class ParticipatingOrganisationSerializer(ModelSerializerNoValidation):
     name_space = serializers.SerializerMethodField(required=False)
     crs_channel_code = CodelistSerializer()
 
-    def get_name_space(self, obj):
+    @classmethod
+    def get_name_space(cls, obj):
         try:
             name_space = NameSpaceElement.objects.filter(
                 parent_element_id=obj.pk).filter(
@@ -953,7 +961,8 @@ class OtherIdentifierSerializer(ModelSerializerNoValidation):
     activity = serializers.CharField(write_only=True)
     name_space = serializers.SerializerMethodField(required=False)
 
-    def get_name_space(self, obj):
+    @classmethod
+    def get_name_space(cls, obj):
         try:
             name_space = NameSpaceElement.objects.filter(
                 parent_element_id=obj.pk).filter(
@@ -1026,7 +1035,8 @@ class ActivityPolicyMarkerSerializer(ModelSerializerNoValidation):
     activity = serializers.CharField(write_only=True)
     name_space = serializers.SerializerMethodField(required=False)
 
-    def get_name_space(self, obj):
+    @classmethod
+    def get_name_space(cls, obj):
         try:
             name_space = NameSpaceElement.objects.filter(
                 parent_element_id=obj.pk).filter(
@@ -1099,7 +1109,8 @@ class TitleSerializer(ModelSerializerNoValidation):
     narratives = NarrativeSerializer(many=True)
     name_space = serializers.SerializerMethodField(required=False)
 
-    def get_name_space(self, obj):
+    @classmethod
+    def get_name_space(cls, obj):
         try:
             name_space = NameSpaceElement.objects.filter(
                 parent_element_id=obj.pk).filter(
@@ -1121,7 +1132,8 @@ class DescriptionSerializer(ModelSerializerNoValidation):
     activity = serializers.CharField(write_only=True)
     name_space = serializers.SerializerMethodField(required=False)
 
-    def get_name_space(self, obj):
+    @classmethod
+    def get_name_space(cls, obj):
         try:
             name_space = NameSpaceElement.objects.filter(
                 parent_element_id=obj.pk).filter(
@@ -1195,7 +1207,8 @@ class RelatedActivitySerializer(ModelSerializerNoValidation):
     )
     name_space = serializers.SerializerMethodField(required=False)
 
-    def get_name_space(self, obj):
+    @classmethod
+    def get_name_space(cls, obj):
         try:
             name_space = NameSpaceElement.objects.filter(
                 parent_element_id=obj.pk).filter(
@@ -1256,7 +1269,8 @@ class LegacyDataSerializer(ModelSerializerNoValidation):
     activity = serializers.CharField(write_only=True)
     name_space = serializers.SerializerMethodField(required=False)
 
-    def get_name_space(self, obj):
+    @classmethod
+    def get_name_space(cls, obj):
         try:
             name_space = NameSpaceElement.objects.filter(
                 parent_element_id=obj.pk).filter(
@@ -1326,7 +1340,8 @@ class ActivitySectorSerializer(ModelSerializerNoValidation):
     narratives = NarrativeSerializer(many=True)
     name_space = serializers.SerializerMethodField(required=False)
 
-    def get_name_space(self, obj):
+    @classmethod
+    def get_name_space(cls, obj):
         try:
             name_space = NameSpaceElement.objects.filter(
                 parent_element_id=obj.pk).filter(
@@ -1467,7 +1482,8 @@ class CountryBudgetItemsSerializer(ModelSerializerNoValidation):
     )
     name_space = serializers.SerializerMethodField(required=False)
 
-    def get_name_space(self, obj):
+    @classmethod
+    def get_name_space(cls, obj):
         try:
             name_space = NameSpaceElement.objects.filter(
                 parent_element_id=obj.pk).filter(
@@ -1537,7 +1553,8 @@ class ConditionSerializer(ModelSerializerNoValidation):
     conditions = serializers.CharField(write_only=True)
     name_space = serializers.SerializerMethodField(required=False)
 
-    def get_name_space(self, obj):
+    @classmethod
+    def get_name_space(cls, obj):
         try:
             name_space = NameSpaceElement.objects.filter(
                 parent_element_id=obj.pk).filter(
@@ -1608,7 +1625,8 @@ class ConditionsSerializer(ModelSerializerNoValidation):
     activity = serializers.CharField(write_only=True)
     name_space = serializers.SerializerMethodField(required=False)
 
-    def get_name_space(self, obj):
+    @classmethod
+    def get_name_space(cls, obj):
         try:
             name_space = NameSpaceElement.objects.filter(
                 parent_element_id=obj.pk).filter(
@@ -1684,7 +1702,8 @@ class ActivityRecipientRegionSerializer(DynamicFieldsModelSerializer):
     narratives = NarrativeSerializer(many=True, required=True)
     name_space = serializers.SerializerMethodField(required=False)
 
-    def get_name_space(self, obj):
+    @classmethod
+    def get_name_space(cls, obj):
         try:
             name_space = NameSpaceElement.objects.filter(
                 parent_element_id=obj.pk).filter(
@@ -1755,7 +1774,8 @@ class HumanitarianScopeSerializer(DynamicFieldsModelSerializer):
     narratives = NarrativeSerializer(many=True, required=False)
     name_space = serializers.SerializerMethodField(required=False)
 
-    def get_name_space(self, obj):
+    @classmethod
+    def get_name_space(cls, obj):
         try:
             name_space = NameSpaceElement.objects.filter(
                 parent_element_id=obj.pk).filter(
@@ -1827,7 +1847,8 @@ class RecipientCountrySerializer(DynamicFieldsModelSerializer):
     narratives = NarrativeSerializer(many=True, required=True)
     name_space = serializers.SerializerMethodField(required=False)
 
-    def get_name_space(self, obj):
+    @classmethod
+    def get_name_space(cls, obj):
         try:
             name_space = NameSpaceElement.objects.filter(
                 parent_element_id=obj.pk).filter(
@@ -1930,7 +1951,8 @@ class ResultIndicatorPeriodActualLocationSerializer(ModelSerializerNoValidation)
     result_indicator_period = serializers.CharField(write_only=True)
     name_space = serializers.SerializerMethodField(required=False)
 
-    def get_name_space(self, obj):
+    @classmethod
+    def get_name_space(cls, obj):
         try:
             name_space = NameSpaceElement.objects.filter(
                 parent_element_id=obj.pk).filter(
@@ -1974,7 +1996,8 @@ class ResultIndicatorPeriodTargetLocationSerializer(ModelSerializerNoValidation)
     )
     name_space = serializers.SerializerMethodField(required=False)
 
-    def get_name_space(self, obj):
+    @classmethod
+    def get_name_space(cls, obj):
         try:
             name_space = NameSpaceElement.objects.filter(
                 parent_element_id=obj.pk).filter(
@@ -2055,7 +2078,8 @@ class ResultIndicatorPeriodActualDimensionSerializer(ModelSerializerNoValidation
     result_indicator_period = serializers.CharField(write_only=True)
     name_space = serializers.SerializerMethodField(required=False)
 
-    def get_name_space(self, obj):
+    @classmethod
+    def get_name_space(cls, obj):
         try:
             name_space = NameSpaceElement.objects.filter(
                 parent_element_id=obj.pk).filter(
@@ -2119,7 +2143,8 @@ class ResultIndicatorPeriodTargetDimensionSerializer(ModelSerializerNoValidation
     result_indicator_period = serializers.CharField(write_only=True)
     name_space = serializers.SerializerMethodField(required=False)
 
-    def get_name_space(self, obj):
+    @classmethod
+    def get_name_space(cls, obj):
         try:
             name_space = NameSpaceElement.objects.filter(
                 parent_element_id=obj.pk).filter(
@@ -2204,7 +2229,8 @@ class ResultIndicatorPeriodTargetSerializer(SerializerNoValidation):
     )
     name_space = serializers.SerializerMethodField(required=False)
 
-    def get_name_space(self, obj):
+    @classmethod
+    def get_name_space(cls, obj):
         try:
             name_space = NameSpaceElement.objects.filter(
                 parent_element_id=obj.pk).filter(
@@ -2238,7 +2264,8 @@ class ResultIndicatorPeriodActualSerializer(SerializerNoValidation):
     )
     name_space = serializers.SerializerMethodField(required=False)
 
-    def get_name_space(self, obj):
+    @classmethod
+    def get_name_space(cls, obj):
         try:
             name_space = NameSpaceElement.objects.filter(
                 parent_element_id=obj.pk).filter(
@@ -2259,7 +2286,8 @@ class ResultIndicatorPeriodSerializer(ModelSerializerNoValidation):
     result_indicator = serializers.CharField(write_only=True)
     name_space = serializers.SerializerMethodField(required=False)
 
-    def get_name_space(self, obj):
+    @classmethod
+    def get_name_space(cls, obj):
         try:
             name_space = NameSpaceElement.objects.filter(
                 parent_element_id=obj.pk).filter(
@@ -2355,7 +2383,8 @@ class ResultIndicatorBaselineSerializer(ModelSerializerNoValidation):
     )
     name_space = serializers.SerializerMethodField(required=False)
 
-    def get_name_space(self, obj):
+    @classmethod
+    def get_name_space(cls, obj):
         try:
             name_space = NameSpaceElement.objects.filter(
                 parent_element_id=obj.pk).filter(
@@ -2458,7 +2487,8 @@ class ResultIndicatorSerializer(ModelSerializerNoValidation):
     )
     name_space = serializers.SerializerMethodField(required=False)
 
-    def get_name_space(self, obj):
+    @classmethod
+    def get_name_space(cls, obj):
         try:
             name_space = NameSpaceElement.objects.filter(
                 parent_element_id=obj.pk).filter(
@@ -2558,7 +2588,8 @@ class ContactInfoSerializer(ModelSerializerNoValidation):
     activity = serializers.CharField(write_only=True)
     name_space = serializers.SerializerMethodField(required=False)
 
-    def get_name_space(self, obj):
+    @classmethod
+    def get_name_space(cls, obj):
         try:
             name_space = NameSpaceElement.objects.filter(
                 parent_element_id=obj.pk).filter(
@@ -2761,7 +2792,8 @@ class ResultReferenceSerializer(ModelSerializerNoValidation):
     result = serializers.CharField(write_only=True)
     name_space = serializers.SerializerMethodField(required=False)
 
-    def get_name_space(self, obj):
+    @classmethod
+    def get_name_space(cls, obj):
         try:
             name_space = NameSpaceElement.objects.filter(
                 parent_element_id=obj.pk).filter(
@@ -2861,7 +2893,8 @@ class ResultSerializer(ModelSerializerNoValidation):
 
     name_space = serializers.SerializerMethodField(required=False)
 
-    def get_name_space(self, obj):
+    @classmethod
+    def get_name_space(cls, obj):
         try:
             name_space = NameSpaceElement.objects.filter(
                 parent_element_id=obj.pk).filter(
@@ -2953,7 +2986,8 @@ class CrsAddLoanTermsSerializer(ModelSerializerNoValidation):
     repayment_final_date = serializers.CharField()
     name_space = serializers.SerializerMethodField(required=False)
 
-    def get_name_space(self, obj):
+    @classmethod
+    def get_name_space(cls, obj):
         try:
             name_space = NameSpaceElement.objects.filter(
                 parent_element_id=obj.pk).filter(
@@ -2982,7 +3016,8 @@ class CrsAddLoanStatusSerializer(ModelSerializerNoValidation):
     currency = CodelistSerializer()
     name_space = serializers.SerializerMethodField(required=False)
 
-    def get_name_space(self, obj):
+    @classmethod
+    def get_name_space(cls, obj):
         try:
             name_space = NameSpaceElement.objects.filter(
                 parent_element_id=obj.pk).filter(
@@ -3013,7 +3048,8 @@ class CrsAddOtherFlagsSerializer(ModelSerializerNoValidation):
     crs_add = serializers.CharField(write_only=True)
     name_space = serializers.SerializerMethodField(required=False)
 
-    def get_name_space(self, obj):
+    @classmethod
+    def get_name_space(cls, obj):
         try:
             name_space = NameSpaceElement.objects.filter(
                 parent_element_id=obj.pk).filter(
@@ -3076,7 +3112,8 @@ class CrsAddSerializer(ModelSerializerNoValidation):
     activity = serializers.CharField(write_only=True)
     name_space = serializers.SerializerMethodField(required=False)
 
-    def get_name_space(self, obj):
+    @classmethod
+    def get_name_space(cls, obj):
         try:
             name_space = NameSpaceElement.objects.filter(
                 parent_element_id=obj.pk).filter(
@@ -3182,7 +3219,8 @@ class FssForecastSerializer(ModelSerializerNoValidation):
     fss = serializers.CharField(write_only=True)
     name_space = serializers.SerializerMethodField(required=False)
 
-    def get_name_space(self, obj):
+    @classmethod
+    def get_name_space(cls, obj):
         try:
             name_space = NameSpaceElement.objects.filter(
                 parent_element_id=obj.pk).filter(
@@ -3252,7 +3290,8 @@ class FssSerializer(ModelSerializerNoValidation):
 
     name_space = serializers.SerializerMethodField(required=False)
 
-    def get_name_space(self, obj):
+    @classmethod
+    def get_name_space(cls, obj):
         try:
             name_space = NameSpaceElement.objects.filter(
                 parent_element_id=obj.pk).filter(
@@ -3384,7 +3423,8 @@ class LocationSerializer(DynamicFieldsModelSerializer):
     iati_identifier = serializers.CharField(source='activity.iati_identifier', required=False)  # NOQA: E501
     name_space = serializers.SerializerMethodField(required=False)
 
-    def get_name_space(self, obj):
+    @classmethod
+    def get_name_space(cls, obj):
         try:
             name_space = NameSpaceElement.objects.filter(
                 parent_element_id=obj.pk).filter(
@@ -3520,7 +3560,8 @@ class TransactionProviderSerializer(serializers.ModelSerializer):
         source="provider_activity_ref", required=False)
     name_space = serializers.SerializerMethodField(required=False)
 
-    def get_name_space(self, obj):
+    @classmethod
+    def get_name_space(cls, obj):
         try:
             name_space = NameSpaceElement.objects.filter(
                 parent_element_id=obj.pk).filter(
@@ -3554,7 +3595,8 @@ class TransactionReceiverSerializer(serializers.ModelSerializer):
     )
     name_space = serializers.SerializerMethodField(required=False)
 
-    def get_name_space(self, obj):
+    @classmethod
+    def get_name_space(cls, obj):
         try:
             name_space = NameSpaceElement.objects.filter(
                 parent_element_id=obj.pk).filter(
@@ -3580,7 +3622,8 @@ class TransactionRecipientCountrySerializer(serializers.ModelSerializer):
     country = CountrySerializer(fields=('code', ))
     name_space = serializers.SerializerMethodField(required=False)
 
-    def get_name_space(self, obj):
+    @classmethod
+    def get_name_space(cls, obj):
         try:
             name_space = NameSpaceElement.objects.filter(
                 parent_element_id=obj.pk).filter(
@@ -3606,7 +3649,8 @@ class TransactionRecipientRegionSerializer(serializers.ModelSerializer):
     vocabulary = VocabularySerializer()
     name_space = serializers.SerializerMethodField(required=False)
 
-    def get_name_space(self, obj):
+    @classmethod
+    def get_name_space(cls, obj):
         try:
             name_space = NameSpaceElement.objects.filter(
                 parent_element_id=obj.pk).filter(
@@ -3630,7 +3674,8 @@ class TransactionSectorSerializer(serializers.ModelSerializer):
     vocabulary = VocabularySerializer()
     name_space = serializers.SerializerMethodField(required=False)
 
-    def get_name_space(self, obj):
+    @classmethod
+    def get_name_space(cls, obj):
         try:
             name_space = NameSpaceElement.objects.filter(
                 parent_element_id=obj.pk).filter(
@@ -3653,7 +3698,8 @@ class TransactionDescriptionSerializer(serializers.ModelSerializer):
     narratives = NarrativeSerializer(many=True)
     name_space = serializers.SerializerMethodField(required=False)
 
-    def get_name_space(self, obj):
+    @classmethod
+    def get_name_space(cls, obj):
         try:
             name_space = NameSpaceElement.objects.filter(
                 parent_element_id=obj.pk).filter(
@@ -3675,7 +3721,8 @@ class TransactionAidTypeSerializer(serializers.ModelSerializer):
     aid_type = AidTypeSerializer()
     name_space = serializers.SerializerMethodField(required=False)
 
-    def get_name_space(self, obj):
+    @classmethod
+    def get_name_space(cls, obj):
         try:
             name_space = NameSpaceElement.objects.filter(
                 parent_element_id=obj.pk).filter(
@@ -3736,7 +3783,8 @@ class TransactionSerializer(serializers.ModelSerializer):
     )
     name_space = serializers.SerializerMethodField(required=False)
 
-    def get_name_space(self, obj):
+    @classmethod
+    def get_name_space(cls, obj):
         try:
             name_space = NameSpaceElement.objects.filter(
                 parent_element_id=obj.pk).filter(
@@ -3777,7 +3825,8 @@ class ActivityTagSerializer(ModelSerializerNoValidation):
     narratives = NarrativeSerializer(many=True)
     name_space = serializers.SerializerMethodField(required=False)
 
-    def get_name_space(self, obj):
+    @classmethod
+    def get_name_space(cls, obj):
         try:
             name_space = NameSpaceElement.objects.filter(
                 parent_element_id=obj.pk).filter(
@@ -3803,7 +3852,8 @@ class ActivityDefaultAidTypeSerializer(ModelSerializerNoValidation):
     aid_type = AidTypeSerializer()
     name_space = serializers.SerializerMethodField(required=False)
 
-    def get_name_space(self, obj):
+    @classmethod
+    def get_name_space(cls, obj):
         try:
             name_space = NameSpaceElement.objects.filter(
                 parent_element_id=obj.pk).filter(
@@ -3841,7 +3891,8 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
 
     name_space = serializers.SerializerMethodField(required=False)
 
-    def get_name_space(self, obj):
+    @classmethod
+    def get_name_space(cls, obj):
         try:
             name_space = NameSpaceElement.objects.filter(
                 parent_element_id=obj.pk).filter(
