@@ -15,7 +15,7 @@ from solr.activity.references import (
     ContactInfoReference, DescriptionReference, LocationReference,
     OtherIdentifierReference, ParticipatingOrgReference,
     RecipientCountryReference, RecipientRegionReference, ReportingOrgReference,
-    TitleReference
+    SectorReference, TitleReference
 )
 from solr.activity.serializers import (
     ActivityRecipientRegionSerializer, ActivitySectorSerializer,
@@ -605,6 +605,7 @@ class ActivityIndexing(BaseIndexing):
         activity_sector_all = self.record.activitysector_set.all()
         if activity_sector_all:
             self.add_field('sector', [])
+            self.add_field('sector_xml', [])
 
             self.add_field('sector_vocabulary', [])
             self.add_field('sector_vocabulary_uri', [])
@@ -621,6 +622,12 @@ class ActivityIndexing(BaseIndexing):
                     JSONRenderer().render(
                         ActivitySectorSerializer(activity_sector).data
                     ).decode()
+                )
+                self.add_value_list(
+                    'sector_xml',
+                    SectorReference(
+                        sector=activity_sector
+                    ).to_string()
                 )
 
                 self.add_value_list(
