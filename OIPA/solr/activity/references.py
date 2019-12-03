@@ -1,6 +1,7 @@
 from api.activity.serializers import (
-    ActivityDateSerializer, ActivityTagSerializer, CodelistSerializer,
-    ContactInfoSerializer, CountryBudgetItemsSerializer, DescriptionSerializer,
+    ActivityDateSerializer, ActivityPolicyMarkerSerializer,
+    ActivityTagSerializer, CodelistSerializer, ContactInfoSerializer,
+    CountryBudgetItemsSerializer, DescriptionSerializer,
     OtherIdentifierSerializer, ParticipatingOrganisationSerializer,
     ReportingOrganisationSerializer, TitleSerializer
 )
@@ -21,6 +22,8 @@ from api.iati.references import \
     OtherIdentifierReference as BaseOtherIdentifierReference
 from api.iati.references import \
     ParticipatingOrgReference as BaseParticipatingOrgReference
+from api.iati.references import \
+    PolicyMarkerReference as BasePolicyMarkerReference
 from api.iati.references import \
     RecipientCountryReference as BaseRecipientCountryReference
 from api.iati.references import \
@@ -195,6 +198,17 @@ class CountryBudgetItemsReference(ConvertElementReference,
     def __init__(self, country_budget_items=None):
         data = CountryBudgetItemsSerializer(
             instance=country_budget_items
+        ).data
+
+        super().__init__(parent_element=None, data=data)
+
+
+class PolicyMarkerReference(ConvertElementReference,
+                            BasePolicyMarkerReference):
+
+    def __init__(self, policy_marker=None):
+        data = ActivityPolicyMarkerSerializer(
+            instance=policy_marker
         ).data
 
         super().__init__(parent_element=None, data=data)

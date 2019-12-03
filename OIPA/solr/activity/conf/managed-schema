@@ -311,6 +311,7 @@
     <field name="humanitarian_scope_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
 
     <field name="policy_marker" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="policy_marker_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
     <field name="policy_marker_vocabulary" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="policy_marker_vocabulary_uri" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="policy_marker_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
