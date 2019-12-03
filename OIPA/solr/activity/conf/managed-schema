@@ -243,6 +243,7 @@
     <field name="recipient_region_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
 
     <field name="location" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="location_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
     <field name="location_ref" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="location_reach_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="location_id_vocabulary" type="string" multiValued="true" indexed="true" required="false" stored="true"/>

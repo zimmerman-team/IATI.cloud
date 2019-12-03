@@ -12,9 +12,10 @@ from api.activity.serializers import (
 )
 from solr.activity.references import (
     ActivityDateReference, ActivityScopeReference, ActivityStatusReference,
-    ContactInfoReference, DescriptionReference, OtherIdentifierReference,
-    ParticipatingOrgReference, RecipientCountryReference,
-    RecipientRegionReference, ReportingOrgReference, TitleReference
+    ContactInfoReference, DescriptionReference, LocationReference,
+    OtherIdentifierReference, ParticipatingOrgReference,
+    RecipientCountryReference, RecipientRegionReference, ReportingOrgReference,
+    TitleReference
 )
 from solr.activity.serializers import (
     ActivityRecipientRegionSerializer, ActivitySectorSerializer,
@@ -496,6 +497,7 @@ class ActivityIndexing(BaseIndexing):
         locations_all = self.record.location_set.all()
         if locations_all:
             self.add_field('location', [])
+            self.add_field('location_xml', [])
 
             self.add_field('location_ref', [])
             self.add_field('location_reach_code', [])
@@ -528,6 +530,12 @@ class ActivityIndexing(BaseIndexing):
                     JSONRenderer().render(
                         LocationSerializer(location).data
                     ).decode()
+                )
+                self.add_value_list(
+                    'location_xml',
+                    LocationReference(
+                        location=location
+                    ).to_string()
                 )
 
                 self.add_value_list('location_ref', location.ref)
