@@ -117,7 +117,6 @@ class DocumentLinkCategorySerializer(ModelSerializerNoValidation):
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
             return None
-            pass
         return namespace_serializer.data
 
     class Meta:
@@ -180,7 +179,6 @@ class DocumentLinkLanguageSerializer(ModelSerializerNoValidation):
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
             return None
-            pass
         return namespace_serializer.data
 
     document_link = serializers.CharField(write_only=True)
@@ -261,7 +259,6 @@ class DocumentLinkSerializer(ModelSerializerNoValidation):
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
             return None
-            pass
         return namespace_serializer.data
 
     class Meta:
@@ -368,7 +365,6 @@ class BudgetSerializer(ModelSerializerNoValidation):
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
             return None
-            pass
         return namespace_serializer.data
 
     class Meta:
@@ -504,7 +500,6 @@ class PlannedDisbursementSerializer(ModelSerializerNoValidation):
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
             return None
-            pass
         return namespace_serializer.data
 
     class Meta:
@@ -634,7 +629,6 @@ class ActivityDateSerializer(ModelSerializerNoValidation):
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
             return None
-            pass
         return namespace_serializer.data
 
     def validate(self, data):
@@ -844,7 +838,6 @@ class ReportingOrganisationDataSerializer(DynamicFieldsModelSerializer):  # NOQA
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
             return None
-            pass
         return namespace_serializer.data
 
     class Meta:
@@ -884,7 +877,6 @@ class ParticipatingOrganisationSerializer(ModelSerializerNoValidation):
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
             return None
-            pass
         return namespace_serializer.data
 
     def validate(self, data):
@@ -969,7 +961,6 @@ class OtherIdentifierSerializer(ModelSerializerNoValidation):
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
             return None
-            pass
         return namespace_serializer.data
 
     class Meta:
@@ -1043,7 +1034,6 @@ class ActivityPolicyMarkerSerializer(ModelSerializerNoValidation):
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
             return None
-            pass
         return namespace_serializer.data
 
     def validate(self, data):
@@ -1117,7 +1107,6 @@ class TitleSerializer(ModelSerializerNoValidation):
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
             return None
-            pass
         return namespace_serializer.data
 
     class Meta:
@@ -1140,7 +1129,6 @@ class DescriptionSerializer(ModelSerializerNoValidation):
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
             return None
-            pass
         return namespace_serializer.data
 
     def validate(self, data):
@@ -1215,7 +1203,6 @@ class RelatedActivitySerializer(ModelSerializerNoValidation):
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
             return None
-            pass
         return namespace_serializer.data
 
     class Meta:
@@ -1277,7 +1264,6 @@ class LegacyDataSerializer(ModelSerializerNoValidation):
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
             return None
-            pass
         return namespace_serializer.data
 
     class Meta:
@@ -1348,7 +1334,6 @@ class ActivitySectorSerializer(ModelSerializerNoValidation):
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
             return None
-            pass
         return namespace_serializer.data
 
     class Meta:
@@ -1490,7 +1475,6 @@ class CountryBudgetItemsSerializer(ModelSerializerNoValidation):
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
             return None
-            pass
         return namespace_serializer.data
 
     class Meta:
@@ -1561,7 +1545,6 @@ class ConditionSerializer(ModelSerializerNoValidation):
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
             return None
-            pass
         return namespace_serializer.data
 
     class Meta:
@@ -1633,7 +1616,6 @@ class ConditionsSerializer(ModelSerializerNoValidation):
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
             return None
-            pass
         return namespace_serializer.data
 
     class Meta:
@@ -1710,7 +1692,6 @@ class ActivityRecipientRegionSerializer(DynamicFieldsModelSerializer):
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
             return None
-            pass
         return namespace_serializer.data
 
     class Meta:
@@ -1782,7 +1763,6 @@ class HumanitarianScopeSerializer(DynamicFieldsModelSerializer):
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
             return None
-            pass
         return namespace_serializer.data
 
     class Meta:
@@ -1855,7 +1835,6 @@ class RecipientCountrySerializer(DynamicFieldsModelSerializer):
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
             return None
-            pass
         return namespace_serializer.data
 
     def validate(self, data):
@@ -1959,7 +1938,6 @@ class ResultIndicatorPeriodActualLocationSerializer(ModelSerializerNoValidation)
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
             return None
-            pass
         return namespace_serializer.data
 
     class Meta:
@@ -2004,7 +1982,6 @@ class ResultIndicatorPeriodTargetLocationSerializer(ModelSerializerNoValidation)
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
             return None
-            pass
         return namespace_serializer.data
 
     class Meta:
@@ -2086,7 +2063,6 @@ class ResultIndicatorPeriodActualDimensionSerializer(ModelSerializerNoValidation
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
             return None
-            pass
         return namespace_serializer.data
 
     class Meta:
@@ -2151,7 +2127,6 @@ class ResultIndicatorPeriodTargetDimensionSerializer(ModelSerializerNoValidation
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
             return None
-            pass
         return namespace_serializer.data
 
     class Meta:
@@ -2237,7 +2212,6 @@ class ResultIndicatorPeriodTargetSerializer(SerializerNoValidation):
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
             return None
-            pass
         return namespace_serializer.data
 
 
@@ -2272,7 +2246,6 @@ class ResultIndicatorPeriodActualSerializer(SerializerNoValidation):
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
             return None
-            pass
         return namespace_serializer.data
 
 
@@ -2294,7 +2267,6 @@ class ResultIndicatorPeriodSerializer(ModelSerializerNoValidation):
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
             return None
-            pass
         return namespace_serializer.data
 
     class Meta:
@@ -2391,7 +2363,6 @@ class ResultIndicatorBaselineSerializer(ModelSerializerNoValidation):
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
             return None
-            pass
         return namespace_serializer.data
 
     class Meta:
@@ -2495,7 +2466,6 @@ class ResultIndicatorSerializer(ModelSerializerNoValidation):
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
             return None
-            pass
         return namespace_serializer.data
 
     class Meta:
@@ -2596,7 +2566,6 @@ class ContactInfoSerializer(ModelSerializerNoValidation):
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
             return None
-            pass
         return namespace_serializer.data
 
     def validate(self, data):
@@ -2800,7 +2769,6 @@ class ResultReferenceSerializer(ModelSerializerNoValidation):
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
             return None
-            pass
         return namespace_serializer.data
 
     class Meta:
@@ -2901,7 +2869,6 @@ class ResultSerializer(ModelSerializerNoValidation):
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
             return None
-            pass
         return namespace_serializer.data
 
     class Meta:
@@ -2994,7 +2961,6 @@ class CrsAddLoanTermsSerializer(ModelSerializerNoValidation):
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
             return None
-            pass
         return namespace_serializer.data
 
     class Meta:
@@ -3024,7 +2990,6 @@ class CrsAddLoanStatusSerializer(ModelSerializerNoValidation):
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
             return None
-            pass
         return namespace_serializer.data
 
     class Meta:
@@ -3056,7 +3021,6 @@ class CrsAddOtherFlagsSerializer(ModelSerializerNoValidation):
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
             return None
-            pass
         return namespace_serializer.data
 
     class Meta:
@@ -3120,7 +3084,6 @@ class CrsAddSerializer(ModelSerializerNoValidation):
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
             return None
-            pass
         return namespace_serializer.data
 
     class Meta:
@@ -3227,7 +3190,6 @@ class FssForecastSerializer(ModelSerializerNoValidation):
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
             return None
-            pass
         return namespace_serializer.data
 
     class Meta:
@@ -3298,7 +3260,6 @@ class FssSerializer(ModelSerializerNoValidation):
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
             return None
-            pass
         return namespace_serializer.data
 
     class Meta:
@@ -3431,7 +3392,6 @@ class LocationSerializer(DynamicFieldsModelSerializer):
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
             return None
-            pass
         return namespace_serializer.data
 
     def validate(self, data):
@@ -3568,7 +3528,6 @@ class TransactionProviderSerializer(serializers.ModelSerializer):
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
             return None
-            pass
         return namespace_serializer.data
 
     class Meta:
@@ -3603,7 +3562,6 @@ class TransactionReceiverSerializer(serializers.ModelSerializer):
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
             return None
-            pass
         return namespace_serializer.data
 
     class Meta:
@@ -3630,7 +3588,6 @@ class TransactionRecipientCountrySerializer(serializers.ModelSerializer):
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
             return None
-            pass
         return namespace_serializer.data
 
     class Meta:
@@ -3657,7 +3614,6 @@ class TransactionRecipientRegionSerializer(serializers.ModelSerializer):
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
             return None
-            pass
         return namespace_serializer.data
 
     class Meta:
@@ -3682,7 +3638,6 @@ class TransactionSectorSerializer(serializers.ModelSerializer):
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
             return None
-            pass
         return namespace_serializer.data
 
     class Meta:
@@ -3706,7 +3661,6 @@ class TransactionDescriptionSerializer(serializers.ModelSerializer):
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
             return None
-            pass
         return namespace_serializer.data
 
     class Meta:
@@ -3729,7 +3683,6 @@ class TransactionAidTypeSerializer(serializers.ModelSerializer):
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
             return None
-            pass
         return namespace_serializer.data
 
     class Meta:
@@ -3791,7 +3744,6 @@ class TransactionSerializer(serializers.ModelSerializer):
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
             return None
-            pass
         return namespace_serializer.data
 
     class Meta:
@@ -3833,7 +3785,6 @@ class ActivityTagSerializer(ModelSerializerNoValidation):
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
             return None
-            pass
         return namespace_serializer.data
 
     class Meta:
@@ -3860,7 +3811,6 @@ class ActivityDefaultAidTypeSerializer(ModelSerializerNoValidation):
             namespace_serializer = NameSpaceSerializer(name_space, many=True)
         except NameSpaceElement.DoesNotExist:
             return None
-            pass
         return namespace_serializer.data
 
     class Meta:
