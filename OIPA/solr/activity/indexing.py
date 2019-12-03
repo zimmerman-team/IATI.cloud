@@ -14,8 +14,8 @@ from solr.activity.references import (
     ActivityDateReference, ActivityScopeReference, ActivityStatusReference,
     ContactInfoReference, CountryBudgetItemsReference, DescriptionReference,
     LocationReference, OtherIdentifierReference, ParticipatingOrgReference,
-    RecipientCountryReference, RecipientRegionReference, ReportingOrgReference,
-    SectorReference, TagReference, TitleReference
+    PolicyMarkerReference, RecipientCountryReference, RecipientRegionReference,
+    ReportingOrgReference, SectorReference, TagReference, TitleReference
 )
 from solr.activity.serializers import (
     ActivityRecipientRegionSerializer, ActivitySectorSerializer,
@@ -808,6 +808,8 @@ class ActivityIndexing(BaseIndexing):
         policy_marker_all = self.record.activitypolicymarker_set.all()
         if policy_marker_all:
             self.add_field('policy_marker', [])
+            self.add_field('policy_marker_xml', [])
+
             self.add_field('policy_marker_vocabulary', [])
             self.add_field('policy_marker_vocabulary_uri', [])
             self.add_field('policy_marker_code', [])
@@ -823,6 +825,12 @@ class ActivityIndexing(BaseIndexing):
                     JSONRenderer().render(
                         ActivityPolicyMarkerSerializer(policy_marker).data
                     ).decode()
+                )
+                self.add_value_list(
+                    'policy_marker_xml',
+                    PolicyMarkerReference(
+                        policy_marker=policy_marker
+                    ).to_string()
                 )
 
                 self.add_value_list(
