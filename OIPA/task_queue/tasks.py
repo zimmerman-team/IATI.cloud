@@ -605,6 +605,7 @@ def synchronize_solr_indexing():
     ):
         queue.enqueue(add_dataset_note_to_solr, args=(dataset_note_id,))"""
 
+
 @job
 def delete_transaction_in_solr(transaction_doc_id):
     solr_transaction.delete(q='id:{id}'.format(id=transaction_doc_id))
