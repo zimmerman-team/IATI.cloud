@@ -112,7 +112,7 @@ class ActivityIndexing(BaseIndexing):
                     description,
                     'description_narrative',
                     'description_narrative_text',
-                    'title_narrative_lang'
+                    'description_lang'
                 )
 
     def participating_org(self):
