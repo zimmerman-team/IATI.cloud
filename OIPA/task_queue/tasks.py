@@ -22,10 +22,12 @@ from iati.activity_aggregation_calculation import (
 )
 from iati.models import Activity, Budget, Document, DocumentLink, Result
 from iati.transaction.models import Transaction
-from iati_synchroniser.models import Dataset
+from iati_synchroniser.models import Dataset, DatasetNote
 from solr.activity.tasks import ActivityTaskIndexing
 from solr.activity.tasks import solr as solr_activity
 from solr.budget.tasks import solr as solr_budget
+from solr.datasetnote.tasks import DatasetNoteTaskIndexing
+from solr.datasetnote.tasks import solr as solr_dataset_note
 from solr.result.tasks import solr as solr_result
 from solr.transaction.tasks import solr as solr_transaction
 
@@ -580,6 +582,28 @@ def synchronize_solr_indexing():
     ):
         queue.enqueue(add_activity_to_solr, args=(activity_id,))
 
+    # Dataset Note
+    """list_dataset_note_id = list(
+        DatasetNote.objects.all().values_list('id', flat=True)
+    )
+    dataset_note_hits = solr_dataset_note.search(q='*:*', fl='id').hits
+    dataset_note_docs = solr_dataset_note.search(
+        q='*:*', fl='id', rows=dataset_note_hits
+    ).docs
+    list_dataset_note_doc_id = [
+        int(dataset_note_doc['id']) for dataset_note_doc in dataset_note_docs
+    ]
+
+    for doc_id in (
+            list(set(list_dataset_note_doc_id) - set(list_dataset_note_id))
+    ):
+        queue.enqueue(delete_dataset_note_in_solr, args=(doc_id,))
+
+    for dataset_note_id in (
+        list(set(list_dataset_note_id) - set(list_dataset_note_doc_id))
+    ):
+        queue.enqueue(add_dataset_note_to_solr, args=(dataset_note_id,))"""
+
 
 @job
 def delete_transaction_in_solr(transaction_doc_id):
@@ -603,7 +627,26 @@ def delete_activity_in_solr(activity_id):
 
 @job
 def add_activity_to_solr(activity_id):
-    ActivityTaskIndexing(
-        instance=Activity.objects.get(id=activity_id),
-        related=True
-    ).run()
+    try:
+        ActivityTaskIndexing(
+            instance=Activity.objects.get(id=activity_id),
+            related=True
+        ).run()
+    except Activity.DoesNotExist:
+        pass
+
+
+@job
+def delete_dataset_note_in_solr(dataset_note_id):
+    solr_dataset_note.delete(q='id:{id}'.format(id=dataset_note_id))
+
+
+@job
+def add_dataset_note_to_solr(dataset_note_id):
+    try:
+        DatasetNoteTaskIndexing(
+            instance=DatasetNote.objects.get(id=dataset_note_id),
+            related=True
+        ).run()
+    except DatasetNote.DoesNotExist:
+        pass

@@ -1,12 +1,13 @@
 from rest_framework.renderers import JSONRenderer
 
 from api.activity.serializers import (
-    ActivityDateSerializer, ActivityPolicyMarkerSerializer,
-    ActivityTagSerializer, BudgetSerializer, ConditionsSerializer,
-    ContactInfoSerializer, CountryBudgetItemsSerializer, CrsAddSerializer,
-    DescriptionSerializer, DocumentLinkSerializer, FssSerializer,
-    HumanitarianScopeSerializer, OtherIdentifierSerializer,
-    ParticipatingOrganisationSerializer, PlannedDisbursementSerializer,
+    ActivityDateSerializer, ActivityDefaultAidTypeSerializer,
+    ActivityPolicyMarkerSerializer, ActivityTagSerializer, BudgetSerializer,
+    ConditionsSerializer, ContactInfoSerializer, CountryBudgetItemsSerializer,
+    CrsAddSerializer, DescriptionSerializer, DocumentLinkSerializer,
+    FssSerializer, HumanitarianScopeSerializer, LegacyDataSerializer,
+    OtherIdentifierSerializer, ParticipatingOrganisationSerializer,
+    PlannedDisbursementSerializer, RelatedActivitySerializer,
     ReportingOrganisationSerializer, TitleSerializer
 )
 from solr.activity.serializers import (
@@ -56,7 +57,10 @@ class ActivityIndexing(BaseIndexing):
             )
             self.add_field('reporting_org_ref', reporting_org.ref)
             self.add_field('reporting_org_type_code', reporting_org.type_id)
-            self.add_field('reporting_org_type_name', reporting_org.type.name)
+            self.add_field(
+                'reporting_org_type_name',
+                get_child_attr(reporting_org, 'type.name')
+            )
             self.add_field(
                 'reporting_org_secondary_reporter',
                 bool_string(reporting_org.secondary_reporter)
@@ -108,7 +112,7 @@ class ActivityIndexing(BaseIndexing):
                     description,
                     'description_narrative',
                     'description_narrative_text',
-                    'title_narrative_lang'
+                    'description_lang'
                 )
 
     def participating_org(self):
@@ -753,6 +757,27 @@ class ActivityIndexing(BaseIndexing):
                     'policy_marker_narrative_lang'
                 )
 
+    def default_aid_type(self):
+        default_aid_type_all = self.record.default_aid_types.all()
+        if default_aid_type_all:
+            self.add_field('default_aid_type', [])
+            self.add_field('default_aid_type_code', [])
+
+            for default_aid_type in default_aid_type_all:
+                self.add_value_list(
+                    'default_aid_type',
+                    JSONRenderer().render(
+                        ActivityDefaultAidTypeSerializer(
+                            default_aid_type
+                        ).data
+                    ).decode()
+                )
+
+                self.add_value_list(
+                    'default_aid_type_code',
+                    default_aid_type.aid_type_id
+                )
+
     def budget(self):
         budget_all = self.record.budget_set.all()
         if budget_all:
@@ -1195,6 +1220,67 @@ class ActivityIndexing(BaseIndexing):
                         'document_link_language_code',
                         document_link_language.language_id
                     )
+
+    def related_activity(self):
+        related_activity_all = self.record.relatedactivity_set.all()
+        if related_activity_all:
+            self.add_field('related_activity', [])
+            self.add_field('related_activity_ref', [])
+            self.add_field('related_activity_type', [])
+
+            for relate_activity in related_activity_all:
+                self.add_value_list(
+                    'related_activity',
+                    JSONRenderer().render(
+                        RelatedActivitySerializer(
+                            instance=relate_activity,
+                            fields=[
+                                'ref',
+                                'type'
+                            ]
+                        ).data
+                    ).decode()
+                )
+
+                self.add_value_list(
+                    'related_activity_ref',
+                    relate_activity.ref
+                )
+                self.add_value_list(
+                    'related_activity_type',
+                    relate_activity.type_id
+                )
+
+    def legacy_data(self):
+        legacy_data_all = self.record.legacydata_set.all()
+        if legacy_data_all:
+            self.add_field('legacy_data', [])
+            self.add_field('legacy_data_name', [])
+            self.add_field('legacy_data_value', [])
+            self.add_field('legacy_data_iati_equivalent', [])
+
+            for legacy_data in legacy_data_all:
+                self.add_value_list(
+                    'legacy_data',
+                    JSONRenderer().render(
+                        LegacyDataSerializer(
+                            instance=legacy_data
+                        ).data
+                    ).decode()
+                )
+
+                self.add_value_list(
+                    'legacy_data_name',
+                    legacy_data.name
+                )
+                self.add_value_list(
+                    'legacy_data_value',
+                    legacy_data.value
+                )
+                self.add_value_list(
+                    'legacy_data_iati_equivalent',
+                    legacy_data.iati_equivalent
+                )
 
     def conditions(self):
         activity_condition = get_child_attr(self.record, 'conditions')
@@ -2002,7 +2088,7 @@ class ActivityIndexing(BaseIndexing):
         self.add_field('iati_identifier', activity.iati_identifier)
         self.add_field(
             'last_updated_datetime',
-            value_string(activity.last_updated_datetime)
+            date_string(activity.last_updated_datetime)
         )
         self.add_field('default_lang', activity.default_lang_id)
         self.add_field('default_currency', activity.default_currency_id)
@@ -2045,10 +2131,13 @@ class ActivityIndexing(BaseIndexing):
         self.country_budget_items()
         self.humanitarian_scope()
         self.policy_marker()
+        self.default_aid_type()
         self.budget()
         self.planned_disbursement()
         self.transaction()
         self.document_link()
+        self.related_activity()
+        self.legacy_data()
         self.conditions()
         self.result()
         self.crs_add()
