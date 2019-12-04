@@ -141,7 +141,8 @@ class TransactionRecipientCountrySerializer(DynamicFieldsModelSerializer):
     country = CountrySerializer(fields=('url', 'code', 'name'))
     name_space = serializers.SerializerMethodField(required=False)
 
-    def get_name_space(self, obj):
+    @classmethod
+    def get_name_space(cls, obj):
         try:
             name_space = iati_models.NameSpaceElement.objects.filter(
                 parent_element_id=obj.pk).filter(

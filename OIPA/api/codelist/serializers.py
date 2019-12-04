@@ -60,7 +60,8 @@ class NarrativeContainerSerializer(SerializerNoValidation):
     narratives = NarrativeSerializer(many=True)
     name_space = serializers.SerializerMethodField(required=False)
 
-    def get_name_space(self, obj):
+    @classmethod
+    def get_name_space(cls, obj):
         try:
             name_space = NameSpaceElement.objects.filter(
                 parent_element_id=obj.pk).filter(
