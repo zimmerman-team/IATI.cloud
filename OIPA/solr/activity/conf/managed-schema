@@ -322,6 +322,7 @@
     <field name="policy_marker_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="policy_marker_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
 
+    <field name="collaboration_type_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
     <field name="collaboration_type_code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="default_flow_type_code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="default_finance_type_code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
