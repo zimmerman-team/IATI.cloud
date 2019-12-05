@@ -762,6 +762,7 @@ class ActivityIndexing(BaseIndexing):
         if default_aid_type_all:
             self.add_field('default_aid_type', [])
             self.add_field('default_aid_type_code', [])
+            self.add_field('default_aid_type_vocabulary', [])
 
             for default_aid_type in default_aid_type_all:
                 self.add_value_list(
@@ -776,6 +777,13 @@ class ActivityIndexing(BaseIndexing):
                 self.add_value_list(
                     'default_aid_type_code',
                     default_aid_type.aid_type_id
+                )
+                self.add_value_list(
+                    'default_aid_type_vocabulary',
+                    get_child_attr(
+                        default_aid_type,
+                        'aid_type.vocabulary.code'
+                    )
                 )
 
     def budget(self):
