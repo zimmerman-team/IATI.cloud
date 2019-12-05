@@ -1,7 +1,7 @@
 from api.activity.serializers import (
-    ActivityDateSerializer, ActivityPolicyMarkerSerializer,
-    ActivityTagSerializer, CodelistSerializer, ContactInfoSerializer,
-    CountryBudgetItemsSerializer, DescriptionSerializer,
+    ActivityDateSerializer, ActivityDefaultAidTypeSerializer,
+    ActivityPolicyMarkerSerializer, ActivityTagSerializer, CodelistSerializer,
+    ContactInfoSerializer, CountryBudgetItemsSerializer, DescriptionSerializer,
     HumanitarianScopeSerializer, OtherIdentifierSerializer,
     ParticipatingOrganisationSerializer, ReportingOrganisationSerializer,
     TitleSerializer
@@ -18,6 +18,8 @@ from api.iati.references import \
     ContactInfoReference as BaseContactInfoReference
 from api.iati.references import \
     CountryBudgetItemsReference as BaseCountryBudgetItemsReference
+from api.iati.references import \
+    DefaultAidTypeReference as BaseDefaultAidTypeReference
 from api.iati.references import \
     DescriptionReference as BaseDescriptionReference
 from api.iati.references import \
@@ -236,6 +238,17 @@ class CollaborationTypeReference(ConvertElementReference,
     def __init__(self, collaboration_type=None):
         data = CodelistSerializer(
             instance=collaboration_type
+        ).data
+
+        super().__init__(parent_element=None, data=data)
+
+
+class DefaultAidTypeReference(ConvertElementReference,
+                              BaseDefaultAidTypeReference):
+
+    def __init__(self, default_aid_type=None):
+        data = ActivityDefaultAidTypeSerializer(
+            instance=default_aid_type
         ).data
 
         super().__init__(parent_element=None, data=data)
