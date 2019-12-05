@@ -13,7 +13,7 @@ from api.activity.serializers import (
 from solr.activity.references import (
     ActivityDateReference, ActivityScopeReference, ActivityStatusReference,
     CollaborationTypeReference, ContactInfoReference,
-    CountryBudgetItemsReference, DescriptionReference,
+    CountryBudgetItemsReference, DefaultAidTypeReference, DescriptionReference,
     HumanitarianScopeReference, LocationReference, OtherIdentifierReference,
     ParticipatingOrgReference, PolicyMarkerReference,
     RecipientCountryReference, RecipientRegionReference, ReportingOrgReference,
@@ -870,6 +870,7 @@ class ActivityIndexing(BaseIndexing):
         default_aid_type_all = self.record.default_aid_types.all()
         if default_aid_type_all:
             self.add_field('default_aid_type', [])
+            self.add_field('default_aid_type_xml', [])
             self.add_field('default_aid_type_code', [])
 
             for default_aid_type in default_aid_type_all:
@@ -880,6 +881,12 @@ class ActivityIndexing(BaseIndexing):
                             default_aid_type
                         ).data
                     ).decode()
+                )
+                self.add_value_list(
+                    'default_aid_type_xml',
+                    DefaultAidTypeReference(
+                        default_aid_type=default_aid_type
+                    ).to_string()
                 )
 
                 self.add_value_list(
