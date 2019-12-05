@@ -12,7 +12,8 @@ from api.activity.serializers import (
 )
 from solr.activity.references import (
     ActivityDateReference, ActivityScopeReference, ActivityStatusReference,
-    ContactInfoReference, CountryBudgetItemsReference, DescriptionReference,
+    CollaborationTypeReference, ContactInfoReference,
+    CountryBudgetItemsReference, DescriptionReference,
     HumanitarianScopeReference, LocationReference, OtherIdentifierReference,
     ParticipatingOrgReference, PolicyMarkerReference,
     RecipientCountryReference, RecipientRegionReference, ReportingOrgReference,
@@ -2232,10 +2233,19 @@ class ActivityIndexing(BaseIndexing):
             ).to_string()
         )
         self.add_field('activity_scope_code', activity.scope_id)
+
         self.add_field(
             'collaboration_type_code',
             activity.collaboration_type_id
         )
+        if activity.collaboration_type:
+            self.add_field(
+                'collaboration_type_xml',
+                CollaborationTypeReference(
+                    collaboration_type=activity.collaboration_type
+                ).to_string()
+            )
+
         self.add_field('default_flow_type_code', activity.default_flow_type_id)
         self.add_field(
             'default_finance_type_code',

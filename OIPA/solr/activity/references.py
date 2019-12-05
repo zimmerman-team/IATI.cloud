@@ -13,6 +13,8 @@ from api.iati.references import \
 from api.iati.references import \
     ActivityStatusReference as BaseActivityStatusReference
 from api.iati.references import \
+    CollaborationTypeReference as BaseCollaborationTypeReference
+from api.iati.references import \
     ContactInfoReference as BaseContactInfoReference
 from api.iati.references import \
     CountryBudgetItemsReference as BaseCountryBudgetItemsReference
@@ -223,6 +225,17 @@ class HumanitarianScopeReference(ConvertElementReference,
     def __init__(self, humanitarian_scope=None):
         data = HumanitarianScopeSerializer(
             instance=humanitarian_scope
+        ).data
+
+        super().__init__(parent_element=None, data=data)
+
+
+class CollaborationTypeReference(ConvertElementReference,
+                                 BaseCollaborationTypeReference):
+
+    def __init__(self, collaboration_type=None):
+        data = CodelistSerializer(
+            instance=collaboration_type
         ).data
 
         super().__init__(parent_element=None, data=data)
