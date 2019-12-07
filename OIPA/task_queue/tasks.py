@@ -622,7 +622,7 @@ def add_activity_to_solr(activity_id):
     try:
         ActivityTaskIndexing(
             instance=Activity.objects.get(id=activity_id),
-            related=True
+            related=False
         ).run()
     except Activity.DoesNotExist:
         pass
