@@ -513,7 +513,7 @@ def update_activity_count():
 
 @job
 def synchronize_solr_indexing():
-    """queue = django_rq.get_queue('solr')
+    queue = django_rq.get_queue('solr')
     # Budget
     list_budget_id = list(
         Budget.objects.all().values_list('id', flat=True)
@@ -525,8 +525,8 @@ def synchronize_solr_indexing():
     list_budget_doc_id = [
         int(budget_doc['id']) for budget_doc in budget_docs
     ]
-    for ids in divide_delete_ids(list_budget_id, list_budget_doc_id):
-        delete_multiple_rows_budget_in_solr(ids)
+    """for ids in divide_delete_ids(list_budget_id, list_budget_doc_id):
+        delete_multiple_rows_budget_in_solr(ids)"""
 
     # Result
     list_result_id = list(
@@ -539,8 +539,8 @@ def synchronize_solr_indexing():
     list_result_doc_id = [
         int(result_doc['id']) for result_doc in result_docs
     ]
-    for ids in divide_delete_ids(list_result_id, list_result_doc_id):
-        delete_multiple_rows_result_in_solr(ids)
+    """for ids in divide_delete_ids(list_result_id, list_result_doc_id):
+        delete_multiple_rows_result_in_solr(ids)"""
 
     # Transaction
     list_transaction_id = list(
@@ -553,8 +553,8 @@ def synchronize_solr_indexing():
     list_transaction_doc_id = [
         int(transaction_doc['id']) for transaction_doc in transaction_docs
     ]
-    for ids in divide_delete_ids(list_transaction_id, list_transaction_doc_id):
-        delete_multiple_rows_transaction_in_solr(ids)
+    """for ids in divide_delete_ids(list_transaction_id, list_transaction_doc_id):
+        delete_multiple_rows_transaction_in_solr(ids)"""
 
     # Activity
     list_activity_id = list(
@@ -567,15 +567,15 @@ def synchronize_solr_indexing():
     list_activity_doc_id = [
         int(activity_doc['id']) for activity_doc in activity_docs
     ]
-    for ids in divide_delete_ids(list_activity_id, list_activity_doc_id):
-        delete_multiple_rows_activiy_in_solr(ids)
+    """for ids in divide_delete_ids(list_activity_id, list_activity_doc_id):
+        delete_multiple_rows_activiy_in_solr(ids)"""
 
     for activity_id in (
         list(set(list_activity_id) - set(list_activity_doc_id))
     ):
         queue.enqueue(add_activity_to_solr, args=(activity_id,))
 
-    # Dataset Note
+    """# Dataset Note
     list_dataset_note_id = list(
         DatasetNote.objects.all().values_list('id', flat=True)
     )
@@ -596,10 +596,6 @@ def synchronize_solr_indexing():
         list(set(list_dataset_note_id) - set(list_dataset_note_doc_id))
     ):
         queue.enqueue(add_dataset_note_to_solr, args=(dataset_note_id,))"""
-
-    queue = django_rq.get_queue('solr')
-    for activity in Activity.objects.filter(default_aid_types__isnull=False):
-        queue.enqueue(add_activity_to_solr, args=(activity.id,))
 
 
 def divide_delete_ids(list_ids, list_solr_ids, start=0, end=1000, inc=1000):
@@ -622,7 +618,7 @@ def add_activity_to_solr(activity_id):
     try:
         ActivityTaskIndexing(
             instance=Activity.objects.get(id=activity_id),
-            related=False
+            related=True
         ).run()
     except Activity.DoesNotExist:
         pass
