@@ -15,7 +15,7 @@ from solr.activity.references import (
     CapitalSpendReference, CollaborationTypeReference, ContactInfoReference,
     CountryBudgetItemsReference, DefaultAidTypeReference,
     DefaultFinanceTypeReference, DefaultFlowTypeReference,
-    DefaultTiedStatusReference, DescriptionReference,
+    DefaultTiedStatusReference, DescriptionReference, DocumentLinkReference,
     HumanitarianScopeReference, LocationReference, OtherIdentifierReference,
     ParticipatingOrgReference, PlannedDisbursementReference,
     PolicyMarkerReference, RecipientCountryReference, RecipientRegionReference,
@@ -1287,6 +1287,7 @@ class ActivityIndexing(BaseIndexing):
         )
         if document_link_all:
             self.add_field('document_link', [])
+            self.add_field('document_link_xml', [])
             self.add_field('document_link_format', [])
             self.add_field('document_link_url', [])
             self.add_field('document_link_title_narrative', [])
@@ -1316,6 +1317,12 @@ class ActivityIndexing(BaseIndexing):
                             ]
                         ).data
                     ).decode()
+                )
+                self.add_value_list(
+                    'document_link_xml',
+                    DocumentLinkReference(
+                        document_link=document_link
+                    ).to_string()
                 )
 
                 self.add_value_list(
