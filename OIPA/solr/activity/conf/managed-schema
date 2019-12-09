@@ -352,6 +352,7 @@
     <field name="budget_value" type="pdoubles" multiValued="true" indexed="true" required="false" stored="true"/>
 
     <field name="planned_disbursement" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="planned_disbursement_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
     <field name="planned_disbursement_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="planned_disbursement_period_start_iso_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="planned_disbursement_period_end_iso_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
