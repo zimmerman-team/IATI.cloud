@@ -96,6 +96,9 @@
       <xsl:for-each select="arr[@name='default_flow_type_xml']">
         <xsl:value-of disable-output-escaping="yes" select="."/>
       </xsl:for-each>
+      <xsl:for-each select="arr[@name='default_finance_type_xml']">
+        <xsl:value-of disable-output-escaping="yes" select="."/>
+      </xsl:for-each>
       <xsl:for-each select="arr[@name='default_aid_type_xml']">
         <xsl:value-of disable-output-escaping="yes" select="."/>
       </xsl:for-each>
