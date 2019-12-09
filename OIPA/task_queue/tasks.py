@@ -575,7 +575,7 @@ def synchronize_solr_indexing():
     ):
         queue.enqueue(add_activity_to_solr, args=(activity_id,))
 
-    # Dataset Note
+    """# Dataset Note
     list_dataset_note_id = list(
         DatasetNote.objects.all().values_list('id', flat=True)
     )
@@ -595,7 +595,7 @@ def synchronize_solr_indexing():
     for dataset_note_id in (
         list(set(list_dataset_note_id) - set(list_dataset_note_doc_id))
     ):
-        queue.enqueue(add_dataset_note_to_solr, args=(dataset_note_id,))
+        queue.enqueue(add_dataset_note_to_solr, args=(dataset_note_id,))"""
 
 
 def divide_delete_ids(list_ids, list_solr_ids, start=0, end=1000, inc=1000):
