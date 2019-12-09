@@ -21,6 +21,8 @@ from api.iati.references import \
 from api.iati.references import \
     DefaultAidTypeReference as BaseDefaultAidTypeReference
 from api.iati.references import \
+    DefaultFlowTypeReference as BaseDefaultFlowTypeReference
+from api.iati.references import \
     DescriptionReference as BaseDescriptionReference
 from api.iati.references import \
     HumanitarianScopeReference as BaseHumanitarianScopeReference
@@ -238,6 +240,17 @@ class CollaborationTypeReference(ConvertElementReference,
     def __init__(self, collaboration_type=None):
         data = CodelistSerializer(
             instance=collaboration_type
+        ).data
+
+        super().__init__(parent_element=None, data=data)
+
+
+class DefaultFlowTypeReference(ConvertElementReference,
+                               BaseDefaultFlowTypeReference):
+
+    def __init__(self, default_flow_type=None):
+        data = CodelistSerializer(
+            instance=default_flow_type
         ).data
 
         super().__init__(parent_element=None, data=data)
