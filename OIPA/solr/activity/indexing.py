@@ -13,11 +13,11 @@ from api.activity.serializers import (
 from solr.activity.references import (
     ActivityDateReference, ActivityScopeReference, ActivityStatusReference,
     CollaborationTypeReference, ContactInfoReference,
-    CountryBudgetItemsReference, DefaultAidTypeReference, DescriptionReference,
-    HumanitarianScopeReference, LocationReference, OtherIdentifierReference,
-    ParticipatingOrgReference, PolicyMarkerReference,
-    RecipientCountryReference, RecipientRegionReference, ReportingOrgReference,
-    SectorReference, TagReference, TitleReference
+    CountryBudgetItemsReference, DefaultAidTypeReference,
+    DefaultFlowTypeReference, DescriptionReference, HumanitarianScopeReference,
+    LocationReference, OtherIdentifierReference, ParticipatingOrgReference,
+    PolicyMarkerReference, RecipientCountryReference, RecipientRegionReference,
+    ReportingOrgReference, SectorReference, TagReference, TitleReference
 )
 from solr.activity.serializers import (
     ActivityRecipientRegionSerializer, ActivitySectorSerializer,
@@ -2254,6 +2254,13 @@ class ActivityIndexing(BaseIndexing):
             )
 
         self.add_field('default_flow_type_code', activity.default_flow_type_id)
+        if activity.default_flow_type_id:
+            self.add_field(
+                'default_flow_type_xml',
+                DefaultFlowTypeReference(
+                    default_flow_type=activity.default_flow_type
+                ).to_string()
+            )
         self.add_field(
             'default_finance_type_code',
             activity.default_finance_type_id
