@@ -2,9 +2,10 @@ from api.activity.serializers import (
     ActivityDateSerializer, ActivityDefaultAidTypeSerializer,
     ActivityPolicyMarkerSerializer, ActivityTagSerializer, CodelistSerializer,
     ContactInfoSerializer, CountryBudgetItemsSerializer, DescriptionSerializer,
-    HumanitarianScopeSerializer, OtherIdentifierSerializer,
-    ParticipatingOrganisationSerializer, PlannedDisbursementSerializer,
-    ReportingOrganisationSerializer, TitleSerializer
+    DocumentLinkSerializer, HumanitarianScopeSerializer,
+    OtherIdentifierSerializer, ParticipatingOrganisationSerializer,
+    PlannedDisbursementSerializer, ReportingOrganisationSerializer,
+    TitleSerializer
 )
 from api.iati.references import \
     ActivityDateReference as BaseActivityDateReference
@@ -30,6 +31,8 @@ from api.iati.references import \
     DefaultTiedStatusReference as BaseDefaultTiedStatusReference
 from api.iati.references import \
     DescriptionReference as BaseDescriptionReference
+from api.iati.references import \
+    DocumentLinkReference as BaseDocumentLinkReference
 from api.iati.references import \
     HumanitarianScopeReference as BaseHumanitarianScopeReference
 from api.iati.references import LocationReference as BaseLocationReference
@@ -313,5 +316,25 @@ class CapitalSpendReference(ConvertElementReference,
 
     def __init__(self, capital_spend=None):
         data = capital_spend
+
+        super().__init__(parent_element=None, data=data)
+
+
+class DocumentLinkReference(ConvertElementReference,
+                            BaseDocumentLinkReference):
+
+    def __init__(self, document_link=None):
+        data = DocumentLinkSerializer(
+            instance=document_link,
+            fields=[
+                'format',
+                'url',
+                'categories',
+                'languages',
+                'title',
+                'document_date',
+                'description'
+            ]
+        ).data
 
         super().__init__(parent_element=None, data=data)
