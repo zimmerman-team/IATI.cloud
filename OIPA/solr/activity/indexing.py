@@ -19,7 +19,8 @@ from solr.activity.references import (
     HumanitarianScopeReference, LocationReference, OtherIdentifierReference,
     ParticipatingOrgReference, PlannedDisbursementReference,
     PolicyMarkerReference, RecipientCountryReference, RecipientRegionReference,
-    ReportingOrgReference, SectorReference, TagReference, TitleReference
+    RelatedActivityReference, ReportingOrgReference, SectorReference,
+    TagReference, TitleReference
 )
 from solr.activity.serializers import (
     ActivityRecipientRegionSerializer, ActivitySectorSerializer,
@@ -1367,15 +1368,16 @@ class ActivityIndexing(BaseIndexing):
         related_activity_all = self.record.relatedactivity_set.all()
         if related_activity_all:
             self.add_field('related_activity', [])
+            self.add_field('related_activity_xml', [])
             self.add_field('related_activity_ref', [])
             self.add_field('related_activity_type', [])
 
-            for relate_activity in related_activity_all:
+            for related_activity in related_activity_all:
                 self.add_value_list(
                     'related_activity',
                     JSONRenderer().render(
                         RelatedActivitySerializer(
-                            instance=relate_activity,
+                            instance=related_activity,
                             fields=[
                                 'ref',
                                 'type'
@@ -1383,14 +1385,20 @@ class ActivityIndexing(BaseIndexing):
                         ).data
                     ).decode()
                 )
+                self.add_value_list(
+                    'related_activity_xml',
+                    RelatedActivityReference(
+                        related_activity=related_activity
+                    ).to_string()
+                )
 
                 self.add_value_list(
                     'related_activity_ref',
-                    relate_activity.ref
+                    related_activity.ref
                 )
                 self.add_value_list(
                     'related_activity_type',
-                    relate_activity.type_id
+                    related_activity.type_id
                 )
 
     def legacy_data(self):

@@ -4,8 +4,8 @@ from api.activity.serializers import (
     ContactInfoSerializer, CountryBudgetItemsSerializer, DescriptionSerializer,
     DocumentLinkSerializer, HumanitarianScopeSerializer,
     OtherIdentifierSerializer, ParticipatingOrganisationSerializer,
-    PlannedDisbursementSerializer, ReportingOrganisationSerializer,
-    TitleSerializer
+    PlannedDisbursementSerializer, RelatedActivitySerializer,
+    ReportingOrganisationSerializer, TitleSerializer
 )
 from api.iati.references import \
     ActivityDateReference as BaseActivityDateReference
@@ -48,6 +48,8 @@ from api.iati.references import \
     RecipientCountryReference as BaseRecipientCountryReference
 from api.iati.references import \
     RecipientRegionReference as BaseRecipientRegionReference
+from api.iati.references import \
+    RelatedActivityReference as BaseRelatedActivityReference
 from api.iati.references import \
     ReportingOrgOrgReference as BaseReportingOrgElementReference
 from api.iati.references import SectorReference as BaseSectorReference
@@ -334,6 +336,21 @@ class DocumentLinkReference(ConvertElementReference,
                 'title',
                 'document_date',
                 'description'
+            ]
+        ).data
+
+        super().__init__(parent_element=None, data=data)
+
+
+class RelatedActivityReference(ConvertElementReference,
+                               BaseRelatedActivityReference):
+
+    def __init__(self, related_activity=None):
+        data = RelatedActivitySerializer(
+            instance=related_activity,
+            fields=[
+                'ref',
+                'type'
             ]
         ).data
 
