@@ -1,5 +1,5 @@
 import hashlib
-from io import BytesIO, StringIO
+from io import BytesIO
 
 from django import db
 from django.conf import settings
@@ -75,7 +75,7 @@ class ParseManager():
         # XXX: some files contain non utf-8 characters:
         # FIXME: this is hardcoded:
         except UnicodeDecodeError:
-            iati_file = smart_text(response.content, 'utf-16')
+            iati_file = smart_text(response.content, 'latin-1')
 
         # 2. Encode the string to use for hashing:
         hasher = hashlib.sha1()
@@ -92,8 +92,8 @@ class ParseManager():
             dataset.save()
 
         try:
-            parser = etree.XMLParser(huge_tree=True, encoding='utf-16')
-            tree = etree.parse(StringIO(iati_file), parser)
+            parser = etree.XMLParser(huge_tree=True, encoding='utf-8')
+            tree = etree.parse(BytesIO(response.content), parser)
             self.root = tree.getroot()
             self.parser = self._prepare_parser(self.root, dataset)
 
