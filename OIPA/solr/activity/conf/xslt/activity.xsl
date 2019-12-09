@@ -111,6 +111,9 @@
       <xsl:for-each select="arr[@name='planned_disbursement_xml']">
         <xsl:value-of disable-output-escaping="yes" select="."/>
       </xsl:for-each>
+      <xsl:for-each select="arr[@name='capital_spend_xml']">
+        <xsl:value-of disable-output-escaping="yes" select="."/>
+      </xsl:for-each>
       <xsl:for-each select="arr[@name='transaction_xml']">
         <xsl:value-of disable-output-escaping="yes" select="."/>
       </xsl:for-each>
