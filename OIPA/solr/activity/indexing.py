@@ -12,7 +12,7 @@ from api.activity.serializers import (
 )
 from solr.activity.references import (
     ActivityDateReference, ActivityScopeReference, ActivityStatusReference,
-    CollaborationTypeReference, ContactInfoReference,
+    CapitalSpendReference, CollaborationTypeReference, ContactInfoReference,
     CountryBudgetItemsReference, DefaultAidTypeReference,
     DefaultFinanceTypeReference, DefaultFlowTypeReference,
     DefaultTiedStatusReference, DescriptionReference,
@@ -2299,6 +2299,13 @@ class ActivityIndexing(BaseIndexing):
             'capital_spend_percentage',
             decimal_string(activity.capital_spend)
         )
+        if activity.capital_spend:
+            self.add_field(
+                'capital_spend_xml',
+                CapitalSpendReference(
+                    capital_spend=activity.capital_spend
+                ).to_string()
+            )
 
         self.dataset()
         self.reporting_org()
