@@ -25,6 +25,8 @@ from api.iati.references import \
 from api.iati.references import \
     DefaultFlowTypeReference as BaseDefaultFlowTypeReference
 from api.iati.references import \
+    DefaultTiedStatusReference as BaseDefaultTiedStatusReference
+from api.iati.references import \
     DescriptionReference as BaseDescriptionReference
 from api.iati.references import \
     HumanitarianScopeReference as BaseHumanitarianScopeReference
@@ -275,6 +277,17 @@ class DefaultAidTypeReference(ConvertElementReference,
     def __init__(self, default_aid_type=None):
         data = ActivityDefaultAidTypeSerializer(
             instance=default_aid_type
+        ).data
+
+        super().__init__(parent_element=None, data=data)
+
+
+class DefaultTiedStatusReference(ConvertElementReference,
+                                 BaseDefaultTiedStatusReference):
+
+    def __init__(self, default_tied_status=None):
+        data = CodelistSerializer(
+            instance=default_tied_status
         ).data
 
         super().__init__(parent_element=None, data=data)

@@ -15,8 +15,9 @@ from solr.activity.references import (
     CollaborationTypeReference, ContactInfoReference,
     CountryBudgetItemsReference, DefaultAidTypeReference,
     DefaultFinanceTypeReference, DefaultFlowTypeReference,
-    DescriptionReference, HumanitarianScopeReference, LocationReference,
-    OtherIdentifierReference, ParticipatingOrgReference, PolicyMarkerReference,
+    DefaultTiedStatusReference, DescriptionReference,
+    HumanitarianScopeReference, LocationReference, OtherIdentifierReference,
+    ParticipatingOrgReference, PolicyMarkerReference,
     RecipientCountryReference, RecipientRegionReference, ReportingOrgReference,
     SectorReference, TagReference, TitleReference
 )
@@ -2279,6 +2280,14 @@ class ActivityIndexing(BaseIndexing):
             'default_tied_status_code',
             activity.default_tied_status_id
         )
+        if activity.default_tied_status_id:
+            self.add_field(
+                'default_tied_status_xml',
+                DefaultTiedStatusReference(
+                    default_tied_status=activity.default_tied_status
+                ).to_string()
+            )
+
         self.add_field(
             'capital_spend_percentage',
             decimal_string(activity.capital_spend)
