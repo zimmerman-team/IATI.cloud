@@ -17,9 +17,9 @@ from solr.activity.references import (
     DefaultFinanceTypeReference, DefaultFlowTypeReference,
     DefaultTiedStatusReference, DescriptionReference,
     HumanitarianScopeReference, LocationReference, OtherIdentifierReference,
-    ParticipatingOrgReference, PolicyMarkerReference,
-    RecipientCountryReference, RecipientRegionReference, ReportingOrgReference,
-    SectorReference, TagReference, TitleReference
+    ParticipatingOrgReference, PlannedDisbursementReference,
+    PolicyMarkerReference, RecipientCountryReference, RecipientRegionReference,
+    ReportingOrgReference, SectorReference, TagReference, TitleReference
 )
 from solr.activity.serializers import (
     ActivityRecipientRegionSerializer, ActivitySectorSerializer,
@@ -948,6 +948,7 @@ class ActivityIndexing(BaseIndexing):
         planned_disbursement_all = self.record.planneddisbursement_set.all()
         if planned_disbursement_all:
             self.add_field('planned_disbursement', [])
+            self.add_field('planned_disbursement_xml', [])
             self.add_field('planned_disbursement_type', [])
             self.add_field('planned_disbursement_period_start_iso_date', [])
             self.add_field('planned_disbursement_period_end_iso_date', [])
@@ -993,6 +994,12 @@ class ActivityIndexing(BaseIndexing):
                             planned_disbursement
                         ).data
                     ).decode()
+                )
+                self.add_value_list(
+                    'planned_disbursement_xml',
+                    PlannedDisbursementReference(
+                        planned_disbursement=planned_disbursement
+                    ).to_string()
                 )
 
                 self.add_value_list(

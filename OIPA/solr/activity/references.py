@@ -3,8 +3,8 @@ from api.activity.serializers import (
     ActivityPolicyMarkerSerializer, ActivityTagSerializer, CodelistSerializer,
     ContactInfoSerializer, CountryBudgetItemsSerializer, DescriptionSerializer,
     HumanitarianScopeSerializer, OtherIdentifierSerializer,
-    ParticipatingOrganisationSerializer, ReportingOrganisationSerializer,
-    TitleSerializer
+    ParticipatingOrganisationSerializer, PlannedDisbursementSerializer,
+    ReportingOrganisationSerializer, TitleSerializer
 )
 from api.iati.references import \
     ActivityDateReference as BaseActivityDateReference
@@ -35,6 +35,8 @@ from api.iati.references import \
     OtherIdentifierReference as BaseOtherIdentifierReference
 from api.iati.references import \
     ParticipatingOrgReference as BaseParticipatingOrgReference
+from api.iati.references import \
+    PlannedDisbursementReference as BasePlannedDisbursementReference
 from api.iati.references import \
     PolicyMarkerReference as BasePolicyMarkerReference
 from api.iati.references import \
@@ -288,6 +290,17 @@ class DefaultTiedStatusReference(ConvertElementReference,
     def __init__(self, default_tied_status=None):
         data = CodelistSerializer(
             instance=default_tied_status
+        ).data
+
+        super().__init__(parent_element=None, data=data)
+
+
+class PlannedDisbursementReference(ConvertElementReference,
+                                   BasePlannedDisbursementReference):
+
+    def __init__(self, planned_disbursement=None):
+        data = PlannedDisbursementSerializer(
+            instance=planned_disbursement
         ).data
 
         super().__init__(parent_element=None, data=data)
