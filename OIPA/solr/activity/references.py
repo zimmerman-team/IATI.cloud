@@ -21,6 +21,8 @@ from api.iati.references import \
 from api.iati.references import \
     DefaultAidTypeReference as BaseDefaultAidTypeReference
 from api.iati.references import \
+    DefaultFinanceTypeReference as BaseDefaultFinanceTypeReference
+from api.iati.references import \
     DefaultFlowTypeReference as BaseDefaultFlowTypeReference
 from api.iati.references import \
     DescriptionReference as BaseDescriptionReference
@@ -251,6 +253,17 @@ class DefaultFlowTypeReference(ConvertElementReference,
     def __init__(self, default_flow_type=None):
         data = CodelistSerializer(
             instance=default_flow_type
+        ).data
+
+        super().__init__(parent_element=None, data=data)
+
+
+class DefaultFinanceTypeReference(ConvertElementReference,
+                                  BaseDefaultFinanceTypeReference):
+
+    def __init__(self, default_finance_type=None):
+        data = CodelistSerializer(
+            instance=default_finance_type
         ).data
 
         super().__init__(parent_element=None, data=data)
