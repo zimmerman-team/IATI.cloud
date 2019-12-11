@@ -616,6 +616,7 @@
     <field name="result_indicator_period_actual_document_link_document_date_iso_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
 
     <field name="fss" type="text_general" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="fss_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
     <field name="fss_extraction_date" type="pdate" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="fss_priority" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="fss_phaseout_year" type="pint" multiValued="false" indexed="true" required="false" stored="true"/>

@@ -21,7 +21,7 @@ from solr.activity.references import (
     PlannedDisbursementReference, PolicyMarkerReference,
     RecipientCountryReference, RecipientRegionReference,
     RelatedActivityReference, ReportingOrgReference, SectorReference,
-    TagReference, TitleReference
+    TagReference, TitleReference, FssReference
 )
 from solr.activity.serializers import (
     ActivityRecipientRegionSerializer, ActivitySectorSerializer,
@@ -2205,6 +2205,7 @@ class ActivityIndexing(BaseIndexing):
         fss_all = self.record.fss_set.all()
         if fss_all:
             self.add_field('fss', [])
+            self.add_field('fss_xml', [])
             self.add_field('fss_extraction_date', [])
             self.add_field('fss_priority', [])
             self.add_field('fss_phaseout_year', [])
@@ -2217,6 +2218,12 @@ class ActivityIndexing(BaseIndexing):
                 self.add_value_list(
                     'fss',
                     JSONRenderer().render(FssSerializer(fss).data).decode()
+                )
+                self.add_value_list(
+                    'tag_xml',
+                    FssSerializer(
+                        fss=fss
+                    ).to_string()
                 )
 
                 self.add_value_list(
