@@ -21,7 +21,7 @@ from solr.activity.references import (
     PlannedDisbursementReference, PolicyMarkerReference,
     RecipientCountryReference, RecipientRegionReference,
     RelatedActivityReference, ReportingOrgReference, SectorReference,
-    TagReference, TitleReference
+    TagReference, TitleReference, CrsAddReference
 )
 from solr.activity.serializers import (
     ActivityRecipientRegionSerializer, ActivitySectorSerializer,
@@ -2051,6 +2051,7 @@ class ActivityIndexing(BaseIndexing):
         crs_add_all = self.record.crsadd_set.all()
         if crs_add_all:
             self.add_field('crs_add', [])
+            self.add_field('crs_add_xml', [])
             self.add_field('crs_add_other_flags_code', [])
             self.add_field('crs_add_other_flags_significance', [])
             self.add_field('crs_add_loan_terms_rate_1', [])
@@ -2075,6 +2076,10 @@ class ActivityIndexing(BaseIndexing):
                     JSONRenderer().render(
                         CrsAddSerializer(crs_add).data
                     ).decode()
+                )
+                self.add_value_list(
+                    'crs_add_xml',
+                    CrsAddReference(crs_add=crs_add).to_string()
                 )
 
                 self.add_value_list(

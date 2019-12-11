@@ -6,7 +6,7 @@ from api.activity.serializers import (
     LegacyDataSerializer, OtherIdentifierSerializer,
     ParticipatingOrganisationSerializer, PlannedDisbursementSerializer,
     RelatedActivitySerializer, ReportingOrganisationSerializer,
-    TitleSerializer
+    TitleSerializer, CrsAddSerializer
 )
 from api.iati.references import \
     ActivityDateReference as BaseActivityDateReference
@@ -33,6 +33,8 @@ from api.iati.references import \
     DefaultTiedStatusReference as BaseDefaultTiedStatusReference
 from api.iati.references import \
     DescriptionReference as BaseDescriptionReference
+from api.iati.references import \
+    CrsAddReference as BaseCrsAddReference
 from api.iati.references import \
     DocumentLinkReference as BaseDocumentLinkReference
 from api.iati.references import \
@@ -376,5 +378,17 @@ class ConditionsReference(ConvertElementReference, BaseConditionsReference):
         data = ConditionsSerializer(
             instance=conditions
         ).data
+
+        super().__init__(parent_element=None, data=data)
+
+
+class CrsAddReference(ConvertElementReference, BaseCrsAddReference):
+
+    def __init__(self, crs_add=None):
+        data = CrsAddSerializer(
+            instance=crs_add
+        ).data
+
+        print(data)
 
         super().__init__(parent_element=None, data=data)
