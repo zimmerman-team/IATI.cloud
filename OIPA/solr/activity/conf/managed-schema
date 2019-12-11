@@ -448,6 +448,7 @@
     <field name="related_activity_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
 
     <field name="legacy_data" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="legacy_data_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
     <field name="legacy_data_name" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="legacy_data_value" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="legacy_data_iati_equivalent" type="string" multiValued="true" indexed="true" required="false" stored="true"/>

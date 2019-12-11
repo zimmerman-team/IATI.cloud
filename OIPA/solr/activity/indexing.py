@@ -16,9 +16,10 @@ from solr.activity.references import (
     CountryBudgetItemsReference, DefaultAidTypeReference,
     DefaultFinanceTypeReference, DefaultFlowTypeReference,
     DefaultTiedStatusReference, DescriptionReference, DocumentLinkReference,
-    HumanitarianScopeReference, LocationReference, OtherIdentifierReference,
-    ParticipatingOrgReference, PlannedDisbursementReference,
-    PolicyMarkerReference, RecipientCountryReference, RecipientRegionReference,
+    HumanitarianScopeReference, LegacyDataReference, LocationReference,
+    OtherIdentifierReference, ParticipatingOrgReference,
+    PlannedDisbursementReference, PolicyMarkerReference,
+    RecipientCountryReference, RecipientRegionReference,
     RelatedActivityReference, ReportingOrgReference, SectorReference,
     TagReference, TitleReference
 )
@@ -1405,6 +1406,7 @@ class ActivityIndexing(BaseIndexing):
         legacy_data_all = self.record.legacydata_set.all()
         if legacy_data_all:
             self.add_field('legacy_data', [])
+            self.add_field('legacy_data_xml', [])
             self.add_field('legacy_data_name', [])
             self.add_field('legacy_data_value', [])
             self.add_field('legacy_data_iati_equivalent', [])
@@ -1417,6 +1419,12 @@ class ActivityIndexing(BaseIndexing):
                             instance=legacy_data
                         ).data
                     ).decode()
+                )
+                self.add_value_list(
+                    'related_activity_xml',
+                    LegacyDataReference(
+                        legacy_data=legacy_data
+                    ).to_string()
                 )
 
                 self.add_value_list(
