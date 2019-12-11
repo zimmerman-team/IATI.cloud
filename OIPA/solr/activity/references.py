@@ -1,11 +1,12 @@
 from api.activity.serializers import (
     ActivityDateSerializer, ActivityDefaultAidTypeSerializer,
     ActivityPolicyMarkerSerializer, ActivityTagSerializer, CodelistSerializer,
-    ContactInfoSerializer, CountryBudgetItemsSerializer, DescriptionSerializer,
-    DocumentLinkSerializer, HumanitarianScopeSerializer, LegacyDataSerializer,
-    OtherIdentifierSerializer, ParticipatingOrganisationSerializer,
-    PlannedDisbursementSerializer, RelatedActivitySerializer,
-    ReportingOrganisationSerializer, TitleSerializer
+    ConditionsSerializer, ContactInfoSerializer, CountryBudgetItemsSerializer,
+    DescriptionSerializer, DocumentLinkSerializer, HumanitarianScopeSerializer,
+    LegacyDataSerializer, OtherIdentifierSerializer,
+    ParticipatingOrganisationSerializer, PlannedDisbursementSerializer,
+    RelatedActivitySerializer, ReportingOrganisationSerializer,
+    TitleSerializer
 )
 from api.iati.references import \
     ActivityDateReference as BaseActivityDateReference
@@ -17,6 +18,7 @@ from api.iati.references import \
     CapitalSpendReference as BaseCapitalSpendReference
 from api.iati.references import \
     CollaborationTypeReference as BaseCollaborationTypeReference
+from api.iati.references import ConditionsReference as BaseConditionsReference
 from api.iati.references import \
     ContactInfoReference as BaseContactInfoReference
 from api.iati.references import \
@@ -363,6 +365,16 @@ class LegacyDataReference(ConvertElementReference, BaseLegacyDataReference):
     def __init__(self, legacy_data=None):
         data = LegacyDataSerializer(
             instance=legacy_data
+        ).data
+
+        super().__init__(parent_element=None, data=data)
+
+
+class ConditionsReference(ConvertElementReference, BaseConditionsReference):
+
+    def __init__(self, conditions=None):
+        data = ConditionsSerializer(
+            instance=conditions
         ).data
 
         super().__init__(parent_element=None, data=data)
