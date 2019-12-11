@@ -12,8 +12,8 @@ from api.activity.serializers import (
 )
 from solr.activity.references import (
     ActivityDateReference, ActivityScopeReference, ActivityStatusReference,
-    CapitalSpendReference, CollaborationTypeReference, ContactInfoReference,
-    CountryBudgetItemsReference, DefaultAidTypeReference,
+    CapitalSpendReference, CollaborationTypeReference, ConditionsReference,
+    ContactInfoReference, CountryBudgetItemsReference, DefaultAidTypeReference,
     DefaultFinanceTypeReference, DefaultFlowTypeReference,
     DefaultTiedStatusReference, DescriptionReference, DocumentLinkReference,
     HumanitarianScopeReference, LegacyDataReference, LocationReference,
@@ -1448,6 +1448,12 @@ class ActivityIndexing(BaseIndexing):
                 JSONRenderer().render(
                     ConditionsSerializer(activity_condition).data
                 ).decode()
+            )
+            self.add_field(
+                'conditions_xml',
+                ConditionsReference(
+                    conditions=activity_condition
+                ).to_string()
             )
 
             self.add_field(

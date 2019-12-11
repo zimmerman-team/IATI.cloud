@@ -126,6 +126,9 @@
       <xsl:for-each select="arr[@name='legacy_data_xml']">
         <xsl:value-of disable-output-escaping="yes" select="."/>
       </xsl:for-each>
+      <xsl:for-each select="arr[@name='conditions_xml']">
+        <xsl:value-of disable-output-escaping="yes" select="."/>
+      </xsl:for-each>
       <xsl:for-each select="arr[@name='result_xml']">
         <xsl:value-of disable-output-escaping="yes" select="."/>
       </xsl:for-each>
