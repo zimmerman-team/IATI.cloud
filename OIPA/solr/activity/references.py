@@ -2,7 +2,7 @@ from api.activity.serializers import (
     ActivityDateSerializer, ActivityDefaultAidTypeSerializer,
     ActivityPolicyMarkerSerializer, ActivityTagSerializer, CodelistSerializer,
     ContactInfoSerializer, CountryBudgetItemsSerializer, DescriptionSerializer,
-    DocumentLinkSerializer, HumanitarianScopeSerializer,
+    DocumentLinkSerializer, HumanitarianScopeSerializer, LegacyDataSerializer,
     OtherIdentifierSerializer, ParticipatingOrganisationSerializer,
     PlannedDisbursementSerializer, RelatedActivitySerializer,
     ReportingOrganisationSerializer, TitleSerializer
@@ -35,6 +35,7 @@ from api.iati.references import \
     DocumentLinkReference as BaseDocumentLinkReference
 from api.iati.references import \
     HumanitarianScopeReference as BaseHumanitarianScopeReference
+from api.iati.references import LegacyDataReference as BaseLegacyDataReference
 from api.iati.references import LocationReference as BaseLocationReference
 from api.iati.references import \
     OtherIdentifierReference as BaseOtherIdentifierReference
@@ -352,6 +353,16 @@ class RelatedActivityReference(ConvertElementReference,
                 'ref',
                 'type'
             ]
+        ).data
+
+        super().__init__(parent_element=None, data=data)
+
+
+class LegacyDataReference(ConvertElementReference, BaseLegacyDataReference):
+
+    def __init__(self, legacy_data=None):
+        data = LegacyDataSerializer(
+            instance=legacy_data
         ).data
 
         super().__init__(parent_element=None, data=data)
