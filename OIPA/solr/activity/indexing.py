@@ -13,15 +13,15 @@ from api.activity.serializers import (
 from solr.activity.references import (
     ActivityDateReference, ActivityScopeReference, ActivityStatusReference,
     CapitalSpendReference, CollaborationTypeReference, ConditionsReference,
-    ContactInfoReference, CountryBudgetItemsReference, DefaultAidTypeReference,
-    DefaultFinanceTypeReference, DefaultFlowTypeReference,
-    DefaultTiedStatusReference, DescriptionReference, DocumentLinkReference,
-    FssReference, HumanitarianScopeReference, LegacyDataReference,
-    LocationReference, OtherIdentifierReference, ParticipatingOrgReference,
-    PlannedDisbursementReference, PolicyMarkerReference,
-    RecipientCountryReference, RecipientRegionReference,
+    ContactInfoReference, CountryBudgetItemsReference, CrsAddReference,
+    DefaultAidTypeReference, DefaultFinanceTypeReference,
+    DefaultFlowTypeReference, DefaultTiedStatusReference, DescriptionReference,
+    DocumentLinkReference, FssReference, HumanitarianScopeReference,
+    LegacyDataReference, LocationReference, OtherIdentifierReference,
+    ParticipatingOrgReference, PlannedDisbursementReference,
+    PolicyMarkerReference, RecipientCountryReference, RecipientRegionReference,
     RelatedActivityReference, ReportingOrgReference, SectorReference,
-    TagReference, TitleReference, CrsAddReference
+    TagReference, TitleReference
 )
 from solr.activity.serializers import (
     ActivityRecipientRegionSerializer, ActivitySectorSerializer,

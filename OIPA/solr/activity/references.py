@@ -2,16 +2,11 @@ from api.activity.serializers import (
     ActivityDateSerializer, ActivityDefaultAidTypeSerializer,
     ActivityPolicyMarkerSerializer, ActivityTagSerializer, CodelistSerializer,
     ConditionsSerializer, ContactInfoSerializer, CountryBudgetItemsSerializer,
-    DescriptionSerializer, DocumentLinkSerializer, FssSerializer,
-    HumanitarianScopeSerializer, LegacyDataSerializer,
+    CrsAddSerializer, DescriptionSerializer, DocumentLinkSerializer,
+    FssSerializer, HumanitarianScopeSerializer, LegacyDataSerializer,
     OtherIdentifierSerializer, ParticipatingOrganisationSerializer,
     PlannedDisbursementSerializer, RelatedActivitySerializer,
     ReportingOrganisationSerializer, TitleSerializer
-    DescriptionSerializer, DocumentLinkSerializer, HumanitarianScopeSerializer,
-    LegacyDataSerializer, OtherIdentifierSerializer,
-    ParticipatingOrganisationSerializer, PlannedDisbursementSerializer,
-    RelatedActivitySerializer, ReportingOrganisationSerializer,
-    TitleSerializer, CrsAddSerializer
 )
 from api.iati.references import \
     ActivityDateReference as BaseActivityDateReference
@@ -28,6 +23,7 @@ from api.iati.references import \
     ContactInfoReference as BaseContactInfoReference
 from api.iati.references import \
     CountryBudgetItemsReference as BaseCountryBudgetItemsReference
+from api.iati.references import CrsAddReference as BaseCrsAddReference
 from api.iati.references import \
     DefaultAidTypeReference as BaseDefaultAidTypeReference
 from api.iati.references import \
@@ -38,8 +34,6 @@ from api.iati.references import \
     DefaultTiedStatusReference as BaseDefaultTiedStatusReference
 from api.iati.references import \
     DescriptionReference as BaseDescriptionReference
-from api.iati.references import \
-    CrsAddReference as BaseCrsAddReference
 from api.iati.references import \
     DocumentLinkReference as BaseDocumentLinkReference
 from api.iati.references import FssReference as BaseFssReference
@@ -394,8 +388,6 @@ class CrsAddReference(ConvertElementReference, BaseCrsAddReference):
         data = CrsAddSerializer(
             instance=crs_add
         ).data
-
-        print(data)
 
         super().__init__(parent_element=None, data=data)
 
