@@ -2,8 +2,8 @@ from api.activity.serializers import (
     ActivityDateSerializer, ActivityDefaultAidTypeSerializer,
     ActivityPolicyMarkerSerializer, ActivityTagSerializer, CodelistSerializer,
     ConditionsSerializer, ContactInfoSerializer, CountryBudgetItemsSerializer,
-    DescriptionSerializer, DocumentLinkSerializer, FssSerializer,
-    HumanitarianScopeSerializer, LegacyDataSerializer,
+    CrsAddSerializer, DescriptionSerializer, DocumentLinkSerializer,
+    FssSerializer, HumanitarianScopeSerializer, LegacyDataSerializer,
     OtherIdentifierSerializer, ParticipatingOrganisationSerializer,
     PlannedDisbursementSerializer, RelatedActivitySerializer,
     ReportingOrganisationSerializer, TitleSerializer
@@ -23,6 +23,7 @@ from api.iati.references import \
     ContactInfoReference as BaseContactInfoReference
 from api.iati.references import \
     CountryBudgetItemsReference as BaseCountryBudgetItemsReference
+from api.iati.references import CrsAddReference as BaseCrsAddReference
 from api.iati.references import \
     DefaultAidTypeReference as BaseDefaultAidTypeReference
 from api.iati.references import \
@@ -376,6 +377,16 @@ class ConditionsReference(ConvertElementReference, BaseConditionsReference):
     def __init__(self, conditions=None):
         data = ConditionsSerializer(
             instance=conditions
+        ).data
+
+        super().__init__(parent_element=None, data=data)
+
+
+class CrsAddReference(ConvertElementReference, BaseCrsAddReference):
+
+    def __init__(self, crs_add=None):
+        data = CrsAddSerializer(
+            instance=crs_add
         ).data
 
         super().__init__(parent_element=None, data=data)

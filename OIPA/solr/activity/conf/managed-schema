@@ -627,6 +627,7 @@
     <field name="fss_forecast_value" type="pdoubles" multiValued="true" indexed="true" required="false" stored="true"/>
 
     <field name="crs_add" type="text_general" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="crs_add_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
     <field name="crs_add_other_flags_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="crs_add_other_flags_significance" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
 

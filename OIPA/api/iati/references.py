@@ -2619,8 +2619,14 @@ class CrsAddReference(ElementReference):
         # </interest-arrears>
     }
     # </loan-status>
-    # TODO: No Channel code
     # <channel-code>
+    channel_code = {
+        'element': 'channel-code',
+        'key': 'channel_code',
+        'code': {
+            'key': 'code'
+        }
+    }
     # </channel-code>
     # <crs-add/>
 
@@ -2842,6 +2848,18 @@ class CrsAddReference(ElementReference):
                 )
                 principal_arrears_value_element.text = interest_arrears_value
             # </interest-arrears>
+
+        channel_code_dict = self.data.get(self.channel_code.get('key'))
+        if channel_code_dict:
+            # <channel-code>
+            channel_code_code = channel_code_dict.get('code')
+            if channel_code_code:
+                channel_code_element = etree.SubElement(
+                    crs_add_element,
+                    self.channel_code.get('element')
+                )
+                channel_code_element.text = channel_code_code
+            # <channel-code>
 
         # </crs-add>
 
