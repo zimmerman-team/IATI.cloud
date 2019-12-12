@@ -2,11 +2,11 @@ from api.activity.serializers import (
     ActivityDateSerializer, ActivityDefaultAidTypeSerializer,
     ActivityPolicyMarkerSerializer, ActivityTagSerializer, CodelistSerializer,
     ConditionsSerializer, ContactInfoSerializer, CountryBudgetItemsSerializer,
-    DescriptionSerializer, DocumentLinkSerializer, HumanitarianScopeSerializer,
-    LegacyDataSerializer, OtherIdentifierSerializer,
-    ParticipatingOrganisationSerializer, PlannedDisbursementSerializer,
-    RelatedActivitySerializer, ReportingOrganisationSerializer,
-    TitleSerializer
+    DescriptionSerializer, DocumentLinkSerializer, FssSerializer,
+    HumanitarianScopeSerializer, LegacyDataSerializer,
+    OtherIdentifierSerializer, ParticipatingOrganisationSerializer,
+    PlannedDisbursementSerializer, RelatedActivitySerializer,
+    ReportingOrganisationSerializer, TitleSerializer
 )
 from api.iati.references import \
     ActivityDateReference as BaseActivityDateReference
@@ -35,6 +35,7 @@ from api.iati.references import \
     DescriptionReference as BaseDescriptionReference
 from api.iati.references import \
     DocumentLinkReference as BaseDocumentLinkReference
+from api.iati.references import FssReference as BaseFssReference
 from api.iati.references import \
     HumanitarianScopeReference as BaseHumanitarianScopeReference
 from api.iati.references import LegacyDataReference as BaseLegacyDataReference
@@ -375,6 +376,16 @@ class ConditionsReference(ConvertElementReference, BaseConditionsReference):
     def __init__(self, conditions=None):
         data = ConditionsSerializer(
             instance=conditions
+        ).data
+
+        super().__init__(parent_element=None, data=data)
+
+
+class FssReference(ConvertElementReference, BaseFssReference):
+
+    def __init__(self, fss=None):
+        data = FssSerializer(
+            instance=fss
         ).data
 
         super().__init__(parent_element=None, data=data)
