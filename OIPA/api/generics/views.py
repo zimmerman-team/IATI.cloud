@@ -1,3 +1,4 @@
+import copy
 from django.db.models.fields.related import ForeignKey, OneToOneField
 from rest_framework import mixins
 from rest_framework.generics import (
@@ -94,7 +95,20 @@ class DynamicView(GenericAPIView):
         """
         Prefetches based on 'fields' GET arg
         """
+        filter_fields = copy.deepcopy(self.request.query_params)
 
+        'fields' in filter_fields and filter_fields.pop('fields')
+        'format' in filter_fields and filter_fields.pop('format')
+
+        for filter_field in filter_fields:
+            found = False
+            for key in self.filter_class.declared_filters:
+                if filter_field == key:
+                    found = True
+            if found is False:
+                # make error in the code to fail if input wrong filter name.
+                self.filter_class = "No Filter Class."
+                break
         fields = self._get_query_fields(*args, **kwargs)
         if not fields:
             fields = self.serializer_fields
