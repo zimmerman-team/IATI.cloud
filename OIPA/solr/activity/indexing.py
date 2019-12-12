@@ -16,12 +16,12 @@ from solr.activity.references import (
     ContactInfoReference, CountryBudgetItemsReference, DefaultAidTypeReference,
     DefaultFinanceTypeReference, DefaultFlowTypeReference,
     DefaultTiedStatusReference, DescriptionReference, DocumentLinkReference,
-    HumanitarianScopeReference, LegacyDataReference, LocationReference,
-    OtherIdentifierReference, ParticipatingOrgReference,
+    FssReference, HumanitarianScopeReference, LegacyDataReference,
+    LocationReference, OtherIdentifierReference, ParticipatingOrgReference,
     PlannedDisbursementReference, PolicyMarkerReference,
     RecipientCountryReference, RecipientRegionReference,
     RelatedActivityReference, ReportingOrgReference, SectorReference,
-    TagReference, TitleReference, FssReference
+    TagReference, TitleReference
 )
 from solr.activity.serializers import (
     ActivityRecipientRegionSerializer, ActivitySectorSerializer,
