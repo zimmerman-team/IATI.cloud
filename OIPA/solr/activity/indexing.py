@@ -2220,8 +2220,8 @@ class ActivityIndexing(BaseIndexing):
                     JSONRenderer().render(FssSerializer(fss).data).decode()
                 )
                 self.add_value_list(
-                    'tag_xml',
-                    FssSerializer(
+                    'fss_xml',
+                    FssReference(
                         fss=fss
                     ).to_string()
                 )
