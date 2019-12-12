@@ -2,6 +2,11 @@ from api.activity.serializers import (
     ActivityDateSerializer, ActivityDefaultAidTypeSerializer,
     ActivityPolicyMarkerSerializer, ActivityTagSerializer, CodelistSerializer,
     ConditionsSerializer, ContactInfoSerializer, CountryBudgetItemsSerializer,
+    DescriptionSerializer, DocumentLinkSerializer, FssSerializer,
+    HumanitarianScopeSerializer, LegacyDataSerializer,
+    OtherIdentifierSerializer, ParticipatingOrganisationSerializer,
+    PlannedDisbursementSerializer, RelatedActivitySerializer,
+    ReportingOrganisationSerializer, TitleSerializer
     DescriptionSerializer, DocumentLinkSerializer, HumanitarianScopeSerializer,
     LegacyDataSerializer, OtherIdentifierSerializer,
     ParticipatingOrganisationSerializer, PlannedDisbursementSerializer,
@@ -37,6 +42,7 @@ from api.iati.references import \
     CrsAddReference as BaseCrsAddReference
 from api.iati.references import \
     DocumentLinkReference as BaseDocumentLinkReference
+from api.iati.references import FssReference as BaseFssReference
 from api.iati.references import \
     HumanitarianScopeReference as BaseHumanitarianScopeReference
 from api.iati.references import LegacyDataReference as BaseLegacyDataReference
@@ -390,5 +396,15 @@ class CrsAddReference(ConvertElementReference, BaseCrsAddReference):
         ).data
 
         print(data)
+
+        super().__init__(parent_element=None, data=data)
+
+
+class FssReference(ConvertElementReference, BaseFssReference):
+
+    def __init__(self, fss=None):
+        data = FssSerializer(
+            instance=fss
+        ).data
 
         super().__init__(parent_element=None, data=data)
