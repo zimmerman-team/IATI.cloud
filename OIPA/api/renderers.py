@@ -834,7 +834,7 @@ class IATIXMLRenderer(BaseRenderer):
         'title': TitleReference,
         'descriptions': DescriptionReference,
         'activity_dates': ActivityDateReference,
-        'reporting_organisation': ReportingOrgReference,
+        'reporting_org': ReportingOrgReference,
         'participating_organisations': ParticipatingOrgReference,
         'contact_info': ContactInfoReference,
         'activity_scope': ActivityScopeReference,

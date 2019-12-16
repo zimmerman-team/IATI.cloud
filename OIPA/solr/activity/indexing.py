@@ -80,7 +80,10 @@ class ActivityIndexing(BaseIndexing):
 
             self.add_field('reporting_org_ref', reporting_org.ref)
             self.add_field('reporting_org_type_code', reporting_org.type_id)
-            self.add_field('reporting_org_type_name', reporting_org.type.name)
+            self.add_field(
+                'reporting_org_type_name',
+                get_child_attr(reporting_org, 'type.name')
+            )
             self.add_field(
                 'reporting_org_secondary_reporter',
                 bool_string(reporting_org.secondary_reporter)
@@ -141,7 +144,7 @@ class ActivityIndexing(BaseIndexing):
                     description,
                     'description_narrative',
                     'description_narrative_text',
-                    'title_narrative_lang'
+                    'description_lang'
                 )
 
     def participating_org(self):
@@ -258,7 +261,7 @@ class ActivityIndexing(BaseIndexing):
                         ActivityDateSerializer(activity_date).data
                     ).decode()
                 )
-                self.add_field(
+                self.add_value_list(
                     'activity_date_xml',
                     ActivityDateReference(
                         activity_date=activity_date
@@ -876,6 +879,7 @@ class ActivityIndexing(BaseIndexing):
             self.add_field('default_aid_type', [])
             self.add_field('default_aid_type_xml', [])
             self.add_field('default_aid_type_code', [])
+            self.add_field('default_aid_type_vocabulary', [])
 
             for default_aid_type in default_aid_type_all:
                 self.add_value_list(
@@ -896,6 +900,13 @@ class ActivityIndexing(BaseIndexing):
                 self.add_value_list(
                     'default_aid_type_code',
                     default_aid_type.aid_type_id
+                )
+                self.add_value_list(
+                    'default_aid_type_vocabulary',
+                    get_child_attr(
+                        default_aid_type,
+                        'aid_type.vocabulary.code'
+                    )
                 )
 
     def budget(self):
@@ -2269,7 +2280,7 @@ class ActivityIndexing(BaseIndexing):
         self.add_field('iati_identifier', activity.iati_identifier)
         self.add_field(
             'last_updated_datetime',
-            value_string(activity.last_updated_datetime)
+            date_string(activity.last_updated_datetime)
         )
         self.add_field('default_lang', activity.default_lang_id)
         self.add_field('default_currency', activity.default_currency_id)
@@ -2283,13 +2294,15 @@ class ActivityIndexing(BaseIndexing):
             ).to_string()
         )
         self.add_field('activity_status_code', activity.activity_status_id)
-        self.add_field(
-            'activity_scope_xml',
-            ActivityScopeReference(
-                activity_scope=activity.scope
-            ).to_string()
-        )
-        self.add_field('activity_scope_code', activity.scope_id)
+
+        if activity.scope:
+            self.add_field(
+                'activity_scope_xml',
+                ActivityScopeReference(
+                    activity_scope=activity.scope
+                ).to_string()
+            )
+            self.add_field('activity_scope_code', activity.scope_id)
 
         self.add_field(
             'collaboration_type_code',
