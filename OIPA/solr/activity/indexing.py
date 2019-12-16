@@ -261,7 +261,7 @@ class ActivityIndexing(BaseIndexing):
                         ActivityDateSerializer(activity_date).data
                     ).decode()
                 )
-                self.add_field(
+                self.add_value_list(
                     'activity_date_xml',
                     ActivityDateReference(
                         activity_date=activity_date
