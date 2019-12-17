@@ -1715,35 +1715,39 @@ class LocationReference(ElementReference):
         # <location-id
         location_id_dict = self.data.get(self.location_id.get('key'))
         if location_id_dict:
-            location_id_element = etree.SubElement(
-                location_element, self.location_id.get('element')
-            )
-
-            # @vocabulary
-            vocabulary_dict = location_id_dict.get(
-                self.location_id.get('vocabulary').get('key')
-            )
-            if vocabulary_dict:
-                code_value = vocabulary_dict.get(
-                    self.location_id.get('vocabulary').get('code').get('key')
-                )
-                if code_value:
-                    location_id_element.set(
-                        self.location_id.get(
-                            'vocabulary'
-                        ).get('code').get('attr'),
-                        code_value
-                    )
-
-            # @code
             code_value = location_id_dict.get(
                 self.location_id.get('code').get('key')
             )
-            if code_value:
-                location_id_element.set(
-                    self.location_id.get('code').get('attr'),
-                    code_value
+            vocabulary_dict = location_id_dict.get(
+                self.location_id.get('vocabulary').get('key')
+            )
+
+            if code_value and vocabulary_dict:
+                location_id_element = etree.SubElement(
+                    location_element, self.location_id.get('element')
                 )
+
+                # @vocabulary
+                if vocabulary_dict:
+                    code_value = vocabulary_dict.get(
+                        self.location_id.get(
+                            'vocabulary'
+                        ).get('code').get('key')
+                    )
+                    if code_value:
+                        location_id_element.set(
+                            self.location_id.get(
+                                'vocabulary'
+                            ).get('code').get('attr'),
+                            code_value
+                        )
+
+                # @code
+                if code_value:
+                    location_id_element.set(
+                        self.location_id.get('code').get('attr'),
+                        code_value
+                    )
         # / >
 
         # <name>
