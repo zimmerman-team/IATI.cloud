@@ -27,11 +27,11 @@ class DataAttribute(Attribute):
                 try:
                     value = p_data.get(key)
                 except AttributeError:
-                    pass
+                    value = None
             else:
                 try:
                     value = data.get(key)
                 except AttributeError:
-                    pass
+                    value = None
 
         super(DataAttribute, self).__init__(element, name, value)
