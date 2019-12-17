@@ -1432,7 +1432,7 @@ class ActivityIndexing(BaseIndexing):
                     ).decode()
                 )
                 self.add_value_list(
-                    'related_activity_xml',
+                    'legacy_data_xml',
                     LegacyDataReference(
                         legacy_data=legacy_data
                     ).to_string()
