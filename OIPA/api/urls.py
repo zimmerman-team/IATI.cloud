@@ -6,6 +6,8 @@ urlpatterns = [
     url(r'^$', views.welcome, name='api-root'),
     url(r'^health-check/', views.health_check, name='api-health-check'),
     url(r'^activities/', include('api.activity.urls', namespace='activities')),
+    url(r'^1/access/activity.xml/$',
+        views.redirect_v1_activity_api, name='redirect-v1-activity-api'),
     url(r'^codelists/', include('api.codelist.urls', namespace='codelists')),
     url(r'^budgets/', include('api.budget.urls', namespace='budgets')),
     url(r'^export/', include('api.export.urls', namespace='export')),

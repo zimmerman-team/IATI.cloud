@@ -1,3 +1,4 @@
+from django.shortcuts import redirect
 from django.db import OperationalError, connections
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -151,3 +152,9 @@ def health_check(request, format=None):
         return Response(status=500)
 
     return Response(status=200)
+
+
+def redirect_v1_activity_api(request):
+    uri = request.GET.urlencode()
+    url = '/api/activities/?' + uri if uri else '/api/activities'
+    return redirect(url,  permanent=True)
