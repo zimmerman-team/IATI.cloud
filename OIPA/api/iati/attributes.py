@@ -24,8 +24,14 @@ class DataAttribute(Attribute):
         if isinstance(data, dict):
             if parent:
                 p_data = data.get(parent)
-                value = p_data.get(key)
+                try:
+                    value = p_data.get(key)
+                except AttributeError:
+                    pass
             else:
-                value = data.get(key)
+                try:
+                    value = data.get(key)
+                except AttributeError:
+                    pass
 
         super(DataAttribute, self).__init__(element, name, value)
