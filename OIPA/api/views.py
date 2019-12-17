@@ -1,5 +1,5 @@
-from django.shortcuts import redirect
 from django.db import OperationalError, connections
+from django.shortcuts import redirect
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
