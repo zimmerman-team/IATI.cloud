@@ -111,7 +111,7 @@ class DynamicView(GenericAPIView):
                     found = True
             if found is False:
                 # make error in the code to fail if input wrong filter name.
-                self.filter_class = "No Filter Class."
+                setattr(self, 'filter_class', 'No Filter Class')
                 break
         fields = self._get_query_fields(*args, **kwargs)
         if not fields:
