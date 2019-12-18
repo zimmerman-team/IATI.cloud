@@ -105,7 +105,8 @@ class DynamicView(GenericAPIView):
 
         for filter_field in filter_fields:
             found = False
-            for key in self.filter_class.declared_filters:
+            declared_filters = self.filter_class.declared_filters
+            for key in declared_filters:
                 if filter_field == key:
                     found = True
             if found is False:
