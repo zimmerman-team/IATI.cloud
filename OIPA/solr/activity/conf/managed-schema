@@ -123,7 +123,7 @@
     <field name="_text_" type="text_general" indexed="true" stored="false" multiValued="true"/>
 
     <!--Activity Core - Start -->
-    <field name="iati_identifier" type="string" multiValued="false" indexed="true" required="true" stored="true"/>
+    <field name="iati_identifier" type="non_case_sensitive" multiValued="false" indexed="true" required="true" stored="true"/>
 
     <field name="dataset_iati_version" type="string" multiValued="false" indexed="true" required="true" stored="true"/>
     <field name="dataset_date_created" type="pdate" multiValued="false" indexed="true" required="true" stored="true"/>
