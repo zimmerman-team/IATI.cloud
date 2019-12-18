@@ -98,8 +98,10 @@ class DynamicView(GenericAPIView):
         """
         filter_fields = copy.deepcopy(self.request.query_params)
 
-        'fields' in filter_fields and filter_fields.pop('fields')
-        'format' in filter_fields and filter_fields.pop('format')
+        if 'fields' in filter_fields:
+            filter_fields.pop('fields')
+        if 'format' in filter_fields:
+            filter_fields.pop('format')
 
         for filter_field in filter_fields:
             found = False
