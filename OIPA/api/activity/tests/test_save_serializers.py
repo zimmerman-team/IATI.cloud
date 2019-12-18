@@ -351,6 +351,7 @@ class ActivitySaveTestCase(TestCase):
         with self.assertRaises(ObjectDoesNotExist):
             iati_models.Activity.objects.get(pk=activity.id)
 
+
 @skip
 class DescriptionSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')

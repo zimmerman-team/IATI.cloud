@@ -1,7 +1,7 @@
 from django.urls import reverse
 from rest_framework.serializers import (
-    HyperlinkedIdentityField, HyperlinkedRelatedField, ModelSerializer,
-    SerializerMethodField, HiddenField
+    HiddenField, HyperlinkedIdentityField, HyperlinkedRelatedField,
+    ModelSerializer, SerializerMethodField
 )
 
 from api.generics.serializers import DynamicFieldsModelSerializer

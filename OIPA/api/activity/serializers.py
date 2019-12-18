@@ -431,7 +431,7 @@ class PlannedDisbursementReceiverSerializer(ModelSerializerNoValidation):
 class PlannedDisbursementSerializer(ModelSerializerNoValidation):
     value = ValueSerializer(source='*')
     type = CodelistSerializer()
-    id=serializers.HiddenField(default=None)
+    id = serializers.HiddenField(default=None)
     activity = serializers.CharField(write_only=True)
 
     period_start = serializers.CharField()
@@ -1646,6 +1646,7 @@ class RecipientCountrySerializer(DynamicFieldsModelSerializer):
 
 class ResultTypeSerializer(ModelSerializerNoValidation):
     id = serializers.HiddenField(default=None)
+
     class Meta:
         model = ResultType
         fields = (
@@ -2868,6 +2869,7 @@ class FssSerializer(ModelSerializerNoValidation):
 
 class LocationSerializer(DynamicFieldsModelSerializer):
     id = serializers.HiddenField(default=None)
+
     class LocationIdSerializer(SerializerNoValidation):
         vocabulary = VocabularySerializer(
             source='location_id_vocabulary')

@@ -1,7 +1,7 @@
 from django.db.models import Sum
 from django.urls import reverse
 from rest_framework.serializers import (
-    HyperlinkedIdentityField, SerializerMethodField, HiddenField
+    HiddenField, HyperlinkedIdentityField, SerializerMethodField
 )
 
 from api.dataset.serializers import DatasetSerializer

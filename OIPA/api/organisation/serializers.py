@@ -948,7 +948,7 @@ class OrganisationDocumentLinkSerializer(ModelSerializerNoValidation):
         iso_date = serializers.CharField()
 
     format = CodelistSerializer(source='file_format')
-    id =  serializers.HiddenField(default=None)
+    id = serializers.HiddenField(default=None)
     categories = OrganisationDocumentLinkCategorySerializer(
         many=True,
         required=False,
