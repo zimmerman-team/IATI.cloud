@@ -1,6 +1,7 @@
 import json
 from collections import OrderedDict
 from datetime import datetime
+from unittest import skip
 
 from django.test import RequestFactory
 from django.urls import reverse
@@ -151,6 +152,7 @@ class TestActivityEndpoints(APITestCase):
         response = self.c.get(url)
         self.assertTrue(status.is_success(response.status_code))
 
+    @skip
     def test_activity_transactions_by_iati_identifier_endpoint(self):
 
         transaction = TransactionFactory(activity=self.activity)

@@ -70,6 +70,7 @@ class TransactionDescriptionSerializer(serializers.ModelSerializer):
 
 
 class TransactionSectorSerializer(serializers.ModelSerializer):
+    id = serializers.HiddenField(default=None)
     sector = SectorSerializer(fields=('url', 'code', 'name'))
     vocabulary = VocabularySerializer()
     vocabulary_uri = serializers.URLField()
@@ -85,6 +86,7 @@ class TransactionSectorSerializer(serializers.ModelSerializer):
 
 
 class TransactionRecipientCountrySerializer(DynamicFieldsModelSerializer):
+    id = serializers.HiddenField(default=None)
     country = CountrySerializer(fields=('url', 'code', 'name'))
 
     class Meta:
@@ -96,6 +98,7 @@ class TransactionRecipientCountrySerializer(DynamicFieldsModelSerializer):
 
 
 class TransactionRecipientRegionSerializer(DynamicFieldsModelSerializer):
+    id = serializers.HiddenField(default=None)
     region = BasicRegionSerializer(
         fields=('url', 'code', 'name'),
     )
@@ -116,6 +119,7 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
     """
     Transaction serializer class
     """
+    id = serializers.HiddenField(default=None)
     url = serializers.HyperlinkedIdentityField(
         view_name='transactions:transaction-detail',
         lookup_field='pk',

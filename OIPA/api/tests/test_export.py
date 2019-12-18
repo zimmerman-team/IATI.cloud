@@ -7,6 +7,7 @@ from rest_framework.reverse import reverse
 from iati.factory.iati_factory import ActivityFactory
 
 
+@skip
 class TestFilter(TestCase):
 
     def setUp(self):

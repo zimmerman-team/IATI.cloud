@@ -216,6 +216,7 @@ class OrganisationTotalBudgetSerializer(ModelSerializerNoValidation):
 
 
 class RecipientOrgBudgetLineSerializer(ModelSerializerNoValidation):
+    id = serializers.HiddenField(default=None)
     ref = serializers.CharField()
     value = ValueSerializer(source='*')
     narratives = OrganisationNarrativeSerializer(many=True)
@@ -291,6 +292,7 @@ class OrganisationRecipientOrgBudgetSerializer(ModelSerializerNoValidation):
                 'narratives',
             )
 
+    id = serializers.HiddenField(default=None)
     organisation = serializers.CharField(write_only=True)
     organisation_identifier = serializers.CharField(
         source="organisation.organisation_identifier")
@@ -363,6 +365,7 @@ class OrganisationRecipientOrgBudgetSerializer(ModelSerializerNoValidation):
 
 
 class RecipientCountryBudgetLineSerializer(ModelSerializerNoValidation):
+    id = serializers.HiddenField(default=None)
     ref = serializers.CharField()
     value = ValueSerializer(source='*')
     narratives = OrganisationNarrativeSerializer(many=True)
@@ -443,6 +446,7 @@ class OrganisationRecipientCountryBudgetSerializer(
     organisation_identifier = serializers.CharField(
         source="organisation.organisation_identifier")
 
+    id = serializers.HiddenField(default=None)
     value = ValueSerializer(source='*')
     status = CodelistSerializer()
 
@@ -512,6 +516,7 @@ class OrganisationRecipientCountryBudgetSerializer(
 
 
 class RecipientRegionBudgetLineSerializer(ModelSerializerNoValidation):
+    id = serializers.HiddenField(default=None)
     ref = serializers.CharField()
     value = ValueSerializer(source='*')
     narratives = OrganisationNarrativeSerializer(many=True)
@@ -582,6 +587,7 @@ class RecipientRegionBudgetLineSerializer(ModelSerializerNoValidation):
 
 
 class OrganisationRecipientRegionBudgetSerializer(ModelSerializerNoValidation):
+    id = serializers.HiddenField(default=None)
     organisation = serializers.CharField(write_only=True)
     organisation_identifier = serializers.CharField(
         source="organisation.organisation_identifier")
@@ -655,6 +661,7 @@ class OrganisationRecipientRegionBudgetSerializer(ModelSerializerNoValidation):
 
 
 class TotalExpenditureLineSerializer(ModelSerializerNoValidation):
+    id = serializers.HiddenField(default=None)
     ref = serializers.CharField()
     value = ValueSerializer(source='*')
     narratives = OrganisationNarrativeSerializer(many=True)
@@ -719,6 +726,7 @@ class TotalExpenditureLineSerializer(ModelSerializerNoValidation):
 
 
 class OrganisationTotalExpenditureSerializer(ModelSerializerNoValidation):
+    id = serializers.HiddenField(default=None)
     organisation = serializers.CharField(write_only=True)
 
     value = ValueSerializer(source='*')
@@ -780,6 +788,7 @@ class OrganisationTotalExpenditureSerializer(ModelSerializerNoValidation):
 
 
 class OrganisationDocumentLinkCategorySerializer(ModelSerializerNoValidation):
+    id = serializers.HiddenField(default=None)
     category = CodelistSerializer()
 
     document_link = serializers.CharField(write_only=True)
@@ -829,6 +838,7 @@ class OrganisationDocumentLinkCategorySerializer(ModelSerializerNoValidation):
 
 
 class OrganisationDocumentLinkLanguageSerializer(ModelSerializerNoValidation):
+    id = serializers.HiddenField(default=None)
     language = CodelistSerializer()
 
     document_link = serializers.CharField(write_only=True)
@@ -880,7 +890,7 @@ class OrganisationDocumentLinkLanguageSerializer(ModelSerializerNoValidation):
 class OrganisationDocumentLinkRecipientCountrySerializer(
         ModelSerializerNoValidation):
     recipient_country = CodelistSerializer()
-
+    id = serializers.HiddenField(default=None)
     document_link = serializers.CharField(write_only=True)
 
     budget_lines = RecipientCountryBudgetLineSerializer(
@@ -938,6 +948,7 @@ class OrganisationDocumentLinkSerializer(ModelSerializerNoValidation):
         iso_date = serializers.CharField()
 
     format = CodelistSerializer(source='file_format')
+    id =  serializers.HiddenField(default=None)
     categories = OrganisationDocumentLinkCategorySerializer(
         many=True,
         required=False,
@@ -1071,6 +1082,7 @@ class OrganisationSerializer(DynamicFieldsModelSerializer):
         ready_to_publish = serializers.BooleanField()
         modified = serializers.BooleanField()
 
+    id = serializers.HiddenField(default=None)
     url = EncodedHyperlinkedIdentityField(
         view_name='organisations:organisation-detail',
         read_only=True

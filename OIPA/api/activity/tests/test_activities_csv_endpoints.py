@@ -72,7 +72,7 @@ class TestActivityCSVEndpoints(APITestCase):
         iati_factory.DescriptionFactory(activity=self.activity)
 
         url = reverse('activities:activity-list')
-        selectable_headers = ['title', 'descriptions']
+        selectable_headers = ['descriptions']
         endpoint_url = "%s?format=csv&fields=" % (  # NOQA: E501
             url
         )

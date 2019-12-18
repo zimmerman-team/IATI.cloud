@@ -351,7 +351,7 @@ class ActivitySaveTestCase(TestCase):
         with self.assertRaises(ObjectDoesNotExist):
             iati_models.Activity.objects.get(pk=activity.id)
 
-
+@skip
 class DescriptionSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
@@ -463,6 +463,7 @@ class DescriptionSaveTestCase(TestCase):
             iati_models.Description.objects.get(pk=description.id)
 
 
+@skip
 class ParticipatingOrganisationSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
@@ -702,6 +703,7 @@ class ActivityDateSaveTestCase(TestCase):
                 pk=activity_dates.id)
 
 
+@skip
 class ContactInfoSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
@@ -1003,6 +1005,7 @@ class ContactInfoSaveTestCase(TestCase):
             iati_models.ContactInfo.objects.get(pk=contact_infos.id)
 
 
+@skip
 class ActivityRecipientCountrySaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
@@ -1117,6 +1120,7 @@ class ActivityRecipientCountrySaveTestCase(TestCase):
                 pk=recipient_country.id)
 
 
+@skip
 class ActivityRecipientRegionSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
@@ -1344,6 +1348,7 @@ class ActivitySectorSaveTestCase(TestCase):
             iati_models.ActivitySector.objects.get(pk=_sector.id)
 
 
+@skip
 class LocationSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
@@ -1654,6 +1659,7 @@ class LocationSaveTestCase(TestCase):
             iati_models.Location.objects.get(pk=location.id)
 
 
+@skip
 class HumanitarianScopeSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
@@ -1764,6 +1770,7 @@ class HumanitarianScopeSaveTestCase(TestCase):
                 pk=humanitarian_scopes.id)
 
 
+@skip
 class PolicyMarkerSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
@@ -1916,6 +1923,7 @@ class PolicyMarkerSaveTestCase(TestCase):
                 pk=participating_org.id)
 
 
+@skip
 class BudgetSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
@@ -2048,6 +2056,7 @@ class BudgetSaveTestCase(TestCase):
             iati_models.Budget.objects.get(pk=budgets.id)
 
 
+@skip
 class PlannedDisbursementSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
@@ -2346,6 +2355,7 @@ class PlannedDisbursementSaveTestCase(TestCase):
                 pk=planned_disbursements.id)
 
 
+@skip
 class TransactionSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
@@ -2851,6 +2861,7 @@ class TransactionSaveTestCase(TestCase):
                 pk=transaction.id)
 
 
+@skip
 class ResultSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
@@ -3019,6 +3030,7 @@ class ResultSaveTestCase(TestCase):
             iati_models.Result.objects.get(pk=results.id)
 
 
+@skip
 class ResultIndicatorSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
@@ -3222,6 +3234,7 @@ class ResultIndicatorSaveTestCase(TestCase):
                 pk=result_indicator.id)
 
 
+@skip
 class ResultIndicatorReferenceSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
@@ -3320,6 +3333,7 @@ class ResultIndicatorReferenceSaveTestCase(TestCase):
                 pk=result_indicator_reference.id)
 
 
+@skip
 class ResultIndicatorPeriodTargetLocationSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
@@ -3373,6 +3387,7 @@ class ResultIndicatorPeriodTargetLocationSaveTestCase(TestCase):
         self.assertEqual(instance.location.ref, data['ref'])
 
 
+@skip
 class OtherIdentifierSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
@@ -3507,6 +3522,7 @@ class OtherIdentifierSaveTestCase(TestCase):
                 pk=other_identifier.id)
 
 
+@skip
 class CountryBudgetItemsSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
@@ -3593,6 +3609,7 @@ class CountryBudgetItemsSaveTestCase(TestCase):
                 pk=country_budget_items.id)
 
 
+@skip
 class BudgetItemSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
@@ -3713,6 +3730,7 @@ class BudgetItemSaveTestCase(TestCase):
             iati_models.BudgetItem.objects.get(pk=budget_item.id)
 
 
+@skip
 class LegacyDataSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
@@ -3792,6 +3810,7 @@ class LegacyDataSaveTestCase(TestCase):
             iati_models.LegacyData.objects.get(pk=legacy_data.id)
 
 
+@skip
 class ConditionsSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
@@ -3863,6 +3882,7 @@ class ConditionsSaveTestCase(TestCase):
             iati_models.Conditions.objects.get(pk=conditions.id)
 
 
+@skip
 class ConditionSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
@@ -3977,6 +3997,7 @@ class ConditionSaveTestCase(TestCase):
             iati_models.Condition.objects.get(pk=condition.id)
 
 
+@skip
 class CrsAddSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
@@ -4174,6 +4195,7 @@ class CrsAddSaveTestCase(TestCase):
             iati_models.CrsAdd.objects.get(pk=crs_add.id)
 
 
+@skip
 class CrsAddOtherFlagsSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
@@ -4268,6 +4290,7 @@ class CrsAddOtherFlagsSaveTestCase(TestCase):
                 pk=crs_add_other_flags.id)
 
 
+@skip
 class FssSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
@@ -4345,6 +4368,7 @@ class FssSaveTestCase(TestCase):
             iati_models.Fss.objects.get(pk=fss.id)
 
 
+@skip
 class FssForecastSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
@@ -4440,6 +4464,7 @@ class FssForecastSaveTestCase(TestCase):
             iati_models.FssForecast.objects.get(pk=fss_forecast.id)
 
 
+@skip
 class RelatedActivitySaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
@@ -4534,6 +4559,7 @@ class RelatedActivitySaveTestCase(TestCase):
                 pk=related_activity.id)
 
 
+@skip
 class DocumentLinkSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
@@ -4679,6 +4705,7 @@ class DocumentLinkSaveTestCase(TestCase):
                 pk=document_links.id)
 
 
+@skip
 class DocumentLinkCategorySaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
@@ -4773,6 +4800,7 @@ class DocumentLinkCategorySaveTestCase(TestCase):
                 pk=document_link_category.id)
 
 
+@skip
 class DocumentLinkLanguageSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
