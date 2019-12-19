@@ -738,16 +738,16 @@ class TransactionReference(ElementReference):
             self.disbursement_channel.get('key')
         )
         if disbursement_channel_dict:
-            disbursement_channel_element = etree.SubElement(
-                transaction_element, self.disbursement_channel.get('element')
-            )
-
             # Attributes
             # Code
             code_value = disbursement_channel_dict.get(
                 self.disbursement_channel.get('code').get('key')
             )
-            if ref_value:
+            if code_value:
+                disbursement_channel_element = etree.SubElement(
+                    transaction_element,
+                    self.disbursement_channel.get('element')
+                )
                 disbursement_channel_element.set(
                     self.disbursement_channel.get('code').get('attr'),
                     code_value

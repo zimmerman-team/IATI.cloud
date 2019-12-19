@@ -65,7 +65,7 @@ class ElementWithNarrativeReference(ElementReference):
                 pass
 
     def create(self):
-        if self.data:
+        if self.data and self.data['narratives']:
             # Narrative can be inside of the new element or
             # inside of the parent element
             if self.element:
