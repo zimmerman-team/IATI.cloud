@@ -514,7 +514,6 @@ def update_activity_count():
 @job
 def synchronize_solr_indexing():
     queue = django_rq.get_queue('solr')
-
     # Budget
     list_budget_id = list(
         Budget.objects.all().values_list('id', flat=True)
@@ -526,9 +525,8 @@ def synchronize_solr_indexing():
     list_budget_doc_id = [
         int(budget_doc['id']) for budget_doc in budget_docs
     ]
-
-    for budget_doc_id in (list(set(list_budget_doc_id) - set(list_budget_id))):
-        queue.enqueue(delete_budget_in_solr, args=(budget_doc_id,))
+    for ids in divide_delete_ids(list_budget_id, list_budget_doc_id):
+        delete_multiple_rows_budget_in_solr(ids)
 
     # Result
     list_result_id = list(
@@ -541,9 +539,8 @@ def synchronize_solr_indexing():
     list_result_doc_id = [
         int(result_doc['id']) for result_doc in result_docs
     ]
-
-    for result_doc_id in (list(set(list_result_doc_id) - set(list_result_id))):
-        queue.enqueue(delete_result_in_solr, args=(result_doc_id,))
+    for ids in divide_delete_ids(list_result_id, list_result_doc_id):
+        delete_multiple_rows_result_in_solr(ids)
 
     # Transaction
     list_transaction_id = list(
@@ -556,11 +553,8 @@ def synchronize_solr_indexing():
     list_transaction_doc_id = [
         int(transaction_doc['id']) for transaction_doc in transaction_docs
     ]
-
-    for transaction_doc_id in (
-        list(set(list_transaction_doc_id) - set(list_transaction_id))
-    ):
-        queue.enqueue(delete_transaction_in_solr, args=(transaction_doc_id,))
+    for ids in divide_delete_ids(list_transaction_id, list_transaction_doc_id):
+        delete_multiple_rows_transaction_in_solr(ids)
 
     # Activity
     list_activity_id = list(
@@ -573,9 +567,8 @@ def synchronize_solr_indexing():
     list_activity_doc_id = [
         int(activity_doc['id']) for activity_doc in activity_docs
     ]
-
-    for doc_id in (list(set(list_activity_doc_id) - set(list_activity_id))):
-        queue.enqueue(delete_activity_in_solr, args=(doc_id,))
+    for ids in divide_delete_ids(list_activity_id, list_activity_doc_id):
+        delete_multiple_rows_activiy_in_solr(ids)
 
     for activity_id in (
         list(set(list_activity_id) - set(list_activity_doc_id))
@@ -583,7 +576,7 @@ def synchronize_solr_indexing():
         queue.enqueue(add_activity_to_solr, args=(activity_id,))
 
     # Dataset Note
-    """list_dataset_note_id = list(
+    list_dataset_note_id = list(
         DatasetNote.objects.all().values_list('id', flat=True)
     )
     dataset_note_hits = solr_dataset_note.search(q='*:*', fl='id').hits
@@ -593,36 +586,31 @@ def synchronize_solr_indexing():
     list_dataset_note_doc_id = [
         int(dataset_note_doc['id']) for dataset_note_doc in dataset_note_docs
     ]
-
-    for doc_id in (
-            list(set(list_dataset_note_doc_id) - set(list_dataset_note_id))
+    for ids in divide_delete_ids(
+            list_dataset_note_id,
+            list_dataset_note_doc_id
     ):
-        queue.enqueue(delete_dataset_note_in_solr, args=(doc_id,))
+        delete_multiple_rows_dataset_note_in_solr(ids)
 
     for dataset_note_id in (
         list(set(list_dataset_note_id) - set(list_dataset_note_doc_id))
     ):
-        queue.enqueue(add_dataset_note_to_solr, args=(dataset_note_id,))"""
+        queue.enqueue(add_dataset_note_to_solr, args=(dataset_note_id,))
 
 
-@job
-def delete_transaction_in_solr(transaction_doc_id):
-    solr_transaction.delete(q='id:{id}'.format(id=transaction_doc_id))
+def divide_delete_ids(list_ids, list_solr_ids, start=0, end=1000, inc=1000):
+    ids_to_delete = list(
+        set(list_solr_ids) - set(list_ids)
+    )
+    ids = ids_to_delete[start:end]
+    result = []
+    while ids:
+        result.append(ids)
+        start += inc
+        end += inc
+        ids = ids_to_delete[start:end]
 
-
-@job
-def delete_result_in_solr(result_doc_id):
-    solr_result.delete(q='id:{id}'.format(id=result_doc_id))
-
-
-@job
-def delete_budget_in_solr(budget_doc_id):
-    solr_budget.delete(q='id:{id}'.format(id=budget_doc_id))
-
-
-@job
-def delete_activity_in_solr(activity_id):
-    solr_activity.delete(q='id:{id}'.format(id=activity_id))
+    return result
 
 
 @job
@@ -639,6 +627,41 @@ def add_activity_to_solr(activity_id):
 @job
 def delete_dataset_note_in_solr(dataset_note_id):
     solr_dataset_note.delete(q='id:{id}'.format(id=dataset_note_id))
+
+
+@job
+def delete_multiple_rows_activiy_in_solr(ids):
+    solr_activity.delete(
+        q='id:({ids})'.format(ids=' OR '.join(str(i) for i in ids))
+    )
+
+
+@job
+def delete_multiple_rows_budget_in_solr(ids):
+    solr_budget.delete(
+        q='id:({ids})'.format(ids=' OR '.join(str(i) for i in ids))
+    )
+
+
+@job
+def delete_multiple_rows_transaction_in_solr(ids):
+    solr_transaction.delete(
+        q='id:({ids})'.format(ids=' OR '.join(str(i) for i in ids))
+    )
+
+
+@job
+def delete_multiple_rows_result_in_solr(ids):
+    solr_result.delete(
+        q='id:({ids})'.format(ids=' OR '.join(str(i) for i in ids))
+    )
+
+
+@job
+def delete_multiple_rows_dataset_note_in_solr(ids):
+    solr_dataset_note.delete(
+        q='id:({ids})'.format(ids=' OR '.join(str(i) for i in ids))
+    )
 
 
 @job

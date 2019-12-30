@@ -12,6 +12,7 @@ class ResultSerializer(serializers.ResultSerializer):
         read_only=True,
         source='documentlink_set',
         fields=[
+            'url',
             'format',
             'categories',
             'languages',
