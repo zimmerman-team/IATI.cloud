@@ -73,13 +73,7 @@ class ReportingOrgReference(ConvertElementReference,
     def __init__(self, reporting_org=None):
         data = ReportingOrganisationSerializer(
             instance=reporting_org,
-            fields=[
-                'id',
-                'ref',
-                'type',
-                'secondary_reporter',
-                'narratives'
-            ]
+            fields=['id', 'ref', 'type', 'secondary_reporter', 'narratives']
         ).data
 
         super().__init__(parent_element=None, data=data)
