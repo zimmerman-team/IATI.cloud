@@ -13,6 +13,7 @@ from redis import Redis
 from rest_framework_extensions.settings import extensions_api_settings
 from rq import Worker
 from rq.job import Job
+from celery import shared_task
 
 from api.export.serializers import ActivityXMLSerializer
 from api.renderers import XMLRenderer
@@ -250,6 +251,12 @@ def delete_sources_not_found_in_registry_in_x_days(days):
 ###############################
 #### IATI MANAGEMENT TASKS ####  # NOQA: E266
 ###############################
+
+def update_iati_codelists_task():
+    from iati_synchroniser.codelist_importer import CodeListImporter
+    syncer = CodeListImporter()
+    syncer.synchronise_with_codelists()
+
 
 @job
 def update_iati_codelists():
@@ -673,3 +680,28 @@ def add_dataset_note_to_solr(dataset_note_id):
         ).run()
     except DatasetNote.DoesNotExist:
         pass
+
+
+# Celery Tasks
+
+@shared_task
+def get_update_iati_codelists_task():
+    update_iati_codelists_task()
+
+
+@shared_task
+def get_new_sources_from_iati_api_task():
+    from django.core import management
+    management.call_command('get_new_sources_from_iati_registry', verbosity=0)
+
+
+@shared_task
+def parse_all_existing_sources_task():
+    """
+    First parse all organisation sources, then all activity sources
+    """
+    for e in Dataset.objects.all().filter(filetype=2):
+        Dataset.objects.get(pk=e.id).process()
+
+    for e in Dataset.objects.all().filter(filetype=1):
+        Dataset.objects.get(pk=e.id).process()

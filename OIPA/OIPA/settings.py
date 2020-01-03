@@ -138,14 +138,13 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'admin_reorder.middleware.ModelAdminReorder',
     'api.middleware.FileExportMiddleware',
 ]
 
 ROOT_URLCONF = 'OIPA.urls'
 
 INSTALLED_APPS = [
-    'django_rq',
+    # 'django_rq',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -157,7 +156,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
 
-    'grappelli',
+    # 'grappelli',
     'django.contrib.admin',
     'django.contrib.admindocs',
     'django.contrib.gis',
@@ -178,27 +177,16 @@ INSTALLED_APPS = [
     'iati_vocabulary.apps.IatiVocabularyConfig',
     'iati_codelists.apps.IatiCodelistsConfig',
     'test_without_migrations',
-    'admin_reorder',
     'rest_framework.authtoken',
     'iati.permissions',
     'rest_auth',
     'rest_auth.registration',
     'django_filters',
     'markdownify',
-    'solr'
+    'solr',
+    'django_celery_beat'
 ]
 
-ADMIN_REORDER = (
-    'iati',
-    'iati_synchroniser',
-    'iati_codelists',
-    'iati_vocabulary',
-    'iati_organisation',
-    'geodata',
-    'currency_convert',
-    'auth',
-    'sites'
-)
 
 RQ_SHOW_ADMIN_LINK = True
 
@@ -364,7 +352,7 @@ DOWNLOAD_DATASETS = False
 # CELERY CONFIG
 
 CELERY_BROKER_URL = 'amqp://localhost'
-CELERY_RESULT_BACKEND = 'amqp://localhost'
+CELERY_RESULT_BACKEND = 'rpc://localhost'
 CELERY_ALWAYS_EAGER = True
 CELERY_EAGER_PROPAGATES_EXCEPTIONS = True
 CELERY_IMPORTS = 'iati.PostmanJsonImport.tasks'

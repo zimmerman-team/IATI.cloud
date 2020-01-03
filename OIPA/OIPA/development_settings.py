@@ -1,12 +1,12 @@
 from OIPA.settings import *  # NOQA: F401, F403
 
 MIDDLEWARE += [  # noqa: F405
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
+    # 'debug_toolbar.middleware.DebugToolbarMiddleware',
     'yet_another_django_profiler.middleware.ProfilerMiddleware'
 ]
 
 INSTALLED_APPS += {  # noqa: F405
-    'debug_toolbar',
+    # 'debug_toolbar',
     'yet_another_django_profiler'
 }
 
