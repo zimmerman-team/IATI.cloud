@@ -2606,6 +2606,160 @@ class CapitalSpendReference(ElementReference):
             # />
 
 
+class DocumentLinkReference(ElementReference):
+    """
+    http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/document-link/
+    """
+    # <document-link
+    element = 'document-link'
+    # @url
+    url = {
+        'key': 'url',
+        'attr': 'url'
+    }
+    # @format
+    format = {
+        'key': 'format',
+        'code': {
+            'key': 'code',
+            'attr': 'format'
+        }
+    }
+    # <title>
+    title = {
+        'element': 'title',
+        'key': 'title'
+    }
+    # <narrative>
+    # Title narrative
+    # </narrative>
+    # </title>
+    # <title>
+    description = {
+        'element': 'description',
+        'key': 'description'
+    }
+    # <narrative>
+    # Title narrative
+    # </narrative>
+    # </title>
+    # <category>
+    category = {
+        # category data in list
+        'list': 'categories',
+        'element': 'category',
+        'key': 'category',
+        'code': {
+            'key': 'code',
+            'attr': 'code'
+        }
+    }
+    # />
+    # <language
+    language = {
+        # category data in list
+        'list': 'languages',
+        'element': 'language',
+        'key': 'language',
+        'code': {
+            'key': 'code',
+            'attr': 'code'
+        }
+    }
+    # />
+    # <document-date
+    document_date = {
+        'element': 'document-date',
+        'key': 'document_date',
+        # @iso-date
+        'iso_date': {
+            'key': 'iso_date',
+            'attr': 'iso-date'
+        }
+    }
+    # />
+
+    def create(self):
+        # <document-link
+        document_link_element = etree.SubElement(
+            self.parent_element, self.element
+        )
+
+        # @url
+        DataAttribute(
+            document_link_element,
+            self.url.get('attr'),
+            self.data,
+            self.url.get('key')
+        ).set()
+
+        # @format
+        format_dict = self.data.get(self.format.get('key'))
+        if format_dict:
+            DataAttribute(
+                document_link_element,
+                self.format.get('code').get('attr'),
+                format_dict,
+                self.format.get('code').get('key')
+            ).set()
+
+        # <title>
+        # <narrative>
+        ElementWithNarrativeReference(
+            parent_element=document_link_element,
+            data=self.data.get(self.title.get('key')),
+            element=self.title.get('element')
+        ).create()
+        # </narrative>
+        # </title>
+
+        # <description>
+        # <narrative>
+        ElementWithNarrativeReference(
+            parent_element=document_link_element,
+            data=self.data.get(self.description.get('key')),
+            element=self.description.get('element')
+        ).create()
+        # </narrative>
+        # </description>
+
+        categories = self.data.get(self.category.get('list'))
+        for category in categories:
+            category_dict = category.get(
+                self.category.get('key')
+            )
+            if category_dict:
+                # <category
+                category_element = etree.SubElement(
+                    document_link_element,
+                    self.category.get('element')
+                )
+                # @code
+                DataAttribute(
+                    category_element,
+                    self.category.get('code').get('attr'),
+                    category_dict,
+                    self.category.get('code').get('key')
+                ).set()
+                # />
+
+        # <document-date
+        document_date_dict = self.data.get(self.document_date.get('key'))
+        if document_date_dict and document_date_dict.get('iso_date'):
+            document_date_element = etree.SubElement(
+                document_link_element, self.document_date.get('element')
+            )
+
+            # @iso-date
+            DataAttribute(
+                document_date_element,
+                self.document_date.get('iso_date').get('attr'),
+                document_date_dict,
+                self.document_date.get('iso_date').get('key')
+            ).set()
+        # />
+
+
 class LegacyDataReference(ElementReference):
     """
     http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/legacy-data/
