@@ -1,7 +1,7 @@
 from django.urls import reverse
 from rest_framework.serializers import (
-    HyperlinkedIdentityField, HyperlinkedRelatedField, ModelSerializer,
-    SerializerMethodField
+    HiddenField, HyperlinkedIdentityField, HyperlinkedRelatedField,
+    ModelSerializer, SerializerMethodField
 )
 
 from api.generics.serializers import DynamicFieldsModelSerializer
@@ -24,7 +24,7 @@ class DatasetNoteSerializer(ModelSerializer):
 
 
 class SimplePublisherSerializer(DynamicFieldsModelSerializer):
-
+    id = HiddenField(default=None)
     url = HyperlinkedIdentityField(view_name='publishers:publisher-detail')
 
     class Meta:
@@ -38,6 +38,7 @@ class SimplePublisherSerializer(DynamicFieldsModelSerializer):
 
 
 class SimpleDatasetSerializer(DynamicFieldsModelSerializer):
+    id = HiddenField(default=None)
     url = HyperlinkedIdentityField(view_name='datasets:dataset-detail')
     publisher = HyperlinkedRelatedField(
         view_name='publishers:publisher-detail',
@@ -66,6 +67,7 @@ class SimpleDatasetSerializer(DynamicFieldsModelSerializer):
 
 class DatasetSerializer(DynamicFieldsModelSerializer):
 
+    id = HiddenField(default=None)
     url = HyperlinkedIdentityField(view_name='datasets:dataset-detail')
     publisher = SimplePublisherSerializer()
     filetype = SerializerMethodField()
