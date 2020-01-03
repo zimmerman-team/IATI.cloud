@@ -911,16 +911,16 @@ class TransactionReference(ElementReference):
             self.disbursement_channel.get('key')
         )
         if disbursement_channel_dict:
-            disbursement_channel_element = etree.SubElement(
-                transaction_element, self.disbursement_channel.get('element')
-            )
-
             # Attributes
             # Code
             code_value = disbursement_channel_dict.get(
                 self.disbursement_channel.get('code').get('key')
             )
-            if ref_value:
+            if code_value:
+                disbursement_channel_element = etree.SubElement(
+                    transaction_element,
+                    self.disbursement_channel.get('element')
+                )
                 disbursement_channel_element.set(
                     self.disbursement_channel.get('code').get('attr'),
                     code_value
@@ -1995,35 +1995,39 @@ class LocationReference(ElementReference):
         # <location-id
         location_id_dict = self.data.get(self.location_id.get('key'))
         if location_id_dict:
-            location_id_element = etree.SubElement(
-                location_element, self.location_id.get('element')
-            )
-
-            # @vocabulary
-            vocabulary_dict = location_id_dict.get(
-                self.location_id.get('vocabulary').get('key')
-            )
-            if vocabulary_dict:
-                code_value = vocabulary_dict.get(
-                    self.location_id.get('vocabulary').get('code').get('key')
-                )
-                if code_value:
-                    location_id_element.set(
-                        self.location_id.get(
-                            'vocabulary'
-                        ).get('code').get('attr'),
-                        code_value
-                    )
-
-            # @code
             code_value = location_id_dict.get(
                 self.location_id.get('code').get('key')
             )
-            if code_value:
-                location_id_element.set(
-                    self.location_id.get('code').get('attr'),
-                    code_value
+            vocabulary_dict = location_id_dict.get(
+                self.location_id.get('vocabulary').get('key')
+            )
+
+            if code_value and vocabulary_dict:
+                location_id_element = etree.SubElement(
+                    location_element, self.location_id.get('element')
                 )
+
+                # @vocabulary
+                if vocabulary_dict:
+                    code_value = vocabulary_dict.get(
+                        self.location_id.get(
+                            'vocabulary'
+                        ).get('code').get('key')
+                    )
+                    if code_value:
+                        location_id_element.set(
+                            self.location_id.get(
+                                'vocabulary'
+                            ).get('code').get('attr'),
+                            code_value
+                        )
+
+                # @code
+                if code_value:
+                    location_id_element.set(
+                        self.location_id.get('code').get('attr'),
+                        code_value
+                    )
         # / >
 
         # <name>
@@ -2802,8 +2806,14 @@ class CrsAddReference(ElementReference):
         # </interest-arrears>
     }
     # </loan-status>
-    # TODO: No Channel code
     # <channel-code>
+    channel_code = {
+        'element': 'channel-code',
+        'key': 'channel_code',
+        'code': {
+            'key': 'code'
+        }
+    }
     # </channel-code>
     # <crs-add/>
 
@@ -3057,6 +3067,18 @@ class CrsAddReference(ElementReference):
                 )
                 principal_arrears_value_element.text = interest_arrears_value
             # </interest-arrears>
+
+        channel_code_dict = self.data.get(self.channel_code.get('key'))
+        if channel_code_dict:
+            # <channel-code>
+            channel_code_code = channel_code_dict.get('code')
+            if channel_code_code:
+                channel_code_element = etree.SubElement(
+                    crs_add_element,
+                    self.channel_code.get('element')
+                )
+                channel_code_element.text = channel_code_code
+            # <channel-code>
 
         # </crs-add>
 

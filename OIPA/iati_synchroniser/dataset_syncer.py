@@ -82,7 +82,7 @@ class DatasetSyncer(object):
                 break
 
         # remove deprecated publishers / datasets
-        self.remove_deprecated()
+        # self.remove_deprecated()
 
     def get_iati_version(self, dataset_data):
 

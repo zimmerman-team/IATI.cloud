@@ -105,7 +105,7 @@ class ValueSerializer(SerializerNoValidation):
 
 class DocumentLinkCategorySerializer(ModelSerializerNoValidation):
     category = CodelistSerializer()
-
+    id = serializers.HiddenField(default=None)
     document_link = serializers.CharField(write_only=True)
     name_space = serializers.SerializerMethodField(required=False)
 
@@ -183,6 +183,7 @@ class DocumentLinkLanguageSerializer(ModelSerializerNoValidation):
             return None
         return namespace_serializer.data
 
+    id = serializers.HiddenField(default=None)
     document_link = serializers.CharField(write_only=True)
 
     class Meta:
@@ -238,6 +239,7 @@ class DocumentLinkSerializer(ModelSerializerNoValidation):
         # CharField because we want to let the validators do the parsing
         iso_date = serializers.CharField()
 
+    id = serializers.HiddenField(default=None)
     format = CodelistSerializer(source='file_format')
     categories = DocumentLinkCategorySerializer(
         many=True, required=False, source="documentlinkcategory_set")
@@ -344,6 +346,7 @@ class CapitalSpendSerializer(ModelSerializerNoValidation):
 
 class BudgetSerializer(ModelSerializerNoValidation):
 
+    id = serializers.HiddenField(default=None)
     value = ValueSerializer(source='*')
     type = CodelistSerializer()
     status = CodelistSerializer()
@@ -482,7 +485,7 @@ class PlannedDisbursementReceiverSerializer(ModelSerializerNoValidation):
 class PlannedDisbursementSerializer(ModelSerializerNoValidation):
     value = ValueSerializer(source='*')
     type = CodelistSerializer()
-
+    id = serializers.HiddenField(default=None)
     activity = serializers.CharField(write_only=True)
 
     period_start = serializers.CharField()
@@ -620,6 +623,7 @@ class PlannedDisbursementSerializer(ModelSerializerNoValidation):
 
 
 class ActivityDateSerializer(ModelSerializerNoValidation):
+    id = serializers.HiddenField(default=None)
     type = CodelistSerializer()
     iso_date = serializers.DateField()
     narratives = NarrativeSerializer(many=True)
@@ -768,6 +772,7 @@ class CustomReportingOrganisationURLSerializer(
 
 class ReportingOrganisationSerializer(DynamicFieldsModelSerializer):
     # TODO: Link to organisation standard (hyperlinked)
+    id = serializers.HiddenField(default=None)
     ref = serializers.CharField(
         source="publisher.organisation.organisation_identifier"
     )
@@ -818,6 +823,7 @@ class ReportingOrganisationDataSerializer(DynamicFieldsModelSerializer):  # NOQA
     Because this class is directly to data of Reporting Organisation data
     Otherwise ReportingOrganisationSerializer is using a publisher data
     """
+    id = serializers.HiddenField(default=None)
     ref = serializers.CharField()
     url = CustomReportingOrganisationDataURLSerializer(
         view_name='organisations:organisation-detail',
@@ -863,6 +869,7 @@ class ReportingOrganisationDataSerializer(DynamicFieldsModelSerializer):  # NOQA
 
 class ParticipatingOrganisationSerializer(ModelSerializerNoValidation):
     # TODO: Link to organisation standard (hyperlinked)
+    id = serializers.HiddenField(default=None)
     ref = serializers.CharField(source='normalized_ref')
     type = CodelistSerializer()
     role = CodelistSerializer()
@@ -953,6 +960,7 @@ class OtherIdentifierSerializer(ModelSerializerNoValidation):
         ref = serializers.CharField(source='owner_ref')
         narratives = NarrativeSerializer(many=True, required=False)
 
+    id = serializers.HiddenField(default=None)
     ref = serializers.CharField(source="identifier")
     type = CodelistSerializer()
 
@@ -1026,6 +1034,7 @@ class OtherIdentifierSerializer(ModelSerializerNoValidation):
 
 
 class ActivityPolicyMarkerSerializer(ModelSerializerNoValidation):
+    id = serializers.HiddenField(default=None)
     vocabulary = VocabularySerializer()
     vocabulary_uri = serializers.URLField()
     policy_marker = CodelistSerializer(source="code")
@@ -1119,6 +1128,7 @@ class TitleSerializer(ModelSerializerNoValidation):
         except NameSpaceElement.DoesNotExist:
             return None
         return namespace_serializer.data
+    id = serializers.HiddenField(default=None)
 
     class Meta:
         model = Title
@@ -1128,7 +1138,7 @@ class TitleSerializer(ModelSerializerNoValidation):
 class DescriptionSerializer(ModelSerializerNoValidation):
     type = CodelistSerializer()
     narratives = NarrativeSerializer(many=True)
-
+    id = serializers.HiddenField(default=None)
     activity = serializers.CharField(write_only=True)
     name_space = serializers.SerializerMethodField(required=False)
 
@@ -1194,6 +1204,7 @@ class DescriptionSerializer(ModelSerializerNoValidation):
 
 
 class RelatedActivitySerializer(ModelSerializerNoValidation):
+    id = serializers.HiddenField(default=None)
     ref_activity = serializers.HyperlinkedRelatedField(
         view_name='activities:activity-detail', read_only=True)
     type = CodelistSerializer()
@@ -1279,6 +1290,7 @@ class LegacyDataSerializer(ModelSerializerNoValidation):
         except NameSpaceElement.DoesNotExist:
             return None
         return namespace_serializer.data
+    id = serializers.HiddenField(default=None)
 
     class Meta:
         model = LegacyData
@@ -1327,6 +1339,7 @@ class LegacyDataSerializer(ModelSerializerNoValidation):
 
 
 class ActivitySectorSerializer(ModelSerializerNoValidation):
+    id = serializers.HiddenField(default=None)
     sector = SectorSerializer(fields=('url', 'code', 'name'))
     percentage = serializers.DecimalField(
         max_digits=5,
@@ -1472,7 +1485,7 @@ class BudgetItemSerializer(ModelSerializerNoValidation):
 class CountryBudgetItemsSerializer(ModelSerializerNoValidation):
 
     vocabulary = VocabularySerializer()
-
+    id = serializers.HiddenField(default=None)
     activity = serializers.CharField(write_only=True)
 
     budget_items = BudgetItemSerializer(
@@ -1547,6 +1560,7 @@ class CountryBudgetItemsSerializer(ModelSerializerNoValidation):
 
 class ConditionSerializer(ModelSerializerNoValidation):
 
+    id = serializers.HiddenField(default=None)
     type = CodelistSerializer()
     narratives = NarrativeSerializer(many=True, required=False)
 
@@ -1615,6 +1629,7 @@ class ConditionSerializer(ModelSerializerNoValidation):
 
 
 class ConditionsSerializer(ModelSerializerNoValidation):
+    id = serializers.HiddenField(default=None)
     condition = ConditionSerializer(
         many=True,
         read_only=True,
@@ -1687,6 +1702,7 @@ class ConditionsSerializer(ModelSerializerNoValidation):
 
 
 class ActivityRecipientRegionSerializer(DynamicFieldsModelSerializer):
+    id = serializers.HiddenField(default=None)
     region = BasicRegionSerializer(
         fields=('url', 'code', 'name'),
     )
@@ -1766,6 +1782,7 @@ class ActivityRecipientRegionSerializer(DynamicFieldsModelSerializer):
 
 
 class HumanitarianScopeSerializer(DynamicFieldsModelSerializer):
+    id = serializers.HiddenField(default=None)
     type = CodelistSerializer()
     vocabulary = VocabularySerializer()
     vocabulary_uri = serializers.URLField()
@@ -1837,6 +1854,7 @@ class HumanitarianScopeSerializer(DynamicFieldsModelSerializer):
 
 
 class RecipientCountrySerializer(DynamicFieldsModelSerializer):
+    id = serializers.HiddenField(default=None)
     country = CountrySerializer(fields=('url', 'code', 'name'))
     percentage = serializers.DecimalField(
         max_digits=5,
@@ -1909,6 +1927,8 @@ class RecipientCountrySerializer(DynamicFieldsModelSerializer):
 
 
 class ResultTypeSerializer(ModelSerializerNoValidation):
+    id = serializers.HiddenField(default=None)
+
     class Meta:
         model = ResultType
         fields = (
@@ -1921,6 +1941,7 @@ class ResultTypeSerializer(ModelSerializerNoValidation):
 
 
 class ResultDescriptionSerializer(ModelSerializerNoValidation):
+    id = serializers.HiddenField(default=None)
     narratives = NarrativeSerializer(source="*")
 
     class Meta:
@@ -1935,6 +1956,7 @@ class ResultDescriptionSerializer(ModelSerializerNoValidation):
 
 class ResultTitleSerializer(ModelSerializerNoValidation):
     narratives = NarrativeSerializer(source="*")
+    id = serializers.HiddenField(default=None)
 
     class Meta:
         model = ResultTitle
@@ -1947,6 +1969,7 @@ class ResultTitleSerializer(ModelSerializerNoValidation):
 
 
 class ResultIndicatorPeriodActualLocationSerializer(ModelSerializerNoValidation):  # NOQA: E501
+    id = serializers.HiddenField(default=None)
     ref = serializers.CharField()
     result_indicator_period = serializers.CharField(write_only=True)
     name_space = serializers.SerializerMethodField(required=False)
@@ -1988,6 +2011,7 @@ class ResultIndicatorPeriodActualLocationSerializer(ModelSerializerNoValidation)
 
 
 class ResultIndicatorPeriodTargetLocationSerializer(ModelSerializerNoValidation):  # NOQA: E501
+    id = serializers.HiddenField(default=None)
     ref = serializers.CharField()
     result_indicator_period_target = serializers.CharField(write_only=True)
     result_indicator_period = serializers.CharField(
@@ -2073,6 +2097,7 @@ class ResultIndicatorPeriodTargetLocationSerializer(ModelSerializerNoValidation)
 
 
 class ResultIndicatorPeriodActualDimensionSerializer(ModelSerializerNoValidation):  # NOQA: E501
+    id = serializers.HiddenField(default=None)
     name = serializers.CharField()
     value = serializers.CharField()
     result_indicator_period = serializers.CharField(write_only=True)
@@ -2138,6 +2163,7 @@ class ResultIndicatorPeriodActualDimensionSerializer(ModelSerializerNoValidation
 
 
 class ResultIndicatorPeriodTargetDimensionSerializer(ModelSerializerNoValidation):  # NOQA: E501
+    id = serializers.HiddenField(default=None)
     name = serializers.CharField()
     value = serializers.CharField()
     result_indicator_period = serializers.CharField(write_only=True)
@@ -2277,6 +2303,7 @@ class ResultIndicatorPeriodActualSerializer(SerializerNoValidation):
 
 
 class ResultIndicatorPeriodSerializer(ModelSerializerNoValidation):
+    id = serializers.HiddenField(default=None)
     targets = ResultIndicatorPeriodTargetSerializer(many=True)
     actuals = ResultIndicatorPeriodActualSerializer(many=True)
 
@@ -2326,6 +2353,7 @@ class ResultIndicatorPeriodSerializer(ModelSerializerNoValidation):
 
 
 class ResultIndicatorBaselineDimensionSerializer(ModelSerializerNoValidation):  # NOQA: E501
+    id = serializers.HiddenField(default=None)
     name = serializers.CharField()
     value = serializers.CharField()
 
@@ -2409,6 +2437,7 @@ class ResultIndicatorBaselineSerializer(ModelSerializerNoValidation):
 
 
 class ResultIndicatorReferenceSerializer(ModelSerializerNoValidation):
+    id = serializers.HiddenField(default=None)
     vocabulary = VocabularySerializer()
     code = serializers.CharField(required=False)
 
@@ -2463,6 +2492,7 @@ class ResultIndicatorReferenceSerializer(ModelSerializerNoValidation):
 
 
 class ResultIndicatorSerializer(ModelSerializerNoValidation):
+    id = serializers.HiddenField(default=None)
     title = NarrativeContainerSerializer(source="resultindicatortitle")
     description = NarrativeContainerSerializer(
         source="resultindicatordescription")
@@ -2578,6 +2608,7 @@ class ResultIndicatorSerializer(ModelSerializerNoValidation):
 
 
 class ContactInfoSerializer(ModelSerializerNoValidation):
+    id = serializers.HiddenField(default=None)
     type = CodelistSerializer()
     organisation = NarrativeContainerSerializer()
     department = NarrativeContainerSerializer()
@@ -2788,7 +2819,7 @@ class ContactInfoSerializer(ModelSerializerNoValidation):
 class ResultReferenceSerializer(ModelSerializerNoValidation):
     vocabulary = VocabularySerializer()
     code = serializers.CharField(required=False)
-
+    id = serializers.HiddenField(default=None)
     result = serializers.CharField(write_only=True)
     name_space = serializers.SerializerMethodField(required=False)
 
@@ -2853,6 +2884,7 @@ class ResultReferenceSerializer(ModelSerializerNoValidation):
 
 
 class ResultSerializer(ModelSerializerNoValidation):
+    id = serializers.HiddenField(default=None)
     type = CodelistSerializer()
     title = NarrativeContainerSerializer(source="resulttitle")
     description = NarrativeContainerSerializer(source="resultdescription")
@@ -3042,6 +3074,7 @@ class CrsAddLoanStatusSerializer(ModelSerializerNoValidation):
 
 
 class CrsAddOtherFlagsSerializer(ModelSerializerNoValidation):
+    id = serializers.HiddenField(default=None)
     other_flags = CodelistSerializer()
     significance = serializers.CharField()
 
@@ -3105,6 +3138,7 @@ class CrsAddOtherFlagsSerializer(ModelSerializerNoValidation):
 
 
 class CrsAddSerializer(ModelSerializerNoValidation):
+    id = serializers.HiddenField(default=None)
     other_flags = CrsAddOtherFlagsSerializer(many=True, required=False)
     loan_terms = CrsAddLoanTermsSerializer(required=False)
     loan_status = CrsAddLoanStatusSerializer(required=False)
@@ -3213,6 +3247,7 @@ class CrsAddSerializer(ModelSerializerNoValidation):
 
 
 class FssForecastSerializer(ModelSerializerNoValidation):
+    id = serializers.HiddenField(default=None)
     value_date = serializers.CharField()
     currency = CodelistSerializer()
 
@@ -3279,6 +3314,7 @@ class FssForecastSerializer(ModelSerializerNoValidation):
 
 
 class FssSerializer(ModelSerializerNoValidation):
+    id = serializers.HiddenField(default=None)
     extraction_date = serializers.CharField()
     forecasts = FssForecastSerializer(
         many=True,
@@ -3348,6 +3384,8 @@ class FssSerializer(ModelSerializerNoValidation):
 
 
 class LocationSerializer(DynamicFieldsModelSerializer):
+    id = serializers.HiddenField(default=None)
+
     class LocationIdSerializer(SerializerNoValidation):
         vocabulary = VocabularySerializer(
             source='location_id_vocabulary')
@@ -3821,6 +3859,7 @@ class TransactionSerializer(serializers.ModelSerializer):
 
 
 class ActivityTagSerializer(ModelSerializerNoValidation):
+    id = serializers.HiddenField(default=None)
     vocabulary = VocabularySerializer()
     narratives = NarrativeSerializer(many=True)
     name_space = serializers.SerializerMethodField(required=False)

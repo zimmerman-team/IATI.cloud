@@ -56,15 +56,19 @@ class ElementWithNarrativeReference(ElementReference):
 
     def create_narrative(self, parent_element):
         if self.narratives_key in self.data:
-            for narrative in self.data.get(self.narratives_key):
-                narrative_reference = NarrativeReference(
-                    parent_element=parent_element,
-                    data=narrative
-                )
-                narrative_reference.create()
+            try:
+                for narrative in self.data.get(self.narratives_key):
+                    narrative_reference = NarrativeReference(
+                        parent_element=parent_element,
+                        data=narrative
+                    )
+                    narrative_reference.create()
+            except TypeError:
+                pass
 
     def create(self):
-        if self.data:
+        if self.data and self.data['narratives']:
+
             namespace_list = self.data.get('name_space')
             # Narrative can be inside of the new element or
             # inside of the parent element

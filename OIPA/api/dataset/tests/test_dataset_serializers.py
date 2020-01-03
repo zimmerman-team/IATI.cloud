@@ -14,7 +14,6 @@ class TestDatasetSerializers(TestCase):
             context={'request': self.request_dummy}
         )
 
-        self.assertEqual(serializer.data.get('id'), dataset.id)
         self.assertEqual(serializer.data.get('name'), dataset.name)
         self.assertEqual(serializer.data.get('title'), dataset.title)
         self.assertEqual(serializer.data.get('filetype'), 'Activity')
@@ -24,7 +23,6 @@ class TestDatasetSerializers(TestCase):
         ), dataset.iati_version)
 
         required_fields = (
-            'id',
             'url',
             'name',
             'title',

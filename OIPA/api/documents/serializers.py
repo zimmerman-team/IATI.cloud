@@ -36,6 +36,7 @@ class DocumentLinkSerializer(serializers.ModelSerializer):
 
 class DocumentSerializer(DynamicFieldsModelSerializer):
     document_link = DocumentLinkSerializer()
+    id = serializers.HiddenField(default=None)
 
     class Meta:
         model = iati_models.Document
