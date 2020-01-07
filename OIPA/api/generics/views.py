@@ -105,14 +105,18 @@ class DynamicView(GenericAPIView):
 
         for filter_field in filter_fields:
             found = False
-            declared_filters = self.filter_class.declared_filters
-            for key in declared_filters:
-                if filter_field == key:
-                    found = True
-            if found is False:
-                # make error in the code to fail if input wrong filter name.
-                setattr(self, 'filter_class', 'No Filter Class')
-                break
+            try:
+                declared_filters = self.filter_class.declared_filters
+
+                for key in declared_filters:
+                    if filter_field == key:
+                        found = True
+                if found is False:
+                    # make error in the code to fail if input wrong filter name.
+                    setattr(self, 'filter_class', 'No Filter Class')
+                    break
+            except AttributeError:
+                pass
         fields = self._get_query_fields(*args, **kwargs)
         if not fields:
             fields = self.serializer_fields
