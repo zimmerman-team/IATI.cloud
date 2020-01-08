@@ -6,7 +6,7 @@ from ast import literal_eval
 from os import environ as env
 
 from celery.schedules import crontab
-from tzlocal import get_localzone
+# from tzlocal import get_localzone
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 DEBUG = literal_eval(env.get('OIPA_DEBUG', 'True'))
@@ -77,7 +77,11 @@ ALLOWED_HOSTS = env.get('OIPA_ALLOWED_HOSTS', '*').split()
 # In a Windows environment this must be set to your system time zone.
 
 
-TIME_ZONE = get_localzone().zone
+# Celery is needed UTC
+# TIME_ZONE = get_localzone().zone
+
+TIME_ZONE = 'UTC'
+
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
@@ -351,6 +355,8 @@ DOWNLOAD_DATASETS = False
 
 # CELERY CONFIG
 
+CELERY_TIMEZONE = 'UTC'
+CELERY_ENABLE_UTC = True
 CELERY_BROKER_URL = 'amqp://localhost'
 CELERY_RESULT_BACKEND = 'rpc://localhost'
 CELERY_ALWAYS_EAGER = True

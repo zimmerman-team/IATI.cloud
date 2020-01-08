@@ -6,6 +6,7 @@ import time
 import django_rq
 import fulltext
 import requests
+from celery import shared_task
 from django.conf import settings
 from django.core.cache import caches
 from django_rq import job
@@ -13,7 +14,6 @@ from redis import Redis
 from rest_framework_extensions.settings import extensions_api_settings
 from rq import Worker
 from rq.job import Job
-from celery import shared_task
 
 from api.export.serializers import ActivityXMLSerializer
 from api.renderers import XMLRenderer
@@ -31,13 +31,9 @@ from solr.datasetnote.tasks import DatasetNoteTaskIndexing
 from solr.datasetnote.tasks import solr as solr_dataset_note
 from solr.result.tasks import solr as solr_result
 from solr.transaction.tasks import solr as solr_transaction
+from task_queue.utils import Tasks
 
 redis_conn = Redis.from_url(settings.RQ_REDIS_URL)
-
-
-###############################
-#### TASK QUEUE MANAGEMENT ####  # NOQA: E266
-###############################
 
 
 def remove_all_api_caches():
@@ -74,10 +70,6 @@ def delete_all_tasks_from_queue(queue_name):
             break
         current_job.delete()
 
-
-###############################
-######## PARSING TASKS ########  # NOQA: E266
-###############################
 
 @job
 def get_new_sources_from_iati_api():
@@ -248,10 +240,6 @@ def delete_sources_not_found_in_registry_in_x_days(days):
                 queue.enqueue(delete_source_by_id, args=(source.id,))
 
 
-###############################
-#### IATI MANAGEMENT TASKS ####  # NOQA: E266
-###############################
-
 def update_iati_codelists_task():
     from iati_synchroniser.codelist_importer import CodeListImporter
     syncer = CodeListImporter()
@@ -408,11 +396,6 @@ def start_searchable_activities_task(counter=0):
 def update_searchable_activities():
     from django.core import management
     management.call_command('set_searchable_activities', verbosity=0)
-
-
-#############################################
-############# Docstore TASKS ################  # NOQA: E266
-#############################################
 
 
 @job
@@ -682,8 +665,6 @@ def add_dataset_note_to_solr(dataset_note_id):
         pass
 
 
-# Celery Tasks
-
 @shared_task
 def get_update_iati_codelists_task():
     update_iati_codelists_task()
@@ -696,12 +677,23 @@ def get_new_sources_from_iati_api_task():
 
 
 @shared_task
-def parse_all_existing_sources_task():
-    """
-    First parse all organisation sources, then all activity sources
-    """
-    for e in Dataset.objects.all().filter(filetype=2):
-        Dataset.objects.get(pk=e.id).process()
+def parse_source_by_id_task(dataset_id, force=False):
+    try:
+        dataset = Dataset.objects.get(pk=dataset_id)
+        dataset.process(force_reparse=force)
+    except Dataset.DoesNotExist:
+        pass
 
-    for e in Dataset.objects.all().filter(filetype=1):
-        Dataset.objects.get(pk=e.id).process()
+
+@shared_task
+def parse_all_existing_sources_task(force=False):
+    tasks = Tasks(
+        parent_task='task_queue.tasks.parse_all_existing_sources_task',
+        children_tasks=['task_queue.tasks.parse_source_by_id_task']
+    )
+    if tasks.is_parent():
+        for dataset in Dataset.objects.all().filter(filetype=2):
+            parse_source_by_id_task.delay(dataset_id=dataset.id, force=force)
+
+        for dataset in Dataset.objects.all().filter(filetype=1):
+            parse_source_by_id_task.delay(dataset_id=dataset.id, force=force)
