@@ -6,6 +6,7 @@ from ast import literal_eval
 from os import environ as env
 
 from celery.schedules import crontab
+
 # from tzlocal import get_localzone
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
