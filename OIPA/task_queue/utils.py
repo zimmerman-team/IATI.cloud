@@ -3,11 +3,11 @@ from celery.task.control import inspect
 
 class Tasks:
     """
-    The logic of this class to check if only one task is running
-    then the task will be continued to run.
+    The logic: if only one task is running then the task will
+    be continued to run.
     - parent_task: if only this task is running then continued to run
-    - children_task: if the active task has a children_task or more
-      then not continue to run.
+    - children_task: if the active task has one or more children_task
+      then not continue to run the task.
     """
 
     def __init__(self, parent_task, children_tasks):
