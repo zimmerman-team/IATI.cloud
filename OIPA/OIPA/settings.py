@@ -6,7 +6,8 @@ from ast import literal_eval
 from os import environ as env
 
 from celery.schedules import crontab
-from tzlocal import get_localzone
+
+# from tzlocal import get_localzone
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 DEBUG = literal_eval(env.get('OIPA_DEBUG', 'True'))
@@ -77,7 +78,11 @@ ALLOWED_HOSTS = env.get('OIPA_ALLOWED_HOSTS', '*').split()
 # In a Windows environment this must be set to your system time zone.
 
 
-TIME_ZONE = get_localzone().zone
+# Celery is needed UTC
+# TIME_ZONE = get_localzone().zone
+
+TIME_ZONE = 'UTC'
+
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
@@ -138,14 +143,13 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'admin_reorder.middleware.ModelAdminReorder',
     'api.middleware.FileExportMiddleware',
 ]
 
 ROOT_URLCONF = 'OIPA.urls'
 
 INSTALLED_APPS = [
-    'django_rq',
+    # 'django_rq',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -157,7 +161,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
 
-    'grappelli',
+    # 'grappelli',
     'django.contrib.admin',
     'django.contrib.admindocs',
     'django.contrib.gis',
@@ -178,27 +182,16 @@ INSTALLED_APPS = [
     'iati_vocabulary.apps.IatiVocabularyConfig',
     'iati_codelists.apps.IatiCodelistsConfig',
     'test_without_migrations',
-    'admin_reorder',
     'rest_framework.authtoken',
     'iati.permissions',
     'rest_auth',
     'rest_auth.registration',
     'django_filters',
     'markdownify',
-    'solr'
+    'solr',
+    'django_celery_beat'
 ]
 
-ADMIN_REORDER = (
-    'iati',
-    'iati_synchroniser',
-    'iati_codelists',
-    'iati_vocabulary',
-    'iati_organisation',
-    'geodata',
-    'currency_convert',
-    'auth',
-    'sites'
-)
 
 RQ_SHOW_ADMIN_LINK = True
 
@@ -363,8 +356,10 @@ DOWNLOAD_DATASETS = False
 
 # CELERY CONFIG
 
+CELERY_TIMEZONE = 'UTC'
+CELERY_ENABLE_UTC = True
 CELERY_BROKER_URL = 'amqp://localhost'
-CELERY_RESULT_BACKEND = 'amqp://localhost'
+CELERY_RESULT_BACKEND = 'rpc://localhost'
 CELERY_ALWAYS_EAGER = True
 CELERY_EAGER_PROPAGATES_EXCEPTIONS = True
 CELERY_IMPORTS = 'iati.PostmanJsonImport.tasks'
