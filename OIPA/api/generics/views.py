@@ -102,6 +102,8 @@ class DynamicView(GenericAPIView):
             filter_fields.pop('fields')
         if 'format' in filter_fields:
             filter_fields.pop('format')
+        if 'page' in filter_fields:
+            filter_fields.pop('page')
 
         for filter_field in filter_fields:
             found = False
