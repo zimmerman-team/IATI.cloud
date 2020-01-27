@@ -114,7 +114,8 @@ class DynamicView(GenericAPIView):
                     if filter_field == key:
                         found = True
                 if found is False:
-                    # make error in the code to fail if input wrong filter name.
+                    # make error in the code to fail
+                    # if input wrong filter name.
                     setattr(self, 'filter_class', 'No Filter Class')
                     break
             except AttributeError:
