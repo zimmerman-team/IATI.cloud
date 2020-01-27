@@ -8,10 +8,10 @@ from api.organisation.serializers import (
 from solr.activity.references import ReportingOrgReference
 from solr.indexing import BaseIndexing
 from solr.organisation.references import (
-    NameOrgReference, RecipientCountryBudgetOrgReference,
-    RecipientOrgBudgetOrgReference, RecipientRegionBudgetOrgReference,
-    TotalBudgetOrgReference, TotalExpenditureOrgReference,
-    DocumentLinkOrgReference
+    DocumentLinkOrgReference, NameOrgReference,
+    RecipientCountryBudgetOrgReference, RecipientOrgBudgetOrgReference,
+    RecipientRegionBudgetOrgReference, TotalBudgetOrgReference,
+    TotalExpenditureOrgReference
 )
 from solr.organisation.serializers import (
     OrganisationRecipientCountryBudgetSerializer,

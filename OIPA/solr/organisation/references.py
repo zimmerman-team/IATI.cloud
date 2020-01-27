@@ -1,3 +1,5 @@
+from api.iati.references import \
+    DocumentLinkOrgReference as BaseDocumentLinkOrgReference
 from api.iati.references import NameOrgReference as BaseNameOrgReference
 from api.iati.references import \
     RecipientCountryBudgetOrgReference as \
@@ -10,12 +12,10 @@ from api.iati.references import \
     TotalBudgetOrgReference as BaseTotalBudgetOrgReference
 from api.iati.references import \
     TotalExpenditureOrgReference as BaseTotalExpenditureOrgReference
-from api.iati.references import \
-    DocumentLinkOrgReference as BaseDocumentLinkOrgReference
 from api.organisation.serializers import (
-    OrganisationNameSerializer, OrganisationRecipientOrgBudgetSerializer,
-    OrganisationTotalBudgetSerializer, OrganisationTotalExpenditureSerializer,
-    OrganisationDocumentLinkSerializer
+    OrganisationDocumentLinkSerializer, OrganisationNameSerializer,
+    OrganisationRecipientOrgBudgetSerializer,
+    OrganisationTotalBudgetSerializer, OrganisationTotalExpenditureSerializer
 )
 from solr.organisation.serializers import (
     OrganisationRecipientCountryBudgetSerializer,
