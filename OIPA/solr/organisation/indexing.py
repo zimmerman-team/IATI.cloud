@@ -5,7 +5,14 @@ from api.organisation.serializers import (
     OrganisationRecipientOrgBudgetSerializer,
     OrganisationTotalBudgetSerializer, OrganisationTotalExpenditureSerializer
 )
+from solr.activity.references import ReportingOrgReference
 from solr.indexing import BaseIndexing
+from solr.organisation.references import (
+    NameOrgReference, RecipientCountryBudgetOrgReference,
+    RecipientOrgBudgetOrgReference, RecipientRegionBudgetOrgReference,
+    TotalBudgetOrgReference, TotalExpenditureOrgReference,
+    DocumentLinkOrgReference
+)
 from solr.organisation.serializers import (
     OrganisationRecipientCountryBudgetSerializer,
     OrganisationRecipientRegionBudgetSerializer
@@ -27,6 +34,7 @@ class OrganisationIndexing(BaseIndexing):
             self.add_field('organisation_total_expenditure_value', [])
             self.add_field('organisation_total_expenditure_value_currency', [])
             self.add_field('organisation_total_expenditure_value_date', [])
+            self.add_field('organisation_total_expenditure_xml', [])
 
             for total_expenditure in total_expenditure_all:
                 self.add_value_list(
@@ -58,6 +66,12 @@ class OrganisationIndexing(BaseIndexing):
                         ).data
                     ).decode()
                 )
+                self.add_value_list(
+                    'organisation_total_expenditure_xml',
+                    TotalExpenditureOrgReference(
+                        organisation_total_expenditure=total_expenditure
+                    ).to_string()
+                )
 
     def document_links(self):
         document_link_all = self.record.organisationdocumentlink_set.all()
@@ -66,6 +80,7 @@ class OrganisationIndexing(BaseIndexing):
             self.add_field('organisation_document_link_url', [])
             self.add_field('organisation_document_link_format', [])
             self.add_field('organisation_document_link_document_date', [])
+            self.add_field('organisation_document_link_xml', [])
 
             for document_link in document_link_all:
                 self.add_value_list(
@@ -87,12 +102,18 @@ class OrganisationIndexing(BaseIndexing):
                         OrganisationDocumentLinkSerializer(document_link).data
                     ).decode()
                 )
+                self.add_value_list(
+                    'organisation_document_link_xml',
+                    DocumentLinkOrgReference(
+                        organisation_document_link=document_link
+                    ).to_string()
+                )
 
     def related_budget(
-        self,
-        related_budget_all,
-        serializer,
-        prefix="organisation_total_budget"
+            self,
+            related_budget_all,
+            serializer,
+            prefix="organisation_total_budget"
     ):
         if related_budget_all:
             self.add_field(prefix + '_period_start', [])
@@ -101,6 +122,15 @@ class OrganisationIndexing(BaseIndexing):
             self.add_field(prefix + '_value_currency', [])
             self.add_field(prefix + '_value_date', [])
             self.add_field(prefix, [])
+
+            if prefix == 'organisation_total_budget':
+                self.add_field('organisation_total_budget_xml', [])
+            elif prefix == 'organisation_recipient_org_budget':
+                self.add_field('organisation_recipient_org_budget_xml', [])
+            elif prefix == 'organisation_recipient_region_budget':
+                self.add_field('organisation_recipient_region_budget_xml', [])
+            elif prefix == 'organisation_recipient_country_budget':
+                self.add_field('organisation_recipient_country_budget_xml', [])
 
             for related_budget in related_budget_all:
                 self.add_value_list(
@@ -131,6 +161,36 @@ class OrganisationIndexing(BaseIndexing):
                     ).decode()
                 )
 
+                if prefix == 'organisation_total_budget':
+                    self.add_value_list(
+                        'organisation_total_budget_xml',
+                        TotalBudgetOrgReference(
+                            organisation_total_budget=related_budget
+                        ).to_string()
+                    )
+                elif prefix == 'organisation_recipient_org_budget':
+                    self.add_value_list(
+                        'organisation_recipient_org_budget_xml',
+                        RecipientOrgBudgetOrgReference(
+                            organisation_recipient_org_budget=related_budget
+                        ).to_string()
+                    )
+                elif prefix == 'organisation_recipient_region_budget':
+                    self.add_value_list(
+                        'organisation_recipient_region_budget_xml',
+                        RecipientRegionBudgetOrgReference(
+                            organisation_recipient_region_budget=related_budget
+                        ).to_string()
+                    )
+                elif prefix == 'organisation_recipient_country_budget':
+                    self.add_value_list(
+                        'organisation_recipient_country_budget_xml',
+                        RecipientCountryBudgetOrgReference(
+                            organisation_recipient_country_budget=
+                            related_budget
+                        ).to_string()
+                    )
+
     def name(self):
         name = get_child_attr(self.record, 'name')
         if name:
@@ -139,6 +199,10 @@ class OrganisationIndexing(BaseIndexing):
                 JSONRenderer().render(
                     OrganisationNameSerializer(name).data
                 ).decode()
+            )
+            self.add_field(
+                'organisation_name_xml',
+                NameOrgReference(organisation_name=name).to_string()
             )
 
             self.indexing[
@@ -178,6 +242,11 @@ class OrganisationIndexing(BaseIndexing):
         )
 
         self.name()
+        self.add_field(
+            'organisation_reported_org_xml',
+            ReportingOrgReference(reporting_org=organisation).to_string()
+        )
+
         self.related_budget(
             self.record.total_budgets.all(),
             serializer=OrganisationTotalBudgetSerializer,
@@ -198,8 +267,8 @@ class OrganisationIndexing(BaseIndexing):
             serializer=OrganisationRecipientCountryBudgetSerializer,
             prefix="organisation_recipient_country_budget"
         )
-        self.document_links()
         self.total_expenditure()
+        self.document_links()
 
     def to_representation(self, organisation):
         self.record = organisation

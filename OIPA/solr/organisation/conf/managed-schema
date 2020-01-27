@@ -129,6 +129,9 @@
     <field name="organisation_name_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="organisation_name_narrative" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="organisation_name_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="organisation_name_xml" type="text_general" multiValued="false" indexed="false" required="false" stored="true"/>
+
+    <field name="organisation_reported_org_xml" type="text_general" multiValued="false" indexed="false" required="false" stored="true"/>
 
     <field name="organisation_type" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
 
@@ -145,6 +148,7 @@
     <field name="organisation_total_budget_value" type="pdoubles" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="organisation_total_budget_value_currency" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="organisation_total_budget_value_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="organisation_total_budget_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
 
     <field name="organisation_recipient_org_budget" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="organisation_recipient_org_budget_period_start" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
@@ -152,6 +156,7 @@
     <field name="organisation_recipient_org_budget_value" type="pdoubles" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="organisation_recipient_org_budget_value_currency" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="organisation_recipient_org_budget_value_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="organisation_recipient_org_budget_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
 
     <field name="organisation_recipient_region_budget" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="organisation_recipient_region_budget_period_start" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
@@ -159,6 +164,7 @@
     <field name="organisation_recipient_region_budget_value" type="pdoubles" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="organisation_recipient_region_budget_value_currency" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="organisation_recipient_region_budget_value_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="organisation_recipient_region_budget_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
 
     <field name="organisation_recipient_country_budget" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="organisation_recipient_country_budget_period_start" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
@@ -166,6 +172,7 @@
     <field name="organisation_recipient_country_budget_value" type="pdoubles" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="organisation_recipient_country_budget_value_currency" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="organisation_recipient_country_budget_value_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="organisation_recipient_country_budget_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
 
     <field name="organisation_total_expenditure" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="organisation_total_expenditure_period_start" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
@@ -173,11 +180,13 @@
     <field name="organisation_total_expenditure_value" type="pdoubles" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="organisation_total_expenditure_value_currency" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="organisation_total_expenditure_value_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="organisation_total_expenditure_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
 
     <field name="organisation_document_link" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="organisation_document_link_url" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="organisation_document_link_format" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="organisation_document_link_document_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="organisation_document_link_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
     <!--Organisation Core - End-->
 
     <!-- This can be enabled, in case the client does not know what fields may be searched. It isn't enabled by default
