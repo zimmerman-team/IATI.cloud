@@ -10,6 +10,7 @@ from iati.models import Budget
 
 class BudgetSerializer(ModelSerializerNoValidation):
 
+    id = serializers.HiddenField(default=None)
     value = ValueSerializer(source='*')
     type = CodelistSerializer()
     status = CodelistSerializer()

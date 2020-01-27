@@ -17,8 +17,9 @@ class TransactionIndexing(BaseIndexing):
         self.add_field('id', transaction.id)
         self.add_field('iati_identifier', transaction.activity.iati_identifier)
 
-        self.indexing['title_lang'], self.indexing['title_narrative'] = \
-            get_narrative_lang_list(transaction.activity.title)
+        if get_child_attr(transaction, 'activity.title'):
+            self.indexing['title_lang'], self.indexing['title_narrative'] = \
+                get_narrative_lang_list(transaction.activity.title)
 
         self.add_field('description_type', [])
         self.add_field('description_lang', [])

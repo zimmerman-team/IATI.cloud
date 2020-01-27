@@ -5,11 +5,13 @@
 # An API for interacting with the Comprehensive Knowledge Archive Network (CKAN):
 ckanapi==4.1
 
-celery==4.3.0
+celery==4.4.0
 
 Django==2.0.13
 
 django-grappelli==2.11.1
+
+django-celery-beat==1.5.0
 
 # Adding CORS headers to responses, only allowing certain API methods:
 django-cors-headers==2.2.0
@@ -153,3 +155,9 @@ python3-memcached==1.51
 ################
 
 pysolr==3.8.1
+
+
+#####
+# FLOWER FOR CELERY WORKER STATUS
+######
+flower

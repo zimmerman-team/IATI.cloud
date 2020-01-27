@@ -10,7 +10,7 @@ from OIPA import views
 admin.autodiscover()
 
 urlpatterns = [
-    url(r'^grappelli/', include('grappelli.urls')),
+    # url(r'^grappelli/', include('grappelli.urls')),
     url(r'^admin/queue/', include('django_rq.urls')),
     url(r'^admin/task_queue/', include('task_queue.urls')),
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),

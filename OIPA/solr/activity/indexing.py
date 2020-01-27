@@ -10,12 +10,28 @@ from api.activity.serializers import (
     PlannedDisbursementSerializer, RelatedActivitySerializer,
     ReportingOrganisationSerializer, TitleSerializer
 )
+from solr.activity.references import (
+    ActivityDateReference, ActivityScopeReference, ActivityStatusReference,
+    CapitalSpendReference, CollaborationTypeReference, ConditionsReference,
+    ContactInfoReference, CountryBudgetItemsReference, CrsAddReference,
+    DefaultAidTypeReference, DefaultFinanceTypeReference,
+    DefaultFlowTypeReference, DefaultTiedStatusReference, DescriptionReference,
+    DocumentLinkReference, FssReference, HumanitarianScopeReference,
+    LegacyDataReference, LocationReference, OtherIdentifierReference,
+    ParticipatingOrgReference, PlannedDisbursementReference,
+    PolicyMarkerReference, RecipientCountryReference, RecipientRegionReference,
+    RelatedActivityReference, ReportingOrgReference, SectorReference,
+    TagReference, TitleReference
+)
 from solr.activity.serializers import (
     ActivityRecipientRegionSerializer, ActivitySectorSerializer,
     LocationSerializer, RecipientCountrySerializer
 )
+from solr.budget.references import BudgetReference
 from solr.indexing import BaseIndexing
+from solr.result.references import ResultReference
 from solr.result.serializers import ResultSerializer
+from solr.transaction.references import TransactionReference
 from solr.transaction.serializers import TransactionSerializer
 from solr.utils import (
     bool_string, date_string, decimal_string, get_child_attr, value_string
@@ -55,6 +71,13 @@ class ActivityIndexing(BaseIndexing):
                     ]
                 ).data).decode()
             )
+            self.add_field(
+                'reporting_org_xml',
+                ReportingOrgReference(
+                    reporting_org=get_child_attr(reporting_org, 'organisation')
+                ).to_string()
+            )
+
             self.add_field('reporting_org_ref', reporting_org.ref)
             self.add_field('reporting_org_type_code', reporting_org.type_id)
             self.add_field(
@@ -77,6 +100,10 @@ class ActivityIndexing(BaseIndexing):
                 'title',
                 JSONRenderer().render(TitleSerializer(title).data).decode()
             )
+            self.add_field(
+                'title_xml',
+                TitleReference(title=title).to_string()
+            )
 
             self.add_field('title_narrative', [])
             self.add_field('title_narrative_lang', [])
@@ -93,6 +120,7 @@ class ActivityIndexing(BaseIndexing):
         description_all = self.record.description_set.all()
         if description_all:
             self.add_field('description', [])
+            self.add_field('description_xml', [])
             self.add_field('description_type', [])
             self.add_field('description_lang', [])
             self.add_field('description_narrative', [])
@@ -105,6 +133,10 @@ class ActivityIndexing(BaseIndexing):
                     JSONRenderer().render(
                         DescriptionSerializer(description).data
                     ).decode()
+                )
+                self.add_field(
+                    'description_xml',
+                    DescriptionReference(description=description).to_string()
                 )
                 self.add_value_list('description_type', description.type_id)
 
@@ -120,6 +152,7 @@ class ActivityIndexing(BaseIndexing):
             self.record.participating_organisations.all()
         if participating_organisation_all:
             self.add_field('participating_org', [])
+            self.add_field('participating_org_xml', [])
             self.add_field('participating_org_ref', [])
             self.add_field('participating_org_type', [])
             self.add_field('participating_org_role', [])
@@ -135,6 +168,12 @@ class ActivityIndexing(BaseIndexing):
                             participating_organisation
                         ).data
                     ).decode()
+                )
+                self.add_field(
+                    'participating_org_xml',
+                    ParticipatingOrgReference(
+                        participating_org=participating_organisation
+                    ).to_string()
                 )
 
                 self.add_value_list(
@@ -161,6 +200,7 @@ class ActivityIndexing(BaseIndexing):
         other_identifier_all = self.record.otheridentifier_set.all()
         if other_identifier_all:
             self.add_field('other_identifier', [])
+            self.add_field('other_identifier_xml', [])
             self.add_field('other_identifier_ref', [])
             self.add_field('other_identifier_type', [])
             self.add_field('other_identifier_owner_org_ref', [])
@@ -174,6 +214,12 @@ class ActivityIndexing(BaseIndexing):
                     JSONRenderer().render(
                         OtherIdentifierSerializer(other_identifier).data
                     ).decode()
+                )
+                self.add_field(
+                    'other_identifier_xml',
+                    OtherIdentifierReference(
+                        other_identifier=other_identifier
+                    ).to_string()
                 )
 
                 self.add_value_list(
@@ -200,6 +246,7 @@ class ActivityIndexing(BaseIndexing):
         activity_dates_all = self.record.activitydate_set.all()
         if activity_dates_all:
             self.add_field('activity_date', [])
+            self.add_field('activity_date_xml', [])
             self.add_field('activity_date_type', [])
             self.add_field('activity_date_iso_date', [])
 
@@ -213,6 +260,12 @@ class ActivityIndexing(BaseIndexing):
                     JSONRenderer().render(
                         ActivityDateSerializer(activity_date).data
                     ).decode()
+                )
+                self.add_value_list(
+                    'activity_date_xml',
+                    ActivityDateReference(
+                        activity_date=activity_date
+                    ).to_string()
                 )
 
                 self.add_value_list(
@@ -258,6 +311,7 @@ class ActivityIndexing(BaseIndexing):
         contact_info_all = self.record.contactinfo_set.all()
         if contact_info_all:
             self.add_field('contact_info', [])
+            self.add_field('contact_info_xml', [])
 
             self.add_field('contact_info_type', [])
             self.add_field('contact_info_telephone', [])
@@ -290,6 +344,12 @@ class ActivityIndexing(BaseIndexing):
                     JSONRenderer().render(
                         ContactInfoSerializer(contact_info).data
                     ).decode()
+                )
+                self.add_value_list(
+                    'contact_info_xml',
+                    ContactInfoReference(
+                        contact_info=contact_info
+                    ).to_string()
                 )
 
                 self.add_value_list('contact_info_type', contact_info.type_id)
@@ -338,6 +398,7 @@ class ActivityIndexing(BaseIndexing):
         recipient_country_all = self.record.activityrecipientcountry_set.all()
         if recipient_country_all:
             self.add_field('recipient_country', [])
+            self.add_field('recipient_country_xml', [])
 
             self.add_field('recipient_country_code', [])
             self.add_field('recipient_country_name', [])
@@ -353,6 +414,12 @@ class ActivityIndexing(BaseIndexing):
                     JSONRenderer().render(
                         RecipientCountrySerializer(recipient_country).data
                     ).decode()
+                )
+                self.add_value_list(
+                    'recipient_country_xml',
+                    RecipientCountryReference(
+                        recipient_country=recipient_country
+                    ).to_string()
                 )
 
                 self.add_value_list(
@@ -379,6 +446,7 @@ class ActivityIndexing(BaseIndexing):
         recipient_region_all = self.record.activityrecipientregion_set.all()
         if recipient_region_all:
             self.add_field('recipient_region', [])
+            self.add_field('recipient_region_xml', [])
 
             self.add_field('recipient_region_code', [])
             self.add_field('recipient_region_name', [])
@@ -398,6 +466,12 @@ class ActivityIndexing(BaseIndexing):
                             recipient_region
                         ).data
                     ).decode()
+                )
+                self.add_value_list(
+                    'recipient_region_xml',
+                    RecipientRegionReference(
+                        recipient_region=recipient_region
+                    ).to_string()
                 )
 
                 self.add_value_list(
@@ -432,6 +506,7 @@ class ActivityIndexing(BaseIndexing):
         locations_all = self.record.location_set.all()
         if locations_all:
             self.add_field('location', [])
+            self.add_field('location_xml', [])
 
             self.add_field('location_ref', [])
             self.add_field('location_reach_code', [])
@@ -464,6 +539,12 @@ class ActivityIndexing(BaseIndexing):
                     JSONRenderer().render(
                         LocationSerializer(location).data
                     ).decode()
+                )
+                self.add_value_list(
+                    'location_xml',
+                    LocationReference(
+                        location=location
+                    ).to_string()
                 )
 
                 self.add_value_list('location_ref', location.ref)
@@ -533,6 +614,7 @@ class ActivityIndexing(BaseIndexing):
         activity_sector_all = self.record.activitysector_set.all()
         if activity_sector_all:
             self.add_field('sector', [])
+            self.add_field('sector_xml', [])
 
             self.add_field('sector_vocabulary', [])
             self.add_field('sector_vocabulary_uri', [])
@@ -549,6 +631,12 @@ class ActivityIndexing(BaseIndexing):
                     JSONRenderer().render(
                         ActivitySectorSerializer(activity_sector).data
                     ).decode()
+                )
+                self.add_value_list(
+                    'sector_xml',
+                    SectorReference(
+                        sector=activity_sector
+                    ).to_string()
                 )
 
                 self.add_value_list(
@@ -579,6 +667,7 @@ class ActivityIndexing(BaseIndexing):
         tag_all = self.record.activitytag_set.all()
         if tag_all:
             self.add_field('tag', [])
+            self.add_field('tag_xml', [])
             self.add_field('tag_vocabulary', [])
             self.add_field('tag_vocabulary_uri', [])
             self.add_field('tag_code', [])
@@ -593,6 +682,12 @@ class ActivityIndexing(BaseIndexing):
                     JSONRenderer().render(
                         ActivityTagSerializer(tag).data
                     ).decode()
+                )
+                self.add_value_list(
+                    'tag_xml',
+                    TagReference(
+                        tag=tag
+                    ).to_string()
                 )
 
                 self.add_value_list(
@@ -626,6 +721,12 @@ class ActivityIndexing(BaseIndexing):
                 JSONRenderer().render(
                     CountryBudgetItemsSerializer(country_budget_item).data
                 ).decode()
+            )
+            self.add_field(
+                'country_budget_items_xml',
+                CountryBudgetItemsReference(
+                    country_budget_items=country_budget_item
+                ).to_string()
             )
 
             self.add_field(
@@ -670,6 +771,7 @@ class ActivityIndexing(BaseIndexing):
         humanitarian_scope_all = self.record.humanitarianscope_set.all()
         if humanitarian_scope_all:
             self.add_field('humanitarian_scope', [])
+            self.add_field('humanitarian_scope_xml', [])
 
             self.add_field('humanitarian_scope_type', [])
             self.add_field('humanitarian_scope_vocabulary', [])
@@ -686,6 +788,12 @@ class ActivityIndexing(BaseIndexing):
                     JSONRenderer().render(
                         HumanitarianScopeSerializer(humanitarian_scope).data
                     ).decode()
+                )
+                self.add_field(
+                    'humanitarian_scope_xml',
+                    HumanitarianScopeReference(
+                        humanitarian_scope=humanitarian_scope
+                    ).to_string()
                 )
 
                 self.add_value_list(
@@ -716,6 +824,8 @@ class ActivityIndexing(BaseIndexing):
         policy_marker_all = self.record.activitypolicymarker_set.all()
         if policy_marker_all:
             self.add_field('policy_marker', [])
+            self.add_field('policy_marker_xml', [])
+
             self.add_field('policy_marker_vocabulary', [])
             self.add_field('policy_marker_vocabulary_uri', [])
             self.add_field('policy_marker_code', [])
@@ -731,6 +841,12 @@ class ActivityIndexing(BaseIndexing):
                     JSONRenderer().render(
                         ActivityPolicyMarkerSerializer(policy_marker).data
                     ).decode()
+                )
+                self.add_value_list(
+                    'policy_marker_xml',
+                    PolicyMarkerReference(
+                        policy_marker=policy_marker
+                    ).to_string()
                 )
 
                 self.add_value_list(
@@ -761,6 +877,7 @@ class ActivityIndexing(BaseIndexing):
         default_aid_type_all = self.record.default_aid_types.all()
         if default_aid_type_all:
             self.add_field('default_aid_type', [])
+            self.add_field('default_aid_type_xml', [])
             self.add_field('default_aid_type_code', [])
             self.add_field('default_aid_type_vocabulary', [])
 
@@ -772,6 +889,12 @@ class ActivityIndexing(BaseIndexing):
                             default_aid_type
                         ).data
                     ).decode()
+                )
+                self.add_value_list(
+                    'default_aid_type_xml',
+                    DefaultAidTypeReference(
+                        default_aid_type=default_aid_type
+                    ).to_string()
                 )
 
                 self.add_value_list(
@@ -790,6 +913,7 @@ class ActivityIndexing(BaseIndexing):
         budget_all = self.record.budget_set.all()
         if budget_all:
             self.add_field('budget', [])
+            self.add_field('budget_xml', [])
             self.add_field('budget_type', [])
             self.add_field('budget_status', [])
             self.add_field('budget_period_start_iso_date', [])
@@ -804,6 +928,10 @@ class ActivityIndexing(BaseIndexing):
                     JSONRenderer().render(
                         BudgetSerializer(budget).data
                     ).decode()
+                )
+                self.add_value_list(
+                    'budget_xml',
+                    BudgetReference(budget=budget).to_string()
                 )
 
                 self.add_value_list('budget_type', budget.type_id)
@@ -833,6 +961,7 @@ class ActivityIndexing(BaseIndexing):
         planned_disbursement_all = self.record.planneddisbursement_set.all()
         if planned_disbursement_all:
             self.add_field('planned_disbursement', [])
+            self.add_field('planned_disbursement_xml', [])
             self.add_field('planned_disbursement_type', [])
             self.add_field('planned_disbursement_period_start_iso_date', [])
             self.add_field('planned_disbursement_period_end_iso_date', [])
@@ -878,6 +1007,12 @@ class ActivityIndexing(BaseIndexing):
                             planned_disbursement
                         ).data
                     ).decode()
+                )
+                self.add_value_list(
+                    'planned_disbursement_xml',
+                    PlannedDisbursementReference(
+                        planned_disbursement=planned_disbursement
+                    ).to_string()
                 )
 
                 self.add_value_list(
@@ -941,6 +1076,7 @@ class ActivityIndexing(BaseIndexing):
         transaction_all = self.record.transaction_set.all()
         if transaction_all:
             self.add_field('transaction', [])
+            self.add_field('transaction_xml', [])
             self.add_field('transaction_ref', [])
             self.add_field('transaction_humanitarian', [])
             self.add_field('transaction_type', [])
@@ -1009,6 +1145,10 @@ class ActivityIndexing(BaseIndexing):
                             ]
                         ).data
                     ).decode()
+                )
+                self.add_value_list(
+                    'transaction_xml',
+                    TransactionReference(transaction=transaction).to_string()
                 )
 
                 self.add_value_list('transaction_ref', transaction.ref)
@@ -1160,6 +1300,7 @@ class ActivityIndexing(BaseIndexing):
         )
         if document_link_all:
             self.add_field('document_link', [])
+            self.add_field('document_link_xml', [])
             self.add_field('document_link_format', [])
             self.add_field('document_link_url', [])
             self.add_field('document_link_title_narrative', [])
@@ -1189,6 +1330,12 @@ class ActivityIndexing(BaseIndexing):
                             ]
                         ).data
                     ).decode()
+                )
+                self.add_value_list(
+                    'document_link_xml',
+                    DocumentLinkReference(
+                        document_link=document_link
+                    ).to_string()
                 )
 
                 self.add_value_list(
@@ -1233,15 +1380,16 @@ class ActivityIndexing(BaseIndexing):
         related_activity_all = self.record.relatedactivity_set.all()
         if related_activity_all:
             self.add_field('related_activity', [])
+            self.add_field('related_activity_xml', [])
             self.add_field('related_activity_ref', [])
             self.add_field('related_activity_type', [])
 
-            for relate_activity in related_activity_all:
+            for related_activity in related_activity_all:
                 self.add_value_list(
                     'related_activity',
                     JSONRenderer().render(
                         RelatedActivitySerializer(
-                            instance=relate_activity,
+                            instance=related_activity,
                             fields=[
                                 'ref',
                                 'type'
@@ -1249,20 +1397,27 @@ class ActivityIndexing(BaseIndexing):
                         ).data
                     ).decode()
                 )
+                self.add_value_list(
+                    'related_activity_xml',
+                    RelatedActivityReference(
+                        related_activity=related_activity
+                    ).to_string()
+                )
 
                 self.add_value_list(
                     'related_activity_ref',
-                    relate_activity.ref
+                    related_activity.ref
                 )
                 self.add_value_list(
                     'related_activity_type',
-                    relate_activity.type_id
+                    related_activity.type_id
                 )
 
     def legacy_data(self):
         legacy_data_all = self.record.legacydata_set.all()
         if legacy_data_all:
             self.add_field('legacy_data', [])
+            self.add_field('legacy_data_xml', [])
             self.add_field('legacy_data_name', [])
             self.add_field('legacy_data_value', [])
             self.add_field('legacy_data_iati_equivalent', [])
@@ -1275,6 +1430,12 @@ class ActivityIndexing(BaseIndexing):
                             instance=legacy_data
                         ).data
                     ).decode()
+                )
+                self.add_value_list(
+                    'legacy_data_xml',
+                    LegacyDataReference(
+                        legacy_data=legacy_data
+                    ).to_string()
                 )
 
                 self.add_value_list(
@@ -1298,6 +1459,12 @@ class ActivityIndexing(BaseIndexing):
                 JSONRenderer().render(
                     ConditionsSerializer(activity_condition).data
                 ).decode()
+            )
+            self.add_field(
+                'conditions_xml',
+                ConditionsReference(
+                    conditions=activity_condition
+                ).to_string()
             )
 
             self.add_field(
@@ -1328,6 +1495,7 @@ class ActivityIndexing(BaseIndexing):
         result_all = self.record.result_set.all()
         if result_all:
             self.add_field('result', [])
+            self.add_field('result_xml', [])
             self.add_field('result_type', [])
             self.add_field('result_aggregation_status', [])
             self.add_field('result_title_narrative', [])
@@ -1548,6 +1716,10 @@ class ActivityIndexing(BaseIndexing):
                     JSONRenderer().render(
                         ResultSerializer(result).data
                     ).decode()
+                )
+                self.add_value_list(
+                    'result_xml',
+                    ResultReference(result=result).to_string()
                 )
 
                 self.add_value_list('result_type', result.type_id)
@@ -1890,6 +2062,7 @@ class ActivityIndexing(BaseIndexing):
         crs_add_all = self.record.crsadd_set.all()
         if crs_add_all:
             self.add_field('crs_add', [])
+            self.add_field('crs_add_xml', [])
             self.add_field('crs_add_other_flags_code', [])
             self.add_field('crs_add_other_flags_significance', [])
             self.add_field('crs_add_loan_terms_rate_1', [])
@@ -1914,6 +2087,10 @@ class ActivityIndexing(BaseIndexing):
                     JSONRenderer().render(
                         CrsAddSerializer(crs_add).data
                     ).decode()
+                )
+                self.add_value_list(
+                    'crs_add_xml',
+                    CrsAddReference(crs_add=crs_add).to_string()
                 )
 
                 self.add_value_list(
@@ -2044,6 +2221,7 @@ class ActivityIndexing(BaseIndexing):
         fss_all = self.record.fss_set.all()
         if fss_all:
             self.add_field('fss', [])
+            self.add_field('fss_xml', [])
             self.add_field('fss_extraction_date', [])
             self.add_field('fss_priority', [])
             self.add_field('fss_phaseout_year', [])
@@ -2056,6 +2234,12 @@ class ActivityIndexing(BaseIndexing):
                 self.add_value_list(
                     'fss',
                     JSONRenderer().render(FssSerializer(fss).data).decode()
+                )
+                self.add_value_list(
+                    'fss_xml',
+                    FssReference(
+                        fss=fss
+                    ).to_string()
                 )
 
                 self.add_value_list(
@@ -2103,25 +2287,79 @@ class ActivityIndexing(BaseIndexing):
         self.add_field('humanitarian', bool_string(activity.humanitarian))
         self.add_field('hierarchy', value_string(activity.hierarchy))
         self.add_field('linked_data_uri', activity.linked_data_uri)
+        self.add_field(
+            'activity_status_xml',
+            ActivityStatusReference(
+                activity_status=activity.activity_status
+            ).to_string()
+        )
         self.add_field('activity_status_code', activity.activity_status_id)
-        self.add_field('activity_scope_code', activity.scope_id)
+
+        if activity.scope:
+            self.add_field(
+                'activity_scope_xml',
+                ActivityScopeReference(
+                    activity_scope=activity.scope
+                ).to_string()
+            )
+            self.add_field('activity_scope_code', activity.scope_id)
+
         self.add_field(
             'collaboration_type_code',
             activity.collaboration_type_id
         )
+        if activity.collaboration_type:
+            self.add_field(
+                'collaboration_type_xml',
+                CollaborationTypeReference(
+                    collaboration_type=activity.collaboration_type
+                ).to_string()
+            )
+
         self.add_field('default_flow_type_code', activity.default_flow_type_id)
+        if activity.default_flow_type_id:
+            self.add_field(
+                'default_flow_type_xml',
+                DefaultFlowTypeReference(
+                    default_flow_type=activity.default_flow_type
+                ).to_string()
+            )
+
         self.add_field(
             'default_finance_type_code',
             activity.default_finance_type_id
         )
+        if activity.default_finance_type_id:
+            self.add_field(
+                'default_flow_type_xml',
+                DefaultFinanceTypeReference(
+                    default_finance_type=activity.default_finance_type
+                ).to_string()
+            )
+
         self.add_field(
             'default_tied_status_code',
             activity.default_tied_status_id
         )
+        if activity.default_tied_status_id:
+            self.add_field(
+                'default_tied_status_xml',
+                DefaultTiedStatusReference(
+                    default_tied_status=activity.default_tied_status
+                ).to_string()
+            )
+
         self.add_field(
             'capital_spend_percentage',
             decimal_string(activity.capital_spend)
         )
+        if activity.capital_spend:
+            self.add_field(
+                'capital_spend_xml',
+                CapitalSpendReference(
+                    capital_spend=activity.capital_spend
+                ).to_string()
+            )
 
         self.dataset()
         self.reporting_org()
