@@ -276,28 +276,44 @@ class ActivityIndexing(BaseIndexing):
                 if activity_date.iso_date:
                     self.add_value_list(
                         'activity_date_iso_date',
-                        date_string(activity_date.iso_date)
+                        str(activity_date.iso_date)
                     )
 
                 if activity_date.type_id == '1':
                     self.add_field(
                         'activity_date_start_planned',
-                        date_string(activity_date.iso_date)
+                        str(activity_date.iso_date)
+                    )
+                    self.add_field(
+                        'activity_date_start_planned_f',
+                        activity_date.iso_date
                     )
                 elif activity_date.type_id == '2':
                     self.add_field(
                         'activity_date_start_actual',
-                        date_string(activity_date.iso_date)
+                        str(activity_date.iso_date)
+                    )
+                    self.add_field(
+                        'activity_date_start_actual_f',
+                        activity_date.iso_date
                     )
                 elif activity_date.type_id == '3':
                     self.add_field(
                         'activity_date_end_planned',
-                        date_string(activity_date.iso_date)
+                        str(activity_date.iso_date)
+                    )
+                    self.add_field(
+                        'activity_date_end_planned_f',
+                        activity_date.iso_date
                     )
                 elif activity_date.type_id == '4':
                     self.add_field(
                         'activity_date_end_actual',
-                        date_string(activity_date.iso_date)
+                        str(activity_date.iso_date)
+                    )
+                    self.add_field(
+                        'activity_date_end_actual_f',
+                        activity_date.iso_date
                     )
 
                 self.related_narrative(
@@ -2278,9 +2294,10 @@ class ActivityIndexing(BaseIndexing):
 
         self.add_field('id', value_string(activity.id))
         self.add_field('iati_identifier', activity.iati_identifier)
+        self.add_field('last_updated_datetime', activity.last_updated_datetime)
         self.add_field(
-            'last_updated_datetime',
-            date_string(activity.last_updated_datetime)
+            'last_updated_datetime_f',
+            activity.last_updated_datetime
         )
         self.add_field('default_lang', activity.default_lang_id)
         self.add_field('default_currency', activity.default_currency_id)
