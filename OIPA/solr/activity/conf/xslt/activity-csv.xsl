@@ -308,7 +308,7 @@
     <xsl:apply-templates select="arr[@name='recipient_country_percentage']/double"/>
     <xsl:value-of select="$deliminquote"/>
     <xsl:apply-templates select="arr[@name='recipient_region_code']/str"/>
-   <xsl:value-of select="$deliminquote"/>
+    <xsl:value-of select="$deliminquote"/>
     <xsl:apply-templates select="arr[@name='recipient_region_percentage']/double"/>
     <xsl:value-of select="$deliminquote"/>
     <xsl:apply-templates select="arr[@name='location_ref']/str"/>
@@ -608,7 +608,7 @@
     <xsl:apply-templates select="arr[@name='result_indicator_period_target_comment_narrative']/str"/>
     <xsl:value-of select="$deliminquote"/>
     <xsl:apply-templates select="arr[@name='result_indicator_period_target_document_link_format']/str"/>
-   <xsl:value-of select="$deliminquote"/>
+    <xsl:value-of select="$deliminquote"/>
     <xsl:apply-templates select="arr[@name='result_indicator_period_target_document_link_url']/str"/>
     <xsl:value-of select="$deliminquote"/>
     <xsl:apply-templates select="arr[@name='result_indicator_period_target_document_link_title_narrative']/str"/>
@@ -690,6 +690,7 @@
     <xsl:apply-templates select="arr[@name='fss_forecast_value']/double"/>
     <xsl:value-of select="$quote"/>
     <xsl:value-of select="$delim"/>
+    <xsl:value-of select="$break"/>
   </xsl:template>
   <xsl:template match="arr[*]/str">
     <xsl:value-of select="concat(normalize-space(), $delim)"/>
