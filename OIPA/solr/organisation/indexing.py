@@ -186,8 +186,7 @@ class OrganisationIndexing(BaseIndexing):
                     self.add_value_list(
                         'organisation_recipient_country_budget_xml',
                         RecipientCountryBudgetOrgReference(
-                            organisation_recipient_country_budget=
-                            related_budget
+                            organisation_recipient_country_budget=related_budget  # NOQA: E501
                         ).to_string()
                     )
 
