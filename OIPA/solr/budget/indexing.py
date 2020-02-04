@@ -1,5 +1,5 @@
 from solr.indexing import BaseIndexing
-from solr.utils import add_reporting_org, decimal_string, value_string
+from solr.utils import add_reporting_org, decimal_string, date_string
 
 
 class BudgetIndexing(BaseIndexing):
@@ -15,19 +15,26 @@ class BudgetIndexing(BaseIndexing):
 
         self.add_field(
             'budget_period_start_iso_date',
-            value_string(
-                budget.period_start
-            )
+            str(budget.period_start)
+        )
+        self.add_field(
+            'budget_period_start_iso_date_f',
+            date_string(budget.period_start)
         )
         self.add_field(
             'budget_period_end_iso_date',
-            value_string(
-                budget.period_end
-            )
+            str(budget.period_end)
+        )
+        self.add_field(
+            'budget_period_end_iso_date_f',
+            date_string(budget.period_end)
         )
 
         self.add_field('budget_value_currency', budget.currency_id)
-        self.add_field('budget_value_date', value_string(budget.value_date))
+
+        self.add_field('budget_value_date', str(budget.value_date))
+        self.add_field('budget_value_date_f', date_string(budget.value_date))
+
         self.add_field('budget_value', decimal_string(budget.value))
 
         add_reporting_org(self, budget.activity)
