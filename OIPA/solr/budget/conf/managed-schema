@@ -132,10 +132,17 @@
 
     <field name="budget_type" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="budget_status" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-    <field name="budget_period_start_iso_date" type="pdate" multiValued="false" indexed="true" required="false" stored="true"/>
-    <field name="budget_period_end_iso_date" type="pdate" multiValued="false" indexed="true" required="false" stored="true"/>
+
+    <field name="budget_period_start_iso_date" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="budget_period_end_iso_date" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="budget_period_start_iso_date_f" type="pdate" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="budget_period_end_iso_date_f" type="pdate" multiValued="false" indexed="true" required="false" stored="true"/>
+
     <field name="budget_value_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-    <field name="budget_value_date" type="pdate" multiValued="false" indexed="true" required="false" stored="true"/>
+
+    <field name="budget_value_date" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="budget_value_date_f" type="pdate" multiValued="false" indexed="true" required="false" stored="true"/>
+
     <field name="budget_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
     <!--Budget Core - End-->
 
