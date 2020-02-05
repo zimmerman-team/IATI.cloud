@@ -1816,7 +1816,9 @@ class Parse(IatiParser):
 
         tag:default-aid-type"""
         code = element.attrib.get('code')
-        default_aid_type = self.get_or_none(codelist_models.AidType, code=code)
+        default_aid_type = codelist_models.AidType.objects.filter(
+            code=code,
+        ).first()
 
         if not code:
             raise RequiredFieldError(
@@ -2763,7 +2765,9 @@ class Parse(IatiParser):
 
         tag:aid-type"""
         code = element.attrib.get('code')
-        aid_type = self.get_or_none(codelist_models.AidType, code=code)
+        aid_type = codelist_models.AidType.objects.filter(
+            code=code,
+        ).first()
 
         if not aid_type and not code:
             raise RequiredFieldError(
