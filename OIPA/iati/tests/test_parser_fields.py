@@ -30,6 +30,8 @@ from iati_codelists.factory import codelist_factory
 from iati_synchroniser.factory import synchroniser_factory
 from iati_vocabulary.factory import vocabulary_factory
 
+# flake8: noqa
+
 
 def build_xml(version, iati_identifier):
     """
