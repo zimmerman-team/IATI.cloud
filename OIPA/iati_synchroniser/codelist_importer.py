@@ -183,6 +183,13 @@ class CodeListImporter():
             model_name = 'AidType'
             category = None
 
+        elif tag == "CashandVoucherModalities":
+            # Ref. http://reference.iatistandard.org/203/codelists/AidTypeVocabulary/  # NOQA: E501
+            # If vocabulary 2 should be using an aid type from Earmarking Category  # NOQA: E501
+            item = AidType(vocabulary=AidTypeVocabulary.objects.get(code=4))
+            model_name = 'AidType'
+            category = None
+
         elif tag == "Version":
             if url is None:
                 url = 'http://reference.iatistandard.org/' + \
@@ -248,14 +255,20 @@ class CodeListImporter():
             item = self.add_to_model_if_field_exists(
                 model, item, 'category_id', category)
 
-        if item is not None and not model.objects.filter(
-            pk=item.code
-        ).exists():
-            try:
-                item.save()
-            except IntegrityError as err:
-                print("Error: {}".format(err))
-                pass
+        if item is not None and not isinstance(item, AidType):
+            if not model.objects.filter(pk=item.code).exists():
+                try:
+                    item.save()
+                except IntegrityError as err:
+                    print("Error: {}".format(err))
+                    pass
+        elif item is not None and isinstance(item, AidType):
+            if not model.objects.filter(pk=item.id).exists():
+                try:
+                    item.save()
+                except IntegrityError as err:
+                    print("Error: {}".format(err))
+                    pass
 
     def add_to_model_if_field_exists(
             self, model, item, field_name, field_content):
