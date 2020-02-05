@@ -30,8 +30,17 @@ def date_time_string(value):
 
 
 def date_string(value):
-    if value:
-        return value.strftime('%Y-%m-%d') + 'T00:00:00Z'
+    if hasattr(value, "strftime"):
+        if hasattr(value, "hour"):
+            offset = value.utcoffset()
+            if offset:
+                value = value - offset
+
+            value = value.replace(tzinfo=None).isoformat() + "Z"
+        else:
+            value = "%sT00:00:00Z" % value.isoformat()
+
+        return value
 
     return None
 
