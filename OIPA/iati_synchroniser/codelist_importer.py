@@ -261,7 +261,6 @@ class CodeListImporter():
                     item.save()
                 except IntegrityError as err:
                     print("Error: {}".format(err))
-                    pass
         elif item is not None and isinstance(item, AidType):
             if not model.objects.filter(pk=item.id).exists():
                 try:
