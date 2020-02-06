@@ -268,7 +268,6 @@ class CodeListImporter():
                     item.save()
                 except IntegrityError as err:
                     print("Error: {}".format(err))
-                    pass
 
     def add_to_model_if_field_exists(
             self, model, item, field_name, field_content):
