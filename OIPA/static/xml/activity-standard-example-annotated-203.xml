@@ -225,6 +225,7 @@
   <!--default-aid-type starts-->
   <default-aid-type code="A01" vocabulary="1" />
   <default-aid-type code="1" vocabulary="2" />
+     <default-aid-type code="1" vocabulary="4" />
   <!--default-aid-type ends-->
 
   <!--default-tied-status starts-->
