@@ -43,7 +43,7 @@ class DatasetValidationTask(celery.Task):
     _validation_id = None
     _file_id = None
     _json_result = None
-    _validation_sha1 = None
+    _validation_sha512 = None
 
     def run(self, dataset_id=None, *args, **kwargs):
         """Run the dataset validation task"""
@@ -91,14 +91,14 @@ class DatasetValidationTask(celery.Task):
                 )
                 # If response if OK then assigned the validation id
                 if post_response.status_code == 200:
-                    # Get the Sha1 of the current XML and save to dataset.
-                    # This will use to compare the Sha1 with the source XML.
+                    # Get the Sha512 of the current XML and save to dataset.
+                    # This will use to compare the Sha512 with the source XML.
                     # So when the XML which has valid status ("success")
-                    # will be parsing, we should compare the Sha1 of the XML
-                    # and with this Sha1.
-                    hashlib_sha1 = hashlib.sha512()
-                    hashlib_sha1.update(get_response.content)
-                    self._validation_sha1 = hashlib_sha1.hexdigest()
+                    # will be parsing, we should compare the Sha512 of the XML
+                    # and with this Sha512.
+                    hashlib_sha512 = hashlib.sha512()
+                    hashlib_sha512.update(get_response.content)
+                    self._validation_sha512 = hashlib_sha512.hexdigest()
                     # Update validation id for the next process
                     self._validation_id = post_response.json().get('id', None)
         except RequestException as e:
@@ -215,9 +215,9 @@ class DatasetValidationTask(celery.Task):
                     severity != valid_status:
                 validation_status = severity
 
-        # If success the save the Sha1 of the current validation
+        # If success the save the Sha512 of the current validation
         if validation_status == valid_status:
-            self._dataset.validation_sha1 = self._validation_sha1
+            self._dataset.validation_sha512 = self._validation_sha512
 
         # Save validation status to the dataset.
         self._dataset.validation_status = validation_status
