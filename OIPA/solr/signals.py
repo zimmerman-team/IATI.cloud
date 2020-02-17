@@ -18,8 +18,7 @@ from solr.transaction.tasks import TransactionTaskIndexing
 
 @receiver(signals.post_save, sender=Dataset)
 def dataset_post_save(sender, instance, **kwargs):
-    # DatasetTaskIndexing(instance=instance).run()
-    pass
+    DatasetTaskIndexing(instance=instance).run()
 
 
 @receiver(signals.post_save, sender=Publisher)
