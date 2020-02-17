@@ -43,7 +43,7 @@ class AidTypeCategory(models.Model):
 
 
 class AidType(models.Model):
-    code = models.CharField(primary_key=True, max_length=3)
+    code = models.CharField(max_length=3)
     name = models.CharField(max_length=200)
     description = models.TextField(default="")
 
@@ -61,6 +61,9 @@ class AidType(models.Model):
         default=None,
         on_delete=models.CASCADE
     )
+
+    class Meta:
+        unique_together = [('code', 'vocabulary')]
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
