@@ -1,7 +1,6 @@
-import unittest
-
 import json
 import os
+import unittest
 
 from django.test import TestCase
 from mock import MagicMock
