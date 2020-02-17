@@ -47,6 +47,7 @@ class DatasetSyncerTestCase(TestCase):
 
         self.assertEqual(keyval, input_list[0])
 
+    @unittest.skip("Not implemented")
     def test_synchronize_with_iati_api(self):
         """
 
