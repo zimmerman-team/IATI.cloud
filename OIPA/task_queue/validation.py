@@ -10,7 +10,6 @@ from django.conf import settings
 from requests.exceptions import RequestException
 
 from iati_synchroniser.models import Dataset
-from OIPA.celery import app
 from task_queue.utils import extract_values
 
 # Get an instance of a logger
@@ -44,7 +43,7 @@ class DatasetValidationTask(celery.Task):
     _validation_id = None
     _file_id = None
     _json_result = None
-    _validation_md5 = None
+    _validation_sha1 = None
 
     def run(self, dataset_id=None, *args, **kwargs):
         """Run the dataset validation task"""
@@ -92,14 +91,14 @@ class DatasetValidationTask(celery.Task):
                 )
                 # If response if OK then assigned the validation id
                 if post_response.status_code == 200:
-                    # Get the MD5 of the current XML and save to dataset.
-                    # This will use to compare the MD5 with the source XML.
+                    # Get the Sha1 of the current XML and save to dataset.
+                    # This will use to compare the Sha1 with the source XML.
                     # So when the XML which has valid status ("success")
-                    # will be parsing, we should compare the MD5 of the XML
-                    # and with this MD5.
-                    hashlib_md5 = hashlib.md5()
-                    hashlib_md5.update(get_response.content)
-                    self._validation_md5 = hashlib_md5.hexdigest()
+                    # will be parsing, we should compare the Sha1 of the XML
+                    # and with this Sha1.
+                    hashlib_sha1 = hashlib.sha1()
+                    hashlib_sha1.update(get_response.content)
+                    self._validation_sha1 = hashlib_sha1.hexdigest()
                     # Update validation id for the next process
                     self._validation_id = post_response.json().get('id', None)
         except RequestException as e:
@@ -216,9 +215,9 @@ class DatasetValidationTask(celery.Task):
                     severity != valid_status:
                 validation_status = severity
 
-        # If success the save the MD5 of the current validation
+        # If success the save the Sha1 of the current validation
         if validation_status == valid_status:
-            self._dataset.validation_md5 = self._validation_md5
+            self._dataset.validation_sha1 = self._validation_sha1
 
         # Save validation status to the dataset.
         self._dataset.validation_status = validation_status
