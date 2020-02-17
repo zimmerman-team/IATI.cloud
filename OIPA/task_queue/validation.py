@@ -96,7 +96,7 @@ class DatasetValidationTask(celery.Task):
                     # So when the XML which has valid status ("success")
                     # will be parsing, we should compare the Sha1 of the XML
                     # and with this Sha1.
-                    hashlib_sha1 = hashlib.sha1()  # NOQA: B303: md5
+                    hashlib_sha1 = hashlib.sha512()
                     hashlib_sha1.update(get_response.content)
                     self._validation_sha1 = hashlib_sha1.hexdigest()
                     # Update validation id for the next process
