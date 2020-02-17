@@ -1,5 +1,6 @@
 import datetime
 import hashlib
+import logging
 import os
 import time
 
@@ -24,6 +25,7 @@ from iati.activity_aggregation_calculation import (
 from iati.models import Activity, Budget, Document, DocumentLink, Result
 from iati.transaction.models import Transaction
 from iati_synchroniser.models import Dataset, DatasetNote
+from OIPA.celery import app
 from solr.activity.tasks import ActivityTaskIndexing
 from solr.activity.tasks import solr as solr_activity
 from solr.budget.tasks import solr as solr_budget
@@ -32,8 +34,15 @@ from solr.datasetnote.tasks import solr as solr_dataset_note
 from solr.result.tasks import solr as solr_result
 from solr.transaction.tasks import solr as solr_transaction
 from task_queue.utils import Tasks
+from task_queue.validation import DatasetValidationTask
+
+# Get an instance of a logger
+logger = logging.getLogger(__name__)
 
 redis_conn = Redis.from_url(settings.RQ_REDIS_URL)
+
+# Register a custom base task then Celery recognizes it
+DatasetValidationTask = app.register_task(DatasetValidationTask())
 
 
 def remove_all_api_caches():

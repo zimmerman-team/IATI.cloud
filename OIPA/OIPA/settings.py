@@ -389,6 +389,25 @@ SOLR = {
     }
 }
 
+VALIDATION = {
+    'host': 'https://test-validator.iatistandard.org',
+    'api': {
+        'root': '/api',
+        'version': '/v1',
+        'urls': {
+            'post_file': '/iati-testfiles/file/source',
+            'start_validation': '/iati-testdatasets/{validation_id}',
+            'get_json_file': '/iati-testfiles/file/json/{json_file}',
+        },
+        'max_loop_process': 50,
+        'sleep_second_process': 5,
+        'valid_status': 'success',
+        'retry': {
+            'max_retries': 5,
+        }
+    }
+}
+
 try:
     from .local_settings import *  # noqa: F401, F403
 except ImportError:
