@@ -13,6 +13,7 @@ from iati_synchroniser.create_publisher_organisation import (
     create_publisher_organisation
 )
 from iati_synchroniser.models import Dataset, Publisher, filetype_choices
+from task_queue.tasks import DatasetValidationTask
 
 DATASET_URL = 'https://iatiregistry.org/api/action/package_search?rows=200&{options}'  # NOQA: E501
 PUBLISHER_URL = 'https://iatiregistry.org/api/action/organization_list?all_fields=true&include_extras=true&limit=200&{options}'  # NOQA: E501
@@ -173,6 +174,9 @@ class DatasetSyncer(object):
         # this also returns internal URL for the Dataset:
         obj.internal_url = self.download_dataset(dataset) or ''
         obj.save()
+
+        # Validation dataset with the current
+        DatasetValidationTask.delay(dataset_id=obj.id)
 
     def download_dataset(self, dataset_data):
         """Based on dataset URL, downloads and saves it in the server
