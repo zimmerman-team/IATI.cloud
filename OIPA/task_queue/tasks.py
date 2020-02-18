@@ -701,8 +701,10 @@ def parse_all_existing_sources_task(force=False):
         children_tasks=['task_queue.tasks.parse_source_by_id_task']
     )
     if tasks.is_parent():
-        for dataset in Dataset.objects.all().filter(filetype=2):
+        for dataset in Dataset.objects.all().filter(filetype=2).filter(
+                validation_status='success'):
             parse_source_by_id_task.delay(dataset_id=dataset.id, force=force)
 
-        for dataset in Dataset.objects.all().filter(filetype=1):
+        for dataset in Dataset.objects.all().filter(filetype=1).filter(
+                validation_status='success'):
             parse_source_by_id_task.delay(dataset_id=dataset.id, force=force)
