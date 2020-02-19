@@ -1,7 +1,7 @@
 import datetime
 import hashlib
 import logging
-import os
+import io
 import time
 
 import django_rq
@@ -15,6 +15,7 @@ from redis import Redis
 from rest_framework_extensions.settings import extensions_api_settings
 from rq import Worker
 from rq.job import Job
+from requests.exceptions import RequestException
 
 from api.export.serializers import ActivityXMLSerializer
 from api.renderers import XMLRenderer
@@ -703,8 +704,55 @@ def parse_all_existing_sources_task(force=False):
     if tasks.is_parent():
         for dataset in Dataset.objects.all().filter(filetype=2).filter(
                 validation_status='success'):
-            parse_source_by_id_task.delay(dataset_id=dataset.id, force=force)
+            if check_sha(dataset.source_url) == dataset.validation_sha512:
+                parse_source_by_id_task.delay(dataset_id=dataset.id, force=force)
 
         for dataset in Dataset.objects.all().filter(filetype=1).filter(
                 validation_status='success'):
-            parse_source_by_id_task.delay(dataset_id=dataset.id, force=force)
+            if check_sha(dataset.source_url) == dataset.validation_sha512:
+                parse_source_by_id_task.delay(dataset_id=dataset.id, force=force)
+
+
+def check_sha(source_url):
+
+    root_validation_url = '{host}{root}{version}'.format(
+        host=settings.VALIDATION.get('host'),
+        root=settings.VALIDATION.get('api').get('root'),
+        version=settings.VALIDATION.get('api').get('version')
+    )
+    try:
+        # Get file from the url of the dataset
+        get_response = requests.get(source_url)
+        # Continue if status is OK
+        if get_response.status_code == 200:
+            # Assign file from the content response
+            file = io.BytesIO(get_response.content)
+            # Add the default filename to the file
+            file.name = 'dataset.xml'
+            # Make dict files
+            files = {'file': file}
+            # POST request with the parameters for upload
+            post_file_url = '{}{}'.format(
+                root_validation_url,
+                settings.VALIDATION.get('api').get('urls').get('post_file')
+            )
+            # Upload the file
+            post_response = requests.post(
+                post_file_url,
+                files=files
+            )
+            # If response if OK then assigned the validation id
+            if post_response.status_code == 200:
+                # Get the Sha512 of the current XML and save to dataset.
+                # This will use to compare the Sha512 with the source XML.
+                # So when the XML which has valid status ("success")
+                # will be parsing, we should compare the Sha512 of the XML
+                # and with this Sha512.
+                hashlib_sha512 = hashlib.sha512()
+                hashlib_sha512.update(get_response.content)
+                validation_sha512 = hashlib_sha512.hexdigest()
+                return validation_sha512
+            return None
+        return None
+    except RequestException as e:
+        logger.error(e)
