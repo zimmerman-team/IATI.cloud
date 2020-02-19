@@ -1,7 +1,8 @@
 import datetime
 import hashlib
-import logging
 import io
+import logging
+import os
 import time
 
 import django_rq
@@ -12,10 +13,10 @@ from django.conf import settings
 from django.core.cache import caches
 from django_rq import job
 from redis import Redis
+from requests.exceptions import RequestException
 from rest_framework_extensions.settings import extensions_api_settings
 from rq import Worker
 from rq.job import Job
-from requests.exceptions import RequestException
 
 from api.export.serializers import ActivityXMLSerializer
 from api.renderers import XMLRenderer
@@ -705,12 +706,14 @@ def parse_all_existing_sources_task(force=False):
         for dataset in Dataset.objects.all().filter(filetype=2).filter(
                 validation_status='success'):
             if check_sha(dataset.source_url) == dataset.validation_sha512:
-                parse_source_by_id_task.delay(dataset_id=dataset.id, force=force)
+                parse_source_by_id_task.delay(dataset_id=dataset.id,
+                                              force=force)
 
         for dataset in Dataset.objects.all().filter(filetype=1).filter(
                 validation_status='success'):
             if check_sha(dataset.source_url) == dataset.validation_sha512:
-                parse_source_by_id_task.delay(dataset_id=dataset.id, force=force)
+                parse_source_by_id_task.delay(dataset_id=dataset.id,
+                                              force=force)
 
 
 def check_sha(source_url):
