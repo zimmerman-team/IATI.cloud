@@ -155,7 +155,6 @@ class DatasetValidationTask(celery.Task):
             if response.status_code == 200:
                 # If response has field 'json-updated'
                 # that mean the process is done
-                print(response.json())
                 if response.json().get('json-updated', None):
                     loop = max_loop_process
                     # Assign file_id form the response
