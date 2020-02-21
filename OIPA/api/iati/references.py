@@ -9,8 +9,6 @@ from api.iati.elements import (
     AttributeRecord, ElementBase, ElementRecord, ElementReference,
     ElementWithNarrativeReference
 )
-from iati_codelists.models import AidType
-from iati_vocabulary.models import AidTypeVocabulary
 
 
 class TitleReference(ElementWithNarrativeReference):
