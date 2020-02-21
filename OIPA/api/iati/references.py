@@ -9,8 +9,6 @@ from api.iati.elements import (
     AttributeRecord, ElementBase, ElementRecord, ElementReference,
     ElementWithNarrativeReference
 )
-from iati_codelists.models import AidType
-from iati_vocabulary.models import AidTypeVocabulary
 
 
 class TitleReference(ElementWithNarrativeReference):
@@ -89,8 +87,9 @@ class DefaultAidTypeReference(ElementReference):
     def create(self):
         code = self.data.get('aid_type').get(self.code_key)
         # We get vocabulary code from AidTypeVocabulary table.
-        vocabulary = AidTypeVocabulary.objects.get(code=AidType.objects.get(
-            code=code).vocabulary_id).code
+        # vocabulary = AidTypeVocabulary.objects.get(code=AidType.objects.get(
+        #     code=code).vocabulary_id).code
+        vocabulary = self.data.get('aid_type').get('vocabulary').get('code')
         if code:
             default_aid_type_element = etree.SubElement(
                 self.parent_element, self.element

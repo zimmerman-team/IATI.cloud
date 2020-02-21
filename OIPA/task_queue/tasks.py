@@ -703,20 +703,26 @@ def parse_all_existing_sources_task(force=False):
         children_tasks=['task_queue.tasks.parse_source_by_id_task']
     )
     if tasks.is_parent():
-        for dataset in Dataset.objects.all().filter(filetype=2).filter(
-                validation_status='success'):
-            if check_sha(dataset.source_url) == dataset.validation_sha512:
-                parse_source_by_id_task.delay(dataset_id=dataset.id,
-                                              force=force)
+        for dataset in Dataset.objects.all().filter(filetype=2):
+            parse_source_by_id_task.delay(dataset_id=dataset.id, force=force)
+        for dataset in Dataset.objects.all().filter(filetype=1):
+            parse_source_by_id_task.delay(dataset_id=dataset.id, force=force)
 
-        for dataset in Dataset.objects.all().filter(filetype=1).filter(
-                validation_status='success'):
-            if check_sha(dataset.source_url) == dataset.validation_sha512:
-                parse_source_by_id_task.delay(dataset_id=dataset.id,
-                                              force=force)
+# We want to drop validation for the time being.
+# for dataset in Dataset.objects.all().filter(filetype=2).filter(
+#         validation_status='success'):
+#     if check_sha(dataset.source_url) == dataset.validation_sha512:
+#         parse_source_by_id_task.delay(dataset_id=dataset.id,
+#                                       force=force)
+#
+# for dataset in Dataset.objects.all().filter(filetype=1).filter(
+#         validation_status='success'):
+#     if check_sha(dataset.source_url) == dataset.validation_sha512:
+#         parse_source_by_id_task.delay(dataset_id=dataset.id,
+#                                       force=force)
 
 
-def check_sha(source_url):
+def check_sha(source_url):  # needed only for validation
 
     root_validation_url = '{host}{root}{version}'.format(
         host=settings.VALIDATION.get('host'),
