@@ -71,10 +71,17 @@ class ResultAggregations(AggregationView):
         Aggregation(
             query_param='actuals',
             field='actuals',
-            annotate=Sum(Func(
-                F('resultindicator__resultindicatorperiod__actuals__value'),
-                function='CAST',
-                template='%(function)s(%(expressions)s as double precision)')),
+            # annotate=Sum(Func(
+            #     F('resultindicator__resultindicatorperiod__actuals__value'),
+            #     function='CAST',
+            #     template='%(function)s(%(expressions)s as double precision)')),
+            annotate=Sum(
+                Func('resultindicator__resultindicatorperiod__actuals__value',
+                     function='CAST',
+                     template='%(function)s(%(expressions)s as double precision)'),
+                filter=Q(
+                    resultindicator__resultindicatorperiod__actuals__value__isnull=
+                    False))
         ),
         Aggregation(
             query_param='activity_count',
