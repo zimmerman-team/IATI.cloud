@@ -1,4 +1,4 @@
-from django.db.models import Count, F, Func, Sum
+from django.db.models import Count, F, Q, Func, Sum, Case, When, DecimalField
 from django_filters.rest_framework import DjangoFilterBackend
 
 from api.activity.serializers import ResultSerializer
@@ -49,10 +49,24 @@ class ResultAggregations(AggregationView):
         Aggregation(
             query_param='targets',
             field='targets',
-            annotate=Sum(Func(
-                F('resultindicator__resultindicatorperiod__targets__value'),
-                function='CAST',
-                template='%(function)s(%(expressions)s as double precision)')),
+            # annotate=Sum(Func(
+            #     F('resultindicator__resultindicatorperiod__targets__value'),
+            #     function='CAST',
+            #     template='%(function)s(%(expressions)s as double precision)')),
+            # annotate=Sum(Case(
+            #             When(
+            #                 resultindicator__resultindicatorperiod__targets__value__isnull=False,
+            #                 then=Func('resultindicator__resultindicatorperiod__targets__value',
+            #                 function='CAST',template='%(function)s(%(expressions)s as double precision)')
+            #             )),output_field=DecimalField())
+
+            annotate=Sum(
+                Func('resultindicator__resultindicatorperiod__targets__value',
+                     function='CAST',
+                     template='%(function)s(%(expressions)s as double precision)'),
+                filter=Q(
+                    resultindicator__resultindicatorperiod__targets__value__isnull=
+                    False))
         ),
         Aggregation(
             query_param='actuals',
@@ -116,10 +130,10 @@ class ResultList(DynamicListView):
     # reference field name is first term, meaning recipient_countries.
     csv_headers = \
         {
-                   'iati_identifier': {'header': 'activity_id'},
-                   'sectors.sector.code': {'header': 'sector_code'},
-                   'sectors.percentage':  {'header': 'sectors_percentage'},
-                   'recipient_countries.country.code': {'header': 'country'},
-                   'recipient_regions.region.code': {'header': 'region'},
+            'iati_identifier': {'header': 'activity_id'},
+            'sectors.sector.code': {'header': 'sector_code'},
+            'sectors.percentage': {'header': 'sectors_percentage'},
+            'recipient_countries.country.code': {'header': 'country'},
+            'recipient_regions.region.code': {'header': 'region'},
         }
     exceptional_fields = [{'results': []}]
