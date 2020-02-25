@@ -1,4 +1,4 @@
-from django.db.models import Count, F, Q, Func, Sum, Case, When, DecimalField
+from django.db.models import Count, Func, Q, Sum
 from django_filters.rest_framework import DjangoFilterBackend
 
 from api.activity.serializers import ResultSerializer
@@ -50,23 +50,17 @@ class ResultAggregations(AggregationView):
             query_param='targets',
             field='targets',
             # annotate=Sum(Func(
-            #     F('resultindicator__resultindicatorperiod__targets__value'),
-            #     function='CAST',
-            #     template='%(function)s(%(expressions)s as double precision)')),
-            # annotate=Sum(Case(
-            #             When(
-            #                 resultindicator__resultindicatorperiod__targets__value__isnull=False,
-            #                 then=Func('resultindicator__resultindicatorperiod__targets__value',
-            #                 function='CAST',template='%(function)s(%(expressions)s as double precision)')
-            #             )),output_field=DecimalField())
+            #    F('resultindicator__resultindicatorperiod__targets__value'),
+            #    function='CAST',
+            #   template='%(function)s(%(expressions)s as double precision)')),
 
             annotate=Sum(
                 Func('resultindicator__resultindicatorperiod__targets__value',
                      function='CAST',
-                     template='%(function)s(%(expressions)s as double precision)'),
+                     template='%(function)s(%(expressions)s as double '
+                              'precision)'),
                 filter=Q(
-                    resultindicator__resultindicatorperiod__targets__value__isnull=
-                    False))
+                    resultindicator__resultindicatorperiod__targets__value__isnull=False))  # NOQA: E501
         ),
         Aggregation(
             query_param='actuals',
@@ -74,14 +68,14 @@ class ResultAggregations(AggregationView):
             # annotate=Sum(Func(
             #     F('resultindicator__resultindicatorperiod__actuals__value'),
             #     function='CAST',
-            #     template='%(function)s(%(expressions)s as double precision)')),
+            #   template='%(function)s(%(expressions)s as double precision)')),
             annotate=Sum(
                 Func('resultindicator__resultindicatorperiod__actuals__value',
                      function='CAST',
-                     template='%(function)s(%(expressions)s as double precision)'),
+                     template='%(function)s(%(expressions)s as double '
+                              'precision)'),
                 filter=Q(
-                    resultindicator__resultindicatorperiod__actuals__value__isnull=
-                    False))
+                    resultindicator__resultindicatorperiod__actuals__value__isnull=False))  # NOQA: E501
         ),
         Aggregation(
             query_param='activity_count',
