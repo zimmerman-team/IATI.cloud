@@ -3440,12 +3440,13 @@ class Parse(IatiParser):
         try:
             value = Decimal(value)
         except Exception as e:
-            value = 0   # value could be None according to
+            value = None   # value could be None according to
             # iati-specification but we should not add None to our database
             # otherwise it would raise error in endpoint aggregation.
             # Example API call:
             # /api/results/aggregations/?group_by=result_indicator_title
             # &aggregations=actuals&format=json
+            # We have updated codes in api aggregation to enable null
 
         result_indicator_period = self.get_model('ResultIndicatorPeriod')
         result_indicator_period_target = models.ResultIndicatorPeriodTarget()
@@ -3557,12 +3558,13 @@ class Parse(IatiParser):
         try:
             value = Decimal(value)
         except Exception as e:
-            value = 0  # value could be None according to
+            value = None # value could be None according to
             # iati-specification but we should not add None to our database
             # otherwise it would raise error in endpoint aggregation.
             # Example API call:
             # /api/results/aggregations/?group_by=result_indicator_title
             # &aggregations=actuals&format=json
+            # we have updated codes in api aggregation to enable null
 
         result_indicator_period = self.get_model('ResultIndicatorPeriod')
 

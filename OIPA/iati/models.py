@@ -1200,7 +1200,7 @@ class ResultIndicatorPeriod(models.Model):
 
 class ResultIndicatorPeriodTarget(models.Model):
     value = models.CharField(
-        max_length=50, blank=True, default='')
+        max_length=50, blank=True, default=None,null=True)
     result_indicator_period = models.ForeignKey(
         ResultIndicatorPeriod,
         null=True,
@@ -1214,7 +1214,7 @@ class ResultIndicatorPeriodTarget(models.Model):
 
 class ResultIndicatorPeriodActual(models.Model):
     value = models.CharField(
-        max_length=50, blank=True, default='')
+        max_length=50, blank=True, default=None,null=True)
     result_indicator_period = models.ForeignKey(
         ResultIndicatorPeriod,
         null=True,
