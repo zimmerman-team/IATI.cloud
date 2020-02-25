@@ -3558,7 +3558,7 @@ class Parse(IatiParser):
         try:
             value = Decimal(value)
         except Exception as e:
-            value = None # value could be None according to
+            value = None  # value could be None according to
             # iati-specification but we should not add None to our database
             # otherwise it would raise error in endpoint aggregation.
             # Example API call:
