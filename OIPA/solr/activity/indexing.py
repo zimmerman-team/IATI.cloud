@@ -169,7 +169,7 @@ class ActivityIndexing(BaseIndexing):
                         ).data
                     ).decode()
                 )
-                self.add_field(
+                self.add_value_list(
                     'participating_org_xml',
                     ParticipatingOrgReference(
                         participating_org=participating_organisation
