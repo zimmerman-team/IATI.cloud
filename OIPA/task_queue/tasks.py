@@ -684,7 +684,8 @@ def get_update_iati_codelists_task():
 @shared_task
 def get_new_sources_from_iati_api_task():
     from django.core import management
-    management.call_command('get_new_sources_from_iati_registry', verbosity=0)
+    management.call_command('get_new_sources_from_iati_registry_and_download',
+                            verbosity=0)
 
 
 @shared_task

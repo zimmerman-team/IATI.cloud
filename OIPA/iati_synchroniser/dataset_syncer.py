@@ -175,8 +175,9 @@ class DatasetSyncer(object):
         obj.internal_url = self.download_dataset(dataset) or ''
         obj.save()
 
-        # Validation dataset with the current
-        DatasetValidationTask.delay(dataset_id=obj.id)
+        # Validation dataset with the current. we don't do validation for
+        # the moment
+        # DatasetValidationTask.delay(dataset_id=obj.id)
 
     def download_dataset(self, dataset_data):
         """Based on dataset URL, downloads and saves it in the server
