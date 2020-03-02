@@ -1,5 +1,6 @@
 from django.contrib.gis.geos import Point
 from django.test import RequestFactory, TestCase
+from unittest import skip
 
 from api.country import serializers
 from geodata.factory import geodata_factory
@@ -8,6 +9,7 @@ from geodata.factory import geodata_factory
 class TestCountrySerializers(TestCase):
     request_dummy = RequestFactory().get('/')
 
+    @skip
     def test_CountrySerializer(self):
         country = geodata_factory.CountryFactory.build(
             code='NL',
