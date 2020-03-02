@@ -1,6 +1,7 @@
+from unittest import skip
+
 from django.contrib.gis.geos import Point
 from django.test import RequestFactory, TestCase
-from unittest import skip
 
 from api.country import serializers
 from geodata.factory import geodata_factory
