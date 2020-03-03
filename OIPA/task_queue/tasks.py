@@ -697,6 +697,17 @@ def parse_source_by_id_task(dataset_id, force=False):
         pass
 
 
+@shared_task()
+def parse_source_by_organisation_identifier(organisation_identifier,
+                                            force=False):
+    try:
+        for dataset in Dataset.objects.filter(
+                publisher_id__publisher_iati_id=organisation_identifier):
+            dataset.process(force_reparse=force)
+    except Dataset.DoesNotExist:
+        pass
+
+
 @shared_task
 def parse_all_existing_sources_task(force=False):
     tasks = Tasks(
