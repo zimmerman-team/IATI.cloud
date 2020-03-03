@@ -1438,7 +1438,7 @@ class RecipientCountryReference(ElementWithNarrativeReference):
 
         # @percentage
         percentage_value = self.data.get(self.percentage.get('key'))
-        if percentage_value:
+        if percentage_value is not None:
             recipient_country_element.set(
                 self.percentage.get('attr'),
                 # Percentage value type is {Decimal}, then convert it to string
