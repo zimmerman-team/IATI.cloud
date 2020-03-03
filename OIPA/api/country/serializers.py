@@ -44,6 +44,6 @@ class CountrySerializer(DynamicFieldsModelSerializer):
             'fips10',
             'data_source',
             'activities',
-            #'location',
+            # 'location',
             'polygon',
         )
