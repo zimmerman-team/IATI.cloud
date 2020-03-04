@@ -38,6 +38,8 @@ from api.iati.references import (
     TotalExpenditureOrgReference, TransactionReference, XmlLangReference
 )
 
+from api.iati.elements import ElementReference
+
 # TODO: Make this more generic - 2016-01-21
 
 
@@ -825,7 +827,6 @@ class IATIXMLRenderer(BaseRenderer):
     root_tag_name = 'iati-activities'
     item_tag_name = 'iati-activity'
     version = '2.03'
-
     default_references = {
         'iati_identifier': None,
     }
@@ -878,6 +879,8 @@ class IATIXMLRenderer(BaseRenderer):
         elif view_class_name in ['ActivityList', 'OrganisationList']:
             if 'results' in data:
                 data = data['results']
+                if data[0]["sectors"]:
+                    ElementReference.activity_sector = True
             self.xml = E(self.root_tag_name)
             self.xml.set('version', self.version)
 

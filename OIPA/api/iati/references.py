@@ -753,55 +753,56 @@ class TransactionReference(ElementReference):
                 )
 
         # Sector
-        sectors_list = self.data.get(
-            self.sectors.get('key')
-        )
-        if sectors_list:
-            for sector_dict in sectors_list:
-                sector_element = etree.SubElement(
-                    transaction_element,
-                    self.sectors.get('element')
-                )
-
-                # Attribute
-                # Code
-                sector = sector_dict.get(
-                    self.sectors.get('sector').get('key')
-                )
-                if sector:
-                    code = sector.get(
-                        self.sectors.get(
-                            'sector'
-                        ).get('code').get('key')
+        if not self.activity_sector:
+            sectors_list = self.data.get(
+                self.sectors.get('key')
+            )
+            if sectors_list:
+                for sector_dict in sectors_list:
+                    sector_element = etree.SubElement(
+                        transaction_element,
+                        self.sectors.get('element')
                     )
 
-                    if code:
-                        sector_element.set(
+                    # Attribute
+                    # Code
+                    sector = sector_dict.get(
+                        self.sectors.get('sector').get('key')
+                    )
+                    if sector:
+                        code = sector.get(
                             self.sectors.get(
                                 'sector'
-                            ).get('code').get('attr'),
-                            code
+                            ).get('code').get('key')
                         )
 
-                # Attribute
-                # Vocabulary
-                vocabulary = sector_dict.get(
-                    self.sectors.get('vocabulary').get('key')
-                )
-                if vocabulary:
-                    code = vocabulary.get(
-                        self.sectors.get(
-                            'vocabulary'
-                        ).get('code').get('key')
-                    )
+                        if code:
+                            sector_element.set(
+                                self.sectors.get(
+                                    'sector'
+                                ).get('code').get('attr'),
+                                code
+                            )
 
-                    if code:
-                        sector_element.set(
+                    # Attribute
+                    # Vocabulary
+                    vocabulary = sector_dict.get(
+                        self.sectors.get('vocabulary').get('key')
+                    )
+                    if vocabulary:
+                        code = vocabulary.get(
                             self.sectors.get(
                                 'vocabulary'
-                            ).get('code').get('attr'),
-                            code
+                            ).get('code').get('key')
                         )
+
+                        if code:
+                            sector_element.set(
+                                self.sectors.get(
+                                    'vocabulary'
+                                ).get('code').get('attr'),
+                                code
+                            )
 
         # Recipient country
         recipient_countries_list = self.data.get(
