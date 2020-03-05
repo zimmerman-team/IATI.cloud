@@ -697,7 +697,7 @@ def parse_source_by_id_task(dataset_id, force=False):
         pass
 
 
-@shared_task()
+@shared_task
 def parse_source_by_organisation_identifier(organisation_identifier,
                                             force=False):
     try:
