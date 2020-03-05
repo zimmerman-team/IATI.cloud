@@ -18,6 +18,7 @@ from rest_framework.utils.serializer_helpers import ReturnDict, ReturnList
 from rest_framework_csv.renderers import CSVRenderer
 from six import BytesIO
 
+from api.iati.elements import ElementReference
 from api.iati.references import (
     ActivityDateReference, ActivityReference, ActivityScopeReference,
     ActivityStatusReference, BudgetReference, CapitalSpendReference,
@@ -37,8 +38,6 @@ from api.iati.references import (
     SectorReference, TagReference, TitleReference, TotalBudgetOrgReference,
     TotalExpenditureOrgReference, TransactionReference, XmlLangReference
 )
-
-from api.iati.elements import ElementReference
 
 # TODO: Make this more generic - 2016-01-21
 
