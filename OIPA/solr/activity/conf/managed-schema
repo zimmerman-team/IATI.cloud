@@ -183,7 +183,7 @@
     <field name="activity_date" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
     <field name="activity_date_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
     <field name="activity_date_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-    <field name="activity_date_iso_date" type="string" multiValued="true" indexed="false" required="false" stored="true"/>
+    <field name="activity_date_iso_date" type="pdate" multiValued="true" indexed="false" required="false" stored="true"/>
     <field name="activity_date_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
     <field name="activity_date_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="activity_date_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
