@@ -276,7 +276,7 @@ class ActivityIndexing(BaseIndexing):
                 if activity_date.iso_date:
                     self.add_value_list(
                         'activity_date_iso_date',
-                        str(activity_date.iso_date)
+                        activity_date.iso_date
                     )
 
                 if activity_date.type_id == '1':
