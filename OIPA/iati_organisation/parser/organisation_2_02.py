@@ -897,21 +897,33 @@ class Parse(IatiParser):
         model = self.get_model('TotalExpenditureBudgetLine',
                                self.total_expenditure_line_current_index)
 
-        code = element.attrib.get('currency')
-        currency = self.get_or_none(codelist_models.Currency, code=code)
-
-        if not code:
-            raise RequiredFieldError(
-                "total-expenditure/value/currency",
-                "code",
-                "required element empty")
-
+        currency = element.attrib.get("currency")
         if not currency:
-            raise FieldValidationError(
-                "total-expenditure/value/currency",
-                "code",
-                "not found on the accompanying code list")
+            currency = getattr(
+                self.get_model("Organisation"),
+                "default_currency"
+            )
+            if not currency:
+                raise RequiredFieldError(
+                    "TotalExpenditureLine",
+                    "currency",
+                    "must specify default-currency on iati-activity or as "
+                    "currency on the element itself."
+                )
 
+        else:
+            currency = self.get_or_none(
+                codelist_models.Currency,
+                code=currency
+            )
+            if currency is None:
+                raise FieldValidationError(
+                    "TotalExpenditureLine",
+                    "currency",
+                    "not found on the accompanying codelist.",
+                    None,
+                    None,
+                )
         model.value_date = self.validate_date(element.attrib.get('value-date'))
         model.currency = currency
         model.value = element.text
