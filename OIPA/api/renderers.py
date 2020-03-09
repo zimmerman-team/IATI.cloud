@@ -878,7 +878,7 @@ class IATIXMLRenderer(BaseRenderer):
         elif view_class_name in ['ActivityList', 'OrganisationList']:
             if 'results' in data:
                 data = data['results']
-                if data[0]["sectors"]:
+                if data and data[0].get("sectors"):
                     ElementReference.activity_sector = True
             self.xml = E(self.root_tag_name)
             self.xml.set('version', self.version)
