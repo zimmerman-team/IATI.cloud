@@ -85,7 +85,6 @@
     <xsl>default_tied_status_code,</xsl>
     <xsl>budget_type,</xsl>
     <xsl>budget_status,</xsl>
-    <xsl>budget_status,</xsl>
     <xsl>budget_period_start_iso_date,</xsl>
     <xsl>budget_period_end_iso_date,</xsl>
     <xsl>budget_value_currency,</xsl>
