@@ -703,7 +703,7 @@ def parse_source_by_organisation_identifier(organisation_identifier,
     try:
         for dataset in Dataset.objects.filter(
                 publisher_id__publisher_iati_id=organisation_identifier):
-            dataset.process(force_reparse=force)
+            parse_source_by_id_task.delay(dataset_id=dataset.id, force=force)
     except Dataset.DoesNotExist:
         pass
 

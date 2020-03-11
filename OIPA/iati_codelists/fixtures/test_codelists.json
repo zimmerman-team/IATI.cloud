@@ -27741,7 +27741,7 @@
             "name": "Basic life skills for youth",
             "description": "",
             "category": "730",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -27752,7 +27752,7 @@
             "name": "Primary education equivalent for adults",
             "description": "",
             "category": "730",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -27785,7 +27785,7 @@
             "name": "Lower secondary education",
             "description": "",
             "category": "152",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -27796,7 +27796,7 @@
             "name": "Upper secondary education",
             "description": "",
             "category": "152",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -28203,7 +28203,7 @@
             "name": "Tax collection",
             "description": "",
             "category": "122",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -28214,7 +28214,7 @@
             "name": "Budget planning",
             "description": "",
             "category": "122",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -28225,7 +28225,7 @@
             "name": "National audit",
             "description": "",
             "category": "122",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -28236,7 +28236,7 @@
             "name": "Debt and aid management",
             "description": "",
             "category": "122",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -28258,7 +28258,7 @@
             "name": "Foreign affairs",
             "description": "",
             "category": "510",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -28269,7 +28269,7 @@
             "name": "Diplomatic missions",
             "description": "",
             "category": "510",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -28280,7 +28280,7 @@
             "name": "Administration of developing countries' foreign aid",
             "description": "",
             "category": "510",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -28291,7 +28291,7 @@
             "name": "General personnel services",
             "description": "",
             "category": null,
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -28302,7 +28302,7 @@
             "name": "Central procurement",
             "description": "",
             "category": "210",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -28313,7 +28313,7 @@
             "name": "Other general public services",
             "description": "",
             "category": "510",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -28324,7 +28324,7 @@
             "name": "National monitoring and evaluation",
             "description": "",
             "category": "210",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -28335,7 +28335,7 @@
             "name": "Local government finance",
             "description": "",
             "category": "510",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -28346,7 +28346,7 @@
             "name": "Other central transfers to institutions",
             "description": "",
             "category": "510",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -28368,7 +28368,7 @@
             "name": "Justice, law and order policy, planning and administration",
             "description": "",
             "category": "250",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -28379,7 +28379,7 @@
             "name": "Police",
             "description": "",
             "category": "250",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -28390,7 +28390,7 @@
             "name": "Fire and rescue services",
             "description": "",
             "category": "250",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -28401,7 +28401,7 @@
             "name": "Judicial affairs",
             "description": "",
             "category": "250",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -28412,7 +28412,7 @@
             "name": "Ombudsman",
             "description": "",
             "category": "250",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -28423,7 +28423,7 @@
             "name": "Immigration",
             "description": "",
             "category": "250",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -28434,7 +28434,7 @@
             "name": "Prisons",
             "description": "",
             "category": "250",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -28456,7 +28456,7 @@
             "name": "Macroeconomic policy",
             "description": "",
             "category": "250",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -28467,7 +28467,7 @@
             "name": "Meteorological services",
             "description": "",
             "category": "233",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -28478,7 +28478,7 @@
             "name": "National standards development",
             "description": "",
             "category": "152",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -28533,7 +28533,7 @@
             "name": "Executive office",
             "description": "",
             "category": "730",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -28544,7 +28544,7 @@
             "name": "Tax policy and administration support",
             "description": "",
             "category": "730",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -28555,7 +28555,7 @@
             "name": "Other non-tax revenue mobilisation",
             "description": "",
             "category": "730",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -28632,7 +28632,7 @@
             "name": "Ending violence against women and girls ",
             "description": "",
             "category": "250",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -28643,7 +28643,7 @@
             "name": "Local government administration",
             "description": "",
             "category": "250",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -28731,7 +28731,7 @@
             "name": "Social protection and welfare services policy, planning and administration",
             "description": "",
             "category": "250",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -28742,7 +28742,7 @@
             "name": "Social security (excl pensions)",
             "description": "",
             "category": "250",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -28753,7 +28753,7 @@
             "name": "General pensions",
             "description": "",
             "category": "250",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -28764,7 +28764,7 @@
             "name": "Civil service pensions",
             "description": "",
             "category": "250",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -28775,7 +28775,7 @@
             "name": "Social services (incl youth development and women+ children)",
             "description": "",
             "category": "250",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -28874,7 +28874,7 @@
             "name": "Recreation and sport",
             "description": "",
             "category": "250",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -28885,7 +28885,7 @@
             "name": "Culture",
             "description": "",
             "category": "250",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -28907,7 +28907,7 @@
             "name": "Transport policy, planning and administration",
             "description": "",
             "category": "250",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -28918,7 +28918,7 @@
             "name": "Public transport services",
             "description": "",
             "category": "720",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -28929,7 +28929,7 @@
             "name": "Transport regulation",
             "description": "",
             "category": "720",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -28951,7 +28951,7 @@
             "name": "Feeder road construction",
             "description": "",
             "category": "240",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -28962,7 +28962,7 @@
             "name": "Feeder road maintenance",
             "description": "",
             "category": "250",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -28973,7 +28973,7 @@
             "name": "National road construction",
             "description": "",
             "category": "323",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -28984,7 +28984,7 @@
             "name": "National road maintenance",
             "description": "",
             "category": "236",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -29061,7 +29061,7 @@
             "name": "Communications policy, planning and administration",
             "description": "",
             "category": "233",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -29072,7 +29072,7 @@
             "name": "Postal services",
             "description": "",
             "category": "112",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -29083,7 +29083,7 @@
             "name": "Information services",
             "description": "",
             "category": "112",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -29314,7 +29314,7 @@
             "name": "Energy policy and administrative management",
             "description": "",
             "category": "323",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -29325,7 +29325,7 @@
             "name": "Energy sector policy, planning and administration",
             "description": "",
             "category": "323",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -29336,7 +29336,7 @@
             "name": "Energy regulation",
             "description": "",
             "category": "323",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -29347,7 +29347,7 @@
             "name": "Energy education/training",
             "description": "",
             "category": "220",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -29358,7 +29358,7 @@
             "name": "Energy research",
             "description": "",
             "category": "152",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -29369,7 +29369,7 @@
             "name": "Energy conservation and demand-side efficiency",
             "description": "",
             "category": "220",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -29380,7 +29380,7 @@
             "name": "Energy generation, renewable sources \u2013 multiple technologies",
             "description": "",
             "category": "140",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -29391,7 +29391,7 @@
             "name": "Hydro-electric power plants",
             "description": "",
             "category": "234",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -29402,7 +29402,7 @@
             "name": "Solar energy",
             "description": "",
             "category": "210",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -29413,7 +29413,7 @@
             "name": "Wind energy",
             "description": "",
             "category": "236",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -29424,7 +29424,7 @@
             "name": "Marine energy",
             "description": "",
             "category": "250",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -29435,7 +29435,7 @@
             "name": "Geothermal energy",
             "description": "",
             "category": "152",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -29446,7 +29446,7 @@
             "name": "Biofuel-fired power plants",
             "description": "",
             "category": "430",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -29457,7 +29457,7 @@
             "name": "Energy generation, non-renewable sources \u2013 unspecified",
             "description": "",
             "category": "236",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -29468,7 +29468,7 @@
             "name": "Coal-fired electric power plants",
             "description": "",
             "category": "323",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -29479,7 +29479,7 @@
             "name": "Oil-fired electric power plants",
             "description": "",
             "category": "220",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -29490,7 +29490,7 @@
             "name": "Natural gas-fired electric power plants",
             "description": "",
             "category": "152",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -29501,7 +29501,7 @@
             "name": "Fossil fuel electric power plants with carbon capture and storage (CCS)",
             "description": "",
             "category": "720",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -29512,7 +29512,7 @@
             "name": "Non-renewable waste-fired electric power plants",
             "description": "",
             "category": "321",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -29523,7 +29523,7 @@
             "name": "Hybrid energy electric power plants",
             "description": "",
             "category": "510",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -29534,7 +29534,7 @@
             "name": "Nuclear energy electric power plants",
             "description": "",
             "category": "323",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -29545,7 +29545,7 @@
             "name": "Heat plants",
             "description": "",
             "category": "210",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -29556,7 +29556,7 @@
             "name": "District heating and cooling",
             "description": "",
             "category": "720",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -29567,7 +29567,7 @@
             "name": "Electric power transmission and distribution",
             "description": "",
             "category": "233",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -29578,7 +29578,7 @@
             "name": "Gas distribution",
             "description": "",
             "category": "730",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -30469,7 +30469,7 @@
             "name": "Urban land policy and management",
             "description": "",
             "category": "410",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -30480,7 +30480,7 @@
             "name": "Urban development",
             "description": "",
             "category": "730",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -30502,7 +30502,7 @@
             "name": "Rural land policy and management",
             "description": "",
             "category": "510",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },
@@ -30513,7 +30513,7 @@
             "name": "Rural development",
             "description": "",
             "category": "250",
-            "vocabulary": "1",
+            "vocabulary": null,
             "percentage": null
         }
     },

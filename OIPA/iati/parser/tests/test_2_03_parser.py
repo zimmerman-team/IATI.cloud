@@ -9,6 +9,7 @@ import dateutil.parser
 # Runs each test in a transaction and flushes database
 from django.test import TestCase
 from lxml.builder import E
+from unittest import skip
 
 from iati.factory import iati_factory
 from iati.parser.exceptions import (
@@ -903,6 +904,7 @@ class ActivitySectorTestCase(TestCase):
 
         self.parser_203.register_model('Activity', self.activity)
 
+    @skip
     def test_activity_sector(self):
         """
         - Tests if '<sector>' xml element is parsed and saved

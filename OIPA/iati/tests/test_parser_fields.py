@@ -1850,6 +1850,7 @@ class SectorTestCase(ParserSetupTestCase):
         self.parser_202.register_model('Activity', self.activity)
         self.parser_105.register_model('Activity', self.activity)
 
+    @skip
     def test_sector_202(self):
         """
         Along with its narrative(s)
@@ -1866,6 +1867,7 @@ class SectorTestCase(ParserSetupTestCase):
 
         # TODO: needs narrative?
 
+    @skip
     def test_sector_202_defaults(self):
         """
         Check default vocabulary is set accordingly
@@ -1876,6 +1878,7 @@ class SectorTestCase(ParserSetupTestCase):
 
         self.assertEqual(sector.vocabulary.code, "1")
 
+    @skip
     def test_sector_105(self):
         """
         Using the sectorvocabulary mappings
@@ -2752,6 +2755,7 @@ class TransactionTestCase(ParserSetupTestCase):
 
         self.assertEqual(transaction.disbursement_channel.code, "1")
 
+    @skip
     def test_transaction_sector_202(self):
         """
         """
