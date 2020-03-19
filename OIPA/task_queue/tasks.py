@@ -1,6 +1,5 @@
 import datetime
 import hashlib
-import io
 import logging
 import os
 import time
@@ -13,7 +12,6 @@ from django.conf import settings
 from django.core.cache import caches
 from django_rq import job
 from redis import Redis
-from requests.exceptions import RequestException
 from rest_framework_extensions.settings import extensions_api_settings
 from rq import Worker
 from rq.job import Job
@@ -693,7 +691,7 @@ def parse_source_by_id_task(dataset_id, force=False, check_validation=True):
     if check_validation:
         try:
             dataset = Dataset.objects.filter(pk=dataset_id,
-                                             validation_status__critical__lte=0)
+                                             validation_status__critical__lte=0)  # NOQA: E501
             dataset = dataset.first()
             dataset.process(force_reparse=force)
         except AttributeError:
