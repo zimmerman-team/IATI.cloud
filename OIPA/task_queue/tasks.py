@@ -689,49 +689,54 @@ def get_new_sources_from_iati_api_task():
 
 
 @shared_task
-def parse_source_by_id_task(dataset_id, force=False):
-    try:
-        dataset = Dataset.objects.get(pk=dataset_id)
-        dataset.process(force_reparse=force)
-    except Dataset.DoesNotExist:
-        pass
+def parse_source_by_id_task(dataset_id, force=False, check_validation=True):
+    if check_validation:
+        try:
+            dataset = Dataset.objects.filter(pk=dataset_id,
+                                             validation_status__critical__lte=0)
+            dataset = dataset.first()
+            dataset.process(force_reparse=force)
+        except AttributeError:
+            print('no dataset found')
+            pass
+    else:
+        try:
+            dataset = Dataset.objects.get(pk=dataset_id)
+            dataset.process(force_reparse=force)
+        except Dataset.DoesNotExist:
+            pass
 
 
 @shared_task
 def parse_source_by_organisation_identifier(organisation_identifier,
-                                            force=False):
+                                            force=False,
+                                            check_validation=True):
     try:
         for dataset in Dataset.objects.filter(
                 publisher_id__publisher_iati_id=organisation_identifier):
-            parse_source_by_id_task.delay(dataset_id=dataset.id, force=force)
+            parse_source_by_id_task.delay(dataset_id=dataset.id,
+                                          force=force,
+                                          check_validation=check_validation)
     except Dataset.DoesNotExist:
         pass
 
 
+# to bypass checking validation, falsify check_validation argument.
 @shared_task
-def parse_all_existing_sources_task(force=False):
+def parse_all_existing_sources_task(force=False, check_validation=True):
     tasks = Tasks(
         parent_task='task_queue.tasks.parse_all_existing_sources_task',
         children_tasks=['task_queue.tasks.parse_source_by_id_task']
     )
     if tasks.is_parent():
         for dataset in Dataset.objects.all().filter(filetype=2):
-            parse_source_by_id_task.delay(dataset_id=dataset.id, force=force)
+            parse_source_by_id_task.delay(dataset_id=dataset.id,
+                                          force=force,
+                                          check_validation=check_validation)
         for dataset in Dataset.objects.all().filter(filetype=1):
-            parse_source_by_id_task.delay(dataset_id=dataset.id, force=force)
-
-# We want to drop validation for the time being.
-# for dataset in Dataset.objects.all().filter(filetype=2).filter(
-#         validation_status='success'):
-#     if check_sha(dataset.source_url) == dataset.validation_sha512:
-#         parse_source_by_id_task.delay(dataset_id=dataset.id,
-#                                       force=force)
-#
-# for dataset in Dataset.objects.all().filter(filetype=1).filter(
-#         validation_status='success'):
-#     if check_sha(dataset.source_url) == dataset.validation_sha512:
-#         parse_source_by_id_task.delay(dataset_id=dataset.id,
-#                                       force=force)
+            parse_source_by_id_task.delay(dataset_id=dataset.id,
+                                          force=force,
+                                          check_validation=check_validation)
 
 
 def check_sha(source_url):  # needed only for validation
