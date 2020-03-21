@@ -3,7 +3,8 @@ import hashlib
 import logging
 import os
 import time
-
+import pika
+import celery
 import django_rq
 import fulltext
 import requests
@@ -471,7 +472,7 @@ def download_file(d):
                         <update.timestamp.id.extention'''
                 ts = time.time()
                 document_path_update = save_path + \
-                    "update." + str(ts) + "." + save_name
+                                       "update." + str(ts) + "." + save_name
                 downloader = DownloadFile(long_url, document_path_update)
                 try:
                     is_downloaded = downloader.download()
@@ -519,7 +520,7 @@ def synchronize_solr_indexing():
     )
     budget_hits = solr_budget.search(q='*:*', fl='id').hits
     budget_docs = solr_budget.search(
-        q='*:*',  fl='id', rows=budget_hits
+        q='*:*', fl='id', rows=budget_hits
     ).docs
     list_budget_doc_id = [
         int(budget_doc['id']) for budget_doc in budget_docs
@@ -570,7 +571,7 @@ def synchronize_solr_indexing():
         delete_multiple_rows_activiy_in_solr(ids)
 
     for activity_id in (
-        list(set(list_activity_id) - set(list_activity_doc_id))
+            list(set(list_activity_id) - set(list_activity_doc_id))
     ):
         queue.enqueue(add_activity_to_solr, args=(activity_id,))
 
@@ -592,7 +593,7 @@ def synchronize_solr_indexing():
         delete_multiple_rows_dataset_note_in_solr(ids)
 
     for dataset_note_id in (
-        list(set(list_dataset_note_id) - set(list_dataset_note_doc_id))
+            list(set(list_dataset_note_id) - set(list_dataset_note_doc_id))
     ):
         queue.enqueue(add_dataset_note_to_solr, args=(dataset_note_id,))
 
@@ -735,3 +736,76 @@ def parse_all_existing_sources_task(force=False, check_validation=True):
             parse_source_by_id_task.delay(dataset_id=dataset.id,
                                           force=force,
                                           check_validation=check_validation)
+
+
+@shared_task
+def continuous_parse_all_existing_sources_task(force=False,
+                                               check_validation=True):
+    i = celery.task.control.inspect()
+
+    is_empty_workers = True
+    while True:
+        active_workers_dict = i.active()
+        for key in active_workers_dict:
+            list_in_dict = active_workers_dict[key]
+            list_without_this_task = [worker for worker in list_in_dict if
+                                      worker[
+                                          'name'] != 'task_queue.tasks.continuous_parse_all_existing_sources_task']
+            if not list_without_this_task:
+                is_empty_workers = True
+            else:
+                is_empty_workers = False
+
+        if is_empty_workers:
+            parse_all_existing_sources_task.delay(force=force,
+                                                  check_validation=check_validation)
+            print("starting another round.")
+
+        time.sleep(20)
+
+
+@shared_task
+def revoke_all_tasks():
+    i = celery.task.control.inspect()
+    connection = pika.BlockingConnection(
+        pika.ConnectionParameters('127.0.0.1'))
+    channel = connection.channel()
+    is_empty_active_workers = False
+    is_empty_reserved_workers = False
+    is_empty_worker = False
+    while is_empty_worker is False:
+        time.sleep(1)
+        channel.queue_purge(queue='celery')
+        active_workers_dict = i.active()
+        reserved_workers_dict = i.reserved()
+        for key in active_workers_dict:
+            list_in_dict = active_workers_dict[key]
+            list_without_this_task = [worker for worker in list_in_dict if
+                                      worker[
+                                          'name'] !=
+                                      'task_queue.tasks.revoke_all_tasks']
+
+            if not list_without_this_task:
+                is_empty_active_workers = True
+            else:
+                is_empty_active_workers = False
+
+            for worker in list_without_this_task:
+                celery.task.control.revoke(worker.get('id', ''),
+                                           terminate=True)
+
+        for key in reserved_workers_dict:  # revoke_all_tasks cannot be in reserved
+            list_in_dict = reserved_workers_dict[key]
+
+            if not list_in_dict:
+                is_empty_reserved_workers = True
+            else:
+                is_empty_reserved_workers = False
+
+            for worker in list_in_dict:
+                celery.task.control.revoke(worker.get('id', ''),
+                                           terminate=True)
+
+        if is_empty_active_workers and is_empty_reserved_workers:
+            is_empty_worker = True
+
