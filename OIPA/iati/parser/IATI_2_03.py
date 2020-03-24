@@ -1426,7 +1426,6 @@ class Parse(IatiParser):
 
         tag:recipient-sector"""
         code = element.attrib.get('code')
-        sector = self.get_or_none(models.Sector, code=code)
         # TODO: make defaults more transparant, here: 'OECD-DAC default'
         vocabulary = self.get_or_none(
             vocabulary_models.SectorVocabulary,
@@ -1449,6 +1448,9 @@ class Parse(IatiParser):
                 "not found on the accompanying code list",
                 None,
                 None)
+
+        sector = models.Sector.objects.filter(code=code,
+                                              vocabulary=vocabulary).first()
 
         if not sector and vocabulary.code == '1':
             raise FieldValidationError(
@@ -2640,8 +2642,6 @@ class Parse(IatiParser):
 
         tag:sector"""
         code = element.attrib.get('code')
-        sector = self.get_or_none(
-            models.Sector, code=element.attrib.get('code'))
         # TODO: make defaults more transparant, here: 'OECD-DAC default'
         vocabulary = self.get_or_none(
             vocabulary_models.SectorVocabulary,
@@ -2664,6 +2664,9 @@ class Parse(IatiParser):
                 None,
                 None,
                 element.attrib.get('vocabulary'))
+
+        sector = models.Sector.objects.filter(code=code,
+                                              vocabulary=vocabulary).first()
 
         if not sector and vocabulary.code == '1':
             raise FieldValidationError(
@@ -4349,12 +4352,13 @@ class Parse(IatiParser):
         try:
             value = Decimal(value)
         except Exception as e:
-            value = 0     # value could be None according to
+            value = None    # value could be None according to
             # iati-specification but we should not add None to our database
             # otherwise it would raise error in endpoint aggregation.
             # Example API call:
             # /api/results/aggregations/?group_by=result_indicator_title
             # &aggregations=targets&format=json
+            # We have update the codes in api aggregations to enable null
 
         result_indicator_period = self.get_model('ResultIndicatorPeriod')
 
@@ -4668,12 +4672,13 @@ class Parse(IatiParser):
         try:
             value = Decimal(value)
         except Exception as e:
-            value = 0  # value could be None according to
+            value = None  # value could be None according to
             # iati-specification but we should not add None to our database
             # otherwise it would raise error in endpoint aggregation.
             # Example API call:
             # /api/results/aggregations/?group_by=result_indicator_title
             # &aggregations=actuals&format=json
+            # We have updated the api aggregations to enable null
 
         result_indicator_period = self.get_model('ResultIndicatorPeriod')
 

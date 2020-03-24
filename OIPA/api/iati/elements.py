@@ -11,6 +11,7 @@ class ElementReference(object):
     attributes = []
     children = []
     element_record = None
+    activity_sector = False
 
     def __init__(self, parent_element, data, nsmap=None, element=None, ):
         if nsmap is None:

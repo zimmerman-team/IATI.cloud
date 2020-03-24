@@ -9,8 +9,6 @@ from api.iati.elements import (
     AttributeRecord, ElementBase, ElementRecord, ElementReference,
     ElementWithNarrativeReference
 )
-from iati_codelists.models import AidType
-from iati_vocabulary.models import AidTypeVocabulary
 
 
 class NameSpaceCreate:
@@ -141,8 +139,9 @@ class DefaultAidTypeReference(ElementReference):
 
         code = self.data.get('aid_type').get(self.code_key)
         # We get vocabulary code from AidTypeVocabulary table.
-        vocabulary = AidTypeVocabulary.objects.get(code=AidType.objects.get(
-            code=code).vocabulary_id).code
+        # vocabulary = AidTypeVocabulary.objects.get(code=AidType.objects.get(
+        #     code=code).vocabulary_id).code
+        vocabulary = self.data.get('aid_type').get('vocabulary').get('code')
         if code:
             default_aid_type_element = etree.SubElement(
                 self.parent_element, self.element, nsmap=ns_map
@@ -927,64 +926,66 @@ class TransactionReference(ElementReference):
                 )
 
         # Sector
-        sectors_list = self.data.get(
-            self.sectors.get('key')
-        )
-        if sectors_list:
-            for sector_dict in sectors_list:
-                # get namespace dictionary to use it in creating
-                # default-aid-type element.
-                sector_ns_map = {}
-                sector_namespace_list = sector_dict.get(
-                    'name_space')
-                if sector_namespace_list is not None:
-                    for namespace in sector_namespace_list:
-                        sector_ns_map.update(namespace.get('nsmap'))
+        if not self.activity_sector:
+            sectors_list = self.data.get(
+                self.sectors.get('key')
+            )
 
-                sector_element = etree.SubElement(
-                    transaction_element,
-                    self.sectors.get('element'), nsmap=sector_ns_map
-                )
+            if sectors_list:
+                for sector_dict in sectors_list:
+                    # get namespace dictionary to use it in creating
+                    # default-aid-type element.
+                    sector_ns_map = {}
+                    sector_namespace_list = sector_dict.get(
+                        'name_space')
+                    if sector_namespace_list is not None:
+                        for namespace in sector_namespace_list:
+                            sector_ns_map.update(namespace.get('nsmap'))
 
-                # Attribute
-                # Code
-                sector = sector_dict.get(
-                    self.sectors.get('sector').get('key')
-                )
-                if sector:
-                    code = sector.get(
-                        self.sectors.get(
-                            'sector'
-                        ).get('code').get('key')
+                    sector_element = etree.SubElement(
+                        transaction_element,
+                        self.sectors.get('element'), nsmap=sector_ns_map
                     )
 
-                    if code:
-                        sector_element.set(
+                    # Attribute
+                    # Code
+                    sector = sector_dict.get(
+                        self.sectors.get('sector').get('key')
+                    )
+                    if sector:
+                        code = sector.get(
                             self.sectors.get(
                                 'sector'
-                            ).get('code').get('attr'),
-                            code
+                            ).get('code').get('key')
                         )
 
-                # Attribute
-                # Vocabulary
-                vocabulary = sector_dict.get(
-                    self.sectors.get('vocabulary').get('key')
-                )
-                if vocabulary:
-                    code = vocabulary.get(
-                        self.sectors.get(
-                            'vocabulary'
-                        ).get('code').get('key')
-                    )
+                        if code:
+                            sector_element.set(
+                                self.sectors.get(
+                                    'sector'
+                                ).get('code').get('attr'),
+                                code
+                            )
 
-                    if code:
-                        sector_element.set(
+                    # Attribute
+                    # Vocabulary
+                    vocabulary = sector_dict.get(
+                        self.sectors.get('vocabulary').get('key')
+                    )
+                    if vocabulary:
+                        code = vocabulary.get(
                             self.sectors.get(
                                 'vocabulary'
-                            ).get('code').get('attr'),
-                            code
+                            ).get('code').get('key')
                         )
+
+                        if code:
+                            sector_element.set(
+                                self.sectors.get(
+                                    'vocabulary'
+                                ).get('code').get('attr'),
+                                code
+                            )
                 NameSpaceCreate.create_namespace_attr_or_elememnt(
                     sector_namespace_list, sector_element)
 
@@ -1701,7 +1702,7 @@ class RecipientCountryReference(ElementWithNarrativeReference):
 
         # @percentage
         percentage_value = self.data.get(self.percentage.get('key'))
-        if percentage_value:
+        if percentage_value is not None:
             recipient_country_element.set(
                 self.percentage.get('attr'),
                 # Percentage value type is {Decimal}, then convert it to string

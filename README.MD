@@ -1,10 +1,11 @@
-## OIPA
+## IATI.cloud
 --------
 
-[![Codacy Badge](https://api.codacy.com/project/badge/Coverage/66a6772e1f264199830b01a86f9a2b47)](https://www.codacy.com/app/eimantas_4/OIPA?utm_source=github.com&utm_medium=referral&utm_content=zimmerman-zimmerman/OIPA&utm_campaign=Badge_Coverage)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/205e2fbfc54b49d0a28d1d774dfb18f2)](https://www.codacy.com/manual/zimmerman-zimmerman/OIPA?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=zimmerman-zimmerman/OIPA&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://api.codacy.com/project/badge/Coverage/205e2fbfc54b49d0a28d1d774dfb18f2)](https://www.codacy.com/manual/zimmerman-zimmerman/OIPA?utm_source=github.com&utm_medium=referral&utm_content=zimmerman-zimmerman/OIPA&utm_campaign=Badge_Coverage)
 [![License: AGPLv3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://github.com/zimmerman-zimmerman/OIPA/blob/master/LICENSE.MD)
 ![Open issues](https://img.shields.io/github/issues/zimmerman-zimmerman/OIPA.svg?style=flat)
-[![CircleCI](https://circleci.com/gh/zimmerman-zimmerman/OIPA.svg?style=svg)](https://circleci.com/gh/zimmerman-zimmerman/OIPA)
+[![CircleCI](https://circleci.com/gh/zimmerman-zimmerman/iati.cloud.svg?style=svg&circle-token=193a84b0736b82dd10d5e7bb0a118c2fc1c30273)](https://circleci.com/gh/zimmerman-zimmerman/iati.cloud)
 
 
 OIPA extracts all published IATI XML files from the [IATI Registry](http://www.iatiregistry.org/publisher) and makes them available in a normalised PostgreSQL database, that you can access using a RESTful API.

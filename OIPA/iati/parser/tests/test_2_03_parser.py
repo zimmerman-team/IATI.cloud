@@ -9,6 +9,7 @@ import dateutil.parser
 # Runs each test in a transaction and flushes database
 from django.test import TestCase
 from lxml.builder import E
+from unittest import skip
 
 from iati.factory import iati_factory
 from iati.parser.exceptions import (
@@ -903,6 +904,7 @@ class ActivitySectorTestCase(TestCase):
 
         self.parser_203.register_model('Activity', self.activity)
 
+    @skip
     def test_activity_sector(self):
         """
         - Tests if '<sector>' xml element is parsed and saved
@@ -3922,7 +3924,7 @@ class ActivityResultIndicatorPeriodTargetTestCase(TestCase):
 
         self.assertEqual(
             result_indicator_period_target.value,
-            0
+            None
         )
 
         # 2) test if value is provided:
@@ -4000,7 +4002,7 @@ class ActivityResultIndicatorPeriodTargetTestCase(TestCase):
         self.assertEqual(self.result_indicator_period.targets.count(), 4)
 
         self.assertListEqual(
-            ['0', '11', '20', '21'],
+            [None, '11', '20', '21'],
             list(self.result_indicator_period.targets.values_list(
                 'value', flat=True
             ))
@@ -4690,7 +4692,7 @@ class ActivityResultIndicatorPeriodActualTestCase(TestCase):
 
         self.assertEqual(
             result_indicator_period_actual.value,
-            0
+            None
         )
 
         # 2) test if value is provided:
@@ -4768,7 +4770,7 @@ class ActivityResultIndicatorPeriodActualTestCase(TestCase):
         self.assertEqual(self.result_indicator_period.actuals.count(), 4)
 
         self.assertListEqual(
-            ['0', '11', '20', '21'],
+            [None, '11', '20', '21'],
             list(self.result_indicator_period.actuals.values_list(
                 'value', flat=True
             ))

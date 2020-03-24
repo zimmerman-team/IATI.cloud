@@ -92,7 +92,7 @@ class ParseManager():
             dataset.save()
 
         try:
-            parser = etree.XMLParser(huge_tree=True, encoding='utf-8')
+            parser = etree.XMLParser(huge_tree=True)
             tree = etree.parse(BytesIO(response.content), parser)
             self.root = tree.getroot()
             self.parser = self._prepare_parser(self.root, dataset)

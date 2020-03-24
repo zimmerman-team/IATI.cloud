@@ -1,11 +1,14 @@
 import datetime
 import hashlib
+import logging
 import os
 import time
-
+import pika
+import celery
 import django_rq
 import fulltext
 import requests
+from celery import shared_task
 from django.conf import settings
 from django.core.cache import caches
 from django_rq import job
@@ -23,6 +26,7 @@ from iati.activity_aggregation_calculation import (
 from iati.models import Activity, Budget, Document, DocumentLink, Result
 from iati.transaction.models import Transaction
 from iati_synchroniser.models import Dataset, DatasetNote
+from OIPA.celery import app
 from solr.activity.tasks import ActivityTaskIndexing
 from solr.activity.tasks import solr as solr_activity
 from solr.budget.tasks import solr as solr_budget
@@ -30,13 +34,16 @@ from solr.datasetnote.tasks import DatasetNoteTaskIndexing
 from solr.datasetnote.tasks import solr as solr_dataset_note
 from solr.result.tasks import solr as solr_result
 from solr.transaction.tasks import solr as solr_transaction
+from task_queue.utils import Tasks
+from task_queue.validation import DatasetValidationTask
+
+# Get an instance of a logger
+logger = logging.getLogger(__name__)
 
 redis_conn = Redis.from_url(settings.RQ_REDIS_URL)
 
-
-###############################
-#### TASK QUEUE MANAGEMENT ####  # NOQA: E266
-###############################
+# Register a custom base task then Celery recognizes it
+DatasetValidationTask = app.register_task(DatasetValidationTask())
 
 
 def remove_all_api_caches():
@@ -73,10 +80,6 @@ def delete_all_tasks_from_queue(queue_name):
             break
         current_job.delete()
 
-
-###############################
-######## PARSING TASKS ########  # NOQA: E266
-###############################
 
 @job
 def get_new_sources_from_iati_api():
@@ -247,9 +250,11 @@ def delete_sources_not_found_in_registry_in_x_days(days):
                 queue.enqueue(delete_source_by_id, args=(source.id,))
 
 
-###############################
-#### IATI MANAGEMENT TASKS ####  # NOQA: E266
-###############################
+def update_iati_codelists_task():
+    from iati_synchroniser.codelist_importer import CodeListImporter
+    syncer = CodeListImporter()
+    syncer.synchronise_with_codelists()
+
 
 @job
 def update_iati_codelists():
@@ -403,11 +408,6 @@ def update_searchable_activities():
     management.call_command('set_searchable_activities', verbosity=0)
 
 
-#############################################
-############# Docstore TASKS ################  # NOQA: E266
-#############################################
-
-
 @job
 def collect_files():
     queue = django_rq.get_queue("document_collector")
@@ -472,7 +472,7 @@ def download_file(d):
                         <update.timestamp.id.extention'''
                 ts = time.time()
                 document_path_update = save_path + \
-                    "update." + str(ts) + "." + save_name
+                                       "update." + str(ts) + "." + save_name
                 downloader = DownloadFile(long_url, document_path_update)
                 try:
                     is_downloaded = downloader.download()
@@ -520,7 +520,7 @@ def synchronize_solr_indexing():
     )
     budget_hits = solr_budget.search(q='*:*', fl='id').hits
     budget_docs = solr_budget.search(
-        q='*:*',  fl='id', rows=budget_hits
+        q='*:*', fl='id', rows=budget_hits
     ).docs
     list_budget_doc_id = [
         int(budget_doc['id']) for budget_doc in budget_docs
@@ -571,7 +571,7 @@ def synchronize_solr_indexing():
         delete_multiple_rows_activiy_in_solr(ids)
 
     for activity_id in (
-        list(set(list_activity_id) - set(list_activity_doc_id))
+            list(set(list_activity_id) - set(list_activity_doc_id))
     ):
         queue.enqueue(add_activity_to_solr, args=(activity_id,))
 
@@ -593,7 +593,7 @@ def synchronize_solr_indexing():
         delete_multiple_rows_dataset_note_in_solr(ids)
 
     for dataset_note_id in (
-        list(set(list_dataset_note_id) - set(list_dataset_note_doc_id))
+            list(set(list_dataset_note_id) - set(list_dataset_note_doc_id))
     ):
         queue.enqueue(add_dataset_note_to_solr, args=(dataset_note_id,))
 
@@ -673,3 +673,139 @@ def add_dataset_note_to_solr(dataset_note_id):
         ).run()
     except DatasetNote.DoesNotExist:
         pass
+
+
+@shared_task
+def get_update_iati_codelists_task():
+    update_iati_codelists_task()
+
+
+@shared_task
+def get_new_sources_from_iati_api_task():
+    from django.core import management
+    management.call_command('get_new_sources_from_iati_registry_and_download',
+                            verbosity=0)
+
+
+@shared_task
+def parse_source_by_id_task(dataset_id, force=False, check_validation=True):
+    if check_validation:
+        try:
+            dataset = Dataset.objects.filter(pk=dataset_id,
+                                             validation_status__critical__lte=0)  # NOQA: E501
+            dataset = dataset.first()
+            dataset.process(force_reparse=force)
+        except AttributeError:
+            print('no dataset found')
+            pass
+    else:
+        try:
+            dataset = Dataset.objects.get(pk=dataset_id)
+            dataset.process(force_reparse=force)
+        except Dataset.DoesNotExist:
+            pass
+
+
+@shared_task
+def parse_source_by_organisation_identifier(organisation_identifier,
+                                            force=False,
+                                            check_validation=True):
+    try:
+        for dataset in Dataset.objects.filter(
+                publisher_id__publisher_iati_id=organisation_identifier):
+            parse_source_by_id_task.delay(dataset_id=dataset.id,
+                                          force=force,
+                                          check_validation=check_validation)
+    except Dataset.DoesNotExist:
+        pass
+
+
+# to bypass checking validation, falsify check_validation argument.
+@shared_task
+def parse_all_existing_sources_task(force=False, check_validation=True):
+    tasks = Tasks(
+        parent_task='task_queue.tasks.parse_all_existing_sources_task',
+        children_tasks=['task_queue.tasks.parse_source_by_id_task']
+    )
+    if tasks.is_parent():
+        for dataset in Dataset.objects.all().filter(filetype=2):
+            parse_source_by_id_task.delay(dataset_id=dataset.id,
+                                          force=force,
+                                          check_validation=check_validation)
+        for dataset in Dataset.objects.all().filter(filetype=1):
+            parse_source_by_id_task.delay(dataset_id=dataset.id,
+                                          force=force,
+                                          check_validation=check_validation)
+
+
+@shared_task
+def continuous_parse_all_existing_sources_task(force=False,
+                                               check_validation=True):
+    i = celery.task.control.inspect()
+
+    is_empty_workers = True
+    while True:
+        active_workers_dict = i.active()
+        for key in active_workers_dict:
+            list_in_dict = active_workers_dict[key]
+            list_without_this_task = [worker for worker in list_in_dict if
+                                      worker[
+                                          'name'] != 'task_queue.tasks.continuous_parse_all_existing_sources_task']
+            if not list_without_this_task:
+                is_empty_workers = True
+            else:
+                is_empty_workers = False
+
+        if is_empty_workers:
+            parse_all_existing_sources_task.delay(force=force,
+                                                  check_validation=check_validation)
+            print("starting another round.")
+
+        time.sleep(20)
+
+
+@shared_task
+def revoke_all_tasks():
+    i = celery.task.control.inspect()
+    connection = pika.BlockingConnection(
+        pika.ConnectionParameters('127.0.0.1'))
+    channel = connection.channel()
+    is_empty_active_workers = False
+    is_empty_reserved_workers = False
+    is_empty_worker = False
+    while is_empty_worker is False:
+        time.sleep(1)
+        channel.queue_purge(queue='celery')
+        active_workers_dict = i.active()
+        reserved_workers_dict = i.reserved()
+        for key in active_workers_dict:
+            list_in_dict = active_workers_dict[key]
+            list_without_this_task = [worker for worker in list_in_dict if
+                                      worker[
+                                          'name'] !=
+                                      'task_queue.tasks.revoke_all_tasks']
+
+            if not list_without_this_task:
+                is_empty_active_workers = True
+            else:
+                is_empty_active_workers = False
+
+            for worker in list_without_this_task:
+                celery.task.control.revoke(worker.get('id', ''),
+                                           terminate=True)
+
+        for key in reserved_workers_dict:  # revoke_all_tasks cannot be in reserved
+            list_in_dict = reserved_workers_dict[key]
+
+            if not list_in_dict:
+                is_empty_reserved_workers = True
+            else:
+                is_empty_reserved_workers = False
+
+            for worker in list_in_dict:
+                celery.task.control.revoke(worker.get('id', ''),
+                                           terminate=True)
+
+        if is_empty_active_workers and is_empty_reserved_workers:
+            is_empty_worker = True
+
