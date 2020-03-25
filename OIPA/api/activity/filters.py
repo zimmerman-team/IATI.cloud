@@ -318,7 +318,7 @@ class ActivityFilter(TogetherFilterSet):
         exclude=True
     )
 
-    related_activity_transaction_receiver_organisation_name = ToManyFilter(
+    related_activity_transaction_receiver_org_name = ToManyFilter(
         qs=RelatedActivity,
         lookup_expr='in',
         name='ref_activity__transaction__receiver_organisation__narratives__content',  # NOQA: E501
@@ -421,28 +421,28 @@ class ActivityFilter(TogetherFilterSet):
         fk='activity',
     )
 
-    participating_organisation = ToManyFilter(
+    participating_org = ToManyFilter(
         qs=ActivityParticipatingOrganisation,
         lookup_expr='in',
         name='normalized_ref',
         fk='activity',
     )
 
-    participating_organisation_name = ToManyFilter(
+    participating_org_name = ToManyFilter(
         qs=ActivityParticipatingOrganisation,
         lookup_expr='in',
         name='primary_name',
         fk='activity',
     )
 
-    participating_organisation_role = ToManyFilter(
+    participating_org_role = ToManyFilter(
         qs=ActivityParticipatingOrganisation,
         lookup_expr='in',
         name='role__code',
         fk='activity',
     )
 
-    participating_organisation_type = ToManyFilter(
+    participating_org_type = ToManyFilter(
         qs=ActivityParticipatingOrganisation,
         lookup_expr='in',
         name='type__code',
@@ -545,42 +545,42 @@ class ActivityFilter(TogetherFilterSet):
         fk='activity',
     )
 
-    provider_organisation_primary_name = ToManyFilter(
+    provider_org_primary_name = ToManyFilter(
         qs=Transaction,
         lookup_expr='in',
         name='provider_organisation__primary_name',
         fk='activity',
     )
 
-    receiver_organisation_primary_name = ToManyFilter(
+    receiver_org_primary_name = ToManyFilter(
         qs=Transaction,
         lookup_expr='in',
         name='receiver_organisation__primary_name',
         fk='activity',
     )
 
-    transaction_provider_organisation = ToManyFilter(
+    transaction_provider_org = ToManyFilter(
         qs=Transaction,
         lookup_expr='in',
         name='provider_organisation__ref',
         fk='activity',
     )
 
-    transaction_receiver_organisation = ToManyFilter(
+    transaction_receiver_org = ToManyFilter(
         qs=Transaction,
         lookup_expr='in',
         name='receiver_organisation__ref',
         fk='activity',
     )
 
-    transaction_provider_organisation_name = ToManyFilter(
+    transaction_provider_org_name = ToManyFilter(
         qs=Transaction,
         lookup_expr='in',
         name='provider_organisation__narratives__content',
         fk='activity',
     )
 
-    transaction_receiver_organisation_name = ToManyFilter(
+    transaction_receiver_org_name = ToManyFilter(
         qs=Transaction,
         lookup_expr='in',
         name='receiver_organisation__narratives__content',
