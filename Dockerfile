@@ -1,20 +1,20 @@
 FROM ubuntu:16.04
 
-RUN apt-get -y update
+RUN apt-get -y update --fix-missing
 
 RUN apt-get install -y software-properties-common
+RUN add-apt-repository ppa:deadsnakes/ppa
 
-RUN add-apt-repository ppa:jonathonf/python-3.6
-
-RUN apt-get update
-
-RUN apt-get install -y build-essential python3.6 python3.6-dev python3-pip
-
-RUN python3.6 -m pip install pip --upgrade
-RUN python3.6 -m pip install wheel
+RUN apt-get -y update --fix-missing
 
 #TODO: all these need to be checked:
 RUN apt-get -y install \
+    #Python installs:
+    build-essential \
+    python3.6 \
+    python3.6-dev \
+    python3-pip \
+    python3.6-venv \
     #python-virtualenv \
     postgresql-client \
     git \
@@ -48,6 +48,9 @@ RUN apt-get -y install \
     python3-pip \
     vim \
     locales
+
+RUN python3.6 -m pip install pip --upgrade
+RUN python3.6 -m pip install wheel
 
 RUN mkdir /app
 
