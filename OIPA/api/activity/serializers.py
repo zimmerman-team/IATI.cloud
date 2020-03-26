@@ -1946,8 +1946,16 @@ class ResultIndicatorPeriodActualSerializer(SerializerNoValidation):
 
 class ResultIndicatorPeriodSerializer(ModelSerializerNoValidation):
     id = serializers.HiddenField(default=None)
-    targets = ResultIndicatorPeriodTargetSerializer(many=True)
-    actuals = ResultIndicatorPeriodActualSerializer(many=True)
+    target = ResultIndicatorPeriodTargetSerializer(
+        many=True,
+        source='targets',
+        read_only=True
+        )
+    actual = ResultIndicatorPeriodActualSerializer(
+        many=True,
+        source='actuals',
+        read_only=True
+    )
 
     period_start = serializers.CharField(required=False)
     period_end = serializers.CharField(required=False)
@@ -1961,8 +1969,8 @@ class ResultIndicatorPeriodSerializer(ModelSerializerNoValidation):
             'id',
             'period_start',
             'period_end',
-            'targets',
-            'actuals',
+            'target',
+            'actual',
         )
 
     def validate(self, data):
@@ -3179,8 +3187,13 @@ class TransactionSerializer(serializers.ModelSerializer):
     transaction_type = CodelistSerializer()
     currency = CodelistSerializer()
     humanitarian = serializers.BooleanField()
-    provider_organisation = TransactionProviderSerializer(required=False)
-    receiver_organisation = TransactionReceiverSerializer(required=False)
+    provider_org = TransactionProviderSerializer(
+        source='provider_organisation',
+        read_only=True)
+    receiver_org = TransactionReceiverSerializer(
+        source='receiver_organisation',
+        read_only=True
+    )
     recipient_country = TransactionRecipientCountrySerializer(
         many=True,
         source='transactionrecipientcountry_set',
@@ -3211,8 +3224,8 @@ class TransactionSerializer(serializers.ModelSerializer):
             'value_date',
             'currency',
             'description',
-            'provider_organisation',
-            'receiver_organisation',
+            'provider_org',
+            'receiver_org',
             'disbursement_channel',
             'sector',
             'recipient_country',
@@ -3271,8 +3284,9 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
         source='description_set',
         read_only=True,
     )
-    participating_organisations = ParticipatingOrganisationSerializer(
+    participating_org = ParticipatingOrganisationSerializer(
         many=True,
+        source='participating_organisations',
         read_only=True,
     )
 
@@ -3604,13 +3618,13 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
                 # the request will take too long.
                 # So related transaction will be shown if it is on fields
                 # request
-                if field.field_name in ['related_transactions',
-                                        'budgets',
-                                        'results',
+                if field.field_name in ['transaction',
+                                        'budget',
+                                        'result',
                                         ]:
 
                     if field.field_name not in ret:
-                        if field.field_name == 'related_transactions' and \
+                        if field.field_name == 'transaction' and \
                                 instance.transaction_set.count() > 100:
                             custom_ret1 = OrderedDict()
                             custom_ret1['message'] = \
@@ -3622,7 +3636,7 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
 
                             ret[field.field_name] = custom_ret1
 
-                        elif field.field_name == 'results' and \
+                        elif field.field_name == 'result' and \
                                 instance.result_set.count() > 100:
                             custom_ret2 = OrderedDict()
                             custom_ret2['message'] = \
@@ -3634,7 +3648,7 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
 
                             ret[field.field_name] = custom_ret2
 
-                        elif field.field_name == 'budgets' \
+                        elif field.field_name == 'budget' \
                                 and \
                                 instance.budget_set.count() > \
                                 100:
@@ -3667,7 +3681,7 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
             'reporting_org',
             'title',
             'description',
-            'participating_organisations',
+            'participating_org',
             'other_identifier',
             'activity_status',
             'budget_not_provided',
