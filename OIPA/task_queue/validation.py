@@ -71,15 +71,19 @@ class DatasetValidationTask(celery.Task):
                         self._updated()
 
     def _check(self):
-        get_respons = requests.get(self._dataset.source_url)
-        if get_respons.status_code == 200:
-            md5 = hashlib.md5()
-            md5.update(get_respons.content)
-            self._validation_md5 = md5.hexdigest()
-            self._file_id = self._validation_md5 + '.xml'
-            self._get(ad_hoc=False)
-            if self._json_result:
-                return True
+        try:
+            get_respons = requests.get(self._dataset.source_url)
+            if get_respons.status_code == 200:
+                md5 = hashlib.md5()
+                md5.update(get_respons.content)
+                self._validation_md5 = md5.hexdigest()
+                self._file_id = self._validation_md5 + '.xml'
+                self._get(ad_hoc=False)
+                if self._json_result:
+                    return True
+        except RequestException as e:
+            logger.error(e)
+            return False
 
     def _post(self):
         """Send XML file to the third party validation"""

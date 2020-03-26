@@ -761,7 +761,7 @@ def continuous_parse_all_existing_sources_task(force=False,
                                                   check_validation=check_validation)
             print("starting another round.")
 
-        time.sleep(20)
+        time.sleep(900)
 
 
 @shared_task
