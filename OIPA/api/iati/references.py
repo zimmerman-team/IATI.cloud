@@ -394,7 +394,7 @@ class TransactionReference(ElementReference):
     # Provider Organisation
     provider_organisation = {
         'element': 'provider-org',
-        'key': 'provider_organisation',
+        'key': 'provider_org',
         # Attributes
         'ref': {
             'key': 'ref',
@@ -419,7 +419,7 @@ class TransactionReference(ElementReference):
     # Receiver Organisation
     receiver_organisation = {
         'element': 'receiver-org',
-        'key': 'receiver_organisation',
+        'key': 'receiver_org',
         # Attributes
         'ref': {
             'key': 'ref',
@@ -454,7 +454,7 @@ class TransactionReference(ElementReference):
     # Recipient country
     recipient_countries = {
         'element': 'recipient-country',
-        'key': 'recipient_countries',
+        'key': 'recipient_country',
         'country': {
             'key': 'country',
             'code': {
@@ -466,7 +466,7 @@ class TransactionReference(ElementReference):
     # Recipient region
     recipient_regions = {
         'element': 'recipient-region',
-        'key': 'recipient_regions',
+        'key': 'recipient_region',
         'region': {
             'key': 'region',
             'code': {
@@ -485,7 +485,7 @@ class TransactionReference(ElementReference):
     # Sector
     sectors = {
         'element': 'sector',
-        'key': 'sectors',
+        'key': 'sector',
         'sector': {
             'key': 'sector',
             'code': {
@@ -2927,7 +2927,7 @@ class DocumentLinkBaseReference(BaseReference):
         # <category
         ElementRecord(
             name='category',
-            key='categories',
+            key='category',
             attributes=[
                 # @code
                 # Dict type
@@ -2942,7 +2942,7 @@ class DocumentLinkBaseReference(BaseReference):
         # <language
         ElementRecord(
             name='language',
-            key='languages',
+            key='language',
             attributes=[
                 # @code
                 # Dict type
@@ -2970,7 +2970,7 @@ class DocumentLinkBaseReference(BaseReference):
     ]
     element_record = ElementRecord(
         name='document-link',
-        key='document_links',
+        key='document_link',
         attributes=attributes,
         children=children
     )
@@ -3031,7 +3031,7 @@ class ResultReference(BaseReference):
         # <document-link>
         ElementRecord(
             name='indicator',
-            key='indicators',
+            key='indicator',
             attributes=[
                 # @measure
                 # Dict type
@@ -3080,7 +3080,7 @@ class ResultReference(BaseReference):
                 # <reference>
                 ElementRecord(
                     name='reference',
-                    key='references',
+                    key='reference',
                     attributes=[
                         # @vocabulary
                         # Dict type
@@ -3122,7 +3122,7 @@ class ResultReference(BaseReference):
                         # <location>
                         ElementRecord(
                             name='location',
-                            key='locations',
+                            key='location',
                             attributes=[
                                 # @ref
                                 AttributeRecord(
@@ -3135,7 +3135,7 @@ class ResultReference(BaseReference):
                         # <dimension>
                         ElementRecord(
                             name='dimension',
-                            key='dimensions',
+                            key='dimension',
                             attributes=[
                                 # @name
                                 AttributeRecord(
@@ -3172,7 +3172,7 @@ class ResultReference(BaseReference):
                 # <period>
                 ElementRecord(
                     name='period',
-                    key='periods',
+                    key='period',
                     children=[
                         # <period-start>
                         ElementRecord(
@@ -3201,7 +3201,7 @@ class ResultReference(BaseReference):
                         # <target>
                         ElementRecord(
                             name='target',
-                            key='targets',
+                            key='target',
                             attributes=[
                                 # @value
                                 AttributeRecord(
@@ -3213,7 +3213,7 @@ class ResultReference(BaseReference):
                                 # <location>
                                 ElementRecord(
                                     name='location',
-                                    key='locations',
+                                    key='location',
                                     attributes=[
                                         # @ref
                                         AttributeRecord(
@@ -3226,7 +3226,7 @@ class ResultReference(BaseReference):
                                 # <dimension>
                                 ElementRecord(
                                     name='dimension',
-                                    key='dimensions',
+                                    key='dimension',
                                     attributes=[
                                         # @name
                                         AttributeRecord(
@@ -3263,7 +3263,7 @@ class ResultReference(BaseReference):
                         # <actual>
                         ElementRecord(
                             name='actual',
-                            key='actuals',
+                            key='actual',
                             attributes=[
                                 # @value
                                 AttributeRecord(
@@ -3275,7 +3275,7 @@ class ResultReference(BaseReference):
                                 # TODO: add <comment></comment>
                                 ElementRecord(
                                     name='location',
-                                    key='locations',
+                                    key='location',
                                     attributes=[
                                         # @ref
                                         AttributeRecord(
@@ -3288,7 +3288,7 @@ class ResultReference(BaseReference):
                                 # <location>
                                 ElementRecord(
                                     name='dimension',
-                                    key='dimensions',
+                                    key='dimension',
                                     attributes=[
                                         # @name
                                         AttributeRecord(
@@ -3355,7 +3355,7 @@ class FssReference(BaseReference):
         # <condition>
         ElementRecord(
             name='forecast',
-            key='forecasts',
+            key='forecast',
             attributes=[
                 # @year
                 AttributeRecord(
@@ -3528,7 +3528,7 @@ class CountryBudgetItemsReference(BaseReference):
         # <budget-item>
         ElementRecord(
             name='budget-item',
-            key='budget_items',
+            key='budget_item',
             attributes=[
                 # @code
                 AttributeRecord(
@@ -4370,7 +4370,7 @@ class DocumentLinkOrgReference(BaseReference):
         # <category
         ElementRecord(
             name='category',
-            key='categories',
+            key='category',
             attributes=[
                 # @code
                 AttributeRecord(
@@ -4384,7 +4384,7 @@ class DocumentLinkOrgReference(BaseReference):
         # <language
         ElementRecord(
             name='language',
-            key='languages',
+            key='language',
             attributes=[
                 # @code
                 AttributeRecord(
@@ -4411,7 +4411,7 @@ class DocumentLinkOrgReference(BaseReference):
         # <recipient-country
         ElementRecord(
             name='recipient-country',
-            key='recipient_countries',
+            key='recipient_country',
             attributes=[
                 # @code
                 AttributeRecord(
