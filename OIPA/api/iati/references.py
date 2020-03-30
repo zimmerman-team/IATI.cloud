@@ -2395,24 +2395,25 @@ class DocumentLinkReference(ElementReference):
         # </description>
 
         categories = self.data.get(self.category.get('list'))
-        for category in categories:
-            category_dict = category.get(
-                self.category.get('key')
-            )
-            if category_dict:
-                # <category
-                category_element = etree.SubElement(
-                    document_link_element,
-                    self.category.get('element')
+        if categories is not None:
+            for category in categories:
+                category_dict = category.get(
+                    self.category.get('key')
                 )
-                # @code
-                DataAttribute(
-                    category_element,
-                    self.category.get('code').get('attr'),
-                    category_dict,
-                    self.category.get('code').get('key')
-                ).set()
-                # />
+                if category_dict:
+                    # <category
+                    category_element = etree.SubElement(
+                        document_link_element,
+                        self.category.get('element')
+                    )
+                    # @code
+                    DataAttribute(
+                        category_element,
+                        self.category.get('code').get('attr'),
+                        category_dict,
+                        self.category.get('code').get('key')
+                    ).set()
+                    # />
 
         # <document-date
         document_date_dict = self.data.get(self.document_date.get('key'))

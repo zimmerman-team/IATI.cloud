@@ -437,10 +437,12 @@ class PlannedDisbursementSerializer(ModelSerializerNoValidation):
     period_start = serializers.CharField()
     period_end = serializers.CharField()
 
-    provider_organisation = PlannedDisbursementProviderSerializer(
+    provider_org = PlannedDisbursementProviderSerializer(
+        source='provider_organisation',
         required=False
     )
-    receiver_organisation = PlannedDisbursementReceiverSerializer(
+    receiver_org = PlannedDisbursementReceiverSerializer(
+        source='receiver_organisation',
         required=False
     )
 
@@ -454,8 +456,8 @@ class PlannedDisbursementSerializer(ModelSerializerNoValidation):
             'period_start',
             'period_end',
             'value',
-            'provider_organisation',
-            'receiver_organisation',
+            'provider_org',
+            'receiver_org',
         )
 
         validators = []
