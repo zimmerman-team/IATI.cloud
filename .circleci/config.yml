@@ -129,4 +129,5 @@ workflows:
                       - deploy
                   filters:
                       branches:
-                          only: master
+                          - develop
+                          - master
