@@ -26,7 +26,7 @@ IATI is a global aid transparency standard and it makes information about aid sp
 
 ## Quick start
 
-If you have Docker installed and want to be able to use iati.cloud right away, run:
+If you have Docker installed and want to be able to use OIPA right away, run:
 
 ```
 docker-compose up
@@ -34,9 +34,9 @@ docker-compose up
 
 this will start a containerised (development) environment using Django's development server. Visit `0.0.0.0:8000` on your local browser. The superuser login credentials are `oipa` / `oipa`.
 
-If you do not have Docker:
+If you don't have Docker:
 
-1. Go to folder OIPA.
+1. Go to your OIPA folder.
 2. Run ```virtualenv <name> -p python3``` to create a virtual environment
 3. Run ```source env/bin/activate``` to activate the virtual environment
 4. Install required libraries using ```pip install -r requirements.txt```
@@ -51,24 +51,37 @@ If you do not have Docker:
 9. Create a superuser account: `python manage.py createsuperuser`
 10. Start the process control centre (Supervisor): ```python manage.py supervisor```
 11. Open your browser at <a href="http://localhost:8000" target="_blank">localhost:8000</a>
+12. Follow instructions for signing-in: <a href="http://docs.oipa.nl/en/latest/admin_interface/" target="_blank">http://docs.oipa.nl/en/latest/admin_interface</a>
+13. Finally, follow the instructions from here: <a href="http://docs.oipa.nl/en/latest/where_to_start/" target="_blank">http://docs.oipa.nl/en/latest/where_to_start</a>
+
+Happy Hunting!
+
+For more detailed information, see the [install documentation](http://docs.oipa.nl/en/latest/installing/)
+
+## IATI Query Builder
+
+The IATI Query Builder runs on top the the iati.cloud API application. It will allow users to interact with all the IATI data that is available in the IATI Registry using a form based interface which enables a user to select what IATI fields to extract, select dates and output formats.
+
+More information on how to get the IATI Query Builder up and running can be found in the <a href="https://github.com/zimmerman-zimmerman/query-builder-iati.cloud">query-builder-iati.cloud</a> repository.
 
 
 ## Full Documentation
 
-Full documentation (which, at this point, needs an update) on installing, running and using iati.cloud can be found at <a href="https://iatidatastore.iatistandard.org/documentation/introduction" target="_blank">docs.iati.cloud</a>
+Full documentation (which, at this point, needs an update) on installing, running and using OIPA can be found at <a href="http://docs.oipa.nl" target="_blank">docs.oipa.nl</a>
+
 
 ## About the project
-* Website:         <a href="https://www.iati.cloud" target="_blank">www.iati.cloud</a>
+* Website:         <a href="https://yoda.oipa.nl" target="_blank">yoda.oipa.nl</a>
 * Authors:          <a href="https://www.zimmermanzimmerman.nl/" target="_blank">Zimmerman & Zimmerman</a>
-* License:          AGPLv3 (see included <a href="https://github.com/zimmerman-zimmerman/iati.cloud/blob/master/LICENSE.MD" target="_blank">LICENSE</a> file for full license)
-* Github Repo:      <a href="https://github.com/zimmerman-zimmerman/iati.cloud/" target="_blank">github.com/zimmerman-zimmerman/iati.cloud/</a>
-* Bug Tracker:      <a href="https://github.com/zimmerman-zimmerman/iati.cloud/issues" target="_blank">github.com/zimmerman-zimmerman/iati.cloud/issues</a>
-
+* License:          AGPLv3 (see included <a href="https://github.com/zimmerman-zimmerman/OIPA/blob/master/LICENSE.MD" target="_blank">LICENSE</a> file for full license)
+* Github Repo:      <a href="https://github.com/zimmerman-zimmerman/OIPA/" target="_blank">github.com/zimmerman-zimmerman/OIPA/</a>
+* Bug Tracker:      <a href="https://github.com/zimmerman-zimmerman/OIPA/issues" target="_blank">github.com/zimmerman-zimmerman/OIPA/issues</a>
+* Documentation:    <a href="https://github.com/zimmerman-zimmerman/OIPA/wiki" target="_blank">docs.oipa.nl</a>
 
 
 ## Can I contribute?
 
-Yes! We are mainly looking for coders to help on the project. If you are a coder feel free to *Fork* the repository and send us Pull requests!
+Yes please! We are mainly looking for coders to help on the project. If you are a coder feel free to *Fork* the repository and send us Pull requests!
 
 ## How should I contribute?
 
@@ -96,11 +109,10 @@ Testing / code quality settings can be found in the `setup.cfg` file. Test cover
 
 ## Who makes use of OIPA?
 * Dutch Ministry of Foreign Affairs:         <a href="https://www.openaid.nl" target="_blank">www.openaid.nl</a>
+* IATI Studio:                               <a href="https://www.iatistudio.com/" target="_blank">www.iatistudio.com</a>
 * DFID Devtracker:                           <a href="https://devtracker.dfid.gov.uk/" target="_blank">devtracker.dfid.gov.uk</a>
 * UNESCO Transparency Portal:                <a href="https://opendata.unesco.org" target="_blank">opendata.unesco.org</a>
 * UN-Habitat:                                <a href="http://open.unhabitat.org" target="_blank">open.unhabitat.org</a>
 * Netherlands Enterprise Agency:             <a href="https://aiddata.rvo.nl/" target="_blank">aiddata.rvo.nl</a>
 * Mohinga AIMS:                              <a href="http://mohinga.info/en/" target="_blank">mohinga.info</a>
 * Overseas Development Institute:            <a href="https://transparency.odi.org/" target="_blank">ODI.org</a>
-* UN Migration:            <a href="https://www.iom.int/" target="_blank">IOM.int</a>
-
