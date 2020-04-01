@@ -43,7 +43,7 @@ class AidTypeCategory(models.Model):
 
 
 class AidType(models.Model):
-    code = models.CharField(primary_key=True, max_length=3)
+    code = models.CharField(max_length=3)
     name = models.CharField(max_length=200)
     description = models.TextField(default="")
 
@@ -61,6 +61,9 @@ class AidType(models.Model):
         default=None,
         on_delete=models.CASCADE
     )
+
+    class Meta:
+        unique_together = [('code', 'vocabulary')]
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
@@ -354,7 +357,7 @@ class SectorCategory(models.Model):
 
 
 class Sector(models.Model):
-    code = models.CharField(primary_key=True, max_length=100)
+    code = models.CharField(max_length=100)
     # FIXME: when Sector importing is fixed (it's currently imported from a
     # file, change this back to CharField).
     # See: https://git.io/fNtF6
@@ -370,6 +373,9 @@ class Sector(models.Model):
         decimal_places=2,
         null=True,
         default=None)
+
+    class Meta:
+        unique_together = [('code', 'vocabulary')]
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)

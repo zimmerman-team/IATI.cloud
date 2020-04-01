@@ -355,7 +355,8 @@ DATA_PLUGINS = {}
 DOWNLOAD_DATASETS = False
 
 # CELERY CONFIG
-
+CELERY_ACKS_LATE = True
+CELERY_WORKER_PREFETCH_MULTIPLIER = 1  # limiting the number of reserved tasks.
 CELERY_TIMEZONE = 'UTC'
 CELERY_ENABLE_UTC = True
 CELERY_BROKER_URL = 'amqp://localhost'
@@ -386,6 +387,25 @@ SOLR = {
         'publisher': 'publisher',
         'result': 'result',
         'transaction': 'transaction'
+    }
+}
+
+VALIDATION = {
+    'host': 'https://test-validator.iatistandard.org',
+    'api': {
+        'root': '/api',
+        'version': '/v1',
+        'urls': {
+            'post_file': '/iati-testfiles/file/source',
+            'start_validation': '/iati-testdatasets/{validation_id}',
+            'get_json_file': '/iati-testfiles/file/json/{json_file}',
+        },
+        'max_loop_process': 50,
+        'sleep_second_process': 5,
+        'valid_status': 'success',
+        'retry': {
+            'max_retries': 5,
+        }
     }
 }
 

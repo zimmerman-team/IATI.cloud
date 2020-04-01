@@ -9,8 +9,6 @@ from api.iati.elements import (
     AttributeRecord, ElementBase, ElementRecord, ElementReference,
     ElementWithNarrativeReference
 )
-from iati_codelists.models import AidType
-from iati_vocabulary.models import AidTypeVocabulary
 
 
 class TitleReference(ElementWithNarrativeReference):
@@ -89,8 +87,9 @@ class DefaultAidTypeReference(ElementReference):
     def create(self):
         code = self.data.get('aid_type').get(self.code_key)
         # We get vocabulary code from AidTypeVocabulary table.
-        vocabulary = AidTypeVocabulary.objects.get(code=AidType.objects.get(
-            code=code).vocabulary_id).code
+        # vocabulary = AidTypeVocabulary.objects.get(code=AidType.objects.get(
+        #     code=code).vocabulary_id).code
+        vocabulary = self.data.get('aid_type').get('vocabulary').get('code')
         if code:
             default_aid_type_element = etree.SubElement(
                 self.parent_element, self.element
@@ -754,55 +753,56 @@ class TransactionReference(ElementReference):
                 )
 
         # Sector
-        sectors_list = self.data.get(
-            self.sectors.get('key')
-        )
-        if sectors_list:
-            for sector_dict in sectors_list:
-                sector_element = etree.SubElement(
-                    transaction_element,
-                    self.sectors.get('element')
-                )
-
-                # Attribute
-                # Code
-                sector = sector_dict.get(
-                    self.sectors.get('sector').get('key')
-                )
-                if sector:
-                    code = sector.get(
-                        self.sectors.get(
-                            'sector'
-                        ).get('code').get('key')
+        if not self.activity_sector:
+            sectors_list = self.data.get(
+                self.sectors.get('key')
+            )
+            if sectors_list:
+                for sector_dict in sectors_list:
+                    sector_element = etree.SubElement(
+                        transaction_element,
+                        self.sectors.get('element')
                     )
 
-                    if code:
-                        sector_element.set(
+                    # Attribute
+                    # Code
+                    sector = sector_dict.get(
+                        self.sectors.get('sector').get('key')
+                    )
+                    if sector:
+                        code = sector.get(
                             self.sectors.get(
                                 'sector'
-                            ).get('code').get('attr'),
-                            code
+                            ).get('code').get('key')
                         )
 
-                # Attribute
-                # Vocabulary
-                vocabulary = sector_dict.get(
-                    self.sectors.get('vocabulary').get('key')
-                )
-                if vocabulary:
-                    code = vocabulary.get(
-                        self.sectors.get(
-                            'vocabulary'
-                        ).get('code').get('key')
-                    )
+                        if code:
+                            sector_element.set(
+                                self.sectors.get(
+                                    'sector'
+                                ).get('code').get('attr'),
+                                code
+                            )
 
-                    if code:
-                        sector_element.set(
+                    # Attribute
+                    # Vocabulary
+                    vocabulary = sector_dict.get(
+                        self.sectors.get('vocabulary').get('key')
+                    )
+                    if vocabulary:
+                        code = vocabulary.get(
                             self.sectors.get(
                                 'vocabulary'
-                            ).get('code').get('attr'),
-                            code
+                            ).get('code').get('key')
                         )
+
+                        if code:
+                            sector_element.set(
+                                self.sectors.get(
+                                    'vocabulary'
+                                ).get('code').get('attr'),
+                                code
+                            )
 
         # Recipient country
         recipient_countries_list = self.data.get(
@@ -1439,7 +1439,7 @@ class RecipientCountryReference(ElementWithNarrativeReference):
 
         # @percentage
         percentage_value = self.data.get(self.percentage.get('key'))
-        if percentage_value:
+        if percentage_value is not None:
             recipient_country_element.set(
                 self.percentage.get('attr'),
                 # Percentage value type is {Decimal}, then convert it to string

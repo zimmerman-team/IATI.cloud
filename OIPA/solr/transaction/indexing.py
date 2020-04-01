@@ -52,6 +52,10 @@ class TransactionIndexing(BaseIndexing):
         self.add_field('transaction_type', transaction.transaction_type_id)
         self.add_field(
             'transaction_date_iso_date',
+            str(transaction.transaction_date)
+        )
+        self.add_field(
+            'transaction_date_iso_date_f',
             date_string(transaction.transaction_date)
         )
         self.add_field('transaction_value_currency', transaction.currency_id)

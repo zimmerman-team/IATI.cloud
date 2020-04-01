@@ -18,6 +18,7 @@ from rest_framework.utils.serializer_helpers import ReturnDict, ReturnList
 from rest_framework_csv.renderers import CSVRenderer
 from six import BytesIO
 
+from api.iati.elements import ElementReference
 from api.iati.references import (
     ActivityDateReference, ActivityReference, ActivityScopeReference,
     ActivityStatusReference, BudgetReference, CapitalSpendReference,
@@ -825,7 +826,6 @@ class IATIXMLRenderer(BaseRenderer):
     root_tag_name = 'iati-activities'
     item_tag_name = 'iati-activity'
     version = '2.03'
-
     default_references = {
         'iati_identifier': None,
     }
@@ -878,6 +878,8 @@ class IATIXMLRenderer(BaseRenderer):
         elif view_class_name in ['ActivityList', 'OrganisationList']:
             if 'results' in data:
                 data = data['results']
+                if data and data[0].get("sectors"):
+                    ElementReference.activity_sector = True
             self.xml = E(self.root_tag_name)
             self.xml.set('version', self.version)
 

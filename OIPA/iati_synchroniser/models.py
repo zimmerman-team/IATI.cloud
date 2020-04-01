@@ -76,6 +76,8 @@ class Dataset(models.Model):
 
     activities_count_in_xml = models.IntegerField(default=0)
     activities_count_in_database = models.IntegerField(default=0)
+    validation_status = models.CharField(max_length=100, null=True, blank=True)
+    validation_sha512 = models.CharField(max_length=512, null=True, blank=True)
 
     class Meta:
         verbose_name_plural = "IATI XML sources"

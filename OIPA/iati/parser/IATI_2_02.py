@@ -1376,7 +1376,6 @@ class Parse(IatiParser):
 
         tag:recipient-sector"""
         code = element.attrib.get('code')
-        sector = self.get_or_none(models.Sector, code=code)
         # TODO: make defaults more transparant, here: 'OECD-DAC default'
         vocabulary = self.get_or_none(
             vocabulary_models.SectorVocabulary,
@@ -1400,6 +1399,9 @@ class Parse(IatiParser):
                 None,
                 None,
                 vocabulary.code)
+
+        sector = models.Sector.objects.filter(code=code,
+                                              vocabulary=vocabulary).first()
 
         if not sector and vocabulary.code == '1':
             raise FieldValidationError(
@@ -1816,7 +1818,9 @@ class Parse(IatiParser):
 
         tag:default-aid-type"""
         code = element.attrib.get('code')
-        default_aid_type = self.get_or_none(codelist_models.AidType, code=code)
+        default_aid_type = codelist_models.AidType.objects.filter(
+            code=code,
+        ).first()
 
         if not code:
             raise RequiredFieldError(
@@ -2533,8 +2537,6 @@ class Parse(IatiParser):
 
         tag:sector"""
         code = element.attrib.get('code')
-        sector = self.get_or_none(
-            models.Sector, code=element.attrib.get('code'))
         # TODO: make defaults more transparant, here: 'OECD-DAC default'
         vocabulary = self.get_or_none(
             vocabulary_models.SectorVocabulary,
@@ -2557,6 +2559,9 @@ class Parse(IatiParser):
                 None,
                 None,
                 element.attrib.get('vocabulary'))
+
+        sector = models.Sector.objects.filter(code=code,
+                                              vocabulary=vocabulary).first()
 
         if not sector and vocabulary.code == '1':
             raise FieldValidationError(
@@ -2763,7 +2768,9 @@ class Parse(IatiParser):
 
         tag:aid-type"""
         code = element.attrib.get('code')
-        aid_type = self.get_or_none(codelist_models.AidType, code=code)
+        aid_type = codelist_models.AidType.objects.filter(
+            code=code,
+        ).first()
 
         if not aid_type and not code:
             raise RequiredFieldError(
@@ -3436,12 +3443,13 @@ class Parse(IatiParser):
         try:
             value = Decimal(value)
         except Exception as e:
-            value = 0   # value could be None according to
+            value = None   # value could be None according to
             # iati-specification but we should not add None to our database
             # otherwise it would raise error in endpoint aggregation.
             # Example API call:
             # /api/results/aggregations/?group_by=result_indicator_title
             # &aggregations=actuals&format=json
+            # We have updated codes in api aggregation to enable null
 
         result_indicator_period = self.get_model('ResultIndicatorPeriod')
         result_indicator_period_target = models.ResultIndicatorPeriodTarget()
@@ -3553,12 +3561,13 @@ class Parse(IatiParser):
         try:
             value = Decimal(value)
         except Exception as e:
-            value = 0  # value could be None according to
+            value = None  # value could be None according to
             # iati-specification but we should not add None to our database
             # otherwise it would raise error in endpoint aggregation.
             # Example API call:
             # /api/results/aggregations/?group_by=result_indicator_title
             # &aggregations=actuals&format=json
+            # we have updated codes in api aggregation to enable null
 
         result_indicator_period = self.get_model('ResultIndicatorPeriod')
 

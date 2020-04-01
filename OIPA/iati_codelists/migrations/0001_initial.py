@@ -42,7 +42,10 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='AidType',
             fields=[
-                ('code', models.CharField(max_length=3, primary_key=True, serialize=False)),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False,
+                                        verbose_name='ID')),
+                ('code', models.CharField(max_length=3, serialize=False)),
                 ('name', models.CharField(max_length=200)),
                 ('description', models.TextField(default=b'')),
             ],
@@ -410,7 +413,10 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Sector',
             fields=[
-                ('code', models.CharField(max_length=100, primary_key=True, serialize=False)),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False,
+                                        verbose_name='ID')),
+                ('code', models.CharField(max_length=100, serialize=False)),
                 ('name', models.CharField(max_length=100)),
                 ('description', models.TextField(default=b'')),
                 ('percentage', models.DecimalField(decimal_places=2, default=None, max_digits=5, null=True)),

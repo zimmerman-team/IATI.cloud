@@ -16,7 +16,7 @@ class CountrySerializer(DynamicFieldsModelSerializer):
     region = RegionSerializer(fields=('url', 'code', 'name'))
     un_region = RegionSerializer(fields=('url', 'code', 'name'))
     unesco_region = RegionSerializer(fields=('url', 'code', 'name'))
-    location = JSONField(source='center_longlat.json')
+    # location = JSONField(source='center_longlat.json')
     polygon = JSONField()
     activities = serializers.SerializerMethodField()
 
@@ -44,6 +44,6 @@ class CountrySerializer(DynamicFieldsModelSerializer):
             'fips10',
             'data_source',
             'activities',
-            'location',
+            # 'location',
             'polygon',
         )

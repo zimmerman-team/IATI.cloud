@@ -1,5 +1,7 @@
 import datetime
 import hashlib
+import io
+import logging
 import os
 import time
 
@@ -11,6 +13,7 @@ from django.conf import settings
 from django.core.cache import caches
 from django_rq import job
 from redis import Redis
+from requests.exceptions import RequestException
 from rest_framework_extensions.settings import extensions_api_settings
 from rq import Worker
 from rq.job import Job
@@ -24,6 +27,7 @@ from iati.activity_aggregation_calculation import (
 from iati.models import Activity, Budget, Document, DocumentLink, Result
 from iati.transaction.models import Transaction
 from iati_synchroniser.models import Dataset, DatasetNote
+from OIPA.celery import app
 from solr.activity.tasks import ActivityTaskIndexing
 from solr.activity.tasks import solr as solr_activity
 from solr.budget.tasks import solr as solr_budget
@@ -32,8 +36,15 @@ from solr.datasetnote.tasks import solr as solr_dataset_note
 from solr.result.tasks import solr as solr_result
 from solr.transaction.tasks import solr as solr_transaction
 from task_queue.utils import Tasks
+from task_queue.validation import DatasetValidationTask
+
+# Get an instance of a logger
+logger = logging.getLogger(__name__)
 
 redis_conn = Redis.from_url(settings.RQ_REDIS_URL)
+
+# Register a custom base task then Celery recognizes it
+DatasetValidationTask = app.register_task(DatasetValidationTask())
 
 
 def remove_all_api_caches():
@@ -673,7 +684,8 @@ def get_update_iati_codelists_task():
 @shared_task
 def get_new_sources_from_iati_api_task():
     from django.core import management
-    management.call_command('get_new_sources_from_iati_registry', verbosity=0)
+    management.call_command('get_new_sources_from_iati_registry_and_download',
+                            verbosity=0)
 
 
 @shared_task
@@ -681,6 +693,17 @@ def parse_source_by_id_task(dataset_id, force=False):
     try:
         dataset = Dataset.objects.get(pk=dataset_id)
         dataset.process(force_reparse=force)
+    except Dataset.DoesNotExist:
+        pass
+
+
+@shared_task
+def parse_source_by_organisation_identifier(organisation_identifier,
+                                            force=False):
+    try:
+        for dataset in Dataset.objects.filter(
+                publisher_id__publisher_iati_id=organisation_identifier):
+            parse_source_by_id_task.delay(dataset_id=dataset.id, force=force)
     except Dataset.DoesNotExist:
         pass
 
@@ -694,6 +717,63 @@ def parse_all_existing_sources_task(force=False):
     if tasks.is_parent():
         for dataset in Dataset.objects.all().filter(filetype=2):
             parse_source_by_id_task.delay(dataset_id=dataset.id, force=force)
-
         for dataset in Dataset.objects.all().filter(filetype=1):
             parse_source_by_id_task.delay(dataset_id=dataset.id, force=force)
+
+# We want to drop validation for the time being.
+# for dataset in Dataset.objects.all().filter(filetype=2).filter(
+#         validation_status='success'):
+#     if check_sha(dataset.source_url) == dataset.validation_sha512:
+#         parse_source_by_id_task.delay(dataset_id=dataset.id,
+#                                       force=force)
+#
+# for dataset in Dataset.objects.all().filter(filetype=1).filter(
+#         validation_status='success'):
+#     if check_sha(dataset.source_url) == dataset.validation_sha512:
+#         parse_source_by_id_task.delay(dataset_id=dataset.id,
+#                                       force=force)
+
+
+def check_sha(source_url):  # needed only for validation
+
+    root_validation_url = '{host}{root}{version}'.format(
+        host=settings.VALIDATION.get('host'),
+        root=settings.VALIDATION.get('api').get('root'),
+        version=settings.VALIDATION.get('api').get('version')
+    )
+    try:
+        # Get file from the url of the dataset
+        get_response = requests.get(source_url)
+        # Continue if status is OK
+        if get_response.status_code == 200:
+            # Assign file from the content response
+            file = io.BytesIO(get_response.content)
+            # Add the default filename to the file
+            file.name = 'dataset.xml'
+            # Make dict files
+            files = {'file': file}
+            # POST request with the parameters for upload
+            post_file_url = '{}{}'.format(
+                root_validation_url,
+                settings.VALIDATION.get('api').get('urls').get('post_file')
+            )
+            # Upload the file
+            post_response = requests.post(
+                post_file_url,
+                files=files
+            )
+            # If response if OK then assigned the validation id
+            if post_response.status_code == 200:
+                # Get the Sha512 of the current XML and save to dataset.
+                # This will use to compare the Sha512 with the source XML.
+                # So when the XML which has valid status ("success")
+                # will be parsing, we should compare the Sha512 of the XML
+                # and with this Sha512.
+                hashlib_sha512 = hashlib.sha512()
+                hashlib_sha512.update(get_response.content)
+                validation_sha512 = hashlib_sha512.hexdigest()
+                return validation_sha512
+            return None
+        return None
+    except RequestException as e:
+        logger.error(e)
