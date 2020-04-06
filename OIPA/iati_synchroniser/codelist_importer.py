@@ -15,7 +15,9 @@ from iati_codelists.models import (
     SectorCategory
 )
 from iati_synchroniser.dac_sector_importer import DacSectorImporter
-from iati_synchroniser.humanitrian_global_clusters_import import GlobalClustersSectorImporter
+from iati_synchroniser.humanitrian_global_clusters_import import (
+    GlobalClustersSectorImporter
+)
 from iati_synchroniser.m49_regions_importer import M49RegionsImporter
 from iati_synchroniser.models import Codelist
 from iati_synchroniser.sdg_sector_importer import SdgSectorImporter
