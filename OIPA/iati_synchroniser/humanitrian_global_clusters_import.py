@@ -27,7 +27,7 @@ class GlobalClustersSectorImporter():
         data = self.get_json_data("/data/humanitarian_global_clusters.json")
         clusters_vocabulary = SectorVocabulary.objects.get(pk=10)
 
-        for sector in data :
+        for sector in data:
             Sector.objects.get_or_create(
                 code=sector.get('id'),
                 vocabulary=clusters_vocabulary,
