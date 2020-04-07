@@ -7,7 +7,7 @@ from rest_framework.serializers import (
 from api.generics.serializers import DynamicFieldsModelSerializer
 from iati.models import Activity
 from iati_synchroniser.models import Dataset, DatasetNote, Publisher
-
+import urllib.parse
 
 class DatasetNoteSerializer(ModelSerializer):
     class Meta:
@@ -132,6 +132,7 @@ class DatasetSerializer(DynamicFieldsModelSerializer):
         # Get internal url from the XML file in the local static folder
         internal_url = obj.get_internal_url()
         if internal_url:
+            internal_url = urllib.parse.quote(internal_url)
             return request.build_absolute_uri(internal_url)
 
         return None

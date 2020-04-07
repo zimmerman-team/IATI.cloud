@@ -212,7 +212,12 @@ class DatasetSyncer(object):
             filename = dataset_url.split('/')[-1]
 
             # sometimes URL is not 'example.com/blah.xml':
-            if '.xml' not in filename:
+            #if '.xml' not in filename:
+            #    filename += '.xml'
+            # This is not sufficient as some urls sometime already have a .xml at the wrong place for example :
+            # http://iati.cloud/static/datasets/BE-BCE_KBO-0410644946/Activity/2.02/activities.xml?id=29&hash=a77d969b23e706cb8fec1850daae34e9
+            if not filename.endswith('.xml'):
+                filename = filename.replace('.xml', '')
                 filename += '.xml'
 
             if '/' in publisher_iati_id:
