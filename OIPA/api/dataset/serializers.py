@@ -1,3 +1,5 @@
+import urllib.parse
+
 from django.urls import reverse
 from rest_framework.serializers import (
     HiddenField, HyperlinkedIdentityField, HyperlinkedRelatedField,
@@ -7,7 +9,7 @@ from rest_framework.serializers import (
 from api.generics.serializers import DynamicFieldsModelSerializer
 from iati.models import Activity
 from iati_synchroniser.models import Dataset, DatasetNote, Publisher
-import urllib.parse
+
 
 class DatasetNoteSerializer(ModelSerializer):
     class Meta:

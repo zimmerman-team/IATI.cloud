@@ -10,7 +10,6 @@ from django.conf import settings
 from requests.exceptions import RequestException
 
 from iati_synchroniser.models import Dataset
-from task_queue.utils import extract_values
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
@@ -236,7 +235,8 @@ class DatasetValidationTask(celery.Task):
         # for severity in unique_severities:
         #     # If the validation status has assigned as a valid status,
         #     # then not possible to change to others status.
-        #     if validation_status != valid_status and severity == valid_status:
+        #     if validation_status != valid_status and severity ==
+        #     valid_status:
         #         validation_status = severity
         #     elif validation_status != valid_status and \
         #             severity != valid_status:
