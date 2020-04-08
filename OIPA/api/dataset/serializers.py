@@ -1,3 +1,5 @@
+import urllib.parse
+
 from django.urls import reverse
 from rest_framework.serializers import (
     HiddenField, HyperlinkedIdentityField, HyperlinkedRelatedField,
@@ -132,6 +134,7 @@ class DatasetSerializer(DynamicFieldsModelSerializer):
         # Get internal url from the XML file in the local static folder
         internal_url = obj.get_internal_url()
         if internal_url:
+            internal_url = urllib.parse.quote(internal_url)
             return request.build_absolute_uri(internal_url)
 
         return None

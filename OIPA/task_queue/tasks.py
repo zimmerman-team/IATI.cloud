@@ -3,10 +3,11 @@ import hashlib
 import logging
 import os
 import time
-import pika
+
 import celery
 import django_rq
 import fulltext
+import pika
 import requests
 from celery import shared_task
 from django.conf import settings
@@ -471,8 +472,7 @@ def download_file(d):
                 '''prepare the updated file storage with the new name \
                         <update.timestamp.id.extention'''
                 ts = time.time()
-                document_path_update = save_path + \
-                                       "update." + str(ts) + "." + save_name
+                document_path_update = save_path + "update." + str(ts) + "." + save_name  # NOQA: E501
                 downloader = DownloadFile(long_url, document_path_update)
                 try:
                     is_downloaded = downloader.download()
@@ -750,7 +750,8 @@ def continuous_parse_all_existing_sources_task(force=False,
             list_in_dict = active_workers_dict[key]
             list_without_this_task = [worker for worker in list_in_dict if
                                       worker[
-                                          'name'] != 'task_queue.tasks.continuous_parse_all_existing_sources_task']
+                                          'name'] !=
+                                      'task_queue.tasks.continuous_parse_all_existing_sources_task']  # NOQA: E501
             if not list_without_this_task:
                 is_empty_workers = True
             else:
@@ -758,7 +759,7 @@ def continuous_parse_all_existing_sources_task(force=False,
 
         if is_empty_workers:
             parse_all_existing_sources_task.delay(force=force,
-                                                  check_validation=check_validation)
+                                                  check_validation=check_validation)  # NOQA: E501
             print("starting another round.")
 
         time.sleep(900)
@@ -794,7 +795,7 @@ def revoke_all_tasks():
                 celery.task.control.revoke(worker.get('id', ''),
                                            terminate=True)
 
-        for key in reserved_workers_dict:  # revoke_all_tasks cannot be in reserved
+        for key in reserved_workers_dict:  # revoke_all_tasks cannot be in reserved  # NOQA: E501
             list_in_dict = reserved_workers_dict[key]
 
             if not list_in_dict:
@@ -808,4 +809,3 @@ def revoke_all_tasks():
 
         if is_empty_active_workers and is_empty_reserved_workers:
             is_empty_worker = True
-

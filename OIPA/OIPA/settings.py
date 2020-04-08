@@ -360,7 +360,7 @@ CELERY_WORKER_PREFETCH_MULTIPLIER = 1  # limiting the number of reserved tasks.
 CELERY_TIMEZONE = 'UTC'
 CELERY_ENABLE_UTC = True
 CELERY_TASK_ROUTES = {'task_queue.tasks.revoke_all_tasks': {'queue':
-                                                               'revoke_queue'}}
+                                                            'revoke_queue'}}
 CELERY_BROKER_URL = 'amqp://localhost'
 CELERY_RESULT_BACKEND = 'rpc://localhost'
 # 'db+postgresql://oipa:oipa@localhost/oipa'
