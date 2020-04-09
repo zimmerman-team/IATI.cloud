@@ -41,9 +41,9 @@ def code_list_region_post_save(sender, instance, **kwargs):
     CodeListRegionTaskIndexing(instance=instance).run()
 
 
-@receiver(signals.post_save, sender=Activity)
-def activity_post_save(sender, instance, **kwargs):
-    ActivityTaskIndexing(instance=instance, related=True).run()
+# @receiver(signals.post_save, sender=Activity)
+# def activity_post_save(sender, instance, **kwargs):
+#     ActivityTaskIndexing(instance=instance, related=True).run()
 
 
 @receiver(signals.pre_delete, sender=Dataset)
