@@ -853,26 +853,26 @@ class Parse(IatiParser):
         code:AF
         percentage:25
 
-        tag:recipient-country
-
-        IATI business rule: If transaction/recipient-country AND/OR
-        transaction/recipient-region are used THEN ALL transaction elements
-        MUST contain a recipient-country or
-        recipient-region element AND (iati-activity/recipient-country AND
-        iati-activity/recipient-region
-        MUST NOT be used)
-        """
-
-        transaction_recipient_country = self.root.findall(
-            "./iati-activity/transaction/recipient-country")
-        if len(transaction_recipient_country) > 0:
-            raise ParserError(
-                "iati-activity",
-                "recipient-country",
-                "activity/recipient-country must not used if "
-                "transaction/recipient-country is used."
-
-            )
+        # tag:recipient-country
+        #
+        # IATI business rule: If transaction/recipient-country AND/OR
+        # transaction/recipient-region are used THEN ALL transaction elements
+        # MUST contain a recipient-country or
+        # recipient-region element AND (iati-activity/recipient-country AND
+        # iati-activity/recipient-region
+        # MUST NOT be used)
+        # """
+        #
+        # transaction_recipient_country = self.root.findall(
+        #     "./iati-activity/transaction/recipient-country")
+        # if len(transaction_recipient_country) > 0:
+        #     raise ParserError(
+        #         "iati-activity",
+        #         "recipient-country",
+        #         "activity/recipient-country must not used if "
+        #         "transaction/recipient-country is used."
+        #
+        #     )
         code = element.attrib.get('code')
         country = self.get_or_none(Country, code=code)
         percentage = element.attrib.get('percentage')
@@ -931,26 +931,26 @@ class Parse(IatiParser):
         vocabulary:1
         percentage:25
 
-        tag:recipient-region
-
-        IATI business rule: If transaction/recipient-country AND/OR
-        transaction/recipient-region are used
-        THEN ALL transaction elements MUST contain a recipient-country or
-        recipient-region element
-        AND (iati-activity/recipient-country AND
-        iati-activity/recipient-region
-        MUST NOT be used).
-        """
-
-        transaction_recipient_region = self.root.findall(
-            "./iati-activity/transaction/recipient-region")
-        if len(transaction_recipient_region) > 0:
-            raise ParserError(
-                "iati-activity",
-                "recipient-region",
-                "activity/recipient-region must not used if transaction/recipient-region is used.",  # NOQA: E501
-
-            )
+        # tag:recipient-region
+        #
+        # IATI business rule: If transaction/recipient-country AND/OR
+        # transaction/recipient-region are used
+        # THEN ALL transaction elements MUST contain a recipient-country or
+        # recipient-region element
+        # AND (iati-activity/recipient-country AND
+        # iati-activity/recipient-region
+        # MUST NOT be used).
+        # """
+        #
+        # transaction_recipient_region = self.root.findall(
+        #     "./iati-activity/transaction/recipient-region")
+        # if len(transaction_recipient_region) > 0:
+        #     raise ParserError(
+        #         "iati-activity",
+        #         "recipient-region",
+        #         "activity/recipient-region must not used if transaction/recipient-region is used.",  # NOQA: E501
+        #
+        #     )
         code = element.attrib.get('code')
         region = self.get_or_none(Region, code=code)
         # TODO: make defaults more transparant, here: 'OECD-DAC default'
