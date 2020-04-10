@@ -17,7 +17,6 @@ def add_recipient_country(serializer, activity):
                 'recipient_country_name',
                 recipient_country.country.name
             )
-    pass
 
 
 class BudgetIndexing(BaseIndexing):
