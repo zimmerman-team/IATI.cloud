@@ -8,7 +8,7 @@
 ![Open issues](https://img.shields.io/github/issues/zimmerman-zimmerman/OIPA.svg?style=flat)
 [![CircleCI](https://circleci.com/gh/zimmerman-zimmerman/iati.cloud.svg?style=svg&circle-token=193a84b0736b82dd10d5e7bb0a118c2fc1c30273)](https://circleci.com/gh/zimmerman-zimmerman/iati.cloud)
 
-OIPA extracts all published IATI XML files from the [IATI Registry](http://www.iatiregistry.org/publisher) and makes them available in a normalised PostgreSQL database, that you can access using a RESTful API.
+IATI.cloud extracts all published IATI XML files from the [IATI Registry](http://www.iatiregistry.org/publisher) and makes them available in a normalised PostgreSQL database, that you can access using a RESTful API.
 
 IATI is a global aid transparency standard and it makes information about aid spending easier to access, re-use and understand the underlying data using a unified open standard. You can find more about the IATI XML standard at: <a href="http://www.iatistandard.org" target="_blank">www.iatistandard.org</a>
 
@@ -58,14 +58,14 @@ Full documentation (which, at this point, needs an update) on installing, runnin
 ## About the project
 
 -   Website: <a href="https://www.iati.cloud" target="_blank">www.iati.cloud</a>
--   Authors: <a href="https://www.zimmermanzimmerman.nl/" target="_blank">Zimmerman & Zimmerman</a>
+-   Authors: <a href="https://www.zimmermanzimmerman.nl/" target="_blank">Zimmerman</a>
 -   License: AGPLv3 (see included <a href="https://github.com/zimmerman-zimmerman/iati.cloud/blob/master/LICENSE.MD" target="_blank">LICENSE</a> file for full license)
 -   Github Repo: <a href="https://github.com/zimmerman-zimmerman/iati.cloud/" target="_blank">github.com/zimmerman-zimmerman/iati.cloud/</a>
 -   Bug Tracker: <a href="https://github.com/zimmerman-zimmerman/iati.cloud/issues" target="_blank">github.com/zimmerman-zimmerman/iati.cloud/issues</a>
 
 ## Can I contribute?
 
-Yes! We are mainly looking for coders to help on the project. If you are a coder feel free to _Fork_ the repository and send us Pull requests!
+Yeap! We are mainly looking for coders to help on the project. If you are a coder feel free to _Fork_ the repository and send us Pull requests!
 
 ## How should I contribute?
 
@@ -101,3 +101,5 @@ Testing / code quality settings can be found in the `setup.cfg` file. Test cover
 -   Mohinga AIMS: <a href="http://mohinga.info/en/" target="_blank">mohinga.info</a>
 -   Overseas Development Institute: <a href="https://transparency.odi.org/" target="_blank">ODI.org</a>
 -   UN Migration: <a href="https://www.iom.int/" target="_blank">IOM.int</a>
+
+& many others
