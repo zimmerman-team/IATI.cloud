@@ -193,7 +193,6 @@ class IatiParser(object):
         """
 
         """
-        indexing =0
         for e in root.getchildren():
             self.model_store = OrderedDict()
             parsed = self.parse(e)
@@ -203,13 +202,14 @@ class IatiParser(object):
                 try:
                     self.save_all_models()
                     self.post_save_models()
-                    ActivityTaskIndexing(self.get_model('Activity'), related=True).run()
-                    print('indexing witout exception %d' % (indexing + 1))
+                    model = self.get_model('Activity')
+                    if model is not None:
+                        ActivityTaskIndexing(model, related=True).run()
                 except Exception:
-                    ActivityTaskIndexing(self.get_model('Activity'),
-                                         related=True).run()
-                    print('indexing with exception %d' % (indexing + 1))
-
+                    model = self.get_model('Activity')
+                    if model is not None:
+                        ActivityTaskIndexing(self.get_model('Activity'),
+                                             related=True).run()
 
         self.post_save_file(self.dataset)
 
