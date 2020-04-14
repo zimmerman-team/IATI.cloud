@@ -134,6 +134,7 @@ class DatasetSerializer(DynamicFieldsModelSerializer):
         # Get internal url from the XML file in the local static folder
         internal_url = obj.get_internal_url()
         if internal_url:
+            internal_url = internal_url[:4] + 's' + internal_url[4:]
             internal_url = urllib.parse.quote(internal_url)
             return request.build_absolute_uri(internal_url)
 
