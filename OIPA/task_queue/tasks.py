@@ -745,27 +745,24 @@ def continuous_parse_all_existing_sources_task(self, force=False,
 
     is_empty_workers = True
     try:
-        while True:
-            active_workers_dict = i.active()
-            for key in active_workers_dict:
-                list_in_dict = active_workers_dict[key]
-                list_without_this_task = [worker for worker in list_in_dict if
-                                          worker[
-                                              'name'] !=
-                                          'task_queue.tasks.continuous_parse_all_existing_sources_task']  # NOQA: E501
-                if not list_without_this_task:
-                    is_empty_workers = True
-                else:
-                    is_empty_workers = False
+        active_workers_dict = i.active()
+        for key in active_workers_dict:
+            list_in_dict = active_workers_dict[key]
+            list_without_this_task = [worker for worker in list_in_dict if
+                                      worker[
+                                          'name'] !=
+                                      'task_queue.tasks.continuous_parse_all_existing_sources_task']  # NOQA: E501
+            if not list_without_this_task:
+                is_empty_workers = True
+            else:
+                is_empty_workers = False
 
-            if is_empty_workers:
-                parse_all_existing_sources_task.delay(force=force,
-                                                      check_validation=check_validation)  # NOQA: E501
-                print("starting another round.")
+        if is_empty_workers:
+            parse_all_existing_sources_task.delay(force=force,
+                                                  check_validation=check_validation)  # NOQA: E501
 
-            time.sleep(1800)
     except ConnectionResetError as exc:
-        raise self.retry(exc=exc)  # will retry in 3 minutes default.
+        raise self.retry(exc=exc)  # will retry in 3 minutes 3 times default.
 
 
 @shared_task
