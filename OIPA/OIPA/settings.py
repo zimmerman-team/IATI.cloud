@@ -366,6 +366,7 @@ CELERY_BROKER_URL = 'amqp://localhost'
 CELERY_RESULT_BACKEND = 'rpc://localhost'
 # 'db+postgresql://oipa:oipa@localhost/oipa'
 CELERY_ALWAYS_EAGER = True
+BROKER_POOL_LIMIT = None
 CELERY_EAGER_PROPAGATES_EXCEPTIONS = True
 CELERY_IMPORTS = 'iati.PostmanJsonImport.tasks'
 CELERY_BEAT_SCHEDULE = {
