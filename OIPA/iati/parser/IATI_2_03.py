@@ -46,7 +46,8 @@ class Parse(IatiParser):
         lang = element.attrib.get(
             '{http://www.w3.org/XML/1998/namespace}lang', default_lang)
         text = element.text
-        text = text.replace('"', '""')
+        if text is not None:
+            text = text.replace('"', '""')
 
         if lang:
             lang = lang.lower()
