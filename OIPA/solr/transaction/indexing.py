@@ -248,10 +248,19 @@ class TransactionIndexing(BaseIndexing):
             transaction.disbursement_channel_id
         )
 
+        self.add_field('transaction_sector', [])
         self.add_field('transaction_sector_vocabulary', [])
         self.add_field('transaction_sector_vocabulary_uri', [])
         self.add_field('transaction_sector_code', [])
+        self.add_field('transaction_sector_percentage', [])
+        self.add_field('transaction_sector_narrative', [])
         for sector in transaction.transactionsector_set.all():
+            self.add_value_list(
+                'transaction_sector',
+                JSONRenderer().render(
+                    ActivitySectorSerializer(sector).data
+                ).decode()
+            )
             self.add_value_list(
                 'transaction_sector_vocabulary',
                 sector.vocabulary_id
@@ -264,6 +273,13 @@ class TransactionIndexing(BaseIndexing):
                 'transaction_sector_code',
                 sector.sector_id
             )
+            self.add_value_list(
+                'transaction_sector_percentage',
+                decimal_string(sector.percentage)
+            )
+
+            for narrative in sector.narratives.all():
+                self.add_value_list('transaction_sector_narrative', narrative.content)
 
         self.add_field(
             'transaction_recipient_country_code',
