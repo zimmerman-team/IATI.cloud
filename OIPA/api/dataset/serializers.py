@@ -133,10 +133,12 @@ class DatasetSerializer(DynamicFieldsModelSerializer):
 
         # Get internal url from the XML file in the local static folder
         internal_url = obj.get_internal_url()
+        url = None
         if internal_url:
             internal_url = urllib.parse.quote(internal_url)
             complete_internal_url = request.build_absolute_uri(internal_url)
-            url = complete_internal_url.replace('http:', 'https:')
+            if complete_internal_url is not None:
+                url = complete_internal_url.replace('http:', 'https:')
             return url
 
         return None
