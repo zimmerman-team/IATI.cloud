@@ -46,6 +46,8 @@ class Parse(IatiParser):
         lang = element.attrib.get(
             '{http://www.w3.org/XML/1998/namespace}lang', default_lang)
         text = element.text
+        if text is not None:
+            text = text.replace('"', '""')
 
         if lang:
             lang = lang.lower()
@@ -80,7 +82,7 @@ class Parse(IatiParser):
             narrative.organisation = self.get_model('Organisation')
 
         narrative.language = language
-        narrative.content = element.text
+        narrative.content = text
         # This (instead of narrative.related_object) is required, otherwise
         # related object doesn't get passed to the model_store (memory) and
         # 'update_related()' fails.
