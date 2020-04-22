@@ -2,6 +2,23 @@ from solr.indexing import BaseIndexing
 from solr.utils import add_reporting_org, date_string, decimal_string
 
 
+def add_recipient_country(serializer, activity):
+    recipient_country_all = activity.activityrecipientcountry_set.all()
+    if recipient_country_all:
+        serializer.add_field('recipient_country_code', [])
+        serializer.add_field('recipient_country_name', [])
+
+        for recipient_country in recipient_country_all:
+            serializer.add_value_list(
+                'recipient_country_code',
+                recipient_country.country.code
+            )
+            serializer.add_value_list(
+                'recipient_country_name',
+                recipient_country.country.name
+            )
+
+
 class BudgetIndexing(BaseIndexing):
 
     def budget(self):
@@ -38,6 +55,7 @@ class BudgetIndexing(BaseIndexing):
         self.add_field('budget_value', decimal_string(budget.value))
 
         add_reporting_org(self, budget.activity)
+        add_recipient_country(self, budget.activity)
 
     def to_representation(self, budget):
         self.record = budget
