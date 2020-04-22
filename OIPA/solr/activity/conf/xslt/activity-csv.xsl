@@ -258,7 +258,7 @@
     <xsl:value-of select="$deliminquote"/>
     <xsl:value-of select="arr[@name='title_narrative']/str"/>
     <xsl:value-of select="$deliminquote"/>
-    <xsl:value-of select="arr[@name='description_narrative']/str"/>
+    <xsl:apply-templates select="arr[@name='description_narrative']/str"/>
     <xsl:value-of select="$deliminquote"/>
     <xsl:apply-templates select="arr[@name='participating_org_ref']/str"/>
     <xsl:value-of select="$deliminquote"/>

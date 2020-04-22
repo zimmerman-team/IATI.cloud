@@ -18,7 +18,7 @@ class PostmanAPIImport(object):
 
         request = urllib.request.Request(
             "https://api.getpostman.com/collections/7423966-c07eebd3-61b2-47b4-9bfd-1bac7ec96c9f",     # NOQA: E501
-            headers={"x-Api-Key": "55dfaaebcc9448bba40e5ff485305a2b"})
+            headers={"x-Api-Key": "675aba3b5dec4d39a1abf193d4386c7b"})
         response = urllib.request.urlopen(request)
         json_string = response.read()
         result_for_test_datastore_iatistandard_org = json.loads(json_string.decode('utf-8-sig'))  # NOQA: E501

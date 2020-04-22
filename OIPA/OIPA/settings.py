@@ -360,11 +360,13 @@ CELERY_WORKER_PREFETCH_MULTIPLIER = 1  # limiting the number of reserved tasks.
 CELERY_TIMEZONE = 'UTC'
 CELERY_ENABLE_UTC = True
 CELERY_TASK_ROUTES = {'task_queue.tasks.revoke_all_tasks': {'queue':
-                                                            'revoke_queue'}}
+                                                            'revoke_queue'},
+                      'task_queue.tasks.continuous_parse_all_existing_sources_task': {'queue': 'revoke_queue'}}  # NOQA: E501
 CELERY_BROKER_URL = 'amqp://localhost'
 CELERY_RESULT_BACKEND = 'rpc://localhost'
 # 'db+postgresql://oipa:oipa@localhost/oipa'
 CELERY_ALWAYS_EAGER = True
+CELERY_BROKER_POOL_LIMIT = None
 CELERY_EAGER_PROPAGATES_EXCEPTIONS = True
 CELERY_IMPORTS = 'iati.PostmanJsonImport.tasks'
 CELERY_BEAT_SCHEDULE = {
