@@ -202,14 +202,16 @@ class IatiParser(object):
                 try:
                     self.save_all_models()
                     self.post_save_models()
-                    model = self.get_model('Activity')
-                    if model is not None:
-                        ActivityTaskIndexing(model, related=True).run()
+                    
                 except Exception:
                     model = self.get_model('Activity')
                     if model is not None:
-                        ActivityTaskIndexing(self.get_model('Activity'),
+                        ActivityTaskIndexing(model,
                                              related=True).run()
+                else:
+                    model = self.get_model('Activity')
+                    if model is not None:
+                        ActivityTaskIndexing(model, related=True).run()
 
         self.post_save_file(self.dataset)
 
