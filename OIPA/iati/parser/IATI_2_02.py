@@ -954,7 +954,7 @@ class Parse(IatiParser):
         #
         #     )
         code = element.attrib.get('code')
-        region = self.get_or_none(Region, code=code)
+
         # TODO: make defaults more transparant, here: 'OECD-DAC default'
         vocabulary = self.get_or_none(
             vocabulary_models.RegionVocabulary,
@@ -963,6 +963,8 @@ class Parse(IatiParser):
                 '1'))
         vocabulary_uri = element.attrib.get('vocabulary-uri')
         percentage = element.attrib.get('percentage')
+        region = Region.objects.filter(code=code,
+                                       region_vocabulary=vocabulary).first()
 
         if not code:
             raise RequiredFieldError(
@@ -2652,7 +2654,7 @@ class Parse(IatiParser):
 
         tag:recipient-region"""
         code = element.attrib.get('code')
-        region = self.get_or_none(Region, code=code)
+
         # TODO: make defaults more transparant, here: 'OECD-DAC default'
         vocabulary = self.get_or_none(
             vocabulary_models.RegionVocabulary,
@@ -2660,6 +2662,8 @@ class Parse(IatiParser):
                 'vocabulary',
                 '1'))
         vocabulary_uri = element.attrib.get('vocabulary-uri')
+        region = Region.objects.filter(code=code,
+                                       region_vocabulary=vocabulary).first()
 
         if not code:
             raise RequiredFieldError(
