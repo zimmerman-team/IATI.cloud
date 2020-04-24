@@ -10,7 +10,7 @@ class M49RegionsImporter:
     The JSON file m49 regions should be put on folder plugins/data of the root
     Django directory.
     The setting will be like below:
-
+    """
     import os
     BASE_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
     DATA_PLUGINS = {
@@ -19,8 +19,6 @@ class M49RegionsImporter:
                 base_dir=BASE_DIR, filename='regions.json')
         }
     }
-
-    """
 
     def __init__(self, filename=None):
         # The filename should be including full path of file itself.
@@ -43,27 +41,18 @@ class M49RegionsImporter:
         json_data.close()
         return data
 
-    def get_or_create(self, item):
-        # To create region data should has region vocabulary
-        region_vocabulary = RegionVocabulary.objects.first()
-        try:
-            # The code of this vocabulary is 2.
-            region_vocabulary = RegionVocabulary.objects.get(code='2')
-        except RegionVocabulary.DoesNotExist:
-            pass
-
-        Region.objects.get_or_create(
-            code=str(int(item.get('code'))),
-            name=item.get('name'),
-            region_vocabulary=region_vocabulary
-        )
-
     def loop_through(self, data):
         for item in data:
-            # Create a new region data
-            self.get_or_create(item=item)
+            region_vocabulary = RegionVocabulary.objects.first()
+            try:
+                # The code of this vocabulary is 2.
+                region_vocabulary = RegionVocabulary.objects.get(code='2')
+            except RegionVocabulary.DoesNotExist:
+                pass
 
-            # If this item has sub item the looping again
-            sub = item.get('sub')
-            if sub:
-                self.loop_through(data=sub)
+            Region.objects.get_or_create(
+                code=data[item],
+                name=item,
+                region_vocabulary=region_vocabulary
+            )
+
