@@ -769,7 +769,7 @@ class Parse(IatiParser):
 
         code = recipient_region[0].attrib.get("code")
         recipient_region = Region.objects.filter(code=code,
-                                       region_vocabulary=recipient_region_vocabulary).first() # NOQA: E501
+                                       region_vocabulary=recipient_region_vocabulary).first()  # NOQA: E501
 
         if not recipient_region and recipient_region_vocabulary.code == '99':
             # 99 vocabulary provide by reporting organisation
@@ -783,7 +783,7 @@ class Parse(IatiParser):
             )
             region.save()
 
-        else:
+        elif not recipient_region:
             raise FieldValidationError(
                 "RecipientRegionBudget",
                 "region",
@@ -906,7 +906,7 @@ class Parse(IatiParser):
         recipient_region_budget = RecipientRegionBudget()
         recipient_region_budget.organisation = organisation
         recipient_region_budget.status = status
-        recipient_region_budget.region = region
+        recipient_region_budget.region = recipient_region
         recipient_region_budget.vocabulary = recipient_region_vocabulary
         recipient_region_budget.vocabulary_uri = vocabulary_uri
         recipient_region_budget.period_start = period_start_date
