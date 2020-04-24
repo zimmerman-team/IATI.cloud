@@ -36,7 +36,7 @@ class M49RegionsImporter:
 
     def get_json_data(self, location_from_here):
         # Open file file json
-        json_data = open(location_from_here)
+        json_data = open(location_from_here, encoding='utf-8')
         data = ujson.load(json_data)
         json_data.close()
         return data
