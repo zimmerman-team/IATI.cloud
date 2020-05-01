@@ -188,7 +188,8 @@ workflows:
                               - master
             - release:
                   requires:
-                      - deploy
+                      - deploy_production_1
+                      - deploy_production_2
                   filters:
                       branches:
                           only:
