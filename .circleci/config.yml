@@ -159,70 +159,37 @@ jobs:
         steps:
             - checkout
             - run: npx semantic-release
-    test_prod_1_ssh:
-        docker:
-            - image: circleci/python:3.6.5
-        steps:
-            - checkout
-            - run:
-                  name: Add target host to known_hosts files
-                  command: ssh-keyscan "$SSH_HOST_PROD_1" >> ~/.ssh/known_hosts
-            - add_ssh_keys:
-                  name: Add SSH KEY
-                  fingerprints:
-                      - "5d:59:e5:e3:ce:cf:ec:18:62:3b:e6:fa:86:c7:9b:9a"
-            - run: eval ssh-agent -s
-            - run:
-                  name: Test ssh
-                  command: ssh "$SSH_USER"@"$SSH_HOST_PROD_2" "echo '"$SSH_PROD_PASS_1"' | sudo -S touch a"
-    test_prod_2_ssh:
-        docker:
-            - image: circleci/python:3.6.5
-        steps:
-            - checkout
-            - run:
-                  name: Add target host to known_hosts files
-                  command: ssh-keyscan "$SSH_HOST_PROD_2" >> ~/.ssh/known_hosts
-            - add_ssh_keys:
-                  name: Add SSH KEY
-                  fingerprints:
-                      - "5d:59:e5:e3:ce:cf:ec:18:62:3b:e6:fa:86:c7:9b:9a"
-            - run: eval ssh-agent -s
-            - run:
-                  name: Test ssh
-                  command: ssh "$SSH_USER"@"$SSH_HOST_PROD_2" "echo '"$SSH_PROD_PASS_2"' | sudo -S touch a"
+
 workflows:
     version: 2
     test_and_deploy:
         jobs:
-            # - test
-            - test_prod_1_ssh
-            - test_prod_2_ssh
-            # - deploy_staging:
-            #       requires:
-            #           - test
-            #       filters:
-            #           branches:
-            #               only:
-            #                   - develop
-            # - deploy_production_1:
-            #       requires:
-            #           - test
-            #       filters:
-            #           branches:
-            #               only:
-            #                   - master
-            # - deploy_production_2:
-            #       requires:
-            #           - test
-            #       filters:
-            #           branches:
-            #               only:
-            #                   - master
-            # - release:
-            #       requires:
-            #           - deploy
-            #       filters:
-            #           branches:
-            #               only:
-            #                   - master
+            - test
+            - deploy_staging:
+                  requires:
+                      - test
+                  filters:
+                      branches:
+                          only:
+                              - develop
+            - deploy_production_1:
+                  requires:
+                      - test
+                  filters:
+                      branches:
+                          only:
+                              - master
+            - deploy_production_2:
+                  requires:
+                      - test
+                  filters:
+                      branches:
+                          only:
+                              - master
+            - release:
+                  requires:
+                      - deploy
+                  filters:
+                      branches:
+                          only:
+                              - master
