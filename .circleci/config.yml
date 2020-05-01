@@ -174,7 +174,7 @@ jobs:
             - run: eval ssh-agent -s
             - run:
                   name: Test ssh
-                  command: ssh "$SSH_USER"@"$SSH_HOST_PROD_2" "echo '"$SSH_PROD_PASS_1"' | sudo touch a"
+                  command: ssh "$SSH_USER"@"$SSH_HOST_PROD_2" "echo '"$SSH_PROD_PASS_1"' | sudo -S touch a"
     test_prod_2_ssh:
         docker:
             - image: circleci/python:3.6.5
@@ -190,7 +190,7 @@ jobs:
             - run: eval ssh-agent -s
             - run:
                   name: Test ssh
-                  command: ssh "$SSH_USER"@"$SSH_HOST_PROD_2" "echo '"$SSH_PROD_PASS_2"' | sudo touch a"
+                  command: ssh "$SSH_USER"@"$SSH_HOST_PROD_2" "echo '"$SSH_PROD_PASS_2"' | sudo -S touch a"
 workflows:
     version: 2
     test_and_deploy:
