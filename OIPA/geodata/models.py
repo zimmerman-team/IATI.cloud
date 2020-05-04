@@ -4,7 +4,7 @@ from iati_vocabulary.models import RegionVocabulary
 
 
 class Region(models.Model):
-    code = models.CharField(primary_key=True, max_length=100)
+    code = models.CharField(max_length=100)
     name = models.CharField(max_length=80)
     region_vocabulary = models.ForeignKey(
         RegionVocabulary, default=1, on_delete=models.CASCADE)

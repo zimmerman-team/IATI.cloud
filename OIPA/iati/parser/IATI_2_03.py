@@ -1001,7 +1001,7 @@ class Parse(IatiParser):
         #     )
 
         code = element.attrib.get('code')
-        region = self.get_or_none(Region, code=code)
+
         # TODO: make defaults more transparant, here: 'OECD-DAC default'
         vocabulary = self.get_or_none(
             vocabulary_models.RegionVocabulary,
@@ -1023,6 +1023,8 @@ class Parse(IatiParser):
                 "vocabulary",
                 "not found on the accompanying code list")
 
+        region = Region.objects.filter(code=code,
+                                       region_vocabulary=vocabulary).first()
         if not region and vocabulary.code == '1':
             raise FieldValidationError(
                 "recipient-region",
@@ -2758,7 +2760,7 @@ class Parse(IatiParser):
 
         tag:recipient-region"""
         code = element.attrib.get('code')
-        region = self.get_or_none(Region, code=code)
+
         # TODO: make defaults more transparant, here: 'OECD-DAC default'
         vocabulary = self.get_or_none(
             vocabulary_models.RegionVocabulary,
@@ -2779,6 +2781,8 @@ class Parse(IatiParser):
                 "vocabulary",
                 "not found on the accompanying code list")
 
+        region = Region.objects.filter(code=code,
+                                       region_vocabulary=vocabulary).first()
         if not region and vocabulary.code == '1':
             raise FieldValidationError(
                 "transaction/recipient-region",
