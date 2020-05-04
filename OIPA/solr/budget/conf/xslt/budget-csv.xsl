@@ -15,6 +15,8 @@
         <xsl>iati_identifier,</xsl>
         <xsl>reporting_org_ref,</xsl>
         <xsl>reporting_org_type,</xsl>
+        <xsl>recipient_country_code,</xsl>
+        <xsl>recipient_country_name,</xsl>
         <xsl>budget_type,</xsl>
         <xsl>budget_status,</xsl>
         <xsl>budget_period_start_iso_date,</xsl>
@@ -30,6 +32,14 @@
         <xsl:value-of select="str[@name='reporting_org_ref']"/>
         <xsl:value-of select="$delim"/>
         <xsl:value-of select="str[@name='reporting_org_type']"/>
+        <xsl:value-of select="$delim"/>
+        <xsl:value-of select="$quote"/>
+        <xsl:apply-templates select="arr[@name='recipient_country_code']/str"/>
+        <xsl:value-of select="$quote"/>
+        <xsl:value-of select="$delim"/>
+        <xsl:value-of select="$quote"/>
+        <xsl:apply-templates select="arr[@name='recipient_country_name']/str"/>
+        <xsl:value-of select="$quote"/>
         <xsl:value-of select="$delim"/>
         <xsl:value-of select="str[@name='budget_type']"/>
         <xsl:value-of select="$delim"/>
@@ -47,4 +57,7 @@
         <xsl:value-of select="$delim"/>
         <xsl:value-of select="$break"/>
     </xsl:template>
+    <xsl:template match="arr[*]/str">
+    <xsl:value-of select="concat(normalize-space(), $delim)"/>
+  </xsl:template>
 </xsl:stylesheet>
