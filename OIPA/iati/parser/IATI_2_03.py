@@ -5560,7 +5560,7 @@ class Parse(IatiParser):
         post_save.set_transaction_provider_receiver_activity(activity)
         post_save.set_derived_activity_dates(activity)
         post_save.set_activity_aggregations(activity)
-        # post_save.update_activity_search_index(activity)
+        post_save.update_activity_search_index(activity)
 
         # TODO: This is right related to this documnetation
         # http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/transaction/sector/  # NOQA: E501
