@@ -1,18 +1,19 @@
 
 from rest_framework.renderers import JSONRenderer
 
+from solr.activity.references import (
+    RecipientCountryReference, RecipientRegionReference
+)
 from solr.activity.serializers import (
-    ActivitySectorSerializer, RecipientCountrySerializer,
-    ActivityRecipientRegionSerializer
+    ActivityRecipientRegionSerializer,
+    ActivitySectorSerializer, RecipientCountrySerializer
 )
 from solr.indexing import BaseIndexing
 from solr.utils import (
     add_reporting_org, bool_string, date_string,
     decimal_string, get_child_attr, get_narrative_lang_list
 )
-from solr.activity.references import (
-    RecipientCountryReference, RecipientRegionReference
-)
+
 
 
 class TransactionIndexing(BaseIndexing):
@@ -48,7 +49,8 @@ class TransactionIndexing(BaseIndexing):
         self.add_field('activity_date_iso_date', [])
 
         add_reporting_org(self, transaction.activity)
-        recipient_country_all = transaction.activity.activityrecipientcountry_set.all()
+        recipient_country_all = \
+            transaction.activity.activityrecipientcountry_set.all()
         if recipient_country_all:
             self.add_field('activity_recipient_country', [])
             self.add_field('activity_recipient_country_xml', [])
@@ -90,7 +92,8 @@ class TransactionIndexing(BaseIndexing):
                     'activity_recipient_country_narrative_lang'
                 )
 
-        recipient_region_all = transaction.activity.activityrecipientregion_set.all()
+        recipient_region_all = \
+            transaction.activity.activityrecipientregion_set.all()
         if recipient_region_all:
             self.add_field('activity_recipient_region', [])
             self.add_field('activity_recipient_region_xml', [])
@@ -145,7 +148,8 @@ class TransactionIndexing(BaseIndexing):
                 )
 
         if get_child_attr(transaction, 'description'):
-            self.indexing['description_lang'], self.indexing['description_narrative'] = \
+            self.indexing['description_lang'], \
+            self.indexing['description_narrative'] = \
                 get_narrative_lang_list(transaction.description)
 
         self.add_field('transaction_ref', transaction.ref)
@@ -281,7 +285,9 @@ class TransactionIndexing(BaseIndexing):
             )
 
             for narrative in sector.narratives.all():
-                self.add_value_list('transaction_sector_narrative', narrative.content)
+                self.add_value_list(
+                    'transaction_sector_narrative',
+                    narrative.content)
 
         self.add_field(
             'transaction_recipient_country_code',
@@ -355,14 +361,19 @@ class TransactionIndexing(BaseIndexing):
                 'activity_sector_vocabulary_uri',
                 activity_sector.vocabulary_uri
             )
-            self.add_value_list('activity_sector_code', activity_sector.sector_id)
+            self.add_value_list(
+                'activity_sector_code',
+                activity_sector.sector_id)
             self.add_value_list(
                 'activity_sector_percentage',
                 decimal_string(activity_sector.percentage)
             )
 
             for narrative in activity_sector.narratives.all():
-                self.add_value_list('activity_sector_narrative', narrative.content)
+                self.add_value_list(
+                    'activity_sector_narrative',
+                    narrative.content
+                )
 
     def to_representation(self, transaction):
         self.record = transaction
