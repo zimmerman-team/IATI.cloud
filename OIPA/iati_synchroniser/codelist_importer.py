@@ -27,7 +27,6 @@ from iati_synchroniser.sdg_sector_importer import SdgSectorImporter
 from iati_synchroniser.vocab7_importer import Vocab7Importer
 from iati_vocabulary.models import RegionVocabulary, SectorVocabulary
 
-
 logger = logging.getLogger(__name__)
 
 
