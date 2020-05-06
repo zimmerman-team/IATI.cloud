@@ -148,8 +148,8 @@ class TransactionIndexing(BaseIndexing):
 
         if get_child_attr(transaction, 'description'):
             self.indexing['description_lang'], \
-            self.indexing['description_narrative'] \
-                = get_narrative_lang_list(transaction.description)
+            self.indexing['description_narrative'] = \
+                get_narrative_lang_list(transaction.description)
 
         self.add_field('transaction_ref', transaction.ref)
         self.add_field(
