@@ -5,15 +5,14 @@ from solr.activity.references import (
     RecipientCountryReference, RecipientRegionReference
 )
 from solr.activity.serializers import (
-    ActivityRecipientRegionSerializer,
-    ActivitySectorSerializer, RecipientCountrySerializer
+    ActivityRecipientRegionSerializer, ActivitySectorSerializer,
+    RecipientCountrySerializer
 )
 from solr.indexing import BaseIndexing
 from solr.utils import (
-    add_reporting_org, bool_string, date_string,
-    decimal_string, get_child_attr, get_narrative_lang_list
+    add_reporting_org, bool_string, date_string, decimal_string,
+    get_child_attr, get_narrative_lang_list
 )
-
 
 
 class TransactionIndexing(BaseIndexing):
@@ -149,8 +148,8 @@ class TransactionIndexing(BaseIndexing):
 
         if get_child_attr(transaction, 'description'):
             self.indexing['description_lang'], \
-            self.indexing['description_narrative'] = \
-                get_narrative_lang_list(transaction.description)
+            self.indexing['description_narrative'] \
+                = get_narrative_lang_list(transaction.description)
 
         self.add_field('transaction_ref', transaction.ref)
         self.add_field(
