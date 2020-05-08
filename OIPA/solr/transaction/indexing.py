@@ -33,7 +33,8 @@ class TransactionIndexing(BaseIndexing):
         self.add_field('activity_date_iso_date', [])
 
         add_reporting_org(self, transaction.activity)
-        recipient_country_all = transaction.activity.activityrecipientcountry_set.all()
+        recipient_country_all = transaction.activity.\
+            activityrecipientcountry_set.all()
         if recipient_country_all:
             self.add_field('activity_recipient_country_code', [])
             self.add_field('activity_recipient_country_name', [])
@@ -48,7 +49,8 @@ class TransactionIndexing(BaseIndexing):
                     recipient_country.country.name
                 )
 
-        recipient_region_all = transaction.activity.activityrecipientregion_set.all()
+        recipient_region_all = transaction.activity.\
+            activityrecipientregion_set.all()
         if recipient_region_all:
             self.add_field('activity_recipient_region_code', [])
             self.add_field('activity_recipient_region_name', [])
