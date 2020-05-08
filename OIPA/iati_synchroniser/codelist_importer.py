@@ -14,6 +14,9 @@ from iati_codelists.models import (
     OrganisationIdentifier, OrganisationRegistrationAgency, Sector,
     SectorCategory
 )
+from iati_synchroniser.aid_type_codes_for_vocab3_importer import (
+    AidTypeVocab3Importer
+)
 from iati_synchroniser.dac_sector_importer import DacSectorImporter
 from iati_synchroniser.humanitrian_global_clusters_import import (
     GlobalClustersSectorImporter
@@ -370,6 +373,10 @@ class CodeListImporter():
 
         humanitarian_global_clusters = GlobalClustersSectorImporter()
         humanitarian_global_clusters.update()
+
+        # aid-type codes for vocab-3
+        aid_type_codes_importer = AidTypeVocab3Importer()
+        aid_type_codes_importer.update()
 
         # Added M49 Regions if available
         M49RegionsImporter()

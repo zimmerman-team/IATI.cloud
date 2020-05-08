@@ -136,8 +136,6 @@
     <xsl>related_activity_type,</xsl>
     <xsl>legacy_data_name,</xsl>
     <xsl>legacy_data_value,</xsl>
-    <xsl>legacy_data_value,</xsl>
-    <xsl>legacy_data_iati_equivalent,</xsl>
     <xsl>legacy_data_iati_equivalent,</xsl>
     <xsl>conditions_attached,</xsl>
     <xsl>conditions_condition_type,</xsl>
@@ -229,6 +227,7 @@
     <xsl>fss_extraction_date,</xsl>
     <xsl>fss_priority,</xsl>
     <xsl>fss_phaseout_year,</xsl>
+      <xsl>fss_forecast_year,</xsl>
     <xsl>fss_forecast_value_date,</xsl>
     <xsl>fss_forecast_currency,</xsl>
     <xsl>fss_forecast_value,</xsl>
@@ -258,7 +257,7 @@
     <xsl:value-of select="$deliminquote"/>
     <xsl:value-of select="arr[@name='title_narrative']/str"/>
     <xsl:value-of select="$deliminquote"/>
-    <xsl:value-of select="arr[@name='description_narrative']/str"/>
+    <xsl:apply-templates select="arr[@name='description_narrative']/str"/>
     <xsl:value-of select="$deliminquote"/>
     <xsl:apply-templates select="arr[@name='participating_org_ref']/str"/>
     <xsl:value-of select="$deliminquote"/>
@@ -451,6 +450,8 @@
     <xsl:apply-templates select="arr[@name='transaction_provider_org_narrative']/str"/>
     <xsl:value-of select="$deliminquote"/>
     <xsl:apply-templates select="arr[@name='transaction_receiver_org_receiver_activity_id']/str"/>
+    <xsl:value-of select="$deliminquote"/>
+    <xsl:apply-templates select="arr[@name='transaction_receiver_org_type']/str"/>
     <xsl:value-of select="$deliminquote"/>
     <xsl:apply-templates select="arr[@name='transaction_receiver_org_ref']/str"/>
     <xsl:value-of select="$deliminquote"/>
@@ -680,6 +681,8 @@
     <xsl:value-of select="str[@name='fss_priority']"/>
     <xsl:value-of select="$delim"/>
     <xsl:value-of select="$quote"/>
+    <xsl:apply-templates select="arr[@name='fss_phaseout_year']/int"/>
+    <xsl:value-of select="$deliminquote"/>
     <xsl:apply-templates select="arr[@name='fss_forecast_year']/int"/>
     <xsl:value-of select="$deliminquote"/>
     <xsl:apply-templates select="arr[@name='fss_forecast_value_date']/date"/>

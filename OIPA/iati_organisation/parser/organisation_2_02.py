@@ -697,13 +697,14 @@ class Parse(IatiParser):
 
         tag:recipient-region"""
         model = self.get_model('RecipientRegionBudget')
-        model.region = self.get_or_none(
-            Region, code=element.attrib.get('code'))
 
         # TODO: make defaults more transparant, here: 'OECD-DAC default'
         vocabulary = self.get_or_none(
             RegionVocabulary, code=element.attrib.get('vocabulary', '1'))
         vocabulary_uri = element.attrib.get('vocabulary-uri')
+
+        model.region = Region.objects.filter(code=element.attrib.get(
+            'code'), region_vocabulary=vocabulary).first()
 
         if not vocabulary:
             raise RequiredFieldError(

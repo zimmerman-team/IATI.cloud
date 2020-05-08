@@ -131,7 +131,10 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Region',
             fields=[
-                ('code', models.CharField(max_length=100, primary_key=True, serialize=False)),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False,
+                                        verbose_name='ID')),
+                ('code', models.CharField(max_length=100, serialize=False)),
                 ('name', models.CharField(max_length=80)),
                 ('center_longlat', django.contrib.gis.db.models.fields.PointField(
                     blank=True, null=True, srid=4326)),

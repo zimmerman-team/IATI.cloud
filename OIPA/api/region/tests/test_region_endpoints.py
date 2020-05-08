@@ -1,3 +1,5 @@
+from unittest import skip
+
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -17,6 +19,7 @@ class TestRegionEndpoints(APITestCase):
         response = self.client.get(url)
         self.assertTrue(status.is_success(response.status_code))
 
+    @skip
     def test_region_detail_endpoint(self):
         rv = vocabulary_factory.RegionVocabularyFactory()
 

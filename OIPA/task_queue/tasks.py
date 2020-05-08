@@ -738,13 +738,13 @@ def parse_all_existing_sources_task(force=False, check_validation=True):
                                           check_validation=check_validation)
 
 
-@shared_task
-def continuous_parse_all_existing_sources_task(force=False,
+@shared_task(bind=True)
+def continuous_parse_all_existing_sources_task(self, force=False,
                                                check_validation=True):
     i = celery.task.control.inspect()
 
     is_empty_workers = True
-    while True:
+    try:
         active_workers_dict = i.active()
         for key in active_workers_dict:
             list_in_dict = active_workers_dict[key]
@@ -760,9 +760,9 @@ def continuous_parse_all_existing_sources_task(force=False,
         if is_empty_workers:
             parse_all_existing_sources_task.delay(force=force,
                                                   check_validation=check_validation)  # NOQA: E501
-            print("starting another round.")
 
-        time.sleep(900)
+    except ConnectionResetError as exc:
+        raise self.retry(exc=exc)  # will retry in 3 minutes 3 times default.
 
 
 @shared_task
