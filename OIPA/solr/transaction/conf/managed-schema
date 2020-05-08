@@ -128,9 +128,21 @@
     <field name="title_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="title_narrative" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
 
-    <field name="description_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-    <field name="description_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-    <field name="description_narrative" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="activity_description_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="activity_description_narrative" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
+
+    <field name="activity_recipient_country_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="activity_recipient_country_name" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+
+    <field name="activity_recipient_region_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="activity_recipient_region_name" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+
+    <field name="activity_sector_vocabulary" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="activity_sector_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+
+    <field name="transaction_description_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="transaction_description_narrative" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
+
 
     <field name="activity_date_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="activity_date_iso_date" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
@@ -149,7 +161,7 @@
     <field name="transaction_value_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="transaction_value_date" type="pdate" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="transaction_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-    <field name="transaction_description_narrative" type="iati_narrative" multiValued="false" indexed="true" required="false" stored="true"/>
+
 
     <field name="transaction_provider_org_ref" type="non_case_sensitive" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="transaction_provider_org_provider_activity_id" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
@@ -189,12 +201,7 @@
     <field name="transaction_tied_status_code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
 
     <field name="humanitarian" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-    <field name="sector" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
-    <field name="sector_vocabulary" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-    <field name="sector_vocabulary_uri" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-    <field name="sector_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-    <field name="sector_percentage" type="pdoubles" multiValued="true" indexed="true" required="false" stored="true"/>
-    <field name="sector_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
+
     <!--Transaction Core - End-->
 
     <!-- This can be enabled, in case the client does not know what fields may be searched. It isn't enabled by default
