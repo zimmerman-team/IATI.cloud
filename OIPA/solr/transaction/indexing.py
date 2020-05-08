@@ -185,7 +185,7 @@ class TransactionIndexing(BaseIndexing):
             )
             self.add_value_list(
                 'transaction_sector_code',
-                sector.sector_id
+                sector.sector.code
             )
 
         self.add_field(
@@ -247,7 +247,8 @@ class TransactionIndexing(BaseIndexing):
                 'activity_sector_vocabulary',
                 activity_sector.vocabulary_id
             )
-            self.add_value_list('activity_sector_code', activity_sector.sector_id)
+            self.add_value_list('activity_sector_code',
+                                activity_sector.sector.code)
 
     def to_representation(self, transaction):
         self.record = transaction
