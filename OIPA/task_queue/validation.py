@@ -82,12 +82,12 @@ class DatasetValidationTask(celery.Task):
                     return True
 
         except requests.exceptions.SSLError as e:
-            logger.info('%s (%s)' % (e, type(e)) + " in get_the_file: " + self._dataset.source_url)
+            logger.info('%s (%s)' % (e, type(e)) + self._dataset.source_url)
             try:
-                get_respons = requests.get(self._dataset.source_url, verify = False)
-                if get_respons.status_code == 200:
+                resp = requests.get(self._dataset.source_url, verify=False)
+                if resp.status_code == 200:
                     md5 = hashlib.md5()
-                    md5.update(get_respons.content)
+                    md5.update(resp.content)
                     self._validation_md5 = md5.hexdigest()
                     self._file_id = self._validation_md5 + '.xml'
                     self._get(ad_hoc=False)
@@ -139,16 +139,17 @@ class DatasetValidationTask(celery.Task):
                     self._validation_id = post_response.json().get('id', None)
 
         except requests.exceptions.SSLError as e:
-            logger.info('%s (%s)' % (e, type(e)) + " in get_the_file: " + self._dataset.source_url)
+            logger.info('%s (%s)' % (e, type(e)) + self._dataset.source_url)
             try:
-                get_response = requests.get(self._dataset.source_url, verify=False)
-                if get_response.status_code == 200:
-                    file = io.BytesIO(get_response.content)
+                resp = requests.get(self._dataset.source_url, verify=False)
+                if resp.status_code == 200:
+                    file = io.BytesIO(resp.content)
                     file.name = 'dataset.xml'
                     files = {'file': file}
                     post_file_url = '{}{}'.format(
                         self._root_validation_url,
-                        settings.VALIDATION.get('api').get('urls').get('post_file')
+                        settings.VALIDATION.get('api').get('urls')
+                            .get('post_file')
                     )
                     post_response = requests.post(
                         post_file_url,
@@ -156,9 +157,10 @@ class DatasetValidationTask(celery.Task):
                     )
                     if post_response.status_code == 200:
                         hashlib_md5 = hashlib.md5()
-                        hashlib_md5.update(get_response.content)
+                        hashlib_md5.update(resp.content)
                         self._validation_md5 = hashlib_md5.hexdigest()
-                        self._validation_id = post_response.json().get('id', None)
+                        self._validation_id = post_response.json()\
+                            .get('id', None)
 
             except Exception as e:
                 logger.error(e)

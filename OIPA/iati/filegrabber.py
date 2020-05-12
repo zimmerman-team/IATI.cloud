@@ -1,10 +1,10 @@
 import logging
+import mechanicalsoup
 import urllib
 from http import cookiejar
 from http.client import HTTPException
 import requests
 
-import mechanicalsoup
 
 logger = logging.getLogger(__name__)
 
