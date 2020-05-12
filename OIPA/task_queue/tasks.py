@@ -772,8 +772,14 @@ def reparse_failed_tasks():
     failed_tasks = TaskResult.objects.filter(status='FAILURE')
     for failed_task in failed_tasks:
         result = json.loads(failed_task.result)
-        print(result['exc_type'])
-
+        if result['exc_type'] == 'SolrError':
+            task_kwargs = failed_task.task_kwargs.replace("'", '"')
+            task_kwargs = eval(task_kwargs)
+            dataset_id = task_kwargs['dataset_id']
+            parse_source_by_id_task.delay(dataset_id=dataset_id, force=True,
+                                          check_validation=True)
+    all_records = TaskResult.objects.all()
+    all_records.delete()
 
 
 @shared_task
