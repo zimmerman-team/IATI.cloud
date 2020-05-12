@@ -3,6 +3,7 @@ import hashlib
 import logging
 import os
 import time
+import json
 
 import celery
 import django_rq
@@ -763,6 +764,16 @@ def continuous_parse_all_existing_sources_task(self, force=False,
 
     except ConnectionResetError as exc:
         raise self.retry(exc=exc)  # will retry in 3 minutes 3 times default.
+
+
+@shared_task
+def reparse_failed_tasks():
+    from django_celery_results.models import TaskResult
+    failed_tasks = TaskResult.objects.filter(status='FAILURE')
+    for failed_task in failed_tasks:
+        result = json.loads(failed_task.result)
+        print(result['exc_type'])
+
 
 
 @shared_task

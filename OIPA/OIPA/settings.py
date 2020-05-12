@@ -189,7 +189,8 @@ INSTALLED_APPS = [
     'django_filters',
     'markdownify',
     'solr',
-    'django_celery_beat'
+    'django_celery_beat',
+    'django_celery_results'
 ]
 
 
