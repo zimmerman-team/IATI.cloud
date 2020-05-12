@@ -2,6 +2,7 @@ import logging
 import urllib
 from http import cookiejar
 from http.client import HTTPException
+import requests
 
 import mechanicalsoup
 
@@ -34,6 +35,15 @@ class FileGrabber():
             self.browser.close()
             return response
 
+        except requests.exceptions.SSLError as e:
+            logger.info('%s (%s)' % (e, type(e)) + " in get_the_file: " + url)
+            try:
+                resp = self.browser.get(url, timeout=10, verify=False)
+                self.browser.close()
+                return resp
+            except Exception as e:
+                logger.info('Error (url=' + url + ') = ' + str(e.code))
+                return None
         except urllib.error.HTTPError as e:
             logger.info('HTTPError (url=' + url + ') = ' + str(e.code))
             if try_number < 2:

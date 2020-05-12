@@ -16,6 +16,8 @@ logger = logging.getLogger(__name__)
 
 
 class DatasetValidationTask(celery.Task):
+    from celery.contrib import rdb
+    rdb.set_trace()
     """
     Dataset Validation Task
     Use:
@@ -80,6 +82,24 @@ class DatasetValidationTask(celery.Task):
                 self._get(ad_hoc=False)
                 if self._json_result:
                     return True
+
+        except requests.exceptions.SSLError as e:
+            logger.info('%s (%s)' % (e, type(e)) + " in get_the_file: " + self._dataset.source_url)
+            try:
+                get_respons = requests.get(self._dataset.source_url, verify = False)
+                if get_respons.status_code == 200:
+                    md5 = hashlib.md5()
+                    md5.update(get_respons.content)
+                    self._validation_md5 = md5.hexdigest()
+                    self._file_id = self._validation_md5 + '.xml'
+                    self._get(ad_hoc=False)
+                    if self._json_result:
+                        return True
+
+            except Exception as e:
+                logger.error(e)
+                return False
+
         except RequestException as e:
             logger.error(e)
             return False
@@ -119,6 +139,32 @@ class DatasetValidationTask(celery.Task):
                     self._validation_md5 = hashlib_md5.hexdigest()
                     # Update validation id for the next process
                     self._validation_id = post_response.json().get('id', None)
+
+        except requests.exceptions.SSLError as e:
+            logger.info('%s (%s)' % (e, type(e)) + " in get_the_file: " + self._dataset.source_url)
+            try:
+                get_response = requests.get(self._dataset.source_url, verify=False)
+                if get_response.status_code == 200:
+                    file = io.BytesIO(get_response.content)
+                    file.name = 'dataset.xml'
+                    files = {'file': file}
+                    post_file_url = '{}{}'.format(
+                        self._root_validation_url,
+                        settings.VALIDATION.get('api').get('urls').get('post_file')
+                    )
+                    post_response = requests.post(
+                        post_file_url,
+                        files=files
+                    )
+                    if post_response.status_code == 200:
+                        hashlib_md5 = hashlib.md5()
+                        hashlib_md5.update(get_response.content)
+                        self._validation_md5 = hashlib_md5.hexdigest()
+                        self._validation_id = post_response.json().get('id', None)
+
+            except Exception as e:
+                logger.error(e)
+
         except RequestException as e:
             logger.error(e)
 
@@ -167,6 +213,7 @@ class DatasetValidationTask(celery.Task):
             loop += 1
             # Get response process
             response = requests.get(process_validation_url)
+
             # Sleep in the seconds
             time.sleep(sleep_second_process)
             # If response status is 200, then continue
@@ -181,7 +228,13 @@ class DatasetValidationTask(celery.Task):
             else:
                 # Looping is done and cancel the process validation of
                 # the current dataset
-                loop = max_loop_process
+                response = requests.get(process_validation_url, verify=False)
+                if response.status_code == 200:
+                    if response.json().get('json-updated', None):
+                        loop = max_loop_process
+                        self._file_id = response.json().get('fileid')
+                else:
+                    loop = max_loop_process
 
     def _get(self, ad_hoc=False):
         """Get the JSON result of the validation to get a feedback ruleset"""
@@ -208,6 +261,10 @@ class DatasetValidationTask(celery.Task):
         # to the variable json result
         if response.status_code == 200:
             self._json_result = response.json()
+        else:
+            response = requests.get(get_json_file_url, verify=False)
+            if response.status_code == 200:
+                self._json_result = response.json()
 
     def _updated(self):
         """
