@@ -16,8 +16,6 @@ logger = logging.getLogger(__name__)
 
 
 class DatasetValidationTask(celery.Task):
-    from celery.contrib import rdb
-    rdb.set_trace()
     """
     Dataset Validation Task
     Use:
