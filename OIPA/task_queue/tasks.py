@@ -1,5 +1,6 @@
 import datetime
 import hashlib
+import json
 import logging
 import os
 import time
@@ -763,6 +764,22 @@ def continuous_parse_all_existing_sources_task(self, force=False,
 
     except ConnectionResetError as exc:
         raise self.retry(exc=exc)  # will retry in 3 minutes 3 times default.
+
+
+@shared_task
+def reparse_failed_tasks():
+    from django_celery_results.models import TaskResult
+    failed_tasks = TaskResult.objects.filter(status='FAILURE')
+    for failed_task in failed_tasks:
+        result = json.loads(failed_task.result)
+        if result['exc_type'] == 'SolrError':
+            task_kwargs = failed_task.task_kwargs.replace("'", '"')
+            task_kwargs = eval(task_kwargs)
+            dataset_id = task_kwargs['dataset_id']
+            parse_source_by_id_task.delay(dataset_id=dataset_id, force=True,
+                                          check_validation=True)
+    all_records = TaskResult.objects.all()
+    all_records.delete()
 
 
 @shared_task
