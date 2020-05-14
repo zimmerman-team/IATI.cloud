@@ -767,33 +767,30 @@ class Parse(IatiParser):
 
         vocabulary_uri = recipient_region[0].attrib.get("vocabulary-uri")
 
-        region = recipient_region[0].attrib.get("code")
-        if region and recipient_region_vocabulary == \
-                RegionVocabulary.objects.get(code=1):
-            region = self.get_or_none(Region, code=region)
-            if not region:
-                raise FieldValidationError(
-                    "RecipientRegionBudget",
-                    "region",
-                    "not found on the accompanying codelist.",
-                    None,
-                    None,
-                )
-        elif recipient_region_vocabulary.code == '99':
+        code = recipient_region[0].attrib.get("code")
+        recipient_region = Region.objects.filter(code=code,
+                                       region_vocabulary=recipient_region_vocabulary).first()  # NOQA: E501
+
+        if not recipient_region and recipient_region_vocabulary.code == '99':
             # 99 vocabulary provide by reporting organisation
             # if code region is not available the make a new one
-            code = region
-            region = self.get_or_none(Region, code=code)
-            if not region:
-                region = Region()
-                region.code = code
-                region.region_vocabulary = recipient_region_vocabulary
-                region.name = '{code}'.format(
-                    code=code
-                )
-                region.save()
-        else:
-            region = None
+
+            region = Region()
+            region.code = code
+            region.region_vocabulary = recipient_region_vocabulary
+            region.name = '{code}'.format(
+                code=code
+            )
+            region.save()
+
+        elif not recipient_region:
+            raise FieldValidationError(
+                "RecipientRegionBudget",
+                "region",
+                "not found on the accompanying codelist.",
+                None,
+                None,
+            )
 
         period_start = element.xpath("period-start")
         if len(period_start) is not 1:
@@ -909,7 +906,7 @@ class Parse(IatiParser):
         recipient_region_budget = RecipientRegionBudget()
         recipient_region_budget.organisation = organisation
         recipient_region_budget.status = status
-        recipient_region_budget.region = region
+        recipient_region_budget.region = recipient_region
         recipient_region_budget.vocabulary = recipient_region_vocabulary
         recipient_region_budget.vocabulary_uri = vocabulary_uri
         recipient_region_budget.period_start = period_start_date

@@ -1,19 +1,20 @@
 import datetime
 import hashlib
-import io
+import json
 import logging
 import os
 import time
 
+import celery
 import django_rq
 import fulltext
+import pika
 import requests
 from celery import shared_task
 from django.conf import settings
 from django.core.cache import caches
 from django_rq import job
 from redis import Redis
-from requests.exceptions import RequestException
 from rest_framework_extensions.settings import extensions_api_settings
 from rq import Worker
 from rq.job import Job
@@ -472,8 +473,7 @@ def download_file(d):
                 '''prepare the updated file storage with the new name \
                         <update.timestamp.id.extention'''
                 ts = time.time()
-                document_path_update = save_path + \
-                    "update." + str(ts) + "." + save_name
+                document_path_update = save_path + "update." + str(ts) + "." + save_name  # NOQA: E501
                 downloader = DownloadFile(long_url, document_path_update)
                 try:
                     is_downloaded = downloader.download()
@@ -521,7 +521,7 @@ def synchronize_solr_indexing():
     )
     budget_hits = solr_budget.search(q='*:*', fl='id').hits
     budget_docs = solr_budget.search(
-        q='*:*',  fl='id', rows=budget_hits
+        q='*:*', fl='id', rows=budget_hits
     ).docs
     list_budget_doc_id = [
         int(budget_doc['id']) for budget_doc in budget_docs
@@ -572,7 +572,7 @@ def synchronize_solr_indexing():
         delete_multiple_rows_activiy_in_solr(ids)
 
     for activity_id in (
-        list(set(list_activity_id) - set(list_activity_doc_id))
+            list(set(list_activity_id) - set(list_activity_doc_id))
     ):
         queue.enqueue(add_activity_to_solr, args=(activity_id,))
 
@@ -594,7 +594,7 @@ def synchronize_solr_indexing():
         delete_multiple_rows_dataset_note_in_solr(ids)
 
     for dataset_note_id in (
-        list(set(list_dataset_note_id) - set(list_dataset_note_doc_id))
+            list(set(list_dataset_note_id) - set(list_dataset_note_doc_id))
     ):
         queue.enqueue(add_dataset_note_to_solr, args=(dataset_note_id,))
 
@@ -689,91 +689,140 @@ def get_new_sources_from_iati_api_task():
 
 
 @shared_task
-def parse_source_by_id_task(dataset_id, force=False):
-    try:
-        dataset = Dataset.objects.get(pk=dataset_id)
-        dataset.process(force_reparse=force)
-    except Dataset.DoesNotExist:
-        pass
+def parse_source_by_id_task(dataset_id, force=False, check_validation=True):
+    if check_validation:
+        try:
+            dataset = Dataset.objects.filter(pk=dataset_id,
+                                             validation_status__critical__lte=0)  # NOQA: E501
+            dataset = dataset.first()
+            dataset.process(force_reparse=force)
+        except AttributeError:
+            print('no dataset found')
+            pass
+    else:
+        try:
+            dataset = Dataset.objects.get(pk=dataset_id)
+            dataset.process(force_reparse=force)
+        except Dataset.DoesNotExist:
+            pass
 
 
 @shared_task
 def parse_source_by_organisation_identifier(organisation_identifier,
-                                            force=False):
+                                            force=False,
+                                            check_validation=True):
     try:
         for dataset in Dataset.objects.filter(
                 publisher_id__publisher_iati_id=organisation_identifier):
-            parse_source_by_id_task.delay(dataset_id=dataset.id, force=force)
+            parse_source_by_id_task.delay(dataset_id=dataset.id,
+                                          force=force,
+                                          check_validation=check_validation)
     except Dataset.DoesNotExist:
         pass
 
 
+# to bypass checking validation, falsify check_validation argument.
 @shared_task
-def parse_all_existing_sources_task(force=False):
+def parse_all_existing_sources_task(force=False, check_validation=True):
     tasks = Tasks(
         parent_task='task_queue.tasks.parse_all_existing_sources_task',
         children_tasks=['task_queue.tasks.parse_source_by_id_task']
     )
     if tasks.is_parent():
         for dataset in Dataset.objects.all().filter(filetype=2):
-            parse_source_by_id_task.delay(dataset_id=dataset.id, force=force)
+            parse_source_by_id_task.delay(dataset_id=dataset.id,
+                                          force=force,
+                                          check_validation=check_validation)
         for dataset in Dataset.objects.all().filter(filetype=1):
-            parse_source_by_id_task.delay(dataset_id=dataset.id, force=force)
-
-# We want to drop validation for the time being.
-# for dataset in Dataset.objects.all().filter(filetype=2).filter(
-#         validation_status='success'):
-#     if check_sha(dataset.source_url) == dataset.validation_sha512:
-#         parse_source_by_id_task.delay(dataset_id=dataset.id,
-#                                       force=force)
-#
-# for dataset in Dataset.objects.all().filter(filetype=1).filter(
-#         validation_status='success'):
-#     if check_sha(dataset.source_url) == dataset.validation_sha512:
-#         parse_source_by_id_task.delay(dataset_id=dataset.id,
-#                                       force=force)
+            parse_source_by_id_task.delay(dataset_id=dataset.id,
+                                          force=force,
+                                          check_validation=check_validation)
 
 
-def check_sha(source_url):  # needed only for validation
+@shared_task(bind=True)
+def continuous_parse_all_existing_sources_task(self, force=False,
+                                               check_validation=True):
+    i = celery.task.control.inspect()
 
-    root_validation_url = '{host}{root}{version}'.format(
-        host=settings.VALIDATION.get('host'),
-        root=settings.VALIDATION.get('api').get('root'),
-        version=settings.VALIDATION.get('api').get('version')
-    )
+    is_empty_workers = True
     try:
-        # Get file from the url of the dataset
-        get_response = requests.get(source_url)
-        # Continue if status is OK
-        if get_response.status_code == 200:
-            # Assign file from the content response
-            file = io.BytesIO(get_response.content)
-            # Add the default filename to the file
-            file.name = 'dataset.xml'
-            # Make dict files
-            files = {'file': file}
-            # POST request with the parameters for upload
-            post_file_url = '{}{}'.format(
-                root_validation_url,
-                settings.VALIDATION.get('api').get('urls').get('post_file')
-            )
-            # Upload the file
-            post_response = requests.post(
-                post_file_url,
-                files=files
-            )
-            # If response if OK then assigned the validation id
-            if post_response.status_code == 200:
-                # Get the Sha512 of the current XML and save to dataset.
-                # This will use to compare the Sha512 with the source XML.
-                # So when the XML which has valid status ("success")
-                # will be parsing, we should compare the Sha512 of the XML
-                # and with this Sha512.
-                hashlib_sha512 = hashlib.sha512()
-                hashlib_sha512.update(get_response.content)
-                validation_sha512 = hashlib_sha512.hexdigest()
-                return validation_sha512
-            return None
-        return None
-    except RequestException as e:
-        logger.error(e)
+        active_workers_dict = i.active()
+        for key in active_workers_dict:
+            list_in_dict = active_workers_dict[key]
+            list_without_this_task = [worker for worker in list_in_dict if
+                                      worker[
+                                          'name'] !=
+                                      'task_queue.tasks.continuous_parse_all_existing_sources_task']  # NOQA: E501
+            if not list_without_this_task:
+                is_empty_workers = True
+            else:
+                is_empty_workers = False
+
+        if is_empty_workers:
+            parse_all_existing_sources_task.delay(force=force,
+                                                  check_validation=check_validation)  # NOQA: E501
+
+    except ConnectionResetError as exc:
+        raise self.retry(exc=exc)  # will retry in 3 minutes 3 times default.
+
+
+@shared_task
+def reparse_failed_tasks():
+    from django_celery_results.models import TaskResult
+    failed_tasks = TaskResult.objects.filter(status='FAILURE')
+    for failed_task in failed_tasks:
+        result = json.loads(failed_task.result)
+        if result['exc_type'] == 'SolrError':
+            task_kwargs = failed_task.task_kwargs.replace("'", '"')
+            task_kwargs = eval(task_kwargs)
+            dataset_id = task_kwargs['dataset_id']
+            parse_source_by_id_task.delay(dataset_id=dataset_id, force=True,
+                                          check_validation=True)
+    all_records = TaskResult.objects.all()
+    all_records.delete()
+
+
+@shared_task
+def revoke_all_tasks():
+    i = celery.task.control.inspect()
+    connection = pika.BlockingConnection(
+        pika.ConnectionParameters('127.0.0.1'))
+    channel = connection.channel()
+    is_empty_active_workers = False
+    is_empty_reserved_workers = False
+    is_empty_worker = False
+    while is_empty_worker is False:
+        time.sleep(1)
+        channel.queue_purge(queue='celery')
+        active_workers_dict = i.active()
+        reserved_workers_dict = i.reserved()
+        for key in active_workers_dict:
+            list_in_dict = active_workers_dict[key]
+            list_without_this_task = [worker for worker in list_in_dict if
+                                      worker[
+                                          'name'] !=
+                                      'task_queue.tasks.revoke_all_tasks']
+
+            if not list_without_this_task:
+                is_empty_active_workers = True
+            else:
+                is_empty_active_workers = False
+
+            for worker in list_without_this_task:
+                celery.task.control.revoke(worker.get('id', ''),
+                                           terminate=True)
+
+        for key in reserved_workers_dict:  # revoke_all_tasks cannot be in reserved  # NOQA: E501
+            list_in_dict = reserved_workers_dict[key]
+
+            if not list_in_dict:
+                is_empty_reserved_workers = True
+            else:
+                is_empty_reserved_workers = False
+
+            for worker in list_in_dict:
+                celery.task.control.revoke(worker.get('id', ''),
+                                           terminate=True)
+
+        if is_empty_active_workers and is_empty_reserved_workers:
+            is_empty_worker = True

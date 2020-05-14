@@ -111,7 +111,7 @@ class DatasetFilter(FilterSet):
 
     class Meta:
         model = Dataset
-        fields = '__all__'
+        fields = []
 
 
 class NoteFilter(FilterSet):

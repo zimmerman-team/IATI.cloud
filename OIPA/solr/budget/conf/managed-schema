@@ -130,6 +130,9 @@
     <field name="reporting_org_secondary_reporter" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="reporting_org_narrative" type="text_general" indexed="true" required="false" stored="true"/>
 
+    <field name="recipient_country_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="recipient_country_name" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+
     <field name="budget_type" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="budget_status" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
 
