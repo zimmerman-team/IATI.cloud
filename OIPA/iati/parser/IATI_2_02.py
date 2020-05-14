@@ -131,60 +131,61 @@ class Parse(IatiParser):
                 "text",
                 "required element empty")
 
-        old_activity = self.get_or_none(
-            models.Activity, iati_identifier=activity_id)
+        # old_activity = self.get_or_none(
+        #     models.Activity, iati_identifier=activity_id)
+        #
+        # if old_activity and (old_activity.dataset.name != self.dataset.name):
+        #     self.append_error(
+        #         'FieldValidationError',
+        #         "iati-identifier",
+        #         "ref",
+        #         "An activity with the same iati-identifier was found in \
+        #         another dataset",
+        #         element.sourceline,
+        #         "found in dataset: '{}'".format(old_activity.dataset.name),
+        #         activity_id)
+        #
+        # if (old_activity
+        #         and not self.force_reparse and not old_activity.modified):
+        #     # update last_updated_model to prevent the activity from being
+        #     # deleted because its not updated (and thereby assumed not found
+        #     # in the dataset)
+        #     old_activity.save()
+        #
+        #     if last_updated_datetime\
+        #         and last_updated_datetime\
+        #             == old_activity.last_updated_datetime:
+        #         raise NoUpdateRequired('activity', 'already up to date')
+        #
+        #     if last_updated_datetime and (last_updated_datetime <
+        #                                   old_activity.last_updated_datetime):
+        #         raise FieldValidationError(
+        #             "iati-activity",
+        #             "last-updated-datetime",
+        #             "last-updated-time is less than existing activity",
+        #             None,
+        #             element.sourceline,
+        #             activity_id,
+        #             activity_id)
+        #
+        #     if not last_updated_datetime and old_activity\
+        #             .last_updated_datetime:
+        #         raise FieldValidationError(
+        #             "iati-activity",
+        #             "last-updated-datetime",
+        #             "last-updated-time is not present, but is present on \
+        #                     existing activity",
+        #             None,
+        #             element.sourceline,
+        #             activity_id,
+        #             activity_id)
+        #
+        #     # TODO: test activity is deleted along with related models
+        #     # update on TODO above; only iati_title, TransactionReceiver,
+        #     # TransactionProvider are not deleted atm - 2015-10-01
+        #     # TODO: do this after activity is parsed along with other saves?
 
-        if old_activity and (old_activity.dataset.name != self.dataset.name):
-            self.append_error(
-                'FieldValidationError',
-                "iati-identifier",
-                "ref",
-                "An activity with the same iati-identifier was found in \
-                another dataset",
-                element.sourceline,
-                "found in dataset: '{}'".format(old_activity.dataset.name),
-                activity_id)
-
-        if (old_activity
-                and not self.force_reparse and not old_activity.modified):
-            # update last_updated_model to prevent the activity from being
-            # deleted because its not updated (and thereby assumed not found
-            # in the dataset)
-            old_activity.save()
-
-            if last_updated_datetime\
-                and last_updated_datetime\
-                    == old_activity.last_updated_datetime:
-                raise NoUpdateRequired('activity', 'already up to date')
-
-            if last_updated_datetime and (last_updated_datetime <
-                                          old_activity.last_updated_datetime):
-                raise FieldValidationError(
-                    "iati-activity",
-                    "last-updated-datetime",
-                    "last-updated-time is less than existing activity",
-                    None,
-                    element.sourceline,
-                    activity_id,
-                    activity_id)
-
-            if not last_updated_datetime and old_activity\
-                    .last_updated_datetime:
-                raise FieldValidationError(
-                    "iati-activity",
-                    "last-updated-datetime",
-                    "last-updated-time is not present, but is present on \
-                            existing activity",
-                    None,
-                    element.sourceline,
-                    activity_id,
-                    activity_id)
-
-            # TODO: test activity is deleted along with related models
-            # update on TODO above; only iati_title, TransactionReceiver,
-            # TransactionProvider are not deleted atm - 2015-10-01
-            # TODO: do this after activity is parsed along with other saves?
-
+        old_activity = models.Activity.objects.get(iati_identifier=activity_id)
         if old_activity:
             old_activity.delete()
 
