@@ -9,7 +9,7 @@ celery==4.4.0
 
 pika==1.1.0
 
-Django==2.0.13
+Django==2.2.10
 
 django-grappelli==2.11.1
 
