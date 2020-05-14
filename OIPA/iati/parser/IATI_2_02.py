@@ -5,6 +5,7 @@ from decimal import Decimal, InvalidOperation
 from django.conf import settings
 from django.contrib.gis.geos import GEOSGeometry, Point
 from django.template.defaultfilters import slugify
+from django.core.exceptions import ObjectDoesNotExist
 
 from currency_convert import convert
 from geodata.models import Country, Region
@@ -185,7 +186,12 @@ class Parse(IatiParser):
         #     # TransactionProvider are not deleted atm - 2015-10-01
         #     # TODO: do this after activity is parsed along with other saves?
 
-        old_activity = models.Activity.objects.get(iati_identifier=activity_id)
+        try:
+            old_activity = models.Activity.objects.get(
+                iati_identifier=activity_id)
+        except ObjectDoesNotExist:
+            old_activity = None
+
         if old_activity:
             old_activity.delete()
 
