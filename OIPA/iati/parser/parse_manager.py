@@ -17,7 +17,6 @@ from iati_organisation.parser.organisation_1_05 import Parse as Org_1_05_Parser
 from iati_organisation.parser.organisation_2_01 import Parse as Org_2_01_Parser
 from iati_organisation.parser.organisation_2_02 import Parse as Org_2_02_Parser
 from iati_organisation.parser.organisation_2_03 import Parse as Org_2_03_Parser
-import time
 
 
 class ParserDisabledError(Exception):
@@ -40,7 +39,6 @@ class ParseManager():
         self.force_reparse = force_reparse
         self.hash_changed = True
         self.valid_dataset = True
-        self.start = None
 
         if root is not None:
             self.root = root
@@ -49,8 +47,6 @@ class ParseManager():
 
         file_grabber = FileGrabber()
         response = file_grabber.get_the_file(self.url)
-        self.start = time.process_time()
-        print('start= %s' % self.start)
         from iati_synchroniser.models import DatasetNote
         if not response or response.status_code != 200:
             self.valid_dataset = False
