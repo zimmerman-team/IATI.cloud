@@ -3,6 +3,7 @@ import logging
 import re
 from collections import OrderedDict
 from decimal import Decimal, InvalidOperation
+from solr.activity.tasks import ActivityTaskIndexing
 
 import dateutil.parser
 from django.conf import settings
@@ -198,8 +199,19 @@ class IatiParser(object):
             # only save if the activity is updated
 
             if parsed:
-                self.save_all_models()
-                self.post_save_models()
+                try:
+                    self.save_all_models()
+                    self.post_save_models()
+                    
+                except Exception:
+                    model = self.get_model('Activity')
+                    if model is not None:
+                        ActivityTaskIndexing(model,
+                                             related=True).run()
+                else:
+                    model = self.get_model('Activity')
+                    if model is not None:
+                        ActivityTaskIndexing(model, related=True).run()
 
         self.post_save_file(self.dataset)
 

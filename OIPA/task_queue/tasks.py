@@ -688,23 +688,29 @@ def get_new_sources_from_iati_api_task():
                             verbosity=0)
 
 
-@shared_task
-def parse_source_by_id_task(dataset_id, force=False, check_validation=True):
-    if check_validation:
-        try:
-            dataset = Dataset.objects.filter(pk=dataset_id,
-                                             validation_status__critical__lte=0)  # NOQA: E501
-            dataset = dataset.first()
-            dataset.process(force_reparse=force)
-        except AttributeError:
-            print('no dataset found')
-            pass
-    else:
-        try:
-            dataset = Dataset.objects.get(pk=dataset_id)
-            dataset.process(force_reparse=force)
-        except Dataset.DoesNotExist:
-            pass
+@shared_task(bind=True)
+def parse_source_by_id_task(self, dataset_id, force=False,
+                            check_validation=True):
+    try:
+        if check_validation:
+            try:
+                dataset = Dataset.objects.filter(pk=dataset_id,
+                                                 validation_status__critical__lte=0)  # NOQA: E501
+                dataset = dataset.first()
+                dataset.process(force_reparse=force)
+            except AttributeError:
+                print('no dataset found')
+                pass
+        else:
+            try:
+                dataset = Dataset.objects.get(pk=dataset_id)
+                dataset.process(force_reparse=force)
+            except Dataset.DoesNotExist:
+                pass
+    except Exception as exc:
+        raise self.retry(exc=exc)
+   
+
 
 
 @shared_task
