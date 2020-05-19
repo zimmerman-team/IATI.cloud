@@ -165,9 +165,10 @@ class ActivityAggregations(AggregationView):
         GroupBy(
             query_param="recipient_region",
             fields="recipient_region",
+            serializer_main_field="id",
             queryset=Region.objects.all(),
             serializer=RegionSerializer,
-            serializer_fields=('url', 'code', 'name', 'location'),
+            serializer_fields=('id', 'url', 'code', 'name', 'location'),
             name_search_field="recipient_region__name",
             renamed_name_search_field="recipient_region_name",
         ),
