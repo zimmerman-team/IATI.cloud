@@ -80,10 +80,12 @@ class CodeListImporter():
 
         # Create sector from the the sector category
         # The sector category can use as a sector code in the XML activity
+        vocabulary = SectorVocabulary.objects.get(code=2)
         for sector_category in SectorCategory.objects.all():
             Sector.objects.get_or_create(
                 code=sector_category.code,
-                name=sector_category.name
+                name=sector_category.name,
+                vocabulary=vocabulary
             )
 
     @staticmethod
