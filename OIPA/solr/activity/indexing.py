@@ -1112,7 +1112,7 @@ class ActivityIndexing(BaseIndexing):
             self.add_field('transaction_receiver_org_narrative', [])
             self.add_field('transaction_receiver_org_narrative_lang', [])
             self.add_field('transaction_receiver_org_narrative_text', [])
-            self.add_field('transaction_disburstment_channel_code', [])
+            self.add_field('transaction_disbursement_channel_code', [])
             self.add_field('transaction_sector_vocabulary', [])
             self.add_field('transaction_sector_vocabulary_uri', [])
             self.add_field('transaction_sector_code', [])
@@ -1244,7 +1244,7 @@ class ActivityIndexing(BaseIndexing):
                     )
 
                 self.add_value_list(
-                    'transaction_disburstment_channel_code',
+                    'transaction_disbursement_channel_code',
                     transaction.disbursement_channel_id
                 )
 
