@@ -4,16 +4,16 @@ from decimal import Decimal, InvalidOperation
 
 from django.conf import settings
 from django.contrib.gis.geos import GEOSGeometry, Point
-from django.template.defaultfilters import slugify
 from django.core.exceptions import ObjectDoesNotExist
+from django.template.defaultfilters import slugify
 
 from currency_convert import convert
 from geodata.models import Country, Region
 from iati import models
 from iati.parser import post_save, post_save_validators
 from iati.parser.exceptions import (
-    FieldValidationError, IgnoredVocabularyError, NoUpdateRequired,
-    ParserError, RequiredFieldError
+    FieldValidationError, IgnoredVocabularyError, ParserError,
+    RequiredFieldError
 )
 from iati.parser.higher_order_parser import provider_org, receiver_org
 from iati.parser.iati_parser import IatiParser
