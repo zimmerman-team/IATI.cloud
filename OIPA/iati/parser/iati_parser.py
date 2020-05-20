@@ -17,6 +17,7 @@ from iati.parser.exceptions import (
 )
 from iati_codelists import models as codelist_models
 from iati_synchroniser.models import DatasetNote
+from solr.activity.tasks import ActivityTaskIndexing
 from solr.datasetnote.tasks import DatasetNoteTaskIndexing
 
 log = logging.getLogger(__name__)
@@ -198,8 +199,18 @@ class IatiParser(object):
             # only save if the activity is updated
 
             if parsed:
-                self.save_all_models()
-                self.post_save_models()
+                try:
+                    self.save_all_models()
+                    self.post_save_models()
+                except Exception:
+                    model = self.get_model('Activity')
+                    if model is not None:
+                        ActivityTaskIndexing(model,
+                                             related=True).run()
+                else:
+                    model = self.get_model('Activity')
+                    if model is not None:
+                        ActivityTaskIndexing(model, related=True).run()
 
         self.post_save_file(self.dataset)
 

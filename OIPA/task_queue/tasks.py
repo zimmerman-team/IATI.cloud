@@ -512,9 +512,111 @@ def update_activity_count():
         dataset.update_activities_count()
 
 
-@job
+# @job
+# def synchronize_solr_indexing():
+#     queue = django_rq.get_queue('solr')
+#     # Budget
+#     list_budget_id = list(
+#         Budget.objects.all().values_list('id', flat=True)
+#     )
+#     budget_hits = solr_budget.search(q='*:*', fl='id').hits
+#     budget_docs = solr_budget.search(
+#         q='*:*', fl='id', rows=budget_hits
+#     ).docs
+#     list_budget_doc_id = [
+#         int(budget_doc['id']) for budget_doc in budget_docs
+#     ]
+#     for ids in divide_delete_ids(list_budget_id, list_budget_doc_id):
+#         delete_multiple_rows_budget_in_solr(ids)
+#
+#     # Result
+#     list_result_id = list(
+#         Result.objects.all().values_list('id', flat=True)
+#     )
+#     result_hits = solr_result.search(q='*:*', fl='id').hits
+#     result_docs = solr_result.search(
+#         q='*:*', fl='id', rows=result_hits
+#     ).docs
+#     list_result_doc_id = [
+#         int(result_doc['id']) for result_doc in result_docs
+#     ]
+#     for ids in divide_delete_ids(list_result_id, list_result_doc_id):
+#         delete_multiple_rows_result_in_solr(ids)
+#
+#     # Transaction
+#     list_transaction_id = list(
+#         Transaction.objects.all().values_list('id', flat=True)
+#     )
+#     transaction_hits = solr_transaction.search(q='*:*', fl='id').hits
+#     transaction_docs = solr_transaction.search(
+#         q='*:*', fl='id', rows=transaction_hits
+#     ).docs
+#     list_transaction_doc_id = [
+#         int(transaction_doc['id']) for transaction_doc in transaction_docs
+#     ]
+#     for ids in divide_delete_ids(list_transaction_id,
+#     list_transaction_doc_id):
+#         delete_multiple_rows_transaction_in_solr(ids)
+#
+#     # Activity
+#     list_activity_id = list(
+#         Activity.objects.all().values_list('id', flat=True)
+#     )
+#     activity_hits = solr_activity.search(q='*:*', fl='id').hits
+#     activity_docs = solr_activity.search(
+#         q='*:*', fl='id', rows=activity_hits
+#     ).docs
+#     list_activity_doc_id = [
+#         int(activity_doc['id']) for activity_doc in activity_docs
+#     ]
+#     for ids in divide_delete_ids(list_activity_id, list_activity_doc_id):
+#         delete_multiple_rows_activiy_in_solr(ids)
+#
+#     for activity_id in (
+#             list(set(list_activity_id) - set(list_activity_doc_id))
+#     ):
+#         queue.enqueue(add_activity_to_solr, args=(activity_id,))
+#
+#     # Dataset Note
+#     list_dataset_note_id = list(
+#         DatasetNote.objects.all().values_list('id', flat=True)
+#     )
+#     dataset_note_hits = solr_dataset_note.search(q='*:*', fl='id').hits
+#     dataset_note_docs = solr_dataset_note.search(
+#         q='*:*', fl='id', rows=dataset_note_hits
+#     ).docs
+#     list_dataset_note_doc_id = [
+#         int(dataset_note_doc['id']) for dataset_note_doc in dataset_note_docs
+#     ]
+#     for ids in divide_delete_ids(
+#             list_dataset_note_id,
+#             list_dataset_note_doc_id
+#     ):
+#         delete_multiple_rows_dataset_note_in_solr(ids)
+#
+#     for dataset_note_id in (
+#             list(set(list_dataset_note_id) - set(list_dataset_note_doc_id))
+#     ):
+#         queue.enqueue(add_dataset_note_to_solr, args=(dataset_note_id,))
+#
+
+# def divide_delete_ids(list_ids, list_solr_ids, start=0, end=1000, inc=1000):
+#     ids_to_delete = list(
+#         set(list_solr_ids) - set(list_ids)
+#     )
+#     ids = ids_to_delete[start:end]
+#     result = []
+#     while ids:
+#         result.append(ids)
+#         start += inc
+#         end += inc
+#         ids = ids_to_delete[start:end]
+#
+#     return result
+
+
+@shared_task
 def synchronize_solr_indexing():
-    queue = django_rq.get_queue('solr')
     # Budget
     list_budget_id = list(
         Budget.objects.all().values_list('id', flat=True)
@@ -574,29 +676,30 @@ def synchronize_solr_indexing():
     for activity_id in (
             list(set(list_activity_id) - set(list_activity_doc_id))
     ):
-        queue.enqueue(add_activity_to_solr, args=(activity_id,))
+        # queue.enqueue(add_activity_to_solr, args=(activity_id,))
+        add_activity_to_solr.delay(activity_id=activity_id)
 
     # Dataset Note
-    list_dataset_note_id = list(
-        DatasetNote.objects.all().values_list('id', flat=True)
-    )
-    dataset_note_hits = solr_dataset_note.search(q='*:*', fl='id').hits
-    dataset_note_docs = solr_dataset_note.search(
-        q='*:*', fl='id', rows=dataset_note_hits
-    ).docs
-    list_dataset_note_doc_id = [
-        int(dataset_note_doc['id']) for dataset_note_doc in dataset_note_docs
-    ]
-    for ids in divide_delete_ids(
-            list_dataset_note_id,
-            list_dataset_note_doc_id
-    ):
-        delete_multiple_rows_dataset_note_in_solr(ids)
-
-    for dataset_note_id in (
-            list(set(list_dataset_note_id) - set(list_dataset_note_doc_id))
-    ):
-        queue.enqueue(add_dataset_note_to_solr, args=(dataset_note_id,))
+    # list_dataset_note_id = list(
+    #     DatasetNote.objects.all().values_list('id', flat=True)
+    # )
+    # dataset_note_hits = solr_dataset_note.search(q='*:*', fl='id').hits
+    # dataset_note_docs = solr_dataset_note.search(
+    #     q='*:*', fl='id', rows=dataset_note_hits
+    # ).docs
+    # list_dataset_note_doc_id = [
+    #     int(dataset_note_doc['id']) for dataset_note_doc in dataset_note_docs
+    # ]
+    # for ids in divide_delete_ids(
+    #         list_dataset_note_id,
+    #         list_dataset_note_doc_id
+    # ):
+    #     delete_multiple_rows_dataset_note_in_solr(ids)
+    #
+    # for dataset_note_id in (
+    #         list(set(list_dataset_note_id) - set(list_dataset_note_doc_id))
+    # ):
+    #     queue.enqueue(add_dataset_note_to_solr, args=(dataset_note_id,))
 
 
 def divide_delete_ids(list_ids, list_solr_ids, start=0, end=1000, inc=1000):
@@ -614,7 +717,18 @@ def divide_delete_ids(list_ids, list_solr_ids, start=0, end=1000, inc=1000):
     return result
 
 
-@job
+# @job
+# def add_activity_to_solr(activity_id):
+#     try:
+#         ActivityTaskIndexing(
+#             instance=Activity.objects.get(id=activity_id),
+#             related=True
+#         ).run()
+#     except Activity.DoesNotExist:
+#         pass
+
+
+@shared_task
 def add_activity_to_solr(activity_id):
     try:
         ActivityTaskIndexing(
@@ -688,23 +802,27 @@ def get_new_sources_from_iati_api_task():
                             verbosity=0)
 
 
-@shared_task
-def parse_source_by_id_task(dataset_id, force=False, check_validation=True):
-    if check_validation:
-        try:
-            dataset = Dataset.objects.filter(pk=dataset_id,
-                                             validation_status__critical__lte=0)  # NOQA: E501
-            dataset = dataset.first()
-            dataset.process(force_reparse=force)
-        except AttributeError:
-            print('no dataset found')
-            pass
-    else:
-        try:
-            dataset = Dataset.objects.get(pk=dataset_id)
-            dataset.process(force_reparse=force)
-        except Dataset.DoesNotExist:
-            pass
+@shared_task(bind=True)
+def parse_source_by_id_task(self, dataset_id, force=False,
+                            check_validation=True):
+    try:
+        if check_validation:
+            try:
+                dataset = Dataset.objects.filter(pk=dataset_id,
+                                                 validation_status__critical__lte=0)  # NOQA: E501
+                dataset = dataset.first()
+                dataset.process(force_reparse=force)
+            except AttributeError:
+                print('no dataset found')
+                pass
+        else:
+            try:
+                dataset = Dataset.objects.get(pk=dataset_id)
+                dataset.process(force_reparse=force)
+            except Dataset.DoesNotExist:
+                pass
+    except Exception as exc:
+        raise self.retry(exc=exc)
 
 
 @shared_task

@@ -47,7 +47,6 @@ class ParseManager():
 
         file_grabber = FileGrabber()
         response = file_grabber.get_the_file(self.url)
-
         from iati_synchroniser.models import DatasetNote
         if not response or response.status_code != 200:
             self.valid_dataset = False
