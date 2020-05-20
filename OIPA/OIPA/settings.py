@@ -189,7 +189,8 @@ INSTALLED_APPS = [
     'django_filters',
     'markdownify',
     'solr',
-    'django_celery_beat'
+    'django_celery_beat',
+    'django_celery_results'
 ]
 
 
@@ -361,7 +362,7 @@ CELERY_TASK_ROUTES = {'task_queue.tasks.revoke_all_tasks': {'queue':
                                                             'revoke_queue'},
                       'task_queue.tasks.continuous_parse_all_existing_sources_task': {'queue': 'revoke_queue'}}  # NOQA: E501
 CELERY_BROKER_URL = 'amqp://localhost'
-CELERY_RESULT_BACKEND = 'rpc://localhost'
+CELERY_RESULT_BACKEND = 'django-db'  # 'rpc://localhost'
 # 'db+postgresql://oipa:oipa@localhost/oipa'
 CELERY_ALWAYS_EAGER = True
 CELERY_BROKER_POOL_LIMIT = None

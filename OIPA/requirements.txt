@@ -13,6 +13,9 @@ Django==2.0.13
 
 django-grappelli==2.11.1
 
+# for saving task status
+django-celery-results
+
 django-celery-beat==1.5.0
 
 # Adding CORS headers to responses, only allowing certain API methods:
