@@ -380,6 +380,7 @@ SOLR = {
     'url': 'http://localhost:8983/solr',
     'cores': {
         'activity': 'activity',
+        'actiivty-sector': 'activity-sector',
         'budget': 'budget',
         'codelist': {
             'country': 'codelist-country',
