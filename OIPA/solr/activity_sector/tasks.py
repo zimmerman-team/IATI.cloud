@@ -4,7 +4,6 @@ from __future__ import print_function
 import pysolr
 from django.conf import settings
 
-#from iati_synchroniser.models import Dataset
 from solr.activity_sector.indexing import ActivitySectorIndexing
 from solr.tasks import BaseTaskIndexing
 
@@ -18,7 +17,6 @@ solr = pysolr.Solr(
 
 class ActivitySectorTaskIndexing(BaseTaskIndexing):
     indexing = ActivitySectorIndexing
-    #model = Dataset
     solr = solr
 
     def run_from_activity(self, activity):
@@ -30,4 +28,3 @@ class ActivitySectorTaskIndexing(BaseTaskIndexing):
         if settings.SOLR.get('indexing'):
             self.solr.delete(q='iati_identifier:{iati_identifier}'.format(
                 iati_identifier=self.instance.activity.iati_identifier))
-
