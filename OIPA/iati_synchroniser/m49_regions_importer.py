@@ -55,4 +55,3 @@ class M49RegionsImporter:
                 name=item,
                 region_vocabulary=region_vocabulary
             )
-

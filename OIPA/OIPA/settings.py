@@ -340,7 +340,6 @@ REST_FRAMEWORK_EXTENSIONS = {
 # For example, for M49 Regions import, add such code block it in the
 # local_settings.py:
 
-import os
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 DATA_PLUGINS = {
     'codelist': {
@@ -348,8 +347,8 @@ DATA_PLUGINS = {
             base_dir=BASE_DIR, filename='regions.json')
     }
 }
-#DATA_PLUGINS = {}
 
+# DATA_PLUGINS = {}
 # A setting indicating whether to save XML datasets (files) to local machine or
 # not:
 DOWNLOAD_DATASETS = False
