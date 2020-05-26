@@ -6,11 +6,11 @@ from django.conf import settings
 
 from iati.models import Activity
 from solr.activity.indexing import ActivityIndexing
+from solr.activity_sector.tasks import ActivitySectorTaskIndexing
 from solr.budget.tasks import BudgetTaskIndexing
 from solr.result.tasks import ResultTaskIndexing
 from solr.tasks import BaseTaskIndexing
 from solr.transaction.tasks import TransactionTaskIndexing
-from solr.activity_sector.tasks import ActivitySectorTaskIndexing
 
 solr = pysolr.Solr(
     '{url}/{core}'.format(
