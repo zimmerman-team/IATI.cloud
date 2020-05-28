@@ -46,10 +46,10 @@ def date_string(value):
 
 
 def decimal_string(value):
-    if value:
+    try:
         return str(value)
-
-    return None
+    except NameError:
+        return None
 
 
 def none_or_value(value):
