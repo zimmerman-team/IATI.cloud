@@ -896,7 +896,8 @@ def reparse_failed_tasks():
             try:
                 dataset_id = task_kwargs['dataset_id']
                 parse_source_by_id_task.delay(dataset_id=dataset_id,
-                                              force=True,check_validation=True)
+                                              force=True,
+                                              check_validation=True)
             except KeyError:
                 activity_id = task_kwargs['activity_id']
                 add_activity_to_solr(activity_id=activity_id)
