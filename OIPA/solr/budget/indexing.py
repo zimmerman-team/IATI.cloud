@@ -1,5 +1,4 @@
 from solr.indexing import BaseIndexing
-
 from solr.utils import (
     add_reporting_org, bool_string, date_string, decimal_string
 )
