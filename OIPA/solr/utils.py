@@ -1,4 +1,5 @@
 from django.core.exceptions import ObjectDoesNotExist
+import numbers
 
 
 def add_value_list(data_list, value=None):
@@ -46,11 +47,8 @@ def date_string(value):
 
 
 def decimal_string(value):
-    try:
+    if isinstance(value, numbers.Number):
         return str(value)
-    except NameError:
-        return None
-
 
 def none_or_value(value):
     try:
