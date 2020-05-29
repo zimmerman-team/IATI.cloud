@@ -893,9 +893,16 @@ def reparse_failed_tasks():
         if result['exc_type'] == 'SolrError':
             task_kwargs = failed_task.task_kwargs.replace("'", '"')
             task_kwargs = eval(task_kwargs)
-            dataset_id = task_kwargs['dataset_id']
-            parse_source_by_id_task.delay(dataset_id=dataset_id, force=True,
-                                          check_validation=True)
+            try:
+                dataset_id = task_kwargs['dataset_id']
+                parse_source_by_id_task.delay(dataset_id=dataset_id,
+                                              force=True,
+                                              check_validation=True)
+            except KeyError:
+                activity_id = task_kwargs['activity_id']
+                add_activity_to_solr(activity_id=activity_id)
+            else:
+                pass
     all_records = TaskResult.objects.all()
     all_records.delete()
 

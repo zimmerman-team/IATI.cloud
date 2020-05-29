@@ -349,6 +349,7 @@ DATA_PLUGINS = {
     }
 }
 
+# DATA_PLUGINS = {}
 # A setting indicating whether to save XML datasets (files) to local machine or
 # not:
 DOWNLOAD_DATASETS = False
