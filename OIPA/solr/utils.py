@@ -49,6 +49,8 @@ def date_string(value):
 def decimal_string(value):
     if isinstance(value, numbers.Number):
         return str(value)
+    else:
+        return None
 
 def none_or_value(value):
     try:
