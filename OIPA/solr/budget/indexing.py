@@ -1,5 +1,8 @@
 from solr.indexing import BaseIndexing
-from solr.utils import add_reporting_org, bool_string, date_string, decimal_string
+
+from solr.utils import (
+    add_reporting_org, bool_string, date_string, decimal_string
+)
 
 
 def add_recipient_country(serializer, activity):
@@ -54,7 +57,10 @@ class BudgetIndexing(BaseIndexing):
 
         self.add_field('budget_value', decimal_string(budget.value))
 
-        self.add_field('humanitarian', bool_string(budget.activity.humanitarian))
+        self.add_field(
+            'humanitarian',
+            bool_string(budget.activity.humanitarian)
+        )
 
         add_reporting_org(self, budget.activity)
         add_recipient_country(self, budget.activity)
