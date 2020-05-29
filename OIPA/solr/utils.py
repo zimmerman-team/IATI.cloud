@@ -1,5 +1,6 @@
-from django.core.exceptions import ObjectDoesNotExist
 import numbers
+
+from django.core.exceptions import ObjectDoesNotExist
 
 
 def add_value_list(data_list, value=None):
@@ -51,6 +52,7 @@ def decimal_string(value):
         return str(value)
     else:
         return None
+
 
 def none_or_value(value):
     try:
