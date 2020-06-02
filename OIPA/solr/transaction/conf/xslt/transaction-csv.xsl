@@ -11,6 +11,13 @@
     <xsl:apply-templates select="response/result/doc"/>
   </xsl:template>
   <xsl:template match="lst">
+      <xsl>iati_identifier,</xsl>
+      <xsl>reporting_org_ref,</xsl>
+      <xsl>title,</xsl>
+      <xsl>activity_description,</xsl>
+      <xsl>activity_recipient_country,</xsl>
+      <xsl>activity_recipient_region,</xsl>
+      <xsl>activity_sector,</xsl>
     <xsl>transaction_ref,</xsl>
     <xsl>transaction_humanitarian,</xsl>
     <xsl>transaction_type,</xsl>
@@ -39,6 +46,30 @@
     <xsl:value-of select="$break"/>
   </xsl:template>
   <xsl:template match="doc">
+      <xsl:value-of select="str[@name='iati_identifier']"/>
+      <xsl:value-of select="$delim"/>
+      <xsl:value-of select="str[@name='reporting_org_ref']"/>
+      <xsl:value-of select="$delim"/>
+      <xsl:value-of select="$quote"/>
+      <xsl:apply-templates select="arr[@name='title_narrative']/str"/>
+      <xsl:value-of select="$quote"/>
+      <xsl:value-of select="$delim"/>
+      <xsl:value-of select="$quote"/>
+      <xsl:apply-templates select="arr[@name='activity_description_narrative']/str"/>
+      <xsl:value-of select="$quote"/>
+      <xsl:value-of select="$delim"/>
+      <xsl:value-of select="$quote"/>
+      <xsl:apply-templates select="arr[@name='activity_recipient_country_code']/str"/>
+      <xsl:value-of select="$quote"/>
+      <xsl:value-of select="$delim"/>
+      <xsl:value-of select="$quote"/>
+      <xsl:apply-templates select="arr[@name='activity_recipient_region_code']/str"/>
+      <xsl:value-of select="$quote"/>
+      <xsl:value-of select="$delim"/>
+      <xsl:value-of select="$quote"/>
+      <xsl:apply-templates select="arr[@name='activity_sector_code']/str"/>
+      <xsl:value-of select="$quote"/>
+      <xsl:value-of select="$delim"/>
     <xsl:value-of select="str[@name='transaction_ref']"/>
     <xsl:value-of select="$delim"/>
     <xsl:value-of select="str[@name='transaction_humanitarian']"/>
