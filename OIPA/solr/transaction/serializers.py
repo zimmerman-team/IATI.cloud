@@ -1,4 +1,4 @@
-
+import django
 from rest_framework import serializers
 
 import api.sector.serializers
@@ -7,6 +7,7 @@ from api.codelist.serializers import CodelistSerializer, NarrativeSerializer
 from api.country.serializers import CountrySerializer
 from api.region.serializers import BasicRegionSerializer
 from iati.transaction import models
+
 
 
 class TransactionProviderSerializer(serializers.ModelSerializer):
@@ -100,3 +101,35 @@ class TransactionSerializer(api.transaction.serializers.TransactionSerializer):
 
     provider_organisation = TransactionProviderSerializer(required=False)
     receiver_organisation = TransactionReceiverSerializer(required=False)
+
+    class Meta:
+        model = models.Transaction
+        fields = (
+            'id',
+            'activity_id',
+            'ref',
+            'humanitarian',
+            'transaction_type',
+            'transaction_date',
+            'value',
+            'value_date',
+            'currency',
+            'description',
+            'currency',
+            'description',
+            'provider_organisation',
+            'receiver_organisation',
+            'disbursement_channel',
+            'sector',
+            'recipient_country',
+            'recipient_region',
+            'flow_type',
+            'finance_type',
+            'aid_type',
+            'tied_status',
+            'sectors',
+            'iati_identifier',
+            'recipient_countries',
+            'recipient_regions',
+            'usd_value'
+        )
