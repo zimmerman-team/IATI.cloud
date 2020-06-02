@@ -1,4 +1,3 @@
-import django
 from rest_framework import serializers
 
 import api.sector.serializers
@@ -7,7 +6,6 @@ from api.codelist.serializers import CodelistSerializer, NarrativeSerializer
 from api.country.serializers import CountrySerializer
 from api.region.serializers import BasicRegionSerializer
 from iati.transaction import models
-
 
 
 class TransactionProviderSerializer(serializers.ModelSerializer):
