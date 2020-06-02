@@ -296,7 +296,7 @@ def export_publisher_activities(publisher_id):
 #### EXCHANGE RATE TASKS ####  # NOQA: E266
 #############################
 
-@job
+@shared_task
 def update_exchange_rates():
     # XXX: no such module exists!
     from currency_convert.imf_rate_parser import RateParser
