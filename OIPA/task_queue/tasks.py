@@ -903,10 +903,12 @@ def reparse_failed_tasks():
                                               force=True,
                                               check_validation=True)
             except KeyError:
-                activity_id = task_kwargs['activity_id']
-                add_activity_to_solr(activity_id=activity_id)
-            else:
-                pass
+                try:
+                    activity_id = task_kwargs['activity_id']
+                    add_activity_to_solr.delay(activity_id=activity_id)
+                except KeyError:
+                    pass
+
     all_records = TaskResult.objects.all()
     all_records.delete()
 
