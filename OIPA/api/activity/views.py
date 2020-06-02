@@ -380,9 +380,9 @@ class ActivityList(DynamicListView):
     # specification document
     fields = (
         'iati_identifier',
-        'sector',
-        'recipient_region',
-        'recipient_country',
+        'sectors',
+        'recipient_regions',
+        'recipient_countries',
         # 'transaction_types' # uncomment if it has to be default and add the same key to selectable_fields tuple (selectable_fields = (transaction_types))  # NOQA: E501
         )
     # column headers with paths to the json property value.
@@ -392,15 +392,15 @@ class ActivityList(DynamicListView):
     csv_headers = \
         {
                    'iati_identifier': {'header': 'activity_id'},
-                   'sector.sector.code': {'header': 'sector_code'},
-                   'sector.percentage':  {'header': 'sectors_percentage'},
-                   'recipient_country.country.code': {'header': 'country'},
-                   'recipient_region.region.code': {'header': 'region'},
+                   'sectors.sector.code': {'header': 'sector_code'},
+                   'sectors.percentage':  {'header': 'sectors_percentage'},
+                   'recipient_countries.country.code': {'header': 'country'},
+                   'recipient_regions.region.code': {'header': 'region'},
         }
     # Get all transaction type
     transaction_types = []
     # Activity break down column
-    break_down_by = 'sector'
+    break_down_by = 'sectors'
     # selectable fields which required different render logic.
     # Instead merging values using the delimiter, this fields will generate
     # additional columns for the different values, based on defined criteria.
@@ -504,9 +504,9 @@ class ActivityDetail(DynamicDetailView):
     # specification document
     fields = (
         'iati_identifier',
-        'sector',
-        'recipient_region',
-        'recipient_country',
+        'sectors',
+        'recipient_regions',
+        'recipient_countries',
         )
 
     # column headers with paths to the json property value.
@@ -516,14 +516,14 @@ class ActivityDetail(DynamicDetailView):
     csv_headers = \
         {
                    'iati_identifier': {'header': 'activity_id'},
-                   'sector.sector.code': {'header': 'sector_code'},
-                   'sector.percentage':  {'header': 'sectors_percentage'},
-                   'recipient_country.country.code': {'header': 'country'},
-                   'recipient_region.region.code': {'header': 'region'},
+                   'sectors.sector.code': {'header': 'sector_code'},
+                   'sectors.percentage':  {'header': 'sectors_percentage'},
+                   'recipient_countries.country.code': {'header': 'country'},
+                   'recipient_regions.region.code': {'header': 'region'},
         }
 
     # Activity break down column
-    break_down_by = 'sector'
+    break_down_by = 'sectors'
 
     exceptional_fields = [{'transaction_types': []}]  # NOQA: E501
 
