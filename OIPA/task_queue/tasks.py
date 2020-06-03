@@ -296,7 +296,7 @@ def export_publisher_activities(publisher_id):
 #### EXCHANGE RATE TASKS ####  # NOQA: E266
 #############################
 
-@job
+@shared_task
 def update_exchange_rates():
     # XXX: no such module exists!
     from currency_convert.imf_rate_parser import RateParser
@@ -617,6 +617,10 @@ def update_activity_count():
 
 @shared_task
 def synchronize_solr_indexing():
+    solr_budget.timeout = 300
+    solr_activity.timeout = 300
+    solr_result.timeout = 300
+    solr_transaction.timeout = 300
     # Budget
     list_budget_id = list(
         Budget.objects.all().values_list('id', flat=True)
@@ -899,10 +903,12 @@ def reparse_failed_tasks():
                                               force=True,
                                               check_validation=True)
             except KeyError:
-                activity_id = task_kwargs['activity_id']
-                add_activity_to_solr(activity_id=activity_id)
-            else:
-                pass
+                try:
+                    activity_id = task_kwargs['activity_id']
+                    add_activity_to_solr.delay(activity_id=activity_id)
+                except KeyError:
+                    pass
+
     all_records = TaskResult.objects.all()
     all_records.delete()
 
