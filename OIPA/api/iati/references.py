@@ -1089,12 +1089,11 @@ class SectorReference(ElementWithNarrativeReference):
             self.percentage.get('key')
         )
         if percentage_value:
-            if percentage_value == 100.00:
-                # we don't want decimals in 100.
-                percentage_value_in_str = (str(percentage_value))[:-3]
-            else:
-                percentage_value_in_str = str(percentage_value)
-
+            # Percentage value type is {Decimal}, then convert it to string
+            percentage_value_in_str = str(percentage_value)
+            # We don't want to display the .00 used for our calculations
+            if percentage_value_in_str[-3:] == '.00':
+                percentage_value_in_str = percentage_value_in_str[:-3]
             sector_element.set(
                 self.percentage.get('attr'),
                 percentage_value_in_str
@@ -1440,10 +1439,14 @@ class RecipientCountryReference(ElementWithNarrativeReference):
         # @percentage
         percentage_value = self.data.get(self.percentage.get('key'))
         if percentage_value is not None:
+            # Percentage value type is {Decimal}, then convert it to string
+            percentage_value_in_str = str(percentage_value)
+            # We don't want to display the .00 used for our calculations
+            if percentage_value_in_str[-3:] == '.00':
+                percentage_value_in_str = percentage_value_in_str[:-3]
             recipient_country_element.set(
                 self.percentage.get('attr'),
-                # Percentage value type is {Decimal}, then convert it to string
-                str(percentage_value)
+                percentage_value_in_str
             )
         self.create_narrative(recipient_country_element)
 
@@ -1501,10 +1504,14 @@ class RecipientRegionReference(ElementWithNarrativeReference):
         # @percentage
         percentage_value = self.data.get(self.percentage.get('key'))
         if percentage_value:
+            # Percentage value type is {Decimal}, then convert it to string
+            percentage_value_in_str = str(percentage_value)
+            # We don't want to display the .00 used for our calculations
+            if percentage_value_in_str[-3:] == '.00':
+                percentage_value_in_str = percentage_value_in_str[:-3]
             recipient_region_element.set(
                 self.percentage.get('attr'),
-                # Percentage value type is {Decimal}, then convert it to string
-                str(percentage_value)
+                percentage_value_in_str
             )
 
         # @vocabulary

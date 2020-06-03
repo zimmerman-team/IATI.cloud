@@ -4,12 +4,12 @@
 
 import datetime
 from decimal import Decimal
+from unittest import skip
 
 import dateutil.parser
 # Runs each test in a transaction and flushes database
 from django.test import TestCase
 from lxml.builder import E
-from unittest import skip
 
 from iati.factory import iati_factory
 from iati.parser.exceptions import (

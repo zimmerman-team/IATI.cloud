@@ -40,6 +40,7 @@ class RegionSerializer(DynamicFieldsModelSerializer):
     class Meta:
         model = geodata.models.Region
         fields = (
+            'id',
             'url',
             'pk',
             'code',

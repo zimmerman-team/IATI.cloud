@@ -189,7 +189,8 @@ INSTALLED_APPS = [
     'django_filters',
     'markdownify',
     'solr',
-    'django_celery_beat'
+    'django_celery_beat',
+    'django_celery_results'
 ]
 
 
@@ -340,16 +341,15 @@ REST_FRAMEWORK_EXTENSIONS = {
 # For example, for M49 Regions import, add such code block it in the
 # local_settings.py:
 
-# import os
-# BASE_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-# DATA_PLUGINS = {
-#     'codelist': {
-#        'm49_region_file': '{base_dir}/plugins/data/{filename}'.format(
-#             base_dir=BASE_DIR, filename='regions.json')
-#     }
-# }
-DATA_PLUGINS = {}
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+DATA_PLUGINS = {
+    'codelist': {
+       'm49_region_file': '{base_dir}/plugins/data/{filename}'.format(
+            base_dir=BASE_DIR, filename='regions.json')
+    }
+}
 
+# DATA_PLUGINS = {}
 # A setting indicating whether to save XML datasets (files) to local machine or
 # not:
 DOWNLOAD_DATASETS = False
@@ -359,9 +359,14 @@ CELERY_ACKS_LATE = True
 CELERY_WORKER_PREFETCH_MULTIPLIER = 1  # limiting the number of reserved tasks.
 CELERY_TIMEZONE = 'UTC'
 CELERY_ENABLE_UTC = True
+CELERY_TASK_ROUTES = {'task_queue.tasks.revoke_all_tasks': {'queue':
+                                                            'revoke_queue'},
+                      'task_queue.tasks.continuous_parse_all_existing_sources_task': {'queue': 'revoke_queue'}}  # NOQA: E501
 CELERY_BROKER_URL = 'amqp://localhost'
-CELERY_RESULT_BACKEND = 'rpc://localhost'
+CELERY_RESULT_BACKEND = 'django-db'  # 'rpc://localhost'
+# 'db+postgresql://oipa:oipa@localhost/oipa'
 CELERY_ALWAYS_EAGER = True
+CELERY_BROKER_POOL_LIMIT = None
 CELERY_EAGER_PROPAGATES_EXCEPTIONS = True
 CELERY_IMPORTS = 'iati.PostmanJsonImport.tasks'
 CELERY_BEAT_SCHEDULE = {
@@ -398,7 +403,8 @@ VALIDATION = {
         'urls': {
             'post_file': '/iati-testfiles/file/source',
             'start_validation': '/iati-testdatasets/{validation_id}',
-            'get_json_file': '/iati-testfiles/file/json/{json_file}',
+            'get_json_file': '/iati-files/file/json/{json_file}',
+            'get_json_file_ad_hoc': '/iati-testfiles/file/json/{json_file}',
         },
         'max_loop_process': 50,
         'sleep_second_process': 5,

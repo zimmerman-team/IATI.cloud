@@ -106,6 +106,12 @@ class DynamicView(GenericAPIView):
             filter_fields.pop('page')
         if 'page_size' in filter_fields:
             filter_fields.pop('page_size')
+        if 'ordering' in filter_fields:
+            filter_fields.pop('ordering')
+        if 'q'in filter_fields:
+            filter_fields.pop('q')
+        if 'q_fields' in filter_fields:
+            filter_fields.pop('q_fields')
 
         for filter_field in filter_fields:
             found = False

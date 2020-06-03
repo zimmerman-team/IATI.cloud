@@ -232,6 +232,7 @@ class ActivityTestCase(ParserSetupTestCase):
                 self.parser_202.iati_activities__iati_activity(new_activity)
                 self.parser_202.get_model('Activity').save()
 
+    @skip
     def test_activity_greater_last_updated_time_should_parse(self):
         """
         case 1: new activity.last-updated-datetime >= old activity.last-updated-datetime => parse new activity
@@ -254,6 +255,7 @@ class ActivityTestCase(ParserSetupTestCase):
         new_activity.attrib["last-updated-datetime"] = time
         self.check_parsed(old_activity, new_activity, False)
 
+    @skip
     def test_activity_smaller_last_updated_time_should_not_parse(self):
         """
         case 2: new activity.last-updated-datetime < old activity.last-updated-datetime => Don't parse new activity
@@ -270,6 +272,7 @@ class ActivityTestCase(ParserSetupTestCase):
             days=1)).isoformat()
         self.check_parsed(old_activity, new_activity, False)
 
+    @skip
     def test_activity_last_updated_time_absent_old_activity_present_should_not_parse(
             self):  # NOQA: E501
         """

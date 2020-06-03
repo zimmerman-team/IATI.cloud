@@ -1,3 +1,5 @@
+import numbers
+
 from django.core.exceptions import ObjectDoesNotExist
 
 
@@ -46,10 +48,10 @@ def date_string(value):
 
 
 def decimal_string(value):
-    if value:
+    if isinstance(value, numbers.Number):
         return str(value)
-
-    return None
+    else:
+        return None
 
 
 def none_or_value(value):

@@ -14,11 +14,17 @@ from iati_codelists.models import (
     OrganisationIdentifier, OrganisationRegistrationAgency, Sector,
     SectorCategory
 )
+from iati_synchroniser.aid_type_codes_for_vocab3_importer import (
+    AidTypeVocab3Importer
+)
 from iati_synchroniser.dac_sector_importer import DacSectorImporter
-from iati_synchroniser.humanitrian_global_clusters_import import GlobalClustersSectorImporter
+from iati_synchroniser.humanitrian_global_clusters_import import (
+    GlobalClustersSectorImporter
+)
 from iati_synchroniser.m49_regions_importer import M49RegionsImporter
 from iati_synchroniser.models import Codelist
 from iati_synchroniser.sdg_sector_importer import SdgSectorImporter
+from iati_synchroniser.vocab7_importer import Vocab7Importer
 from iati_vocabulary.models import RegionVocabulary, SectorVocabulary
 
 logger = logging.getLogger(__name__)
@@ -74,10 +80,12 @@ class CodeListImporter():
 
         # Create sector from the the sector category
         # The sector category can use as a sector code in the XML activity
+        vocabulary = SectorVocabulary.objects.get(code=2)
         for sector_category in SectorCategory.objects.all():
             Sector.objects.get_or_create(
                 code=sector_category.code,
-                name=sector_category.name
+                name=sector_category.name,
+                vocabulary=vocabulary
             )
 
     @staticmethod
@@ -368,6 +376,14 @@ class CodeListImporter():
 
         humanitarian_global_clusters = GlobalClustersSectorImporter()
         humanitarian_global_clusters.update()
+
+        # aid-type codes for vocab-3
+        aid_type_codes_importer = AidTypeVocab3Importer()
+        aid_type_codes_importer.update()
+
+        # vocabulary 7 codes
+        vocab7_importer = Vocab7Importer()
+        vocab7_importer.update()
 
         # Added M49 Regions if available
         M49RegionsImporter()
