@@ -281,7 +281,7 @@
     <narrative>Agency A</narrative>
    </receiver-org>
    <disbursement-channel code="1" />
-   <sector vocabulary="2" code="111" />
+   <sector vocabulary="1" code="11110" />
    <!--Note: only a recipient-region OR a recipient-country is expected-->
    <recipient-country code="TM" />
    <recipient-region code="88" vocabulary="1" />

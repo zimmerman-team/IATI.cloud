@@ -3,7 +3,7 @@ from django.dispatch import receiver
 
 from geodata.models import Country, Region
 from iati.models import Activity, ActivitySector, Budget
-from iati.transaction.models import Transaction
+from iati.transaction.models import Transaction, TransactionSector
 from iati_organisation.models import Organisation
 from iati_synchroniser.models import Dataset, Publisher
 from solr.activity.tasks import ActivityTaskIndexing
@@ -15,6 +15,7 @@ from solr.dataset.tasks import DatasetTaskIndexing
 from solr.organisation.tasks import OrganisationTaskIndexing
 from solr.publisher.tasks import PublisherTaskIndexing
 from solr.transaction.tasks import TransactionTaskIndexing
+from solr.transaction_sector.tasks import TransactionSectorTaskIndexing
 
 
 @receiver(signals.post_save, sender=Dataset)
@@ -90,3 +91,9 @@ def transaction_pre_delete(sender, instance, **kwargs):
 @receiver(signals.pre_delete, sender=ActivitySector)
 def activity_sector_pre_delete(sender, instance, **kwargs):
     ActivitySectorTaskIndexing(instance=instance).delete()
+
+
+@receiver(signals.pre_delete, sender=TransactionSector)
+def transaction_sector_pre_delete(sender, instance, **kwargs):
+    TransactionSectorTaskIndexing(instance=instance).delete()
+

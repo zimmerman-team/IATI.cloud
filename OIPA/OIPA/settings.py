@@ -381,7 +381,7 @@ SOLR = {
     'url': 'http://localhost:8983/solr',
     'cores': {
         'activity': 'activity',
-        'actiivty-sector': 'activity-sector',
+        'activity-sector': 'activity-sector',
         'budget': 'budget',
         'codelist': {
             'country': 'codelist-country',
@@ -392,7 +392,8 @@ SOLR = {
         'organisation': 'organisation',
         'publisher': 'publisher',
         'result': 'result',
-        'transaction': 'transaction'
+        'transaction': 'transaction',
+        'transaction-sector':'transaction-sector'
     }
 }
 
