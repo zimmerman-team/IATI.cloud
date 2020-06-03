@@ -381,7 +381,7 @@ class ActivityList(DynamicListView):
     # specification document
     fields = (
         'iati_identifier',
-        'sectors',
+        'sector',
         'recipient_regions',
         'recipient_countries',
         # 'transaction_types' # uncomment if it has to be default and add the same key to selectable_fields tuple (selectable_fields = (transaction_types))  # NOQA: E501
@@ -401,7 +401,7 @@ class ActivityList(DynamicListView):
     # Get all transaction type
     transaction_types = []
     # Activity break down column
-    break_down_by = 'sectors'
+    break_down_by = 'sector'
     # selectable fields which required different render logic.
     # Instead merging values using the delimiter, this fields will generate
     # additional columns for the different values, based on defined criteria.
