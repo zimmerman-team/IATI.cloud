@@ -96,4 +96,3 @@ def activity_sector_pre_delete(sender, instance, **kwargs):
 @receiver(signals.pre_delete, sender=TransactionSector)
 def transaction_sector_pre_delete(sender, instance, **kwargs):
     TransactionSectorTaskIndexing(instance=instance).delete()
-

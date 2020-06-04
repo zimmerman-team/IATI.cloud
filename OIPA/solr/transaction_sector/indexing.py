@@ -8,7 +8,8 @@ class TransactionSectorIndexing(BaseIndexing):
         if transaction_sector:
             self.add_field('id', transaction_sector.id)
             self.add_field('iati_identifier',
-                           transaction_sector.transaction.activity.iati_identifier)
+                           transaction_sector.transaction.activity
+                           .iati_identifier)
             self.add_field('sector_vocabulary',
                            transaction_sector.vocabulary_id)
             self.add_field('sector_vocabulary_uri',

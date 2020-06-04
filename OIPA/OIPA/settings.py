@@ -393,7 +393,7 @@ SOLR = {
         'publisher': 'publisher',
         'result': 'result',
         'transaction': 'transaction',
-        'transaction-sector':'transaction-sector'
+        'transaction-sector': 'transaction-sector'
     }
 }
 

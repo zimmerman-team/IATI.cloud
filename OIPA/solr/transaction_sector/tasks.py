@@ -4,8 +4,8 @@ from __future__ import print_function
 import pysolr
 from django.conf import settings
 
-from solr.transaction_sector.indexing import TransactionSectorIndexing
 from solr.tasks import BaseTaskIndexing
+from solr.transaction_sector.indexing import TransactionSectorIndexing
 
 solr = pysolr.Solr(
     '{url}/{core}'.format(
