@@ -412,7 +412,7 @@
     <field name="transaction_receiver_org_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="transaction_receiver_org_narrative_text" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
 
-    <field name="transaction_disburstment_channel_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="transaction_disbursement_channel_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
 
     <field name="transaction_sector_vocabulary" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="transaction_sector_vocabulary_uri" type="string" multiValued="true" indexed="true" required="false" stored="true"/>

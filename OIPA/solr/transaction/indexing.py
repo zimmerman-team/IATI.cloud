@@ -169,7 +169,7 @@ class TransactionIndexing(BaseIndexing):
                 )
 
         self.add_field(
-            'transaction_disburstment_channel_code',
+            'transaction_disbursement_channel_code',
             transaction.disbursement_channel_id
         )
 
