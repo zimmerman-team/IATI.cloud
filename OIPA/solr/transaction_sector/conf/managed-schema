@@ -122,87 +122,22 @@
 
     <field name="_text_" type="text_general" indexed="true" stored="false" multiValued="true"/>
 
-    <!--Transaction Core - Start-->
-    <field name="iati_identifier" type="string" multiValued="false" indexed="true" required="true" stored="true"/>
-
-    <field name="title_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-    <field name="title_narrative" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
-
-    <field name="activity_description_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-    <field name="activity_description_narrative" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
-
-    <field name="activity_recipient_country_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-    <field name="activity_recipient_country_name" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-
-    <field name="activity_recipient_region_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-    <field name="activity_recipient_region_name" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-
-    <field name="activity_sector_vocabulary" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-    <field name="activity_sector_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-
-    <field name="transaction_description_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-    <field name="transaction_description_narrative" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
+    <!--Transaction-sector Core - Start -->
+    <field name="iati_identifier" type="non_case_sensitive" multiValued="false" indexed="true" required="true" stored="true"/>
 
 
-    <field name="activity_date_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-    <field name="activity_date_iso_date" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-    <field name="activity_date_iso_date_f" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="sector_vocabulary" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="sector_vocabulary_uri" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="sector_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="sector_percentage" type="pdoubles" multiValued="true" indexed="false" required="false" stored="true"/>
 
-    <field name="reporting_org_ref" type="non_case_sensitive" multiValued="false" indexed="true" required="false" stored="true"/>
-    <field name="reporting_org_type" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-    <field name="reporting_org_secondary_reporter" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-    <field name="reporting_org_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
-
-    <field name="transaction_ref" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-    <field name="transaction_humanitarian" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-    <field name="transaction_type" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-    <field name="transaction_date_iso_date" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-    <field name="transaction_date_iso_date_f" type="pdate" multiValued="false" indexed="true" required="false" stored="true"/>
-    <field name="transaction_value_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-    <field name="transaction_value_date" type="pdate" multiValued="false" indexed="true" required="false" stored="true"/>
-    <field name="transaction_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="sector_narrative" type="iati_narrative" indexed="true"
+    required="false" stored="true"/>
+    <field name="sector_narrative_lang" type="string" multiValued="false"
+    indexed="true" required="false" stored="true"/>
 
 
-    <field name="transaction_provider_org_ref" type="non_case_sensitive" multiValued="false" indexed="true" required="false" stored="true"/>
-    <field name="transaction_provider_org_provider_activity_id" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-    <field name="transaction_provider_org_type" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-
-    <field name="transaction_provider_org_narrative" type="iati_narrative" multiValued="false" indexed="true" required="false" stored="true"/>
-    <field name="transaction_provider_org_narrative_text" type="iati_narrative" multiValued="false" indexed="true" required="false" stored="true"/>
-    <field name="transaction_provider_org_narrative_lang" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-
-    <field name="transaction_receiver_org_ref" type="non_case_sensitive" multiValued="false" indexed="true" required="false" stored="true"/>
-    <field name="transaction_receiver_org_receiver_activity_id" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-    <field name="transaction_receiver_org_type" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-
-    <field name="transaction_receiver_org_narrative" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
-    <field name="transaction_receiver_org_narrative_text" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
-    <field name="transaction_receiver_org_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-
-    <field name="transaction_disbursement_channel_code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-
-    <field name="transaction_sector_vocabulary" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-    <field name="transaction_sector_vocabulary_uri" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-    <field name="transaction_sector_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-
-    <field name="transaction_recipient_country_code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-    <field name="transaction_recipient_country_narrative" type="iati_narrative" multiValued="false" indexed="true" required="false" stored="true"/>
-
-    <field name="transaction_recipient_region_code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-    <field name="transaction_recipient_region_vocabulary" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-    <field name="transaction_recipient_region_vocabulary_uri" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-
-    <field name="transaction_flow_type_code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-    <field name="transaction_finance_type_code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-
-    <field name="transaction_aid_type_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-    <field name="transaction_aid_type_vocabulary" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-
-    <field name="transaction_tied_status_code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-
-    <field name="humanitarian" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-
-    <!--Transaction Core - End-->
+    <!--Transaction-sector Core - End -->
 
     <!-- This can be enabled, in case the client does not know what fields may be searched. It isn't enabled by default
          because it's very expensive to index everything twice. -->
