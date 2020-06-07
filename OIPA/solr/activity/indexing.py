@@ -1157,7 +1157,8 @@ class ActivityIndexing(BaseIndexing):
                                 'sectors',
                                 'iati_identifier',
                                 'recipient_countries',
-                                'recipient_regions'
+                                'recipient_regions',
+                                'usd_value'
                             ]
                         ).data
                     ).decode()
