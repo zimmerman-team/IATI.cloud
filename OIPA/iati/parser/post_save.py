@@ -204,7 +204,7 @@ def set_sector_transaction(activity):
                             transaction=t,
                             sector=recipient_sector.sector,
                             percentage=recipient_sector.percentage,
-                            vocabulary=recipient_sector.sector.vocabulary,
+                            vocabulary=recipient_sector.vocabulary,
                             reported_on_transaction=False
                         ).save()
         else:
@@ -214,7 +214,7 @@ def set_sector_transaction(activity):
                         transaction=t,
                         sector=recipient_sector.sector,
                         percentage=recipient_sector.percentage,
-                        vocabulary=recipient_sector.sector.vocabulary,
+                        vocabulary=recipient_sector.vocabulary,
                         reported_on_transaction=False
                     ).save()
 
