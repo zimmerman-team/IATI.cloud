@@ -398,7 +398,7 @@ SOLR = {
 }
 
 VALIDATION = {
-    'host': 'https://test-validator.iatistandard.org',
+    'host': 'http://iativalidator.iatistandard.org/',
     'api': {
         'root': '/api',
         'version': '/v1',
