@@ -1261,7 +1261,7 @@ class ActivityIndexing(BaseIndexing):
                     )
                     self.add_value_list(
                         'transaction_sector_code',
-                        transaction_sector.sector_id
+                        transaction_sector.sector.code
                     )
 
                 for transaction_recipient_country in \
