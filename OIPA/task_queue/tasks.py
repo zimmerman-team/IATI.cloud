@@ -826,7 +826,8 @@ def parse_source_by_id_task(self, dataset_id, force=False,
             except Dataset.DoesNotExist:
                 pass
     except Exception as exc:
-        raise self.retry(exc=exc)
+        raise self.retry(kwargs={'dataset_id': dataset_id, 'force': True},
+                         exc=exc)
 
 
 @shared_task
