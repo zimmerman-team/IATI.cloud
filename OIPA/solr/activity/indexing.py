@@ -915,7 +915,10 @@ class ActivityIndexing(BaseIndexing):
 
                 self.add_value_list(
                     'default_aid_type_code',
-                    default_aid_type.aid_type_id
+                    get_child_attr(
+                        default_aid_type,
+                        'aid_type.code'
+                    )
                 )
                 self.add_value_list(
                     'default_aid_type_vocabulary',
