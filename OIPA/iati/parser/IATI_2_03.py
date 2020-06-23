@@ -2387,11 +2387,6 @@ class Parse(IatiParser):
         transaction.activity = activity
         transaction.ref = ref
         transaction.humanitarian = self.makeBoolNone(humanitarian)
-        transaction.flow_type = self.get_model('Activity').default_flow_type
-        transaction.finance_type = self.get_model(
-            'Activity').default_finance_type
-        transaction.tied_status = self.get_model(
-            'Activity').default_tied_status
 
         self.register_model('Transaction', transaction)
         return element

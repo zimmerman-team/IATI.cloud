@@ -2352,7 +2352,7 @@ class ActivityIndexing(BaseIndexing):
         )
         if activity.default_finance_type_id:
             self.add_field(
-                'default_flow_type_xml',
+                'default_finance_type_xml',
                 DefaultFinanceTypeReference(
                     default_finance_type=activity.default_finance_type
                 ).to_string()
