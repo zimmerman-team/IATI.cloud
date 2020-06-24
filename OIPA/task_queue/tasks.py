@@ -4,6 +4,7 @@ import json
 import logging
 import os
 import time
+import pysolr
 
 import celery
 import django_rq
@@ -783,9 +784,13 @@ def delete_dataset_note_in_solr(dataset_note_id):
 
 @job
 def delete_multiple_rows_activity_sector_in_solr(ids):
-    solr_activity_sector.delete(
-        q='id:{ids}'.format(ids=' OR '.join(str(i)for i in ids))
-    )
+    for i_d in ids:
+        try:
+            solr_activity_sector.delete(
+                q='id:{ids}'.format(ids=str(i_d))
+            )
+        except pysolr.SolrError:
+            pass
 
 @job
 def delete_multiple_rows_transaction_sector_in_solr(ids):
