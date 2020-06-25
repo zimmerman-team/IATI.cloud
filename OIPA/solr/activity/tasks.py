@@ -26,7 +26,8 @@ class ActivityTaskIndexing(BaseTaskIndexing):
     solr = solr
 
     def run_related(self):
+        # transaction-sector is indexed in TransactionTaskIndexing()
         TransactionTaskIndexing().run_from_activity(self.instance)
         BudgetTaskIndexing().run_from_activity(self.instance)
-        ResultTaskIndexing().run_from_activity(self.instance)
+        # ResultTaskIndexing().run_from_activity(self.instance)
         ActivitySectorTaskIndexing().run_from_activity(self.instance)
