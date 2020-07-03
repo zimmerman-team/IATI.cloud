@@ -194,3 +194,4 @@ workflows:
                       branches:
                           only:
                               - master
+                              - prerelease
