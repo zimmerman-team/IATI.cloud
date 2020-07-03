@@ -2491,7 +2491,9 @@ class Parse(IatiParser):
                 None,
                 element.attrib.get('value-date'))
 
-        currency = self._get_currency_or_raise('transaction/value', currency)
+        # we don't want to farm out activity level elements/value to
+        # transaction
+        # currency = self._get_currency_or_raise('transaction/value', currency)
 
         transaction = self.get_model('Transaction')
         transaction.value_string = value
