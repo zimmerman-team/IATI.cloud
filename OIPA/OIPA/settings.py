@@ -400,7 +400,7 @@ SOLR = {
 VALIDATION = {
     'host': 'http://iativalidator.iatistandard.org/',
     'api': {
-        'root': '/api',
+        'root': 'api',
         'version': '/v1',
         'urls': {
             'post_file': '/iati-testfiles/file/source',

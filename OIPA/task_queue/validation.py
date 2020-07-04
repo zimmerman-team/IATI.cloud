@@ -50,24 +50,26 @@ class DatasetValidationTask(celery.Task):
 
         if self._check():
             self._updated()
-        else:
-            # Upload file
-            self._post()
-            # Continue validation if validation id is not none
-            if self._validation_id:
-                # Begin validation
-                self._start()
-                # Process validation
-                self._process()
-                # If the variable file id is not None,
-                # that mean the process can continue
-                if self._file_id:
-                    # Get JSON result of the current validation
-                    self._get(ad_hoc=True)
-                    # If the JSON result is not None then update
-                    # the current dataset
-                    if self._json_result:
-                        self._updated()
+
+        # We don't do ad-hoc validation anymore
+        # else:
+        #     # Upload file
+        #     self._post()
+        #     # Continue validation if validation id is not none
+        #     if self._validation_id:
+        #         # Begin validation
+        #         self._start()
+        #         # Process validation
+        #         self._process()
+        #         # If the variable file id is not None,
+        #         # that mean the process can continue
+        #         if self._file_id:
+        #             # Get JSON result of the current validation
+        #             self._get(ad_hoc=True)
+        #             # If the JSON result is not None then update
+        #             # the current dataset
+        #             if self._json_result:
+        #                 self._updated()
 
     def _check(self):
         try:
