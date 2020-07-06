@@ -7,6 +7,7 @@ from rest_framework.serializers import (
 )
 
 from api.generics.serializers import DynamicFieldsModelSerializer
+from rest_framework import serializers
 from iati.models import Activity
 from iati_synchroniser.models import Dataset, DatasetNote, Publisher
 
@@ -81,6 +82,7 @@ class DatasetSerializer(DynamicFieldsModelSerializer):
     DatasetNoteSerializer(many=True, source="datasetnote_set")
 
     internal_url = SerializerMethodField()
+    sha1 = serializers.CharField(source='sync_sha1')
 
     class Meta:
         model = Dataset
