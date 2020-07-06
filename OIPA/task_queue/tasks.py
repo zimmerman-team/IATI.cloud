@@ -37,6 +37,7 @@ from solr.datasetnote.tasks import solr as solr_dataset_note
 from solr.result.tasks import solr as solr_result
 from solr.transaction.tasks import solr as solr_transaction
 from task_queue.utils import Tasks
+from task_queue.download import DatasetDownloadTask
 from task_queue.validation import DatasetValidationTask
 
 # Get an instance of a logger
@@ -46,6 +47,7 @@ redis_conn = Redis.from_url(settings.RQ_REDIS_URL)
 
 # Register a custom base task then Celery recognizes it
 DatasetValidationTask = app.register_task(DatasetValidationTask())
+DatasetDownloadTask = app.register_task(DatasetDownloadTask())
 
 
 def remove_all_api_caches():
