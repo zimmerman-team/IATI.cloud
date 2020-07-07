@@ -34,12 +34,44 @@ class DatasetDownloadTask(celery.Task):
     # Local variables
 
     _dataset = Dataset
-    is_download_datasets = False
+    is_download_datasets = True
+
+    def get_val_in_list_of_dicts(self, key, dicts):
+        return next(
+            (item for item in dicts
+                if item.get("key") and item["key"] == key), None
+        )
+
+    def get_iati_version(self, dataset_data):
+
+        iati_version = self.get_val_in_list_of_dicts(
+            'iati_version', dataset_data['extras'])
+        if iati_version:
+            iati_version = iati_version.get('value')
+        else:
+            iati_version = ''
+
+        return iati_version
+
+    def get_dataset_filetype(self, dataset_data):
+        filetype_name = self.get_val_in_list_of_dicts(
+            'filetype', dataset_data['extras'])
+
+        if filetype_name and filetype_name.get('value') == 'organisation':
+            filetype = 2
+        else:
+            filetype = 1
+
+        return filetype
 
 
     def run(self, dataset_data, *args, **kwargs):
         """Run the dataset download task"""
 
+        """Based on dataset URL, downloads and saves it in the server
+        TODO: create error log (DatasetNote) object if the URL is not
+        reachable (requires broader implementation of error logs)
+        """
         if self.is_download_datasets and settings.DOWNLOAD_DATASETS:
             # URL:
             dataset_url = dataset_data['resources'][0]['url']

@@ -4,6 +4,7 @@ import json
 import logging
 import os
 import ssl
+import time
 import urllib
 
 from django.conf import settings
@@ -172,18 +173,14 @@ class DatasetSyncer(object):
             }
         )
         # this also returns internal URL for the Dataset:
-        dataset_attribut = DatasetDownloadTask.delay(dataset_data= dataset)
-        obj.internal_url = dataset_attribut or ''
+        return_value = DatasetDownloadTask.delay(dataset_data=dataset)
+        obj.internal_url = return_value.get(disable_sync_subtasks=False) or ''
         obj.save()
 
         # Validation dataset with the current. we don't do validation for
         # the moment
         DatasetValidationTask.delay(dataset_id=obj.id)
 
-        """Based on dataset URL, downloads and saves it in the server
-        TODO: create error log (DatasetNote) object if the URL is not
-        reachable (requires broader implementation of error logs)
-        """
 
     def remove_deprecated(self):
         """
