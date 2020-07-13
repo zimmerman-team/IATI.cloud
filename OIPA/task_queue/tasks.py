@@ -655,33 +655,33 @@ def synchronize_solr_indexing():
     for ids in divide_delete_ids(list_result_id, list_result_doc_id):
         delete_multiple_rows_result_in_solr(ids)
 
-    # Activity-sector
-    list_activity_sector_id = list(ActivitySector.objects.all().values_list(
-        'id', flat=True))
-    activity_sector_hits = solr_activity_sector.search(q='*:*', fl='id').hits
-    activity_sector_docs = solr_activity_sector.search(
-        q='*:*', fl='id', rows=activity_sector_hits
-    ).docs
-    list_activity_sector_doc_id = [
-        int(activity_sector_doc['id']) for activity_sector_doc in activity_sector_docs
-    ]
-    for ids in divide_delete_ids(list_activity_sector_id, list_activity_sector_doc_id):
-        delete_multiple_rows_activity_sector_in_solr(ids)
-
-    # Transaction-sector
-    list_transaction_sector_id = list(TransactionSector.objects.all().values_list(
-        'id', flat=True
-    ))
-    transaction_sector_hits = solr_transaction_sector.search(q='*:*', fl='id').hits
-    transaction_sector_docs = solr_transaction_sector.search(
-        q='*:*', fl='id', rows=transaction_sector_hits
-    ).docs
-    list_transaction_sector_doc_id = [
-        int(transaction_sector_doc['id']) for transaction_sector_doc in
-        transaction_sector_docs
-    ]
-    for ids in divide_delete_ids(list_transaction_sector_id,list_transaction_sector_doc_id):
-        delete_multiple_rows_transaction_sector_in_solr(ids)
+    # # Activity-sector
+    # list_activity_sector_id = list(ActivitySector.objects.all().values_list(
+    #     'id', flat=True))
+    # activity_sector_hits = solr_activity_sector.search(q='*:*', fl='id').hits
+    # activity_sector_docs = solr_activity_sector.search(
+    #     q='*:*', fl='id', rows=activity_sector_hits
+    # ).docs
+    # list_activity_sector_doc_id = [
+    #     int(activity_sector_doc['id']) for activity_sector_doc in activity_sector_docs
+    # ]
+    # for ids in divide_delete_ids(list_activity_sector_id, list_activity_sector_doc_id):
+    #     delete_multiple_rows_activity_sector_in_solr(ids)
+    #
+    # # Transaction-sector
+    # list_transaction_sector_id = list(TransactionSector.objects.all().values_list(
+    #     'id', flat=True
+    # ))
+    # transaction_sector_hits = solr_transaction_sector.search(q='*:*', fl='id').hits
+    # transaction_sector_docs = solr_transaction_sector.search(
+    #     q='*:*', fl='id', rows=transaction_sector_hits
+    # ).docs
+    # list_transaction_sector_doc_id = [
+    #     int(transaction_sector_doc['id']) for transaction_sector_doc in
+    #     transaction_sector_docs
+    # ]
+    # for ids in divide_delete_ids(list_transaction_sector_id,list_transaction_sector_doc_id):
+    #     delete_multiple_rows_transaction_sector_in_solr(ids)
 
     # Transaction
     list_transaction_id = list(
@@ -794,9 +794,13 @@ def delete_multiple_rows_activity_sector_in_solr(ids):
 
 @job
 def delete_multiple_rows_transaction_sector_in_solr(ids):
-    solr_transaction_sector.delete(
-        q='id:{ids}'.format(ids=' OR '.join(str(i) for i in ids))
-    )
+    for i_d in ids:
+        try:
+            solr_transaction_sector.delete(
+                q='id:{ids}'.format(ids=str(i_d))
+            )
+        except pysolr.SolrError:
+            pass
 
 
 @job
