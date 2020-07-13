@@ -4,12 +4,12 @@ import json
 import logging
 import os
 import time
-import pysolr
 
 import celery
 import django_rq
 import fulltext
 import pika
+import pysolr
 import requests
 from celery import shared_task
 from django.conf import settings
@@ -26,19 +26,18 @@ from common.download_file import DownloadFile, hash_file
 from iati.activity_aggregation_calculation import (
     ActivityAggregationCalculation
 )
-from iati.models import Activity, Budget, Document, DocumentLink, Result, \
-    ActivitySector
-from iati.transaction.models import Transaction, TransactionSector
+from iati.models import Activity, Budget, Document, DocumentLink, Result
+from iati.transaction.models import Transaction
 from iati_synchroniser.models import Dataset, DatasetNote
 from OIPA.celery import app
 from solr.activity.tasks import ActivityTaskIndexing
 from solr.activity.tasks import solr as solr_activity
+from solr.activity_sector.tasks import solr as solr_activity_sector
 from solr.budget.tasks import solr as solr_budget
 from solr.datasetnote.tasks import DatasetNoteTaskIndexing
 from solr.datasetnote.tasks import solr as solr_dataset_note
 from solr.result.tasks import solr as solr_result
 from solr.transaction.tasks import solr as solr_transaction
-from solr.activity_sector.tasks import solr as solr_activity_sector
 from solr.transaction_sector.tasks import solr as solr_transaction_sector
 from task_queue.utils import Tasks
 from task_queue.validation import DatasetValidationTask
@@ -663,16 +662,20 @@ def synchronize_solr_indexing():
     #     q='*:*', fl='id', rows=activity_sector_hits
     # ).docs
     # list_activity_sector_doc_id = [
-    #     int(activity_sector_doc['id']) for activity_sector_doc in activity_sector_docs
+    #     int(activity_sector_doc['id']) for
+    #     activity_sector_doc in activity_sector_docs
     # ]
-    # for ids in divide_delete_ids(list_activity_sector_id, list_activity_sector_doc_id):
+    # for ids in divide_delete_ids(list_activity_sector_id,
+    # list_activity_sector_doc_id):
     #     delete_multiple_rows_activity_sector_in_solr(ids)
     #
     # # Transaction-sector
-    # list_transaction_sector_id = list(TransactionSector.objects.all().values_list(
+    # list_transaction_sector_id = list(TransactionSector.objects.all().
+    # values_list(
     #     'id', flat=True
     # ))
-    # transaction_sector_hits = solr_transaction_sector.search(q='*:*', fl='id').hits
+    # transaction_sector_hits = solr_transaction_sector.search
+    # (q='*:*', fl='id').hits
     # transaction_sector_docs = solr_transaction_sector.search(
     #     q='*:*', fl='id', rows=transaction_sector_hits
     # ).docs
@@ -680,7 +683,8 @@ def synchronize_solr_indexing():
     #     int(transaction_sector_doc['id']) for transaction_sector_doc in
     #     transaction_sector_docs
     # ]
-    # for ids in divide_delete_ids(list_transaction_sector_id,list_transaction_sector_doc_id):
+    # for ids in divide_delete_ids(list_transaction_sector_id,
+    # list_transaction_sector_doc_id):
     #     delete_multiple_rows_transaction_sector_in_solr(ids)
 
     # Transaction
@@ -791,6 +795,7 @@ def delete_multiple_rows_activity_sector_in_solr(ids):
             )
         except pysolr.SolrError:
             pass
+
 
 @job
 def delete_multiple_rows_transaction_sector_in_solr(ids):
