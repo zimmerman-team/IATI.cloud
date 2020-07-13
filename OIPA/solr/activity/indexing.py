@@ -134,7 +134,7 @@ class ActivityIndexing(BaseIndexing):
                         DescriptionSerializer(description).data
                     ).decode()
                 )
-                self.add_field(
+                self.add_value_list(
                     'description_xml',
                     DescriptionReference(description=description).to_string()
                 )
