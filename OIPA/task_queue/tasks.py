@@ -510,7 +510,7 @@ def download_file(d):
         doc.save()
 
 
-@job
+@shared_task
 def update_activity_count():
     for dataset in Dataset.objects.all():
         dataset.update_activities_count()
