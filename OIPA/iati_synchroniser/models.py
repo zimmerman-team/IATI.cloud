@@ -96,7 +96,11 @@ class Dataset(models.Model):
 
             parser = ParseManager(self, force_reparse=force_reparse)
             parser.parse_all()
-            self.is_parsed = True
+            self.update_activities_count()
+            if self.activities_count_in_database == \
+                    self.activities_count_in_xml:
+
+                self.is_parsed = True
 
             self.date_updated = datetime.datetime.now()
 
