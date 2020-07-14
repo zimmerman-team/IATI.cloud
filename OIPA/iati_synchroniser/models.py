@@ -164,8 +164,8 @@ class Dataset(models.Model):
 
                 self.iati_version = iati_version
 
-            count = len(tree.getchildren())
-            self.activities_count_in_xml = count - 1 if count > 0 else count
+            count = len(tree.findall('iati-activity'))
+            self.activities_count_in_xml = count
 
             # Activity count in the Database
             self.activities_count_in_database = self.activity_set.all().count()
