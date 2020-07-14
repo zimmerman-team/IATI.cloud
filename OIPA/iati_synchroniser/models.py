@@ -101,6 +101,8 @@ class Dataset(models.Model):
                     self.activities_count_in_xml:
 
                 self.is_parsed = True
+            else:
+                self.is_parsed = False
 
             self.date_updated = datetime.datetime.now()
 
