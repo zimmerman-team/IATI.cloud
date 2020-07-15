@@ -1,7 +1,3 @@
-
-from rest_framework.renderers import JSONRenderer
-
-from solr.activity.serializers import ActivitySectorSerializer
 from solr.indexing import BaseIndexing
 from solr.utils import (
     add_reporting_org, bool_string, date_string, decimal_string,
@@ -16,33 +12,64 @@ class TransactionIndexing(BaseIndexing):
 
         self.add_field('id', transaction.id)
         self.add_field('iati_identifier', transaction.activity.iati_identifier)
-
         if get_child_attr(transaction, 'activity.title'):
             self.indexing['title_lang'], self.indexing['title_narrative'] = \
                 get_narrative_lang_list(transaction.activity.title)
 
-        self.add_field('description_type', [])
-        self.add_field('description_lang', [])
-        self.add_field('description_narrative', [])
+        self.add_field('activity_description_type', [])
+        self.add_field('activity_description_narrative', [])
         for description in transaction.activity.description_set.all():
             self.add_value_list(
-                'description_type',
+                'activity_description_type',
                 description.type_id
             )
             for narrative in description.narratives.all():
                 self.add_value_list(
-                    'description_narrative',
+                    'activity_description_narrative',
                     narrative.content
-                )
-                self.add_value_list(
-                    'description_lang',
-                    narrative.language_id
                 )
 
         self.add_field('activity_date_type', [])
         self.add_field('activity_date_iso_date', [])
 
         add_reporting_org(self, transaction.activity)
+        recipient_country_all = transaction.activity.\
+            activityrecipientcountry_set.all()
+        if recipient_country_all:
+            self.add_field('activity_recipient_country_code', [])
+            self.add_field('activity_recipient_country_name', [])
+            for recipient_country in recipient_country_all:
+
+                self.add_value_list(
+                    'activity_recipient_country_code',
+                    recipient_country.country.code
+                )
+                self.add_value_list(
+                    'activity_recipient_country_name',
+                    recipient_country.country.name
+                )
+
+        recipient_region_all = transaction.activity.\
+            activityrecipientregion_set.all()
+        if recipient_region_all:
+            self.add_field('activity_recipient_region_code', [])
+            self.add_field('activity_recipient_region_name', [])
+
+            for recipient_region in recipient_region_all:
+
+                self.add_value_list(
+                    'activity_recipient_region_code',
+                    recipient_region.region.code
+                )
+                self.add_value_list(
+                    'activity_recipient_region_name',
+                    recipient_region.region.name
+                )
+
+        if get_child_attr(transaction, 'transaction_description'):
+            self.indexing['transaction_description_lang'], self.indexing[
+                'transaction_description_narrative'] = \
+                get_narrative_lang_list(transaction.description)
 
         self.add_field('transaction_ref', transaction.ref)
         self.add_field(
@@ -142,25 +169,25 @@ class TransactionIndexing(BaseIndexing):
                 )
 
         self.add_field(
-            'transaction_disburstment_channel_code',
+            'transaction_disbursement_channel_code',
             transaction.disbursement_channel_id
         )
 
         self.add_field('transaction_sector_vocabulary', [])
         self.add_field('transaction_sector_vocabulary_uri', [])
         self.add_field('transaction_sector_code', [])
-        for transaction_sector in transaction.transactionsector_set.all():
+        for sector in transaction.transactionsector_set.all():
             self.add_value_list(
                 'transaction_sector_vocabulary',
-                transaction_sector.vocabulary_id
+                sector.vocabulary_id
             )
             self.add_value_list(
                 'transaction_sector_vocabulary_uri',
-                transaction_sector.vocabulary_uri
+                sector.vocabulary_uri
             )
             self.add_value_list(
                 'transaction_sector_code',
-                transaction_sector.sector_id
+                sector.sector.code
             )
 
         self.add_field(
@@ -213,36 +240,17 @@ class TransactionIndexing(BaseIndexing):
             bool_string(get_child_attr(transaction, 'activity.humanitarian'))
         )
 
-        self.add_field('sector', [])
-        self.add_field('sector_vocabulary', [])
-        self.add_field('sector_vocabulary_uri', [])
-        self.add_field('sector_code', [])
-        self.add_field('sector_percentage', [])
-        self.add_field('sector_narrative', [])
+        self.add_field('activity_sector_vocabulary', [])
+        self.add_field('activity_sector_code', [])
+
         for activity_sector in transaction.activity.activitysector_set.all():
-            self.add_value_list(
-                'sector',
-                JSONRenderer().render(
-                    ActivitySectorSerializer(activity_sector).data
-                ).decode()
-            )
 
             self.add_value_list(
-                'sector_vocabulary',
+                'activity_sector_vocabulary',
                 activity_sector.vocabulary_id
             )
-            self.add_value_list(
-                'sector_vocabulary_uri',
-                activity_sector.vocabulary_uri
-            )
-            self.add_value_list('sector_code', activity_sector.sector_id)
-            self.add_value_list(
-                'sector_percentage',
-                decimal_string(activity_sector.percentage)
-            )
-
-            for narrative in activity_sector.narratives.all():
-                self.add_value_list('sector_narrative', narrative.content)
+            self.add_value_list('activity_sector_code',
+                                activity_sector.sector.code)
 
     def to_representation(self, transaction):
         self.record = transaction

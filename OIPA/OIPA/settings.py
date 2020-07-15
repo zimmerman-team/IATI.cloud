@@ -349,6 +349,7 @@ DATA_PLUGINS = {
     }
 }
 
+# DATA_PLUGINS = {}
 # A setting indicating whether to save XML datasets (files) to local machine or
 # not:
 DOWNLOAD_DATASETS = False
@@ -380,6 +381,7 @@ SOLR = {
     'url': 'http://localhost:8983/solr',
     'cores': {
         'activity': 'activity',
+        'activity-sector': 'activity-sector',
         'budget': 'budget',
         'codelist': {
             'country': 'codelist-country',
@@ -390,14 +392,15 @@ SOLR = {
         'organisation': 'organisation',
         'publisher': 'publisher',
         'result': 'result',
-        'transaction': 'transaction'
+        'transaction': 'transaction',
+        'transaction-sector': 'transaction-sector'
     }
 }
 
 VALIDATION = {
-    'host': 'https://test-validator.iatistandard.org',
+    'host': 'http://iativalidator.iatistandard.org/',
     'api': {
-        'root': '/api',
+        'root': 'api',
         'version': '/v1',
         'urls': {
             'post_file': '/iati-testfiles/file/source',

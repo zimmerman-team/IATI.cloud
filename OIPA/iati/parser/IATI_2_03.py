@@ -4,6 +4,7 @@ from decimal import Decimal, InvalidOperation
 
 from django.conf import settings
 from django.contrib.gis.geos import GEOSGeometry, Point
+from django.core.exceptions import ObjectDoesNotExist
 from django.template.defaultfilters import slugify
 
 from currency_convert import convert
@@ -12,8 +13,8 @@ from geodata.models import Country, Region
 from iati import models
 from iati.parser import post_save, post_save_validators
 from iati.parser.exceptions import (
-    FieldValidationError, IgnoredVocabularyError, NoUpdateRequired,
-    ParserError, RequiredFieldError
+    FieldValidationError, IgnoredVocabularyError, ParserError,
+    RequiredFieldError
 )
 from iati.parser.higher_order_parser import provider_org, receiver_org
 from iati.parser.iati_parser import IatiParser
@@ -142,60 +143,65 @@ class Parse(IatiParser):
                 "text",
                 "required element empty")
 
-        old_activity = self.get_or_none(
-            models.Activity, iati_identifier=activity_id)
+        # old_activity = self.get_or_none(
+        #     models.Activity, iati_identifier=activity_id)
+        #
+        # if old_activity and (old_activity.dataset.name != self.dataset.name):
+        #     self.append_error(
+        #         'FieldValidationError',
+        #         "iati-identifier",
+        #         "ref",
+        #         "An activity with the same iati-identifier was found in \
+        #         another dataset",
+        #         element.sourceline,
+        #         "found in dataset: '{}'".format(old_activity.dataset.name),
+        #         activity_id)
+        #
+        # if (old_activity
+        #         and not self.force_reparse and not old_activity.modified):
+        #     # update last_updated_model to prevent the activity from being
+        #     # deleted because its not updated (and thereby assumed not found
+        #     # in the dataset)
+        #     old_activity.save()
+        #
+        #     if last_updated_datetime\
+        #         and last_updated_datetime\
+        #             == old_activity.last_updated_datetime:
+        #         raise NoUpdateRequired('activity', 'already up to date')
+        #
+        #     if last_updated_datetime and (last_updated_datetime <
+        #                                   old_activity.last_updated_datetime):
+        #         raise FieldValidationError(
+        #             "iati-activity",
+        #             "last-updated-datetime",
+        #             "last-updated-time is less than existing activity",
+        #             None,
+        #             element.sourceline,
+        #             activity_id,
+        #             activity_id)
+        #
+        #     if not last_updated_datetime and old_activity\
+        #             .last_updated_datetime:
+        #         raise FieldValidationError(
+        #             "iati-activity",
+        #             "last-updated-datetime",
+        #             "last-updated-time is not present, but is present on "
+        #             "existing activity",
+        #             None,
+        #             element.sourceline,
+        #             activity_id,
+        #             activity_id)
+        #
+        #     # TODO: test activity is deleted along with related models
+        #     # update on TODO above; only iati_title, TransactionReceiver,
+        #     # TransactionProvider are not deleted atm - 2015-10-01
+        #     # TODO: do this after activity is parsed along with other saves?
 
-        if old_activity and (old_activity.dataset.name != self.dataset.name):
-            self.append_error(
-                'FieldValidationError',
-                "iati-identifier",
-                "ref",
-                "An activity with the same iati-identifier was found in \
-                another dataset",
-                element.sourceline,
-                "found in dataset: '{}'".format(old_activity.dataset.name),
-                activity_id)
-
-        if (old_activity
-                and not self.force_reparse and not old_activity.modified):
-            # update last_updated_model to prevent the activity from being
-            # deleted because its not updated (and thereby assumed not found
-            # in the dataset)
-            old_activity.save()
-
-            if last_updated_datetime\
-                and last_updated_datetime\
-                    == old_activity.last_updated_datetime:
-                raise NoUpdateRequired('activity', 'already up to date')
-
-            if last_updated_datetime and (last_updated_datetime <
-                                          old_activity.last_updated_datetime):
-                raise FieldValidationError(
-                    "iati-activity",
-                    "last-updated-datetime",
-                    "last-updated-time is less than existing activity",
-                    None,
-                    element.sourceline,
-                    activity_id,
-                    activity_id)
-
-            if not last_updated_datetime and old_activity\
-                    .last_updated_datetime:
-                raise FieldValidationError(
-                    "iati-activity",
-                    "last-updated-datetime",
-                    "last-updated-time is not present, but is present on "
-                    "existing activity",
-                    None,
-                    element.sourceline,
-                    activity_id,
-                    activity_id)
-
-            # TODO: test activity is deleted along with related models
-            # update on TODO above; only iati_title, TransactionReceiver,
-            # TransactionProvider are not deleted atm - 2015-10-01
-            # TODO: do this after activity is parsed along with other saves?
-
+        try:
+            old_activity = models.Activity.objects.get(
+                iati_identifier=activity_id)
+        except ObjectDoesNotExist:
+            old_activity = None
         if old_activity:
             old_activity.delete()
 
@@ -2381,11 +2387,6 @@ class Parse(IatiParser):
         transaction.activity = activity
         transaction.ref = ref
         transaction.humanitarian = self.makeBoolNone(humanitarian)
-        transaction.flow_type = self.get_model('Activity').default_flow_type
-        transaction.finance_type = self.get_model(
-            'Activity').default_finance_type
-        transaction.tied_status = self.get_model(
-            'Activity').default_tied_status
 
         self.register_model('Transaction', transaction)
         return element
@@ -2490,7 +2491,9 @@ class Parse(IatiParser):
                 None,
                 element.attrib.get('value-date'))
 
-        currency = self._get_currency_or_raise('transaction/value', currency)
+        # we don't want to farm out activity level elements/value to
+        # transaction
+        # currency = self._get_currency_or_raise('transaction/value', currency)
 
         transaction = self.get_model('Transaction')
         transaction.value_string = value
@@ -2681,6 +2684,20 @@ class Parse(IatiParser):
                 None,
                 None,
                 code)
+        elif not sector and vocabulary.code in ['99', '98']:
+            # This is needed to create a new sector if related to vocabulary 99 or 98  # NOQA: E501
+            # ref. http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/sector/  # NOQA: E501
+
+            code = slugify(code)
+            sector = self.get_or_none(models.Sector, code=code)
+
+            if not sector:
+                sector = models.Sector()
+                sector.code = code
+                sector.name = 'Vocabulary 99 or 98'
+                sector.description = 'The sector reported corresponds to a sector vocabulary maintained by the reporting organisation for this activity'  # NOQA: E501
+                sector.save()
+
         elif not sector:
             raise IgnoredVocabularyError(
                 "transaction/sector",

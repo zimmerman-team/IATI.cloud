@@ -134,7 +134,7 @@ class ActivityIndexing(BaseIndexing):
                         DescriptionSerializer(description).data
                     ).decode()
                 )
-                self.add_field(
+                self.add_value_list(
                     'description_xml',
                     DescriptionReference(description=description).to_string()
                 )
@@ -915,7 +915,10 @@ class ActivityIndexing(BaseIndexing):
 
                 self.add_value_list(
                     'default_aid_type_code',
-                    default_aid_type.aid_type_id
+                    get_child_attr(
+                        default_aid_type,
+                        'aid_type.code'
+                    )
                 )
                 self.add_value_list(
                     'default_aid_type_vocabulary',
@@ -1112,7 +1115,7 @@ class ActivityIndexing(BaseIndexing):
             self.add_field('transaction_receiver_org_narrative', [])
             self.add_field('transaction_receiver_org_narrative_lang', [])
             self.add_field('transaction_receiver_org_narrative_text', [])
-            self.add_field('transaction_disburstment_channel_code', [])
+            self.add_field('transaction_disbursement_channel_code', [])
             self.add_field('transaction_sector_vocabulary', [])
             self.add_field('transaction_sector_vocabulary_uri', [])
             self.add_field('transaction_sector_code', [])
@@ -1157,7 +1160,8 @@ class ActivityIndexing(BaseIndexing):
                                 'sectors',
                                 'iati_identifier',
                                 'recipient_countries',
-                                'recipient_regions'
+                                'recipient_regions',
+                                'usd_value'
                             ]
                         ).data
                     ).decode()
@@ -1244,7 +1248,7 @@ class ActivityIndexing(BaseIndexing):
                     )
 
                 self.add_value_list(
-                    'transaction_disburstment_channel_code',
+                    'transaction_disbursement_channel_code',
                     transaction.disbursement_channel_id
                 )
 
@@ -1260,7 +1264,7 @@ class ActivityIndexing(BaseIndexing):
                     )
                     self.add_value_list(
                         'transaction_sector_code',
-                        transaction_sector.sector_id
+                        transaction_sector.sector.code
                     )
 
                 for transaction_recipient_country in \
@@ -2348,7 +2352,7 @@ class ActivityIndexing(BaseIndexing):
         )
         if activity.default_finance_type_id:
             self.add_field(
-                'default_flow_type_xml',
+                'default_finance_type_xml',
                 DefaultFinanceTypeReference(
                     default_finance_type=activity.default_finance_type
                 ).to_string()

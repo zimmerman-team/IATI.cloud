@@ -25,7 +25,7 @@ class Transaction(models.Model):
 
     value = models.DecimalField(max_digits=15, decimal_places=2)
     value_string = models.CharField(max_length=50)
-    currency = models.ForeignKey(Currency, on_delete=models.CASCADE)
+    currency = models.ForeignKey(Currency, null=True, on_delete=models.CASCADE)
     value_date = models.DateField()
 
     humanitarian = models.NullBooleanField(null=True, blank=True)

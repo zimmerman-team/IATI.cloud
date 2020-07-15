@@ -12,7 +12,7 @@ solr = pysolr.Solr(
     '{url}/{core}'.format(
         url=settings.SOLR.get('url'),
         core=settings.SOLR.get('cores').get('organisation')
-    ), always_commit=True
+    ), always_commit=True, timeout=180
 )
 
 
