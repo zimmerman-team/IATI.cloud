@@ -34,7 +34,8 @@ from solr.result.serializers import ResultSerializer
 from solr.transaction.references import TransactionReference
 from solr.transaction.serializers import TransactionSerializer
 from solr.utils import (
-    bool_string, date_string, decimal_string, get_child_attr, value_string
+    bool_string, date_string, decimal_string, get_child_attr, value_string,
+    get_narrative_lang_list
 )
 
 
@@ -1201,6 +1202,11 @@ class ActivityIndexing(BaseIndexing):
                     transaction,
                     'provider_organisation'
                 )
+                if get_child_attr(transaction, 'description'):
+                    self.indexing['transaction_description_lang'], \
+                        self.indexing[
+                        'transaction_description_narrative'] = \
+                        get_narrative_lang_list(transaction.description)
                 if provider_organisation:
                     self.add_value_list(
                         'transaction_provider_org_provider_activity_id',
