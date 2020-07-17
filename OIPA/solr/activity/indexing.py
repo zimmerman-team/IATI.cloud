@@ -34,8 +34,8 @@ from solr.result.serializers import ResultSerializer
 from solr.transaction.references import TransactionReference
 from solr.transaction.serializers import TransactionSerializer
 from solr.utils import (
-    bool_string, date_string, decimal_string, get_child_attr, value_string,
-    get_narrative_lang_list
+    bool_string, date_string, decimal_string, get_child_attr,
+    get_narrative_lang_list, value_string
 )
 
 
