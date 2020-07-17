@@ -388,6 +388,8 @@
     <field name="transaction_humanitarian" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="transaction_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="transaction_date_iso_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="transaction_description_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="transaction_description_narrative" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
 
     <field name="transaction_value_currency" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="transaction_value_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
