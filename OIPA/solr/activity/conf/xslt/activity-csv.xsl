@@ -244,7 +244,9 @@
     <xsl:value-of select="$delim"/>
     <xsl:value-of select="str[@name='hierarchy']"/>
     <xsl:value-of select="$delim"/>
+      <xsl:value-of select="$quote"/>
     <xsl:value-of select="str[@name='iati_identifier']"/>
+      <xsl:value-of select="$quote"/>
     <xsl:value-of select="$delim"/>
     <xsl:value-of select="str[@name='reporting_org_ref']"/>
     <xsl:value-of select="$delim"/>
