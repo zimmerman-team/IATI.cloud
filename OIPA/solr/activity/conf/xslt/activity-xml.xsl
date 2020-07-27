@@ -9,9 +9,25 @@
 
   <xsl:template match="doc">
     <iati-activity>
-      <xsl:attribute name="xml:lang">
-        <xsl:value-of select="str[@name='default_lang']"/>
-      </xsl:attribute>
+
+        <xsl:attribute name="last-updated-datetime">
+            <xsl:value-of select="str[@name='last_updated_datetime']"/>
+        </xsl:attribute>
+        <xsl:attribute name="xml:lang">
+            <xsl:value-of select="str[@name='default_lang']"/>
+        </xsl:attribute>
+        <xsl:attribute name="default-currency">
+            <xsl:value-of select="str[@name='default_currency']"/>
+        </xsl:attribute>
+        <xsl:attribute name="humanitarian">
+            <xsl:value-of select="str[@name='humanitarian']"/>
+        </xsl:attribute>
+        <xsl:attribute name="hierarchy">
+            <xsl:value-of select="str[@name='hierarchy']"/>
+        </xsl:attribute>
+        <xsl:attribute name="linked-data-uri">
+            <xsl:value-of select="str[@name='linked_data_uri']"/>
+        </xsl:attribute>
       <iati-identifier>
         <xsl:value-of select="str[@name='iati_identifier']"/>
       </iati-identifier>

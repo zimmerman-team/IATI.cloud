@@ -96,7 +96,13 @@ class Dataset(models.Model):
 
             parser = ParseManager(self, force_reparse=force_reparse)
             parser.parse_all()
-            self.is_parsed = True
+            self.update_activities_count()
+            if self.activities_count_in_database == \
+                    self.activities_count_in_xml:
+
+                self.is_parsed = True
+            else:
+                self.is_parsed = False
 
             self.date_updated = datetime.datetime.now()
 
@@ -164,8 +170,8 @@ class Dataset(models.Model):
 
                 self.iati_version = iati_version
 
-            count = len(tree.getchildren())
-            self.activities_count_in_xml = count - 1 if count > 0 else count
+            count = len(tree.findall('iati-activity'))
+            self.activities_count_in_xml = count
 
             # Activity count in the Database
             self.activities_count_in_database = self.activity_set.all().count()

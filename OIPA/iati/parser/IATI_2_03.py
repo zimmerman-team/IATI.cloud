@@ -2387,11 +2387,6 @@ class Parse(IatiParser):
         transaction.activity = activity
         transaction.ref = ref
         transaction.humanitarian = self.makeBoolNone(humanitarian)
-        transaction.flow_type = self.get_model('Activity').default_flow_type
-        transaction.finance_type = self.get_model(
-            'Activity').default_finance_type
-        transaction.tied_status = self.get_model(
-            'Activity').default_tied_status
 
         self.register_model('Transaction', transaction)
         return element
@@ -2496,7 +2491,9 @@ class Parse(IatiParser):
                 None,
                 element.attrib.get('value-date'))
 
-        currency = self._get_currency_or_raise('transaction/value', currency)
+        # we don't want to farm out activity level elements/value to
+        # transaction
+        # currency = self._get_currency_or_raise('transaction/value', currency)
 
         transaction = self.get_model('Transaction')
         transaction.value_string = value
@@ -2687,6 +2684,20 @@ class Parse(IatiParser):
                 None,
                 None,
                 code)
+        elif not sector and vocabulary.code in ['99', '98']:
+            # This is needed to create a new sector if related to vocabulary 99 or 98  # NOQA: E501
+            # ref. http://reference.iatistandard.org/203/activity-standard/iati-activities/iati-activity/sector/  # NOQA: E501
+
+            code = slugify(code)
+            sector = self.get_or_none(models.Sector, code=code)
+
+            if not sector:
+                sector = models.Sector()
+                sector.code = code
+                sector.name = 'Vocabulary 99 or 98'
+                sector.description = 'The sector reported corresponds to a sector vocabulary maintained by the reporting organisation for this activity'  # NOQA: E501
+                sector.save()
+
         elif not sector:
             raise IgnoredVocabularyError(
                 "transaction/sector",

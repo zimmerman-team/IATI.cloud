@@ -225,6 +225,8 @@ class DatasetInline(admin.TabularInline):
 class PublisherAdmin(admin.ModelAdmin):
     inlines = [DatasetInline]
 
+    search_fields = ['publisher_iati_id', 'display_name', 'name']
+
     list_display = (
         'publisher_iati_id',
         'display_name',

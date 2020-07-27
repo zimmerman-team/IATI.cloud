@@ -66,7 +66,7 @@ class TransactionIndexing(BaseIndexing):
                     recipient_region.region.name
                 )
 
-        if get_child_attr(transaction, 'transaction_description'):
+        if get_child_attr(transaction, 'description'):
             self.indexing['transaction_description_lang'], self.indexing[
                 'transaction_description_narrative'] = \
                 get_narrative_lang_list(transaction.description)

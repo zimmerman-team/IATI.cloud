@@ -8,7 +8,7 @@ from iati.models import Activity
 from solr.activity.indexing import ActivityIndexing
 from solr.activity_sector.tasks import ActivitySectorTaskIndexing
 from solr.budget.tasks import BudgetTaskIndexing
-from solr.result.tasks import ResultTaskIndexing
+# from solr.result.tasks import ResultTaskIndexing
 from solr.tasks import BaseTaskIndexing
 from solr.transaction.tasks import TransactionTaskIndexing
 
@@ -16,7 +16,7 @@ solr = pysolr.Solr(
     '{url}/{core}'.format(
         url=settings.SOLR.get('url'),
         core=settings.SOLR.get('cores').get('activity')
-    ), always_commit=True
+    ), always_commit=True, timeout=180
 )
 
 
@@ -26,7 +26,8 @@ class ActivityTaskIndexing(BaseTaskIndexing):
     solr = solr
 
     def run_related(self):
+        # transaction-sector is indexed in TransactionTaskIndexing()
         TransactionTaskIndexing().run_from_activity(self.instance)
         BudgetTaskIndexing().run_from_activity(self.instance)
-        ResultTaskIndexing().run_from_activity(self.instance)
+        # ResultTaskIndexing().run_from_activity(self.instance)
         ActivitySectorTaskIndexing().run_from_activity(self.instance)

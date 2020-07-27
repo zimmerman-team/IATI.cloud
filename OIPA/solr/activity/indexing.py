@@ -34,7 +34,8 @@ from solr.result.serializers import ResultSerializer
 from solr.transaction.references import TransactionReference
 from solr.transaction.serializers import TransactionSerializer
 from solr.utils import (
-    bool_string, date_string, decimal_string, get_child_attr, value_string
+    bool_string, date_string, decimal_string, get_child_attr,
+    get_narrative_lang_list, value_string
 )
 
 
@@ -134,7 +135,7 @@ class ActivityIndexing(BaseIndexing):
                         DescriptionSerializer(description).data
                     ).decode()
                 )
-                self.add_field(
+                self.add_value_list(
                     'description_xml',
                     DescriptionReference(description=description).to_string()
                 )
@@ -915,7 +916,10 @@ class ActivityIndexing(BaseIndexing):
 
                 self.add_value_list(
                     'default_aid_type_code',
-                    default_aid_type.aid_type_id
+                    get_child_attr(
+                        default_aid_type,
+                        'aid_type.code'
+                    )
                 )
                 self.add_value_list(
                     'default_aid_type_vocabulary',
@@ -1198,6 +1202,11 @@ class ActivityIndexing(BaseIndexing):
                     transaction,
                     'provider_organisation'
                 )
+                if get_child_attr(transaction, 'description'):
+                    self.indexing['transaction_description_lang'], \
+                        self.indexing[
+                        'transaction_description_narrative'] = \
+                        get_narrative_lang_list(transaction.description)
                 if provider_organisation:
                     self.add_value_list(
                         'transaction_provider_org_provider_activity_id',
@@ -1261,7 +1270,7 @@ class ActivityIndexing(BaseIndexing):
                     )
                     self.add_value_list(
                         'transaction_sector_code',
-                        transaction_sector.sector_id
+                        transaction_sector.sector.code
                     )
 
                 for transaction_recipient_country in \
@@ -2349,7 +2358,7 @@ class ActivityIndexing(BaseIndexing):
         )
         if activity.default_finance_type_id:
             self.add_field(
-                'default_flow_type_xml',
+                'default_finance_type_xml',
                 DefaultFinanceTypeReference(
                     default_finance_type=activity.default_finance_type
                 ).to_string()

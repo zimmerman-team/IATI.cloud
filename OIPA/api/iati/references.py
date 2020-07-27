@@ -1736,17 +1736,17 @@ class LocationReference(ElementReference):
 
                 # @vocabulary
                 if vocabulary_dict:
-                    code_value = vocabulary_dict.get(
+                    vocab_code_value = vocabulary_dict.get(
                         self.location_id.get(
                             'vocabulary'
                         ).get('code').get('key')
                     )
-                    if code_value:
+                    if vocab_code_value:
                         location_id_element.set(
                             self.location_id.get(
                                 'vocabulary'
                             ).get('code').get('attr'),
-                            code_value
+                            vocab_code_value
                         )
 
                 # @code
