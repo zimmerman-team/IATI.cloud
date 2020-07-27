@@ -384,11 +384,13 @@ class BudgetSerializer(ModelSerializerNoValidation):
 
 class PlannedDisbursementProviderSerializer(ModelSerializerNoValidation):
     ref = serializers.CharField(source="normalized_ref")
-    organisation = serializers.PrimaryKeyRelatedField(
-        queryset=Organisation.objects.all(), required=False)
+    # organisation = serializers.PrimaryKeyRelatedField(
+    #     queryset=Organisation.objects.all(), required=False)
     type = CodelistSerializer()
-    provider_activity = serializers.PrimaryKeyRelatedField(
-        queryset=Activity.objects.all(), required=False)
+    provider_activity_id = serializers.CharField(
+        source="provider_activity_ref")
+    # provider_activity = serializers.PrimaryKeyRelatedField(
+    #     queryset=Activity.objects.all(), required=False)
     narratives = NarrativeSerializer(many=True, required=False)
 
     class Meta:
@@ -396,9 +398,9 @@ class PlannedDisbursementProviderSerializer(ModelSerializerNoValidation):
 
         fields = (
             'ref',
-            'organisation',
+            # 'organisation',
             'type',
-            'provider_activity',
+            'provider_activity_id',
             'narratives',
         )
 
@@ -407,11 +409,13 @@ class PlannedDisbursementProviderSerializer(ModelSerializerNoValidation):
 
 class PlannedDisbursementReceiverSerializer(ModelSerializerNoValidation):
     ref = serializers.CharField(source="normalized_ref")
-    organisation = serializers.PrimaryKeyRelatedField(
-        queryset=Organisation.objects.all(), required=False)
+    # organisation = serializers.PrimaryKeyRelatedField(
+    #     queryset=Organisation.objects.all(), required=False)
     type = CodelistSerializer()
-    receiver_activity = serializers.PrimaryKeyRelatedField(
-        queryset=Activity.objects.all(), required=False)
+    receiver_activity_id = serializers.CharField(
+        source="receiver_activity_ref")
+    # receiver_activity = serializers.PrimaryKeyRelatedField(
+    #     queryset=Activity.objects.all(), required=False)
     narratives = NarrativeSerializer(many=True, required=False)
 
     class Meta:
@@ -419,9 +423,9 @@ class PlannedDisbursementReceiverSerializer(ModelSerializerNoValidation):
 
         fields = (
             'ref',
-            'organisation',
+            # 'organisation',
             'type',
-            'receiver_activity',
+            'receiver_activity_id',
             'narratives',
         )
 

@@ -2254,6 +2254,75 @@ class PlannedDisbursementReference(ElementReference):
             if value:
                 # Value type is {Decimal}, then convert it to string
                 value_element.text = str(value)
+
+            # Provider-org
+            provider_org_dict = self.data.get('provider_org')
+            if provider_org_dict:
+                provider_org_element = etree.SubElement(
+                    planned_disbursement_element, 'provider-org')
+
+                # Attributes
+                # Ref
+                ref_value = provider_org_dict.get('ref')
+                if ref_value:
+                    provider_org_element.set('ref', ref_value)
+
+                # Provider-activity-id
+                provider_activity_id_value = provider_org_dict.get(
+                    'provider_activity_id')
+                if provider_activity_id_value:
+                    provider_org_element.set('provider-activity-id',
+                                             provider_activity_id_value)
+                # type
+                type_dict = provider_org_dict.get('type')
+                if type_dict:
+                    type_value = type_dict.get('code')
+                    if type_value:
+                        provider_org_element.set('type', type_value)
+
+                # Narrative
+                provider_org_narrative = ElementWithNarrativeReference(
+                    parent_element=None,
+                    data=provider_org_dict
+                )
+                provider_org_narrative.create_narrative(
+                    parent_element=provider_org_element
+                )
+
+                # Receiver-org
+                receiver_org_dict = self.data.get('receiver_org')
+                if receiver_org_dict:
+                    receiver_org_element = etree.SubElement(
+                        planned_disbursement_element, 'receiver-org')
+
+                    # Attributes
+                    # Ref
+                    ref_value = receiver_org_dict.get('ref')
+                    if ref_value:
+                        receiver_org_element.set('ref', ref_value)
+
+                    # Receiver-activity-id
+                    receiver_activity_id_value = receiver_org_dict.get(
+                        'receiver_activity_id')
+                    if receiver_activity_id_value:
+                        receiver_org_element.set('receiver-activity-id',
+                                                 receiver_activity_id_value)
+                    # type
+                    type_dict = receiver_org_dict.get('type')
+                    if type_dict:
+                        type_value = type_dict.get('code')
+                        if type_value:
+                            receiver_org_element.set('type', type_value)
+
+                    # Narrative
+                    receiver_org_narrative = ElementWithNarrativeReference(
+                        parent_element=None,
+                        data=receiver_org_dict
+                    )
+                    receiver_org_narrative.create_narrative(
+                        parent_element=receiver_org_element
+                    )
+
         # </planned-disbursement>
 
 
