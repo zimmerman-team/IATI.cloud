@@ -77,7 +77,7 @@ class ActivitySerializerTestCase(TestCase):
             the field 'format' should be a CodelistSerializer
             """
 
-        assert isinstance(serializer.fields['categories'].child, serializers.
+        assert isinstance(serializer.fields['category'].child, serializers.
                           DocumentLinkCategorySerializer),\
             """
             the field 'categories' should be a DocumentLinkCategorySerializer
@@ -665,33 +665,33 @@ class ActivitySerializerTestCase(TestCase):
             'id',
             'iati_identifier',
             'title',
-            'descriptions',
+            'description',
             'last_updated_datetime',
             'default_currency',
             'hierarchy',
             'linked_data_uri',
             'reporting_org',
-            'participating_organisations',
-            'related_activities',
+            'participating_org',
+            'related_activity',
             'activity_status',
-            'activity_dates',
+            'activity_date',
             'activity_scope',
-            'recipient_countries',
-            'recipient_regions',
-            'sectors',
+            'recipient_country',
+            'recipient_region',
+            'sector',
             'transactions',
-            'policy_markers',
+            'policy_marker',
             'collaboration_type',
             'default_flow_type',
             'default_finance_type',
             'default_aid_type',
             'default_tied_status',
-            'budgets',
+            'budget',
             'capital_spend',
             'dataset',
-            'document_links',
-            'results',
-            'locations',
+            'document_link',
+            'result',
+            'location',
             'activity_plus_child_aggregation',
         )
         assertion_msg = "the field '{0}' should be in the serialized activity"

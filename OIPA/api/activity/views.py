@@ -381,9 +381,9 @@ class ActivityList(DynamicListView):
     # specification document
     fields = (
         'iati_identifier',
-        'sectors',
-        'recipient_regions',
-        'recipient_countries',
+        'sector',
+        'recipient_region',
+        'recipient_country',
         # 'transaction_types' # uncomment if it has to be default and add the same key to selectable_fields tuple (selectable_fields = (transaction_types))  # NOQA: E501
         )
     # column headers with paths to the json property value.
@@ -393,15 +393,15 @@ class ActivityList(DynamicListView):
     csv_headers = \
         {
                    'iati_identifier': {'header': 'activity_id'},
-                   'sectors.sector.code': {'header': 'sector_code'},
-                   'sectors.percentage':  {'header': 'sectors_percentage'},
-                   'recipient_countries.country.code': {'header': 'country'},
-                   'recipient_regions.region.code': {'header': 'region'},
+                   'sector.sector.code': {'header': 'sector_code'},
+                   'sector.percentage':  {'header': 'sectors_percentage'},
+                   'recipient_country.country.code': {'header': 'country'},
+                   'recipient_region.region.code': {'header': 'region'},
         }
     # Get all transaction type
     transaction_types = []
     # Activity break down column
-    break_down_by = 'sectors'
+    break_down_by = 'sector'
     # selectable fields which required different render logic.
     # Instead merging values using the delimiter, this fields will generate
     # additional columns for the different values, based on defined criteria.
