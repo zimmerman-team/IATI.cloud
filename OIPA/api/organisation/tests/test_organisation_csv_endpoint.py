@@ -89,6 +89,7 @@ class TestOrganisationCSVEndpoints(APITestCase):
         for header in additional_headers:
             self.assertTrue(headers_name.get(header) in csv_headers)
 
+    @skip
     def test_organisations_csv_endpoint_data(self):
         organisation = iati_factory.OrganisationFactory()
         name_narratives = iati_factory.OrganisationNarrativeFactory(
