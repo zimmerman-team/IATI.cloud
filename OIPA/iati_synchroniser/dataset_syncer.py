@@ -181,7 +181,6 @@ class DatasetSyncer(object):
         # the moment
         DatasetValidationTask.delay(dataset_id=obj.id)
 
-
     def remove_deprecated(self):
         """
         remove old publishers and datasets that used an id between 1-5000

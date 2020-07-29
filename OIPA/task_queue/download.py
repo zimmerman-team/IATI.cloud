@@ -64,7 +64,6 @@ class DatasetDownloadTask(celery.Task):
 
         return filetype
 
-
     def run(self, dataset_data, *args, **kwargs):
         """Run the dataset download task"""
 
