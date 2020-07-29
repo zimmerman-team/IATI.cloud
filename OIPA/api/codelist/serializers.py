@@ -43,13 +43,13 @@ class NarrativeSerializer(ModelSerializerNoValidation):
 
 class OrganisationNarrativeSerializer(ModelSerializerNoValidation):
     text = serializers.CharField(source="content")
-    language = CodelistSerializer(required=False)
+    lang = CodelistSerializer(required=False, source='narratives')
 
     class Meta:
         model = OrganisationNarrative
         fields = (
             'text',
-            'language',
+            'lang',
         )
 
     # def validate(self, data):
