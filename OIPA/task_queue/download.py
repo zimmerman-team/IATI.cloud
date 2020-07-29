@@ -1,14 +1,13 @@
 
-import celery
 import errno
 import logging
 import os
 import urllib
 
+import celery
 from django.conf import settings
 
-from iati_synchroniser.models import Dataset, Publisher, filetype_choices
-
+from iati_synchroniser.models import Dataset, filetype_choices
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
@@ -155,7 +154,3 @@ class DatasetDownloadTask(celery.Task):
 
             # URL string to save as a Dataset attribute:
             return os.path.join(main_download_dir, filename)
-
-
-
-
