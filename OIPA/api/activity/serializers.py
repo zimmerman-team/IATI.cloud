@@ -391,7 +391,8 @@ class PlannedDisbursementProviderSerializer(ModelSerializerNoValidation):
         source="provider_activity_ref")
     # provider_activity = serializers.PrimaryKeyRelatedField(
     #     queryset=Activity.objects.all(), required=False)
-    narratives = NarrativeSerializer(many=True, required=False)
+    narrative = NarrativeSerializer(many=True, required=False,
+                                    source='narratives')
 
     class Meta:
         model = PlannedDisbursementProvider
@@ -401,7 +402,7 @@ class PlannedDisbursementProviderSerializer(ModelSerializerNoValidation):
             # 'organisation',
             'type',
             'provider_activity_id',
-            'narratives',
+            'narrative',
         )
 
         validators = []
@@ -416,7 +417,8 @@ class PlannedDisbursementReceiverSerializer(ModelSerializerNoValidation):
         source="receiver_activity_ref")
     # receiver_activity = serializers.PrimaryKeyRelatedField(
     #     queryset=Activity.objects.all(), required=False)
-    narratives = NarrativeSerializer(many=True, required=False)
+    narrative = NarrativeSerializer(many=True, required=False,
+                                    source='narratives')
 
     class Meta:
         model = PlannedDisbursementReceiver
@@ -426,7 +428,7 @@ class PlannedDisbursementReceiverSerializer(ModelSerializerNoValidation):
             # 'organisation',
             'type',
             'receiver_activity_id',
-            'narratives',
+            'narrative',
         )
 
         validators = []
@@ -565,7 +567,7 @@ class ActivityDateSerializer(ModelSerializerNoValidation):
     id = serializers.HiddenField(default=None)
     type = CodelistSerializer()
     iso_date = serializers.DateField()
-    narratives = NarrativeSerializer(many=True)
+    narrative = NarrativeSerializer(many=True, source='narratives')
     activity = serializers.CharField(write_only=True)
 
     def validate(self, data):
@@ -603,7 +605,7 @@ class ActivityDateSerializer(ModelSerializerNoValidation):
 
     class Meta:
         model = ActivityDate
-        fields = ('id', 'activity', 'iso_date', 'type', 'narratives')
+        fields = ('id', 'activity', 'iso_date', 'type', 'narrative')
 
 
 class ActivityAggregationSerializer(DynamicFieldsSerializer):
@@ -704,7 +706,7 @@ class ReportingOrganisationSerializer(DynamicFieldsModelSerializer):
 
     activity = serializers.CharField(write_only=True)
 
-    narratives = OrganisationNarrativeSerializer(
+    narrative = OrganisationNarrativeSerializer(
         source="publisher.organisation.name.narratives",
         many=True,
         required=False
@@ -718,7 +720,7 @@ class ReportingOrganisationSerializer(DynamicFieldsModelSerializer):
             'url',
             'type',
             'secondary_reporter',
-            'narratives',
+            'narrative',
             'activity',
         )
 
@@ -755,7 +757,7 @@ class ReportingOrganisationDataSerializer(DynamicFieldsModelSerializer):  # NOQA
 
     # TODO: please check this why in narrative in Reporting org is empty
     # So to get narratives should be from organisation
-    narratives = OrganisationNarrativeSerializer(
+    narrative = OrganisationNarrativeSerializer(
         source="organisation.name.narratives",
         many=True,
         required=False
@@ -769,7 +771,7 @@ class ReportingOrganisationDataSerializer(DynamicFieldsModelSerializer):  # NOQA
             'url',
             'type',
             'secondary_reporter',
-            'narratives',
+            'narrative',
             'activity',
         )
 
@@ -784,7 +786,8 @@ class ParticipatingOrganisationSerializer(ModelSerializerNoValidation):
         source='org_activity_id',
         required=False
     )
-    narratives = NarrativeSerializer(many=True, required=False)
+    narrative = NarrativeSerializer(many=True, required=False,
+                                    source="narratives")
 
     activity = serializers.CharField(write_only=True)
 
@@ -843,14 +846,15 @@ class ParticipatingOrganisationSerializer(ModelSerializerNoValidation):
             'role',
             'activity_id',
             'activity',
-            'narratives',
+            'narrative',
         )
 
 
 class OtherIdentifierSerializer(ModelSerializerNoValidation):
     class OwnerOrgSerializer(SerializerNoValidation):
         ref = serializers.CharField(source='owner_ref')
-        narratives = NarrativeSerializer(many=True, required=False)
+        narrative = NarrativeSerializer(many=True, required=False,
+                                        source='narratives')
 
     id = serializers.HiddenField(default=None)
     ref = serializers.CharField(source="identifier")
@@ -918,7 +922,7 @@ class ActivityPolicyMarkerSerializer(ModelSerializerNoValidation):
     vocabulary_uri = serializers.URLField()
     policy_marker = CodelistSerializer(source="code")
     significance = CodelistSerializer()
-    narratives = NarrativeSerializer(many=True)
+    narrative = NarrativeSerializer(many=True, source='narratives')
 
     activity = serializers.CharField(write_only=True)
 
@@ -975,23 +979,23 @@ class ActivityPolicyMarkerSerializer(ModelSerializerNoValidation):
             'vocabulary_uri',
             'policy_marker',
             'significance',
-            'narratives',
+            'narrative',
         )
 
 
 # TODO: change to NarrativeContainer
 class TitleSerializer(ModelSerializerNoValidation):
-    narratives = NarrativeSerializer(many=True)
+    narrative = NarrativeSerializer(many=True, source='narratives')
     id = serializers.HiddenField(default=None)
 
     class Meta:
         model = Title
-        fields = ('id', 'narratives',)
+        fields = ('id', 'narrative',)
 
 
 class DescriptionSerializer(ModelSerializerNoValidation):
     type = CodelistSerializer()
-    narratives = NarrativeSerializer(many=True)
+    narrative = NarrativeSerializer(many=True, source='narratives')
     id = serializers.HiddenField(default=None)
     activity = serializers.CharField(write_only=True)
 
@@ -1039,7 +1043,7 @@ class DescriptionSerializer(ModelSerializerNoValidation):
         fields = (
             'id',
             'type',
-            'narratives',
+            'narrative',
             'activity',
         )
 
@@ -1165,7 +1169,7 @@ class ActivitySectorSerializer(ModelSerializerNoValidation):
     vocabulary_uri = serializers.URLField()
 
     activity = serializers.CharField(write_only=True)
-    narratives = NarrativeSerializer(many=True)
+    narrative = NarrativeSerializer(many=True, source='narratives')
 
     class Meta:
         model = ActivitySector
@@ -1176,7 +1180,7 @@ class ActivitySectorSerializer(ModelSerializerNoValidation):
             'percentage',
             'vocabulary',
             'vocabulary_uri',
-            'narratives',
+            'narrative',
         )
 
     def validate(self, data):
@@ -1219,7 +1223,8 @@ class ActivitySectorSerializer(ModelSerializerNoValidation):
 class BudgetItemSerializer(ModelSerializerNoValidation):
 
     class BudgetItemDescriptionSerializer(SerializerNoValidation):
-        narratives = NarrativeSerializer(many=True, required=False)
+        narrative = NarrativeSerializer(many=True, required=False,
+                                        source='narratives')
 
     budget_identifier = CodelistSerializer(source="code")
     description = BudgetItemDescriptionSerializer(required=False)
@@ -1351,7 +1356,8 @@ class ConditionSerializer(ModelSerializerNoValidation):
 
     id = serializers.HiddenField(default=None)
     type = CodelistSerializer()
-    narratives = NarrativeSerializer(many=True, required=False)
+    narrative = NarrativeSerializer(many=True, required=False,
+                                    source='narratives')
 
     conditions = serializers.CharField(write_only=True)
 
@@ -1361,7 +1367,7 @@ class ConditionSerializer(ModelSerializerNoValidation):
             'id',
             'conditions',
             'type',
-            'narratives',
+            'narrative',
         )
 
     def validate(self, data):
@@ -1478,7 +1484,8 @@ class ActivityRecipientRegionSerializer(DynamicFieldsModelSerializer):
     vocabulary_uri = serializers.URLField(required=False)
 
     activity = serializers.CharField(write_only=True)
-    narratives = NarrativeSerializer(many=True, required=True)
+    narrative = NarrativeSerializer(many=True, required=True,
+                                    source='narratives')
 
     class Meta:
         model = ActivityRecipientRegion
@@ -1489,7 +1496,7 @@ class ActivityRecipientRegionSerializer(DynamicFieldsModelSerializer):
             'percentage',
             'vocabulary',
             'vocabulary_uri',
-            'narratives',
+            'narrative',
         )
 
     def validate(self, data):
@@ -1538,7 +1545,8 @@ class HumanitarianScopeSerializer(DynamicFieldsModelSerializer):
     vocabulary_uri = serializers.URLField()
     code = serializers.CharField()
     activity = serializers.CharField(write_only=True)
-    narratives = NarrativeSerializer(many=True, required=False)
+    narrative = NarrativeSerializer(many=True, required=False,
+                                    source='narratives')
 
     class Meta:
         model = HumanitarianScope
@@ -1549,7 +1557,7 @@ class HumanitarianScopeSerializer(DynamicFieldsModelSerializer):
             'vocabulary',
             'vocabulary_uri',
             'code',
-            'narratives'
+            'narrative'
         )
 
     def validate(self, data):
@@ -1599,7 +1607,8 @@ class RecipientCountrySerializer(DynamicFieldsModelSerializer):
         coerce_to_string=False
     )
     activity = serializers.CharField(write_only=True)
-    narratives = NarrativeSerializer(many=True, required=True)
+    narrative = NarrativeSerializer(many=True, required=True,
+                                    source='narratives')
 
     def validate(self, data):
         activity = get_or_raise(Activity, data, 'activity')
@@ -1646,7 +1655,7 @@ class RecipientCountrySerializer(DynamicFieldsModelSerializer):
             'activity',
             'country',
             'percentage',
-            'narratives',
+            'narrative',
         )
 
 
@@ -1666,27 +1675,27 @@ class ResultTypeSerializer(ModelSerializerNoValidation):
 
 class ResultDescriptionSerializer(ModelSerializerNoValidation):
     id = serializers.HiddenField(default=None)
-    narratives = NarrativeSerializer(source="*")
+    narrative = NarrativeSerializer(source="*",)
 
     class Meta:
         model = ResultDescription
         fields = (
             'id',
-            'narratives',
+            'narrative',
         )
 
         extra_kwargs = {"id": {"read_only": False}}
 
 
 class ResultTitleSerializer(ModelSerializerNoValidation):
-    narratives = NarrativeSerializer(source="*")
+    narrative = NarrativeSerializer(source="*")
     id = serializers.HiddenField(default=None)
 
     class Meta:
         model = ResultTitle
         fields = (
             'id',
-            'narratives',
+            'narrative',
         )
 
         extra_kwargs = {"id": {"read_only": False}}
@@ -3075,7 +3084,7 @@ class ActivityAggregationContainerSerializer(DynamicFieldsSerializer):
 class TransactionProviderSerializer(serializers.ModelSerializer):
     ref = serializers.CharField()
     type = CodelistSerializer()
-    narratives = NarrativeSerializer(many=True)
+    narrative = NarrativeSerializer(many=True, source='narratives')
     provider_activity = serializers.HyperlinkedRelatedField(
         read_only=True,
         view_name='activities:activity-detail')
@@ -3089,14 +3098,14 @@ class TransactionProviderSerializer(serializers.ModelSerializer):
             'type',
             'provider_activity',
             'provider_activity_id',
-            'narratives'
+            'narrative'
         )
 
 
 class TransactionReceiverSerializer(serializers.ModelSerializer):
     ref = serializers.CharField()
     type = CodelistSerializer()
-    narratives = NarrativeSerializer(many=True)
+    narrative = NarrativeSerializer(many=True, source='narratives')
     receiver_activity = serializers.HyperlinkedRelatedField(
         read_only=True,
         view_name='activities:activity-detail')
@@ -3111,7 +3120,7 @@ class TransactionReceiverSerializer(serializers.ModelSerializer):
             'type',
             'receiver_activity',
             'receiver_activity_id',
-            'narratives'
+            'narrative'
         )
 
 
@@ -3153,12 +3162,12 @@ class TransactionSectorSerializer(serializers.ModelSerializer):
 
 
 class TransactionDescriptionSerializer(serializers.ModelSerializer):
-    narratives = NarrativeSerializer(many=True)
+    narrative = NarrativeSerializer(many=True, source='narratives')
 
     class Meta:
         model = TransactionDescription
         fields = (
-            'narratives',
+            'narrative',
         )
 
 
@@ -3247,7 +3256,7 @@ class TransactionSerializer(serializers.ModelSerializer):
 class ActivityTagSerializer(ModelSerializerNoValidation):
     id = serializers.HiddenField(default=None)
     vocabulary = VocabularySerializer()
-    narratives = NarrativeSerializer(many=True)
+    narrative = NarrativeSerializer(many=True, source='narratives')
 
     class Meta:
         model = ActivityTag
@@ -3257,7 +3266,7 @@ class ActivityTagSerializer(ModelSerializerNoValidation):
             'vocabulary_uri',
             'activity',
             'vocabulary',
-            'narratives'
+            'narrative'
         )
 
 

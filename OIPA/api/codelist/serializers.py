@@ -31,13 +31,13 @@ class CodelistVocabularySerializer(CodelistSerializer):
 
 class NarrativeSerializer(ModelSerializerNoValidation):
     text = serializers.CharField(source="content")
-    language = CodelistSerializer(required=False)
+    lang = CodelistSerializer(required=False, source='language')
 
     class Meta:
         model = Narrative
         fields = (
             'text',
-            'language',
+            'lang',
         )
 
 
