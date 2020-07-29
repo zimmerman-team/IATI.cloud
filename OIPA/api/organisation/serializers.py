@@ -74,17 +74,17 @@ class ValueSerializer(SerializerNoValidation):
 
 
 class OrganisationNameSerializer(SerializerNoValidation):
-    narratives = OrganisationNarrativeSerializer(many=True)
+    narrative = OrganisationNarrativeSerializer(many=True, source='narratives')
 
     class Meta:
         model = org_models.OrganisationName
-        fields = ('narratives',)
+        fields = ('narrative',)
 
 
 class TotalBudgetBudgetLineSerializer(ModelSerializerNoValidation):
     ref = serializers.CharField()
     value = ValueSerializer(source='*')
-    narratives = OrganisationNarrativeSerializer(many=True)
+    narrative = OrganisationNarrativeSerializer(many=True, source='narratives')
 
     total_budget = serializers.CharField(write_only=True)
 
@@ -95,7 +95,7 @@ class TotalBudgetBudgetLineSerializer(ModelSerializerNoValidation):
             'id',
             'ref',
             'value',
-            'narratives',
+            'narrative',
         )
 
     def validate(self, data):
@@ -219,7 +219,7 @@ class RecipientOrgBudgetLineSerializer(ModelSerializerNoValidation):
     id = serializers.HiddenField(default=None)
     ref = serializers.CharField()
     value = ValueSerializer(source='*')
-    narratives = OrganisationNarrativeSerializer(many=True)
+    narrative = OrganisationNarrativeSerializer(many=True, source='narratives')
 
     recipient_org_budget = serializers.CharField(write_only=True)
 
@@ -230,7 +230,7 @@ class RecipientOrgBudgetLineSerializer(ModelSerializerNoValidation):
             'id',
             'ref',
             'value',
-            'narratives',
+            'narrative',
         )
 
     def validate(self, data):
@@ -284,12 +284,14 @@ class RecipientOrgBudgetLineSerializer(ModelSerializerNoValidation):
 class OrganisationRecipientOrgBudgetSerializer(ModelSerializerNoValidation):
     class RecipientOrganisationSerializer(SerializerNoValidation):
         ref = serializers.CharField(source="recipient_org_identifier")
-        narratives = OrganisationNarrativeSerializer(many=True, read_only=True)
+        narrative = OrganisationNarrativeSerializer(many=True,
+                                                    read_only=True,
+                                                    source='narratives')
 
         class Meta:
             fields = (
                 'ref',
-                'narratives',
+                'narrative',
             )
 
     id = serializers.HiddenField(default=None)
@@ -368,7 +370,7 @@ class RecipientCountryBudgetLineSerializer(ModelSerializerNoValidation):
     id = serializers.HiddenField(default=None)
     ref = serializers.CharField()
     value = ValueSerializer(source='*')
-    narratives = OrganisationNarrativeSerializer(many=True)
+    narrative = OrganisationNarrativeSerializer(many=True, source='narratives')
 
     recipient_country_budget = serializers.CharField(write_only=True)
 
@@ -379,7 +381,7 @@ class RecipientCountryBudgetLineSerializer(ModelSerializerNoValidation):
             'id',
             'ref',
             'value',
-            'narratives',
+            'narrative',
         )
 
     def validate(self, data):
@@ -519,7 +521,7 @@ class RecipientRegionBudgetLineSerializer(ModelSerializerNoValidation):
     id = serializers.HiddenField(default=None)
     ref = serializers.CharField()
     value = ValueSerializer(source='*')
-    narratives = OrganisationNarrativeSerializer(many=True)
+    narrative = OrganisationNarrativeSerializer(many=True, source='narratives')
 
     recipient_region_budget = serializers.CharField(write_only=True)
 
@@ -530,7 +532,7 @@ class RecipientRegionBudgetLineSerializer(ModelSerializerNoValidation):
             'id',
             'ref',
             'value',
-            'narratives',
+            'narrative',
         )
 
     def validate(self, data):
@@ -664,7 +666,7 @@ class TotalExpenditureLineSerializer(ModelSerializerNoValidation):
     id = serializers.HiddenField(default=None)
     ref = serializers.CharField()
     value = ValueSerializer(source='*')
-    narratives = OrganisationNarrativeSerializer(many=True)
+    narrative = OrganisationNarrativeSerializer(many=True, source='narratives')
 
     total_expenditure = serializers.CharField(write_only=True)
 
@@ -675,7 +677,7 @@ class TotalExpenditureLineSerializer(ModelSerializerNoValidation):
             'id',
             'ref',
             'value',
-            'narratives',
+            'narrative',
         )
 
     def validate(self, data):
@@ -1047,7 +1049,7 @@ class OrganisationReportingOrganisationSerializer(ModelSerializerNoValidation):
     type = CodelistSerializer(source="org_type")
     secondary_reporter = BoolToNumField()
 
-    narratives = OrganisationNarrativeSerializer(many=True)
+    narrative = OrganisationNarrativeSerializer(many=True, source='narratives')
 
     class Meta:
         model = org_models.OrganisationReportingOrganisation
@@ -1055,7 +1057,7 @@ class OrganisationReportingOrganisationSerializer(ModelSerializerNoValidation):
             'ref',
             'type',
             'secondary_reporter',
-            'narratives',
+            'narrative',
         )
 
 
