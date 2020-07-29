@@ -832,37 +832,37 @@ class IATIXMLRenderer(BaseRenderer):
 
     element_references = {
         'title': TitleReference,
-        'descriptions': DescriptionReference,
-        'activity_dates': ActivityDateReference,
+        'description': DescriptionReference,
+        'activity_date': ActivityDateReference,
         'reporting_org': ReportingOrgReference,
-        'participating_organisations': ParticipatingOrgReference,
+        'participating_org': ParticipatingOrgReference,
         'contact_info': ContactInfoReference,
         'activity_scope': ActivityScopeReference,
-        'related_transactions': TransactionReference,
-        'sectors': SectorReference,
-        'budgets': BudgetReference,
+        'transaction': TransactionReference,
+        'sector': SectorReference,
+        'budget': BudgetReference,
         'other_identifier': OtherIdentifierReference,
         'activity_status': ActivityStatusReference,
-        'recipient_countries': RecipientCountryReference,
-        'recipient_regions': RecipientRegionReference,
-        'locations': LocationReference,
-        'policy_markers': PolicyMarkerReference,
+        'recipient_country': RecipientCountryReference,
+        'recipient_region': RecipientRegionReference,
+        'location': LocationReference,
+        'policy_marker': PolicyMarkerReference,
         'collaboration_type': CollaborationTypeReference,
         'default_flow_type': DefaultFlowTypeReference,
         'default_finance_type': DefaultFinanceTypeReference,
         'default_tied_status': DefaultTiedStatusReference,
-        'planned_disbursements': PlannedDisbursementReference,
+        'planned_disbursement': PlannedDisbursementReference,
         'capital_spend': CapitalSpendReference,
-        'document_links': DocumentLinkReference,
+        'document_link': DocumentLinkReference,
         'legacy_data': LegacyDataReference,
         'crs_add': CrsAddReference,
-        'results': ResultReference,
+        'result': ResultReference,
         'fss': FssReference,
         'humanitarian_scope': HumanitarianScopeReference,
-        'related_activities': RelatedActivityReference,
+        'related_activity': RelatedActivityReference,
         'conditions': ConditionsReference,
         'country_budget_items': CountryBudgetItemsReference,
-        'tags': TagReference,
+        'tag': TagReference,
         'default_aid_type': DefaultAidTypeReference,
     }
 
@@ -1079,7 +1079,7 @@ class OrganisationIATIXMLRenderer(IATIXMLRenderer):
         'recipient_region_budgets': RecipientRegionBudgetOrgReference,
         'recipient_country_budgets': RecipientCountryBudgetOrgReference,
         'total_expenditures': TotalExpenditureOrgReference,
-        'document_links': DocumentLinkOrgReference
+        'document_link': DocumentLinkOrgReference
     }
 
 
@@ -1237,7 +1237,7 @@ class OrganisationIATICSVRenderer(CSVRenderer):
 
         @classmethod
         def get(cls, data):
-            document_links = data.get('document_links')
+            document_links = data.get('document_link')
             if document_links and isinstance(document_links, list):
                 data_column = ''
                 for document_links in document_links:

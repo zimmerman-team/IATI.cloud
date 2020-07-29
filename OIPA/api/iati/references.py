@@ -394,7 +394,7 @@ class TransactionReference(ElementReference):
     # Provider Organisation
     provider_organisation = {
         'element': 'provider-org',
-        'key': 'provider_organisation',
+        'key': 'provider_org',
         # Attributes
         'ref': {
             'key': 'ref',
@@ -419,7 +419,7 @@ class TransactionReference(ElementReference):
     # Receiver Organisation
     receiver_organisation = {
         'element': 'receiver-org',
-        'key': 'receiver_organisation',
+        'key': 'receiver_org',
         # Attributes
         'ref': {
             'key': 'ref',
@@ -454,7 +454,7 @@ class TransactionReference(ElementReference):
     # Recipient country
     recipient_countries = {
         'element': 'recipient-country',
-        'key': 'recipient_countries',
+        'key': 'recipient_country',
         'country': {
             'key': 'country',
             'code': {
@@ -466,7 +466,7 @@ class TransactionReference(ElementReference):
     # Recipient region
     recipient_regions = {
         'element': 'recipient-region',
-        'key': 'recipient_regions',
+        'key': 'recipient_region',
         'region': {
             'key': 'region',
             'code': {
@@ -485,7 +485,7 @@ class TransactionReference(ElementReference):
     # Sector
     sectors = {
         'element': 'sector',
-        'key': 'sectors',
+        'key': 'sector',
         'sector': {
             'key': 'sector',
             'code': {
@@ -2254,6 +2254,75 @@ class PlannedDisbursementReference(ElementReference):
             if value:
                 # Value type is {Decimal}, then convert it to string
                 value_element.text = str(value)
+
+            # Provider-org
+            provider_org_dict = self.data.get('provider_org')
+            if provider_org_dict:
+                provider_org_element = etree.SubElement(
+                    planned_disbursement_element, 'provider-org')
+
+                # Attributes
+                # Ref
+                ref_value = provider_org_dict.get('ref')
+                if ref_value:
+                    provider_org_element.set('ref', ref_value)
+
+                # Provider-activity-id
+                provider_activity_id_value = provider_org_dict.get(
+                    'provider_activity_id')
+                if provider_activity_id_value:
+                    provider_org_element.set('provider-activity-id',
+                                             provider_activity_id_value)
+                # type
+                type_dict = provider_org_dict.get('type')
+                if type_dict:
+                    type_value = type_dict.get('code')
+                    if type_value:
+                        provider_org_element.set('type', type_value)
+
+                # Narrative
+                provider_org_narrative = ElementWithNarrativeReference(
+                    parent_element=None,
+                    data=provider_org_dict
+                )
+                provider_org_narrative.create_narrative(
+                    parent_element=provider_org_element
+                )
+
+                # Receiver-org
+                receiver_org_dict = self.data.get('receiver_org')
+                if receiver_org_dict:
+                    receiver_org_element = etree.SubElement(
+                        planned_disbursement_element, 'receiver-org')
+
+                    # Attributes
+                    # Ref
+                    ref_value = receiver_org_dict.get('ref')
+                    if ref_value:
+                        receiver_org_element.set('ref', ref_value)
+
+                    # Receiver-activity-id
+                    receiver_activity_id_value = receiver_org_dict.get(
+                        'receiver_activity_id')
+                    if receiver_activity_id_value:
+                        receiver_org_element.set('receiver-activity-id',
+                                                 receiver_activity_id_value)
+                    # type
+                    type_dict = receiver_org_dict.get('type')
+                    if type_dict:
+                        type_value = type_dict.get('code')
+                        if type_value:
+                            receiver_org_element.set('type', type_value)
+
+                    # Narrative
+                    receiver_org_narrative = ElementWithNarrativeReference(
+                        parent_element=None,
+                        data=receiver_org_dict
+                    )
+                    receiver_org_narrative.create_narrative(
+                        parent_element=receiver_org_element
+                    )
+
         # </planned-disbursement>
 
 
@@ -2402,24 +2471,25 @@ class DocumentLinkReference(ElementReference):
         # </description>
 
         categories = self.data.get(self.category.get('list'))
-        for category in categories:
-            category_dict = category.get(
-                self.category.get('key')
-            )
-            if category_dict:
-                # <category
-                category_element = etree.SubElement(
-                    document_link_element,
-                    self.category.get('element')
+        if categories is not None:
+            for category in categories:
+                category_dict = category.get(
+                    self.category.get('key')
                 )
-                # @code
-                DataAttribute(
-                    category_element,
-                    self.category.get('code').get('attr'),
-                    category_dict,
-                    self.category.get('code').get('key')
-                ).set()
-                # />
+                if category_dict:
+                    # <category
+                    category_element = etree.SubElement(
+                        document_link_element,
+                        self.category.get('element')
+                    )
+                    # @code
+                    DataAttribute(
+                        category_element,
+                        self.category.get('code').get('attr'),
+                        category_dict,
+                        self.category.get('code').get('key')
+                    ).set()
+                    # />
 
         # <document-date
         document_date_dict = self.data.get(self.document_date.get('key'))
@@ -2934,7 +3004,7 @@ class DocumentLinkBaseReference(BaseReference):
         # <category
         ElementRecord(
             name='category',
-            key='categories',
+            key='category',
             attributes=[
                 # @code
                 # Dict type
@@ -2949,7 +3019,7 @@ class DocumentLinkBaseReference(BaseReference):
         # <language
         ElementRecord(
             name='language',
-            key='languages',
+            key='language',
             attributes=[
                 # @code
                 # Dict type
@@ -2977,7 +3047,7 @@ class DocumentLinkBaseReference(BaseReference):
     ]
     element_record = ElementRecord(
         name='document-link',
-        key='document_links',
+        key='document_link',
         attributes=attributes,
         children=children
     )
@@ -3038,7 +3108,7 @@ class ResultReference(BaseReference):
         # <document-link>
         ElementRecord(
             name='indicator',
-            key='indicators',
+            key='indicator',
             attributes=[
                 # @measure
                 # Dict type
@@ -3087,7 +3157,7 @@ class ResultReference(BaseReference):
                 # <reference>
                 ElementRecord(
                     name='reference',
-                    key='references',
+                    key='reference',
                     attributes=[
                         # @vocabulary
                         # Dict type
@@ -3129,7 +3199,7 @@ class ResultReference(BaseReference):
                         # <location>
                         ElementRecord(
                             name='location',
-                            key='locations',
+                            key='location',
                             attributes=[
                                 # @ref
                                 AttributeRecord(
@@ -3142,7 +3212,7 @@ class ResultReference(BaseReference):
                         # <dimension>
                         ElementRecord(
                             name='dimension',
-                            key='dimensions',
+                            key='dimension',
                             attributes=[
                                 # @name
                                 AttributeRecord(
@@ -3179,7 +3249,7 @@ class ResultReference(BaseReference):
                 # <period>
                 ElementRecord(
                     name='period',
-                    key='periods',
+                    key='period',
                     children=[
                         # <period-start>
                         ElementRecord(
@@ -3208,7 +3278,7 @@ class ResultReference(BaseReference):
                         # <target>
                         ElementRecord(
                             name='target',
-                            key='targets',
+                            key='target',
                             attributes=[
                                 # @value
                                 AttributeRecord(
@@ -3220,7 +3290,7 @@ class ResultReference(BaseReference):
                                 # <location>
                                 ElementRecord(
                                     name='location',
-                                    key='locations',
+                                    key='location',
                                     attributes=[
                                         # @ref
                                         AttributeRecord(
@@ -3233,7 +3303,7 @@ class ResultReference(BaseReference):
                                 # <dimension>
                                 ElementRecord(
                                     name='dimension',
-                                    key='dimensions',
+                                    key='dimension',
                                     attributes=[
                                         # @name
                                         AttributeRecord(
@@ -3270,7 +3340,7 @@ class ResultReference(BaseReference):
                         # <actual>
                         ElementRecord(
                             name='actual',
-                            key='actuals',
+                            key='actual',
                             attributes=[
                                 # @value
                                 AttributeRecord(
@@ -3282,7 +3352,7 @@ class ResultReference(BaseReference):
                                 # TODO: add <comment></comment>
                                 ElementRecord(
                                     name='location',
-                                    key='locations',
+                                    key='location',
                                     attributes=[
                                         # @ref
                                         AttributeRecord(
@@ -3295,7 +3365,7 @@ class ResultReference(BaseReference):
                                 # <location>
                                 ElementRecord(
                                     name='dimension',
-                                    key='dimensions',
+                                    key='dimension',
                                     attributes=[
                                         # @name
                                         AttributeRecord(
@@ -3362,7 +3432,7 @@ class FssReference(BaseReference):
         # <condition>
         ElementRecord(
             name='forecast',
-            key='forecasts',
+            key='forecast',
             attributes=[
                 # @year
                 AttributeRecord(
@@ -3535,7 +3605,7 @@ class CountryBudgetItemsReference(BaseReference):
         # <budget-item>
         ElementRecord(
             name='budget-item',
-            key='budget_items',
+            key='budget_item',
             attributes=[
                 # @code
                 AttributeRecord(
@@ -4377,7 +4447,7 @@ class DocumentLinkOrgReference(BaseReference):
         # <category
         ElementRecord(
             name='category',
-            key='categories',
+            key='category',
             attributes=[
                 # @code
                 AttributeRecord(
@@ -4391,7 +4461,7 @@ class DocumentLinkOrgReference(BaseReference):
         # <language
         ElementRecord(
             name='language',
-            key='languages',
+            key='language',
             attributes=[
                 # @code
                 AttributeRecord(
@@ -4418,7 +4488,7 @@ class DocumentLinkOrgReference(BaseReference):
         # <recipient-country
         ElementRecord(
             name='recipient-country',
-            key='recipient_countries',
+            key='recipient_country',
             attributes=[
                 # @code
                 AttributeRecord(
