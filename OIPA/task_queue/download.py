@@ -2,9 +2,9 @@
 import errno
 import logging
 import os
-import urllib
 
 import celery
+import requests
 from django.conf import settings
 
 from iati_synchroniser.models import Dataset, filetype_choices
@@ -141,14 +141,19 @@ class DatasetDownloadTask(celery.Task):
             )
 
             try:
-                urllib.request.urlretrieve(
-                    dataset_url,
-                    download_dir_with_filename
-                )
+                with open(download_dir_with_filename, 'wb') as f:
+                    resp = requests.get(dataset_url, verify=False)
+                    f.write(resp.content)
+                # urllib.request.urlretrieve(
+                #     dataset_url,
+                #     download_dir_with_filename
+                # )
+
             except (
-                urllib.request.HTTPError,  # 403
-                urllib.request.URLError,  # timeouts
-                ConnectionResetError,
+                requests.exceptions.RequestException,
+                ConnectionResetError
+                # urllib.request.HTTPError,  # 403
+                # urllib.request.URLError,  # timeouts
             ):
                 pass
 
