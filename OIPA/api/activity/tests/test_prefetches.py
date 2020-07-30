@@ -183,7 +183,7 @@ class ActivitySaveTestCase(TestCase):
                 queryset,
                 many=True,
                 context={'request': self.request_dummy},
-                fields=('recipient_countries',))
+                fields=('recipient_country',))
 
             list(serializer.data)
 
@@ -201,7 +201,7 @@ class ActivitySaveTestCase(TestCase):
                 queryset,
                 many=True,
                 context={'request': self.request_dummy},
-                fields=('recipient_regions',))
+                fields=('recipient_region',))
 
             list(serializer.data)
 
@@ -345,7 +345,7 @@ class ActivitySaveTestCase(TestCase):
                 queryset,
                 many=True,
                 context={'request': self.request_dummy},
-                fields=('planned_disbursement',))
+                fields=('planned_disbursements',))
 
             list(serializer.data)
 
