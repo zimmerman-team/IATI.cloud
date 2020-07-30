@@ -58,7 +58,7 @@ class Dataset(models.Model):
     # This can be blank because sometimes the URL might not be reachable.
     internal_url = models.URLField(max_length=255, blank=True)
 
-    iati_version = models.CharField(max_length=10, default="2.02")
+    iati_version = models.CharField(max_length=255, default="2.02")
     # OIPA related fields
     date_created = models.DateTimeField(
         default=datetime.datetime.now, editable=False)
