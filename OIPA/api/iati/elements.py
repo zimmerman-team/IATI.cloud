@@ -51,7 +51,7 @@ class NarrativeReference(ElementReference):
 
 class ElementWithNarrativeReference(ElementReference):
     narrative_element = 'narrative'
-    narratives_key = 'narratives'
+    narratives_key = 'narrative'
 
     def create_narrative(self, parent_element):
         if self.narratives_key in self.data:
@@ -66,7 +66,7 @@ class ElementWithNarrativeReference(ElementReference):
                 pass
 
     def create(self):
-        if self.data and self.data['narratives']:
+        if self.data and self.data['narrative']:
             # Narrative can be inside of the new element or
             # inside of the parent element
             if self.element:
