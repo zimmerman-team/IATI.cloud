@@ -43,7 +43,7 @@ class NarrativeSerializerTestCase(TestCase):
             'narrative.content' should be serialized to a field called 'text'
             """
         assert serializer.data[
-            'language'
+            'lang'
         ]['code'] == narrative.language.code,\
             """
             'narrative.language' should be serialized to a field called 'language'
@@ -252,7 +252,7 @@ class ActivitySerializerTestCase(TestCase):
         policy_marker = iati_factory.ActivityPolicyMarkerFactory.build()
         data = serializers.ActivityPolicyMarkerSerializer(policy_marker).data
 
-        assert 'narratives' in data
+        assert 'narrative' in data
         assert 'vocabulary' in data,\
             'serializer.data should contain an object called vocabulary'
         assert 'significance' in data,\
@@ -277,7 +277,7 @@ class ActivitySerializerTestCase(TestCase):
         iati_factory.NarrativeFactory.create(
             related_object=title, content="title")
         serializer = serializers.TitleSerializer(title)
-        assert serializer.data['narratives'][0]['text'] == "title",\
+        assert serializer.data['narrative'][0]['text'] == "title",\
             """
             'title' should be serialized as 'title.narratives.text'
             """
@@ -287,7 +287,7 @@ class ActivitySerializerTestCase(TestCase):
         iati_factory.NarrativeFactory.create(
             related_object=description, content="description")
         serializer = serializers.DescriptionSerializer(description)
-        assert serializer.data['narratives'][0]['text'] == "description",\
+        assert serializer.data['narrative'][0]['text'] == "description",\
             """
             'description' should be serialized as 'description.narratives.text'
             """
@@ -383,7 +383,7 @@ class ActivitySerializerTestCase(TestCase):
             context={'request': self.request_dummy}
         )
         assert ('role'
-                and 'type' and 'ref' and 'narratives') in serializer.data,\
+                and 'type' and 'ref' and 'narrative') in serializer.data,\
             """
             a serialized ParticipatingOrganisation should contain the fields
             'organisation' and 'role'
