@@ -161,7 +161,8 @@ class DatasetSyncer(object):
             response = requests.get(source_url)
         except requests.exceptions.SSLError:
             response = requests.get(source_url, verify=False)
-        except requests.exceptions.ConnectionError:
+        except (requests.exceptions.ConnectionError,
+                requests.exceptions.TooManyRedirects):
             pass
 
         if response and response.status_code == 200:
