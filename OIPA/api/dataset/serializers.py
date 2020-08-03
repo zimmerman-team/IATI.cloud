@@ -1,6 +1,7 @@
 import urllib.parse
 
 from django.urls import reverse
+from rest_framework import serializers
 from rest_framework.serializers import (
     HiddenField, HyperlinkedIdentityField, HyperlinkedRelatedField,
     ModelSerializer, SerializerMethodField
@@ -81,6 +82,7 @@ class DatasetSerializer(DynamicFieldsModelSerializer):
     DatasetNoteSerializer(many=True, source="datasetnote_set")
 
     internal_url = SerializerMethodField()
+    sha1 = serializers.CharField(source='sync_sha1')
 
     class Meta:
         model = Dataset
