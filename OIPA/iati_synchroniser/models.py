@@ -70,6 +70,8 @@ class Dataset(models.Model):
     is_parsed = models.BooleanField(null=False, default=False)
     added_manually = models.BooleanField(null=False, default=True)
     sha1 = models.CharField(max_length=40, default="", null=False, blank=True)
+    sync_sha1 = models.CharField(max_length=40, default="", null=False,
+                                 blank=True)
     note_count = models.IntegerField(default=0)
 
     export_in_progress = models.BooleanField(default=False)
