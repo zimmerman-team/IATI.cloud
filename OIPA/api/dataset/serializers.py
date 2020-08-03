@@ -1,13 +1,13 @@
 import urllib.parse
 
 from django.urls import reverse
+from rest_framework import serializers
 from rest_framework.serializers import (
     HiddenField, HyperlinkedIdentityField, HyperlinkedRelatedField,
     ModelSerializer, SerializerMethodField
 )
 
 from api.generics.serializers import DynamicFieldsModelSerializer
-from rest_framework import serializers
 from iati.models import Activity
 from iati_synchroniser.models import Dataset, DatasetNote, Publisher
 

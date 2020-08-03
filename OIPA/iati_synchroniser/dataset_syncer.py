@@ -6,7 +6,6 @@ import ssl
 import urllib
 
 import requests
-
 from django.utils.encoding import smart_text
 
 from iati_organisation.models import Organisation
