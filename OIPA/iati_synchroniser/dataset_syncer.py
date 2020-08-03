@@ -1,12 +1,12 @@
 import datetime
+import hashlib
 import json
 import logging
 import ssl
 import urllib
-import hashlib
+
 import requests
 
-from django.conf import settings
 from django.utils.encoding import smart_text
 
 from iati_organisation.models import Organisation
