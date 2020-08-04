@@ -117,7 +117,7 @@ class ActivitySerializerTestCase(TestCase):
         iati_factory.NarrativeFactory.create(
             related_object=title, content="title")
         serializer = serializers.NarrativeContainerSerializer(title)
-        assert serializer.data['narratives'][0]['text'] == "title",\
+        assert serializer.data['narrative'][0]['text'] == "title",\
             """
             'title' should be serialized as 'title.narratives.text'
             """
