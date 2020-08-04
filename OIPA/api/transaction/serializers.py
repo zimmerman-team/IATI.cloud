@@ -19,7 +19,7 @@ from iati.transaction import models
 class TransactionProviderSerializer(serializers.ModelSerializer):
     ref = serializers.CharField()
     type = CodelistSerializer()
-    narratives = NarrativeSerializer(many=True)
+    narrative = NarrativeSerializer(many=True, source='narratives')
     provider_activity = serializers.HyperlinkedRelatedField(
         read_only=True,
         view_name='activities:activity-detail')
@@ -33,14 +33,14 @@ class TransactionProviderSerializer(serializers.ModelSerializer):
             'type',
             'provider_activity',
             'provider_activity_id',
-            'narratives'
+            'narrative'
         )
 
 
 class TransactionReceiverSerializer(serializers.ModelSerializer):
     ref = serializers.CharField()
     type = CodelistSerializer()
-    narratives = NarrativeSerializer(many=True)
+    narrative = NarrativeSerializer(many=True, source='narratives')
     receiver_activity = serializers.HyperlinkedRelatedField(
         read_only=True,
         view_name='activities:activity-detail')
@@ -55,17 +55,17 @@ class TransactionReceiverSerializer(serializers.ModelSerializer):
             'type',
             'receiver_activity',
             'receiver_activity_id',
-            'narratives'
+            'narrative'
         )
 
 
 class TransactionDescriptionSerializer(serializers.ModelSerializer):
-    narratives = NarrativeSerializer(many=True)
+    narrative = NarrativeSerializer(many=True, source='narratives')
 
     class Meta:
         model = models.TransactionDescription
         fields = (
-            'narratives',
+            'narrative',
         )
 
 

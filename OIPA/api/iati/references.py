@@ -485,7 +485,7 @@ class TransactionReference(ElementReference):
     # Sector
     sectors = {
         'element': 'sector',
-        'key': 'sector',
+        'key': 'sectors',
         'sector': {
             'key': 'sector',
             'code': {
