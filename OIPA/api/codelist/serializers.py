@@ -57,11 +57,11 @@ class OrganisationNarrativeSerializer(ModelSerializerNoValidation):
 
 
 class NarrativeContainerSerializer(SerializerNoValidation):
-    narratives = NarrativeSerializer(many=True)
+    narrative = NarrativeSerializer(many=True, source='narratives')
 
 
 class OrganisationNarrativeContainerSerializer(SerializerNoValidation):
-    narratives = OrganisationNarrativeSerializer(many=True)
+    narrative = OrganisationNarrativeSerializer(many=True, source='narratives')
 
 
 class DocumentCategorySerializer(ModelSerializerNoValidation):

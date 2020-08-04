@@ -20,7 +20,7 @@ class ActivityRecipientRegionSerializer(
 
 
 class LocationSerializer(serializers.LocationSerializer):
-    reporting_organisations = serializers.ReportingOrganisationDataSerializer(
+    reporting_org = serializers.ReportingOrganisationDataSerializer(
         many=True,
         source='activity.reporting_organisations',
         required=False,
@@ -29,6 +29,6 @@ class LocationSerializer(serializers.LocationSerializer):
             'ref',
             'type',
             'secondary_reporter',
-            'narratives'
+            'narrative'
         ]
     )

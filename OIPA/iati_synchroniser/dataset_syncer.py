@@ -1,8 +1,12 @@
 import datetime
+import hashlib
 import json
 import logging
 import ssl
 import urllib
+
+import requests
+from django.utils.encoding import smart_text
 
 from iati_organisation.models import Organisation
 from iati_synchroniser.create_publisher_organisation import (
@@ -150,6 +154,32 @@ class DatasetSyncer(object):
 
         publisher = Publisher.objects.get(
             iati_id=dataset['organization']['id'])
+        sync_sha1 = ''
+        source_url = dataset['resources'][0]['url']
+        response = None
+        headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
+                                 '10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}  # NOQA: E501
+
+        try:
+            response = requests.get(source_url, headers=headers)
+        except requests.exceptions.SSLError:
+            response = requests.get(source_url, verify=False, headers=headers)
+        except (requests.exceptions.ConnectionError,
+                requests.exceptions.TooManyRedirects):
+            pass
+
+        if response and response.status_code == 200:
+            try:
+                iati_file = smart_text(response.content, 'utf-8')
+            # XXX: some files contain non utf-8 characters:
+            # FIXME: this is hardcoded:
+            except UnicodeDecodeError:
+                iati_file = smart_text(response.content, 'latin-1')
+
+            # 2. Encode the string to use for hashing:
+            hasher = hashlib.sha1()
+            hasher.update(iati_file.encode('utf-8'))
+            sync_sha1 = hasher.hexdigest()
 
         obj, created = Dataset.objects.update_or_create(
             iati_id=dataset['id'],
@@ -163,7 +193,8 @@ class DatasetSyncer(object):
                 'last_found_in_registry': datetime.datetime.now(),
                 'added_manually': False,
                 'date_created': dataset['metadata_created'],
-                'date_updated': dataset['metadata_modified']
+                'date_updated': dataset['metadata_modified'],
+                'sync_sha1': sync_sha1
             }
         )
         # this also returns internal URL for the Dataset:
