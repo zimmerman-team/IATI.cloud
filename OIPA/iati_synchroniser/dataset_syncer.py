@@ -157,10 +157,13 @@ class DatasetSyncer(object):
         sync_sha1 = ''
         source_url = dataset['resources'][0]['url']
         response = None
+        headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
+                                 '10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}  # NOQA: E501
+
         try:
-            response = requests.get(source_url)
+            response = requests.get(source_url, headers=headers)
         except requests.exceptions.SSLError:
-            response = requests.get(source_url, verify=False)
+            response = requests.get(source_url, verify=False, headers=headers)
         except (requests.exceptions.ConnectionError,
                 requests.exceptions.TooManyRedirects):
             pass

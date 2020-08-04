@@ -1,12 +1,13 @@
 import hashlib
 from io import BytesIO
 
+import requests
 from django import db
 from django.conf import settings
 from django.utils.encoding import smart_text
 from lxml import etree
 
-from iati.filegrabber import FileGrabber
+# from iati.filegrabber import FileGrabber
 from iati.parser import schema_validators
 from iati.parser.IATI_1_03 import Parse as IATI_103_Parser
 from iati.parser.IATI_1_05 import Parse as IATI_105_Parser
@@ -45,8 +46,20 @@ class ParseManager():
             self.parser = self._prepare_parser(self.root, dataset)
             return
 
-        file_grabber = FileGrabber()
-        response = file_grabber.get_the_file(self.url)
+        # file_grabber = FileGrabber()
+        # response = file_grabber.get_the_file(self.url)
+        response = None
+        headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
+                                 '10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}  # NOQA: E501
+
+        try:
+            response = requests.get(self.url, headers=headers)
+        except requests.exceptions.SSLError:
+            response = requests.get(self.url, verify=False, headers=headers)
+        except (requests.exceptions.ConnectionError,
+                requests.exceptions.TooManyRedirects):
+            pass
+
         from iati_synchroniser.models import DatasetNote
         if not response or response.status_code != 200:
             self.valid_dataset = False

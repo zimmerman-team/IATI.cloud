@@ -139,10 +139,13 @@ class DatasetDownloadTask(celery.Task):
                 full_download_dir,
                 filename
             )
+            headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
+                                     '10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}  # NOQA: E501
 
             try:
                 with open(download_dir_with_filename, 'wb') as f:
-                    resp = requests.get(dataset_url, verify=False)
+                    resp = requests.get(dataset_url, verify=False,
+                                        headers=headers)
                     f.write(resp.content)
                 # urllib.request.urlretrieve(
                 #     dataset_url,
@@ -151,7 +154,8 @@ class DatasetDownloadTask(celery.Task):
 
             except (
                 requests.exceptions.RequestException,
-                ConnectionResetError
+                ConnectionResetError,
+                requests.exceptions.TooManyRedirects
                 # urllib.request.HTTPError,  # 403
                 # urllib.request.URLError,  # timeouts
             ):
