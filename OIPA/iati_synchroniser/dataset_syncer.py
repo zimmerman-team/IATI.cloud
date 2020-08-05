@@ -170,18 +170,17 @@ class DatasetSyncer(object):
                 requests.exceptions.Timeout):
             pass
 
-        if response and response.status_code == 200:
-            try:
-                iati_file = smart_text(response.content, 'utf-8')
-            # XXX: some files contain non utf-8 characters:
-            # FIXME: this is hardcoded:
-            except UnicodeDecodeError:
-                iati_file = smart_text(response.content, 'latin-1')
+        try:
+            iati_file = smart_text(response.content, 'utf-8')
+        # XXX: some files contain non utf-8 characters:
+        # FIXME: this is hardcoded:
+        except UnicodeDecodeError:
+            iati_file = smart_text(response.content, 'latin-1')
 
-            # 2. Encode the string to use for hashing:
-            hasher = hashlib.sha1()
-            hasher.update(iati_file.encode('utf-8'))
-            sync_sha1 = hasher.hexdigest()
+        # 2. Encode the string to use for hashing:
+        hasher = hashlib.sha1()
+        hasher.update(iati_file.encode('utf-8'))
+        sync_sha1 = hasher.hexdigest()
 
         obj, created = Dataset.objects.update_or_create(
             iati_id=dataset['id'],
