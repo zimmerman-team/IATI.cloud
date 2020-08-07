@@ -65,8 +65,14 @@ def get_narrative_lang_list(data):
     lang_list = list()
     narrative_list = list()
     for narrative in data.narratives.all():
-        add_value_list(lang_list, narrative.language_id)
-        add_value_list(narrative_list, narrative.content)
+        if narrative.language_id:
+            add_value_list(lang_list, narrative.language_id)
+        else:
+            lang_list.append(' ')
+        if narrative.content:
+            add_value_list(narrative_list, narrative.content)
+        else:
+            narrative_list.append(' ')
 
     return lang_list, narrative_list
 
