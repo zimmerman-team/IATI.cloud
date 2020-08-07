@@ -1362,19 +1362,39 @@ class ActivityIndexing(BaseIndexing):
 
                 for transaction_aid_type in \
                         transaction.transactionaidtype_set.all():
-                    self.add_value_list(
-                        'transaction_aid_type_code',
-                        transaction_aid_type.aid_type.code
-                    )
-                    self.add_value_list(
-                        'transaction_aid_type_vocabulary',
-                        transaction_aid_type.aid_type.vocabulary_id
-                    )
 
-                self.add_value_list(
-                    'transaction_tied_status_code',
-                    transaction.tied_status_id
-                )
+                    if self.indexing['transaction_aid_type_code']:
+                        aid_type_code = self.indexing['transaction_aid_type_code'].pop() + ',' + transaction_aid_type.aid_type.code  # NOQA: E501
+                        self.add_value_list(
+                            'transaction_aid_type_code',
+                            aid_type_code
+                        )
+                    else:
+
+                        self.add_value_list(
+                            'transaction_aid_type_code',
+                            transaction_aid_type.aid_type.code
+                        )
+
+                    if self.indexing['transaction_aid_type_vocabulary']:
+                        aid_type_vocabulary = self.indexing['transaction_aid_type_vocabulary'].pop() + ',' + transaction_aid_type.aid_type.vocabulary_id  # NOQA: E501
+                        self.add_value_list(
+                            'transaction_aid_type_vocabulary',
+                            aid_type_vocabulary
+                        )
+                    else:
+                        self.add_value_list(
+                            'transaction_aid_type_vocabulary',
+                            transaction_aid_type.aid_type.vocabulary_id
+                        )
+
+                if transaction.tied_status_id:
+                    self.add_value_list(
+                        'transaction_tied_status_code',
+                        transaction.tied_status_id
+                    )
+                else:
+                    self.indexing['transaction_tied_status_code'].append(' ')
 
     def document_link(self):
         document_link_all = self.record.documentlink_set.filter(
