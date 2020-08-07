@@ -46,7 +46,7 @@ class ResultSerializer(serializers.ResultSerializer):
         fields = (
             'title',
             'description',
-            'indicators',
+            'indicator',
             'type',
             'aggregation_status',
             'document_links',
