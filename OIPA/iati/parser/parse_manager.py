@@ -53,11 +53,13 @@ class ParseManager():
                                  '10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}  # NOQA: E501
 
         try:
-            response = requests.get(self.url, headers=headers)
+            response = requests.get(self.url, headers=headers, timeout=30)
         except requests.exceptions.SSLError:
-            response = requests.get(self.url, verify=False, headers=headers)
+            response = requests.get(self.url, verify=False, headers=headers,
+                                    timeout=30)
         except (requests.exceptions.ConnectionError,
-                requests.exceptions.TooManyRedirects):
+                requests.exceptions.TooManyRedirects,
+                requests.exceptions.Timeout):
             pass
 
         from iati_synchroniser.models import DatasetNote

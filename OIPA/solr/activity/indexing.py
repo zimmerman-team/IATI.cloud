@@ -1092,6 +1092,13 @@ class ActivityIndexing(BaseIndexing):
                     'planned_disbursement_provider_org_narrative_lang'
                 )
 
+    # for transactions in activity, non-existent sub elements of transaction
+    # are represented as empty string (' ') in their respective fields. That
+    # makes it possible to map a transaction to its related sub elements
+    # when making (extracting) transaction csv output from activity core in
+    # Solr. Take note that this modification is not required for compulsory
+    # elements.
+
     def transaction(self):
         transaction_all = self.record.transaction_set.all()
         if transaction_all:
@@ -1172,15 +1179,24 @@ class ActivityIndexing(BaseIndexing):
                     TransactionReference(transaction=transaction).to_string()
                 )
 
-                self.add_value_list('transaction_ref', transaction.ref)
-                self.add_value_list(
-                    'transaction_humanitarian',
-                    bool_string(transaction.humanitarian)
-                )
+                if transaction.ref:
+                    self.add_value_list('transaction_ref', transaction.ref)
+                else:
+                    self.indexing['transaction_ref'].append(' ')
+
+                if transaction.humanitarian:
+                    self.add_value_list(
+                        'transaction_humanitarian',
+                        bool_string(transaction.humanitarian)
+                    )
+                else:
+                    self.indexing['transaction_humanitarian'].append(' ')
+
                 self.add_value_list(
                     'transaction_type',
                     value_string(transaction.transaction_type_id)
                 )
+
                 self.add_value_list(
                     'transaction_date_iso_date',
                     date_string(transaction.transaction_date)
@@ -1208,18 +1224,31 @@ class ActivityIndexing(BaseIndexing):
                         'transaction_description_narrative'] = \
                         get_narrative_lang_list(transaction.description)
                 if provider_organisation:
-                    self.add_value_list(
-                        'transaction_provider_org_provider_activity_id',
-                        provider_organisation.provider_activity_ref
-                    )
-                    self.add_value_list(
-                        'transaction_provider_org_type',
-                        provider_organisation.type_id
-                    )
-                    self.add_value_list(
-                        'transaction_provider_org_ref',
-                        provider_organisation.ref
-                    )
+                    if provider_organisation.provider_activity_ref:
+                        self.add_value_list(
+                            'transaction_provider_org_provider_activity_id',
+                            provider_organisation.provider_activity_ref
+                        )
+                    else:
+                        self.indexing[
+                            'transaction_provider_org_provider_activity_id'].append(' ')  # NOQA: E501
+                    if provider_organisation.type_id:
+                        self.add_value_list(
+                            'transaction_provider_org_type',
+                            provider_organisation.type_id
+                        )
+                    else:
+                        self.indexing[
+                            'transaction_provider_org_type'].append(' ')
+
+                    if provider_organisation.ref:
+                        self.add_value_list(
+                            'transaction_provider_org_ref',
+                            provider_organisation.ref
+                        )
+                    else:
+                        self.indexing[
+                            'transaction_provider_org_ref'].append(' ')
 
                     self.related_narrative(
                         provider_organisation,
@@ -1233,18 +1262,32 @@ class ActivityIndexing(BaseIndexing):
                     'receiver_organisation'
                 )
                 if receiver_organisation:
-                    self.add_value_list(
-                        'transaction_receiver_org_receiver_activity_id',
-                        receiver_organisation.receiver_activity_ref
-                    )
-                    self.add_value_list(
-                        'transaction_receiver_org_type',
-                        receiver_organisation.type_id
-                    )
-                    self.add_value_list(
-                        'transaction_receiver_org_ref',
-                        receiver_organisation.ref
-                    )
+                    if receiver_organisation.ref:
+                        self.add_value_list(
+                            'transaction_receiver_org_receiver_activity_id',
+                            receiver_organisation.receiver_activity_ref
+                        )
+                    else:
+                        self.indexing[
+                            'transaction_receiver_org_receiver_activity_id'].append(' ')  # NOQA: E501
+
+                    if receiver_organisation.type_id:
+                        self.add_value_list(
+                            'transaction_receiver_org_type',
+                            receiver_organisation.type_id
+                        )
+                    else:
+                        self.indexing[
+                            'transaction_receiver_org_type'].append(' ')
+
+                    if receiver_organisation.ref:
+                        self.add_value_list(
+                            'transaction_receiver_org_ref',
+                            receiver_organisation.ref
+                        )
+                    else:
+                        self.indexing[
+                            'transaction_receiver_org_ref'].append(' ')
 
                     self.related_narrative(
                         receiver_organisation,
@@ -1253,10 +1296,20 @@ class ActivityIndexing(BaseIndexing):
                         'transaction_receiver_org_narrative_lang'
                     )
 
-                self.add_value_list(
-                    'transaction_disbursement_channel_code',
-                    transaction.disbursement_channel_id
-                )
+                if transaction.disbursement_channel_id:
+                    self.add_value_list(
+                        'transaction_disbursement_channel_code',
+                        transaction.disbursement_channel_id
+                    )
+                else:
+                    self.indexing[
+                        'transaction_disbursement_channel_code'].append(' ')
+
+                # no need to append empty string (' ') for transaction
+                # sector, recipient country and recipient region. These
+                # elements are all or
+                # null in all of transaction
+                # elements so no problem arises regarding mapping.
 
                 for transaction_sector in \
                         transaction.transactionsector_set.all():
@@ -1291,30 +1344,57 @@ class ActivityIndexing(BaseIndexing):
                         transaction_recipient_region.vocabulary_id
                     )
 
-                self.add_value_list(
-                    'transaction_flow_type_code',
-                    transaction.flow_type_id
-                )
-                self.add_value_list(
-                    'transaction_finance_type_code',
-                    transaction.finance_type_id
-                )
+                if transaction.flow_type_id:
+                    self.add_value_list(
+                        'transaction_flow_type_code',
+                        transaction.flow_type_id
+                    )
+                else:
+                    self.indexing['transaction_flow_type_code'].append(' ')
+
+                if transaction.finance_type_id:
+                    self.add_value_list(
+                        'transaction_finance_type_code',
+                        transaction.finance_type_id
+                    )
+                else:
+                    self.indexing['transaction_finance_type_code'].append(' ')
 
                 for transaction_aid_type in \
                         transaction.transactionaidtype_set.all():
-                    self.add_value_list(
-                        'transaction_aid_type_code',
-                        transaction_aid_type.aid_type.code
-                    )
-                    self.add_value_list(
-                        'transaction_aid_type_vocabulary',
-                        transaction_aid_type.aid_type.vocabulary_id
-                    )
 
-                self.add_value_list(
-                    'transaction_tied_status_code',
-                    transaction.tied_status_id
-                )
+                    if self.indexing['transaction_aid_type_code']:
+                        aid_type_code = self.indexing['transaction_aid_type_code'].pop() + ',' + transaction_aid_type.aid_type.code  # NOQA: E501
+                        self.add_value_list(
+                            'transaction_aid_type_code',
+                            aid_type_code
+                        )
+                    else:
+
+                        self.add_value_list(
+                            'transaction_aid_type_code',
+                            transaction_aid_type.aid_type.code
+                        )
+
+                    if self.indexing['transaction_aid_type_vocabulary']:
+                        aid_type_vocabulary = self.indexing['transaction_aid_type_vocabulary'].pop() + ',' + transaction_aid_type.aid_type.vocabulary_id  # NOQA: E501
+                        self.add_value_list(
+                            'transaction_aid_type_vocabulary',
+                            aid_type_vocabulary
+                        )
+                    else:
+                        self.add_value_list(
+                            'transaction_aid_type_vocabulary',
+                            transaction_aid_type.aid_type.vocabulary_id
+                        )
+
+                if transaction.tied_status_id:
+                    self.add_value_list(
+                        'transaction_tied_status_code',
+                        transaction.tied_status_id
+                    )
+                else:
+                    self.indexing['transaction_tied_status_code'].append(' ')
 
     def document_link(self):
         document_link_all = self.record.documentlink_set.filter(
