@@ -26,4 +26,4 @@ class TransactionTaskIndexing(BaseTaskIndexing):
         for transaction in activity.transaction_set.all():
             self.instance = transaction
             self.run()
-            TransactionSectorTaskIndexing().run_from_transaction(transaction)
+            # TransactionSectorTaskIndexing().run_from_transaction(transaction)
