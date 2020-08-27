@@ -176,6 +176,8 @@ class DatasetSyncer(object):
         # FIXME: this is hardcoded:
         except UnicodeDecodeError:
             iati_file = smart_text(response.content, 'latin-1')
+        except AttributeError:
+            iati_file = ''
 
         # 2. Encode the string to use for hashing:
         hasher = hashlib.sha1()
