@@ -38,7 +38,6 @@ from solr.utils import (
     get_narrative_lang_list, value_string
 )
 
-
 class ActivityIndexing(BaseIndexing):
 
     def dataset(self):
@@ -139,7 +138,13 @@ class ActivityIndexing(BaseIndexing):
                     'description_xml',
                     DescriptionReference(description=description).to_string()
                 )
-                self.add_value_list('description_type', description.type_id)
+                if description.type_id:
+                    self.add_value_list(
+                        'description_type',
+                        description.type_id
+                    )
+                else:
+                    self.indexing['description_type'].append(' ')
 
                 self.related_narrative(
                     description,
@@ -177,14 +182,20 @@ class ActivityIndexing(BaseIndexing):
                     ).to_string()
                 )
 
-                self.add_value_list(
-                    'participating_org_ref',
-                    participating_organisation.ref
-                )
-                self.add_value_list(
-                    'participating_org_type',
-                    participating_organisation.type_id
-                )
+                if participating_organisation.ref:
+                    self.add_value_list(
+                        'participating_org_ref',
+                        participating_organisation.ref
+                    )
+                else:
+                    self.indexing['participating_org_ref'].append(' ')
+                if participating_organisation.type_id:
+                    self.add_value_list(
+                        'participating_org_type',
+                        participating_organisation.type_id
+                    )
+                else:
+                    self.indexing['participating_org_type'].append(' ')
                 self.add_value_list(
                     'participating_org_role',
                     participating_organisation.role_id
@@ -369,7 +380,13 @@ class ActivityIndexing(BaseIndexing):
                     ).to_string()
                 )
 
-                self.add_value_list('contact_info_type', contact_info.type_id)
+                if contact_info.type_id:
+                    self.add_value_list(
+                        'contact_info_type',
+                        contact_info.type_id
+                    )
+                else:
+                    self.indexing['contact_info_type'].append(' ')
                 self.add_value_list(
                     'contact_info_telephone',
                     contact_info.telephone
@@ -499,14 +516,20 @@ class ActivityIndexing(BaseIndexing):
                     'recipient_region_name',
                     recipient_region.region.name
                 )
-                self.add_value_list(
-                    'recipient_region_vocabulary',
-                    recipient_region.vocabulary.code
-                )
-                self.add_value_list(
-                    'recipient_region_vocabulary_uri',
-                    recipient_region.vocabulary_uri
-                )
+                if recipient_region.vocabulary.code:
+                    self.add_value_list(
+                        'recipient_region_vocabulary',
+                        recipient_region.vocabulary.code
+                    )
+                else:
+                    self.indexing['recipient_region_vocabulary'].append(' ')
+                if recipient_region.vocabulary_uri:
+                    self.add_value_list(
+                        'recipient_region_vocabulary_uri',
+                        recipient_region.vocabulary_uri
+                    )
+                else:
+                    self.indexing['recipient_region_vocabulary_uri'].append(' ')
                 self.add_value_list(
                     'recipient_region_percentage',
                     decimal_string(recipient_region.percentage)
@@ -564,7 +587,13 @@ class ActivityIndexing(BaseIndexing):
                     ).to_string()
                 )
 
-                self.add_value_list('location_ref', location.ref)
+                if location.ref:
+                    self.add_value_list(
+                        'location_ref',
+                        location.ref
+                    )
+                else:
+                    self.indexing['location_ref'].append(' ')
                 self.add_value_list(
                     'location_reach_code',
                     location.location_reach_id
@@ -618,10 +647,13 @@ class ActivityIndexing(BaseIndexing):
                         'location_administrative_vocabulary',
                         location_administrative.vocabulary.code
                     )
-                    self.add_value_list(
-                        'location_administrative_level',
-                        location_administrative.level
-                    )
+                    if location_administrative.level:
+                        self.add_value_list(
+                            'location_administrative_level',
+                            location_administrative.level
+                        )
+                    else:
+                        self.indexing['location_administrative_level'].append(' ')
                     self.add_value_list(
                         'location_administrative_code',
                         location_administrative.code
@@ -656,14 +688,20 @@ class ActivityIndexing(BaseIndexing):
                     ).to_string()
                 )
 
-                self.add_value_list(
-                    'sector_vocabulary',
-                    activity_sector.vocabulary_id
-                )
-                self.add_value_list(
-                    'sector_vocabulary_uri',
-                    activity_sector.vocabulary_uri
-                )
+                if activity_sector.vocabulary_id:
+                    self.add_value_list(
+                        'sector_vocabulary',
+                        activity_sector.vocabulary_id
+                    )
+                else:
+                    self.indexing['sector_vocabulary'].append(' ')
+                if activity_sector.vocabulary_uri:
+                    self.add_value_list(
+                        'sector_vocabulary_uri',
+                        activity_sector.vocabulary_uri
+                    )
+                else:
+                    self.indexing['sector_vocabulary_uri'].append(' ')
                 self.add_value_list(
                     'sector_code',
                     activity_sector.sector.code
@@ -711,10 +749,13 @@ class ActivityIndexing(BaseIndexing):
                     'tag_vocabulary',
                     tag.vocabulary_id
                 )
-                self.add_value_list(
-                    'tag_vocabulary_uri',
-                    tag.vocabulary_uri
-                )
+                if tag.vocabulary_uri:
+                    self.add_value_list(
+                        'tag_vocabulary_uri',
+                        tag.vocabulary_uri
+                    )
+                else:
+                    self.indexing['tag_vocabulary_uri'].append(' ')
                 self.add_value_list(
                     'tag_code',
                     tag.code
@@ -821,10 +862,13 @@ class ActivityIndexing(BaseIndexing):
                     'humanitarian_scope_vocabulary',
                     humanitarian_scope.vocabulary_id
                 )
-                self.add_value_list(
-                    'humanitarian_scope_vocabulary_uri',
-                    humanitarian_scope.vocabulary_uri
-                )
+                if humanitarian_scope.vocabulary_uri:
+                    self.add_value_list(
+                        'humanitarian_scope_vocabulary_uri',
+                        humanitarian_scope.vocabulary_uri
+                    )
+                else:
+                    self.indexing['humanitarian_scope_vocabulary_uri'].append(' ')
                 self.add_value_list(
                     'humanitarian_scope_code',
                     humanitarian_scope.code
@@ -865,15 +909,21 @@ class ActivityIndexing(BaseIndexing):
                         policy_marker=policy_marker
                     ).to_string()
                 )
-
-                self.add_value_list(
-                    'policy_marker_vocabulary',
-                    policy_marker.vocabulary_id
-                )
-                self.add_value_list(
-                    'policy_marker_vocabulary_uri',
-                    policy_marker.vocabulary_uri
-                )
+                
+                if policy_marker.vocabulary_id:
+                    self.add_value_list(
+                        'policy_marker_vocabulary',
+                        policy_marker.vocabulary_id
+                    )
+                else:
+                    self.indexing['policy_marker_vocabulary'].append(' ')
+                if policy_marker.vocabulary_uri:
+                    self.add_value_list(
+                        'policy_marker_vocabulary_uri',
+                        policy_marker.vocabulary_uri
+                    )
+                else:
+                    self.indexing['policy_marker_vocabulary_uri'].append(' ')
                 self.add_value_list(
                     'policy_marker_code',
                     policy_marker.code_id
@@ -954,7 +1004,13 @@ class ActivityIndexing(BaseIndexing):
                     BudgetReference(budget=budget).to_string()
                 )
 
-                self.add_value_list('budget_type', budget.type_id)
+                if budget.type_id:
+                    self.add_value_list(
+                        'budget_type',
+                        budget.type_id
+                    )
+                else:
+                    self.indexing['budget_type'].append(' ')
                 self.add_value_list('budget_status', budget.status_id)
                 self.add_value_list(
                     'budget_period_start_iso_date',
@@ -1035,10 +1091,13 @@ class ActivityIndexing(BaseIndexing):
                     ).to_string()
                 )
 
-                self.add_value_list(
-                    'planned_disbursement_type',
-                    planned_disbursement.type_id
-                )
+                if planned_disbursement.type_id:
+                    self.add_value_list(
+                        'planned_disbursement_type',
+                        planned_disbursement.type_id
+                    )
+                else:
+                    self.indexing['planned_disbursement_type'].append(' ')
                 self.add_value_list(
                     'planned_disbursement_period_start_iso_date',
                     date_string(planned_disbursement.period_start)
@@ -1552,10 +1611,13 @@ class ActivityIndexing(BaseIndexing):
                     'legacy_data_value',
                     legacy_data.value
                 )
-                self.add_value_list(
-                    'legacy_data_iati_equivalent',
-                    legacy_data.iati_equivalent
-                )
+                if legacy_data.iati_equivalent:
+                    self.add_value_list(
+                        'legacy_data_iati_equivalent',
+                        legacy_data.iati_equivalent
+                    )
+                else:
+                    self.indexing['legacy_data_iati_equivalent'].append(' ')
 
     def conditions(self):
         activity_condition = get_child_attr(self.record, 'conditions')
@@ -1829,10 +1891,13 @@ class ActivityIndexing(BaseIndexing):
                 )
 
                 self.add_value_list('result_type', result.type_id)
-                self.add_value_list(
-                    'result_aggregation_status',
-                    bool_string(result.aggregation_status)
-                )
+                if result.aggregation_status:
+                    self.add_value_list(
+                        'result_aggregation_status',
+                        bool_string(result.aggregation_status)
+                    )
+                else:
+                    self.indexing['result_aggregation_status'].append(' ')
 
                 self.related_narrative(
                     get_child_attr(result, 'resulttitle'),
@@ -1906,20 +1971,33 @@ class ActivityIndexing(BaseIndexing):
                         'result_reference_vocabulary_uri',
                         result_reference.vocabulary_uri
                     )
+                    if result_reference.vocabulary_uri:
+                        self.add_value_list(
+                            'result_reference_vocabulary_uri',
+                            result_reference.vocabulary_uri
+                        )
+                    else:
+                        self.indexing['result_reference_vocabulary_uri'].append(' ')
 
                 for result_indicator in result.resultindicator_set.all():
                     self.add_value_list(
                         'result_indicator_measure',
                         result_indicator.measure_id
                     )
-                    self.add_value_list(
-                        'result_indicator_ascending',
-                        bool_string(result_indicator.ascending)
-                    )
-                    self.add_value_list(
-                        'result_indicator_aggregation_status',
-                        bool_string(result_indicator.aggregation_status)
-                    )
+                    if result_indicator.ascending:
+                        self.add_value_list(
+                            'result_indicator_ascending',
+                            bool_string(result_indicator.ascending)
+                        )
+                    else:
+                        self.indexing['result_indicator_ascending'].append(' ')
+                    if result_indicator.aggregation_status:
+                        self.add_value_list(
+                            'result_indicator_aggregation_status',
+                            bool_string(result_indicator.aggregation_status)
+                        )
+                    else:
+                        self.indexing['result_indicator_aggregation_status'].append(' ')
 
                     self.related_narrative(
                         get_child_attr(
@@ -1980,41 +2058,60 @@ class ActivityIndexing(BaseIndexing):
                             'result_indicator_reference_vocabulary',
                             result_indicator_reference.vocabulary_id
                         )
-                        self.add_value_list(
-                            'result_indicator_reference_vocabulary_uri',
-                            result_indicator_reference.indicator_uri
-                        )
+                        if result_indicator_reference.indicator_uri:
+                            self.add_value_list(
+                                'result_indicator_reference_vocabulary_uri',
+                                result_indicator_reference.indicator_uri
+                            )
+                        else:
+                            self.indexing['result_indicator_reference_vocabulary_uri'].append(' ')
 
                     for result_indicator_baseline in result_indicator.resultindicatorbaseline_set.all():  # NOQA: E501
                         self.add_value_list(
                             'result_indicator_baseline_year',
                             result_indicator_baseline.year
                         )
-                        self.add_value_list(
-                            'result_indicator_baseline_iso_date',
-                            date_string(result_indicator_baseline.iso_date)
-                        )
-                        self.add_value_list(
-                            'result_indicator_baseline_value',
-                            result_indicator_baseline.value
-                        )
+                        if result_indicator_baseline.iso_date:
+                            self.add_value_list(
+                                'result_indicator_baseline_iso_date',
+                                date_string(result_indicator_baseline.iso_date)
+                            )
+                        else:
+                            self.indexing['result_indicator_baseline_iso_date'].append(' ')
+                        if result_indicator_baseline.value:
+                            self.add_value_list(
+                                'result_indicator_baseline_value',
+                                result_indicator_baseline.value
+                            )
+                        else:
+                            self.indexing['result_indicator_baseline_value'].append(' ')
 
                         for result_indicator_baseline_location in \
                                 result_indicator_baseline.location_set.all():
-                            self.add_value_list(
-                                'result_indicator_baseline_location_ref',
-                                result_indicator_baseline_location.ref
-                            )
+                            if result_indicator_baseline_location.ref:
+                                self.add_value_list(
+                                    'result_indicator_baseline_location_ref',
+                                    result_indicator_baseline_location.ref
+                                )
+                            else:
+                                self.indexing['result_indicator_baseline_location_ref'].append(' ')
+                            
 
                         for result_indicator_baseline_dimension in result_indicator_baseline.resultindicatorbaselinedimension_set.all():  # NOQA: E501
-                            self.add_value_list(
-                                'result_indicator_baseline_dimension_name',
-                                result_indicator_baseline_dimension.name
-                            )
-                            self.add_value_list(
-                                'result_indicator_baseline_dimension_value',
-                                result_indicator_baseline_dimension.value
-                            )
+                            if result_indicator_baseline_dimension.name:
+                                self.add_value_list(
+                                    'result_indicator_baseline_dimension_name',
+                                    result_indicator_baseline_dimension.name
+                                )
+                            else:
+                                self.indexing['result_indicator_baseline_dimension_value'].append(' ')
+                            if result_indicator_baseline_dimension.value:
+                                self.add_value_list(
+                                    'result_indicator_baseline_dimension_value',
+                                    result_indicator_baseline_dimension.value
+                                )
+                            else:
+                                self.indexing['result_indicator_baseline_dimension_value'].append(' ')
 
                         self.related_narrative(get_child_attr(result_indicator_baseline, 'resultindicatorbaselinecomment'), 'result_indicator_baseline_comment_narrative', 'result_indicator_baseline_comment_narrative_text', 'result_indicator_baseline_comment_narrative_lang')  # NOQA: E501
 
@@ -2048,17 +2145,38 @@ class ActivityIndexing(BaseIndexing):
 
                         for result_period_target in \
                                 result_period.targets.all():
-                            self.add_value_list(
-                                'result_indicator_period_target_value',
-                                result_period_target.value
-                            )
+                            if result_period_target.value:
+                                self.add_value_list(
+                                    'result_indicator_period_target_value',
+                                    result_period_target.value
+                                )
+                            else:
+                                self.indexing['result_indicator_period_target_value'].append(' ')
 
                             for result_period_target_location in result_period_target.resultindicatorperiodtargetlocation_set.all():  # NOQA: E501
-                                self.add_value_list('result_indicator_period_target_location_ref', result_period_target_location.ref)  # NOQA: E501
+                                if result_period_target_location.ref:
+                                    self.add_value_list(
+                                        'result_indicator_period_target_location_ref',
+                                        result_period_target_location.ref
+                                    )
+                                else:
+                                    self.indexing['result_indicator_period_target_location_ref'].append(' ')
 
                             for result_period_target_dimension in result_period_target.resultindicatorperiodtargetdimension_set.all():  # NOQA: E501
-                                self.add_value_list('result_indicator_period_target_dimension_name', result_period_target_dimension.name)  # NOQA: E501
-                                self.add_value_list('result_indicator_period_target_dimension_value', result_period_target_dimension.value)  # NOQA: E501
+                                if result_period_target.name:
+                                    self.add_value_list(
+                                        'result_indicator_period_target_dimension_name',
+                                        result_period_target_dimension.name
+                                    )
+                                else:
+                                    self.indexing['result_indicator_period_target_dimension_name'].append(' ')
+                                if result_period_target.value:
+                                    self.add_value_list(
+                                        'result_indicator_period_target_dimension_value',
+                                        result_period_target_dimension.value
+                                    )
+                                else:
+                                    self.indexing['result_indicator_period_target_dimension_value'].append(' ')
 
                             for result_period_target_comment in result_period_target.resultindicatorperiodtargetcomment_set.all():  # NOQA: E501
                                 self.related_narrative(result_period_target_comment, 'result_indicator_period_target_comment_narrative', 'result_indicator_period_target_comment_narrative_text', 'result_indicator_period_target_comment_narrative_lang')  # NOQA: E501
@@ -2111,26 +2229,38 @@ class ActivityIndexing(BaseIndexing):
 
                         for result_period_actual in \
                                 result_period.actuals.all():
-                            self.add_value_list(
-                                'result_indicator_period_actual_value',
-                                result_period_actual.value
-                            )
+                            if result_period_actual.value:
+                                self.add_value_list(
+                                    'result_indicator_period_actual_value',
+                                    result_period_actual.value
+                                )
+                            else:
+                                self.indexing['result_indicator_period_actual_value'].append(' ')
 
                             for result_period_actual_location in result_period_actual.resultindicatorperiodactuallocation_set.all():  # NOQA: E501
-                                self.add_value_list(
-                                    'result_indicator_period_actual_location_ref',  # NOQA: E501
-                                    result_period_actual_location.ref
-                                )
+                                if result_period_actual_location.ref:
+                                    self.add_value_list(
+                                        'result_indicator_period_actual_location_ref',
+                                        result_period_actual_location.ref
+                                    )
+                                else:
+                                    self.indexing['result_indicator_period_actual_location_ref'].append(' ')
 
                             for result_period_actual_dimension in result_period_actual.resultindicatorperiodactualdimension_set.all():  # NOQA: E501
-                                self.add_value_list(
-                                    'result_indicator_period_actual_dimension_name',  # NOQA: E501
-                                    result_period_actual_dimension.name
-                                )
-                                self.add_value_list(
-                                    'result_indicator_period_actual_dimension_value',  # NOQA: E501
-                                    result_period_actual_dimension.value
-                                )
+                                if result_period_actual_dimension.name:
+                                    self.add_value_list(
+                                        'result_indicator_period_actual_dimension_name',
+                                        result_period_actual_dimension.name
+                                    )
+                                else:
+                                    self.indexing['result_indicator_period_actual_dimension_name'].append(' ')
+                                if result_period_actual_dimension.value:
+                                    self.add_value_list(
+                                        'result_indicator_period_actual_dimension_value',
+                                        result_period_actual_dimension.value
+                                    )
+                                else:
+                                    self.indexing['result_indicator_period_actual_dimension_value'].append(' ')
 
                             for result_period_actual_comment in result_period_actual.resultindicatorperiodactualcomment_set.all():  # NOQA: E501
                                 self.related_narrative(
@@ -2366,14 +2496,20 @@ class ActivityIndexing(BaseIndexing):
                         'fss_forecast_year',
                         value_string(forecast.year)
                     )
-                    self.add_value_list(
-                        'fss_forecast_value_date',
-                        value_string(forecast.value_date)
-                    )
-                    self.add_value_list(
-                        'fss_forecast_currency',
-                        forecast.currency_id
-                    )
+                    if forecast.value_date:
+                        self.add_value_list(
+                            'fss_forecast_value_date',
+                            value_string(forecast.value_date)
+                        )
+                    else:
+                        self.indexing['fss_forecast_value_date'].append(' ')
+                    if forecast.currency_id:
+                        self.add_value_list(
+                            'fss_forecast_currency',
+                            forecast.currency_id
+                        )
+                    else:
+                        self.indexing['fss_forecast_currency'].append(' ')
                     self.add_value_list(
                         'fss_forecast_value',
                         value_string(forecast.value)
