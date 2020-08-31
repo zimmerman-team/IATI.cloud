@@ -7,6 +7,7 @@ from django.conf import settings
 from iati.transaction.models import Transaction
 from solr.tasks import BaseTaskIndexing
 from solr.transaction.indexing import TransactionIndexing
+
 # from solr.transaction_sector.tasks import TransactionSectorTaskIndexing
 
 solr = pysolr.Solr(

@@ -1981,7 +1981,7 @@ class ActivityIndexing(BaseIndexing):
                             result_reference.vocabulary_uri
                         )
                     else:
-                        self.indexing['result_reference_vocabulary_uri'].append(
+                        self.indexing['result_reference_vocabulary_uri'].append(  # NOQA: E501
                             ' ')
 
                 for result_indicator in result.resultindicator_set.all():
@@ -2002,7 +2002,7 @@ class ActivityIndexing(BaseIndexing):
                             bool_string(result_indicator.aggregation_status)
                         )
                     else:
-                        self.indexing['result_indicator_aggregation_status'].append(
+                        self.indexing['result_indicator_aggregation_status'].append(  # NOQA: E501
                             ' ')
 
                     self.related_narrative(
@@ -2036,7 +2036,7 @@ class ActivityIndexing(BaseIndexing):
                         )
 
                         self.related_narrative(get_child_attr(result_indicator_document_link, 'documentlinktitle'), 'result_indicator_document_link_title_narrative', 'result_indicator_document_link_title_narrative_text', 'result_indicator_document_link_title_narrative_lang')  # NOQA: E501
-                        self.related_narrative(get_child_attr(result_indicator_document_link, 'documentlinkdescription'), 'result_indicator_document_link_description_narrative',  'result_indicator_document_link_description_narrative_text', 'result_indicator_document_link_description_narrative_lang')  # NOQA: E501
+                        self.related_narrative(get_child_attr(result_indicator_document_link, 'documentlinkdescription'), 'result_indicator_document_link_description_narrative', 'result_indicator_document_link_description_narrative_text', 'result_indicator_document_link_description_narrative_lang')  # NOQA: E501
 
                         for document_link_category in result_indicator_document_link.documentlinkcategory_set.all():  # NOQA: E501
                             self.add_value_list(
@@ -2070,7 +2070,7 @@ class ActivityIndexing(BaseIndexing):
                                 result_indicator_reference.indicator_uri
                             )
                         else:
-                            self.indexing['result_indicator_reference_vocabulary_uri'].append(
+                            self.indexing['result_indicator_reference_vocabulary_uri'].append(  # NOQA: E501
                                 ' ')
 
                     for result_indicator_baseline in result_indicator.resultindicatorbaseline_set.all():  # NOQA: E501
@@ -2084,7 +2084,7 @@ class ActivityIndexing(BaseIndexing):
                                 date_string(result_indicator_baseline.iso_date)
                             )
                         else:
-                            self.indexing['result_indicator_baseline_iso_date'].append(
+                            self.indexing['result_indicator_baseline_iso_date'].append(  # NOQA: E501
                                 ' ')
                         if result_indicator_baseline.value:
                             self.add_value_list(
@@ -2092,7 +2092,7 @@ class ActivityIndexing(BaseIndexing):
                                 result_indicator_baseline.value
                             )
                         else:
-                            self.indexing['result_indicator_baseline_value'].append(
+                            self.indexing['result_indicator_baseline_value'].append(  # NOQA: E501
                                 ' ')
 
                         for result_indicator_baseline_location in \
@@ -2103,7 +2103,7 @@ class ActivityIndexing(BaseIndexing):
                                     result_indicator_baseline_location.ref
                                 )
                             else:
-                                self.indexing['result_indicator_baseline_location_ref'].append(
+                                self.indexing['result_indicator_baseline_location_ref'].append(  # NOQA: E501
                                     ' ')
 
                         for result_indicator_baseline_dimension in result_indicator_baseline.resultindicatorbaselinedimension_set.all():  # NOQA: E501
@@ -2113,15 +2113,14 @@ class ActivityIndexing(BaseIndexing):
                                     result_indicator_baseline_dimension.name
                                 )
                             else:
-                                self.indexing['result_indicator_baseline_dimension_value'].append(
+                                self.indexing['result_indicator_baseline_dimension_value'].append(  # NOQA: E501
                                     ' ')
                             if result_indicator_baseline_dimension.value:
                                 self.add_value_list(
-                                    'result_indicator_baseline_dimension_value',
-                                    result_indicator_baseline_dimension.value
-                                )
+                                    'result_indicator_baseline_dimension_value',  # NOQA: E501
+                                    result_indicator_baseline_dimension.value)
                             else:
-                                self.indexing['result_indicator_baseline_dimension_value'].append(
+                                self.indexing['result_indicator_baseline_dimension_value'].append(  # NOQA: E501
                                     ' ')
 
                         self.related_narrative(get_child_attr(result_indicator_baseline, 'resultindicatorbaselinecomment'), 'result_indicator_baseline_comment_narrative', 'result_indicator_baseline_comment_narrative_text', 'result_indicator_baseline_comment_narrative_lang')  # NOQA: E501
@@ -2131,9 +2130,9 @@ class ActivityIndexing(BaseIndexing):
                                 'result_indicator_baseline_document_link_url',
                                 result_indicator_baseline_document_link.url
                             )
-                            self.add_value_list('result_indicator_baseline_document_link_format',  result_indicator_baseline_document_link.file_format_id)  # NOQA: E501
-                            self.related_narrative(get_child_attr(result_indicator_baseline_document_link, 'documentlinktitle'), 'result_indicator_baseline_document_link_title',  'result_indicator_baseline_document_link_title_narrative_text', 'result_indicator_baseline_document_link_title_narrative_lang')  # NOQA: E501
-                            self.related_narrative(get_child_attr(result_indicator_baseline_document_link, 'documentlinkdescription'), 'result_indicator_baseline_document_link_description',  'result_indicator_baseline_document_link_description_text',  'result_indicator_baseline_document_link_description_lang')  # NOQA: E501
+                            self.add_value_list('result_indicator_baseline_document_link_format', result_indicator_baseline_document_link.file_format_id)  # NOQA: E501
+                            self.related_narrative(get_child_attr(result_indicator_baseline_document_link, 'documentlinktitle'), 'result_indicator_baseline_document_link_title', 'result_indicator_baseline_document_link_title_narrative_text', 'result_indicator_baseline_document_link_title_narrative_lang')  # NOQA: E501
+                            self.related_narrative(get_child_attr(result_indicator_baseline_document_link, 'documentlinkdescription'), 'result_indicator_baseline_document_link_description', 'result_indicator_baseline_document_link_description_text', 'result_indicator_baseline_document_link_description_lang')  # NOQA: E501
 
                             for document_link_category in result_indicator_baseline_document_link.documentlinkcategory_set.all():  # NOQA: E501
                                 self.add_value_list('result_indicator_baseline_document_link_category_code', document_link_category.category_id)  # NOQA: E501
@@ -2162,35 +2161,32 @@ class ActivityIndexing(BaseIndexing):
                                     result_period_target.value
                                 )
                             else:
-                                self.indexing['result_indicator_period_target_value'].append(
+                                self.indexing['result_indicator_period_target_value'].append(  # NOQA: E501
                                     ' ')
 
                             for result_period_target_location in result_period_target.resultindicatorperiodtargetlocation_set.all():  # NOQA: E501
                                 if result_period_target_location.ref:
                                     self.add_value_list(
-                                        'result_indicator_period_target_location_ref',
-                                        result_period_target_location.ref
-                                    )
+                                        'result_indicator_period_target_location_ref',  # NOQA: E501
+                                        result_period_target_location.ref)
                                 else:
-                                    self.indexing['result_indicator_period_target_location_ref'].append(
+                                    self.indexing['result_indicator_period_target_location_ref'].append(  # NOQA: E501
                                         ' ')
 
                             for result_period_target_dimension in result_period_target.resultindicatorperiodtargetdimension_set.all():  # NOQA: E501
                                 if result_period_target.name:
                                     self.add_value_list(
-                                        'result_indicator_period_target_dimension_name',
-                                        result_period_target_dimension.name
-                                    )
+                                        'result_indicator_period_target_dimension_name',  # NOQA: E501
+                                        result_period_target_dimension.name)
                                 else:
-                                    self.indexing['result_indicator_period_target_dimension_name'].append(
+                                    self.indexing['result_indicator_period_target_dimension_name'].append(  # NOQA: E501
                                         ' ')
                                 if result_period_target.value:
                                     self.add_value_list(
-                                        'result_indicator_period_target_dimension_value',
-                                        result_period_target_dimension.value
-                                    )
+                                        'result_indicator_period_target_dimension_value',  # NOQA: E501
+                                        result_period_target_dimension.value)
                                 else:
-                                    self.indexing['result_indicator_period_target_dimension_value'].append(
+                                    self.indexing['result_indicator_period_target_dimension_value'].append(  # NOQA: E501
                                         ' ')
 
                             for result_period_target_comment in result_period_target.resultindicatorperiodtargetcomment_set.all():  # NOQA: E501
@@ -2250,35 +2246,32 @@ class ActivityIndexing(BaseIndexing):
                                     result_period_actual.value
                                 )
                             else:
-                                self.indexing['result_indicator_period_actual_value'].append(
+                                self.indexing['result_indicator_period_actual_value'].append(  # NOQA: E501
                                     ' ')
 
                             for result_period_actual_location in result_period_actual.resultindicatorperiodactuallocation_set.all():  # NOQA: E501
                                 if result_period_actual_location.ref:
                                     self.add_value_list(
-                                        'result_indicator_period_actual_location_ref',
-                                        result_period_actual_location.ref
-                                    )
+                                        'result_indicator_period_actual_location_ref',  # NOQA: E501
+                                        result_period_actual_location.ref)
                                 else:
-                                    self.indexing['result_indicator_period_actual_location_ref'].append(
+                                    self.indexing['result_indicator_period_actual_location_ref'].append(  # NOQA: E501
                                         ' ')
 
                             for result_period_actual_dimension in result_period_actual.resultindicatorperiodactualdimension_set.all():  # NOQA: E501
                                 if result_period_actual_dimension.name:
                                     self.add_value_list(
-                                        'result_indicator_period_actual_dimension_name',
-                                        result_period_actual_dimension.name
-                                    )
+                                        'result_indicator_period_actual_dimension_name',  # NOQA: E501
+                                        result_period_actual_dimension.name)
                                 else:
-                                    self.indexing['result_indicator_period_actual_dimension_name'].append(
+                                    self.indexing['result_indicator_period_actual_dimension_name'].append(  # NOQA: E501
                                         ' ')
                                 if result_period_actual_dimension.value:
                                     self.add_value_list(
-                                        'result_indicator_period_actual_dimension_value',
-                                        result_period_actual_dimension.value
-                                    )
+                                        'result_indicator_period_actual_dimension_value',  # NOQA: E501
+                                        result_period_actual_dimension.value)
                                 else:
-                                    self.indexing['result_indicator_period_actual_dimension_value'].append(
+                                    self.indexing['result_indicator_period_actual_dimension_value'].append(  # NOQA: E501
                                         ' ')
 
                             for result_period_actual_comment in result_period_actual.resultindicatorperiodactualcomment_set.all():  # NOQA: E501
