@@ -38,17 +38,20 @@ def geo_percentages_add_up(self, a):
     Rule: Percentages for all reported countries and regions must add up to
     100%
     """
-    recipient_country_sum = a.activityrecipientcountry_set.all().aggregate(
-        Sum('percentage')
-    ).get('percentage__sum')
-    recipient_region_sum = a.activityrecipientregion_set.all(
-    ).aggregate(Sum('percentage')).get('percentage__sum')
 
-    total_sum = 0
-    if recipient_country_sum:
-        total_sum += recipient_country_sum
-    if recipient_region_sum:
-        total_sum += recipient_region_sum
+    recipient_country_percentages = a.activityrecipientcountry_set.values_list('percentage')
+    recipient_country_sum = 0
+    for i in recipient_country_percentages:
+        for j in i:
+            recipient_country_sum += float(j)
+
+    recipient_region_percentages = a.activityrecipientregion_set.values_list('percentage')
+    recipient_region_sum = 0
+    for i in recipient_region_percentages:
+        for j in i:
+            recipient_region_sum += float(j)
+
+    total_sum = recipient_country_sum + recipient_region_sum
 
     if not (total_sum == 0 or total_sum == 100):
         self.append_error(
@@ -66,8 +69,11 @@ def sector_percentages_add_up(self, a):
     """
     Rule: Percentages for all reported sectors must add up to 100%
     """
-    sector_sum = a.activitysector_set.all().aggregate(
-        Sum('percentage')).get('percentage__sum')
+    sector_percentage = a.activitysector_set.values_list('percentage')
+    sector_sum = 0
+    for i in sector_percentage:
+        for j in i:
+            sector_sum += float(j)
 
     if not (sector_sum is None or sector_sum == 0 or sector_sum == 100):
         self.append_error(

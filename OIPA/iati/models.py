@@ -650,12 +650,7 @@ class ActivitySector(models.Model):
                                    null=True, blank=True,
                                    default=None, on_delete=models.CASCADE)
     vocabulary_uri = models.URLField(null=True, blank=True)
-    percentage = models.DecimalField(
-        max_digits=5,
-        decimal_places=2,
-        null=True,
-        blank=True,
-        default=None)
+    percentage = models.CharField(max_length=100, null=True, blank=True)
     narratives = GenericRelation(
         Narrative,
         content_type_field='related_content_type',
@@ -675,12 +670,7 @@ class ActivitySector(models.Model):
 class ActivityRecipientCountry(models.Model):
     activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
     country = models.ForeignKey(Country, on_delete=models.CASCADE)
-    percentage = models.DecimalField(
-        max_digits=5,
-        decimal_places=2,
-        null=True,
-        blank=True,
-        default=None)
+    percentage = models.CharField(max_length=100, null=True, blank=True)
     narratives = GenericRelation(
         Narrative,
         content_type_field='related_content_type',
@@ -730,12 +720,7 @@ class BudgetItem(models.Model):
     country_budget_item = models.ForeignKey(CountryBudgetItem,
                                             on_delete=models.CASCADE)
     code = models.ForeignKey(BudgetIdentifier, on_delete=models.CASCADE)
-    percentage = models.DecimalField(
-        max_digits=5,
-        decimal_places=2,
-        null=True,
-        blank=True,
-        default=None)
+    percentage = models.CharField(max_length=100, null=True, blank=True)
 
     def get_activity(self):
         return self.country_budget_item.activity
@@ -763,12 +748,7 @@ class ActivityRecipientRegion(models.Model):
         Narrative,
         content_type_field='related_content_type',
         object_id_field='related_object_id')
-    percentage = models.DecimalField(
-        max_digits=5,
-        decimal_places=2,
-        null=True,
-        blank=True,
-        default=None)
+    percentage = models.CharField(max_length=100, null=True, blank=True)
 
     def __unicode__(self,):
         return "name: %s" % self.region
@@ -1389,9 +1369,7 @@ class BudgetSector(models.Model):
         Sector,
         on_delete=models.CASCADE)
 
-    percentage = models.DecimalField(
-        max_digits=5,
-        decimal_places=2)
+    percentage = models.CharField(max_length=100, null=True, blank=True)
 
     def __unicode__(self, ):
         return "%s - %s" % (self.budget.id, self.sector.code)
