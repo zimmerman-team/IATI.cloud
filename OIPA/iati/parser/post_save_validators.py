@@ -51,7 +51,11 @@ def geo_percentages_add_up(self, a):
         for j in i:
             recipient_region_sum += float(j)
 
-    total_sum = recipient_country_sum + recipient_region_sum
+    total_sum = 0
+    if recipient_country_sum:
+        total_sum += recipient_country_sum
+    if recipient_region_sum:
+        total_sum += recipient_region_sum
 
     if not (total_sum == 0 or total_sum == 100):
         self.append_error(
