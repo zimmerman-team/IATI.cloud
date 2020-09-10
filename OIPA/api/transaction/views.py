@@ -1,5 +1,6 @@
 from django.conf import settings
-from django.db.models import Count, F, Q, Sum
+from django.db.models import Count, ExpressionWrapper, F, FloatField, Q, Sum
+from django.db.models.functions import Cast
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from django_filters.rest_framework import DjangoFilterBackend
@@ -276,10 +277,12 @@ def annotate_currency(query_params, groupings):
     additions = list(set(param_additions).union(grouping_additions))
 
     for percentage_field in additions:
-        percentage_expression = F(percentage_field) / 100.0
+        percentage_expression = Cast(percentage_field,
+                                     output_field=FloatField()) / 100.0
         annotation_components = annotation_components * percentage_expression
 
-    return Sum(annotation_components)
+    return ExpressionWrapper(Sum(annotation_components),
+                             output_field=FloatField())
 
 
 class TransactionAggregation(AggregationView):
