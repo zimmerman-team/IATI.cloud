@@ -361,8 +361,8 @@ class ActivitySerializerTestCase(TestCase):
         serializer = serializers.ActivityRecipientRegionSerializer(
             recipient_region, context={'request': self.request_dummy})
 
-        assert serializer.data['percentage'] == \
-               str(recipient_region.percentage),\
+        assert serializer.data['percentage'] == str(
+            recipient_region.percentage),\
             """
             'recipient_region.percentage' should be serialized to a field
             called 'percentage'
@@ -407,8 +407,8 @@ class ActivitySerializerTestCase(TestCase):
             recipient_country,
             context={'request': self.request_dummy}
         )
-        assert serializer.data['percentage'] == \
-               str(recipient_country.percentage),\
+        assert serializer.data['percentage'] == str(
+            recipient_country.percentage),\
             """
             'recipient_country.percentage' should be serialized to a field
             called 'percentage'

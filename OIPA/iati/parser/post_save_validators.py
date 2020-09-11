@@ -1,4 +1,4 @@
-from django.db.models import Max, Sum
+from django.db.models import Max
 
 from iati.models import (
     Activity, ActivityParticipatingOrganisation, RelatedActivity,
@@ -39,13 +39,15 @@ def geo_percentages_add_up(self, a):
     100%
     """
 
-    recipient_country_percentages = a.activityrecipientcountry_set.values_list('percentage')
+    recipient_country_percentages = \
+        a.activityrecipientcountry_set.values_list('percentage')
     recipient_country_sum = 0
     for i in recipient_country_percentages:
         for j in i:
             recipient_country_sum += float(j)
 
-    recipient_region_percentages = a.activityrecipientregion_set.values_list('percentage')
+    recipient_region_percentages = \
+        a.activityrecipientregion_set.values_list('percentage')
     recipient_region_sum = 0
     for i in recipient_region_percentages:
         for j in i:
