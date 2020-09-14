@@ -108,7 +108,10 @@ class CodelistItemList(CacheResponseMixin, DynamicListView):
         except LookupError:
             raise NotFound("Codelist not found")
 
-        queryset = model_cls.objects.all()
+        if model_cls.__name__ == 'Sector':
+            queryset = model_cls.objects.filter(vocabulary__isnull=False)
+        else:
+            queryset = model_cls.objects.all()
         vocabulary = self.request.query_params.get('vocabulary', None)
         if vocabulary is not None:
             try:
