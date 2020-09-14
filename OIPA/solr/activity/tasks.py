@@ -6,7 +6,7 @@ from django.conf import settings
 
 from iati.models import Activity
 from solr.activity.indexing import ActivityIndexing
-from solr.activity_sector.tasks import ActivitySectorTaskIndexing
+# from solr.activity_sector.tasks import ActivitySectorTaskIndexing
 from solr.budget.tasks import BudgetTaskIndexing
 # from solr.result.tasks import ResultTaskIndexing
 from solr.tasks import BaseTaskIndexing
@@ -30,4 +30,4 @@ class ActivityTaskIndexing(BaseTaskIndexing):
         TransactionTaskIndexing().run_from_activity(self.instance)
         BudgetTaskIndexing().run_from_activity(self.instance)
         # ResultTaskIndexing().run_from_activity(self.instance)
-        ActivitySectorTaskIndexing().run_from_activity(self.instance)
+        # ActivitySectorTaskIndexing().run_from_activity(self.instance)

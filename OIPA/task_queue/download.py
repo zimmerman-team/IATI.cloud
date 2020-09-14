@@ -145,7 +145,7 @@ class DatasetDownloadTask(celery.Task):
             try:
                 with open(download_dir_with_filename, 'wb') as f:
                     resp = requests.get(dataset_url, verify=False,
-                                        headers=headers)
+                                        headers=headers, timeout=30)
                     f.write(resp.content)
                 # urllib.request.urlretrieve(
                 #     dataset_url,
@@ -155,7 +155,8 @@ class DatasetDownloadTask(celery.Task):
             except (
                 requests.exceptions.RequestException,
                 ConnectionResetError,
-                requests.exceptions.TooManyRedirects
+                requests.exceptions.TooManyRedirects,
+                requests.exceptions.Timeout
                 # urllib.request.HTTPError,  # 403
                 # urllib.request.URLError,  # timeouts
             ):

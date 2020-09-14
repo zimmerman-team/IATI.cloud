@@ -2,6 +2,7 @@
 #
 # Check https://circleci.com/docs/2.0/language-python/ for more details
 #
+
 version: 2
 jobs:
     test:
@@ -159,6 +160,13 @@ jobs:
         steps:
             - checkout
             - run: npx semantic-release
+    prerelease:
+        docker:
+            - image: circleci/node:12.14.1-stretch-browsers
+        working_directory: ~/project
+        steps:
+            - checkout
+            - run: npx semantic-release
 
 workflows:
     version: 2
@@ -194,3 +202,10 @@ workflows:
                       branches:
                           only:
                               - master
+            - prerelease:
+                  requires:
+                      - deploy_staging
+                  filters:
+                      branches:
+                          only:
+                              - develop

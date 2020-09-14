@@ -394,7 +394,7 @@ class TransactionReference(ElementReference):
     # Provider Organisation
     provider_organisation = {
         'element': 'provider-org',
-        'key': 'provider_org',
+        'key': 'provider_organisation',
         # Attributes
         'ref': {
             'key': 'ref',
@@ -419,7 +419,7 @@ class TransactionReference(ElementReference):
     # Receiver Organisation
     receiver_organisation = {
         'element': 'receiver-org',
-        'key': 'receiver_org',
+        'key': 'receiver_organisation',
         # Attributes
         'ref': {
             'key': 'ref',
@@ -454,7 +454,7 @@ class TransactionReference(ElementReference):
     # Recipient country
     recipient_countries = {
         'element': 'recipient-country',
-        'key': 'recipient_country',
+        'key': 'recipient_countries',
         'country': {
             'key': 'country',
             'code': {
@@ -466,7 +466,7 @@ class TransactionReference(ElementReference):
     # Recipient region
     recipient_regions = {
         'element': 'recipient-region',
-        'key': 'recipient_region',
+        'key': 'recipient_regions',
         'region': {
             'key': 'region',
             'code': {

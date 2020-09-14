@@ -161,25 +161,28 @@ class DatasetSyncer(object):
                                  '10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}  # NOQA: E501
 
         try:
-            response = requests.get(source_url, headers=headers)
+            response = requests.get(source_url, headers=headers, timeout=30)
         except requests.exceptions.SSLError:
-            response = requests.get(source_url, verify=False, headers=headers)
+            response = requests.get(source_url, verify=False,
+                                    headers=headers, timeout=30)
         except (requests.exceptions.ConnectionError,
-                requests.exceptions.TooManyRedirects):
+                requests.exceptions.TooManyRedirects,
+                requests.exceptions.Timeout):
             pass
 
-        if response and response.status_code == 200:
-            try:
-                iati_file = smart_text(response.content, 'utf-8')
-            # XXX: some files contain non utf-8 characters:
-            # FIXME: this is hardcoded:
-            except UnicodeDecodeError:
-                iati_file = smart_text(response.content, 'latin-1')
+        try:
+            iati_file = smart_text(response.content, 'utf-8')
+        # XXX: some files contain non utf-8 characters:
+        # FIXME: this is hardcoded:
+        except UnicodeDecodeError:
+            iati_file = smart_text(response.content, 'latin-1')
+        except AttributeError:
+            iati_file = ''
 
-            # 2. Encode the string to use for hashing:
-            hasher = hashlib.sha1()
-            hasher.update(iati_file.encode('utf-8'))
-            sync_sha1 = hasher.hexdigest()
+        # 2. Encode the string to use for hashing:
+        hasher = hashlib.sha1()
+        hasher.update(iati_file.encode('utf-8'))
+        sync_sha1 = hasher.hexdigest()
 
         obj, created = Dataset.objects.update_or_create(
             iati_id=dataset['id'],
