@@ -330,8 +330,8 @@ class DocumentLinkReference(ConvertElementReference,
             fields=[
                 'format',
                 'url',
-                'categories',
-                'languages',
+                'category',
+                'language',
                 'title',
                 'document_date',
                 'description'
