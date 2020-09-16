@@ -243,9 +243,7 @@ class TransactionSector(models.Model):
 
     reported_on_transaction = models.BooleanField(default=True)
 
-    percentage = models.DecimalField(
-        max_digits=5,
-        decimal_places=2)
+    percentage = models.CharField(max_length=100, null=True, blank=True)
 
     narratives = GenericRelation(
         Narrative,
@@ -278,9 +276,7 @@ class TransactionRecipientCountry(models.Model):
 
     reported_on_transaction = models.BooleanField(default=True)
 
-    percentage = models.DecimalField(
-        max_digits=5,
-        decimal_places=2)
+    percentage = models.CharField(max_length=100, null=True, blank=True)
 
     narratives = GenericRelation(
         Narrative,
@@ -322,9 +318,7 @@ class TransactionRecipientRegion(models.Model):
 
     reported_on_transaction = models.BooleanField(default=True)
 
-    percentage = models.DecimalField(
-        max_digits=5,
-        decimal_places=2)
+    percentage = models.CharField(max_length=100, null=True, blank=True)
 
     narratives = GenericRelation(
         Narrative,

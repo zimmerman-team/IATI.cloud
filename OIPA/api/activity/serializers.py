@@ -1160,11 +1160,7 @@ class LegacyDataSerializer(ModelSerializerNoValidation):
 class ActivitySectorSerializer(ModelSerializerNoValidation):
     id = serializers.HiddenField(default=None)
     sector = SectorSerializer(fields=('url', 'code', 'name'))
-    percentage = serializers.DecimalField(
-        max_digits=5,
-        decimal_places=2,
-        coerce_to_string=False
-    )
+    percentage = serializers.CharField()
     vocabulary = VocabularySerializer()
     vocabulary_uri = serializers.URLField()
 
@@ -1475,11 +1471,7 @@ class ActivityRecipientRegionSerializer(DynamicFieldsModelSerializer):
     region = BasicRegionSerializer(
         fields=('url', 'code', 'name'),
     )
-    percentage = serializers.DecimalField(
-        max_digits=5,
-        decimal_places=2,
-        coerce_to_string=False
-    )
+    percentage = serializers.CharField()
     vocabulary = VocabularySerializer()
     vocabulary_uri = serializers.URLField(required=False)
 
@@ -1601,11 +1593,7 @@ class HumanitarianScopeSerializer(DynamicFieldsModelSerializer):
 class RecipientCountrySerializer(DynamicFieldsModelSerializer):
     id = serializers.HiddenField(default=None)
     country = CountrySerializer(fields=('url', 'code', 'name'))
-    percentage = serializers.DecimalField(
-        max_digits=5,
-        decimal_places=2,
-        coerce_to_string=False
-    )
+    percentage = serializers.CharField()
     activity = serializers.CharField(write_only=True)
     narrative = NarrativeSerializer(many=True, required=True,
                                     source='narratives')

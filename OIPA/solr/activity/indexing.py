@@ -449,7 +449,7 @@ class ActivityIndexing(BaseIndexing):
                 )
                 self.add_value_list(
                     'recipient_country_percentage',
-                    decimal_string(recipient_country.percentage)
+                    recipient_country.percentage
                 )
 
                 self.related_narrative(
@@ -509,7 +509,7 @@ class ActivityIndexing(BaseIndexing):
                 )
                 self.add_value_list(
                     'recipient_region_percentage',
-                    decimal_string(recipient_region.percentage)
+                    recipient_region.percentage
                 )
 
                 self.related_narrative(
@@ -670,7 +670,7 @@ class ActivityIndexing(BaseIndexing):
                 )
                 self.add_value_list(
                     'sector_percentage',
-                    decimal_string(activity_sector.percentage)
+                    activity_sector.percentage
                 )
 
                 self.related_narrative(
@@ -774,7 +774,7 @@ class ActivityIndexing(BaseIndexing):
                 )
                 self.add_value_list(
                     'country_budget_items_budget_item_percentage',
-                    decimal_string(budget_item.percentage)
+                    budget_item.percentage
                 )
 
                 self.related_narrative(

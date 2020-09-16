@@ -108,7 +108,7 @@ class TestActivityCSVEndpoints(APITestCase):
             self.assertEqual(row[default_csv_headers[1]], sector.sector.code
                              + ';')
             self.assertEqual(row[default_csv_headers[2]],
-                             str(format(sector.percentage, '.2f'))
+                             str(sector.percentage)
                              + ';')
             self.assertEqual(row[default_csv_headers[4]],
                              country.country.code + ';')
