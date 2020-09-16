@@ -2393,7 +2393,7 @@ class DocumentLinkReference(ElementReference):
     # <category>
     category = {
         # category data in list
-        'list': 'categories',
+        'list': 'category',
         'element': 'category',
         'key': 'category',
         'code': {
@@ -2405,7 +2405,7 @@ class DocumentLinkReference(ElementReference):
     # <language
     language = {
         # category data in list
-        'list': 'languages',
+        'list': 'language',
         'element': 'language',
         'key': 'language',
         'code': {
