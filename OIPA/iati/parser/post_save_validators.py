@@ -44,14 +44,20 @@ def geo_percentages_add_up(self, a):
     recipient_country_sum = 0
     for i in recipient_country_percentages:
         for j in i:
-            recipient_country_sum += float(j)
+            try:
+                recipient_country_sum += float(j)
+            except TypeError:
+                pass
 
     recipient_region_percentages = \
         a.activityrecipientregion_set.values_list('percentage')
     recipient_region_sum = 0
     for i in recipient_region_percentages:
         for j in i:
-            recipient_region_sum += float(j)
+            try:
+                recipient_region_sum += float(j)
+            except TypeError:
+                pass
 
     total_sum = 0
     if recipient_country_sum:
@@ -79,7 +85,10 @@ def sector_percentages_add_up(self, a):
     sector_sum = 0
     for i in sector_percentage:
         for j in i:
-            sector_sum += float(j)
+            try:
+                sector_sum += float(j)
+            except TypeError:
+                pass
 
     if not (sector_sum is None or sector_sum == 0 or sector_sum == 100):
         self.append_error(
