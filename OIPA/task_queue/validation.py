@@ -86,8 +86,7 @@ class DatasetValidationTask(celery.Task):
         except requests.exceptions.SSLError as e:
             logger.info('%s (%s)' % (e, type(e)) + self._dataset.source_url)
             try:
-                resp = requests.get(self._dataset.source_url, verify=False, 
-                                    timeout=30)
+                resp = requests.get(self._dataset.source_url, verify=False, timeout=30)  # NOQA: E501
                 if resp.status_code == 200:
                     md5 = hashlib.md5()
                     md5.update(resp.content)
@@ -265,7 +264,7 @@ class DatasetValidationTask(celery.Task):
         if response.status_code == 200:
             self._json_result = response.json()
         else:
-            response = requests.get(get_json_file_url, verify=False, timeout=30)
+            response = requests.get(get_json_file_url, verify=False, timeout=30)  # NOQA: E501
             if response.status_code == 200:
                 self._json_result = response.json()
 
