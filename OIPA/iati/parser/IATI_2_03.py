@@ -1460,7 +1460,7 @@ class Parse(IatiParser):
                 None,
                 None)
 
-        sector = models.Sector.objects.filter(code=code,
+        sector = models.Sector.objects.filter(code=slugify(code),
                                               vocabulary=vocabulary).first()
 
         if not sector and vocabulary.code == '1':
@@ -1482,6 +1482,7 @@ class Parse(IatiParser):
             if not sector:
                 sector = models.Sector()
                 sector.code = code
+                sector.vocabulary = vocabulary
                 sector.name = 'Vocabulary 99 or 98'
                 sector.description = 'The sector reported corresponds to a sector vocabulary maintained by the reporting organisation for this activity'  # NOQA: E501
                 sector.save()
@@ -2673,7 +2674,7 @@ class Parse(IatiParser):
                 None,
                 element.attrib.get('vocabulary'))
 
-        sector = models.Sector.objects.filter(code=code,
+        sector = models.Sector.objects.filter(code=slugify(code),
                                               vocabulary=vocabulary).first()
 
         if not sector and vocabulary.code == '1':
@@ -2694,6 +2695,7 @@ class Parse(IatiParser):
             if not sector:
                 sector = models.Sector()
                 sector.code = code
+                sector.vocabulary = vocabulary
                 sector.name = 'Vocabulary 99 or 98'
                 sector.description = 'The sector reported corresponds to a sector vocabulary maintained by the reporting organisation for this activity'  # NOQA: E501
                 sector.save()

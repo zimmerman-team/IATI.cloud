@@ -2174,14 +2174,14 @@ class ActivityIndexing(BaseIndexing):
                                         ' ')
 
                             for result_period_target_dimension in result_period_target.resultindicatorperiodtargetdimension_set.all():  # NOQA: E501
-                                if result_period_target.name:
+                                if result_period_target_dimension.name:
                                     self.add_value_list(
                                         'result_indicator_period_target_dimension_name',  # NOQA: E501
                                         result_period_target_dimension.name)
                                 else:
                                     self.indexing['result_indicator_period_target_dimension_name'].append(  # NOQA: E501
                                         ' ')
-                                if result_period_target.value:
+                                if result_period_target_dimension.value:
                                     self.add_value_list(
                                         'result_indicator_period_target_dimension_value',  # NOQA: E501
                                         result_period_target_dimension.value)
