@@ -2085,7 +2085,7 @@ class ActivityIndexing(BaseIndexing):
                             )
                         else:
                             self.indexing['result_indicator_baseline_iso_date'].append(  # NOQA: E501
-                                ' ')
+                                date_string(' '))
                         if result_indicator_baseline.value:
                             self.add_value_list(
                                 'result_indicator_baseline_value',
@@ -2511,10 +2511,11 @@ class ActivityIndexing(BaseIndexing):
                     if forecast.value_date:
                         self.add_value_list(
                             'fss_forecast_value_date',
-                            value_string(forecast.value_date)
+                            date_string(forecast.value_date)
                         )
                     else:
-                        self.indexing['fss_forecast_value_date'].append(' ')
+                        self.indexing['fss_forecast_value_date'].append(
+                            date_string(' '))
                     if forecast.currency_id:
                         self.add_value_list(
                             'fss_forecast_currency',
