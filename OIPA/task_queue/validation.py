@@ -72,8 +72,12 @@ class DatasetValidationTask(celery.Task):
         #                 self._updated()
 
     def _check(self):
+        headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
+                                 '10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}  # NOQA: E501
+
         try:
-            get_respons = requests.get(self._dataset.source_url, timeout=30)
+            get_respons = requests.get(self._dataset.source_url,
+                                       headers=headers, timeout=30)
             if get_respons.status_code == 200:
                 md5 = hashlib.md5()
                 md5.update(get_respons.content)
@@ -86,7 +90,8 @@ class DatasetValidationTask(celery.Task):
         except requests.exceptions.SSLError as e:
             logger.info('%s (%s)' % (e, type(e)) + self._dataset.source_url)
             try:
-                resp = requests.get(self._dataset.source_url, verify=False, timeout=30)  # NOQA: E501
+                resp = requests.get(self._dataset.source_url, headers=headers,
+                verify=False, timeout=30)  # NOQA: E501
                 if resp.status_code == 200:
                     md5 = hashlib.md5()
                     md5.update(resp.content)
