@@ -158,20 +158,24 @@ class BudgetAggregations(AggregationView):
         ),
         GroupBy(
             query_param="recipient_region",
-            fields="activity__recipient_region",
+            fields="activity__recipient_region__code",
             renamed_fields="recipient_region",
             queryset=Region.objects.all(),
             serializer=RegionSerializer,
+            serializer_fk='code',
             serializer_fields=('url', 'code', 'name',),
             name_search_field="activity__recipient_region__name",
             renamed_name_search_field="recipient_region_name",
         ),
         GroupBy(
             query_param="sector",
-            fields="budgetsector__sector",
+            fields="budgetsector__sector__code",
             renamed_fields="sector",
             queryset=Sector.objects.all(),
             serializer=SectorSerializer,
+            # though code is not fk, it is used in searching sector code
+            # in Sector model.
+            serializer_fk='code',
             serializer_fields=('url', 'code', 'name'),
             name_search_field="budgetsector__sector__name",
             renamed_name_search_field="sector_name",
