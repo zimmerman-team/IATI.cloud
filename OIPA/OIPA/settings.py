@@ -144,11 +144,19 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'api.middleware.FileExportMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django_otp.middleware.OTPMiddleware',
 ]
 
 ROOT_URLCONF = 'OIPA.urls'
 
 INSTALLED_APPS = [
+    # 'two-factor
+    'django_otp',
+    'django_otp.plugins.otp_static',
+    'django_otp.plugins.otp_totp',
+    'two_factor',
+
     # 'django_rq',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -244,6 +252,9 @@ RQ_QUEUES = {
         'DEFAULT_TIMEOUT': 10800,
     }
 }
+TWO_FACTOR_FORCE_OTP_ADMIN = True
+LOGIN_URL = 'two_factor:login'
+LOGIN_REDIRECT_URL = '/admin'  # Redirect admin dashboard
 
 GRAPPELLI_ADMIN_TITLE = 'OIPA admin'
 ADMINFILES_UPLOAD_TO = 'csv_files'
