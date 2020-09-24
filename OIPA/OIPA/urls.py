@@ -3,16 +3,15 @@ from django.conf.urls import include, url
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.auth import REDIRECT_FIELD_NAME
+from django.contrib.auth.views import redirect_to_login
+from django.http import HttpResponseRedirect
+from django.shortcuts import resolve_url
+from django.urls import reverse
+from django.utils.http import is_safe_url
 from django.views.generic import TemplateView
 from django.views.generic.base import RedirectView
 from two_factor.admin import AdminSiteOTPRequired, AdminSiteOTPRequiredMixin
 from two_factor.urls import urlpatterns as tf_urls
-from django.urls import reverse
-from django.utils.http import is_safe_url
-from django.http import HttpResponseRedirect
-from django.shortcuts import resolve_url
-from django.contrib.auth.views import redirect_to_login
-
 
 from OIPA import views
 
