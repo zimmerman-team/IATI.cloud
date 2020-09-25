@@ -588,6 +588,7 @@ class TransactionAggregation(AggregationView):
             query_param="default_aid_type",
             fields="activity__default_aid_types__aid_type__code",
             renamed_fields="default_aid_type",
+            serializer_fk='code',
             queryset=AidType.objects.all(),
             serializer=CodelistSerializer,
         ),
