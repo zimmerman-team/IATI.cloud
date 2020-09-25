@@ -1,8 +1,7 @@
 import django_filters
 
-from geodata.models import Country
-
 from api.generics.filters import CommaSeparatedCharFilter
+from geodata.models import Country
 
 
 class CountryFilter(django_filters.FilterSet):
