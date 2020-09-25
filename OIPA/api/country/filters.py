@@ -4,6 +4,7 @@ from geodata.models import Country
 
 from api.generics.filters import CommaSeparatedCharFilter
 
+
 class CountryFilter(django_filters.FilterSet):
     """
     Filter countries list
