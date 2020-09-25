@@ -15,6 +15,10 @@ class CountryFilter(django_filters.FilterSet):
         field_name='name',
         lookup_expr='in'
     )
+    code = CommaSeparatedCharFilter(
+        field_name='code',
+        lookup_expr='in'
+    )
 
     class Meta:
         model = Country
