@@ -39,6 +39,10 @@ class PublisherFilter(FilterSet):
         field_name='name',
         lookup_expr='in'
     )
+    display_name = CommaSeparatedCharFilter(
+        field_name='display_name',
+        lookup_expr='in'
+    )
 
     class Meta:
         model = Publisher
