@@ -173,3 +173,4 @@ flower
 ######
 
 django-two-factor-auth==1.12.1
+phonenumbers==8.12.9
