@@ -232,12 +232,12 @@ class PostSaveActivityTestCase(TestCase):
         trc1 = TransactionRecipientCountry.objects.filter(
             country=self.c1, transaction=self.t1)[0]
         # 10000 / 3
-        self.assertEqual(round(trc1.percentage), 33)
+        self.assertEqual(round(Decimal(trc1.percentage)), 33)
 
         trr1 = TransactionRecipientRegion.objects.filter(
             region=self.r1, transaction=self.t2)[0]
         # 20000 / 3
-        self.assertEqual(round(trr1.percentage), 33)
+        self.assertEqual(round(Decimal(trr1.percentage)), 33)
 
     def test_set_sector_transaction_with_percentages(self):
         """
@@ -293,22 +293,22 @@ class PostSaveActivityTestCase(TestCase):
         ts1 = TransactionSector.objects.filter(
             sector=self.s1, transaction=self.t1)[0]
         # 10000 / 2
-        self.assertEqual(ts1.percentage, 50)
+        self.assertEqual(Decimal(ts1.percentage), 50)
 
         ts2 = TransactionSector.objects.filter(
             sector=self.s2, transaction=self.t1)[0]
         # 20000 / 3
-        self.assertEqual(round(ts2.percentage), 50)
+        self.assertEqual(round(Decimal(ts2.percentage)), 50)
 
         TransactionSector.objects.filter(
             sector=self.s3, transaction=self.t1)[0]
         # 10000 / 2
-        self.assertEqual(ts1.percentage, 50)
+        self.assertEqual(Decimal(ts1.percentage), 50)
 
         TransactionSector.objects.filter(
             sector=self.s4, transaction=self.t1)[0]
         # 20000 / 3
-        self.assertEqual(round(ts2.percentage), 50)
+        self.assertEqual(round(Decimal(ts2.percentage)), 50)
 
     def test_set_sector_budget_with_percentages(self):
         """
@@ -361,16 +361,16 @@ class PostSaveActivityTestCase(TestCase):
 
         ts1 = BudgetSector.objects.filter(
             sector=self.s1, budget=self.budget1)[0]
-        self.assertEqual(ts1.percentage, 25)
+        self.assertEqual(Decimal(ts1.percentage), 25)
 
         ts2 = BudgetSector.objects.filter(
             sector=self.s2, budget=self.budget2)[0]
-        self.assertEqual(round(ts2.percentage), 25)
+        self.assertEqual(round(Decimal(ts2.percentage)), 25)
 
         BudgetSector.objects.filter(
             sector=self.s3, budget=self.budget1)[0]
-        self.assertEqual(ts1.percentage, 25)
+        self.assertEqual(Decimal(ts1.percentage), 25)
 
         BudgetSector.objects.filter(
             sector=self.s4, budget=self.budget2)[0]
-        self.assertEqual(round(ts2.percentage), 25)
+        self.assertEqual(round(Decimal(ts2.percentage)), 25)

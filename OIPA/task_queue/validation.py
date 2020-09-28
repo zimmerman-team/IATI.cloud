@@ -72,8 +72,12 @@ class DatasetValidationTask(celery.Task):
         #                 self._updated()
 
     def _check(self):
+        headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
+                                 '10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}  # NOQA: E501
+
         try:
-            get_respons = requests.get(self._dataset.source_url)
+            get_respons = requests.get(self._dataset.source_url,
+                                       headers=headers, timeout=30)
             if get_respons.status_code == 200:
                 md5 = hashlib.md5()
                 md5.update(get_respons.content)
@@ -86,7 +90,8 @@ class DatasetValidationTask(celery.Task):
         except requests.exceptions.SSLError as e:
             logger.info('%s (%s)' % (e, type(e)) + self._dataset.source_url)
             try:
-                resp = requests.get(self._dataset.source_url, verify=False)
+                resp = requests.get(self._dataset.source_url, headers=headers,
+                verify=False, timeout=30)  # NOQA: E501
                 if resp.status_code == 200:
                     md5 = hashlib.md5()
                     md5.update(resp.content)
@@ -258,13 +263,13 @@ class DatasetValidationTask(celery.Task):
                 ).get('get_json_file').format(json_file=json_file)
             )
         # Request to the JSON result to the server
-        response = requests.get(get_json_file_url)
+        response = requests.get(get_json_file_url, timeout=30)
         # If the response if OK then save the result
         # to the variable json result
         if response.status_code == 200:
             self._json_result = response.json()
         else:
-            response = requests.get(get_json_file_url, verify=False)
+            response = requests.get(get_json_file_url, verify=False, timeout=30)  # NOQA: E501
             if response.status_code == 200:
                 self._json_result = response.json()
 
