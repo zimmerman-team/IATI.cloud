@@ -88,11 +88,11 @@ def transaction_pre_delete(sender, instance, **kwargs):
     TransactionTaskIndexing(instance=instance).delete()
 
 
-@receiver(signals.pre_delete, sender=ActivitySector)
-def activity_sector_pre_delete(sender, instance, **kwargs):
-    ActivitySectorTaskIndexing(instance=instance).delete()
-
-
-@receiver(signals.pre_delete, sender=TransactionSector)
-def transaction_sector_pre_delete(sender, instance, **kwargs):
-    TransactionSectorTaskIndexing(instance=instance).delete()
+# @receiver(signals.pre_delete, sender=ActivitySector)
+# def activity_sector_pre_delete(sender, instance, **kwargs):
+#     ActivitySectorTaskIndexing(instance=instance).delete()
+#
+#
+# @receiver(signals.pre_delete, sender=TransactionSector)
+# def transaction_sector_pre_delete(sender, instance, **kwargs):
+#     TransactionSectorTaskIndexing(instance=instance).delete()
