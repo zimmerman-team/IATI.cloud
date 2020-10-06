@@ -4,7 +4,8 @@ from django_filters import BooleanFilter, DateFilter, NumberFilter
 from rest_framework import filters
 
 from api.generics.filters import (
-    CommaSeparatedCharFilter, TogetherFilterSet, ToManyFilter
+    CommaSeparatedCharFilter, IsNullBooleanFilter, TogetherFilterSet,
+    ToManyFilter
 )
 from iati.models import (
     ActivityParticipatingOrganisation, ActivityRecipientCountry,
@@ -27,6 +28,11 @@ class BudgetFilter(TogetherFilterSet):
     activity_scope = CommaSeparatedCharFilter(
         field_name='activity__scope__code',
         lookup_expr='in',)
+
+    has_activity_scope = IsNullBooleanFilter(
+        name='activity__scope__code',
+        lookup_expr='isnull',
+    )
 
     document_link_category = CommaSeparatedCharFilter(
         lookup_expr='in',
