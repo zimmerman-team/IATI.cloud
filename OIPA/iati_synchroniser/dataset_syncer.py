@@ -165,9 +165,12 @@ class DatasetSyncer(object):
         except requests.exceptions.SSLError:
             response = requests.get(source_url, verify=False,
                                     headers=headers, timeout=30)
-        except (requests.exceptions.ConnectionError,
-                requests.exceptions.TooManyRedirects,
-                requests.exceptions.Timeout):
+        except requests.exceptions.Timeout:
+            response = requests.get(source_url, timeout=30)
+        # except (requests.exceptions.ConnectionError,
+        #         requests.exceptions.TooManyRedirects):
+        #     pass
+        finally:
             pass
 
         try:
