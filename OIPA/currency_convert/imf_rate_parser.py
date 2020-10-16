@@ -56,6 +56,7 @@ class RateParser():
     def __init__(self):
         self.imf_url = "http://www.imf.org/external/np/fin/ert/GUI/Pages/Report.aspx?Type=XML&CU=%27EUR%27,%27JPY%27,%27GBP%27,%27USD%27,%27DZD%27,%27AUD%27,%27ATS%27,%27BHD%27,%27BEF%27,%27VEF%27,%27BWP%27,%27BRL%27,%27BND%27,%27CAD%27,%27CLP%27,%27CNY%27,%27COP%27,%27CYP%27,%27CZK%27,%27DKK%27,%27DEM%27,%27FIM%27,%27FRF%27,%27GRD%27,%27HUF%27,%27ISK%27,%27INR%27,%27IDR%27,%27IRR%27,%27IEP%27,%27ILS%27,%27ITL%27,%27KZT%27,%27KRW%27,%27EEK%27,%27KWD%27,%27LYD%27,%27LUF%27,%27MYR%27,%27MTL%27,%27MUR%27,%27MXN%27,%27NPR%27,%27NLG%27,%27NZD%27,%27NOK%27,%27PEN%27,%27PKR%27,%27UYU%27,%27PHP%27,%27PLN%27,%27PTE%27,%27QAR%27,%27OMR%27,%27RUB%27,%27SAR%27,%27SGD%27,%27SKK%27,%27SIT%27,%27ZAR%27,%27ESP%27,%27LKR%27,%27SEK%27,%27CHF%27,%27THB%27,%27TTD%27,%27TND%27,%27AED%27,%27VEB%27&EX=SDRC&P=DateRange&CF=UnCompressed&CUF=Period&DS=Ascending&DT=NA"  # NOQA: E501
         self.imf_download_url = "http://www.imf.org/external/np/fin/ert/GUI/Pages/ReportData.aspx?Type=XML"  # NOQA: E501
+        self.updated_imf_url = ''
         self.year = 1993
         self.month = 12
         self.min_tick = 0
@@ -71,7 +72,7 @@ class RateParser():
         min_tick = start of month tick
         max_tick = end of month tick
         """
-        return ''.join([
+        self.updated_imf_url = ''.join([
             self.imf_url,
             '&Fr=',
             str(self.min_tick),
@@ -130,6 +131,7 @@ class RateParser():
                 month=self.month,
                 year=self.year,
                 currency=currency,
+                imf_url=self.updated_imf_url,
                 defaults={'value': average_value})
             if not created:
                 obj.value = average_value
@@ -183,9 +185,9 @@ class RateParser():
                 continue
             count += 1
             self.set_tick_rates()
-            url = self.prepare_url()
+            self.prepare_url()
             browser = self.create_browser()
-            data = browser.get_xml_data(url, self.imf_download_url)
+            data = browser.get_xml_data(self.updated_imf_url, self.imf_download_url)
 
             if data is not None:
                 self.parse_data(data)
