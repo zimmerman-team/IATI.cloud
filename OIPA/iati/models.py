@@ -1336,6 +1336,9 @@ class Budget(models.Model):
     currency = models.ForeignKey(
         Currency, null=True, blank=True,
         default=None, on_delete=models.CASCADE)
+    usd_exchange_rate = models.DecimalField(max_digits=15, decimal_places=10,
+                                            null=True)
+    imf_url = models.TextField(null=True)
 
     xdr_value = models.DecimalField(
         max_digits=20, decimal_places=7, default=Decimal(0))
@@ -1393,6 +1396,9 @@ class PlannedDisbursement(models.Model):
     currency = models.ForeignKey(
         Currency, null=True, blank=True,
         default=None, on_delete=models.CASCADE)
+    usd_exchange_rate = models.DecimalField(max_digits=15, decimal_places=10,
+                                            null=True)
+    imf_url = models.TextField(null=True)
 
     xdr_value = models.DecimalField(
         max_digits=20, decimal_places=7, default=Decimal(0))

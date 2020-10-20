@@ -2061,6 +2061,10 @@ class Parse(IatiParser):
                 budget.currency_id, 'JPY', budget.value_date, budget.value)
             budget.cad_value = convert.currency_from_to(
                 budget.currency_id, 'CAD', budget.value_date, budget.value)
+            imf_url, usd_exchange_rate = convert.get_imf_url_and_exchange_rate(
+                budget.currency_id, budget.value_date)
+            budget.imf_url = imf_url
+            budget.usd_exchange_rate = usd_exchange_rate
 
         return element
 
@@ -2190,6 +2194,37 @@ class Parse(IatiParser):
         planned_disbursement.value = decimal_value
         planned_disbursement.value_date = value_date
         planned_disbursement.currency = currency
+
+        if settings.CONVERT_CURRENCIES:
+            planned_disbursement.xdr_value = convert.currency_from_to(
+                planned_disbursement.currency_id, 'XDR',
+                planned_disbursement.value_date,
+                planned_disbursement.value)
+            planned_disbursement.usd_value = convert.currency_from_to(
+                planned_disbursement.currency_id, 'USD',
+                planned_disbursement.value_date,
+                planned_disbursement.value)
+            planned_disbursement.eur_value = convert.currency_from_to(
+                planned_disbursement.currency_id, 'EUR',
+                planned_disbursement.value_date,
+                planned_disbursement.value)
+            planned_disbursement.gbp_value = convert.currency_from_to(
+                planned_disbursement.currency_id, 'GBP',
+                planned_disbursement.value_date,
+                planned_disbursement.value)
+            planned_disbursement.jpy_value = convert.currency_from_to(
+                planned_disbursement.currency_id, 'JPY',
+                planned_disbursement.value_date,
+                planned_disbursement.value)
+            planned_disbursement.cad_value = convert.currency_from_to(
+                planned_disbursement.currency_id, 'CAD',
+                planned_disbursement.value_date,
+                planned_disbursement.value)
+            imf_url, usd_exchange_rate = convert.get_imf_url_and_exchange_rate(
+                planned_disbursement.currency_id,
+                planned_disbursement.value_date)
+            planned_disbursement.imf_url = imf_url
+            planned_disbursement.usd_exchange_rate = usd_exchange_rate
 
         return element
 
@@ -2430,6 +2465,10 @@ class Parse(IatiParser):
             transaction.cad_value = convert.currency_from_to(
                 transaction.currency_id, 'CAD', transaction.value_date,
                 transaction.value)
+            imf_url, usd_exchange_rate = convert.get_imf_url_and_exchange_rate(
+                transaction.currency_id, transaction.value_date)
+            transaction.imf_url = imf_url
+            transaction.usd_exchange_rate = usd_exchange_rate
 
         return element
 
