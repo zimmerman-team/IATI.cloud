@@ -55,6 +55,18 @@ class BudgetIndexing(BaseIndexing):
         self.add_field('budget_value_date_f', date_string(budget.value_date))
 
         self.add_field('budget_value', decimal_string(budget.value))
+        self.add_field(
+            'budget_value_usd',
+            decimal_string(budget.usd_value)
+        )
+        self.add_field(
+            'budget_imf_link',
+            budget.imf_url
+        )
+        self.add_field(
+            'budget_usd_conversion_rate',
+            decimal_string(budget.usd_exchange_rate)
+        )
 
         self.add_field(
             'humanitarian',

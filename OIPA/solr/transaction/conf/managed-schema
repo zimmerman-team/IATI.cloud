@@ -161,6 +161,9 @@
     <field name="transaction_value_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="transaction_value_date" type="pdate" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="transaction_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="transaction_value_usd" type="pdoubles" multiValued="false"  indexed="false" required="false" stored="true"/>
+    <field name="transaction_imf_link" type="text_general" multiValued="false"  indexed="false" required="false" stored="true"/>
+    <field name="transaction_usd_conversion_rate" type="pdoubles" multiValued="false" indexed="false" required="false" stored="true"/>
 
 
     <field name="transaction_provider_org_ref" type="non_case_sensitive" multiValued="false" indexed="true" required="false" stored="true"/>

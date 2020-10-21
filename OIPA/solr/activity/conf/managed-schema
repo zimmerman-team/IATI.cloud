@@ -355,6 +355,10 @@
     <field name="budget_value_currency" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="budget_value_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="budget_value" type="pdoubles" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="budget_value_usd" type="pdoubles" multiValued="true" indexed="false" required="false" stored="true"/>
+    <field name="budget_imf_link" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
+    <field name="budget_usd_conversion_rate" type="pdoubles" multiValued="true" indexed="false" required="false" stored="true"/>
+
 
     <field name="planned_disbursement" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
     <field name="planned_disbursement_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
@@ -364,6 +368,9 @@
     <field name="planned_disbursement_value_currency" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="planned_disbursement_value_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="planned_disbursement_value" type="pdoubles" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="planned_disbursement_value_usd" type="pdoubles" multiValued="true" indexed="false" required="false" stored="true"/>
+    <field name="planned_disbursement_imf_link" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
+    <field name="planned_disbursement_usd_conversion_rate" type="pdoubles" multiValued="true" indexed="false" required="false" stored="true"/>
     <field name="planned_disbursement_provider_org_provider_activity_id" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="planned_disbursement_provider_org_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="planned_disbursement_provider_org_ref" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
@@ -394,6 +401,9 @@
     <field name="transaction_value_currency" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="transaction_value_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="transaction_value" type="pdoubles" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="transaction_value_usd" type="pdoubles" multiValued="true" indexed="false" required="false" stored="true"/>
+    <field name="transaction_imf_link" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
+    <field name="transaction_usd_conversion_rate" type="pdoubles" multiValued="true" indexed="false" required="false" stored="true"/>
 
     <field name="transaction_provider_org_provider_activity_id" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="transaction_provider_org_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>

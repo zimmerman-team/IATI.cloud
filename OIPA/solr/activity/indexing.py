@@ -995,6 +995,9 @@ class ActivityIndexing(BaseIndexing):
             self.add_field('budget_value_currency', [])
             self.add_field('budget_value_date', [])
             self.add_field('budget_value', [])
+            self.add_field('budget_value_usd', [])
+            self.add_field('budget_imf_link', [])
+            self.add_field('budget_usd_conversion_rate', [])
 
             for budget in budget_all:
                 self.add_value_list(
@@ -1036,6 +1039,18 @@ class ActivityIndexing(BaseIndexing):
                     'budget_value',
                     decimal_string(budget.value)
                 )
+                self.add_value_list(
+                    'budget_value_usd',
+                    decimal_string(budget.usd_value)
+                )
+                self.add_value_list(
+                    'budget_imf_link',
+                    budget.imf_url
+                )
+                self.add_value_list(
+                    'budget_usd_conversion_rate',
+                    decimal_string(budget.usd_exchange_rate)
+                )
 
     def planned_disbursement(self):
         planned_disbursement_all = self.record.planneddisbursement_set.all()
@@ -1048,6 +1063,9 @@ class ActivityIndexing(BaseIndexing):
             self.add_field('planned_disbursement_value_currency', [])
             self.add_field('planned_disbursement_value_date', [])
             self.add_field('planned_disbursement_value', [])
+            self.add_field('planned_disbursement_value_usd', [])
+            self.add_field('planned_disbursement_imf_link', [])
+            self.add_field('planned_disbursement_usd_conversion_rate', [])
             self.add_field(
                 'planned_disbursement_provider_org_provider_activity_id',
                 []
@@ -1122,6 +1140,18 @@ class ActivityIndexing(BaseIndexing):
                     'planned_disbursement_value',
                     decimal_string(planned_disbursement.value)
                 )
+                self.add_value_list(
+                    'planned_disbursement_value_usd',
+                    decimal_string(planned_disbursement.usd_value)
+                )
+                self.add_value_list(
+                    'planned_disbursement_imf_link',
+                    planned_disbursement.imf_url
+                )
+                self.add_value_list(
+                    'planned_disbursement_usd_conversion_rate',
+                    decimal_string(planned_disbursement.usd_exchange_rate)
+                )
 
                 self.add_value_list(
                     'planned_disbursement_provider_org_provider_activity_id',
@@ -1174,6 +1204,9 @@ class ActivityIndexing(BaseIndexing):
             self.add_field('transaction_value_currency', [])
             self.add_field('transaction_value_date', [])
             self.add_field('transaction_value', [])
+            self.add_field('transaction_value_usd', [])
+            self.add_field('transaction_imf_link', [])
+            self.add_field('transaction_usd_conversion_rate', [])
             self.add_field('transaction_provider_org_provider_activity_id', [])
             self.add_field('transaction_provider_org_type', [])
             self.add_field('transaction_provider_org_ref', [])
@@ -1275,6 +1308,18 @@ class ActivityIndexing(BaseIndexing):
                 self.add_value_list(
                     'transaction_value',
                     decimal_string(transaction.value)
+                )
+                self.add_value_list(
+                    'transaction_value_usd',
+                    decimal_string(transaction.usd_value)
+                )
+                self.add_value_list(
+                    'transaction_imf_link',
+                    transaction.imf_url
+                )
+                self.add_value_list(
+                    'transaction_usd_conversion_rate',
+                    decimal_string(transaction.usd_exchange_rate)
                 )
 
                 provider_organisation = get_child_attr(

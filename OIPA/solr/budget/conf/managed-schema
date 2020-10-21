@@ -147,6 +147,9 @@
     <field name="budget_value_date_f" type="pdate" multiValued="false" indexed="true" required="false" stored="true"/>
 
     <field name="budget_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="budget_value_usd" type="pdoubles" multiValued="false" indexed="false" required="false" stored="true"/>
+    <field name="budget_imf_link" type="text_general" multiValued="false" indexed="false" required="false" stored="true"/>
+    <field name="budget_usd_conversion_rate" type="pdoubles" multiValued="false" indexed="false" required="false" stored="true"/>
 
     <field name="humanitarian" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <!--Budget Core - End-->
