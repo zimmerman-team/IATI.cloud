@@ -42,7 +42,7 @@ class OrganisationNarrative(models.Model):
 
 
 class BudgetLineAbstract(models.Model):
-    ref = models.CharField(max_length=150)
+    ref = models.CharField(max_length=150, null=True)
     currency = models.ForeignKey(Currency, null=True, on_delete=models.CASCADE)
     value = models.DecimalField(max_digits=14, decimal_places=2, null=True,
                                 default=None)
@@ -238,7 +238,7 @@ class TotalExpenditureLine(models.Model):
     total_expenditure = models.ForeignKey(
         TotalExpenditure, on_delete=models.CASCADE)
 
-    ref = models.CharField(max_length=150)
+    ref = models.CharField(max_length=150, null=True)
     currency = models.ForeignKey(Currency, null=True, on_delete=models.CASCADE)
     value = models.DecimalField(
         max_digits=14, decimal_places=2, null=True, default=None)
