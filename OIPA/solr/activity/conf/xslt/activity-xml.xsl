@@ -1,3 +1,5 @@
+<!--This file is moved to XSL repository and no longer used in Solr. Please
+refer to XSL repository. -->
 <xsl:stylesheet version='1.0' xmlns:xsl='http://www.w3.org/1999/XSL/Transform'>
   <xsl:output media-type="text/xml" method="xml" indent="yes"/>
 
