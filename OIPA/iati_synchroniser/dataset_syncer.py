@@ -152,8 +152,11 @@ class DatasetSyncer(object):
         if not len(dataset['resources']) or not dataset['organization']:
             return
 
-        publisher = Publisher.objects.get(
-            iati_id=dataset['organization']['id'])
+        try:
+            publisher = Publisher.objects.get(
+                iati_id=dataset['organization']['id'])
+        except Publisher.DoesNotExist:
+            publisher = None
         sync_sha1 = ''
         source_url = dataset['resources'][0]['url']
         response = None
