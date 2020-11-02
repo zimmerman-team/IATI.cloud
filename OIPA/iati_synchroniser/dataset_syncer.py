@@ -170,9 +170,9 @@ class DatasetSyncer(object):
                                     headers=headers, timeout=30)
         except requests.exceptions.Timeout:
             response = requests.get(source_url, timeout=30)
-        # except (requests.exceptions.ConnectionError,
-        #         requests.exceptions.TooManyRedirects):
-        #     pass
+        except (requests.exceptions.ConnectionError,
+                requests.exceptions.TooManyRedirects):
+            pass
         finally:
             pass
 
