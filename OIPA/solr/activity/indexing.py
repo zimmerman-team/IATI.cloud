@@ -1016,6 +1016,7 @@ class ActivityIndexing(BaseIndexing):
                     budget_usd_ns_xml_string = \
                         make_normalized_usd_namespace_element(
                             str(budget.usd_exchange_rate),
+                            str(budget.imf_url),
                             str(budget.usd_value),
                             'budget').decode("utf-8")
 
@@ -1138,6 +1139,7 @@ class ActivityIndexing(BaseIndexing):
                     planned_disbursement_usd_ns_xml_string = \
                         make_normalized_usd_namespace_element(
                             str(planned_disbursement.usd_exchange_rate),
+                            str(planned_disbursement.imf_url),
                             str(planned_disbursement.usd_value),
                             'planned_disbursement').decode("utf-8")
 
@@ -1326,6 +1328,7 @@ class ActivityIndexing(BaseIndexing):
                     transaction_usd_ns_xml_string = \
                         make_normalized_usd_namespace_element(
                               str(transaction.usd_exchange_rate),
+                              str(transaction.imf_url),
                               str(transaction.usd_value),
                               'transaction').decode("utf-8")
 

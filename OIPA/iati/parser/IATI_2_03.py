@@ -1,6 +1,7 @@
 import logging
 from datetime import datetime
 from decimal import Decimal, InvalidOperation
+import numbers
 
 from django.conf import settings
 from django.contrib.gis.geos import GEOSGeometry, Point
@@ -2148,8 +2149,8 @@ class Parse(IatiParser):
         if settings.CONVERT_CURRENCIES:
             budget.xdr_value = convert.currency_from_to(
                 budget.currency_id, 'XDR', budget.value_date, budget.value)
-            budget.usd_value = convert.currency_from_to(
-                budget.currency_id, 'USD', budget.value_date, budget.value)
+            budget.usd_value = round(convert.currency_from_to(
+                budget.currency_id, 'USD', budget.value_date, budget.value), 2)
             budget.eur_value = convert.currency_from_to(
                 budget.currency_id, 'EUR', budget.value_date, budget.value)
             budget.gbp_value = convert.currency_from_to(
@@ -2161,7 +2162,9 @@ class Parse(IatiParser):
             imf_url, usd_exchange_rate = convert.get_imf_url_and_exchange_rate(
                 budget.currency_id, budget.value_date)
             budget.imf_url = imf_url
-            budget.usd_exchange_rate = usd_exchange_rate
+            budget.usd_exchange_rate = round(usd_exchange_rate,
+                                             5) if isinstance(
+                usd_exchange_rate, numbers.Number) else usd_exchange_rate
 
         return element
 
@@ -2297,10 +2300,10 @@ class Parse(IatiParser):
                 planned_disbursement.currency_id, 'XDR',
                 planned_disbursement.value_date,
                 planned_disbursement.value)
-            planned_disbursement.usd_value = convert.currency_from_to(
+            planned_disbursement.usd_value = round(convert.currency_from_to(
                 planned_disbursement.currency_id, 'USD',
                 planned_disbursement.value_date,
-                planned_disbursement.value)
+                planned_disbursement.value), 2)
             planned_disbursement.eur_value = convert.currency_from_to(
                 planned_disbursement.currency_id, 'EUR',
                 planned_disbursement.value_date,
@@ -2321,7 +2324,9 @@ class Parse(IatiParser):
                 planned_disbursement.currency_id,
                 planned_disbursement.value_date)
             planned_disbursement.imf_url = imf_url
-            planned_disbursement.usd_exchange_rate = usd_exchange_rate
+            planned_disbursement.usd_exchange_rate = round(
+                usd_exchange_rate, 5) if isinstance(usd_exchange_rate,
+                                                    numbers.Number) else usd_exchange_rate
 
         return element
 
@@ -2541,9 +2546,9 @@ class Parse(IatiParser):
             transaction.xdr_value = convert.currency_from_to(
                 transaction.currency_id, 'XDR', transaction.value_date,
                 transaction.value)
-            transaction.usd_value = convert.currency_from_to(
+            transaction.usd_value = round(convert.currency_from_to(
                 transaction.currency_id, 'USD', transaction.value_date,
-                transaction.value)
+                transaction.value), 2)
             transaction.eur_value = convert.currency_from_to(
                 transaction.currency_id, 'EUR', transaction.value_date,
                 transaction.value)
@@ -2559,7 +2564,9 @@ class Parse(IatiParser):
             imf_url, usd_exchange_rate = convert.get_imf_url_and_exchange_rate(
                 transaction.currency_id, transaction.value_date)
             transaction.imf_url = imf_url
-            transaction.usd_exchange_rate = usd_exchange_rate
+            transaction.usd_exchange_rate = round(usd_exchange_rate, 5) if \
+                isinstance(usd_exchange_rate, numbers.Number) else \
+                usd_exchange_rate
 
         return element
 

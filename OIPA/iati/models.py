@@ -1336,14 +1336,14 @@ class Budget(models.Model):
     currency = models.ForeignKey(
         Currency, null=True, blank=True,
         default=None, on_delete=models.CASCADE)
-    usd_exchange_rate = models.DecimalField(max_digits=15, decimal_places=10,
+    usd_exchange_rate = models.DecimalField(max_digits=15, decimal_places=5,
                                             null=True)
     imf_url = models.TextField(null=True)
 
     xdr_value = models.DecimalField(
         max_digits=20, decimal_places=7, default=Decimal(0))
     usd_value = models.DecimalField(
-        max_digits=20, decimal_places=7, default=Decimal(0))
+        max_digits=20, decimal_places=2, default=Decimal(0))
     eur_value = models.DecimalField(
         max_digits=20, decimal_places=7, default=Decimal(0))
     gbp_value = models.DecimalField(
@@ -1396,14 +1396,14 @@ class PlannedDisbursement(models.Model):
     currency = models.ForeignKey(
         Currency, null=True, blank=True,
         default=None, on_delete=models.CASCADE)
-    usd_exchange_rate = models.DecimalField(max_digits=15, decimal_places=10,
+    usd_exchange_rate = models.DecimalField(max_digits=15, decimal_places=5,
                                             null=True)
     imf_url = models.TextField(null=True)
 
     xdr_value = models.DecimalField(
         max_digits=20, decimal_places=7, default=Decimal(0))
     usd_value = models.DecimalField(
-        max_digits=20, decimal_places=7, default=Decimal(0))
+        max_digits=20, decimal_places=2, default=Decimal(0))
     eur_value = models.DecimalField(
         max_digits=20, decimal_places=7, default=Decimal(0))
     gbp_value = models.DecimalField(
