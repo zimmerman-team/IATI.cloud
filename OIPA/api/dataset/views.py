@@ -92,6 +92,8 @@ class DatasetList(CacheResponseMixin, DynamicListView):
         'source_url',
         'activities',
         'activity_count',
+        'activities_count_in_xml',
+        'activities_count_in_database',
         'date_created',
         'date_updated',
         'last_found_in_registry',
@@ -253,8 +255,6 @@ class DatasetFails(CacheResponseMixin, DynamicListView):
         'url',
         'source_url',
         'activity_count',
-        'activities_count_in_xml',
-        'activities_count_in_database',
         'date_updated',
         'iati_version',
         'validation_status'
