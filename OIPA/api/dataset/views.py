@@ -230,6 +230,39 @@ class DatasetAggregations(AggregationView):
     )
 
 
+class DatasetFails(CacheResponseMixin, DynamicListView):
+    """
+    Returns a list of datasets with a critical validation status
+
+    ## URI Format
+
+    ```
+    /api/datasets/fails
+    ```
+    """
+    queryset = Dataset.objects.filter(validation_status__critical=1)
+    serializer_class = DatasetSerializer
+    filter_class = DatasetFilter
+    selectable_fields = ()
+    filter_backends = (OrderingFilter, DjangoFilterBackend)
+    ordering_fields = '__all__'
+    pagination_class = DatasetPagination
+
+    fields = (
+        'id',
+        'name',
+        'publisher',
+        'url',
+        'source_url',
+        'activity_count',
+        'activities_count_in_xml',
+        'activities_count_in_database',
+        'date_updated',
+        'iati_version',
+        'validation_status'
+    )
+
+
 class DatasetNotes(CacheResponseMixin, ListAPIView):
     """
     Returns a list of Dataset notes stored in OIPA.
