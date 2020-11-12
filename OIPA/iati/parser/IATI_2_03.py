@@ -2325,8 +2325,9 @@ class Parse(IatiParser):
                 planned_disbursement.value_date)
             planned_disbursement.imf_url = imf_url
             planned_disbursement.usd_exchange_rate = round(
-                usd_exchange_rate, 5) if isinstance(usd_exchange_rate,
-                                                    numbers.Number) else usd_exchange_rate
+                usd_exchange_rate, 5) if \
+                isinstance(usd_exchange_rate, numbers.Number) else \
+                usd_exchange_rate
 
         return element
 

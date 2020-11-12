@@ -1,4 +1,5 @@
 import logging
+import numbers
 from datetime import datetime
 from decimal import Decimal, InvalidOperation
 
@@ -2064,7 +2065,9 @@ class Parse(IatiParser):
             imf_url, usd_exchange_rate = convert.get_imf_url_and_exchange_rate(
                 budget.currency_id, budget.value_date)
             budget.imf_url = imf_url
-            budget.usd_exchange_rate = round(usd_exchange_rate, 5)
+            budget.usd_exchange_rate = round(usd_exchange_rate,
+                                             5) if isinstance(
+                usd_exchange_rate, numbers.Number) else usd_exchange_rate
 
         return element
 
@@ -2225,7 +2228,8 @@ class Parse(IatiParser):
                 planned_disbursement.value_date)
             planned_disbursement.imf_url = imf_url
             planned_disbursement.usd_exchange_rate = round(
-                usd_exchange_rate, 5)
+                usd_exchange_rate, 5) if isinstance(usd_exchange_rate,
+                                                    numbers.Number) else usd_exchange_rate
 
         return element
 
@@ -2469,7 +2473,9 @@ class Parse(IatiParser):
             imf_url, usd_exchange_rate = convert.get_imf_url_and_exchange_rate(
                 transaction.currency_id, transaction.value_date)
             transaction.imf_url = imf_url
-            transaction.usd_exchange_rate = round(usd_exchange_rate, 5)
+            transaction.usd_exchange_rate = round(usd_exchange_rate, 5) if \
+                isinstance(usd_exchange_rate, numbers.Number) else \
+                usd_exchange_rate
 
         return element
 
