@@ -15,7 +15,7 @@ FTS_ENABLED = literal_eval(env.get('OIPA_FTS_ENABLED', 'True'))
 
 LOGIN_REDIRECT_URL = '/admin/'
 LOGOUT_URL = '/logout'
-LOGOUT_REDIRECT_URL = '/admin/logout'
+# LOGOUT_REDIRECT_URL = '/admin/logout'
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 3000
 
 SECRET_KEY = env.get('OIPA_SECRET_KEY', 'PXwlMOpfNJTgIdQeH5zk39jKfUMZPOUK')
@@ -156,8 +156,8 @@ INSTALLED_APPS = [
     'django_otp',
     'django_otp.plugins.otp_static',
     'django_otp.plugins.otp_totp',
-    'two_factor',
-    'otp_yubikey',
+    # 'two_factor',
+    # 'otp_yubikey',
 
     # 'django_rq',
     'django.contrib.auth',
@@ -254,9 +254,9 @@ RQ_QUEUES = {
         'DEFAULT_TIMEOUT': 10800,
     }
 }
-TWO_FACTOR_FORCE_OTP_ADMIN = True
-LOGIN_URL = 'two_factor:login'
-LOGIN_REDIRECT_URL = '/admin'  # Redirect admin dashboard
+# TWO_FACTOR_FORCE_OTP_ADMIN = True
+# LOGIN_URL = 'two_factor:login'
+# LOGIN_REDIRECT_URL = '/admin'  # Redirect admin dashboard
 
 GRAPPELLI_ADMIN_TITLE = 'OIPA admin'
 ADMINFILES_UPLOAD_TO = 'csv_files'
