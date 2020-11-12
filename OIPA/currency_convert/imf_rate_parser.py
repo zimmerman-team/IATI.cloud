@@ -187,7 +187,8 @@ class RateParser():
             self.set_tick_rates()
             self.prepare_url()
             browser = self.create_browser()
-            data = browser.get_xml_data(self.updated_imf_url, self.imf_download_url)
+            data = browser.get_xml_data(self.updated_imf_url,
+                                        self.imf_download_url)
 
             if data is not None:
                 self.parse_data(data)
