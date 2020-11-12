@@ -152,8 +152,11 @@ class DatasetSyncer(object):
         if not len(dataset['resources']) or not dataset['organization']:
             return
 
-        publisher = Publisher.objects.get(
-            iati_id=dataset['organization']['id'])
+        try:
+            publisher = Publisher.objects.get(
+                iati_id=dataset['organization']['id'])
+        except Publisher.DoesNotExist:
+            publisher = None
         sync_sha1 = ''
         source_url = dataset['resources'][0]['url']
         response = None
@@ -165,9 +168,12 @@ class DatasetSyncer(object):
         except requests.exceptions.SSLError:
             response = requests.get(source_url, verify=False,
                                     headers=headers, timeout=30)
+        except requests.exceptions.Timeout:
+            response = requests.get(source_url, timeout=30)
         except (requests.exceptions.ConnectionError,
-                requests.exceptions.TooManyRedirects,
-                requests.exceptions.Timeout):
+                requests.exceptions.TooManyRedirects):
+            pass
+        finally:
             pass
 
         try:

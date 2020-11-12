@@ -152,14 +152,19 @@ class DatasetDownloadTask(celery.Task):
                 #     download_dir_with_filename
                 # )
 
+            except requests.exceptions.Timeout:
+                with open(download_dir_with_filename, 'wb') as f:
+                    resp = requests.get(dataset_url, verify=False, timeout=30)
+                    f.write(resp.content)
             except (
-                requests.exceptions.RequestException,
-                ConnectionResetError,
-                requests.exceptions.TooManyRedirects,
-                requests.exceptions.Timeout
-                # urllib.request.HTTPError,  # 403
-                # urllib.request.URLError,  # timeouts
-            ):
+                 requests.exceptions.RequestException,
+                 ConnectionResetError,
+                 requests.exceptions.TooManyRedirects,
+                 # urllib.request.HTTPError,  # 403
+                 # urllib.request.URLError,  # timeouts
+             ):
+                pass
+            finally:
                 pass
 
             # URL string to save as a Dataset attribute:
