@@ -2229,8 +2229,7 @@ class Parse(IatiParser):
             planned_disbursement.imf_url = imf_url
             planned_disbursement.usd_exchange_rate = round(
                 usd_exchange_rate, 5) if isinstance(usd_exchange_rate,
-                                                    numbers.Number) else usd_exchange_rate
-
+                                                    numbers.Number) else usd_exchange_rate  # NOQA: E501
         return element
 
     def iati_activities__iati_activity__planned_disbursement__provider_org(

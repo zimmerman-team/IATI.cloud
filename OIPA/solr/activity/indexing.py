@@ -35,8 +35,8 @@ from solr.transaction.references import TransactionReference
 from solr.transaction.serializers import TransactionSerializer
 from solr.utils import (
     bool_string, date_string, decimal_string, get_child_attr,
-    get_narrative_lang_list, value_string,
-    make_normalized_usd_namespace_element
+    get_narrative_lang_list, make_normalized_usd_namespace_element,
+    value_string
 )
 
 
@@ -1159,7 +1159,6 @@ class ActivityIndexing(BaseIndexing):
                             planned_disbursement=planned_disbursement
                         ).to_string()
                     )
-
 
                 if planned_disbursement.type_id:
                     self.add_value_list(

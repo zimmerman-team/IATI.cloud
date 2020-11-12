@@ -1,7 +1,7 @@
 import logging
+import numbers
 from datetime import datetime
 from decimal import Decimal, InvalidOperation
-import numbers
 
 from django.conf import settings
 from django.contrib.gis.geos import GEOSGeometry, Point
