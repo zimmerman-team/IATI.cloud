@@ -57,9 +57,13 @@ class ParseManager():
         except requests.exceptions.SSLError:
             response = requests.get(self.url, verify=False, headers=headers,
                                     timeout=30)
+        except requests.exceptions.Timeout:
+            response = requests.get(self.url, verify=False, timeout=30)
         except (requests.exceptions.ConnectionError,
                 requests.exceptions.TooManyRedirects,
                 requests.exceptions.Timeout):
+            pass
+        finally:
             pass
 
         from iati_synchroniser.models import DatasetNote

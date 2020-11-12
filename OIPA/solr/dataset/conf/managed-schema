@@ -132,10 +132,10 @@
     <field name="iati_version" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
 
     <field name="source_url" type="string" multiValued="false" indexed="true" required="true" stored="true"/>
-    <field name="publisher" type="text_general" multiValued="false" indexed="true" required="true" stored="true"/>
-    <field name="publisher_iati_id" type="string" multiValued="false" indexed="true" required="true" stored="true"/>
-    <field name="publisher_name" type="string" multiValued="false" indexed="true" required="true" stored="true"/>
-    <field name="publisher_display_name" type="string" multiValued="false" indexed="true" required="true" stored="true"/>
+    <field name="publisher" type="text_general" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="publisher_iati_id" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="publisher_name" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="publisher_display_name" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <!--DataSet Core - End-->
 
     <!-- This can be enabled, in case the client does not know what fields may be searched. It isn't enabled by default

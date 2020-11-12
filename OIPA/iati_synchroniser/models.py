@@ -51,7 +51,8 @@ class Dataset(models.Model):
     name = models.CharField(max_length=255)
     title = models.CharField(max_length=255, default="")
     filetype = models.IntegerField(choices=filetype_choices, default=1)
-    publisher = models.ForeignKey(Publisher, on_delete=models.CASCADE)
+    publisher = models.ForeignKey(Publisher, on_delete=models.CASCADE,
+                                  null=True)
 
     source_url = models.TextField()  # resource.url
     # Internal URL where we are storing the file.

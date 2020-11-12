@@ -236,7 +236,7 @@
   <budget type="1" status="1">
    <period-start iso-date="2014-01-01" />
    <period-end iso-date="2014-12-31" />
-   <value currency="EUR" value-date="2014-01-01">3000</value>
+   <value currency="AUD" value-date="1994-01-01">1000</value>
   </budget>
   <!--budget ends-->
 
@@ -244,7 +244,7 @@
   <planned-disbursement type="1">
    <period-start iso-date="2014-01-01" />
    <period-end iso-date="2014-12-31" />
-   <value currency="EUR" value-date="2014-01-01">3000</value>
+   <value currency="JPY" value-date="1994-01-01">1000</value>
    <provider-org provider-activity-id="BB-BBB-123456789-1234AA" type="10" ref="BB-BBB-123456789">
     <narrative>Agency B</narrative>
    </provider-org>
@@ -269,8 +269,8 @@
   <!--transaction starts-->
   <transaction ref="1234" humanitarian="1">
    <transaction-type code="1" />
-   <transaction-date iso-date="2012-01-01" />
-   <value currency="EUR" value-date="2012-01-01">1000</value>
+   <transaction-date iso-date="1995-01-01" />
+   <value currency="AUD" value-date="1995-01-01">1000</value>
    <description>
     <narrative>Transaction description text</narrative>
    </description>

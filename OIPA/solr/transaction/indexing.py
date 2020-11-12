@@ -93,6 +93,19 @@ class TransactionIndexing(BaseIndexing):
         self.add_field('transaction_value', decimal_string(transaction.value))
 
         self.add_field(
+            'transaction_value_usd',
+            decimal_string(transaction.usd_value)
+        )
+        self.add_field(
+            'transaction_imf_link',
+            transaction.imf_url
+        )
+        self.add_field(
+            'transaction_usd_conversion_rate',
+            decimal_string(transaction.usd_exchange_rate)
+        )
+
+        self.add_field(
             'transaction_provider_org_provider_activity_id',
             get_child_attr(
                 transaction,
