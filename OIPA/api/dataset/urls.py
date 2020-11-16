@@ -11,13 +11,14 @@ urlpatterns = [
     url(r'^aggregations/',
         cache_page(API_CACHE_SECONDS)(views.DatasetAggregations.as_view()),
         name='dataset-aggregations'),
+    url(r'^fails/',
+        views.DatasetFails.as_view(), name='dataset-fails'),
     url(r'^(?P<pk>[^@$&+,/:;=?]+)/$',
         views.DatasetDetail.as_view(),
         name='dataset-detail'),
     url(r'^(?P<pk>[^@$&+,/:;=?]+)/notes/',
         views.DatasetNotes.as_view(),
         name='dataset-notes'),
-
     # TODO: temporary soln until we have implemented datasets properly -
     # 2016-10-25
     url(
