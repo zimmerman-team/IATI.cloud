@@ -240,7 +240,7 @@ class DatasetFails(CacheResponseMixin, DynamicListView):
     /api/datasets/fails
     ```
     """
-    queryset = Dataset.objects.filter(validation_status__critical=1)
+    queryset = Dataset.objects.filter(validation_status__critical__gte=1)
     serializer_class = DatasetSerializer
     filter_class = DatasetFilter
     selectable_fields = ()
