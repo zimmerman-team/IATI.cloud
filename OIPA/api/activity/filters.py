@@ -1,5 +1,6 @@
 from distutils.util import strtobool
 
+from django.db.models import Prefetch
 from django.db.models import Q
 from django.db.models.fields import FieldDoesNotExist
 from django.db.models.fields.related import ForeignObjectRel, OneToOneRel
@@ -395,12 +396,30 @@ class ActivityFilter(TogetherFilterSet):
         fk='activity',
     )
 
-    sector_vocabulary = ToManyFilter(
-        qs=ActivitySector,
-        lookup_expr='in',
-        name='vocabulary__code',
-        fk='activity',
-    )
+    def sector_vocabulary_filter(self, qs, name, value):
+        activity_queryset = Activity.objects.filter(sector__vocabulary__code=value)
+
+        budget_queryset = Activity.objects.prefetch_related(
+            Prefetch("budget_set",
+                     queryset=Budget.objects.prefetch_related(Prefetch("budgetsector_set"))))\
+            .filter(budget__budgetsector__sector__vocabulary__code=value)
+
+        transaction_queryset = Activity.objects.prefetch_related(
+            Prefetch("transaction_set",
+                     queryset=Transaction.objects.prefetch_related(Prefetch("transactionsector_set"))))\
+            .filter(transaction__transactionsector__sector__vocabulary__code=value)
+
+        return activity_queryset.union(budget_queryset, transaction_queryset)
+
+    sector_vocabulary = CommaSeparatedCharFilter(
+        name='sector_vocabulary', method='sector_vocabulary_filter')
+
+    #sector_vocabulary = ToManyFilter(
+    #    qs=ActivitySector,
+    #    lookup_expr='in',
+    #    name='vocabulary__code',
+    #    fk='activity',
+    #)
 
     sector_category = ToManyFilter(
         qs=ActivitySector,
