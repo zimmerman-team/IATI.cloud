@@ -123,7 +123,7 @@
     <field name="_text_" type="text_general" indexed="true" stored="false" multiValued="true"/>
 
     <!--Publisher Core - Start-->
-    <field name="publisher_iati_id" type="string" multiValued="false" indexed="true" required="fase" stored="true"/>
+    <field name="publisher_iati_id" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="publisher_organisation_identifier" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="publisher_name" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="publisher_display_name" type="string" multiValued="false" indexed="true" required="false" stored="true"/>

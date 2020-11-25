@@ -9,6 +9,7 @@ from solr.activity.indexing import ActivityIndexing
 # from solr.activity_sector.tasks import ActivitySectorTaskIndexing
 from solr.budget.tasks import BudgetTaskIndexing
 # from solr.result.tasks import ResultTaskIndexing
+from solr.result.tasks import ResultTaskIndexing
 from solr.tasks import BaseTaskIndexing
 from solr.transaction.tasks import TransactionTaskIndexing
 
@@ -26,8 +27,6 @@ class ActivityTaskIndexing(BaseTaskIndexing):
     solr = solr
 
     def run_related(self):
-        # transaction-sector is indexed in TransactionTaskIndexing()
         TransactionTaskIndexing().run_from_activity(self.instance)
         BudgetTaskIndexing().run_from_activity(self.instance)
-        # ResultTaskIndexing().run_from_activity(self.instance)
-        # ActivitySectorTaskIndexing().run_from_activity(self.instance)
+        ResultTaskIndexing().run_from_activity(self.instance)

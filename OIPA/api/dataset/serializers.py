@@ -110,7 +110,8 @@ class DatasetSerializer(DynamicFieldsModelSerializer):
             'is_parsed',
             'export_in_progress',
             'parse_in_progress',
-            'internal_url'
+            'internal_url',
+            'validation_status'
         )
 
     def get_filetype(self, obj):

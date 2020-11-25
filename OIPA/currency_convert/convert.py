@@ -3,6 +3,24 @@ from django.core.exceptions import ObjectDoesNotExist
 from currency_convert.models import MonthlyAverage
 
 
+def get_imf_url_and_exchange_rate(from_currency_iso, value_date):
+    try:
+        ma = MonthlyAverage.objects.get(
+            year=value_date.year,
+            month=value_date.month,
+            currency='USD'
+        )
+        exchange_rate_to_xdr = get_monthly_average(from_currency_iso,
+                                                   value_date)
+        if exchange_rate_to_xdr:
+            exchange_rate_from_currency_to_usd = exchange_rate_to_xdr/ma.value
+            return ma.imf_url, exchange_rate_from_currency_to_usd
+        else:
+            return ma.imf_url, None
+    except ObjectDoesNotExist:
+        return None, None
+
+
 def get_monthly_average(currency_iso, value_date):
     try:
         ma = MonthlyAverage.objects.get(

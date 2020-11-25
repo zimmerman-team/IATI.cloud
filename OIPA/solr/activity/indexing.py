@@ -35,7 +35,8 @@ from solr.transaction.references import TransactionReference
 from solr.transaction.serializers import TransactionSerializer
 from solr.utils import (
     bool_string, date_string, decimal_string, get_child_attr,
-    get_narrative_lang_list, value_string
+    get_narrative_lang_list, make_normalized_usd_namespace_element,
+    value_string
 )
 
 
@@ -995,6 +996,9 @@ class ActivityIndexing(BaseIndexing):
             self.add_field('budget_value_currency', [])
             self.add_field('budget_value_date', [])
             self.add_field('budget_value', [])
+            self.add_field('budget_value_usd', [])
+            self.add_field('budget_imf_link', [])
+            self.add_field('budget_usd_conversion_rate', [])
 
             for budget in budget_all:
                 self.add_value_list(
@@ -1003,10 +1007,32 @@ class ActivityIndexing(BaseIndexing):
                         BudgetSerializer(budget).data
                     ).decode()
                 )
-                self.add_value_list(
-                    'budget_xml',
-                    BudgetReference(budget=budget).to_string()
-                )
+                # add usd_namespace_element in budget only if
+                # usd_exchange_rate is present.
+                if budget.usd_exchange_rate:
+                    budget_xml_string = BudgetReference(
+                        budget=budget).to_string()
+
+                    budget_usd_ns_xml_string = \
+                        make_normalized_usd_namespace_element(
+                            str(budget.usd_exchange_rate),
+                            str(budget.imf_url),
+                            str(budget.usd_value),
+                            'budget').decode("utf-8")
+
+                    budget_xml_string = budget_xml_string.replace(
+                        '</budget>',
+                        budget_usd_ns_xml_string + '</budget>')
+                    self.add_value_list(
+                        'budget_xml',
+                        budget_xml_string
+                    )
+                else:
+                    self.add_value_list(
+                        'budget_xml',
+                        BudgetReference(
+                            budget=budget).to_string()
+                    )
 
                 if budget.type_id:
                     self.add_value_list(
@@ -1036,6 +1062,18 @@ class ActivityIndexing(BaseIndexing):
                     'budget_value',
                     decimal_string(budget.value)
                 )
+                self.add_value_list(
+                    'budget_value_usd',
+                    decimal_string(budget.usd_value)
+                )
+                self.add_value_list(
+                    'budget_imf_link',
+                    budget.imf_url
+                )
+                self.add_value_list(
+                    'budget_usd_conversion_rate',
+                    decimal_string(budget.usd_exchange_rate)
+                )
 
     def planned_disbursement(self):
         planned_disbursement_all = self.record.planneddisbursement_set.all()
@@ -1048,6 +1086,9 @@ class ActivityIndexing(BaseIndexing):
             self.add_field('planned_disbursement_value_currency', [])
             self.add_field('planned_disbursement_value_date', [])
             self.add_field('planned_disbursement_value', [])
+            self.add_field('planned_disbursement_value_usd', [])
+            self.add_field('planned_disbursement_imf_link', [])
+            self.add_field('planned_disbursement_usd_conversion_rate', [])
             self.add_field(
                 'planned_disbursement_provider_org_provider_activity_id',
                 []
@@ -1088,12 +1129,36 @@ class ActivityIndexing(BaseIndexing):
                         ).data
                     ).decode()
                 )
-                self.add_value_list(
-                    'planned_disbursement_xml',
-                    PlannedDisbursementReference(
-                        planned_disbursement=planned_disbursement
-                    ).to_string()
-                )
+                # add usd_namespace_element in budget only if
+                # usd_exchange_rate is present.
+                if planned_disbursement.usd_exchange_rate:
+                    planned_disbursement_xml_string = \
+                        PlannedDisbursementReference(
+                            planned_disbursement=planned_disbursement).to_string()  # NOQA: E501
+
+                    planned_disbursement_usd_ns_xml_string = \
+                        make_normalized_usd_namespace_element(
+                            str(planned_disbursement.usd_exchange_rate),
+                            str(planned_disbursement.imf_url),
+                            str(planned_disbursement.usd_value),
+                            'planned_disbursement').decode("utf-8")
+
+                    planned_disbursement_xml_string = \
+                        planned_disbursement_xml_string.replace(
+                            '</planned-disbursement>',
+                            planned_disbursement_usd_ns_xml_string +
+                            '</planned-disbursement>')
+                    self.add_value_list(
+                        'planned_disbursement_xml',
+                        planned_disbursement_xml_string
+                    )
+                else:
+                    self.add_value_list(
+                        'planned_disbursement_xml',
+                        PlannedDisbursementReference(
+                            planned_disbursement=planned_disbursement
+                        ).to_string()
+                    )
 
                 if planned_disbursement.type_id:
                     self.add_value_list(
@@ -1121,6 +1186,18 @@ class ActivityIndexing(BaseIndexing):
                 self.add_value_list(
                     'planned_disbursement_value',
                     decimal_string(planned_disbursement.value)
+                )
+                self.add_value_list(
+                    'planned_disbursement_value_usd',
+                    decimal_string(planned_disbursement.usd_value)
+                )
+                self.add_value_list(
+                    'planned_disbursement_imf_link',
+                    planned_disbursement.imf_url
+                )
+                self.add_value_list(
+                    'planned_disbursement_usd_conversion_rate',
+                    decimal_string(planned_disbursement.usd_exchange_rate)
                 )
 
                 self.add_value_list(
@@ -1174,6 +1251,9 @@ class ActivityIndexing(BaseIndexing):
             self.add_field('transaction_value_currency', [])
             self.add_field('transaction_value_date', [])
             self.add_field('transaction_value', [])
+            self.add_field('transaction_value_usd', [])
+            self.add_field('transaction_imf_link', [])
+            self.add_field('transaction_usd_conversion_rate', [])
             self.add_field('transaction_provider_org_provider_activity_id', [])
             self.add_field('transaction_provider_org_type', [])
             self.add_field('transaction_provider_org_ref', [])
@@ -1237,10 +1317,31 @@ class ActivityIndexing(BaseIndexing):
                         ).data
                     ).decode()
                 )
-                self.add_value_list(
-                    'transaction_xml',
-                    TransactionReference(transaction=transaction).to_string()
-                )
+
+                # add usd_namespace_element in transaction only if
+                # usd_exchange_rate is present.
+                if transaction.usd_exchange_rate:
+                    transaction_xml_string = TransactionReference(
+                        transaction=transaction).to_string()
+
+                    transaction_usd_ns_xml_string = \
+                        make_normalized_usd_namespace_element(
+                              str(transaction.usd_exchange_rate),
+                              str(transaction.imf_url),
+                              str(transaction.usd_value),
+                              'transaction').decode("utf-8")
+
+                    transaction_xml_string = transaction_xml_string.replace('</transaction>', transaction_usd_ns_xml_string + '</transaction>')  # NOQA: E501
+                    self.add_value_list(
+                        'transaction_xml',
+                        transaction_xml_string
+                    )
+                else:
+                    self.add_value_list(
+                        'transaction_xml',
+                        TransactionReference(
+                            transaction=transaction).to_string()
+                    )
 
                 if transaction.ref:
                     self.add_value_list('transaction_ref', transaction.ref)
@@ -1275,6 +1376,18 @@ class ActivityIndexing(BaseIndexing):
                 self.add_value_list(
                     'transaction_value',
                     decimal_string(transaction.value)
+                )
+                self.add_value_list(
+                    'transaction_value_usd',
+                    decimal_string(transaction.usd_value)
+                )
+                self.add_value_list(
+                    'transaction_imf_link',
+                    transaction.imf_url
+                )
+                self.add_value_list(
+                    'transaction_usd_conversion_rate',
+                    decimal_string(transaction.usd_exchange_rate)
                 )
 
                 provider_organisation = get_child_attr(

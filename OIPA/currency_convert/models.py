@@ -8,6 +8,7 @@ class MonthlyAverage(models.Model):
     currency = models.ForeignKey(Currency, on_delete=models.CASCADE)
     month = models.IntegerField()
     year = models.IntegerField()
+    imf_url = models.URLField(max_length=2000, null=True)
     value = models.DecimalField(
         max_digits=20,
         decimal_places=10,

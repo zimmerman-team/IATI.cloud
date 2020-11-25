@@ -166,3 +166,12 @@ pysolr==3.8.1
 # FLOWER FOR CELERY WORKER STATUS
 ######
 flower
+
+
+#####
+# TWO-FACTOR AUTHENTICATION
+######
+
+django-two-factor-auth==1.12.1
+phonenumbers==8.12.9
+

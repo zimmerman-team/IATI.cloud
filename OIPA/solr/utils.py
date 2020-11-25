@@ -1,6 +1,7 @@
 import numbers
 
 from django.core.exceptions import ObjectDoesNotExist
+from lxml import etree
 
 
 def add_value_list(data_list, value=None):
@@ -112,3 +113,22 @@ def field_narrative(serializer, field, key):
     if field:
         for narrative in field.narratives.all():
             serializer.add_value_list(key, narrative.content)
+
+
+def make_normalized_usd_namespace_element(rate, imf_url, value, name):
+    element_name = 'usd_' + name
+    root = etree.Element('root')
+    ns_map = {"imf": "https://www.imf.org/external/index.htm"}
+    element = etree.SubElement(root,
+                               "{https://www.imf.org/external/index.htm}" +
+                               element_name,
+                               currency='USD', exchange_rate=rate,
+                               nsmap=ns_map)
+    value_sub_element = etree.SubElement(element,
+                                         "{https://www.imf.org/external/index.htm}" + 'usd-value', nsmap=ns_map)  # NOQA: E501
+    value_sub_element.text = value
+    imf_sub_element = etree.SubElement(element,
+                                       "{https://www.imf.org/external/index.htm}"  # NOQA: E501
+                                       + 'url', nsmap=ns_map)
+    imf_sub_element.text = imf_url
+    return etree.tostring(element, pretty_print=True)

@@ -24,6 +24,9 @@ class Transaction(models.Model):
     transaction_date = models.DateField(db_index=True)
 
     value = models.DecimalField(max_digits=15, decimal_places=2)
+    usd_exchange_rate = models.DecimalField(max_digits=15, decimal_places=5,
+                                            null=True)
+    imf_url = models.TextField(null=True)
     value_string = models.CharField(max_length=50)
     currency = models.ForeignKey(Currency, null=True, on_delete=models.CASCADE)
     value_date = models.DateField()
@@ -33,7 +36,7 @@ class Transaction(models.Model):
     xdr_value = models.DecimalField(
         max_digits=20, decimal_places=7, default=Decimal(0))
     usd_value = models.DecimalField(
-        max_digits=20, decimal_places=7, default=Decimal(0))
+        max_digits=20, decimal_places=2, default=Decimal(0))
     eur_value = models.DecimalField(
         max_digits=20, decimal_places=7, default=Decimal(0))
     gbp_value = models.DecimalField(

@@ -35,7 +35,11 @@ class PublisherFilter(FilterSet):
         lookup_expr='in'
 
     )
-    publisher_id = CommaSeparatedCharFilter(
+    display_name = CommaSeparatedCharFilter(
+        field_name='display_name',
+        lookup_expr='in'
+    )
+    name = CommaSeparatedCharFilter(
         field_name='name',
         lookup_expr='in'
     )

@@ -16,7 +16,7 @@ from iati_synchroniser.models import Dataset, Publisher
 from task_queue.tasks import DatasetDownloadTask, DatasetValidationTask
 
 DATASET_URL = 'https://iatiregistry.org/api/action/package_search?rows=200&{options}'  # NOQA: E501
-PUBLISHER_URL = 'https://iatiregistry.org/api/action/organization_list?all_fields=true&include_extras=true&limit=200&{options}'  # NOQA: E501
+PUBLISHER_URL = 'https://iatiregistry.org/api/action/organization_list?all_fields=true&include_extras=true&limit=50&{options}'  # NOQA: E501
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
@@ -51,7 +51,7 @@ class DatasetSyncer(object):
         while True:
             # get data
             options = 'offset={}'.format(offset)
-            offset += 200
+            offset += 50
             page_url = PUBLISHER_URL.format(options=options)
             results = self.get_data(page_url)
 
