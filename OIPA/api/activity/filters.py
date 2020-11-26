@@ -269,8 +269,8 @@ class ActivityFilter(TogetherFilterSet):
                      queryset=Transaction.objects.prefetch_related(
                          Prefetch("flow_type"))))\
             .filter(
-            transaction__flow_type__code__in
-            =value.split(',')).distinct('id')
+                transaction__flow_type__code__in=value.split(',')
+            ).distinct('id')
 
         return transaction_queryset
 
@@ -287,8 +287,8 @@ class ActivityFilter(TogetherFilterSet):
                      queryset=Transaction.objects.prefetch_related(
                          Prefetch("transactionaidtype_set"))))\
             .filter(
-            transaction__transactionaidtype__aid_type__code__in
-            =value.split(',')).distinct('id')
+                transaction__transactionaidtype__aid_type__code__in=value.split(',')  # NOQA: E501
+            ).distinct('id')
 
         return transaction_queryset
 
@@ -305,8 +305,8 @@ class ActivityFilter(TogetherFilterSet):
                      queryset=Transaction.objects.prefetch_related(
                          Prefetch("finance_type"))))\
             .filter(
-            transaction__finance_type__code__in
-            =value.split(',')).distinct('id')
+                transaction__finance_type__code__in=value.split(',')
+            ).distinct('id')
 
         return transaction_queryset
 
@@ -323,8 +323,8 @@ class ActivityFilter(TogetherFilterSet):
                      queryset=Transaction.objects.prefetch_related(
                          Prefetch("tied_status"))))\
             .filter(
-            transaction__tied_status__code__in
-            =value.split(',')).distinct('id')
+                transaction__tied_status__code__in=value.split(',')
+            ).distinct('id')
 
         return transaction_queryset
 
@@ -345,14 +345,12 @@ class ActivityFilter(TogetherFilterSet):
 
     def humanitarian_filter(self, qs, value):
         activity_queryset = Activity.objects.filter(
-            humanitarian
-            =value)
+            humanitarian=value)
 
         transaction_queryset = Activity.objects.prefetch_related(
             Prefetch("transaction_set"))\
             .filter(
-            transaction__humanitarian
-            =value)
+            transaction__humanitarian=value)
 
         return activity_queryset.union(transaction_queryset)
 
@@ -432,14 +430,14 @@ class ActivityFilter(TogetherFilterSet):
         budget_queryset = Activity.objects.prefetch_related(
             Prefetch("budget_set"))\
             .filter(
-            budget__currency__code__in
-            =value.split(',')).distinct("id")
+                budget__currency__code__in=value.split(',')
+            ).distinct("id")
 
         transaction_queryset = Activity.objects.prefetch_related(
             Prefetch("transaction_set"))\
             .filter(
-            transaction__currency__code__in
-            =value.split(',')).distinct("id")
+                transaction__currency__code__in=value.split(',')
+            ).distinct("id")
 
         return budget_queryset.union(transaction_queryset)
 
@@ -455,16 +453,15 @@ class ActivityFilter(TogetherFilterSet):
 
     def country_code_filter(self, qs, name, value):
         activity_queryset = Activity.objects.filter(
-            recipient_country__code__in
-            =value.split(','))
+            recipient_country__code__in=value.split(',')
+        )
 
         transaction_queryset = Activity.objects.prefetch_related(
             Prefetch("transaction_set",
                      queryset=Transaction.objects.prefetch_related(
                          Prefetch("transaction_recipient_country"))))\
             .filter(
-            transaction__transaction_recipient_country__country__code__in
-            =value.split(','))
+                transaction__transaction_recipient_country__country__code__in=value.split(','))  # NOQA: E501
 
         return activity_queryset.union(transaction_queryset)
 
@@ -478,18 +475,23 @@ class ActivityFilter(TogetherFilterSet):
     # fk='activity',
     # )
 
+    recipient_region_not = ToManyNotInFilter(
+        qs=ActivityRecipientCountry,
+        lookup_expr='in',
+        name='country__code',
+        fk='activity',
+    )
+
     def region_code_filter(self, qs, name, value):
         activity_queryset = Activity.objects.filter(
-            recipient_region__code__in
-            =value.split(','))
+            recipient_region__code__in=value.split(','))
 
         transaction_queryset = Activity.objects.prefetch_related(
             Prefetch("transaction_set",
                      queryset=Transaction.objects.prefetch_related(
                          Prefetch("transaction_recipient_region"))))\
             .filter(
-            transaction__transaction_recipient_region__region__code__in
-            =value.split(','))
+                transaction__transaction_recipient_region__region__code__in=value.split(','))  # NOQA: E501
 
         return activity_queryset.union(transaction_queryset)
 
@@ -505,16 +507,14 @@ class ActivityFilter(TogetherFilterSet):
 
     def region_category_filter(self, qs, name, value):
         activity_queryset = Activity.objects.filter(
-            recipient_region__category__in
-            =value.split(','))
+            recipient_region__category__in=value.split(','))
 
         transaction_queryset = Activity.objects.prefetch_related(
             Prefetch("transaction_set",
                      queryset=Transaction.objects.prefetch_related(
                          Prefetch("transaction_recipient_region"))))\
             .filter(
-            transaction__transaction_recipient_region__category__code__in
-            =value.split(','))
+                transaction__transaction_recipient_region__category__code__in=value.split(','))  # NOQA: E501
 
         return activity_queryset.union(transaction_queryset)
 
@@ -530,24 +530,21 @@ class ActivityFilter(TogetherFilterSet):
 
     def sector_code_filter(self, qs, name, value):
         activity_queryset = Activity.objects.filter(
-            sector__code__in
-            =value.split(','))
+            sector__code__in=value.split(','))
 
         budget_queryset = Activity.objects.prefetch_related(
             Prefetch("budget_set",
                      queryset=Budget.objects.prefetch_related(
                          Prefetch("budgetsector_set"))))\
             .filter(
-            budget__budgetsector__sector__code__in
-            =value.split(','))
+                budget__budgetsector__sector__code__in=value.split(','))
 
         transaction_queryset = Activity.objects.prefetch_related(
             Prefetch("transaction_set",
                      queryset=Transaction.objects.prefetch_related(
                          Prefetch("transactionsector_set"))))\
             .filter(
-            transaction__transactionsector__sector__code__in
-            =value.split(','))
+                transaction__transactionsector__sector__code__in=value.split(','))  # NOQA: E501
 
         return activity_queryset.union(budget_queryset, transaction_queryset)
 
@@ -577,16 +574,14 @@ class ActivityFilter(TogetherFilterSet):
                      queryset=Budget.objects.prefetch_related(
                          Prefetch("budgetsector_set"))))\
             .filter(
-            budget__budgetsector__sector__vocabulary__code__in
-            =value.split(','))
+                budget__budgetsector__sector__vocabulary__code__in=value.split(','))  # NOQA: E501
 
         transaction_queryset = Activity.objects.prefetch_related(
             Prefetch("transaction_set",
                      queryset=Transaction.objects.prefetch_related(
                          Prefetch("transactionsector_set"))))\
             .filter(
-            transaction__transactionsector__sector__vocabulary__code__in
-            =value.split(','))
+                transaction__transactionsector__sector__vocabulary__code__in=value.split(','))  # NOQA: E501
 
         return activity_queryset.union(budget_queryset, transaction_queryset)
 
@@ -609,16 +604,14 @@ class ActivityFilter(TogetherFilterSet):
                      queryset=Budget.objects.prefetch_related(
                          Prefetch("budgetsector_set"))))\
             .filter(
-            budget__budgetsector__sector__category__code__in
-            =value.split(','))
+                budget__budgetsector__sector__category__code__in=value.split(','))  # NOQA: E501
 
         transaction_queryset = Activity.objects.prefetch_related(
             Prefetch("transaction_set",
                      queryset=Transaction.objects.prefetch_related(
                          Prefetch("transactionsector_set"))))\
             .filter(
-            transaction__transactionsector__sector__category__code__in
-            =value.split(','))
+                transaction__transactionsector__sector__category__code__in=value.split(','))  # NOQA: E501
 
         return activity_queryset.union(budget_queryset, transaction_queryset)
 
