@@ -160,6 +160,7 @@ class DatasetDownloadTask(celery.Task):
                  requests.exceptions.RequestException,
                  ConnectionResetError,
                  requests.exceptions.TooManyRedirects,
+                 requests.exceptions.ReadTimeout,
                  # urllib.request.HTTPError,  # 403
                  # urllib.request.URLError,  # timeouts
              ):
