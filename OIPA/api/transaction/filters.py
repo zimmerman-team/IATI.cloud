@@ -47,9 +47,14 @@ class TransactionFilter(FilterSet):
     min_value = NumberFilter(field_name='value', lookup_expr='gte')
     max_value = NumberFilter(field_name='value', lookup_expr='lte')
 
+    value = NumberFilter(
+        lookup_expr='exact', field_name='value'
+    )
+
     value_not = NumberFilter(
         lookup_expr='exact', field_name='value', exclude=True
     )
+
     xdr_value_not = NumberFilter(
         lookup_expr='exact', field_name='xdr_value', exclude=True)
     usd_value_not = NumberFilter(
@@ -84,8 +89,8 @@ class TransactionFilter(FilterSet):
     )
 
     aid_type = CommaSeparatedCharFilter(
-        lookup_expr='exact',
-        field_name='aid_type',
+        lookup_expr='in',
+        field_name='aid_type__code',
     )
 
     provider_organisation_primary_name = ToManyFilter(
