@@ -475,7 +475,7 @@ class ActivityFilter(TogetherFilterSet):
     # fk='activity',
     # )
 
-    recipient_region_not = ToManyNotInFilter(
+    recipient_country_not = ToManyNotInFilter(
         qs=ActivityRecipientCountry,
         lookup_expr='in',
         name='country__code',
