@@ -1,6 +1,6 @@
 from distutils.util import strtobool
 
-from django.db.models import Q
+from django.db.models import Prefetch, Q
 from django.db.models.fields import FieldDoesNotExist
 from django.db.models.fields.related import ForeignObjectRel, OneToOneRel
 from django_filters import (
@@ -263,17 +263,73 @@ class ActivityFilter(TogetherFilterSet):
         lookup_expr='in',
         name='collaboration_type',)
 
+    def flow_type_filter(self, qs, name, value):
+        transaction_queryset = Activity.objects.prefetch_related(
+            Prefetch("transaction_set",
+                     queryset=Transaction.objects.prefetch_related(
+                         Prefetch("flow_type"))))\
+            .filter(
+                transaction__flow_type__code__in=value.split(',')
+            ).distinct('id')
+
+        return transaction_queryset
+
+    flow_type = CommaSeparatedCharFilter(
+        name='flow_type__code', method='flow_type_filter')
+
     default_flow_type = CommaSeparatedCharFilter(
         lookup_expr='in',
         name='default_flow_type',)
+
+    def aid_type_filter(self, qs, name, value):
+        transaction_queryset = Activity.objects.prefetch_related(
+            Prefetch("transaction_set",
+                     queryset=Transaction.objects.prefetch_related(
+                         Prefetch("transactionaidtype_set"))))\
+            .filter(
+                transaction__transactionaidtype__aid_type__code__in=value.split(',')  # NOQA: E501
+            ).distinct('id')
+
+        return transaction_queryset
+
+    aid_type = CommaSeparatedCharFilter(
+        name='aid_type', method='aid_type_filter')
 
     default_aid_type = CommaSeparatedCharFilter(
         lookup_expr='in',
         name='default_aid_types__aid_type__code',)
 
+    def finance_type_filter(self, qs, name, value):
+        transaction_queryset = Activity.objects.prefetch_related(
+            Prefetch("transaction_set",
+                     queryset=Transaction.objects.prefetch_related(
+                         Prefetch("finance_type"))))\
+            .filter(
+                transaction__finance_type__code__in=value.split(',')
+            ).distinct('id')
+
+        return transaction_queryset
+
+    finance_type = CommaSeparatedCharFilter(
+        name='finance_type', method='finance_type_filter')
+
     default_finance_type = CommaSeparatedCharFilter(
         lookup_expr='in',
         name='default_finance_type',)
+
+    def tied_status_filter(self, qs, name, value):
+        transaction_queryset = Activity.objects.prefetch_related(
+            Prefetch("transaction_set",
+                     queryset=Transaction.objects.prefetch_related(
+                         Prefetch("tied_status"))))\
+            .filter(
+                transaction__tied_status__code__in=value.split(',')
+            ).distinct('id')
+
+        return transaction_queryset
+
+    tied_status = CommaSeparatedCharFilter(
+        name='tied_status', method='tied_status_filter')
 
     default_tied_status = CommaSeparatedCharFilter(
         lookup_expr='in',
@@ -287,9 +343,26 @@ class ActivityFilter(TogetherFilterSet):
         lookup_expr='lte',
         name='budget__period_end')
 
+    def humanitarian_filter(self, qs, value):
+        activity_queryset = Activity.objects.filter(
+            humanitarian=value)
+
+        transaction_queryset = Activity.objects.prefetch_related(
+            Prefetch("transaction_set"))\
+            .filter(
+            transaction__humanitarian=value)
+
+        return activity_queryset.union(transaction_queryset)
+
     humanitarian = TypedChoiceFilter(
         choices=(('0', 'False'), ('1', 'True')),
-        coerce=strtobool)
+        coerce=strtobool,
+        method=humanitarian_filter
+    )
+
+    # humanitarian = TypedChoiceFilter(
+    # choices=(('0', 'False'), ('1', 'True')),
+    # coerce=strtobool)
 
     humanitarian_scope_type = ToManyFilter(
         qs=HumanitarianScope,
@@ -353,6 +426,24 @@ class ActivityFilter(TogetherFilterSet):
         fk='current_activity',
     )
 
+    def currency_filter(self, qs, name, value):
+        budget_queryset = Activity.objects.prefetch_related(
+            Prefetch("budget_set"))\
+            .filter(
+                budget__currency__code__in=value.split(',')
+            ).distinct("id")
+
+        transaction_queryset = Activity.objects.prefetch_related(
+            Prefetch("transaction_set"))\
+            .filter(
+                transaction__currency__code__in=value.split(',')
+            ).distinct("id")
+
+        return budget_queryset.union(transaction_queryset)
+
+    currency = CommaSeparatedCharFilter(
+        name='currency', method='currency_filter')
+
     budget_currency = ToManyFilter(
         qs=Budget,
         lookup_expr='in',
@@ -360,19 +451,75 @@ class ActivityFilter(TogetherFilterSet):
         fk='activity',
     )
 
-    recipient_country = ToManyFilter(
+    def country_code_filter(self, qs, name, value):
+        activity_queryset = Activity.objects.filter(
+            recipient_country__code__in=value.split(',')
+        )
+
+        transaction_queryset = Activity.objects.prefetch_related(
+            Prefetch("transaction_set",
+                     queryset=Transaction.objects.prefetch_related(
+                         Prefetch("transaction_recipient_country"))))\
+            .filter(
+                transaction__transaction_recipient_country__country__code__in=value.split(','))  # NOQA: E501
+
+        return activity_queryset.union(transaction_queryset)
+
+    recipient_country = CommaSeparatedCharFilter(
+        name='country__code', method='country_code_filter')
+
+    # recipient_country = ToManyFilter(
+    # qs=ActivityRecipientCountry,
+    # lookup_expr='in',
+    # name='country__code',
+    # fk='activity',
+    # )
+
+    recipient_country_not = ToManyNotInFilter(
         qs=ActivityRecipientCountry,
         lookup_expr='in',
         name='country__code',
         fk='activity',
     )
 
-    recipient_region = ToManyFilter(
-        qs=ActivityRecipientRegion,
-        lookup_expr='in',
-        name='region__code',
-        fk='activity',
-    )
+    def region_code_filter(self, qs, name, value):
+        activity_queryset = Activity.objects.filter(
+            recipient_region__code__in=value.split(','))
+
+        transaction_queryset = Activity.objects.prefetch_related(
+            Prefetch("transaction_set",
+                     queryset=Transaction.objects.prefetch_related(
+                         Prefetch("transaction_recipient_region"))))\
+            .filter(
+                transaction__transaction_recipient_region__region__code__in=value.split(','))  # NOQA: E501
+
+        return activity_queryset.union(transaction_queryset)
+
+    recipient_region = CommaSeparatedCharFilter(
+        name='region__code', method='region_code_filter')
+
+    # recipient_region = ToManyFilter(
+    # qs=ActivityRecipientRegion,
+    # lookup_expr='in',
+    # name='region__code',
+    # fk='activity',
+    # )
+
+    def region_category_filter(self, qs, name, value):
+        activity_queryset = Activity.objects.filter(
+            recipient_region__category__in=value.split(','))
+
+        transaction_queryset = Activity.objects.prefetch_related(
+            Prefetch("transaction_set",
+                     queryset=Transaction.objects.prefetch_related(
+                         Prefetch("transaction_recipient_region"))))\
+            .filter(
+                transaction__transaction_recipient_region__category__code__in=value.split(','))  # NOQA: E501
+
+        return activity_queryset.union(transaction_queryset)
+
+    recipient_region = CommaSeparatedCharFilter(
+        name='region__code', method='region_code_filter')
 
     recipient_region_not = ToManyNotInFilter(
         qs=ActivityRecipientRegion,
@@ -381,12 +528,35 @@ class ActivityFilter(TogetherFilterSet):
         fk='activity',
     )
 
-    sector = ToManyFilter(
-        qs=ActivitySector,
-        lookup_expr='in',
-        name='sector__code',
-        fk='activity',
-    )
+    def sector_code_filter(self, qs, name, value):
+        activity_queryset = Activity.objects.filter(
+            sector__code__in=value.split(','))
+
+        budget_queryset = Activity.objects.prefetch_related(
+            Prefetch("budget_set",
+                     queryset=Budget.objects.prefetch_related(
+                         Prefetch("budgetsector_set"))))\
+            .filter(
+                budget__budgetsector__sector__code__in=value.split(','))
+
+        transaction_queryset = Activity.objects.prefetch_related(
+            Prefetch("transaction_set",
+                     queryset=Transaction.objects.prefetch_related(
+                         Prefetch("transactionsector_set"))))\
+            .filter(
+                transaction__transactionsector__sector__code__in=value.split(','))  # NOQA: E501
+
+        return activity_queryset.union(budget_queryset, transaction_queryset)
+
+    sector = CommaSeparatedCharFilter(
+        name='sector', method='sector_code_filter')
+
+    # sector = ToManyFilter(
+    # qs=ActivitySector,
+    # lookup_expr='in',
+    # name='sector__code',
+    # fk='activity',
+    # )
 
     sector_startswith = ToManyFilter(
         qs=ActivitySector,
@@ -395,19 +565,65 @@ class ActivityFilter(TogetherFilterSet):
         fk='activity',
     )
 
-    sector_vocabulary = ToManyFilter(
-        qs=ActivitySector,
-        lookup_expr='in',
-        name='vocabulary__code',
-        fk='activity',
-    )
+    def sector_vocabulary_filter(self, qs, name, value):
+        activity_queryset = Activity.objects.filter(
+            sector__vocabulary__code__in=value.split(','))
 
-    sector_category = ToManyFilter(
-        qs=ActivitySector,
-        lookup_expr='in',
-        name='sector__category__code',
-        fk='activity',
-    )
+        budget_queryset = Activity.objects.prefetch_related(
+            Prefetch("budget_set",
+                     queryset=Budget.objects.prefetch_related(
+                         Prefetch("budgetsector_set"))))\
+            .filter(
+                budget__budgetsector__sector__vocabulary__code__in=value.split(','))  # NOQA: E501
+
+        transaction_queryset = Activity.objects.prefetch_related(
+            Prefetch("transaction_set",
+                     queryset=Transaction.objects.prefetch_related(
+                         Prefetch("transactionsector_set"))))\
+            .filter(
+                transaction__transactionsector__sector__vocabulary__code__in=value.split(','))  # NOQA: E501
+
+        return activity_queryset.union(budget_queryset, transaction_queryset)
+
+    sector_vocabulary = CommaSeparatedCharFilter(
+        name='sector_vocabulary', method='sector_vocabulary_filter')
+
+    # sector_vocabulary = ToManyFilter(
+    # qs=ActivitySector,
+    # lookup_expr='in',
+    # name='vocabulary__code',
+    # fk='activity',
+    # )
+
+    def sector_category_filter(self, qs, name, value):
+        activity_queryset = Activity.objects.filter(
+            sector__category__code__in=value.split(','))
+
+        budget_queryset = Activity.objects.prefetch_related(
+            Prefetch("budget_set",
+                     queryset=Budget.objects.prefetch_related(
+                         Prefetch("budgetsector_set"))))\
+            .filter(
+                budget__budgetsector__sector__category__code__in=value.split(','))  # NOQA: E501
+
+        transaction_queryset = Activity.objects.prefetch_related(
+            Prefetch("transaction_set",
+                     queryset=Transaction.objects.prefetch_related(
+                         Prefetch("transactionsector_set"))))\
+            .filter(
+                transaction__transactionsector__sector__category__code__in=value.split(','))  # NOQA: E501
+
+        return activity_queryset.union(budget_queryset, transaction_queryset)
+
+    sector_category = CommaSeparatedCharFilter(
+        name='sector_category', method='sector_category_filter')
+
+    # sector_category = ToManyFilter(
+    # qs=ActivitySector,
+    # lookup_expr='in',
+    # name='sector__category__code',
+    # fk='activity',
+    # )
 
     sector_startswith_in = StartsWithInCommaSeparatedCharFilter(
         lookup_expr='startswith',
