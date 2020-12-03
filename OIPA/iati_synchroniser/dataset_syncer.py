@@ -172,7 +172,8 @@ class DatasetSyncer(object):
             response = requests.get(source_url, timeout=30)
         except (requests.exceptions.ConnectionError,
                 requests.exceptions.TooManyRedirects,
-                requests.exceptions.ReadTimeout):
+                requests.exceptions.ReadTimeout,
+                requests.exceptions.Timeout):
             pass
         finally:
             pass
@@ -208,8 +209,9 @@ class DatasetSyncer(object):
             }
         )
         # this also returns internal URL for the Dataset:
-        return_value = DatasetDownloadTask.delay(dataset_data=dataset)
-        obj.internal_url = return_value.get(disable_sync_subtasks=False) or ''
+        return_value = DatasetDownloadTask.run(dataset_data=dataset,
+                                               content=response.content)
+        #obj.internal_url = return_value.get(disable_sync_subtasks=False) or ''
         obj.save()
 
         # Validation dataset with the current. we don't do validation for

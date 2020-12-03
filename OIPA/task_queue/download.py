@@ -63,7 +63,7 @@ class DatasetDownloadTask(celery.Task):
 
         return filetype
 
-    def run(self, dataset_data, *args, **kwargs):
+    def run(self, dataset_data, content, *args, **kwargs):
         """Run the dataset download task"""
 
         """Based on dataset URL, downloads and saves it in the server
@@ -139,34 +139,37 @@ class DatasetDownloadTask(celery.Task):
                 full_download_dir,
                 filename
             )
-            headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
-                                     '10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}  # NOQA: E501
+            # headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
+            #                          '10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}  # NOQA: E501
+            #
+            # try:
+            #     with open(download_dir_with_filename, 'wb') as f:
+            #         resp = requests.get(dataset_url, verify=False,
+            #                             headers=headers, timeout=30)
+            #         f.write(resp.content)
+            #     # urllib.request.urlretrieve(
+            #     #     dataset_url,
+            #     #     download_dir_with_filename
+            #     # )
+            #
+            # except requests.exceptions.Timeout:
+            #     with open(download_dir_with_filename, 'wb') as f:
+            #         resp = requests.get(dataset_url, verify=False, timeout=30)
+            #         f.write(resp.content)
+            # except (
+            #      requests.exceptions.RequestException,
+            #      ConnectionResetError,
+            #      requests.exceptions.TooManyRedirects,
+            #      requests.exceptions.ReadTimeout,
+            #      # urllib.request.HTTPError,  # 403
+            #      # urllib.request.URLError,  # timeouts
+            #  ):
+            #     pass
+            # finally:
+            #     pass
 
-            try:
-                with open(download_dir_with_filename, 'wb') as f:
-                    resp = requests.get(dataset_url, verify=False,
-                                        headers=headers, timeout=30)
-                    f.write(resp.content)
-                # urllib.request.urlretrieve(
-                #     dataset_url,
-                #     download_dir_with_filename
-                # )
-
-            except requests.exceptions.Timeout:
-                with open(download_dir_with_filename, 'wb') as f:
-                    resp = requests.get(dataset_url, verify=False, timeout=30)
-                    f.write(resp.content)
-            except (
-                 requests.exceptions.RequestException,
-                 ConnectionResetError,
-                 requests.exceptions.TooManyRedirects,
-                 requests.exceptions.ReadTimeout,
-                 # urllib.request.HTTPError,  # 403
-                 # urllib.request.URLError,  # timeouts
-             ):
-                pass
-            finally:
-                pass
+            with open(download_dir_with_filename, 'wb') as f:
+                f.write(content)
 
             # URL string to save as a Dataset attribute:
             return os.path.join(main_download_dir, filename)
