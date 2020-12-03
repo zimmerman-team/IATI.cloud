@@ -213,9 +213,9 @@ class DatasetSyncer(object):
             content = response.content
         else:
             content = ''.encode()
-        return_value = DatasetDownloadTask.run(dataset_data=dataset,
+        return_value = DatasetDownloadTask.delay(dataset_data=dataset,
                                                content=content)
-        #obj.internal_url = return_value.get(disable_sync_subtasks=False) or ''
+        obj.internal_url = return_value.get(disable_sync_subtasks=False) or ''
         obj.save()
 
         # Validation dataset with the current. we don't do validation for
