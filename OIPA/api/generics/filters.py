@@ -394,4 +394,4 @@ class StartsWithInCommaSeparatedCharFilter(CharFilter):
             query = query | \
                     Q(**{"{}__{}".format(self.name, self.lookup_expr): value})
 
-        return qs.filter(query)
+        return qs.filter(query).distinct()
