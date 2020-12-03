@@ -167,7 +167,8 @@ class DatasetDownloadTask(celery.Task):
             #     pass
             # finally:
             #     pass
-
+            if type(content) != bytes:
+                content = content.encode()
             with open(download_dir_with_filename, 'wb') as f:
                 f.write(content)
 
