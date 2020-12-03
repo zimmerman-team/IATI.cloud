@@ -210,7 +210,7 @@ class DatasetSyncer(object):
         )
         # this also returns internal URL for the Dataset:
         if response is not None:
-            content = response.content
+            content = str(response.content)
         else:
             content = ''
         return_value = DatasetDownloadTask.delay(dataset_data=dataset,

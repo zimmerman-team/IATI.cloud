@@ -167,10 +167,9 @@ class DatasetDownloadTask(celery.Task):
             #     pass
             # finally:
             #     pass
-            if type(content) != bytes:
-                content = content.encode()
+
             with open(download_dir_with_filename, 'wb') as f:
-                f.write(content)
+                f.write(content.encode())
 
             # URL string to save as a Dataset attribute:
             return os.path.join(main_download_dir, filename)
