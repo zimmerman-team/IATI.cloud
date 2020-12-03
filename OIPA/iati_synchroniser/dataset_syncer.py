@@ -212,7 +212,7 @@ class DatasetSyncer(object):
         if response is not None:
             content = response.content
         else:
-            content = ''
+            content = ''.encode()
         return_value = DatasetDownloadTask.run(dataset_data=dataset,
                                                content=content)
         #obj.internal_url = return_value.get(disable_sync_subtasks=False) or ''
