@@ -63,7 +63,7 @@ class DatasetDownloadTask(celery.Task):
 
         return filetype
 
-    def run(self, dataset_data, content, *args, **kwargs):
+    def run(self, dataset_data, content, dataset_obj_id, *args, **kwargs):
         """Run the dataset download task"""
 
         """Based on dataset URL, downloads and saves it in the server
@@ -169,7 +169,11 @@ class DatasetDownloadTask(celery.Task):
             #     pass
 
             with open(download_dir_with_filename, 'wb') as f:
-                f.write(content.encode())
+                f.write(content.encode('utf-8'))
 
+            dataset = Dataset.objects.get(id=dataset_obj_id)
+            dataset.internal_url = os.path.join(
+                main_download_dir, filename)
+            dataset.save()
             # URL string to save as a Dataset attribute:
             return os.path.join(main_download_dir, filename)

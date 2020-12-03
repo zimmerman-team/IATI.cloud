@@ -209,14 +209,12 @@ class DatasetSyncer(object):
             }
         )
         # this also returns internal URL for the Dataset:
-        if response is not None:
-            content = str(response.content)
-        else:
-            content = ''
-        return_value = DatasetDownloadTask.delay(dataset_data=dataset,
-                                                 content=content)
-        obj.internal_url = return_value.get(disable_sync_subtasks=False) or ''
-        obj.save()
+        DatasetDownloadTask.delay(dataset_data=dataset,
+                                  content=iati_file,
+                                  dataset_obj_id=obj.pk)
+        # obj.internal_url = return_value.get(disable_sync_subtasks=False)
+        # or ''
+        # obj.save()
 
         # Validation dataset with the current. we don't do validation for
         # the moment
