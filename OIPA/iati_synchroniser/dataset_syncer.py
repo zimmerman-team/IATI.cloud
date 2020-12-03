@@ -214,7 +214,7 @@ class DatasetSyncer(object):
 
         # Validation dataset with the current. we don't do validation for
         # the moment
-        DatasetValidationTask.delay(dataset_id=obj.id)
+        # DatasetValidationTask.delay(dataset_id=obj.id)
 
     def remove_deprecated(self):
         """
