@@ -166,14 +166,32 @@ class DatasetSyncer(object):
         try:
             response = requests.get(source_url, headers=headers, timeout=30)
         except requests.exceptions.SSLError:
-            response = requests.get(source_url, verify=False,
-                                    headers=headers, timeout=30)
+            try:
+                response = requests.get(source_url, verify=False,
+                                        headers=headers, timeout=30)
+            except (requests.exceptions.SSLError,
+                    requests.exceptions.Timeout,
+                    requests.exceptions.ConnectionError,
+                    requests.exceptions.TooManyRedirects,
+                    requests.exceptions.ReadTimeout,
+                    requests.exceptions.ChunkedEncodingError,
+                    ):
+                pass
         except requests.exceptions.Timeout:
-            response = requests.get(source_url, timeout=30)
+            try:
+                response = requests.get(source_url, timeout=30)
+            except (requests.exceptions.Timeout,
+                    requests.exceptions.ConnectionError,
+                    requests.exceptions.TooManyRedirects,
+                    requests.exceptions.ReadTimeout,
+                    requests.exceptions.ChunkedEncodingError,
+                    ):
+                pass
         except (requests.exceptions.ConnectionError,
                 requests.exceptions.TooManyRedirects,
                 requests.exceptions.ReadTimeout,
-                requests.exceptions.Timeout):
+                requests.exceptions.ChunkedEncodingError,
+                ):
             pass
         finally:
             pass
