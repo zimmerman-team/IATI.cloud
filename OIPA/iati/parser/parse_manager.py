@@ -18,6 +18,7 @@ from iati_organisation.parser.organisation_1_05 import Parse as Org_1_05_Parser
 from iati_organisation.parser.organisation_2_01 import Parse as Org_2_01_Parser
 from iati_organisation.parser.organisation_2_02 import Parse as Org_2_02_Parser
 from iati_organisation.parser.organisation_2_03 import Parse as Org_2_03_Parser
+from iati_synchroniser.models import DatasetFailedPickup
 
 
 class ParserDisabledError(Exception):
@@ -54,15 +55,45 @@ class ParseManager():
 
         try:
             response = requests.get(self.url, headers=headers, timeout=30)
+            response.raise_for_status()
         except requests.exceptions.SSLError:
-            response = requests.get(self.url, verify=False, headers=headers,
-                                    timeout=30)
+            try:
+                response = requests.get(self.url, verify=False,
+                                        timeout=30)
+            except requests.exceptions.SSLError as error:
+                datasetFailedPickup = DatasetFailedPickup(
+                    dataset=self.dataset,
+                    is_http_error=False,
+                    error_detail=error.strerror
+                )
+                datasetFailedPickup.save()
         except requests.exceptions.Timeout:
-            response = requests.get(self.url, verify=False, timeout=30)
+            try:
+                response = requests.get(self.url, verify=False, timeout=30)
+            except requests.exceptions.Timeout as error:
+                datasetFailedPickup = DatasetFailedPickup(
+                    dataset=self.dataset,
+                    is_http_error=False,
+                    error_detail=error.strerror
+                )
+                datasetFailedPickup.save()
         except (requests.exceptions.ConnectionError,
-                requests.exceptions.TooManyRedirects,
-                requests.exceptions.Timeout):
-            pass
+                requests.exceptions.TooManyRedirects
+                ) as error:
+            datasetFailedPickup = DatasetFailedPickup(
+                dataset=self.dataset,
+                is_http_error=False,
+                error_detail=error.strerror
+            )
+            datasetFailedPickup.save()
+        except requests.exceptions.HTTPError as error:
+            datasetFailedPickup = DatasetFailedPickup(
+                dataset=self.dataset,
+                is_http_error=True,
+                status_code=error.response.status_code,
+                error_detail=error.response.reason
+            )
+            datasetFailedPickup.save()
         finally:
             pass
 
