@@ -13,6 +13,8 @@ urlpatterns = [
         name='dataset-aggregations'),
     url(r'^fails/',
         views.DatasetFails.as_view(), name='dataset-fails'),
+    url(r'^failedpickups/',
+        views.DatasetFailedPickup.as_view(), name='dataset-failedpickups'),
     url(r'^(?P<pk>[^@$&+,/:;=?]+)/$',
         views.DatasetDetail.as_view(),
         name='dataset-detail'),
