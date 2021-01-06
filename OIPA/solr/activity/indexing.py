@@ -997,6 +997,7 @@ class ActivityIndexing(BaseIndexing):
             self.add_field('budget_value_date', [])
             self.add_field('budget_value', [])
             self.add_field('budget_value_usd', [])
+            self.add_field('budget_value_usd_sum', 0)
             self.add_field('budget_imf_link', [])
             self.add_field('budget_usd_conversion_rate', [])
 
@@ -1065,6 +1066,10 @@ class ActivityIndexing(BaseIndexing):
                 self.add_value_list(
                     'budget_value_usd',
                     decimal_string(budget.usd_value)
+                )
+                self.add_sum(
+                    'budget_value_usd_sum',
+                    budget.usd_value
                 )
                 self.add_value_list(
                     'budget_imf_link',
