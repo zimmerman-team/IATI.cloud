@@ -1262,6 +1262,7 @@ class ActivityIndexing(BaseIndexing):
             self.add_field('transaction_value_date', [])
             self.add_field('transaction_value', [])
             self.add_field('transaction_value_usd', [])
+            self.add_field('transaction_value_usd_sum', 0)
             self.add_field('transaction_imf_link', [])
             self.add_field('transaction_usd_conversion_rate', [])
             self.add_field('transaction_provider_org_provider_activity_id', [])
@@ -1390,6 +1391,10 @@ class ActivityIndexing(BaseIndexing):
                 self.add_value_list(
                     'transaction_value_usd',
                     decimal_string(transaction.usd_value)
+                )
+                self.add_sum(
+                    'transaction_value_usd_sum',
+                    transaction.usd_value
                 )
                 self.add_value_list(
                     'transaction_imf_link',
