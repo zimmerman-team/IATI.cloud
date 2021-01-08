@@ -16,9 +16,9 @@ from solr.publisher.tasks import PublisherTaskIndexing
 from solr.transaction.tasks import TransactionTaskIndexing
 
 
-@receiver(signals.post_save, sender=Dataset)
-def dataset_post_save(sender, instance, **kwargs):
-    DatasetTaskIndexing(instance=instance).run()
+# @receiver(signals.post_save, sender=Dataset)
+# def dataset_post_save(sender, instance, **kwargs):
+#     DatasetTaskIndexing(instance=instance).run()
 
 
 @receiver(signals.post_save, sender=Publisher)
@@ -46,9 +46,9 @@ def code_list_region_post_save(sender, instance, **kwargs):
 #     ActivityTaskIndexing(instance=instance, related=True).run()
 
 
-@receiver(signals.pre_delete, sender=Dataset)
-def dataset_pre_delete(sender, instance, **kwargs):
-    DatasetTaskIndexing(instance=instance).delete()
+# @receiver(signals.pre_delete, sender=Dataset)
+# def dataset_pre_delete(sender, instance, **kwargs):
+#     DatasetTaskIndexing(instance=instance).delete()
 
 
 @receiver(signals.pre_delete, sender=Publisher)

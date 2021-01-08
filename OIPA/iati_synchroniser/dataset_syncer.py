@@ -166,13 +166,32 @@ class DatasetSyncer(object):
         try:
             response = requests.get(source_url, headers=headers, timeout=30)
         except requests.exceptions.SSLError:
-            response = requests.get(source_url, verify=False,
-                                    headers=headers, timeout=30)
+            try:
+                response = requests.get(source_url, verify=False,
+                                        headers=headers, timeout=30)
+            except (requests.exceptions.SSLError,
+                    requests.exceptions.Timeout,
+                    requests.exceptions.ConnectionError,
+                    requests.exceptions.TooManyRedirects,
+                    requests.exceptions.ReadTimeout,
+                    requests.exceptions.ChunkedEncodingError,
+                    ):
+                pass
         except requests.exceptions.Timeout:
-            response = requests.get(source_url, timeout=30)
+            try:
+                response = requests.get(source_url, timeout=30)
+            except (requests.exceptions.Timeout,
+                    requests.exceptions.ConnectionError,
+                    requests.exceptions.TooManyRedirects,
+                    requests.exceptions.ReadTimeout,
+                    requests.exceptions.ChunkedEncodingError,
+                    ):
+                pass
         except (requests.exceptions.ConnectionError,
                 requests.exceptions.TooManyRedirects,
-                requests.exceptions.ReadTimeout):
+                requests.exceptions.ReadTimeout,
+                requests.exceptions.ChunkedEncodingError,
+                ):
             pass
         finally:
             pass
@@ -208,13 +227,16 @@ class DatasetSyncer(object):
             }
         )
         # this also returns internal URL for the Dataset:
-        return_value = DatasetDownloadTask.delay(dataset_data=dataset)
-        obj.internal_url = return_value.get(disable_sync_subtasks=False) or ''
-        obj.save()
+        DatasetDownloadTask.delay(dataset_data=dataset,
+                                  content=iati_file,
+                                  dataset_obj_id=obj.pk)
+        # obj.internal_url = return_value.get(disable_sync_subtasks=False)
+        # or ''
+        # obj.save()
 
         # Validation dataset with the current. we don't do validation for
         # the moment
-        DatasetValidationTask.delay(dataset_id=obj.id)
+        # DatasetValidationTask.delay(dataset_id=obj.id)
 
     def remove_deprecated(self):
         """
