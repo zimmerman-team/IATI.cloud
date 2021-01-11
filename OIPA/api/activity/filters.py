@@ -545,27 +545,39 @@ class ActivityFilter(TogetherFilterSet):
 
     def sector_code_filter(self, queryset, name, value):
         activity_queryset = queryset.filter(
-            sector__code__in=value.split(',')).distinct('id')
+            sector__code__in=value.split(','))
 
-        budget_queryset = queryset.prefetch_related(
-            Prefetch("budget_set",
-                     queryset=Budget.objects.prefetch_related(
-                         Prefetch("budgetsector_set"))))\
-            .filter(
-                budget__budgetsector__sector__code__in=value.split(',')
-                    ).distinct('id')
+        # budget_queryset = queryset.prefetch_related(
+        #     Prefetch("budget_set",
+        #              queryset=Budget.objects.prefetch_related(
+        #                  Prefetch("budgetsector_set"))))\
+        #     .filter(
+        #         budget__budgetsector__sector__code__in=value.split(',')
+        #             )
 
-        transaction_queryset = queryset.prefetch_related(
-            Prefetch("transaction_set",
-                     queryset=Transaction.objects.prefetch_related(
-                         Prefetch("transactionsector_set"))))\
-            .filter(
-                transaction__transactionsector__sector__code__in=value
-                    .split(',')).distinct('id')  # NOQA: E501
+        budget_sector_filtered = Budget.objects.filter(
+            budgetsector__sector__code__in=value.split(',')
+        ).values('activity_id')
+
+        budget_queryset = queryset.filter(id__in=budget_sector_filtered)
+
+        transaction_sector_filtered = Transaction.objects.filter(
+            transactionsector__sector__code__in=value.split(',')
+        ).values('activity_id')
+
+        transaction_queryset = queryset.filter(id__in=transaction_sector_filtered)
+        # transaction_queryset = queryset.prefetch_related(
+        #     Prefetch("transaction_set",
+        #              queryset=Transaction.objects.prefetch_related(
+        #                  Prefetch("transactionsector_set"))))\
+        #     .filter(
+        #         transaction__transactionsector__sector__code__in=value
+        #             .split(',')).distinct('id')  # NOQA: E501
 
         # union those three queryset. Cannot use union() function because
         # result queryset cannot be apply filter again which will do in
         # later stages.
+
         return activity_queryset | budget_queryset | transaction_queryset
 
     sector = CommaSeparatedCharFilter(
