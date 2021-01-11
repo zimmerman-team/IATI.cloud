@@ -1,6 +1,6 @@
 from distutils.util import strtobool
 
-from django.db.models import Prefetch, Q
+from django.db.models import Q
 from django.db.models.fields import FieldDoesNotExist
 from django.db.models.fields.related import ForeignObjectRel, OneToOneRel
 from django_filters import (
@@ -264,13 +264,13 @@ class ActivityFilter(TogetherFilterSet):
         name='collaboration_type',)
 
     def flow_type_filter(self, qs, name, value):
-        transaction_queryset = qs.prefetch_related(
-            Prefetch("transaction_set",
-                     queryset=Transaction.objects.prefetch_related(
-                         Prefetch("flow_type"))))\
-            .filter(
-                transaction__flow_type__code__in=value.split(',')
-            ).distinct('id')
+
+        transaction_flowtype_filtered = Transaction.objects.filter(
+            flow_type__code__in=value.split(',')
+        ).values('activity_id')
+
+        transaction_queryset = qs.filter(
+            id__in=transaction_flowtype_filtered)
 
         return transaction_queryset
 
@@ -282,13 +282,13 @@ class ActivityFilter(TogetherFilterSet):
         name='default_flow_type',)
 
     def aid_type_filter(self, qs, name, value):
-        transaction_queryset = qs.prefetch_related(
-            Prefetch("transaction_set",
-                     queryset=Transaction.objects.prefetch_related(
-                         Prefetch("transactionaidtype_set"))))\
-            .filter(
-                transaction__transactionaidtype__aid_type__code__in=value.split(',')  # NOQA: E501
-            ).distinct('id')
+
+        transaction_aidtype_filtered = Transaction.objects.filter(
+            transactionaidtype__aid_type__code__in=value.split(',')
+        ).values('activity_id')
+
+        transaction_queryset = qs.filter(
+            id__in=transaction_aidtype_filtered)
 
         return transaction_queryset
 
@@ -300,13 +300,13 @@ class ActivityFilter(TogetherFilterSet):
         name='default_aid_types__aid_type__code',)
 
     def finance_type_filter(self, qs, name, value):
-        transaction_queryset = qs.prefetch_related(
-            Prefetch("transaction_set",
-                     queryset=Transaction.objects.prefetch_related(
-                         Prefetch("finance_type"))))\
-            .filter(
-                transaction__finance_type__code__in=value.split(',')
-            ).distinct('id')
+
+        transaction_financetype_filtered = Transaction.objects.filter(
+            finance_type__code__in=value.split(',')
+        ).values('activity_id')
+
+        transaction_queryset = qs.filter(
+            id__in=transaction_financetype_filtered)
 
         return transaction_queryset
 
@@ -318,13 +318,13 @@ class ActivityFilter(TogetherFilterSet):
         name='default_finance_type',)
 
     def tied_status_filter(self, qs, name, value):
-        transaction_queryset = qs.prefetch_related(
-            Prefetch("transaction_set",
-                     queryset=Transaction.objects.prefetch_related(
-                         Prefetch("tied_status"))))\
-            .filter(
-                transaction__tied_status__code__in=value.split(',')
-            ).distinct('id')
+
+        transaction_tied_status_filtered = Transaction.objects.filter(
+            tied_status__code__in=value.split(',')
+        ).values('activity_id')
+
+        transaction_queryset = qs.filter(
+            id__in=transaction_tied_status_filtered)
 
         return transaction_queryset
 
@@ -345,12 +345,14 @@ class ActivityFilter(TogetherFilterSet):
 
     def humanitarian_filter(self, qs, value):
         activity_queryset = qs.filter(
-            humanitarian=value).distinct('id')
+            humanitarian=value)
 
-        transaction_queryset = qs.prefetch_related(
-            Prefetch("transaction_set"))\
-            .filter(
-            transaction__humanitarian=value).distinct('id')
+        transaction_humanitarian_filtered = Transaction.objects.filter(
+            humanitarian=value.split(',')
+        ).values('activity_id')
+
+        transaction_queryset = qs.filter(
+            id__in=transaction_humanitarian_filtered)
 
         # union those three queryset. Cannot use union() function because
         # result queryset cannot be apply filter again which will do in
@@ -430,17 +432,19 @@ class ActivityFilter(TogetherFilterSet):
     )
 
     def currency_filter(self, qs, name, value):
-        budget_queryset = qs.prefetch_related(
-            Prefetch("budget_set"))\
-            .filter(
-                budget__currency__code__in=value.split(',')
-            ).distinct("id")
 
-        transaction_queryset = qs.prefetch_related(
-            Prefetch("transaction_set"))\
-            .filter(
-                transaction__currency__code__in=value.split(',')
-            ).distinct("id")
+        budget_currency_filtered = Budget.objects.filter(
+            currency__code__in=value.split(',')
+        ).values('activity_id')
+
+        budget_queryset = qs.filter(id__in=budget_currency_filtered)
+
+        transaction_currency_filtered = Transaction.objects.filter(
+            currency__code__in=value.split(',')
+        ).values('activity_id')
+
+        transaction_queryset = qs.filter(
+            id__in=transaction_currency_filtered)
 
         # union those three queryset. Cannot use union() function because
         # result queryset cannot be apply filter again which will do in
@@ -460,14 +464,14 @@ class ActivityFilter(TogetherFilterSet):
     def country_code_filter(self, qs, name, value):
         activity_queryset = qs.filter(
             recipient_country__code__in=value.split(',')
-        ).distinct('id')
+        )
 
-        transaction_queryset = qs.prefetch_related(
-            Prefetch("transaction_set",
-                     queryset=Transaction.objects.prefetch_related(
-                         Prefetch("transaction_recipient_country"))))\
-            .filter(
-                transaction__transaction_recipient_country__country__code__in=value.split(',')).distinct('id')  # NOQA: E501
+        transaction_country_filtered = Transaction.objects.filter(
+            transaction_recipient_country__country__code__in=value.split(',')
+        ).values('activity_id')
+
+        transaction_queryset = qs.filter(
+            id__in=transaction_country_filtered)
 
         # union those three queryset. Cannot use union() function because
         # result queryset cannot be apply filter again which will do in
@@ -493,14 +497,14 @@ class ActivityFilter(TogetherFilterSet):
 
     def region_code_filter(self, qs, name, value):
         activity_queryset = qs.filter(
-            recipient_region__code__in=value.split(',')).distinct('id')
+            recipient_region__code__in=value.split(','))
 
-        transaction_queryset = qs.prefetch_related(
-            Prefetch("transaction_set",
-                     queryset=Transaction.objects.prefetch_related(
-                         Prefetch("transaction_recipient_region"))))\
-            .filter(
-                transaction__transaction_recipient_region__region__code__in=value.split(',')).distinct('id')  # NOQA: E501
+        transaction_region_filtered = Transaction.objects.filter(
+            transaction_recipient_region__region__code__in=value.split(',')
+        ).values('activity_id')
+
+        transaction_queryset = qs.filter(
+            id__in=transaction_region_filtered)
 
         # union those three queryset. Cannot use union() function because
         # result queryset cannot be apply filter again which will do in
@@ -519,14 +523,14 @@ class ActivityFilter(TogetherFilterSet):
 
     def region_category_filter(self, qs, name, value):
         activity_queryset = qs.filter(
-            recipient_region__category__in=value.split(',')).distinct('id')
+            recipient_region__category__in=value.split(','))
 
-        transaction_queryset = qs.prefetch_related(
-            Prefetch("transaction_set",
-                     queryset=Transaction.objects.prefetch_related(
-                         Prefetch("transaction_recipient_region"))))\
-            .filter(
-                transaction__transaction_recipient_region__category__code__in=value.split(',')).distinct('id')  # NOQA: E501
+        transaction_region_category_filtered = Transaction.objects.filter(
+            transaction_recipient_region__category__code__in=value.split(',')
+        ).values('activity_id')
+
+        transaction_queryset = qs.filter(
+            id__in=transaction_region_category_filtered)
 
         # union those three queryset. Cannot use union() function because
         # result queryset cannot be apply filter again which will do in
@@ -599,21 +603,20 @@ class ActivityFilter(TogetherFilterSet):
 
     def sector_vocabulary_filter(self, qs, name, value):
         activity_queryset = qs.filter(
-            sector__vocabulary__code__in=value.split(',')).distinct('id')
+            sector__vocabulary__code__in=value.split(','))
 
-        budget_queryset = qs.prefetch_related(
-            Prefetch("budget_set",
-                     queryset=Budget.objects.prefetch_related(
-                         Prefetch("budgetsector_set"))))\
-            .filter(
-                budget__budgetsector__sector__vocabulary__code__in=value.split(',')).distinct('id')  # NOQA: E501
+        budget_sector_vocabulary_filtered = Budget.objects.filter(
+            budgetsector__sector__vocabulary__code__in=value.split(',')
+        ).values('activity_id')
 
-        transaction_queryset = qs.prefetch_related(
-            Prefetch("transaction_set",
-                     queryset=Transaction.objects.prefetch_related(
-                         Prefetch("transactionsector_set"))))\
-            .filter(
-                transaction__transactionsector__sector__vocabulary__code__in=value.split(',')).distinct('id')  # NOQA: E501
+        budget_queryset = qs.filter(id__in=budget_sector_vocabulary_filtered)
+
+        transaction_sector_vocabulary_filtered = Transaction.objects.filter(
+            transactionsector__sector__vocabulary__code__in=value.split(',')
+        ).values('activity_id')
+
+        transaction_queryset = qs.filter(
+            id__in=transaction_sector_vocabulary_filtered)
 
         # union those three queryset. Cannot use union() function because
         # result queryset cannot be apply filter again which will do in
@@ -632,21 +635,20 @@ class ActivityFilter(TogetherFilterSet):
 
     def sector_category_filter(self, qs, name, value):
         activity_queryset = qs.filter(
-            sector__category__code__in=value.split(',')).distinct('id')
+            sector__category__code__in=value.split(','))
 
-        budget_queryset = qs.prefetch_related(
-            Prefetch("budget_set",
-                     queryset=Budget.objects.prefetch_related(
-                         Prefetch("budgetsector_set"))))\
-            .filter(
-                budget__budgetsector__sector__category__code__in=value.split(',')).distinct('id')  # NOQA: E501
+        budget_sector_category_filtered = Budget.objects.filter(
+            budgetsector__sector__category__code__in=value.split(',')
+        ).values('activity_id')
 
-        transaction_queryset = qs.prefetch_related(
-            Prefetch("transaction_set",
-                     queryset=Transaction.objects.prefetch_related(
-                         Prefetch("transactionsector_set"))))\
-            .filter(
-                transaction__transactionsector__sector__category__code__in=value.split(',')).distinct('id')  # NOQA: E501
+        budget_queryset = qs.filter(id__in=budget_sector_category_filtered)
+
+        transaction_sector_category_filtered = Transaction.objects.filter(
+            transactionsector__sector__category__code__in=value.split(',')
+        ).values('activity_id')
+
+        transaction_queryset = qs.filter(
+            id__in=transaction_sector_category_filtered)
 
         # union those three queryset. Cannot use union() function because
         # result queryset cannot be apply filter again which will do in
