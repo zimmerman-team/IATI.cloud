@@ -264,7 +264,7 @@ class ActivityFilter(TogetherFilterSet):
         name='collaboration_type',)
 
     def flow_type_filter(self, qs, name, value):
-        transaction_queryset = Activity.objects.prefetch_related(
+        transaction_queryset = qs.prefetch_related(
             Prefetch("transaction_set",
                      queryset=Transaction.objects.prefetch_related(
                          Prefetch("flow_type"))))\
@@ -282,7 +282,7 @@ class ActivityFilter(TogetherFilterSet):
         name='default_flow_type',)
 
     def aid_type_filter(self, qs, name, value):
-        transaction_queryset = Activity.objects.prefetch_related(
+        transaction_queryset = qs.prefetch_related(
             Prefetch("transaction_set",
                      queryset=Transaction.objects.prefetch_related(
                          Prefetch("transactionaidtype_set"))))\
@@ -300,7 +300,7 @@ class ActivityFilter(TogetherFilterSet):
         name='default_aid_types__aid_type__code',)
 
     def finance_type_filter(self, qs, name, value):
-        transaction_queryset = Activity.objects.prefetch_related(
+        transaction_queryset = qs.prefetch_related(
             Prefetch("transaction_set",
                      queryset=Transaction.objects.prefetch_related(
                          Prefetch("finance_type"))))\
@@ -318,7 +318,7 @@ class ActivityFilter(TogetherFilterSet):
         name='default_finance_type',)
 
     def tied_status_filter(self, qs, name, value):
-        transaction_queryset = Activity.objects.prefetch_related(
+        transaction_queryset = qs.prefetch_related(
             Prefetch("transaction_set",
                      queryset=Transaction.objects.prefetch_related(
                          Prefetch("tied_status"))))\
@@ -344,10 +344,10 @@ class ActivityFilter(TogetherFilterSet):
         name='budget__period_end')
 
     def humanitarian_filter(self, qs, value):
-        activity_queryset = Activity.objects.filter(
+        activity_queryset = qs.filter(
             humanitarian=value)
 
-        transaction_queryset = Activity.objects.prefetch_related(
+        transaction_queryset = qs.prefetch_related(
             Prefetch("transaction_set"))\
             .filter(
             transaction__humanitarian=value)
@@ -427,13 +427,13 @@ class ActivityFilter(TogetherFilterSet):
     )
 
     def currency_filter(self, qs, name, value):
-        budget_queryset = Activity.objects.prefetch_related(
+        budget_queryset = qs.prefetch_related(
             Prefetch("budget_set"))\
             .filter(
                 budget__currency__code__in=value.split(',')
             ).distinct("id")
 
-        transaction_queryset = Activity.objects.prefetch_related(
+        transaction_queryset = qs.prefetch_related(
             Prefetch("transaction_set"))\
             .filter(
                 transaction__currency__code__in=value.split(',')
@@ -452,11 +452,11 @@ class ActivityFilter(TogetherFilterSet):
     )
 
     def country_code_filter(self, qs, name, value):
-        activity_queryset = Activity.objects.filter(
+        activity_queryset = qs.filter(
             recipient_country__code__in=value.split(',')
         )
 
-        transaction_queryset = Activity.objects.prefetch_related(
+        transaction_queryset = qs.prefetch_related(
             Prefetch("transaction_set",
                      queryset=Transaction.objects.prefetch_related(
                          Prefetch("transaction_recipient_country"))))\
@@ -483,10 +483,10 @@ class ActivityFilter(TogetherFilterSet):
     )
 
     def region_code_filter(self, qs, name, value):
-        activity_queryset = Activity.objects.filter(
+        activity_queryset = qs.filter(
             recipient_region__code__in=value.split(','))
 
-        transaction_queryset = Activity.objects.prefetch_related(
+        transaction_queryset = qs.prefetch_related(
             Prefetch("transaction_set",
                      queryset=Transaction.objects.prefetch_related(
                          Prefetch("transaction_recipient_region"))))\
@@ -506,10 +506,10 @@ class ActivityFilter(TogetherFilterSet):
     # )
 
     def region_category_filter(self, qs, name, value):
-        activity_queryset = Activity.objects.filter(
+        activity_queryset = qs.filter(
             recipient_region__category__in=value.split(','))
 
-        transaction_queryset = Activity.objects.prefetch_related(
+        transaction_queryset = qs.prefetch_related(
             Prefetch("transaction_set",
                      queryset=Transaction.objects.prefetch_related(
                          Prefetch("transaction_recipient_region"))))\
@@ -529,17 +529,17 @@ class ActivityFilter(TogetherFilterSet):
     )
 
     def sector_code_filter(self, qs, name, value):
-        activity_queryset = Activity.objects.filter(
+        activity_queryset = qs.filter(
             sector__code__in=value.split(','))
 
-        budget_queryset = Activity.objects.prefetch_related(
+        budget_queryset = qs.prefetch_related(
             Prefetch("budget_set",
                      queryset=Budget.objects.prefetch_related(
                          Prefetch("budgetsector_set"))))\
             .filter(
                 budget__budgetsector__sector__code__in=value.split(','))
 
-        transaction_queryset = Activity.objects.prefetch_related(
+        transaction_queryset = qs.prefetch_related(
             Prefetch("transaction_set",
                      queryset=Transaction.objects.prefetch_related(
                          Prefetch("transactionsector_set"))))\
@@ -566,17 +566,17 @@ class ActivityFilter(TogetherFilterSet):
     )
 
     def sector_vocabulary_filter(self, qs, name, value):
-        activity_queryset = Activity.objects.filter(
+        activity_queryset = qs.filter(
             sector__vocabulary__code__in=value.split(','))
 
-        budget_queryset = Activity.objects.prefetch_related(
+        budget_queryset = qs.prefetch_related(
             Prefetch("budget_set",
                      queryset=Budget.objects.prefetch_related(
                          Prefetch("budgetsector_set"))))\
             .filter(
                 budget__budgetsector__sector__vocabulary__code__in=value.split(','))  # NOQA: E501
 
-        transaction_queryset = Activity.objects.prefetch_related(
+        transaction_queryset = qs.prefetch_related(
             Prefetch("transaction_set",
                      queryset=Transaction.objects.prefetch_related(
                          Prefetch("transactionsector_set"))))\
@@ -596,17 +596,17 @@ class ActivityFilter(TogetherFilterSet):
     # )
 
     def sector_category_filter(self, qs, name, value):
-        activity_queryset = Activity.objects.filter(
+        activity_queryset = qs.filter(
             sector__category__code__in=value.split(','))
 
-        budget_queryset = Activity.objects.prefetch_related(
+        budget_queryset = qs.prefetch_related(
             Prefetch("budget_set",
                      queryset=Budget.objects.prefetch_related(
                          Prefetch("budgetsector_set"))))\
             .filter(
                 budget__budgetsector__sector__category__code__in=value.split(','))  # NOQA: E501
 
-        transaction_queryset = Activity.objects.prefetch_related(
+        transaction_queryset = qs.prefetch_related(
             Prefetch("transaction_set",
                      queryset=Transaction.objects.prefetch_related(
                          Prefetch("transactionsector_set"))))\
