@@ -551,6 +551,10 @@ class ActivityFilter(TogetherFilterSet):
         activity_queryset = queryset.filter(
             sector__code__in=value.split(','))
 
+        # BUDGET DOESN'T HAVE SECTOR OF ITS OWN
+        # https://iatistandard.org/en/iati-standard/203/activity-standard
+        # /iati-activities/iati-activity/budget/
+
         # budget_queryset = queryset.prefetch_related(
         #     Prefetch("budget_set",
         #              queryset=Budget.objects.prefetch_related(
@@ -559,17 +563,12 @@ class ActivityFilter(TogetherFilterSet):
         #         budget__budgetsector__sector__code__in=value.split(',')
         #             )
 
-        budget_sector_filtered = Budget.objects.filter(
-            budgetsector__sector__code__in=value.split(',')
-        ).values('activity_id')
-
-        budget_queryset = queryset.filter(id__in=budget_sector_filtered)
-
         transaction_sector_filtered = Transaction.objects.filter(
             transactionsector__sector__code__in=value.split(',')
         ).values('activity_id')
 
-        transaction_queryset = queryset.filter(id__in=transaction_sector_filtered)
+        transaction_queryset = queryset.filter(
+            id__in=transaction_sector_filtered)
         # transaction_queryset = queryset.prefetch_related(
         #     Prefetch("transaction_set",
         #              queryset=Transaction.objects.prefetch_related(
@@ -582,7 +581,7 @@ class ActivityFilter(TogetherFilterSet):
         # result queryset cannot be apply filter again which will do in
         # later stages.
 
-        return activity_queryset | budget_queryset | transaction_queryset
+        return activity_queryset | transaction_queryset
 
     sector = CommaSeparatedCharFilter(
         name='sector', method='sector_code_filter')
@@ -605,12 +604,6 @@ class ActivityFilter(TogetherFilterSet):
         activity_queryset = qs.filter(
             sector__vocabulary__code__in=value.split(','))
 
-        budget_sector_vocabulary_filtered = Budget.objects.filter(
-            budgetsector__sector__vocabulary__code__in=value.split(',')
-        ).values('activity_id')
-
-        budget_queryset = qs.filter(id__in=budget_sector_vocabulary_filtered)
-
         transaction_sector_vocabulary_filtered = Transaction.objects.filter(
             transactionsector__sector__vocabulary__code__in=value.split(',')
         ).values('activity_id')
@@ -621,7 +614,7 @@ class ActivityFilter(TogetherFilterSet):
         # union those three queryset. Cannot use union() function because
         # result queryset cannot be apply filter again which will do in
         # later stages.
-        return activity_queryset | budget_queryset | transaction_queryset
+        return activity_queryset | transaction_queryset
 
     sector_vocabulary = CommaSeparatedCharFilter(
         name='sector_vocabulary', method='sector_vocabulary_filter')
@@ -637,12 +630,6 @@ class ActivityFilter(TogetherFilterSet):
         activity_queryset = qs.filter(
             sector__category__code__in=value.split(','))
 
-        budget_sector_category_filtered = Budget.objects.filter(
-            budgetsector__sector__category__code__in=value.split(',')
-        ).values('activity_id')
-
-        budget_queryset = qs.filter(id__in=budget_sector_category_filtered)
-
         transaction_sector_category_filtered = Transaction.objects.filter(
             transactionsector__sector__category__code__in=value.split(',')
         ).values('activity_id')
@@ -653,7 +640,7 @@ class ActivityFilter(TogetherFilterSet):
         # union those three queryset. Cannot use union() function because
         # result queryset cannot be apply filter again which will do in
         # later stages.
-        return activity_queryset | budget_queryset | transaction_queryset
+        return activity_queryset | transaction_queryset
 
     sector_category = CommaSeparatedCharFilter(
         name='sector_category', method='sector_category_filter')
