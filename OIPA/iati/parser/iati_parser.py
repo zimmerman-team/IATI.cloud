@@ -1,4 +1,5 @@
 import datetime
+import hashlib
 import logging
 import re
 from collections import OrderedDict
@@ -11,6 +12,7 @@ from django.db.models.fields.related import ForeignKey, OneToOneField
 from lxml import etree
 
 from common.util import findnth_occurence_in_string, normalise_unicode_string
+from iati.models import Activity
 from iati.parser.exceptions import (
     FieldValidationError, IgnoredVocabularyError, NoUpdateRequired,
     ParserError, RequiredFieldError, ValidationError
@@ -193,26 +195,54 @@ class IatiParser(object):
         """
 
         """
+        activities_to_keep = []
         for e in root.getchildren():
             self.model_store = OrderedDict()
-            parsed = self.parse(e)
+            parsed = False
+            should_be_parsed = True
+
+            hasher = hashlib.sha1()
+            hasher.update(etree.tostring(e))
+            sha1 = hasher.hexdigest()
+            if not self.force_reparse:
+                try:
+                    iati_id = e.find('iati-identifier').text
+                    saved_activity = Activity.objects.\
+                        filter(iati_identifier=iati_id).values("sha1")
+                    if saved_activity.count() == 1:
+                        if saved_activity[0]['sha1'] == sha1:
+                            activities_to_keep.append(iati_id)
+                            should_be_parsed = False
+                except Exception:
+                    should_be_parsed = True
+
+            if should_be_parsed:
+                parsed = self.parse(e)
             # only save if the activity is updated
 
             if parsed:
                 try:
+                    model = self.get_model('Activity')
+                    if model is not None:
+                        if sha1:
+                            model.sha1 = sha1
                     self.save_all_models()
                     self.post_save_models()
                 except Exception:
                     model = self.get_model('Activity')
                     if model is not None:
+                        if sha1:
+                            model.sha1 = sha1
                         ActivityTaskIndexing(model,
                                              related=True).run()
                 else:
                     model = self.get_model('Activity')
                     if model is not None:
+                        if sha1:
+                            model.sha1 = sha1
                         ActivityTaskIndexing(model, related=True).run()
 
-        self.post_save_file(self.dataset)
+        self.post_save_file(self.dataset, activities_to_keep)
 
         if settings.ERROR_LOGS_ENABLED:
             self.post_save_validators(self.dataset)

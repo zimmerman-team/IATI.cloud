@@ -215,6 +215,9 @@ class Activity(models.Model):
     # is this activity changed from the originally parsed version?
     modified = models.BooleanField(default=False, db_index=True)
 
+    # Sha1 field for data change detection at activity level when parsing
+    sha1 = models.CharField(max_length=40, default="", null=False, blank=True)
+
     objects = ActivityManager(
         fields=('title', 'description'),  # fields on the model
         config='pg_catalog.simple',  # default dictionary to use
