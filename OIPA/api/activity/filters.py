@@ -320,7 +320,7 @@ class ActivityFilter(TogetherFilterSet):
     def tied_status_filter(self, qs, name, value):
 
         transaction_tied_status_filtered = Transaction.objects.filter(
-            tied_status__code__in=value.split(',')
+            tied_status_id__in=value.split(',')
         ).values('activity_id')
 
         transaction_queryset = qs.filter(
