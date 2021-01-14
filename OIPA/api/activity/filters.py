@@ -343,12 +343,12 @@ class ActivityFilter(TogetherFilterSet):
         lookup_expr='lte',
         name='budget__period_end')
 
-    def humanitarian_filter(self, qs, value):
+    def humanitarian_filter(qs, name, value):
         activity_queryset = qs.filter(
             humanitarian=value)
 
         transaction_humanitarian_filtered = Transaction.objects.filter(
-            humanitarian=value.split(',')
+            humanitarian=value
         ).values('activity_id')
 
         transaction_queryset = qs.filter(
@@ -361,7 +361,6 @@ class ActivityFilter(TogetherFilterSet):
 
     humanitarian = TypedChoiceFilter(
         choices=(('0', 'False'), ('1', 'True')),
-        coerce=strtobool,
         method=humanitarian_filter
     )
 
@@ -605,7 +604,7 @@ class ActivityFilter(TogetherFilterSet):
             sector__vocabulary__code__in=value.split(','))
 
         transaction_sector_vocabulary_filtered = Transaction.objects.filter(
-            transactionsector__sector__vocabulary__code__in=value.split(',')
+            transactionsector__vocabulary__in=value.split(',')
         ).values('activity_id')
 
         transaction_queryset = qs.filter(
