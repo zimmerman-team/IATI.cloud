@@ -266,7 +266,7 @@ class ActivityFilter(TogetherFilterSet):
     def flow_type_filter(self, qs, name, value):
 
         transaction_flowtype_filtered = Transaction.objects.filter(
-            flow_type__code__in=value.split(',')
+            flow_type_id__in=value.split(',')
         ).values('activity_id')
 
         transaction_queryset = qs.filter(
