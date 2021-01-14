@@ -466,7 +466,7 @@ class ActivityFilter(TogetherFilterSet):
         )
 
         transaction_country_filtered = Transaction.objects.filter(
-            transaction_recipient_country__country__code__in=value.split(',')
+            transaction_recipient_country__in=value.split(',')
         ).values('activity_id')
 
         transaction_queryset = qs.filter(
@@ -604,7 +604,7 @@ class ActivityFilter(TogetherFilterSet):
             sector__vocabulary__code__in=value.split(','))
 
         transaction_sector_vocabulary_filtered = Transaction.objects.filter(
-            transactionsector__vocabulary__in=value.split(',')
+            transactionsector__vocabulary_id__in=value.split(',')
         ).values('activity_id')
 
         transaction_queryset = qs.filter(
