@@ -209,10 +209,10 @@ class IatiParser(object):
                     iati_id = e.find('iati-identifier').text
                     saved_activity = Activity.objects.\
                         filter(iati_identifier=iati_id).values("sha1")
-                    if saved_activity.count() == 1:
-                        if saved_activity[0]['sha1'] == sha1:
-                            activities_to_keep.append(iati_id)
-                            should_be_parsed = False
+                    if saved_activity.count() == 1 \
+                            and saved_activity[0]['sha1'] == sha1:
+                        activities_to_keep.append(iati_id)
+                        should_be_parsed = False
                 except Exception:
                     should_be_parsed = True
 
@@ -223,23 +223,20 @@ class IatiParser(object):
             if parsed:
                 try:
                     model = self.get_model('Activity')
-                    if model is not None:
-                        if sha1:
-                            model.sha1 = sha1
+                    if model is not None and sha1:
+                        model.sha1 = sha1
                     self.save_all_models()
                     self.post_save_models()
                 except Exception:
                     model = self.get_model('Activity')
-                    if model is not None:
-                        if sha1:
-                            model.sha1 = sha1
+                    if model is not None and sha1:
+                        model.sha1 = sha1
                         ActivityTaskIndexing(model,
                                              related=True).run()
                 else:
                     model = self.get_model('Activity')
-                    if model is not None:
-                        if sha1:
-                            model.sha1 = sha1
+                    if model is not None and sha1:
+                        model.sha1 = sha1
                         ActivityTaskIndexing(model, related=True).run()
 
         self.post_save_file(self.dataset, activities_to_keep)
@@ -259,7 +256,7 @@ class IatiParser(object):
     def post_save_models(self):
         print("override in children")
 
-    def post_save_file(self, dataset):
+    def post_save_file(self, dataset, activities_to_keep):
         print("override in children")
 
     def append_error(self, error_type, model, field, message,
