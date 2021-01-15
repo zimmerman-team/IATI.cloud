@@ -197,11 +197,16 @@ def add_activity_additional_filter_fields(serializer, activity):
     tag_all = activity.activitytag_set.all()
     if tag_all:
         serializer.add_field('tag_code', [])
+        serializer.add_field('tag_vocabulary',[])
 
         for tag in tag_all:
             serializer.add_value_list(
                 'tag_code',
                 tag.code
+            )
+            serializer.add_value_list(
+                'tag_vocabulary',
+                tag.vocabulary_id
             )
 
 
