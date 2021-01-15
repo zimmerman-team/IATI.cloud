@@ -1,7 +1,7 @@
 from django.db.models import signals
 from django.dispatch import receiver
-from geodata.models import Country, Region
 
+from geodata.models import Country, Region
 from iati.models import Activity, Budget
 from iati.transaction.models import Transaction
 from iati_organisation.models import Organisation
