@@ -4,7 +4,6 @@ import logging
 import os
 
 import celery
-# import requests
 from django.conf import settings
 
 from iati_synchroniser.models import Dataset, filetype_choices
