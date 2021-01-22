@@ -5,16 +5,14 @@ from geodata.models import Country, Region
 from iati.models import Activity, Budget
 from iati.transaction.models import Transaction
 from iati_organisation.models import Organisation
-from iati_synchroniser.models import Dataset, Publisher
+from iati_synchroniser.models import Publisher
 from solr.activity.tasks import ActivityTaskIndexing
 from solr.budget.tasks import BudgetTaskIndexing
 from solr.codelists.country.tasks import CodeListCountryTaskIndexing
 from solr.codelists.region.tasks import CodeListRegionTaskIndexing
-from solr.dataset.tasks import DatasetTaskIndexing
 from solr.organisation.tasks import OrganisationTaskIndexing
 from solr.publisher.tasks import PublisherTaskIndexing
 from solr.transaction.tasks import TransactionTaskIndexing
-
 
 # @receiver(signals.post_save, sender=Dataset)
 # def dataset_post_save(sender, instance, **kwargs):
