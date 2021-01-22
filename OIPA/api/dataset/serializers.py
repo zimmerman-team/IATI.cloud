@@ -9,7 +9,9 @@ from rest_framework.serializers import (
 
 from api.generics.serializers import DynamicFieldsModelSerializer
 from iati.models import Activity
-from iati_synchroniser.models import Dataset, DatasetFailedPickup, DatasetNote, Publisher
+from iati_synchroniser.models import (
+    Dataset, DatasetFailedPickup, DatasetNote, Publisher
+)
 
 
 class DatasetNoteSerializer(ModelSerializer):
