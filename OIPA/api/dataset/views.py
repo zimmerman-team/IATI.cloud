@@ -12,17 +12,21 @@ from rest_framework.views import APIView
 from rest_framework_extensions.cache.mixins import CacheResponseMixin
 
 from api.aggregation.views import Aggregation, AggregationView, GroupBy
-from api.dataset.filters import DatasetFilter, DatasetFailedPickupFilter, NoteFilter
+from api.dataset.filters import (
+    DatasetFailedPickupFilter, DatasetFilter, NoteFilter
+)
 from api.dataset.serializers import (
-    DatasetFailedPickupSerializer, DatasetNoteSerializer, DatasetSerializer, SimpleDatasetSerializer,
-    SimplePublisherSerializer
+    DatasetFailedPickupSerializer, DatasetNoteSerializer, DatasetSerializer,
+    SimpleDatasetSerializer, SimplePublisherSerializer
 )
 from api.export.views import IATIActivityList
 from api.generics.views import DynamicListView
 from api.publisher.permissions import OrganisationAdminGroupPermissions
 from iati.models import Activity
 from iati_organisation.models import Organisation
-from iati_synchroniser.models import Dataset, DatasetFailedPickup, DatasetNote, Publisher
+from iati_synchroniser.models import (
+    Dataset, DatasetFailedPickup, DatasetNote, Publisher
+)
 
 
 class DatasetPagination(pagination.PageNumberPagination):
@@ -260,6 +264,7 @@ class DatasetFails(CacheResponseMixin, DynamicListView):
         'validation_status'
     )
 
+
 class DatasetFailedPickup(CacheResponseMixin, DynamicListView):
     """
     Returns a list of datasets that failed pickups
@@ -271,10 +276,10 @@ class DatasetFailedPickup(CacheResponseMixin, DynamicListView):
     ```
     """
     last_5_timestamps_per_dataset = DatasetFailedPickup.objects.filter(
-        dataset_id = OuterRef('dataset')).order_by('-timestamp')[:5]
+        dataset_id=OuterRef('dataset')).order_by('-timestamp')[:5]
 
     queryset = DatasetFailedPickup.objects.filter(
-        id__in = Subquery(last_5_timestamps_per_dataset.values('id')))
+        id__in=Subquery(last_5_timestamps_per_dataset.values('id')))
 
     serializer_class = DatasetFailedPickupSerializer
     filter_class = DatasetFailedPickupFilter
@@ -288,6 +293,7 @@ class DatasetFailedPickup(CacheResponseMixin, DynamicListView):
         'error_detail',
         'timestamp',
     )
+
 
 class DatasetNotes(CacheResponseMixin, ListAPIView):
     """
