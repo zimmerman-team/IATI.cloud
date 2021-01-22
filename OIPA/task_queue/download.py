@@ -4,7 +4,6 @@ import logging
 import os
 
 import celery
-import requests
 from django.conf import settings
 
 from iati_synchroniser.models import Dataset, filetype_choices
@@ -139,8 +138,10 @@ class DatasetDownloadTask(celery.Task):
                 full_download_dir,
                 filename
             )
-            # headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
-            #                          '10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}  # NOQA: E501
+            # headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS '
+            #                           'X 10_11_5) AppleWebKit/537.36 (KHTML'
+            #                           ', like Gecko) Chrome/50.0.2661.102 '
+            #                           'Safari/537.36'}  # NOQA: E501
             #
             # try:
             #     with open(download_dir_with_filename, 'wb') as f:
@@ -154,7 +155,8 @@ class DatasetDownloadTask(celery.Task):
             #
             # except requests.exceptions.Timeout:
             #     with open(download_dir_with_filename, 'wb') as f:
-            #         resp = requests.get(dataset_url, verify=False, timeout=30)
+            #         resp = requests.get(dataset_url, verify=False,
+            #                    timeout=30)
             #         f.write(resp.content)
             # except (
             #      requests.exceptions.RequestException,
