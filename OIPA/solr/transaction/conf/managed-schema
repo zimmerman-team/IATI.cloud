@@ -160,7 +160,8 @@
 
     <field name="document_link_category_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="hierarchy" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-    <field name="humanitarian" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="default_humanitarian" type="string" multiValued="false"
+    indexed="true" required="false" stored="true"/>
 
     <field name="humanitarian_scope_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="humanitarian_scope_vocabulary" type="string" multiValued="true" indexed="true" required="false" stored="true"/>

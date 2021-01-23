@@ -100,7 +100,8 @@ def add_activity_additional_filter_fields(serializer, activity):
         activity.default_tied_status_id
     )
     serializer.add_field('hierarchy', value_string(activity.hierarchy))
-    serializer.add_field('humanitarian', bool_string(activity.humanitarian))
+    serializer.add_field('default_humanitarian', bool_string(
+        activity.humanitarian))
     serializer.add_field(
         'dataset_iati_version',
         activity.iati_standard_version_id)
