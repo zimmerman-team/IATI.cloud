@@ -116,7 +116,7 @@ class DatasetFilter(FilterSet):
 
 class DatasetFailedPickupFilter(FilterSet):
     """
-    Filter countries list
+    Filter for failed datasets.
     """
 
     dataset_id = CharFilter(
