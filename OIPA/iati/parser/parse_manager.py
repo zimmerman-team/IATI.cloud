@@ -64,7 +64,7 @@ class ParseManager():
                 datasetFailedPickup = DatasetFailedPickup(
                     dataset=self.dataset,
                     is_http_error=False,
-                    error_detail=error.strerror
+                    error_detail=str(error)
                 )
                 datasetFailedPickup.save()
         except requests.exceptions.Timeout:
@@ -74,7 +74,7 @@ class ParseManager():
                 datasetFailedPickup = DatasetFailedPickup(
                     dataset=self.dataset,
                     is_http_error=False,
-                    error_detail=error.strerror
+                    error_detail=str(error)
                 )
                 datasetFailedPickup.save()
         except (requests.exceptions.ConnectionError,
@@ -83,7 +83,7 @@ class ParseManager():
             datasetFailedPickup = DatasetFailedPickup(
                 dataset=self.dataset,
                 is_http_error=False,
-                error_detail=error.strerror
+                error_detail=str(error)
             )
             datasetFailedPickup.save()
         except requests.exceptions.HTTPError as error:
@@ -94,6 +94,8 @@ class ParseManager():
                 error_detail=error.response.reason
             )
             datasetFailedPickup.save()
+        # We do not add a generic exception, because that would mean that
+        # an internal datastore error would show up in the API.
         finally:
             pass
 
