@@ -20,14 +20,13 @@ def add_recipient_country(serializer, activity):
                 'recipient_country_name',
                 recipient_country.country.name
             )
-            
+
 
 def add_sector(serializer, activity):
     sector_all = activity.activitysector_set.all()
     if sector_all:
         serializer.add_field('sector_code', [])
         serializer.add_field('sector_vocabulary', [])
-        
         for sector in sector_all:
             serializer.add_value_list('sector_code', sector.sector.code)
             serializer.add_value_list('sector_vocabulary',
@@ -42,7 +41,7 @@ def add_recipient_region(serializer, activity):
         for recipient_region in recipient_region_all:
             serializer.add_value_list('recipient_region_code',
                                       recipient_region.region.code)
-            
+
 
 def add_activity_date(serializer, activity):
     activity_date_all = activity.activitydate_set.all()
@@ -68,8 +67,8 @@ def add_activity_date(serializer, activity):
                     'activity_date_end_actual_f',
                     activity_date.iso_date
                 )
-                
-                
+
+
 def add_participating_org(serializer, activity):
     participating_org_all = activity.participating_organisations.all()
     if participating_org_all:
@@ -198,7 +197,7 @@ def add_activity_additional_filter_fields(serializer, activity):
     tag_all = activity.activitytag_set.all()
     if tag_all:
         serializer.add_field('tag_code', [])
-        serializer.add_field('tag_vocabulary',[])
+        serializer.add_field('tag_vocabulary', [])
 
         for tag in tag_all:
             serializer.add_value_list(

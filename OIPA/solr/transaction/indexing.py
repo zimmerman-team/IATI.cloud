@@ -1,11 +1,11 @@
+from solr.budget.indexing import (
+    add_activity_additional_filter_fields, add_participating_org
+)
 from solr.indexing import BaseIndexing
 from solr.utils import (
     add_reporting_org, bool_string, date_string, decimal_string,
-    get_child_attr, get_narrative_lang_list, value_string
+    get_child_attr, get_narrative_lang_list
 )
-
-from solr.budget.indexing import add_participating_org, \
-    add_activity_additional_filter_fields
 
 
 class TransactionIndexing(BaseIndexing):
@@ -262,7 +262,6 @@ class TransactionIndexing(BaseIndexing):
             )
             self.add_value_list('activity_sector_code',
                                 activity_sector.sector.code)
-            
         add_participating_org(self, transaction.activity)
         add_activity_additional_filter_fields(self, transaction.activity)
 

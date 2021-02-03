@@ -1,4 +1,4 @@
-from distutils.util import strtobool
+
 
 from django.db.models import Q
 from django.db.models.fields import FieldDoesNotExist
