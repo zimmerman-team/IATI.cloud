@@ -4,7 +4,7 @@ from django_filters import (
 )
 
 from api.generics.filters import CommaSeparatedCharFilter, ToManyFilter
-from iati_synchroniser.models import Dataset, DatasetNote
+from iati_synchroniser.models import Dataset, DatasetFailedPickup, DatasetNote
 
 
 class SearchQueryFilter(Filter):
@@ -111,6 +111,46 @@ class DatasetFilter(FilterSet):
 
     class Meta:
         model = Dataset
+        fields = []
+
+
+class DatasetFailedPickupFilter(FilterSet):
+    """
+    Filter for failed datasets.
+    """
+
+    dataset_id = CharFilter(
+        lookup_expr='exact',
+        field_name='dataset__id')
+
+    dataset_name = CharFilter(
+        lookup_expr='icontains',
+        field_name='dataset__name')
+
+    dataset_title = CharFilter(
+        lookup_expr='icontains',
+        field_name='dataset__title')
+
+    dataset_filetype = CommaSeparatedCharFilter(
+        lookup_expr='in',
+        field_name='dataset__filetype')
+
+    dataset_publisher_id = CharFilter(
+        lookup_expr='exact',
+        field_name='dataset__publisher__id')
+
+    dataset_publisher_identifier = CharFilter(
+        lookup_expr='icontains',
+        field_name='dataset__publisher__publisher_iati_id')
+
+    dataset_publisher_title = CharFilter(
+        lookup_expr='icontains',
+        field_name='dataset__publisher__title')
+
+    q = SearchQueryFilter()
+
+    class Meta:
+        model = DatasetFailedPickup
         fields = []
 
 

@@ -140,8 +140,44 @@
     <field name="activity_sector_vocabulary" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="activity_sector_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
 
-    <field name="transaction_description_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-    <field name="transaction_description_narrative" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="participating_org_ref" type="non_case_sensitive" multiValued="true" indexed="true" required="false" stored="true"/>
+
+     <!-- fields for activity additional filters -->
+
+    <field name="activity_scope_code" type="string" indexed="true" required="false" stored="true"/>
+    <field name="activity_status_code" type="string" indexed="true" required="false" stored="true"/>
+    <field name="collaboration_type_code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+
+    <field name="default_aid_type_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="default_aid_type_vocabulary" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="default_aid_type_category_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+
+    <field name="default_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="default_finance_type_code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="default_lang" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="default_flow_type_code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="default_tied_status_code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+
+    <field name="document_link_category_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="hierarchy" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="default_humanitarian" type="string" multiValued="false"
+    indexed="true" required="false" stored="true"/>
+
+    <field name="humanitarian_scope_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="humanitarian_scope_vocabulary" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+
+    <field name="dataset_iati_version" type="string" multiValued="false" indexed="true" required="true" stored="true"/>
+
+    <field name="other_identifier_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+
+    <field name="policy_marker_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+
+    <field name="tag_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="tag_vocabulary" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+
+
+    <!-- end fields for activity additional filters -->
+
 
 
     <field name="activity_date_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
@@ -152,6 +188,9 @@
     <field name="reporting_org_type" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="reporting_org_secondary_reporter" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="reporting_org_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
+
+    <field name="transaction_description_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="transaction_description_narrative" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
 
     <field name="transaction_ref" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="transaction_humanitarian" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
@@ -203,7 +242,6 @@
 
     <field name="transaction_tied_status_code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
 
-    <field name="humanitarian" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
 
     <!--Transaction Core - End-->
 
