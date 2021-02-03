@@ -16,6 +16,9 @@ class BaseIndexing(serializers.Serializer):
     def add_field(self, field, value=None):
         self.indexing[field] = value
 
+    def add_sum(self, field, value):
+        self.indexing[field] = self.indexing[field] + value
+
     def add_value_list(self, field, value):
         add_value_list(self.indexing[field], value)
 

@@ -1859,7 +1859,7 @@ class ActivityTag(models.Model):
     or s separate method (get_tag_value) to get it from Narratives or smth.
     """
     activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
-    code = models.CharField(max_length=5)
+    code = models.CharField(max_length=255)
     vocabulary = models.ForeignKey(
         TagVocabulary, on_delete=models.CASCADE
     )

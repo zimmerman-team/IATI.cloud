@@ -1,3 +1,6 @@
+from solr.budget.indexing import (
+    add_activity_additional_filter_fields, add_participating_org
+)
 from solr.indexing import BaseIndexing
 from solr.utils import (
     add_reporting_org, bool_string, date_string, decimal_string,
@@ -248,11 +251,6 @@ class TransactionIndexing(BaseIndexing):
             transaction.tied_status_id
         )
 
-        self.add_field(
-            'humanitarian',
-            bool_string(get_child_attr(transaction, 'activity.humanitarian'))
-        )
-
         self.add_field('activity_sector_vocabulary', [])
         self.add_field('activity_sector_code', [])
 
@@ -264,6 +262,8 @@ class TransactionIndexing(BaseIndexing):
             )
             self.add_value_list('activity_sector_code',
                                 activity_sector.sector.code)
+        add_participating_org(self, transaction.activity)
+        add_activity_additional_filter_fields(self, transaction.activity)
 
     def to_representation(self, transaction):
         self.record = transaction
