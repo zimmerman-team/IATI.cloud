@@ -2,7 +2,7 @@ from datetime import datetime
 
 from ckanapi import RemoteCKAN
 from django.conf import settings
-from django.db.models import Count
+from django.db.models import Count, OuterRef, Subquery
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import authentication, exceptions, pagination
 from rest_framework.filters import OrderingFilter
@@ -12,17 +12,21 @@ from rest_framework.views import APIView
 from rest_framework_extensions.cache.mixins import CacheResponseMixin
 
 from api.aggregation.views import Aggregation, AggregationView, GroupBy
-from api.dataset.filters import DatasetFilter, NoteFilter
+from api.dataset.filters import (
+    DatasetFailedPickupFilter, DatasetFilter, NoteFilter
+)
 from api.dataset.serializers import (
-    DatasetNoteSerializer, DatasetSerializer, SimpleDatasetSerializer,
-    SimplePublisherSerializer
+    DatasetFailedPickupSerializer, DatasetNoteSerializer, DatasetSerializer,
+    SimpleDatasetSerializer, SimplePublisherSerializer
 )
 from api.export.views import IATIActivityList
 from api.generics.views import DynamicListView
 from api.publisher.permissions import OrganisationAdminGroupPermissions
 from iati.models import Activity
 from iati_organisation.models import Organisation
-from iati_synchroniser.models import Dataset, DatasetNote, Publisher
+from iati_synchroniser.models import (
+    Dataset, DatasetFailedPickup, DatasetNote, Publisher
+)
 
 
 class DatasetPagination(pagination.PageNumberPagination):
@@ -258,6 +262,36 @@ class DatasetFails(CacheResponseMixin, DynamicListView):
         'date_updated',
         'iati_version',
         'validation_status'
+    )
+
+
+class DatasetFailedPickup(CacheResponseMixin, DynamicListView):
+    """
+    Returns a list of datasets that failed pickups
+
+    ## URI Format
+
+    ```
+    /api/datasets/failedpickups
+    ```
+    """
+    last_5_timestamps_per_dataset = DatasetFailedPickup.objects.filter(
+        dataset_id=OuterRef('dataset')).order_by('-timestamp')[:5]
+
+    queryset = DatasetFailedPickup.objects.filter(
+        id__in=Subquery(last_5_timestamps_per_dataset.values('id')))
+
+    serializer_class = DatasetFailedPickupSerializer
+    filter_class = DatasetFailedPickupFilter
+    selectable_fields = ()
+    ordering_fields = '__all__'
+
+    fields = (
+        'dataset',
+        'is_http_error',
+        'status_code',
+        'error_detail',
+        'timestamp',
     )
 
 

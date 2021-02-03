@@ -203,6 +203,15 @@ class DatasetNote(models.Model):
         null=True, blank=True, auto_now=True)
 
 
+class DatasetFailedPickup(models.Model):
+    dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE)
+    is_http_error = models.BooleanField(null=False, default=False)
+    status_code = models.CharField(max_length=100, blank=False, null=True)
+    error_detail = models.TextField(max_length=1000, blank=False, null=True)
+    timestamp = models.DateTimeField(
+        null=False, blank=True, auto_now=True)
+
+
 class Codelist(models.Model):
     name = models.CharField(primary_key=True, max_length=100)
     description = models.TextField(max_length=1000, blank=True, null=True)

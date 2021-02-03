@@ -9,7 +9,9 @@ from rest_framework.serializers import (
 
 from api.generics.serializers import DynamicFieldsModelSerializer
 from iati.models import Activity
-from iati_synchroniser.models import Dataset, DatasetNote, Publisher
+from iati_synchroniser.models import (
+    Dataset, DatasetFailedPickup, DatasetNote, Publisher
+)
 
 
 class DatasetNoteSerializer(ModelSerializer):
@@ -26,7 +28,7 @@ class DatasetNoteSerializer(ModelSerializer):
             'variable')
 
 
-class SimplePublisherSerializer(DynamicFieldsModelSerializer):
+class SimplePublisherSerializer(ModelSerializer):
     id = HiddenField(default=None)
     url = HyperlinkedIdentityField(view_name='publishers:publisher-detail')
 
@@ -145,3 +147,35 @@ class DatasetSerializer(DynamicFieldsModelSerializer):
             return url
 
         return None
+
+
+class DatasetNestedSerializer(DynamicFieldsModelSerializer):
+
+    id = HiddenField(default=None)
+    publisher = SimplePublisherSerializer()
+
+    class Meta:
+        model = Dataset
+        fields = (
+            'id',
+            'iati_id',
+            'name',
+            'title',
+            'publisher',
+            'source_url',
+            'iati_version',
+        )
+
+
+class DatasetFailedPickupSerializer(DynamicFieldsModelSerializer):
+
+    dataset = DatasetNestedSerializer(many=False, read_only=True)
+
+    class Meta:
+        model = DatasetFailedPickup
+        fields = (
+            'dataset',
+            'is_http_error',
+            'status_code',
+            'error_detail',
+            'timestamp')
