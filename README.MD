@@ -39,17 +39,18 @@ If you do not have Docker:
 2. Run `virtualenv <name> -p python3` to create a virtual environment
 3. Run `source env/bin/activate` to activate the virtual environment
 4. Install required libraries using `pip install -r requirements.txt`
-5. Create a PostgreSQL database
-6. Set your database credentials in `OIPA/.env` file as follows:
+5. Run `pre-commit install --hook-type commit-msg`
+6. Create a PostgreSQL database
+7. Set your database credentials in `OIPA/.env` file as follows:
     - OIPA_DB_NAME= `your_database_name`
     - OIPA_DB_USER= `your_db_user`
     - OIPA_DB_PASSWORD= `your_db_password`
-7. Run database migrations with `python manage.py migrate`
-8. Start the development server: `python manage.py runserver`
-9. In order for the parser to work, you need to start Redis too: `redis-server`
-10. Create a superuser account: `python manage.py createsuperuser`
-11. Start the process control centre (Supervisor): `python manage.py supervisor`
-12. Open your browser at <a href="http://localhost:8000" target="_blank">localhost:8000</a>
+8. Run database migrations with `python manage.py migrate`
+9. Start the development server: `python manage.py runserver`
+10. In order for the parser to work, you need to start Redis too: `redis-server`
+11. Create a superuser account: `python manage.py createsuperuser`
+12. Start the process control centre (Supervisor): `python manage.py supervisor`
+13. Open your browser at <a href="http://localhost:8000" target="_blank">localhost:8000</a>
 
 ## Full Documentation
 
