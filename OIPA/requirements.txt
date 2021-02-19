@@ -175,3 +175,4 @@ flower
 django-two-factor-auth==1.12.1
 phonenumbers==8.12.9
 
+pre-commit==2.10.1
