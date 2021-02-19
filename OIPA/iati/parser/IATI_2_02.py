@@ -4239,16 +4239,16 @@ class Parse(IatiParser):
         # post_save.set_sector_transaction(activity)
         post_save.set_sector_budget(activity)
 
-    def post_save_file(self, dataset, activities_to_keep):
+    def post_save_file(self, dataset):
         """Perform all actions that need to happen after a single IATI
         datasets has been parsed.
 
         Keyword arguments:
         dataset -- the Dataset object
         """
-        self.delete_removed_activities(dataset, activities_to_keep)
+        self.delete_removed_activities(dataset)
 
-    def delete_removed_activities(self, dataset, activities_to_keep):
+    def delete_removed_activities(self, dataset):
         """ Delete activities that were not found in the dataset any longer
 
         Keyword arguments:
@@ -4262,8 +4262,7 @@ class Parse(IatiParser):
         """
         models.Activity.objects.filter(
             dataset=dataset,
-            last_updated_model__lt=self.parse_start_datetime)\
-            .exclude(iati_identifier__in=activities_to_keep).delete()
+            last_updated_model__lt=self.parse_start_datetime).delete()
 
     def post_save_validators(self, dataset):
 
