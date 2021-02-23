@@ -76,38 +76,48 @@ class DatasetValidationTask(celery.Task):
                                  '10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}  # NOQA: E501
 
         try:
-            get_respons = requests.get(self._dataset.source_url,
-                                       headers=headers, timeout=30)
-            if get_respons.status_code == 200:
-                md5 = hashlib.md5()
-                md5.update(get_respons.content)
-                self._validation_md5 = md5.hexdigest()
-                self._file_id = self._validation_md5 + '.xml'
-                self._get(ad_hoc=False)
-                if self._json_result:
-                    return True
-
-        except requests.exceptions.SSLError as e:
-            logger.info('%s (%s)' % (e, type(e)) + self._dataset.source_url)
+            response = requests.get(self._dataset.source_url, headers=headers,
+                                    timeout=30)
+        except requests.exceptions.SSLError:
             try:
-                resp = requests.get(self._dataset.source_url, headers=headers,
-                verify=False, timeout=30)  # NOQA: E501
-                if resp.status_code == 200:
-                    md5 = hashlib.md5()
-                    md5.update(resp.content)
-                    self._validation_md5 = md5.hexdigest()
-                    self._file_id = self._validation_md5 + '.xml'
-                    self._get(ad_hoc=False)
-                    if self._json_result:
-                        return True
-
-            except Exception as e:
+                response = requests.get(self._dataset.source_url, verify=False,
+                                        headers=headers, timeout=30)
+            except (requests.exceptions.SSLError,
+                    requests.exceptions.Timeout,
+                    requests.exceptions.ConnectionError,
+                    requests.exceptions.TooManyRedirects,
+                    requests.exceptions.ReadTimeout,
+                    requests.exceptions.ChunkedEncodingError,
+                    ) as e:
                 logger.error(e)
                 return False
-
-        except RequestException as e:
+        except requests.exceptions.Timeout:
+            try:
+                response = requests.get(self._dataset.source_url, timeout=30)
+            except (requests.exceptions.Timeout,
+                    requests.exceptions.ConnectionError,
+                    requests.exceptions.TooManyRedirects,
+                    requests.exceptions.ReadTimeout,
+                    requests.exceptions.ChunkedEncodingError,
+                    ) as e:
+                logger.error(e)
+                return False
+        except (requests.exceptions.ConnectionError,
+                requests.exceptions.TooManyRedirects,
+                requests.exceptions.ReadTimeout,
+                requests.exceptions.ChunkedEncodingError,
+                ) as e:
             logger.error(e)
             return False
+
+        if response.status_code == 200:
+            md5 = hashlib.md5()
+            md5.update(response.content)
+            self._validation_md5 = md5.hexdigest()
+            self._file_id = self._validation_md5 + '.xml'
+            self._get(ad_hoc=False)
+            if self._json_result:
+                return True
 
     def _post(self):
         """Send XML file to the third party validation"""
