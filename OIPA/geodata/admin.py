@@ -45,4 +45,4 @@ class RegionAdmin(admin.ModelAdmin):
 
 admin.site.register(Country, CountryAdmin)
 admin.site.register(Region, RegionAdmin)
-admin.site.register(Adm1Region, Adm1RegionAdmin)
+# admin.site.register(Adm1Region, Adm1RegionAdmin)
