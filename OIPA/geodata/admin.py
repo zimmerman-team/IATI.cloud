@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from geodata.models import Adm1Region, Country, Region
+from geodata.models import Country, Region
 
 
 class Adm1RegionAdmin(admin.ModelAdmin):
