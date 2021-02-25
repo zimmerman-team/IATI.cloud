@@ -126,10 +126,9 @@ Full API documentation for iati.cloud can be found at [docs.iati.cloud](https://
 - Bug Tracker: [github.com/zimmerman-zimmerman/iati.cloud/issues](https://github.com/zimmerman-team/iati.cloud/issues)
 
 ## Can I contribute?
-Yes! We are mainly looking for coders to help on the project. If you are a coder feel free to _Fork_ the repository and send us your amazing Pull requests!
+Yes! We are mainly looking for coders to help on the project. If you are a coder feel free to _Fork_ the repository and send us your amazing Pull Requests!
 
 ## How should I contribute?
-
 Python already has clear PEP 8 code style guidelines, so it's difficult to add something to it, but there are certain key points to follow when contributing:
 - PEP 8 code style guidelines should always be followed. Tested with `flake8 OIPA`.
 - [Commitlint](https://github.com/conventional-changelog/commitlint#what-is-commitlint) is used to check your commit messages.
@@ -157,7 +156,7 @@ Testing / code quality settings can be found in the `setup.cfg` file. Test cover
 - UN-Habitat: [open.unhabitat.org](http://open.unhabitat.org)
 - Overseas Development Institute: [ODI.org](https://transparency.odi.org/)
 - UN Migration: [IOM.int](https://www.iom.int/)
-- AIDA [AIDA.tooks](https://www.aida.tools/)
+- AIDA [AIDA.tools](https://www.aida.tools/)
 
 
 & many others
