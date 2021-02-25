@@ -8,9 +8,9 @@
 ![Open issues](https://img.shields.io/github/issues/zimmerman-zimmerman/OIPA.svg?style=flat)
 [![CircleCI](https://circleci.com/gh/zimmerman-team/iati.cloud.svg?style=svg&circle-token=193a84b0736b82dd10d5e7bb0a118c2fc1c30273)](https://circleci.com/gh/zimmerman-team/iati.cloud)
 ---
-IATI.cloud extracts all published IATI XML files from the [IATI Registry](http://www.iatiregistry.org/publisher) and makes them available in a normalised PostgreSQL database, that you can access using a RESTful API. The project also stores all the parsed data in Solr cores, allowing for faster querying. Two APIs are currently encompassed by the IATI.cloud project.
+IATI.cloud extracts all published IATI XML files from the [IATI Registry](http://www.iatiregistry.org/publisher) and makes them available in a normalised PostgreSQL database, that you can access using a RESTful API. The project also stores all the parsed data in Apache Solr cores, allowing for faster querying. Two APIs are currently encompassed by the IATI.cloud project.
 
-IATI is a global aid transparency standard and it makes information about aid spending easier to access, re-use and understand the underlying data using a unified open standard. You can find more about the IATI XML standard at: [www.iatistandard.org](www.iatistandard.org)
+IATI is a global aid transparency standard and it makes information about aid spending easier to access, re-use and understand the underlying data using a unified open standard. You can find more about the IATI data standard at: [www.iatistandard.org](www.iatistandard.org)
 
 ## Requirements
 | Name                   | Required version                                                                                                   | Installation instructions |
@@ -19,7 +19,7 @@ IATI is a global aid transparency standard and it makes information about aid sp
 | PostgreSQL             | latest                                                                                                             | [PostgreSQL](https://postgis.net/install/) |
 | PostGIS                | latest | [PostGIS](https://docs.djangoproject.com/en/2.0/ref/contrib/gis/install/postgis/) <br /> Might already be installed depending on the PostgreSQL installation done |
 | RabbitMQ               | latest                                                                                                             | [RabbitMQ](https://www.rabbitmq.com/download.html) |
-| Solr                   | 8.2.0                                                                                                              | [Solr](https://lucene.apache.org/solr/guide/8_2/installing-solr.html) |
+| Apache Solr                   | 8.2.0                                                                                                              | [Solr](https://lucene.apache.org/solr/guide/8_2/installing-solr.html) |
 | Python requirements    | Installed by requirements.txt                                                                                      | See instructions below    |
 | Diskspace              | Up to 80GB                                                                                                         | Not applicable |
 
@@ -65,7 +65,7 @@ DOWNLOAD_DATASETS = False
 15. Start Celery beat with the command: `celery -A OIPA beat --loglevel=info -S django`
 16. Start Celery flower with the command: `celery flower -A OIPA --port=5555`
 17. Navigate to your Solr installation.
-18. To use Solr you will need to create the following 7 cores:
+18. To use Apache Solr you will need to create the following 7 cores:
 - activity
 - budget
 - dataset
@@ -79,9 +79,9 @@ To create a core :
 - Copy the ‘managed-schema’ file from *OIPA/solr/[name of your core]/conf/* and paste it in the *server/solr/[name of your core]/conf/* folder of the solr core.
 19. Run the command `bin/solr start` to run Solr.
 
-You can now access the Django admin page at [http://localhost:8000/admin/](http://localhost:8000/admin/), the Flower Dashboard at [http://localhost:5555](http://localhost:5555) and the solr dashboard at [localhost:8983/solr/#/](localhost:8983/solr/#/)
+You can now access the Django admin page at [http://localhost:8000/admin/](http://localhost:8000/admin/), the Flower Dashboard at [http://localhost:5555](http://localhost:5555) and the Apache Solr administrative dashboard at [localhost:8983/solr/#/](localhost:8983/solr/#/)
 
-## Debugging Celery or Solr
+## Debugging Celery or Apache Solr
 - install telnet
 - add at the to-be-debugged line in your code :
 ```
@@ -96,13 +96,13 @@ This will open the debugger.
 This process is managed from the [Django administration page](https://iati.cloud/admin/django_celery_beat/periodictask/).
 The following is a step by step description of everything that needs to be done to load the data inside your local postgres database.
 
-1. **Disable Solr indexing** within OIPA/OIPA/local_settings.py by changing ‘indexing’: True to False.
+1. **Disable Apache Solr indexing** within OIPA/OIPA/local_settings.py by changing ‘indexing’: True to False.
 2. On the django administration page, run the task to [import codelists](https://docs.google.com/document/d/1ExDE7QU10DP7zkdRFi9PVJWQjpH84Yx6w3dYIP4RZ6k/edit#heading=h.w85d58axjqo6).
     - Wait for this to finish.
 3. On the django administration page, force run the task to [update exchange rates](https://docs.google.com/document/d/1ExDE7QU10DP7zkdRFi9PVJWQjpH84Yx6w3dYIP4RZ6k/edit#heading=h.k3f97g5tzow5).
     - Wait for this to finish.
     - Activate a scheduled version of this task, the task should be run monthly, not strictly necessary on a local installation.
-4. **Enable Solr indexing.**
+4. **Enable Apache Solr indexing.**
 5. On the django administration page, run the task to [import datasets](https://docs.google.com/document/d/1ExDE7QU10DP7zkdRFi9PVJWQjpH84Yx6w3dYIP4RZ6k/edit#heading=h.dp7yeu31dvb8).
     - In case you want to make use of the IATI validator, make sure that you set DOWNLOAD_DATASETS = True in OIA/OIPA/local_settings.py, so the IATI validator can be used.
     - Wait for this to finish.
@@ -116,17 +116,17 @@ After this all the data is available within our database as well as Solr. Solr c
 Simply select the core containing the information you're interested in, go to the query tab and ask your question.
 
 ## API Documentation
-Full API documentation for iati.cloud can be found at [docs.iati.cloud](https://iatidatastore.iatistandard.org/documentation/introduction).
+Full API documentation for iati.cloud can be found at [docs.iati.cloud](https://iati.cloud/documentation).
 
 ## About the project
 - Website: [www.iati.cloud](https://www.iati.cloud)
-- Authors: [Zimmerman](https://www.zimmermanzimmerman.nl/)
-- License: AGPLv3 (see included [LICENSE](https://github.com/zimmerman-zimmerman/iati.cloud/blob/master/LICENSE.MD) file for full license)
-- Github Repo: [github.com/zimmerman-zimmerman/iati.cloud/](https://github.com/zimmerman-zimmerman/iati.cloud/)
-- Bug Tracker: [github.com/zimmerman-zimmerman/iati.cloud/issues](https://github.com/zimmerman-zimmerman/iati.cloud/issues)
+- Authors: [Zimmerman B.V.](https://www.zimmermanzimmerman.nl/)
+- License: AGPLv3 (see included [LICENSE](https://github.com/zimmerman-team/iati.cloud/blob/master/LICENSE.MD) file for full license)
+- Github Repo: [github.com/zimmerman-zimmerman/iati.cloud/](https://github.com/zimmerman-team/iati.cloud/)
+- Bug Tracker: [github.com/zimmerman-zimmerman/iati.cloud/issues](https://github.com/zimmerman-team/iati.cloud/issues)
 
 ## Can I contribute?
-Yes! We are mainly looking for coders to help on the project. If you are a coder feel free to _Fork_ the repository and send us Pull requests!
+Yes! We are mainly looking for coders to help on the project. If you are a coder feel free to _Fork_ the repository and send us your amazing Pull requests!
 
 ## How should I contribute?
 
@@ -148,14 +148,16 @@ Tip: to be able to use debuggers (f. ex. ipdb) with pytest, run it with `-s` opt
 
 Testing / code quality settings can be found in the `setup.cfg` file. Test coverage settings (for pytest-cov plugin) can be found at `.coveragerc` file.
 
-## Who makes use of OIPA?
+## Who currently makes use of IATI.cloud?
 - Dutch Ministry of Foreign Affairs: [www.openaid.nl](https://www.openaid.nl)
-- DFID Devtracker: [devtracker.dfid.gov.uk](https://devtracker.dfid.gov.uk/)
+- FCDO Devtracker: [devtracker.dfid.gov.uk](https://devtracker.dfid.gov.uk/)
 - UNESCO Transparency Portal: [opendata.unesco.org](https://opendata.unesco.org)
-- UN-Habitat: [open.unhabitat.org](http://open.unhabitat.org)
 - Netherlands Enterprise Agency: [aiddata.rvo.nl](https://aiddata.rvo.nl/)
 - Mohinga AIMS: [mohinga.info](http://mohinga.info/en/)
+- UN-Habitat: [open.unhabitat.org](http://open.unhabitat.org)
 - Overseas Development Institute: [ODI.org](https://transparency.odi.org/)
 - UN Migration: [IOM.int](https://www.iom.int/)
+- AIDA [AIDA.tooks](https://www.aida.tools/)
+
 
 & many others
