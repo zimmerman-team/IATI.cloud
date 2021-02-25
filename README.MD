@@ -19,9 +19,9 @@ IATI is a global aid transparency standard and it makes information about aid sp
 | PostgreSQL             | latest                                                                                                             | [PostgreSQL](https://postgis.net/install/) |
 | PostGIS                | latest | [PostGIS](https://docs.djangoproject.com/en/2.0/ref/contrib/gis/install/postgis/) <br /> Might already be installed depending on the PostgreSQL installation done |
 | RabbitMQ               | latest                                                                                                             | [RabbitMQ](https://www.rabbitmq.com/download.html) |
-| Apache Solr                   | 8.2.0                                                                                                              | [Solr](https://lucene.apache.org/solr/guide/8_2/installing-solr.html) |
+| Apache Solr            | 8.2.0                                                                                                              | [Solr](https://lucene.apache.org/solr/guide/8_2/installing-solr.html) |
 | Python requirements    | Installed by requirements.txt                                                                                      | See instructions below    |
-| Diskspace              | Up to 80GB                                                                                                         | Not applicable |
+| Diskspace              | 1GB of space is recommended to ensure the Repository, Postgres Database, Apache Solr and required services can be installed. Do keep in mind, parsing and indexing datasets does increase the overall size of the IATI.cloud project, which can reach up to or more than 80GB. | Not applicable |
 
 
 ## Setting up your IATI Cloud environment
