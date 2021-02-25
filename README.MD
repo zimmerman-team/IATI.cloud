@@ -1,4 +1,4 @@
-## IATI.cloud
+# IATI.cloud
 
 ---
 
@@ -7,27 +7,24 @@
 [![License: AGPLv3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://github.com/zimmerman-zimmerman/OIPA/blob/master/LICENSE.MD)
 ![Open issues](https://img.shields.io/github/issues/zimmerman-zimmerman/OIPA.svg?style=flat)
 [![CircleCI](https://circleci.com/gh/zimmerman-team/iati.cloud.svg?style=svg&circle-token=193a84b0736b82dd10d5e7bb0a118c2fc1c30273)](https://circleci.com/gh/zimmerman-team/iati.cloud)
-
+---
 IATI.cloud extracts all published IATI XML files from the [IATI Registry](http://www.iatiregistry.org/publisher) and makes them available in a normalised PostgreSQL database, that you can access using a RESTful API. The project also stores all the parsed data in Solr cores, allowing for faster querying. Two APIs are currently encompassed by the IATI.cloud project.
 
 IATI is a global aid transparency standard and it makes information about aid spending easier to access, re-use and understand the underlying data using a unified open standard. You can find more about the IATI XML standard at: [www.iatistandard.org](www.iatistandard.org)
 
 ## Requirements
-
-| Name                   | Recommended version                                                                                                | Installation instructions |
+| Name                   | Required version                                                                                                   | Installation instructions |
 | ---------------------- | ------------------------------------------------------------------------------------------------------------------ |---------------------------|
-| Python                 | 3.6.5                                                                                                              | [python]( https://wiki.python.org/moin/BeginnersGuideDownload)<br>Tip: for managing multiple versions of python you can use [pyenv](https://realpython.com/intro-to-pyenv/#why-not-use-system-python)                                                                                                                                                                   |
-| PostgreSQL             | latest                                                                                                                | [psql](https://postgis.net/install/)                                                                                                                                                                 |
-| PostGIS                | latest | [PostGIS](https://docs.djangoproject.com/en/2.0/ref/contrib/gis/install/postgis/)<br> Might already be installed depending on the PostgreSQL installation done                                                                                                                                                                      |
-| RabbitMQ               | latest                                                                                                             | [rabbitmq](https://www.rabbitmq.com/download.html)                                                                                                                                                            |
-| Diskspace              | 80GB minumum                                                                                                       | NA                        |
-| Solr                   | 8.2.0                                                                                                              | [Solr](https://lucene.apache.org/solr/guide/8_2/installing-solr.html)                                                                                                                                                     |
-| iati.cloud             | latest                                                                                                             | Clone from [github](https://github.com/zimmerman-team/iati.cloud)                                                                                                                                                               |
+| Python                 | 3.6.5                                                                                                              | [Python 3.6.5](https://wiki.python.org/moin/BeginnersGuide/Download) <br /> Tip: for managing multiple versions of python you can use [pyenv](https://realpython.com/intro-to-pyenv/#why-not-use-system-python) |
+| PostgreSQL             | latest                                                                                                             | [PostgreSQL](https://postgis.net/install/) |
+| PostGIS                | latest | [PostGIS](https://docs.djangoproject.com/en/2.0/ref/contrib/gis/install/postgis/) <br /> Might already be installed depending on the PostgreSQL installation done |
+| RabbitMQ               | latest                                                                                                             | [RabbitMQ](https://www.rabbitmq.com/download.html) |
+| Solr                   | 8.2.0                                                                                                              | [Solr](https://lucene.apache.org/solr/guide/8_2/installing-solr.html) |
 | Python requirements    | Installed by requirements.txt                                                                                      | See instructions below    |
+| Diskspace              | Up to 80GB                                                                                                         | Not applicable |
 
 
 ## Setting up your IATI Cloud environment
-
 1. Go to folder root/OIPA.<br>
 2. Create a virtual environment with the correct Python version, recommended name is ‘env’ (ex: `virtualenv env -p python3` )
 3. Activate the virtual environment (ex: `source env/bin/activate`)
@@ -95,7 +92,7 @@ When the code reaches the corresponding line, you will receive a notification in
 In another terminal you can then launch: `telnet localhost [port number]`.<br>
 This will open the debugger.
 
-## parsing/indexing the data.
+## Parsing/indexing the data.
 This process is managed from the [Django administration page](https://iati.cloud/admin/django_celery_beat/periodictask/).
 The following is a step by step description of everything that needs to be done to load the data inside your local postgres database.
 
@@ -129,7 +126,6 @@ Full API documentation for iati.cloud can be found at [docs.iati.cloud](https://
 - Bug Tracker: [github.com/zimmerman-zimmerman/iati.cloud/issues](https://github.com/zimmerman-zimmerman/iati.cloud/issues)
 
 ## Can I contribute?
-
 Yes! We are mainly looking for coders to help on the project. If you are a coder feel free to _Fork_ the repository and send us Pull requests!
 
 ## How should I contribute?
@@ -153,7 +149,6 @@ Tip: to be able to use debuggers (f. ex. ipdb) with pytest, run it with `-s` opt
 Testing / code quality settings can be found in the `setup.cfg` file. Test coverage settings (for pytest-cov plugin) can be found at `.coveragerc` file.
 
 ## Who makes use of OIPA?
-
 - Dutch Ministry of Foreign Affairs: [www.openaid.nl](https://www.openaid.nl)
 - DFID Devtracker: [devtracker.dfid.gov.uk](https://devtracker.dfid.gov.uk/)
 - UNESCO Transparency Portal: [opendata.unesco.org](https://opendata.unesco.org)
