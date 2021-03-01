@@ -1100,7 +1100,7 @@ class Parse(IatiParser):
         # Solr indexing
         OrganisationTaskIndexing(instance=organisation).run()
 
-    def post_save_file(self, xml_source):
+    def post_save_file(self, xml_source, files_to_keep):
         pass
 
     def post_save_validators(self, dataset):
