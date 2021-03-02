@@ -148,7 +148,7 @@ class DatasetSyncer(object):
 
         iati_version = self.get_iati_version(dataset)
 
-        # trololo edge cases
+        # edge cases
         if not len(dataset['resources']) or not dataset['organization']:
             return
 
