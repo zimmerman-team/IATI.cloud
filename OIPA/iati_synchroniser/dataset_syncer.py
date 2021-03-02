@@ -1,3 +1,4 @@
+import datetime
 import json
 import logging
 import ssl
@@ -7,7 +8,7 @@ from iati_organisation.models import Organisation
 from iati_synchroniser.create_publisher_organisation import (
     create_publisher_organisation
 )
-from iati_synchroniser.models import Dataset, Publisher
+from iati_synchroniser.models import Dataset, DatasetUpdateDates, Publisher
 from task_queue.tasks import DatasetDownloadTask
 
 DATASET_URL = 'https://iatiregistry.org/api/action/package_search?rows=200&{options}'  # NOQA: E501
@@ -59,6 +60,12 @@ class DatasetSyncer(object):
         # parse datasets
         offset = 0
 
+        dataset_sync_start = datetime.datetime.now()
+        DatasetUpdateDates.objects.create(
+            timestamp=dataset_sync_start,
+            success=False
+        )
+
         while True:
             # get data
             options = 'start={}'.format(offset)
@@ -78,8 +85,9 @@ class DatasetSyncer(object):
             if len(results['result']['results']) == 0:
                 break
 
-        # remove deprecated publishers / datasets
-        # self.remove_deprecated()
+        dud = DatasetUpdateDates.objects.last()
+        dud.success = True
+        dud.save()
 
     def update_or_create_publisher(self, publisher):
         """
