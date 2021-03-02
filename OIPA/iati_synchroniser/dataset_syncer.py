@@ -1,12 +1,7 @@
-import datetime
-import hashlib
 import json
 import logging
 import ssl
 import urllib
-
-import requests
-from django.utils.encoding import smart_text
 
 from iati_organisation.models import Organisation
 from iati_synchroniser.create_publisher_organisation import (
@@ -77,6 +72,7 @@ class DatasetSyncer(object):
             # update dataset
             for dataset in results['result']['results']:
                 self.update_or_create_dataset(dataset)
+                break  # TODO: Remove this break. just for testing purposes.
 
             # check if done
             if len(results['result']['results']) == 0:
@@ -84,17 +80,6 @@ class DatasetSyncer(object):
 
         # remove deprecated publishers / datasets
         # self.remove_deprecated()
-
-    def get_iati_version(self, dataset_data):
-
-        iati_version = self.get_val_in_list_of_dicts(
-            'iati_version', dataset_data['extras'])
-        if iati_version:
-            iati_version = iati_version.get('value')
-        else:
-            iati_version = ''
-
-        return iati_version
 
     def update_or_create_publisher(self, publisher):
         """
@@ -126,17 +111,6 @@ class DatasetSyncer(object):
 
         return obj
 
-    def get_dataset_filetype(self, dataset_data):
-        filetype_name = self.get_val_in_list_of_dicts(
-            'filetype', dataset_data['extras'])
-
-        if filetype_name and filetype_name.get('value') == 'organisation':
-            filetype = 2
-        else:
-            filetype = 1
-
-        return filetype
-
     def update_or_create_dataset(self, dataset):
         """
         Updates or creates a Dataset AND downloads it locally. Returns internal
@@ -144,99 +118,12 @@ class DatasetSyncer(object):
 
         """
 
-        filetype = self.get_dataset_filetype(dataset)
-
-        iati_version = self.get_iati_version(dataset)
-
         # edge cases
         if not len(dataset['resources']) or not dataset['organization']:
             return
 
-        try:
-            publisher = Publisher.objects.get(
-                iati_id=dataset['organization']['id'])
-        except Publisher.DoesNotExist:
-            publisher = None
-        sync_sha1 = ''
-        source_url = dataset['resources'][0]['url']
-        response = None
-        headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
-                                 '10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}  # NOQA: E501
-
-        try:
-            response = requests.get(source_url, headers=headers, timeout=30)
-        except requests.exceptions.SSLError:
-            try:
-                response = requests.get(source_url, verify=False,
-                                        headers=headers, timeout=30)
-            except (requests.exceptions.SSLError,
-                    requests.exceptions.Timeout,
-                    requests.exceptions.ConnectionError,
-                    requests.exceptions.TooManyRedirects,
-                    requests.exceptions.ReadTimeout,
-                    requests.exceptions.ChunkedEncodingError,
-                    ):
-                pass
-        except requests.exceptions.Timeout:
-            try:
-                response = requests.get(source_url, timeout=30)
-            except (requests.exceptions.Timeout,
-                    requests.exceptions.ConnectionError,
-                    requests.exceptions.TooManyRedirects,
-                    requests.exceptions.ReadTimeout,
-                    requests.exceptions.ChunkedEncodingError,
-                    ):
-                pass
-        except (requests.exceptions.ConnectionError,
-                requests.exceptions.TooManyRedirects,
-                requests.exceptions.ReadTimeout,
-                requests.exceptions.ChunkedEncodingError,
-                ):
-            pass
-        finally:
-            pass
-
-        try:
-            iati_file = smart_text(response.content, 'utf-8')
-        # XXX: some files contain non utf-8 characters:
-        # FIXME: this is hardcoded:
-        except UnicodeDecodeError:
-            iati_file = smart_text(response.content, 'latin-1')
-        except AttributeError:
-            iati_file = ''
-
-        # 2. Encode the string to use for hashing:
-        hasher = hashlib.sha1()
-        hasher.update(iati_file.encode('utf-8'))
-        sync_sha1 = hasher.hexdigest()
-
-        obj, created = Dataset.objects.update_or_create(
-            iati_id=dataset['id'],
-            defaults={
-                'name': dataset['name'],
-                'title': dataset['title'][0:254],
-                'filetype': filetype,
-                'publisher': publisher,
-                'source_url': dataset['resources'][0]['url'],
-                'iati_version': iati_version,
-                'last_found_in_registry': datetime.datetime.now(),
-                'added_manually': False,
-                'date_created': dataset['metadata_created'],
-                'date_updated': dataset['metadata_modified'],
-                'sync_sha1': sync_sha1
-            }
-        )
-        # this also returns internal URL for the Dataset:
-        DatasetDownloadTask.delay(dataset_data=dataset,
-                                  content=iati_file,
-                                  dataset_obj_id=obj.pk)
-        # obj.internal_url = return_value.get(disable_sync_subtasks=False)
-        # or ''
-        # obj.save()
-
-        # Validation dataset with the current. we don't do validation for
-        # the moment
-        # DatasetValidationTask.delay(dataset_id=obj.id)
+        # Pass the data generated here to the
+        DatasetDownloadTask.delay(dataset_data=dataset)
 
     def remove_deprecated(self):
         """
