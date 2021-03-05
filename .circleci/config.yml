@@ -43,6 +43,10 @@ jobs:
                   name: Install Flake8 style guide checker
                   command: sudo apt-get install flake8
 
+            - run:
+                  name: Install python3-setuptools
+                  command: sudo apt-get install python3-setuptools
+
             # Download and cache main dependencies:
             - restore_cache:
                   keys:
