@@ -43,7 +43,7 @@ class AidTypeCategory(models.Model):
 
 
 class AidType(models.Model):
-    code = models.CharField(max_length=3)
+    code = models.CharField(max_length=4)
     name = models.CharField(max_length=200)
     description = models.TextField(default="")
 
