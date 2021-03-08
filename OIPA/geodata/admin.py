@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from geodata.models import Adm1Region, Country, Region
+from geodata.models import Country, Region
 
 
 class Adm1RegionAdmin(admin.ModelAdmin):
@@ -45,4 +45,4 @@ class RegionAdmin(admin.ModelAdmin):
 
 admin.site.register(Country, CountryAdmin)
 admin.site.register(Region, RegionAdmin)
-admin.site.register(Adm1Region, Adm1RegionAdmin)
+# admin.site.register(Adm1Region, Adm1RegionAdmin)
