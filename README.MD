@@ -1,12 +1,10 @@
 # IATI.cloud
 
 ---
-
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/205e2fbfc54b49d0a28d1d774dfb18f2)](https://www.codacy.com/manual/zimmerman-zimmerman/OIPA?utm_source=github.com&utm_medium=referral&utm_content=zimmerman-zimmerman/OIPA&utm_campaign=Badge_Grade)
-[![Codacy Badge](https://api.codacy.com/project/badge/Coverage/205e2fbfc54b49d0a28d1d774dfb18f2)](https://www.codacy.com/manual/zimmerman-zimmerman/OIPA?utm_source=github.com&utm_medium=referral&utm_content=zimmerman-zimmerman/OIPA&utm_campaign=Badge_Coverage)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=zimmerman-zimmerman_iati.cloud&metric=alert_status)](https://sonarcloud.io/dashboard?id=zimmerman-zimmerman_iati.cloud)
 [![License: AGPLv3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://github.com/zimmerman-zimmerman/OIPA/blob/master/LICENSE.MD)
-![Open issues](https://img.shields.io/github/issues/zimmerman-zimmerman/OIPA.svg?style=flat)
-[![CircleCI](https://circleci.com/gh/zimmerman-team/iati.cloud.svg?style=svg&circle-token=193a84b0736b82dd10d5e7bb0a118c2fc1c30273)](https://circleci.com/gh/zimmerman-team/iati.cloud)
+[![Open issues](https://img.shields.io/github/issues/zimmerman-zimmerman/OIPA.svg?style=flat)](https://github.com/zimmerman-team/iati.cloud/issues)
+[![CircleCI](https://circleci.com/gh/zimmerman-team/iati.cloud.svg?style=shield&circle-token=193a84b0736b82dd10d5e7bb0a118c2fc1c30273)](https://circleci.com/gh/zimmerman-team/iati.cloud)
 ---
 IATI.cloud extracts all published IATI XML files from the [IATI Registry](http://www.iatiregistry.org/publisher) and makes them available in a normalised PostgreSQL database, that you can access using a RESTful API. The project also stores all the parsed data in Apache Solr cores, allowing for faster querying. Two APIs are currently encompassed by the IATI.cloud project.
 
