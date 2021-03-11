@@ -25,7 +25,7 @@ class DatasetDownloadTask(celery.Task):
     task.apply_async(dataset_id=1)
     """
     # Assigned the default of retry task if get exception
-    autoretry_for = (Exception, )
+    autoretry_for = (Exception,)
     retry_kwargs = {
         'max_retries': settings.VALIDATION.get(
             'api'
@@ -42,7 +42,7 @@ class DatasetDownloadTask(celery.Task):
     def get_val_in_list_of_dicts(self, key, dicts):
         return next(
             (item for item in dicts
-                if item.get("key") and item["key"] == key), None
+             if item.get("key") and item["key"] == key), None
         )
 
     def get_iati_version(self, dataset_data):
@@ -184,18 +184,6 @@ class DatasetDownloadTask(celery.Task):
                     error_detail=str(error)
                 )
                 dfp.save()
-        except (requests.exceptions.ConnectionError,
-                requests.exceptions.TooManyRedirects
-                ) as error:
-            dfp = DatasetFailedPickup(
-                publisher_name=dataset_data['organization']['name'],
-                publisher_identifier=publisher_iati_id,
-                dataset_filename=dataset_data['name'],
-                dataset_url=dataset_url,
-                is_http_error=False,
-                error_detail=str(error)
-            )
-            dfp.save()
         except requests.exceptions.HTTPError as error:
             dfp = DatasetFailedPickup(
                 publisher_name=dataset_data['organization']['name'],
@@ -231,7 +219,9 @@ class DatasetDownloadTask(celery.Task):
         except AttributeError:
             iati_file = ''
 
-        if len(iati_file) == 0:
+        if len(iati_file) == 0 and len(DatasetFailedPickup.objects.filter(
+            dataset_filename=dataset_data['name'])
+        ) == 0:
             dfp = DatasetFailedPickup(
                 publisher_name=dataset_data['organization']['name'],
                 publisher_identifier=publisher_iati_id,
@@ -241,6 +231,45 @@ class DatasetDownloadTask(celery.Task):
                 error_detail="Retrieved dataset contained no data."
             )
             dfp.save()
+
+        if len(iati_file) > 0 and len(DatasetFailedPickup.objects.filter(
+            dataset_filename=dataset_data['name'])
+        ) == 0:
+            if iati_file[0] is not '<' and iati_file[1] is not '<' and \
+                    iati_file[2] is not '<' and iati_file[3] is not '<':
+                dfp = DatasetFailedPickup(
+                    publisher_name=dataset_data['organization']['name'],
+                    publisher_identifier=publisher_iati_id,
+                    dataset_filename=dataset_data['name'],
+                    dataset_url=dataset_url,
+                    is_http_error=False,
+                    error_detail="Retrieved dataset does not start with '<', "
+                                 "likely not a proper XML file."
+                )
+                dfp.save()
+
+            if (('<html' in iati_file) or ('<HTML' in iati_file)) \
+                    and ('<?xml' not in iati_file):
+                dfp = DatasetFailedPickup(
+                    publisher_name=dataset_data['organization']['name'],
+                    publisher_identifier=publisher_iati_id,
+                    dataset_filename=dataset_data['name'],
+                    dataset_url=dataset_url,
+                    is_http_error=False,
+                    error_detail="Retrieved dataset is a HTML file"
+                )
+                dfp.save()
+
+            if 'Access Denied' in iati_file:
+                dfp = DatasetFailedPickup(
+                    publisher_name=dataset_data['organization']['name'],
+                    publisher_identifier=publisher_iati_id,
+                    dataset_filename=dataset_data['name'],
+                    dataset_url=dataset_url,
+                    is_http_error=False,
+                    error_detail="Access to file was denied."
+                )
+                dfp.save()
 
         # 2. Encode the string to use for hashing:
         hasher = hashlib.sha1()
