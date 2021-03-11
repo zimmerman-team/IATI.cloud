@@ -204,7 +204,21 @@ class DatasetNote(models.Model):
 
 
 class DatasetFailedPickup(models.Model):
-    dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE)
+    """
+    Specification:
+    Name of publisher
+    Publisher Identifier
+    Publisher IATI Identifier
+    Dataset Filename
+    Dataset Identifier
+    Timestamp
+    Type of error
+    """
+    publisher_name = models.CharField(max_length=255, null=True, blank=False)
+    publisher_identifier = models.CharField(max_length=255, null=True,
+                                            blank=False)
+    dataset_filename = models.CharField(max_length=255, null=True, blank=False)
+    dataset_url = models.URLField(max_length=255, blank=True)
     is_http_error = models.BooleanField(null=False, default=False)
     status_code = models.CharField(max_length=100, blank=False, null=True)
     error_detail = models.TextField(max_length=1000, blank=False, null=True)

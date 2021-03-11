@@ -18,7 +18,7 @@ from iati_organisation.parser.organisation_1_05 import Parse as Org_1_05_Parser
 from iati_organisation.parser.organisation_2_01 import Parse as Org_2_01_Parser
 from iati_organisation.parser.organisation_2_02 import Parse as Org_2_02_Parser
 from iati_organisation.parser.organisation_2_03 import Parse as Org_2_03_Parser
-from iati_synchroniser.models import DatasetFailedPickup
+from iati_synchroniser.models import DatasetFailedPickup, DatasetNote
 
 
 class ParserDisabledError(Exception):
@@ -47,8 +47,6 @@ class ParseManager():
             self.parser = self._prepare_parser(self.root, dataset)
             return
 
-        # file_grabber = FileGrabber()
-        # response = file_grabber.get_the_file(self.url)
         response = None
         headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
                                  '10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}  # NOQA: E501
@@ -61,45 +59,62 @@ class ParseManager():
                 response = requests.get(self.url, verify=False,
                                         timeout=30)
             except requests.exceptions.SSLError as error:
-                datasetFailedPickup = DatasetFailedPickup(
-                    dataset=self.dataset,
+                dfp = DatasetFailedPickup(
+                    publisher_name=dataset.publisher.name,
+                    publisher_identifier=dataset.publisher.iati_identifier,
+                    dataset_filename=dataset.name,
+                    dataset_url=dataset.source_url,
                     is_http_error=False,
                     error_detail=str(error)
                 )
-                datasetFailedPickup.save()
+                dfp.save()
         except requests.exceptions.Timeout:
             try:
                 response = requests.get(self.url, verify=False, timeout=30)
             except requests.exceptions.Timeout as error:
-                datasetFailedPickup = DatasetFailedPickup(
-                    dataset=self.dataset,
+                dfp = DatasetFailedPickup(
+                    publisher_name=dataset.publisher.name,
+                    publisher_identifier=dataset.publisher.iati_identifier,
+                    dataset_filename=dataset.name,
+                    dataset_url=dataset.source_url,
                     is_http_error=False,
                     error_detail=str(error)
                 )
-                datasetFailedPickup.save()
-        except (requests.exceptions.ConnectionError,
-                requests.exceptions.TooManyRedirects
-                ) as error:
-            datasetFailedPickup = DatasetFailedPickup(
-                dataset=self.dataset,
-                is_http_error=False,
-                error_detail=str(error)
-            )
-            datasetFailedPickup.save()
+                dfp.save()
         except requests.exceptions.HTTPError as error:
-            datasetFailedPickup = DatasetFailedPickup(
-                dataset=self.dataset,
+            dfp = DatasetFailedPickup(
+                publisher_name=dataset.publisher.name,
+                publisher_identifier=dataset.publisher.iati_identifier,
+                dataset_filename=dataset.name,
+                dataset_url=dataset.source_url,
                 is_http_error=True,
                 status_code=error.response.status_code,
                 error_detail=error.response.reason
             )
-            datasetFailedPickup.save()
+            dfp.save()
+        except requests.exceptions.RequestException as error:
+            dfp = DatasetFailedPickup(
+                publisher_name=dataset.publisher.name,
+                publisher_identifier=dataset.publisher.iati_identifier,
+                dataset_filename=dataset.name,
+                dataset_url=dataset.source_url,
+                is_http_error=False,
+                error_detail=str(error)
+            )
+            dfp.save()
         # We do not add a generic exception, because that would mean that
         # an internal datastore error would show up in the API.
         finally:
             pass
 
-        from iati_synchroniser.models import DatasetNote
+        if len(smart_text(response.content, 'utf-8')) == 0:
+            datasetFailedPickup = DatasetFailedPickup(
+                dataset=self.dataset,
+                is_http_error=False,
+                error_detail="Retrieved dataset contained no data."
+            )
+            datasetFailedPickup.save()
+
         if not response or response.status_code != 200:
             self.valid_dataset = False
             note = DatasetNote(

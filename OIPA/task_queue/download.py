@@ -9,7 +9,9 @@ import requests
 from django.conf import settings
 from django.utils.encoding import smart_text
 
-from iati_synchroniser.models import Dataset, Publisher, filetype_choices
+from iati_synchroniser.models import (
+    Dataset, DatasetFailedPickup, Publisher, filetype_choices
+)
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
@@ -146,73 +148,77 @@ class DatasetDownloadTask(celery.Task):
             full_download_dir,
             filename
         )
-        # headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS '
-        #                           'X 10_11_5) AppleWebKit/537.36 (KHTML'
-        #                           ', like Gecko) Chrome/50.0.2661.102 '
-        #                           'Safari/537.36'}  # NOQA: E501
-        #
-        # try:
-        #     with open(download_dir_with_filename, 'wb') as f:
-        #         resp = requests.get(dataset_url, verify=False,
-        #                             headers=headers, timeout=30)
-        #         f.write(resp.content)
-        #     # urllib.request.urlretrieve(
-        #     #     dataset_url,
-        #     #     download_dir_with_filename
-        #     # )
-        #
-        # except requests.exceptions.Timeout:
-        #     with open(download_dir_with_filename, 'wb') as f:
-        #         resp = requests.get(dataset_url, verify=False,
-        #                    timeout=30)
-        #         f.write(resp.content)
-        # except (
-        #      requests.exceptions.RequestException,
-        #      ConnectionResetError,
-        #      requests.exceptions.TooManyRedirects,
-        #      requests.exceptions.ReadTimeout,
-        #      # urllib.request.HTTPError,  # 403
-        #      # urllib.request.URLError,  # timeouts
-        #  ):
-        #     pass
-        # finally:
-        #     pass
 
+        # Actually retrieve the dataset from source url
         response = None
         headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
                                  '10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}  # NOQA: E501
 
         try:
-            response = requests.get(dataset_url, headers=headers,
-                                    timeout=30)
+            response = requests.get(dataset_url, headers=headers, timeout=30)
+            response.raise_for_status()
         except requests.exceptions.SSLError:
             try:
                 response = requests.get(dataset_url, verify=False,
-                                        headers=headers, timeout=30)
-            except (requests.exceptions.SSLError,
-                    requests.exceptions.Timeout,
-                    requests.exceptions.ConnectionError,
-                    requests.exceptions.TooManyRedirects,
-                    requests.exceptions.ReadTimeout,
-                    requests.exceptions.ChunkedEncodingError,
-                    ):
-                pass
+                                        timeout=30)
+            except requests.exceptions.SSLError as error:
+                dfp = DatasetFailedPickup(
+                    publisher_name=dataset_data['organization']['name'],
+                    publisher_identifier=publisher_iati_id,
+                    dataset_filename=dataset_data['name'],
+                    dataset_url=dataset_url,
+                    is_http_error=False,
+                    error_detail=str(error)
+                )
+                dfp.save()
         except requests.exceptions.Timeout:
             try:
-                response = requests.get(dataset_url, timeout=30)
-            except (requests.exceptions.Timeout,
-                    requests.exceptions.ConnectionError,
-                    requests.exceptions.TooManyRedirects,
-                    requests.exceptions.ReadTimeout,
-                    requests.exceptions.ChunkedEncodingError,
-                    ):
-                pass
+                response = requests.get(dataset_url, verify=False, timeout=30)
+            except requests.exceptions.Timeout as error:
+                dfp = DatasetFailedPickup(
+                    publisher_name=dataset_data['organization']['name'],
+                    publisher_identifier=publisher_iati_id,
+                    dataset_filename=dataset_data['name'],
+                    dataset_url=dataset_url,
+                    is_http_error=False,
+                    error_detail=str(error)
+                )
+                dfp.save()
         except (requests.exceptions.ConnectionError,
-                requests.exceptions.TooManyRedirects,
-                requests.exceptions.ReadTimeout,
-                requests.exceptions.ChunkedEncodingError,
-                ):
-            pass
+                requests.exceptions.TooManyRedirects
+                ) as error:
+            dfp = DatasetFailedPickup(
+                publisher_name=dataset_data['organization']['name'],
+                publisher_identifier=publisher_iati_id,
+                dataset_filename=dataset_data['name'],
+                dataset_url=dataset_url,
+                is_http_error=False,
+                error_detail=str(error)
+            )
+            dfp.save()
+        except requests.exceptions.HTTPError as error:
+            dfp = DatasetFailedPickup(
+                publisher_name=dataset_data['organization']['name'],
+                publisher_identifier=publisher_iati_id,
+                dataset_filename=dataset_data['name'],
+                dataset_url=dataset_url,
+                is_http_error=True,
+                status_code=error.response.status_code,
+                error_detail=error.response.reason
+            )
+            dfp.save()
+        except requests.exceptions.RequestException as error:
+            dfp = DatasetFailedPickup(
+                publisher_name=dataset_data['organization']['name'],
+                publisher_identifier=publisher_iati_id,
+                dataset_filename=dataset_data['name'],
+                dataset_url=dataset_url,
+                is_http_error=False,
+                error_detail=str(error)
+            )
+            dfp.save()
+        # We do not add a generic exception, because that would mean that
+        # an internal datastore error would show up in the API.
         finally:
             pass
 
@@ -224,6 +230,17 @@ class DatasetDownloadTask(celery.Task):
             iati_file = smart_text(response.content, 'latin-1')
         except AttributeError:
             iati_file = ''
+
+        if len(iati_file) == 0:
+            dfp = DatasetFailedPickup(
+                publisher_name=dataset_data['organization']['name'],
+                publisher_identifier=publisher_iati_id,
+                dataset_filename=dataset_data['name'],
+                dataset_url=dataset_url,
+                is_http_error=False,
+                error_detail="Retrieved dataset contained no data."
+            )
+            dfp.save()
 
         # 2. Encode the string to use for hashing:
         hasher = hashlib.sha1()

@@ -2,7 +2,7 @@ from datetime import datetime
 
 from ckanapi import RemoteCKAN
 from django.conf import settings
-from django.db.models import Count, OuterRef, Subquery
+from django.db.models import Count
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import authentication, exceptions, pagination
 from rest_framework.filters import OrderingFilter
@@ -275,23 +275,21 @@ class DatasetFailedPickup(CacheResponseMixin, DynamicListView):
     /api/datasets/failedpickups
     ```
     """
-    last_5_timestamps_per_dataset = DatasetFailedPickup.objects.filter(
-        dataset_id=OuterRef('dataset')).order_by('-timestamp')[:5]
-
-    queryset = DatasetFailedPickup.objects.filter(
-        id__in=Subquery(last_5_timestamps_per_dataset.values('id')))
-
+    queryset = DatasetFailedPickup.objects.all()
     serializer_class = DatasetFailedPickupSerializer
     filter_class = DatasetFailedPickupFilter
     selectable_fields = ()
     ordering_fields = '__all__'
 
     fields = (
-        'dataset',
+        'publisher_name',
+        'publisher_identifier',
+        'dataset_filename',
+        'dataset_url',
         'is_http_error',
         'status_code',
         'error_detail',
-        'timestamp',
+        'timestamp'
     )
 
 
