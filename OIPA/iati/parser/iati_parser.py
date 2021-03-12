@@ -124,6 +124,8 @@ class IatiParser(object):
     def guess_number(self, model_name, number_string):
         # first strip non numeric values, except for -.,
         decimal_string = re.sub(r'[^\d.,-]+', '', number_string)
+        if ',' in decimal_string and '.' not in decimal_string:
+            decimal_string = re.sub(r',', '.', decimal_string)
 
         try:
             return Decimal(decimal_string)
