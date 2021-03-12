@@ -8,7 +8,9 @@ from iati_organisation.models import Organisation
 from iati_synchroniser.create_publisher_organisation import (
     create_publisher_organisation
 )
-from iati_synchroniser.models import Dataset, DatasetUpdateDates, Publisher
+from iati_synchroniser.models import (
+    Dataset, DatasetFailedPickup, DatasetUpdateDates, Publisher
+)
 from task_queue.tasks import DatasetDownloadTask
 
 DATASET_URL = 'https://iatiregistry.org/api/action/package_search?rows=200&{options}'  # NOQA: E501
@@ -60,11 +62,16 @@ class DatasetSyncer(object):
         # parse datasets
         offset = 0
 
+        # Create initial false dataset update date.
         dataset_sync_start = datetime.datetime.now()
         DatasetUpdateDates.objects.create(
             timestamp=dataset_sync_start,
             success=False
         )
+
+        # Drop old information about failing dataset pickups.
+        dfp = DatasetFailedPickup.objects.all()
+        dfp.delete()
 
         while True:
             # get data
