@@ -30,7 +30,7 @@ django-rq==1.1.0
 # A temporary workaround for DRF-related error:
 Markdown~=2.6
 
-djangorestframework==3.9.1
+djangorestframework==3.11.2
 
 djangorestframework-csv==2.1.0
 
