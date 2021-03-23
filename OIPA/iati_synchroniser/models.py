@@ -212,6 +212,12 @@ class DatasetFailedPickup(models.Model):
         null=False, blank=True, auto_now=True)
 
 
+class DatasetUpdateDates(models.Model):
+    success = models.BooleanField(null=False, default=False)
+    timestamp = models.DateTimeField(
+        null=False, blank=True, auto_now=False)
+
+
 class Codelist(models.Model):
     name = models.CharField(primary_key=True, max_length=100)
     description = models.TextField(max_length=1000, blank=True, null=True)

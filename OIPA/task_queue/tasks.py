@@ -27,7 +27,8 @@ from iati.activity_aggregation_calculation import (
 )
 from iati.models import Activity, Budget, Document, DocumentLink, Result
 from iati.transaction.models import Transaction
-from iati_synchroniser.models import Dataset, DatasetNote
+from iati_organisation.models import Organisation
+from iati_synchroniser.models import Dataset, DatasetNote, DatasetUpdateDates
 from OIPA.celery import app
 from solr.activity.tasks import ActivityTaskIndexing
 from solr.activity.tasks import solr as solr_activity
@@ -349,6 +350,35 @@ def synchronize_solr_indexing():
     #         list(set(list_dataset_note_id) - set(list_dataset_note_doc_id))
     # ):
     #     queue.enqueue(add_dataset_note_to_solr, args=(dataset_note_id,))
+
+
+# Function to remove old activities from datasets that are no longer available
+@shared_task
+def drop_old_datasets():
+    """
+    Manual task to fire after the updating of the datasets.
+    Find datasets that were not updated (last_found_in_registry is always
+    updated for new and existing datasets). Skip if last update failed.
+    Remove activities or organisation data depending on the filetype of the
+    dataset. Synchronise with Solr.
+    """
+    previous_dud = DatasetUpdateDates.objects.last()
+    if not previous_dud.success:
+        return
+    old_datasets = Dataset.objects.filter(
+        last_found_in_registry__lt=previous_dud.timestamp)
+
+    for ds in old_datasets:
+        if ds.filetype == 1:
+            old_activities = Activity.objects.filter(dataset_id=ds.id)
+            if len(old_activities) > 0:
+                old_activities.delete()
+        if ds.filetype == 2:
+            old_organisation = Organisation.objects.filter(dataset_id=ds.id)
+            if len(old_organisation) > 0:
+                old_organisation.delete()
+    old_datasets.delete()
+    synchronize_solr_indexing()
 
 
 #
