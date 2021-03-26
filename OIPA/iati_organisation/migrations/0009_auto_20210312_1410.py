@@ -13,6 +13,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='totalexpenditureline',
             name='value',
-            field=models.DecimalField(decimal_places=4, default=None, max_digits=14, null=True),
+            field=models.DecimalField(decimal_places=4, default=None, max_digits=16, null=True),
         ),
     ]
