@@ -149,33 +149,16 @@ class DatasetSerializer(DynamicFieldsModelSerializer):
         return None
 
 
-class DatasetNestedSerializer(DynamicFieldsModelSerializer):
-
-    id = HiddenField(default=None)
-    publisher = SimplePublisherSerializer()
-
-    class Meta:
-        model = Dataset
-        fields = (
-            'id',
-            'iati_id',
-            'name',
-            'title',
-            'publisher',
-            'source_url',
-            'iati_version',
-        )
-
-
 class DatasetFailedPickupSerializer(DynamicFieldsModelSerializer):
-
-    dataset = DatasetNestedSerializer(many=False, read_only=True)
-
     class Meta:
         model = DatasetFailedPickup
         fields = (
-            'dataset',
+            'publisher_name',
+            'publisher_identifier',
+            'dataset_filename',
+            'dataset_url',
             'is_http_error',
             'status_code',
             'error_detail',
-            'timestamp')
+            'timestamp'
+        )

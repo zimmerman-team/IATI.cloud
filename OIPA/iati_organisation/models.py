@@ -241,7 +241,7 @@ class TotalExpenditureLine(models.Model):
     ref = models.CharField(max_length=150, null=True)
     currency = models.ForeignKey(Currency, null=True, on_delete=models.CASCADE)
     value = models.DecimalField(
-        max_digits=14, decimal_places=4, null=True, default=None)
+        max_digits=16, decimal_places=4, null=True, default=None)
     value_date = models.DateField(null=True)
     narratives = GenericRelation(OrganisationNarrative)
 

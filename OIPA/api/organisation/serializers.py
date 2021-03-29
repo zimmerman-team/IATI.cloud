@@ -59,7 +59,7 @@ class ValueSerializer(SerializerNoValidation):
     date = serializers.CharField(source='value_date')
     value = serializers.DecimalField(
         max_digits=15,
-        decimal_places=2,
+        decimal_places=4,
         coerce_to_string=False,
     )
 
