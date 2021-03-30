@@ -131,7 +131,8 @@
     <field name="reporting_org_secondary_reporter" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="reporting_org_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
 
-    <field name="result_type" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="result_type_code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="result_type_name" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="result_aggregation_status" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
 
     <field name="result_title" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
