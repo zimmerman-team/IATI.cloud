@@ -10,7 +10,7 @@ from django.conf import settings
 from django.utils.encoding import smart_text
 
 from iati_synchroniser.models import (
-    Dataset, DatasetDownloadsFinished, DatasetFailedPickup, Publisher,
+    AsyncTasksFinished, Dataset, DatasetFailedPickup, Publisher,
     filetype_choices
 )
 
@@ -301,8 +301,8 @@ class DatasetDownloadTask(celery.Task):
                 'internal_url': internal_url
             }
         )
-        # Save a row to the DatasetDownloadsFinished table.
-        DatasetDownloadsFinished.objects.create()
+        # Save a row to the AsyncTasksFinished table.
+        AsyncTasksFinished.objects.create()
 
         # URL string to save as a Dataset attribute:
         return os.path.join(main_download_dir, filename)

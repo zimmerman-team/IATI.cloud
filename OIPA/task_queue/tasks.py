@@ -29,7 +29,7 @@ from iati.models import Activity, Budget, Document, DocumentLink, Result
 from iati.transaction.models import Transaction
 from iati_organisation.models import Organisation
 from iati_synchroniser.models import (
-    Dataset, DatasetDownloadsFinished, DatasetDownloadsStarted, DatasetNote,
+    AsyncTasksFinished, Dataset, DatasetDownloadsStarted, DatasetNote,
     DatasetUpdateDates
 )
 from OIPA.celery import app
@@ -131,7 +131,7 @@ def automatic_incremental_parse():
     # Still contain data.
     dds = DatasetDownloadsStarted.objects.all()
     dds.delete()
-    ddf = DatasetDownloadsFinished.objects.all()
+    ddf = AsyncTasksFinished.objects.all()
     ddf.delete()
 
     # Loop until stopped
@@ -150,7 +150,7 @@ def automatic_incremental_parse():
         while True:
             # Get the size of the started datasets
             started = len(DatasetDownloadsStarted.objects.all())
-            finished = len(DatasetDownloadsFinished.objects.all())
+            finished = len(AsyncTasksFinished.objects.all())
 
             # Check if the grace should take effect.
             if finished == check_previous_finished_length:
@@ -177,7 +177,7 @@ def automatic_incremental_parse():
         # After this while loop finishes, we clear the DatasetDownloads tables
         dds = DatasetDownloadsStarted.objects.all()
         dds.delete()
-        ddf = DatasetDownloadsFinished.objects.all()
+        ddf = AsyncTasksFinished.objects.all()
         ddf.delete()
         # STEP ONE -- End #
 
@@ -232,7 +232,7 @@ def automatic_incremental_parse():
 
         # Now that the "waiting for validator to finish" loop is over, we know
         # The validator is finished. Run the task. To reduce complexity, reuse
-        # the DatasetDownloadsFinished table.
+        # the AsyncTasksFinished table.
         get_validation_results_task()
 
         # Prepare checks
@@ -242,7 +242,7 @@ def automatic_incremental_parse():
         check_previous_finished_length = 0
         while True:
             # Get the size of the started datasets
-            finished = len(DatasetDownloadsFinished.objects.all())
+            finished = len(AsyncTasksFinished.objects.all())
 
             if started == finished & finished == check_previous_finished_length:  # NOQA: E501
                 check_iteration_count += 1
@@ -255,7 +255,7 @@ def automatic_incremental_parse():
             time.sleep(60)
             check_previous_finished_length = finished
         # After this while loop finishes, we clear the DatasetDownloads tables
-        ddf = DatasetDownloadsFinished.objects.all()
+        ddf = AsyncTasksFinished.objects.all()
         ddf.delete()
         # STEP THREE -- End #
 

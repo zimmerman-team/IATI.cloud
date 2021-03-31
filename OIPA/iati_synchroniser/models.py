@@ -239,7 +239,7 @@ class DatasetDownloadsStarted(models.Model):
 
 
 # This model is added for the automation of the incremental parsing procedure
-class DatasetDownloadsFinished(models.Model):
+class AsyncTasksFinished(models.Model):
     timestamp = models.DateTimeField(
         null=False, blank=True, auto_now=True)
 
