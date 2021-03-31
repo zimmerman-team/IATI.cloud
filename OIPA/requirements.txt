@@ -72,7 +72,7 @@ mock==2.0.0
 factory-boy==2.11.1
 
 # Working with XML files
-lxml==4.6.2
+lxml==4.6.3
 
 # Extensions to the standard datetime module:
 python-dateutil==2.7.3
