@@ -126,6 +126,11 @@ def automatic_incremental_parse():
      as it is the same as the number of existing datasets.
      Make the DatasetValidationTask update a table with a row, check if the
      number of rows matches the number of existing datasets.
+    4 - We know that the parse all sources task queues a
+    parse_source_by_id_task for each of the existing datasets.
+    We can simply reuse the logic from the previous step to check which
+    of the datasets have been parsed, and when all async tasks finish, we have
+    completed the incremental parse/index. The process can then start anew.
     """
     # Before starting, reset the databases we use for checks, in case they
     # Still contain data.
@@ -259,6 +264,37 @@ def automatic_incremental_parse():
         ddf.delete()
         # STEP THREE -- End #
 
+        # STEP FOUR -- PARSE ALL DATASET #
+        parse_all_existing_sources_task()
+
+        # Prepare checks
+        # We know that the Parse all sources uses validation.
+        # With validation, it only parses datasets with critical = 0.
+        started = len(
+            Dataset.objects.filter(validation_status__critical__lte=0)
+        )
+        check_iteration_count = 0
+        check_iteration_maximum = 3
+        check_previous_finished_length = 0
+        while True:
+            # Get the size of the started datasets
+            finished = len(AsyncTasksFinished.objects.all())
+
+            if started == finished & finished == check_previous_finished_length:  # NOQA: E501
+                check_iteration_count += 1
+                if check_iteration_count == check_iteration_maximum:
+                    break
+            else:
+                check_iteration_count = 0
+
+            # Wait a minute and check again
+            time.sleep(60)
+            check_previous_finished_length = finished
+        # After this while loop finishes, we clear the DatasetDownloads tables
+        ddf = AsyncTasksFinished.objects.all()
+        ddf.delete()
+        # STEP FOUR -- End #
+
 
 # This task updates all of the currency exchange rates in the local database
 @shared_task
@@ -293,6 +329,8 @@ def get_validation_results_task():
 
 
 # This task is used to parse a specific dataset by passing it an ID.
+# For all of the different try and catches, store a AsyncTasksFinished
+# for the automatic incremental parse procedure
 # TODO: 25-02-2020 document this function.
 @shared_task(bind=True)
 def parse_source_by_id_task(self, dataset_id, force=False,
@@ -304,14 +342,25 @@ def parse_source_by_id_task(self, dataset_id, force=False,
                                                  validation_status__critical__lte=0)  # NOQA: E501
                 dataset = dataset.first()
                 dataset.process(force_reparse=force)
+
+                # Save a row to the AsyncTasksFinished table.
+                AsyncTasksFinished.objects.create()
             except AttributeError:
                 print('no dataset found')
+
+                # Save a row to the AsyncTasksFinished table.
+                AsyncTasksFinished.objects.create()
                 pass
         else:
             try:
                 dataset = Dataset.objects.get(pk=dataset_id)
                 dataset.process(force_reparse=force)
+
+                # Save a row to the AsyncTasksFinished table.
+                AsyncTasksFinished.objects.create()
             except Dataset.DoesNotExist:
+                # Save a row to the AsyncTasksFinished table.
+                AsyncTasksFinished.objects.create()
                 pass
     except Exception as exc:
         raise self.retry(kwargs={'dataset_id': dataset_id, 'force': True},
