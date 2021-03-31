@@ -29,8 +29,7 @@ from iati.models import Activity, Budget, Document, DocumentLink, Result
 from iati.transaction.models import Transaction
 from iati_organisation.models import Organisation
 from iati_synchroniser.models import (
-    AsyncTasksFinished, Dataset, DatasetDownloadsStarted, DatasetNote,
-    DatasetUpdateDates
+    AsyncTasksFinished, Dataset, DatasetNote, DatasetUpdateDates
 )
 from OIPA.celery import app
 from solr.activity.tasks import ActivityTaskIndexing
@@ -43,7 +42,9 @@ from solr.result.tasks import solr as solr_result
 from solr.transaction.tasks import solr as solr_transaction
 from solr.transaction_sector.tasks import solr as solr_transaction_sector
 from task_queue.download import DatasetDownloadTask
-from task_queue.utils import Tasks
+from task_queue.utils import (
+    Tasks, await_async_subtasks, reset_automatic_incremental_parse_dbs
+)
 from task_queue.validation import DatasetValidationTask
 
 # Get an instance of a logger
@@ -134,10 +135,7 @@ def automatic_incremental_parse():
     """
     # Before starting, reset the databases we use for checks, in case they
     # Still contain data.
-    dds = DatasetDownloadsStarted.objects.all()
-    dds.delete()
-    ddf = AsyncTasksFinished.objects.all()
-    ddf.delete()
+    reset_automatic_incremental_parse_dbs()
 
     # Loop until stopped
     while True:
@@ -145,45 +143,9 @@ def automatic_incremental_parse():
         # Start the task
         get_new_sources_from_iati_api_task()
 
-        # Prepare checks
-        check_iteration_count = 0
-        check_iteration_maximum = 3
-        check_previous_finished_length = 0
-        check_grace_iteration_count = 0
-        check_grace_iteration_maximum = 10
-        check_grace_maximum_disparity = 10
-        while True:
-            # Get the size of the started datasets
-            started = len(DatasetDownloadsStarted.objects.all())
-            finished = len(AsyncTasksFinished.objects.all())
-
-            # Check if the grace should take effect.
-            if finished == check_previous_finished_length:
-                check_grace_iteration_count += 1
-                if check_grace_iteration_count == check_grace_iteration_maximum:  # NOQA: E501
-                    if started - finished < check_grace_maximum_disparity:
-                        break
-                    else:  # More downloads than expected failed,
-                        # exit automatic parsing
-                        return
-            else:
-                check_grace_iteration_count = 0
-
-            if started == finished & finished == check_previous_finished_length:  # NOQA: E501
-                check_iteration_count += 1
-                if check_iteration_count == check_iteration_maximum:
-                    break
-            else:
-                check_iteration_count = 0
-
-            # Wait a minute and check again
-            time.sleep(60)
-            check_previous_finished_length = finished
-        # After this while loop finishes, we clear the DatasetDownloads tables
-        dds = DatasetDownloadsStarted.objects.all()
-        dds.delete()
-        ddf = AsyncTasksFinished.objects.all()
-        ddf.delete()
+        too_many_failed = await_async_subtasks(started_not_set=False)
+        if too_many_failed:
+            return
         # STEP ONE -- End #
 
         # STEP TWO -- DROP OLD DATASETS #
@@ -240,59 +202,20 @@ def automatic_incremental_parse():
         # the AsyncTasksFinished table.
         get_validation_results_task()
 
-        # Prepare checks
         started = len(Dataset.objects.all())
-        check_iteration_count = 0
-        check_iteration_maximum = 3
-        check_previous_finished_length = 0
-        while True:
-            # Get the size of the started datasets
-            finished = len(AsyncTasksFinished.objects.all())
+        await_async_subtasks(started)
 
-            if started == finished & finished == check_previous_finished_length:  # NOQA: E501
-                check_iteration_count += 1
-                if check_iteration_count == check_iteration_maximum:
-                    break
-            else:
-                check_iteration_count = 0
-
-            # Wait a minute and check again
-            time.sleep(60)
-            check_previous_finished_length = finished
-        # After this while loop finishes, we clear the DatasetDownloads tables
-        ddf = AsyncTasksFinished.objects.all()
-        ddf.delete()
         # STEP THREE -- End #
 
         # STEP FOUR -- PARSE ALL DATASET #
+        # start the parse task
         parse_all_existing_sources_task()
-
-        # Prepare checks
         # We know that the Parse all sources uses validation.
         # With validation, it only parses datasets with critical = 0.
         started = len(
             Dataset.objects.filter(validation_status__critical__lte=0)
         )
-        check_iteration_count = 0
-        check_iteration_maximum = 3
-        check_previous_finished_length = 0
-        while True:
-            # Get the size of the started datasets
-            finished = len(AsyncTasksFinished.objects.all())
-
-            if started == finished & finished == check_previous_finished_length:  # NOQA: E501
-                check_iteration_count += 1
-                if check_iteration_count == check_iteration_maximum:
-                    break
-            else:
-                check_iteration_count = 0
-
-            # Wait a minute and check again
-            time.sleep(60)
-            check_previous_finished_length = finished
-        # After this while loop finishes, we clear the DatasetDownloads tables
-        ddf = AsyncTasksFinished.objects.all()
-        ddf.delete()
+        await_async_subtasks(started)
         # STEP FOUR -- End #
 
 
