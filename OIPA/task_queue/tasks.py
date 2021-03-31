@@ -136,20 +136,17 @@ def automatic_incremental_parse():
                 check_grace_iteration_count += 1
                 if check_grace_iteration_count == check_grace_iteration_maximum:  # NOQA: E501
                     if started - finished < check_grace_maximum_disparity:
-                        # break
-                        return "Finished with grace"
+                        break
                     else:  # More downloads than expected failed,
                         # exit automatic parsing
-                        # return
-                        return "Automatic Parsing Failed - Datasets not downloaded"  # NOQA: E501
+                        return
             else:
                 check_grace_iteration_count = 0
 
             if started == finished & finished == check_previous_finished_length:  # NOQA: E501
                 check_iteration_count += 1
                 if check_iteration_count == check_iteration_maximum:
-                    return "Finished properly"
-                    # break
+                    break
             else:
                 check_iteration_count = 0
 

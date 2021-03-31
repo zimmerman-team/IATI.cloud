@@ -87,7 +87,6 @@ class DatasetSyncer(object):
             # update dataset
             for dataset in results['result']['results']:
                 self.update_or_create_dataset(dataset)
-                break  # TODO: Remove this break. Just for testing purposes.
 
             # check if done
             if len(results['result']['results']) == 0:
