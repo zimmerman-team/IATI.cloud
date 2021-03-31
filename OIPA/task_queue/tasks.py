@@ -112,7 +112,28 @@ def automatic_incremental_parse():
      have failed. As we expect 0 failed downloads, but historically have seen
      a maximum of four datasetDownloadTasks failing, we allow a difference of
      TEN at maximum.
+    2 - Simple, just fire the task. Not async
+    3 - We check whether or not the dataset validation on the validation
+     endpoint has started by checking their API. If this API endpoint returns
+     empty, it means the validation endpoint is not running. The steps to
+     take to ensure the validation has completed are: Check if it has started
+     validating datasets. If it has not started yet, wait until it has started
+     If it has started, wait until it no longer returns any data. Then confirm
+     that it has stopped returning data by checking several times in a row.
+
+     Then, we need to actually do the validation step. Start off that task,
+     then re-use the logic from step one: we know the number of validation task
+     as it is the same as the number of existing datasets.
+     Make the DatasetValidationTask update a table with a row, check if the
+     number of rows matches the number of existing datasets.
     """
+    # Before starting, reset the databases we use for checks, in case they
+    # Still contain data.
+    dds = DatasetDownloadsStarted.objects.all()
+    dds.delete()
+    ddf = DatasetDownloadsFinished.objects.all()
+    ddf.delete()
+
     # Loop until stopped
     while True:
         # STEP ONE -- Import Datasets #
@@ -158,6 +179,85 @@ def automatic_incremental_parse():
         dds.delete()
         ddf = DatasetDownloadsFinished.objects.all()
         ddf.delete()
+        # STEP ONE -- End #
+
+        # STEP TWO -- DROP OLD DATASETS #
+        drop_old_datasets()
+        # STEP TWO -- End #
+
+        # STEP THREE -- DATASET VALIDATION TASK #
+        # Prepare checks
+        check_validation_has_started = False
+        check_validation_is_active = False
+        check_empty_iteration_count = 0
+        check_empty_iteration_maximum = 3
+
+        while True:
+            url = "https://iativalidator.iatistandard.org/api/v1/queue/next"
+            response = requests.get(url, timeout=30)
+            response.raise_for_status()
+
+            # If the response is not 200, reset and check back later.
+            if response.status_code != 200:
+                check_validation_has_started = False
+                check_validation_is_active = False
+                time.sleep(60)
+                continue
+
+            check_content_is_empty = response.content.decode("utf-8") == ""
+
+            """
+            Case 1: content empty - started = false - active = false
+                wait for the validator to start
+            Case 2: content has data - started = false - active = false
+                set started to true and active to true
+            Case 3: content has data - started = true - active = true
+                wait for the content to stop having data!
+            Case 4: content empty - started = true - active = true
+                with three iterations, confirm the content is actually empty!
+                set active to false.
+            """
+            # if check_content_is_empty and not check_validation_has_started and not check_validation_is_active:  # NOQA: E501
+            if not check_content_is_empty and not check_validation_has_started and not check_validation_is_active:  # NOQA: E501
+                check_validation_has_started = True
+                check_validation_is_active = True
+            if not check_content_is_empty and check_validation_has_started and check_validation_is_active:  # NOQA: E501
+                check_empty_iteration_count = 0
+            if check_content_is_empty and check_validation_has_started and check_validation_is_active:  # NOQA: E501
+                if check_empty_iteration_count < check_empty_iteration_maximum:
+                    check_empty_iteration_count += 1
+                else:  # Validation has finished
+                    break
+            time.sleep(60)
+
+        # Now that the "waiting for validator to finish" loop is over, we know
+        # The validator is finished. Run the task. To reduce complexity, reuse
+        # the DatasetDownloadsFinished table.
+        get_validation_results_task()
+
+        # Prepare checks
+        started = len(Dataset.objects.all())
+        check_iteration_count = 0
+        check_iteration_maximum = 3
+        check_previous_finished_length = 0
+        while True:
+            # Get the size of the started datasets
+            finished = len(DatasetDownloadsFinished.objects.all())
+
+            if started == finished & finished == check_previous_finished_length:  # NOQA: E501
+                check_iteration_count += 1
+                if check_iteration_count == check_iteration_maximum:
+                    break
+            else:
+                check_iteration_count = 0
+
+            # Wait a minute and check again
+            time.sleep(60)
+            check_previous_finished_length = finished
+        # After this while loop finishes, we clear the DatasetDownloads tables
+        ddf = DatasetDownloadsFinished.objects.all()
+        ddf.delete()
+        # STEP THREE -- End #
 
 
 # This task updates all of the currency exchange rates in the local database
@@ -904,6 +1004,8 @@ def download_file(d):
         # print str(e)
         doc.document_content = document_content.decode("latin-1")
         doc.save()
+
+
 #
 #
 # @shared_task
