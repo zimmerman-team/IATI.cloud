@@ -9,7 +9,8 @@ from iati_synchroniser.create_publisher_organisation import (
     create_publisher_organisation
 )
 from iati_synchroniser.models import (
-    Dataset, DatasetFailedPickup, DatasetUpdateDates, Publisher
+    Dataset, DatasetDownloadsStarted, DatasetFailedPickup, DatasetUpdateDates,
+    Publisher
 )
 from task_queue.tasks import DatasetDownloadTask
 
@@ -86,6 +87,7 @@ class DatasetSyncer(object):
             # update dataset
             for dataset in results['result']['results']:
                 self.update_or_create_dataset(dataset)
+                break  # TODO: Remove this break. Just for testing purposes.
 
             # check if done
             if len(results['result']['results']) == 0:
@@ -136,7 +138,10 @@ class DatasetSyncer(object):
         if not len(dataset['resources']) or not dataset['organization']:
             return
 
-        # Pass the data generated here to the
+        # Add a row to the DatasetDownloadsStarted table
+        DatasetDownloadsStarted.objects.create()
+
+        # Pass the data generated here to the DatasetDownloadTask
         DatasetDownloadTask.delay(dataset_data=dataset)
 
     def remove_deprecated(self):

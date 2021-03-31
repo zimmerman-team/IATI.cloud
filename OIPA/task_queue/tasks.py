@@ -28,7 +28,10 @@ from iati.activity_aggregation_calculation import (
 from iati.models import Activity, Budget, Document, DocumentLink, Result
 from iati.transaction.models import Transaction
 from iati_organisation.models import Organisation
-from iati_synchroniser.models import Dataset, DatasetNote, DatasetUpdateDates
+from iati_synchroniser.models import (
+    Dataset, DatasetDownloadsFinished, DatasetDownloadsStarted, DatasetNote,
+    DatasetUpdateDates
+)
 from OIPA.celery import app
 from solr.activity.tasks import ActivityTaskIndexing
 from solr.activity.tasks import solr as solr_activity
@@ -82,6 +85,84 @@ def add_activity_to_solr(activity_id):
 # All Registered Celery tasks that are actively used
 # TODO: 25-02-2020 rename tasks
 #
+# This task 'automatically' does a complete parse and index.
+# Meaning the different steps that were previously manual are all included.
+@shared_task
+def automatic_incremental_parse():
+    """
+    There are several steps that need to be taken to complete an incremental
+    parse/index.
+    1. Import datasets task (async, not able to directly tell when finished)
+    2. Drop old datasets task (when is this finished?)
+    3. Dataset validation task (when does it start? when does it finish?)
+    4. Parse all datasets task (when does it finish?)
+
+    Solutions:
+    1 - When running the 'import datasets task', separate 'download dataset
+     tasks' are fired. To track whether or not all of them finished - we
+     add a table which gets filled from the 'update_or_create_dataset'
+     function which in turn queues a DatasetDownloadTask. We add a table
+     which gets filled when the DatasetDownloadTask finishes, leading to
+     eventually having two tables with an equal number of rows. To make sure
+     it is not a false positive, check three times whether or not the
+     size of both tables remains the same and still matches (to catch cases
+     like '5 datasets found in the IATI registry and 5 datasets downloaded).
+     Also, we include a 'grace' filter, where we try to catch failed datasets.
+     If the finished datasets hasn't changed in 10 iterations, we assume they
+     have failed. As we expect 0 failed downloads, but historically have seen
+     a maximum of four datasetDownloadTasks failing, we allow a difference of
+     TEN at maximum.
+    """
+    # Loop until stopped
+    while True:
+        # STEP ONE -- Import Datasets #
+        # Start the task
+        get_new_sources_from_iati_api_task()
+
+        # Prepare checks
+        check_iteration_count = 0
+        check_iteration_maximum = 3
+        check_previous_finished_length = 0
+        check_grace_iteration_count = 0
+        check_grace_iteration_maximum = 10
+        check_grace_maximum_disparity = 10
+        while True:
+            # Get the size of the started datasets
+            started = len(DatasetDownloadsStarted.objects.all())
+            finished = len(DatasetDownloadsFinished.objects.all())
+
+            # Check if the grace should take effect.
+            if finished == check_previous_finished_length:
+                check_grace_iteration_count += 1
+                if check_grace_iteration_count == check_grace_iteration_maximum:  # NOQA: E501
+                    if started - finished < check_grace_maximum_disparity:
+                        # break
+                        return "Finished with grace"
+                    else:  # More downloads than expected failed,
+                        # exit automatic parsing
+                        # return
+                        return "Automatic Parsing Failed - Datasets not downloaded"  # NOQA: E501
+            else:
+                check_grace_iteration_count = 0
+
+            if started == finished & finished == check_previous_finished_length:  # NOQA: E501
+                check_iteration_count += 1
+                if check_iteration_count == check_iteration_maximum:
+                    return "Finished properly"
+                    # break
+            else:
+                check_iteration_count = 0
+
+            # Wait a minute and check again
+            time.sleep(60)
+            check_previous_finished_length = finished
+        # After this while loop finishes, we clear the DatasetDownloads tables
+        dds = DatasetDownloadsStarted.objects.all()
+        dds.delete()
+        ddf = DatasetDownloadsFinished.objects.all()
+        ddf.delete()
+
+
 # This task updates all of the currency exchange rates in the local database
 @shared_task
 def update_exchange_rates():
