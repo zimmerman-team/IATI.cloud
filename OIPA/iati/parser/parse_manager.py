@@ -18,7 +18,7 @@ from iati_organisation.parser.organisation_1_05 import Parse as Org_1_05_Parser
 from iati_organisation.parser.organisation_2_01 import Parse as Org_2_01_Parser
 from iati_organisation.parser.organisation_2_02 import Parse as Org_2_02_Parser
 from iati_organisation.parser.organisation_2_03 import Parse as Org_2_03_Parser
-from iati_synchroniser.models import DatasetFailedPickup
+from iati_synchroniser.models import DatasetNote
 
 
 class ParserDisabledError(Exception):
@@ -47,12 +47,12 @@ class ParseManager():
             self.parser = self._prepare_parser(self.root, dataset)
             return
 
-        # file_grabber = FileGrabber()
-        # response = file_grabber.get_the_file(self.url)
         response = None
         headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
                                  '10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}  # NOQA: E501
 
+        # This was rolled back to how it was before adding dataset failed
+        # pickups in commit e5d0ba6454b180d8b4e27820184007fdacb6c3b4
         try:
             response = requests.get(self.url, headers=headers, timeout=30)
             response.raise_for_status()
@@ -60,46 +60,20 @@ class ParseManager():
             try:
                 response = requests.get(self.url, verify=False,
                                         timeout=30)
-            except requests.exceptions.SSLError as error:
-                datasetFailedPickup = DatasetFailedPickup(
-                    dataset=self.dataset,
-                    is_http_error=False,
-                    error_detail=str(error)
-                )
-                datasetFailedPickup.save()
+            except requests.exceptions.SSLError:
+                pass
         except requests.exceptions.Timeout:
             try:
                 response = requests.get(self.url, verify=False, timeout=30)
-            except requests.exceptions.Timeout as error:
-                datasetFailedPickup = DatasetFailedPickup(
-                    dataset=self.dataset,
-                    is_http_error=False,
-                    error_detail=str(error)
-                )
-                datasetFailedPickup.save()
-        except (requests.exceptions.ConnectionError,
-                requests.exceptions.TooManyRedirects
-                ) as error:
-            datasetFailedPickup = DatasetFailedPickup(
-                dataset=self.dataset,
-                is_http_error=False,
-                error_detail=str(error)
-            )
-            datasetFailedPickup.save()
-        except requests.exceptions.HTTPError as error:
-            datasetFailedPickup = DatasetFailedPickup(
-                dataset=self.dataset,
-                is_http_error=True,
-                status_code=error.response.status_code,
-                error_detail=error.response.reason
-            )
-            datasetFailedPickup.save()
+            except requests.exceptions.Timeout:
+                pass
+        except requests.exceptions.RequestException:
+            pass
         # We do not add a generic exception, because that would mean that
         # an internal datastore error would show up in the API.
         finally:
             pass
 
-        from iati_synchroniser.models import DatasetNote
         if not response or response.status_code != 200:
             self.valid_dataset = False
             note = DatasetNote(

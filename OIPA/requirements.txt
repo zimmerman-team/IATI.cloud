@@ -30,7 +30,7 @@ django-rq==1.1.0
 # A temporary workaround for DRF-related error:
 Markdown~=2.6
 
-djangorestframework==3.9.1
+djangorestframework==3.11.2
 
 djangorestframework-csv==2.1.0
 
@@ -172,6 +172,7 @@ flower
 # TWO-FACTOR AUTHENTICATION
 ######
 
-django-two-factor-auth==1.12.1
+# django-two-factor-auth==1.12.1
 phonenumbers==8.12.9
 
+pre-commit==2.10.1

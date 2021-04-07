@@ -42,6 +42,10 @@ class ResultIndexing(BaseIndexing):
                     narrative.content
                 )
 
+    def type(self):
+        self.add_field('result_type_code', self.record.type.code)
+        self.add_field('result_type_name', self.record.type.name)
+
     def document_link(self, document_link_all, prefix='result_document_link'):
         if document_link_all:
             if prefix not in self.indexing:
@@ -333,6 +337,7 @@ class ResultIndexing(BaseIndexing):
 
         self.title()
         self.description()
+        self.type()
 
         self.document_link(self.record.documentlink_set.all())
         self.reference(self.record.resultreference_set.all())

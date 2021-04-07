@@ -927,7 +927,7 @@ class Parse(IatiParser):
                 )
         model.value_date = self.validate_date(element.attrib.get('value-date'))
         model.currency = currency
-        model.value = element.text
+        model.value = self.guess_number("TotalExpenditure", element.text)
         return element
 
     def iati_organisations__iati_organisation__total_expenditure__expense_line__narrative(  # NOQA: E501
@@ -1100,7 +1100,7 @@ class Parse(IatiParser):
         # Solr indexing
         OrganisationTaskIndexing(instance=organisation).run()
 
-    def post_save_file(self, xml_source):
+    def post_save_file(self, xml_source, files_to_keep):
         pass
 
     def post_save_validators(self, dataset):

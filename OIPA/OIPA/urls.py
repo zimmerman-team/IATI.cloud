@@ -1,9 +1,16 @@
+from allauth.account.models import EmailAddress
+from allauth.socialaccount.models import SocialAccount, SocialApp, SocialToken
 from django.conf import settings
 from django.conf.urls import include, url
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.contrib.sites.models import Site
 from django.views.generic import TemplateView
 from django.views.generic.base import RedirectView
+from django_celery_beat.models import ClockedSchedule, SolarSchedule
+from django_otp.plugins.otp_static.models import StaticDevice
+from django_otp.plugins.otp_totp.models import TOTPDevice
+from rest_framework.authtoken.models import Token
 
 from OIPA import views
 
@@ -39,3 +46,17 @@ if settings.DEBUG:
     urlpatterns += [
         url(r'^__debug__/', include(debug_toolbar.urls)),
     ]
+
+
+admin.site.unregister([
+    SocialApp,
+    SocialToken,
+    SocialAccount,
+    Site,
+    SolarSchedule,
+    ClockedSchedule,
+    Token,
+    EmailAddress,
+    StaticDevice,
+    TOTPDevice
+])

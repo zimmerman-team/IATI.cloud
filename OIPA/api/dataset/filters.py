@@ -119,33 +119,37 @@ class DatasetFailedPickupFilter(FilterSet):
     Filter for failed datasets.
     """
 
-    dataset_id = CharFilter(
-        lookup_expr='exact',
-        field_name='dataset__id')
-
-    dataset_name = CharFilter(
+    publisher_name = CharFilter(
         lookup_expr='icontains',
-        field_name='dataset__name')
+        field_name='publisher_name')
 
-    dataset_title = CharFilter(
+    publisher_identifier = CharFilter(
         lookup_expr='icontains',
-        field_name='dataset__title')
+        field_name='publisher_identifier')
 
-    dataset_filetype = CommaSeparatedCharFilter(
-        lookup_expr='in',
-        field_name='dataset__filetype')
-
-    dataset_publisher_id = CharFilter(
-        lookup_expr='exact',
-        field_name='dataset__publisher__id')
-
-    dataset_publisher_identifier = CharFilter(
+    dataset_filename = CharFilter(
         lookup_expr='icontains',
-        field_name='dataset__publisher__publisher_iati_id')
+        field_name='dataset_filename')
 
-    dataset_publisher_title = CharFilter(
+    dataset_url = CharFilter(
         lookup_expr='icontains',
-        field_name='dataset__publisher__title')
+        field_name='dataset_url')
+
+    is_http_error = CharFilter(
+        lookup_expr='icontains',
+        field_name='is_http_error')
+
+    status_code = CharFilter(
+        lookup_expr='icontains',
+        field_name='status_code')
+
+    error_detail = CharFilter(
+        lookup_expr='icontains',
+        field_name='error_detail')
+
+    timestamp = DateTimeFilter(
+        lookup_expr='gte',
+        field_name='timestamp')
 
     q = SearchQueryFilter()
 
