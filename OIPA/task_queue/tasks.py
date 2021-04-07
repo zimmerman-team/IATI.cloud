@@ -204,17 +204,19 @@ def automatic_incremental_parse():
 
         started = len(Dataset.objects.all())
         await_async_subtasks(started)
-
         # STEP THREE -- End #
 
-        # STEP FOUR -- PARSE ALL DATASET #
-        # start the parse task
-        parse_all_existing_sources_task()
-        # We know that the Parse all sources uses validation.
-        # With validation, it only parses datasets with critical = 0.
-        started = len(
-            Dataset.objects.filter(validation_status__critical__lte=0)
-        )
+        # STEP FOUR -- PARSE ALL DATASETS #
+        # parse_all_existing_sources_task() does not actually run the parsing,
+        # Reusing the code here.
+        for dataset in Dataset.objects.all().filter(filetype=2):
+            parse_source_by_id_task.delay(dataset_id=dataset.id,
+                                          force=False,
+                                          check_validation=True)
+        for dataset in Dataset.objects.all().filter(filetype=1):
+            parse_source_by_id_task.delay(dataset_id=dataset.id,
+                                          force=False,
+                                          check_validation=True)
         await_async_subtasks(started)
         # STEP FOUR -- End #
 
