@@ -99,30 +99,33 @@ def await_async_subtasks(started=-1, started_not_set=True):
     check_iteration_count = 0
     check_iteration_maximum = 3
     check_previous_finished_length = 0
-    if not started_not_set:
-        check_grace_iteration_count = 0
-        check_grace_iteration_maximum = 10
-        check_grace_maximum_disparity = 10
+    check_grace_iteration_count = 0
+    check_grace_iteration_maximum = 10
+    check_grace_maximum_disparity = 10
     while True:
         # Get the size of the started datasets
         if not started_not_set:
             started = len(DatasetDownloadsStarted.objects.all())
         finished = len(AsyncTasksFinished.objects.all())
 
-        if not started_not_set:
-            # Check if the grace should take effect.
-            if finished == check_previous_finished_length:
-                check_grace_iteration_count += 1
-                if check_grace_iteration_count == check_grace_iteration_maximum:  # NOQA: E501
-                    if started - finished < check_grace_maximum_disparity:
-                        break
-                    else:  # More downloads than expected failed,
-                        # exit automatic parsing
-                        return True
-            else:
-                check_grace_iteration_count = 0
+        # Check if the grace should take effect.
+        # Grace is when the number of failed tasks is very small but the
+        # number of finished tasks no longer changes. This makes sure that
+        # the automatic parsing does not get stuck waiting for an unfinished
+        # async task.
+        if finished == check_previous_finished_length:
+            check_grace_iteration_count += 1
+            if check_grace_iteration_count == check_grace_iteration_maximum:
+                if started - finished < check_grace_maximum_disparity:
+                    break
+                else:  # More downloads than expected failed,
+                    # exit automatic parsing
+                    return True
+        else:
+            check_grace_iteration_count = 0
 
-        if started == finished & finished == check_previous_finished_length:  # NOQA: E501
+        # Check if the async tasks are done
+        if started == finished & finished == check_previous_finished_length:
             check_iteration_count += 1
             if check_iteration_count == check_iteration_maximum:
                 break
