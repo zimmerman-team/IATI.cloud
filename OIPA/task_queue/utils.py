@@ -118,19 +118,20 @@ def await_async_subtasks(started=-1, started_not_set=True):
             if check_grace_iteration_count == check_grace_iteration_maximum:
                 if started - finished < check_grace_maximum_disparity:
                     break
-                else:  # More downloads than expected failed,
+                else:  # More async tasks than expected failed,
                     # exit automatic parsing
                     return True
         else:
             check_grace_iteration_count = 0
 
         # Check if the async tasks are done
-        if started == finished & finished == check_previous_finished_length:
-            check_iteration_count += 1
-            if check_iteration_count == check_iteration_maximum:
-                break
-        else:
-            check_iteration_count = 0
+        if started == finished:
+            if finished == check_previous_finished_length:
+                check_iteration_count += 1
+                if check_iteration_count == check_iteration_maximum:
+                    break
+            else:
+                check_iteration_count = 0
 
         # Wait a minute and check again
         time.sleep(60)
