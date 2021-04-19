@@ -9,7 +9,7 @@ import requests
 from django.conf import settings
 from requests.exceptions import RequestException
 
-from iati_synchroniser.models import Dataset
+from iati_synchroniser.models import AsyncTasksFinished, Dataset
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
@@ -50,6 +50,9 @@ class DatasetValidationTask(celery.Task):
 
         if self._check():
             self._updated()
+
+        # Save a row to the AsyncTasksFinished table.
+        AsyncTasksFinished.objects.create()
 
         # We don't do ad-hoc validation anymore
         # else:
