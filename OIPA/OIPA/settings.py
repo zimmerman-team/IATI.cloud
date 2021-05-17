@@ -430,6 +430,9 @@ VALIDATION = {
     }
 }
 
+# To be overwritten by local_settings.py in any case for security purposes.
+POSTMAN_API_KEY = 'OverwriteFromLocalSettings'
+
 try:
     from .local_settings import *  # noqa: F401, F403
 except ImportError:
