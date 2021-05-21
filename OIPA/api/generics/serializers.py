@@ -61,7 +61,7 @@ class FilteredListSerializer(serializers.ListSerializer):
 
     def __init__(cls, *args, **kwargs):
         cls.filter_class = kwargs.pop('filter_class', ())
-        return super(FilteredListSerializer, cls).__init__(*args, **kwargs)
+        return None
 
     def to_representation(self, queryset):
         request = self.context.get("request")
