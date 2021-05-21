@@ -485,40 +485,6 @@ class ActivitySerializerTestCase(TestCase):
         assert serializer.data['telephone'] == contact_info.telephone,\
             "telephone text should be serialized to a field called 'telephone'"
 
-    @skip('NotImplemented')
-    def test_ResultSerializer(self):
-        # TODO test after implementing in parser
-        raise NotImplementedError()
-
-        result = iati_factory.ResultFactory.build()
-        serializer = serializers.ResultSerializer(result)
-
-        assert serializer.data[
-            'title'
-        ]['narratives'][0]['text'] == result.title,\
-            """
-            'result.title' should be serialized to a field called
-            'title'
-            """
-        assert serializer.data[
-            'description'
-        ]['narratives'][0]['text'] == result.description,\
-            """
-            'result.description' should be serialized to a field called
-            'description'
-            """
-        assert serializer.data[
-            'aggregation_status'
-        ] == result.aggregation_status,\
-            """
-            'result.aggregation_status' should be serialized to a field called
-            'aggregation_status'
-            """
-        assert 'result_type' in serializer.data, \
-            """
-            result.result_type should be serialized in result
-            """
-
     def test_GeographicVocabularySerializer(self):
         vocabulary = iati_factory.GeographicVocabularyFactory.build()
         serializer = serializers.CodelistSerializer(vocabulary)
