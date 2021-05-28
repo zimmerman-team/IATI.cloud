@@ -772,7 +772,7 @@ class ContactInfoSaveTestCase(TestCase):
             },
             "telephone": "0631942897",
             "email": "test@zz.com",
-            "website": "https://zimmermanzimmerman.com",
+            "website": "https://zimmerman.team",
             "mailing_address": {
                 "narratives": [
                     {
@@ -906,7 +906,7 @@ class ContactInfoSaveTestCase(TestCase):
             },
             "telephone": "0631942897",
             "email": "test@zz.com",
-            "website": "https://zimmermanzimmerman.com",
+            "website": "https://zimmerman.team",
             "mailing_address": {
                 "narratives": [
                     {
@@ -1424,7 +1424,7 @@ class LocationSaveTestCase(TestCase):
                     "latitude": "31.616944",
                     "longitude": "65.716944",
                 },
-                "srsName": "http://www.opengis.net/def/crs/EPSG/0/4326",
+                "srsName": "https://www.opengis.net/def/crs/EPSG/0/4326",
             },
             "exactness": {
                 "code": exactness.code,
@@ -1566,7 +1566,7 @@ class LocationSaveTestCase(TestCase):
                     "latitude": "31.616944",
                     "longitude": "65.716944",
                 },
-                "srsName": "http://www.opengis.net/def/crs/EPSG/0/4326",
+                "srsName": "https://www.opengis.net/def/crs/EPSG/0/4326",
             },
             "exactness": {
                 "code": exactness.code,
@@ -1692,7 +1692,7 @@ class HumanitarianScopeSaveTestCase(TestCase):
                 "code": vocabulary.code,
                 "name": 'irrelevant',
             },
-            "vocabulary_uri": "https://github.com/zimmerman-zimmerman",
+            "vocabulary_uri": "https://github.com/zimmerman-team",
         }
 
         res = self.c.post(
@@ -1729,7 +1729,7 @@ class HumanitarianScopeSaveTestCase(TestCase):
                 "code": vocabulary.code,
                 "name": 'irrelevant',
             },
-            "vocabulary_uri": "https://github.com/zimmerman-zimmerman",
+            "vocabulary_uri": "https://github.com/zimmerman-team",
         }
 
         res = self.c.put(
