@@ -117,7 +117,8 @@ class ParseManager():
             dataset.save()
 
         try:
-            parser = etree.XMLParser(resolve_entities=False, no_network=True, huge_tree=True)
+            parser = etree.XMLParser(resolve_entities=False,
+                                     no_network=True, huge_tree=True)
             tree = etree.parse(BytesIO(response.content), parser)
             self.root = tree.getroot()
             self.parser = self._prepare_parser(self.root, dataset)
