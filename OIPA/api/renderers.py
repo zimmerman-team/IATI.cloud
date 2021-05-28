@@ -891,7 +891,7 @@ class IATIXMLRenderer(BaseRenderer):
 
             # the element with namespace must be the last element in the xml.
             for element in self.xml.iter():
-                if element.tag.find("https://www.zimmermanzimmerman.n") != -1:
+                if element.tag.find("https://www.zimmerman.team") != -1:
                     print(element.tag)
                     parent = element.getparent()
                     parent.remove(element)

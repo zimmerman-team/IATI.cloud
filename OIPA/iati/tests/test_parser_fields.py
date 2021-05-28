@@ -41,7 +41,7 @@ def build_xml(version, iati_identifier):
     activities_attrs = {
         "generated-datetime": datetime.datetime.now().isoformat(),
         "version": version,
-        "linked-data-default": "http://zimmermanzimmerman.nl/",
+        "linked-data-default": "https://zimmerman.team/",
     }
 
     activity = E("iati-activities", **activities_attrs)
@@ -160,7 +160,7 @@ class ActivityTestCase(ParserSetupTestCase):
             # "xml:lang": "en",
             "default-currency": "USD",
             "last-updated-datetime": datetime.datetime.now().isoformat(' '),
-            "linked-data-uri": "http://zimmermanzimmerman.org/iati",
+            "linked-data-uri": "https://zimmerman.team/iati",
             "hierarchy": "1",
         }
 
@@ -308,7 +308,7 @@ class ActivityTestCase(ParserSetupTestCase):
         """
         raise NotImplementedError()
 
-        linked_data_default = "http://zimmermanzimmerman.org/"
+        linked_data_default = "https://zimmerman.team/"
 
         iati_202 = copy_xml_tree(self.iati_202)
         iati_202.set("linked-data-default", linked_data_default)
@@ -3159,7 +3159,7 @@ class DocumentLinkTestCase(ParserSetupTestCase):
         self.iati_202 = copy_xml_tree(self.iati_202)
 
         self.attrs = {
-            "url": "http://zimmermanzimmerman.nl/",
+            "url": "https://zimmerman.team/",
             "format": "text/html",
         }
 

@@ -505,10 +505,10 @@ class TransactionReference(ElementReference):
     def create(self):
         if 'message' in self.data:
             ns_map = {"zz":
-                      "https://www.zimmermanzimmerman.nl"}
+                      "https://www.zimmerman.team"}
             transaction_element = etree.SubElement(
                 self.parent_element,
-                "{https://www.zimmermanzimmerman.nl}"+self.element,
+                "{https://www.zimmerman.team}"+self.element,
                 nsmap=ns_map
             )
         else:
@@ -1175,10 +1175,10 @@ class BudgetReference(ElementReference):
     def create(self):
         if 'message' in self.data:
             ns_map = {"zz":
-                      "https://www.zimmermanzimmerman.nl"}
+                      "https://www.zimmerman.team"}
             budget_element = etree.SubElement(
                 self.parent_element,
-                "{https://www.zimmermanzimmerman.nl}"+self.element,
+                "{https://www.zimmerman.team}"+self.element,
                 nsmap=ns_map
             )
         else:
