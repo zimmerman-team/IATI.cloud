@@ -1470,7 +1470,7 @@ class RecipientRegionTestCase(ParserSetupTestCase):
             "code": "89",  # Europe, regional
             "vocabulary": "1",  # OECD-DAC
             "percentage": "50.5",
-            "vocabulary-uri": "http://example.com/vocab.html"
+            "vocabulary-uri": "https://example.com/vocab.html"
         }
 
         self.recipient_region = E('recipient-region', **self.attrs)
@@ -1707,13 +1707,13 @@ class ActivityLocationTestCase(ParserSetupTestCase):
     def test_location_point_202(self):
         # Global Point Unit layers
         point = E(
-            'point', srsName="http://www.opengis.net/def/crs/EPSG/0/4326"
+            'point', srsName="https://www.opengis.net/def/crs/EPSG/0/4326"
         )
         self.parser_202.iati_activities__iati_activity__location__point(point)
         location = self.parser_202.get_model('Location')
 
         self.assertEqual(location.point_srs_name,
-                         "http://www.opengis.net/def/crs/EPSG/0/4326")
+                         "https://www.opengis.net/def/crs/EPSG/0/4326")
 
     def test_location_pos_pos_valid_latlong_202(self):
         """
@@ -1767,7 +1767,7 @@ class ActivityLocationTestCase(ParserSetupTestCase):
         location = self.parser_103.get_model('Location')
 
         self.assertEqual(location.point_srs_name,
-                         "http://www.opengis.net/def/crs/EPSG/0/4326")
+                         "https://www.opengis.net/def/crs/EPSG/0/4326")
         # Geodjango Location = longlat
         self.assertEqual(location.point_pos.coords, (65.716944, 31.616944))
         self.assertEqual(location.exactness.code, "1")
@@ -1843,7 +1843,7 @@ class SectorTestCase(ParserSetupTestCase):
             "code": "11110",  # Education Policy and administrative management
             "vocabulary": "1",  # OECD-DAC-5
             "percentage": "50.5",
-            "vocabulary-uri": "http://example.com/vocab.html"
+            "vocabulary-uri": "https://example.com/vocab.html"
         }
 
         self.sector = E('sector', **self.attrs)
@@ -2023,7 +2023,7 @@ class HumanitarianScopeTestCase(ParserSetupTestCase):
             "type": "1",
             "vocabulary": "1-1",
             "code": "2015-000050",
-            "vocabulary-uri": "http://example.com/vocab.html"
+            "vocabulary-uri": "https://example.com/vocab.html"
         }
 
         self.humanitarian_scope = E('humanitarian-scope', **self.attrs)
@@ -2081,7 +2081,7 @@ class PolicyMarkerTestCase(ParserSetupTestCase):
         self.attrs = {
             "code": "1",  # Gender Equality
             "vocabulary": "1",  # OECD-DAC CRS
-            "vocabulary-uri": "http://example.com/vocab.html",
+            "vocabulary-uri": "https://example.com/vocab.html",
             "significance": "1",  # Significant objective
         }
 
@@ -2765,7 +2765,7 @@ class TransactionTestCase(ParserSetupTestCase):
         attrs = {
             "code": "11110",  # Education Policy and administrative management
             "vocabulary": "1",  # OECD-DAC-5
-            "vocabulary-uri": "http://example.com/vocab.html"
+            "vocabulary-uri": "https://example.com/vocab.html"
         }
 
         sector = E('sector', **attrs)
@@ -2812,7 +2812,7 @@ class TransactionTestCase(ParserSetupTestCase):
             "code": "89",  # Europe, regional
             "vocabulary": "1",  # OECD-DAC
             "percentage": "50.5",
-            "vocabulary-uri": "http://example.com/vocab.html"
+            "vocabulary-uri": "https://example.com/vocab.html"
         }
 
         recipient_region = E('recipient_region', **attrs)
@@ -3631,7 +3631,7 @@ class ResultTestCase(ParserSetupTestCase):
         attrs = {
             'code': 'B1',
             'vocabulary': '99',
-            'indicator-uri': 'http://example.com/indicators.html'
+            'indicator-uri': 'https://example.com/indicators.html'
         }
         reference = E('reference', **attrs)
 
