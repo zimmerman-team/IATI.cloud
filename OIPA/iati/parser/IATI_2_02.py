@@ -1241,7 +1241,7 @@ class Parse(IatiParser):
 
     def iati_activities__iati_activity__location__point(self, element):
         """attributes:
-        srsName:http://www.opengis.net/def/crs/EPSG/0/4326
+        srsName:https://www.opengis.net/def/crs/EPSG/0/4326
 
         tag:point"""
         srs_name = element.attrib.get('srsName')
@@ -1250,7 +1250,7 @@ class Parse(IatiParser):
         # if not srs_name: raise RequiredFieldError("srsName",
         # "location_point: srsName is required")
         if not srs_name:
-            srs_name = "http://www.opengis.net/def/crs/EPSG/0/4326"
+            srs_name = "https://www.opengis.net/def/crs/EPSG/0/4326"
 
         location = self.get_model('Location')
         location.point_srs_name = srs_name
