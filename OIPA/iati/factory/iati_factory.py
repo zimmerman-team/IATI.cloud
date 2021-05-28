@@ -210,7 +210,7 @@ class ContactInfoFactory(NoDatabaseFactory):
     type = SubFactory(ContactTypeFactory)
     telephone = "0044111222333444"
     email = "transparency@example.org"
-    website = "http://www.example.org"
+    website = "https://www.example.org"
 
 
 class RelatedActivityFactory(NoDatabaseFactory):
@@ -673,7 +673,7 @@ class LocationFactory(NoDatabaseFactory):
     location_id_vocabulary = SubFactory(GeographicVocabularyFactory)
     location_id_code = '23213'
     point_pos = GEOSGeometry(Point(20.22, 45.22), srid=4326)
-    point_srs_name = "http://www.opengis.net/def/crs/EPSG/0/4326"
+    point_srs_name = "https://www.opengis.net/def/crs/EPSG/0/4326"
     exactness = SubFactory(GeographicExactnessFactory)
     location_class = SubFactory(GeographicLocationClassFactory)
     feature_designation = SubFactory(LocationTypeFactory)
@@ -860,7 +860,7 @@ class HumanitarianScopeFactory(NoDatabaseFactory):
     code = "code"
     type = SubFactory(HumanitarianScopeTypeFactory)
     vocabulary = SubFactory(HumanitarianScopeVocabularyFactory)
-    vocabulary_uri = "http://reference.iatistandard.org/202/activity-standard/\
+    vocabulary_uri = "https://reference.iatistandard.org/202/activity-standard/\
                       iati-activities/iati-activity/humanitarian-scope/"
 
 
