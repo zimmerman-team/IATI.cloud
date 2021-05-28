@@ -118,7 +118,7 @@ Full API documentation for iati.cloud can be found at [docs.iati.cloud](https://
 
 ## About the project
 - Website: [www.iati.cloud](https://www.iati.cloud)
-- Authors: [Zimmerman B.V.](https://www.zimmermanzimmerman.nl/)
+- Authors: [Zimmerman B.V.](https://www.zimmerman.team/)
 - License: AGPLv3 (see included [LICENSE](https://github.com/zimmerman-team/iati.cloud/blob/master/LICENSE.MD) file for full license)
 - Github Repo: [github.com/zimmerman-zimmerman/iati.cloud/](https://github.com/zimmerman-team/iati.cloud/)
 - Bug Tracker: [github.com/zimmerman-zimmerman/iati.cloud/issues](https://github.com/zimmerman-team/iati.cloud/issues)

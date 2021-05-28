@@ -58,7 +58,7 @@ def fake_call_action(self, arg, whatever):
             u'publisher_organization_type': u'70',
             u'tags': [],
             u'groups': [],
-            u'publisher_ui_url': u'http://www.openaidsearch.org',
+            u'publisher_ui_url': u'https://www.openaidsearch.org',
             u'publisher_timeliness': u'',
             u'publisher_source_type': u'primary_source',
             u'publisher_segmentation': u'',

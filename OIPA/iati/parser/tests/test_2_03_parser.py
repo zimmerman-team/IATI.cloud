@@ -334,7 +334,7 @@ class ActivityTagTestCase(TestCase):
 
             # "vocabulary": '1',
             "code": '1',
-            'vocabulary-uri': 'http://example.com/vocab.html',
+            'vocabulary-uri': 'https://example.com/vocab.html',
         }
 
         activity_tag_XML_element = E(
@@ -443,7 +443,7 @@ class ActivityTagTestCase(TestCase):
         # ALL IS GOOD:
         activity_tag_attributes[
             'vocabulary-uri'
-        ] = 'http://example.com/vocab.html'
+        ] = 'https://example.com/vocab.html'
 
         activity_tag_XML_element = E(
             'tag',
@@ -830,7 +830,7 @@ class RecipientRegionTestCase(TestCase):
             "code": region.code,
             "vocabulary": str(vocabulary.code),
             "percentage": '100',
-            "vocabulary-uri": "http://www.google.lt",
+            "vocabulary-uri": "https://www.google.lt",
         }
 
         recipient_region_XML_element = E(
@@ -1070,7 +1070,7 @@ class ActivitySectorTestCase(TestCase):
             "code": sector.code,
             "vocabulary": str(vocabulary.code),
             "percentage": '100',
-            "vocabulary-uri": "http://www.google.lt",
+            "vocabulary-uri": "https://www.google.lt",
         }
 
         sector_XML_element = E(
@@ -1785,7 +1785,7 @@ class ActivityResultDocumentLinkTestCase(TestCase):
             FileFormatFactory(code='application/pdf')
 
         dummy_document_link = iati_factory.\
-            DocumentLinkFactory(url='http://aasamannepal.org.np/')
+            DocumentLinkFactory(url='https://example.com')
 
         self.parser_203.codelist_cache = {}
 
@@ -1858,7 +1858,7 @@ class ActivityResultDocumentLinkTitleTestCase(TestCase):
             FileFormatFactory(code='application/pdf')
 
         dummy_document_link = iati_factory. \
-            DocumentLinkFactory(url='http://aasamannepal.org.np/')
+            DocumentLinkFactory(url='https://example.com/')
 
         self.parser_203.codelist_cache = {}
 
@@ -2489,7 +2489,7 @@ class ActivityResultIndicatorDocumentLinkTestCase(TestCase):
             FileFormatFactory(code='application/pdf')
 
         dummy_document_link = iati_factory.\
-            DocumentLinkFactory(url='http://aasamannepal.org.np/')
+            DocumentLinkFactory(url='https://example.com/')
 
         self.parser_203.codelist_cache = {}
 
@@ -2673,7 +2673,7 @@ class ActivityResultIndicatorDocumentLinkTitleTestCase(TestCase):
             FileFormatFactory(code='application/pdf')
 
         dummy_indicator_document_link = iati_factory. \
-            DocumentLinkFactory(url='http://aasamannepal.org.np/')
+            DocumentLinkFactory(url='https://example.com/')
 
         self.parser_203.codelist_cache = {}
 
@@ -3338,7 +3338,7 @@ class ActivityResultIndicatorBaselineDocumentLinkTestCase(TestCase):
             FileFormatFactory(code='application/pdf')
 
         dummy_document_link = iati_factory.\
-            DocumentLinkFactory(url='http://aasamannepal.org.np/')
+            DocumentLinkFactory(url='https://example.com/')
 
         self.parser_203.codelist_cache = {}
 
@@ -4130,7 +4130,7 @@ class ActivityResultIndicatorPeriodTargetDocumentLinkTestCase(TestCase):
             FileFormatFactory(code='application/pdf')
 
         dummy_document_link = iati_factory.\
-            DocumentLinkFactory(url='http://aasamannepal.org.np/')
+            DocumentLinkFactory(url='https://example.com/')
 
         self.parser_203.codelist_cache = {}
 
@@ -4219,7 +4219,7 @@ class ActivityResultIndicatorBaselineDocumentLinkTitleTestCase(
             FileFormatFactory(code='application/pdf')
 
         dummy_document_link = iati_factory. \
-            DocumentLinkFactory(url='http://aasamannepal.org.np/')
+            DocumentLinkFactory(url='https://example.com/')
 
         self.parser_203.codelist_cache = {}
 
@@ -4896,7 +4896,7 @@ class ActivityResultIndicatorPeriodActualDocumentLinkTestCase(TestCase):
         self.parser_203.codelist_cache = {}
 
         result_indicator_period_actual_document_link_attr = {
-            "url": 'http://aasamannepal.org.np/',
+            "url": 'https://example.com/',
             "format": dummy_file_format.code
         }
 
@@ -5121,7 +5121,7 @@ class AcitivityResultIndicatorPeriodActualDocumentLinkTitleTestCase(TestCase):
             FileFormatFactory(code='application/pdf')
 
         dummy_indicator_period_actual_document_link = iati_factory. \
-            DocumentLinkFactory(url='http://aasamannepal.org.np/')
+            DocumentLinkFactory(url='https://example.com/')
 
         self.parser_203.codelist_cache = {}
 
