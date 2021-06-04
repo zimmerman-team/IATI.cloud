@@ -128,7 +128,7 @@ git+https://github.com/zimmerman-zimmerman/django-supervisor@07c67b4daebe4ebae5e
 # mainly used for 'shell_plus' management command:
 django-extensions==2.0.7
 
-django-debug-toolbar==1.9.1
+django-debug-toolbar==1.11.1
 
 # Interactive Python debugger:
 ipdb==0.11
