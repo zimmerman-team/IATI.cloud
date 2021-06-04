@@ -387,6 +387,10 @@ CELERY_BEAT_SCHEDULE = {
         'task': 'iati.PostmanJsonImport.tasks.get_postman_api',
         'schedule': crontab(minute=0, hour=0),
     },
+    'Update the exchange rates': {
+        'task': 'task_queue.tasks.update_exchange_rates',
+        'schedule': crontab(minute=0, hour=0),
+    },
 }
 
 SOLR = {
