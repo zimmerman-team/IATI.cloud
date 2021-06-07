@@ -162,7 +162,9 @@ class Dataset(models.Model):
 
             # Get version from the XML
             if not self.iati_version:
-                parser = etree.XMLParser(huge_tree=True, encoding='utf-8')
+                parser = etree.XMLParser(resolve_entities=False,
+                                         no_network=True,
+                                         huge_tree=True, encoding='utf-8')
                 parser_tree = etree.parse(BytesIO(response.content), parser)
                 root = parser_tree.getroot()
 

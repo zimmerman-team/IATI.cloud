@@ -273,7 +273,7 @@ class UpdateOrganisationSearchMixin(object):
 
     def reindex_organisation(self, serializer):
         instance = serializer.instance.get_organisation()
-        self.reindex_organisation(instance)
+        return instance
 
     def perform_create(self, serializer):
         serializer.save()
