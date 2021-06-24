@@ -160,7 +160,6 @@ def automatic_incremental_parse():
     while True:
         url = "https://iativalidator.iatistandard.org/api/v1/queue/next"
         response = requests.get(url, timeout=30)
-        response.raise_for_status()
 
         # If the response is not 200, reset and check back later.
         if response.status_code != 200:
