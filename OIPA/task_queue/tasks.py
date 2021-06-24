@@ -89,7 +89,7 @@ def add_activity_to_solr(activity_id):
 # This task 'automatically' does a complete parse and index.
 # Meaning the different steps that were previously manual are all included.
 @shared_task
-def automatic_incremental_parse():
+def automatic_incremental_parse(start_at=1):
     """
     There are several steps that need to be taken to complete an incremental
     parse/index.
@@ -138,86 +138,90 @@ def automatic_incremental_parse():
     reset_automatic_incremental_parse_dbs()
 
     # STEP ONE -- Import Datasets #
-    # Start the task
-    get_new_sources_from_iati_api_task()
+    if start_at == 1:
+        # Start the task
+        get_new_sources_from_iati_api_task()
 
-    too_many_failed = await_async_subtasks(started_not_set=False)
-    if too_many_failed:
-        return
+        too_many_failed = await_async_subtasks(started_not_set=False)
+        if too_many_failed:
+            return "Too many dataset imports failed"
     # STEP ONE -- End #
 
     # STEP TWO -- DROP OLD DATASETS #
-    drop_old_datasets()
+    if start_at in (1, 2):
+        drop_old_datasets()
     # STEP TWO -- End #
 
     # STEP THREE -- DATASET VALIDATION TASK #
     # Prepare checks
-    check_validation_has_started = False
-    check_validation_is_active = False
-    check_empty_iteration_count = 0
-    check_empty_iteration_maximum = 3
+    if start_at in (1, 2, 3):
+        check_validation_has_started = False
+        check_validation_is_active = False
+        check_empty_iteration_count = 0
+        check_empty_iteration_maximum = 3
 
-    while True:
-        url = "https://iativalidator.iatistandard.org/api/v1/queue/next"
-        response = requests.get(url, timeout=30)
+        while True:
+            url = "https://iativalidator.iatistandard.org/api/v1/queue/next"
+            response = requests.get(url, timeout=30)
 
-        # If the response is not 200, reset and check back later.
-        if response.status_code != 200:
-            check_validation_has_started = False
-            check_validation_is_active = False
+            # If the response is not 200, reset and check back later.
+            if response.status_code != 200:
+                check_validation_has_started = False
+                check_validation_is_active = False
+                time.sleep(60)
+                continue
+
+            check_content_is_empty = response.content.decode("utf-8") == ""
+
+            """
+            Case 1: content empty - started = false - active = false
+                wait for the validator to start
+            Case 2: content has data - started = false - active = false
+                set started to true and active to true
+            Case 3: content has data - started = true - active = true
+                wait for the content to stop having data!
+            Case 4: content empty - started = true - active = true
+                with three iterations, confirm the content is actually empty!
+                set active to false.
+            """
+            # if check_content_is_empty and not check_validation_has_started and not check_validation_is_active:  # NOQA: E501
+            if not check_content_is_empty and not check_validation_has_started and not check_validation_is_active:  # NOQA: E501
+                check_validation_has_started = True
+                check_validation_is_active = True
+            if not check_content_is_empty and check_validation_has_started and check_validation_is_active:  # NOQA: E501
+                check_empty_iteration_count = 0
+            if check_content_is_empty and check_validation_has_started and check_validation_is_active:  # NOQA: E501
+                if check_empty_iteration_count < check_empty_iteration_maximum:
+                    check_empty_iteration_count += 1
+                else:  # Validation has finished
+                    break
             time.sleep(60)
-            continue
 
-        check_content_is_empty = response.content.decode("utf-8") == ""
+        # Now that the "waiting for validator to finish" loop is over, we know
+        # The validator is finished. Run the task. To reduce complexity, reuse
+        # the AsyncTasksFinished table.
+        get_validation_results_task()
 
-        """
-        Case 1: content empty - started = false - active = false
-            wait for the validator to start
-        Case 2: content has data - started = false - active = false
-            set started to true and active to true
-        Case 3: content has data - started = true - active = true
-            wait for the content to stop having data!
-        Case 4: content empty - started = true - active = true
-            with three iterations, confirm the content is actually empty!
-            set active to false.
-        """
-        # if check_content_is_empty and not check_validation_has_started and not check_validation_is_active:  # NOQA: E501
-        if not check_content_is_empty and not check_validation_has_started and not check_validation_is_active:  # NOQA: E501
-            check_validation_has_started = True
-            check_validation_is_active = True
-        if not check_content_is_empty and check_validation_has_started and check_validation_is_active:  # NOQA: E501
-            check_empty_iteration_count = 0
-        if check_content_is_empty and check_validation_has_started and check_validation_is_active:  # NOQA: E501
-            if check_empty_iteration_count < check_empty_iteration_maximum:
-                check_empty_iteration_count += 1
-            else:  # Validation has finished
-                break
-        time.sleep(60)
-
-    # Now that the "waiting for validator to finish" loop is over, we know
-    # The validator is finished. Run the task. To reduce complexity, reuse
-    # the AsyncTasksFinished table.
-    get_validation_results_task()
-
-    started = len(Dataset.objects.all())
-    await_async_subtasks(started)
+        started = len(Dataset.objects.all())
+        await_async_subtasks(started)
     # STEP THREE -- End #
 
     # STEP FOUR -- PARSE ALL DATASETS #
-    # parse_all_existing_sources_task() does not actually run the parsing,
-    # Reusing the code here.
-    for dataset in Dataset.objects.all().filter(filetype=2):
-        parse_source_by_id_task.delay(dataset_id=dataset.id,
-                                      force=False,
-                                      check_validation=True)
-    for dataset in Dataset.objects.all().filter(filetype=1):
-        parse_source_by_id_task.delay(dataset_id=dataset.id,
-                                      force=False,
-                                      check_validation=True)
-    await_async_subtasks(started)
+    if start_at in (1, 2, 3, 4):
+        # parse_all_existing_sources_task() does not actually run the parsing,
+        # Reusing the code here.
+        for dataset in Dataset.objects.all().filter(filetype=2):
+            parse_source_by_id_task.delay(dataset_id=dataset.id,
+                                          force=False,
+                                          check_validation=True)
+        for dataset in Dataset.objects.all().filter(filetype=1):
+            parse_source_by_id_task.delay(dataset_id=dataset.id,
+                                          force=False,
+                                          check_validation=True)
+        await_async_subtasks(started)
     # STEP FOUR -- End #
 
-    # Restart the process.
+    # Restart the automatic_incremental_parse asynchronously and end this task.
     automatic_incremental_parse.apply_async()
 
 
