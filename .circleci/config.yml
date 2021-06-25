@@ -178,13 +178,13 @@ workflows:
     test_and_deploy:
         jobs:
             - test
-            - deploy_staging:
-                  requires:
-                      - test
-                  filters:
-                      branches:
-                          only:
-                              - develop
+#            - deploy_staging:
+#                  requires:
+#                      - test
+#                  filters:
+#                      branches:
+#                          only:
+#                              - develop
             - deploy_production_1:
                   requires:
                       - test
@@ -208,8 +208,8 @@ workflows:
                           only:
                               - master
             - prerelease:
-                  requires:
-                      - deploy_staging
+#                  requires:
+#                      - deploy_staging
                   filters:
                       branches:
                           only:
