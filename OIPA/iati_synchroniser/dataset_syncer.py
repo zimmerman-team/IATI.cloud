@@ -9,7 +9,8 @@ from iati_synchroniser.create_publisher_organisation import (
     create_publisher_organisation
 )
 from iati_synchroniser.models import (
-    Dataset, DatasetFailedPickup, DatasetUpdateDates, Publisher
+    Dataset, DatasetDownloadsStarted, DatasetFailedPickup, DatasetUpdateDates,
+    Publisher
 )
 from task_queue.tasks import DatasetDownloadTask
 
@@ -136,7 +137,10 @@ class DatasetSyncer(object):
         if not len(dataset['resources']) or not dataset['organization']:
             return
 
-        # Pass the data generated here to the
+        # Add a row to the DatasetDownloadsStarted table
+        DatasetDownloadsStarted.objects.create()
+
+        # Pass the data generated here to the DatasetDownloadTask
         DatasetDownloadTask.delay(dataset_data=dataset)
 
     def remove_deprecated(self):
