@@ -89,7 +89,9 @@ def add_activity_to_solr(activity_id):
 # This task 'automatically' does a complete parse and index.
 # Meaning the different steps that were previously manual are all included.
 @shared_task
-def automatic_incremental_parse(start_at=1):
+def automatic_incremental_parse(start_at=1,
+                                force=False,
+                                check_validation=True):
     """
     There are several steps that need to be taken to complete an incremental
     parse/index.
@@ -153,8 +155,9 @@ def automatic_incremental_parse(start_at=1):
     # STEP TWO -- End #
 
     # STEP THREE -- DATASET VALIDATION TASK #
-    # Prepare checks
-    if start_at in (1, 2, 3):
+    # Only execute this step if validation should be active.
+    if start_at in (1, 2, 3) and check_validation:
+        # Prepare checks
         check_validation_has_started = False
         check_validation_is_active = False
         check_empty_iteration_count = 0
@@ -212,17 +215,19 @@ def automatic_incremental_parse(start_at=1):
         # Reusing the code here.
         for dataset in Dataset.objects.all().filter(filetype=2):
             parse_source_by_id_task.delay(dataset_id=dataset.id,
-                                          force=False,
-                                          check_validation=True)
+                                          force=force,
+                                          check_validation=check_validation)
         for dataset in Dataset.objects.all().filter(filetype=1):
             parse_source_by_id_task.delay(dataset_id=dataset.id,
-                                          force=False,
-                                          check_validation=True)
+                                          force=force,
+                                          check_validation=check_validation)
+        started = len(Dataset.objects.all())
         await_async_subtasks(started)
     # STEP FOUR -- End #
 
     # Restart the automatic_incremental_parse asynchronously and end this task.
-    automatic_incremental_parse.apply_async()
+    automatic_incremental_parse.delay(force=force,
+                                      check_validation=check_validation)
 
 
 # This task updates all of the currency exchange rates in the local database
