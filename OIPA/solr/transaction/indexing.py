@@ -8,6 +8,49 @@ from solr.utils import (
 )
 
 
+def add_activity_date_fields(serializer, activity):
+    activity_dates_all = activity.activitydate_set.all()
+    if not activity_dates_all:
+        return
+    for activity_date in activity_dates_all:
+        if activity_date.type_id == '1':
+            serializer.add_field(
+                'activity_date_start_planned',
+                str(activity_date.iso_date)
+            )
+            serializer.add_field(
+                'activity_date_start_planned_f',
+                activity_date.iso_date
+            )
+        elif activity_date.type_id == '2':
+            serializer.add_field(
+                'activity_date_start_actual',
+                str(activity_date.iso_date)
+            )
+            serializer.add_field(
+                'activity_date_start_actual_f',
+                activity_date.iso_date
+            )
+        elif activity_date.type_id == '3':
+            serializer.add_field(
+                'activity_date_end_planned',
+                str(activity_date.iso_date)
+            )
+            serializer.add_field(
+                'activity_date_end_planned_f',
+                activity_date.iso_date
+            )
+        elif activity_date.type_id == '4':
+            serializer.add_field(
+                'activity_date_end_actual',
+                str(activity_date.iso_date)
+            )
+            serializer.add_field(
+                'activity_date_end_actual_f',
+                activity_date.iso_date
+            )
+
+
 class TransactionIndexing(BaseIndexing):
 
     def transaction(self):
@@ -251,6 +294,7 @@ class TransactionIndexing(BaseIndexing):
             transaction.tied_status_id
         )
 
+        # Adding customized activity information to transaction
         self.add_field('activity_sector_vocabulary', [])
         self.add_field('activity_sector_code', [])
 
@@ -264,6 +308,7 @@ class TransactionIndexing(BaseIndexing):
                                 activity_sector.sector.code)
         add_participating_org(self, transaction.activity)
         add_activity_additional_filter_fields(self, transaction.activity)
+        add_activity_date_fields(self, transaction.activity)
 
     def to_representation(self, transaction):
         self.record = transaction
