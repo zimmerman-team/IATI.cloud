@@ -73,11 +73,49 @@ def add_participating_org(serializer, activity):
     participating_org_all = activity.participating_organisations.all()
     if participating_org_all:
         serializer.add_field('participating_org_ref', [])
+        serializer.add_field('participating_org_type', [])
+        serializer.add_field('participating_org_narrative', [])
+        serializer.add_field('participating_org_narrative_lang', [])
+        serializer.add_field('participating_org_narrative_text', [])
         for participating_organisation in participating_org_all:
             serializer.add_value_list(
                 'participating_org_ref',
                 participating_organisation.ref
             )
+            serializer.add_value_list(
+                'participating_org_type',
+                participating_organisation.type_id
+            )
+            for narrative in participating_organisation.narratives.all():
+                if narrative.content:
+                    serializer.add_value_list(
+                        "participating_org_narrative",
+                        narrative.content
+                    )
+                    serializer.add_value_list(
+                        "participating_org_narrative_text",
+                        narrative.content
+                    )
+                else:
+                    serializer.add_value_list(
+                        "participating_org_narrative",
+                        " "
+                    )
+                    serializer.add_value_list(
+                        "participating_org_narrative_text",
+                        " "
+                    )
+
+                if narrative.language:
+                    serializer.add_value_list(
+                        "participating_org_narrative_lang",
+                        narrative.language.code
+                    )
+                else:
+                    serializer.add_value_list(
+                        "participating_org_narrative_lang",
+                        " "
+                    )
 
 
 def add_activity_additional_filter_fields(serializer, activity):

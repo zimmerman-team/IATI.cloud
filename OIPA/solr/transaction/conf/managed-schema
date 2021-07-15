@@ -139,8 +139,13 @@
 
     <field name="activity_sector_vocabulary" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="activity_sector_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="activity_sector_percentage" type="pdoubles" multiValued="true" indexed="true" required="false" stored="true"/>
 
     <field name="participating_org_ref" type="non_case_sensitive" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="participating_org_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="participating_org_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
+    <field name="participating_org_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="participating_org_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
 
      <!-- fields for activity additional filters -->
 
@@ -193,6 +198,7 @@
 
     <field name="reporting_org_ref" type="non_case_sensitive" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="reporting_org_type" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="reporting_org_type_name" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="reporting_org_secondary_reporter" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="reporting_org_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
 
@@ -233,6 +239,7 @@
     <field name="transaction_sector_vocabulary" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="transaction_sector_vocabulary_uri" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="transaction_sector_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="transaction_sector_percentage" type="pdoubles" multiValued="true" indexed="true" required="false" stored="true"/>
 
     <field name="transaction_recipient_country_code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="transaction_recipient_country_narrative" type="iati_narrative" multiValued="false" indexed="true" required="false" stored="true"/>

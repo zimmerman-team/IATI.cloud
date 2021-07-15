@@ -235,6 +235,8 @@ class TransactionIndexing(BaseIndexing):
         self.add_field('transaction_sector_vocabulary', [])
         self.add_field('transaction_sector_vocabulary_uri', [])
         self.add_field('transaction_sector_code', [])
+        self.add_field('transaction_sector_percentage', [])
+
         for sector in transaction.transactionsector_set.all():
             self.add_value_list(
                 'transaction_sector_vocabulary',
@@ -247,6 +249,10 @@ class TransactionIndexing(BaseIndexing):
             self.add_value_list(
                 'transaction_sector_code',
                 sector.sector.code
+            )
+            self.add_value_list(
+                'transaction_sector_percentage',
+                sector.percentage
             )
 
         self.add_field(
@@ -297,15 +303,22 @@ class TransactionIndexing(BaseIndexing):
         # Adding customized activity information to transaction
         self.add_field('activity_sector_vocabulary', [])
         self.add_field('activity_sector_code', [])
+        self.add_field('activity_sector_percentage', [])
 
         for activity_sector in transaction.activity.activitysector_set.all():
-
             self.add_value_list(
                 'activity_sector_vocabulary',
                 activity_sector.vocabulary_id
             )
-            self.add_value_list('activity_sector_code',
-                                activity_sector.sector.code)
+            self.add_value_list(
+                'activity_sector_code',
+                activity_sector.sector.code
+            )
+            self.add_value_list(
+                'activity_sector_percentage',
+                activity_sector.percentage
+            )
+
         add_participating_org(self, transaction.activity)
         add_activity_additional_filter_fields(self, transaction.activity)
         add_activity_date_fields(self, transaction.activity)
