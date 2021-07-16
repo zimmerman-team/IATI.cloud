@@ -43,7 +43,8 @@ from solr.transaction.tasks import solr as solr_transaction
 from solr.transaction_sector.tasks import solr as solr_transaction_sector
 from task_queue.download import DatasetDownloadTask
 from task_queue.utils import (
-    Tasks, await_async_subtasks, reset_automatic_incremental_parse_dbs
+    Tasks, automatic_incremental_validation, await_async_subtasks,
+    reset_automatic_incremental_parse_dbs
 )
 from task_queue.validation import DatasetValidationTask
 
@@ -89,7 +90,9 @@ def add_activity_to_solr(activity_id):
 # This task 'automatically' does a complete parse and index.
 # Meaning the different steps that were previously manual are all included.
 @shared_task
-def automatic_incremental_parse(start_at=1):
+def automatic_incremental_parse(start_at=1,
+                                force=False,
+                                check_validation=True):
     """
     There are several steps that need to be taken to complete an incremental
     parse/index.
@@ -152,59 +155,8 @@ def automatic_incremental_parse(start_at=1):
         drop_old_datasets()
     # STEP TWO -- End #
 
-    # STEP THREE -- DATASET VALIDATION TASK #
-    # Prepare checks
-    if start_at in (1, 2, 3):
-        check_validation_has_started = False
-        check_validation_is_active = False
-        check_empty_iteration_count = 0
-        check_empty_iteration_maximum = 3
-
-        while True:
-            url = "https://iativalidator.iatistandard.org/api/v1/queue/next"
-            response = requests.get(url, timeout=30)
-
-            # If the response is not 200, reset and check back later.
-            if response.status_code != 200:
-                check_validation_has_started = False
-                check_validation_is_active = False
-                time.sleep(60)
-                continue
-
-            check_content_is_empty = response.content.decode("utf-8") == ""
-
-            """
-            Case 1: content empty - started = false - active = false
-                wait for the validator to start
-            Case 2: content has data - started = false - active = false
-                set started to true and active to true
-            Case 3: content has data - started = true - active = true
-                wait for the content to stop having data!
-            Case 4: content empty - started = true - active = true
-                with three iterations, confirm the content is actually empty!
-                set active to false.
-            """
-            # if check_content_is_empty and not check_validation_has_started and not check_validation_is_active:  # NOQA: E501
-            if not check_content_is_empty and not check_validation_has_started and not check_validation_is_active:  # NOQA: E501
-                check_validation_has_started = True
-                check_validation_is_active = True
-            if not check_content_is_empty and check_validation_has_started and check_validation_is_active:  # NOQA: E501
-                check_empty_iteration_count = 0
-            if check_content_is_empty and check_validation_has_started and check_validation_is_active:  # NOQA: E501
-                if check_empty_iteration_count < check_empty_iteration_maximum:
-                    check_empty_iteration_count += 1
-                else:  # Validation has finished
-                    break
-            time.sleep(60)
-
-        # Now that the "waiting for validator to finish" loop is over, we know
-        # The validator is finished. Run the task. To reduce complexity, reuse
-        # the AsyncTasksFinished table.
-        get_validation_results_task()
-
-        started = len(Dataset.objects.all())
-        await_async_subtasks(started)
-    # STEP THREE -- End #
+    # Step three
+    automatic_incremental_validation(start_at, check_validation)
 
     # STEP FOUR -- PARSE ALL DATASETS #
     if start_at in (1, 2, 3, 4):
@@ -212,17 +164,19 @@ def automatic_incremental_parse(start_at=1):
         # Reusing the code here.
         for dataset in Dataset.objects.all().filter(filetype=2):
             parse_source_by_id_task.delay(dataset_id=dataset.id,
-                                          force=False,
-                                          check_validation=True)
+                                          force=force,
+                                          check_validation=check_validation)
         for dataset in Dataset.objects.all().filter(filetype=1):
             parse_source_by_id_task.delay(dataset_id=dataset.id,
-                                          force=False,
-                                          check_validation=True)
+                                          force=force,
+                                          check_validation=check_validation)
+        started = len(Dataset.objects.all())
         await_async_subtasks(started)
     # STEP FOUR -- End #
 
     # Restart the automatic_incremental_parse asynchronously and end this task.
-    automatic_incremental_parse.apply_async()
+    automatic_incremental_parse.delay(force=force,
+                                      check_validation=check_validation)
 
 
 # This task updates all of the currency exchange rates in the local database
