@@ -87,6 +87,10 @@ def add_reporting_org(serializer, activity):
             reporting_organisation.type_id
         )
         serializer.add_field(
+            'reporting_org_type_name',
+            get_child_attr(reporting_organisation, 'type.name')
+        )
+        serializer.add_field(
             'reporting_org_secondary_reporter',
             bool_string(reporting_organisation.secondary_reporter)
         )

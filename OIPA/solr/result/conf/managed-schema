@@ -128,6 +128,7 @@
 
     <field name="reporting_org_ref" type="non_case_sensitive" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="reporting_org_type" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="reporting_org_type_name" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="reporting_org_secondary_reporter" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="reporting_org_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
 
