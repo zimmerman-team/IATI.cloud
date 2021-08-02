@@ -180,4 +180,8 @@ flower==0.9.7
 # django-two-factor-auth==1.12.1
 phonenumbers==8.12.9
 
+# Required for commit hooks
 pre-commit==2.10.1
+
+# Update to be able to use Django Shell
+jedi==0.17.2
