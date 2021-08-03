@@ -672,10 +672,11 @@ def parse_source_by_id(source_id):
         return False
 
 
-@job
-def calculate_activity_aggregations_per_source(source_ref):
-    aac = ActivityAggregationCalculation()
-    aac.parse_activity_aggregations_by_source(source_ref)
+# F811 redefinition of unused 'calculate_activity_aggregations_per_source'
+# @job
+# def calculate_activity_aggregations_per_source(source_ref):
+#     aac = ActivityAggregationCalculation()
+#     aac.parse_activity_aggregations_by_source(source_ref)
 
 
 @job
