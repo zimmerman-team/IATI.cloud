@@ -498,11 +498,9 @@ def parse_all_activity_aggregations():
 
 
 @shared_task
-def calculate_activity_aggregations_per_source():
-    ds = Dataset.objects.filter(is_parsed=True)
-    for d in ds:
-        aac = ActivityAggregationCalculation()
-        aac.parse_activity_aggregations_by_source(d.id)
+def calculate_activity_aggregations_per_source(dataset_id):
+    aac = ActivityAggregationCalculation()
+    aac.parse_activity_aggregations_by_source(dataset_id)
 
 
 #
