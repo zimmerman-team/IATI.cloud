@@ -2656,6 +2656,9 @@ class ActivityIndexing(BaseIndexing):
                         value_string(forecast.value)
                     )
 
+    def activity_plus_child_aggregation(self):
+        self.add_field()
+
     def activity(self):
         activity = self.record
 

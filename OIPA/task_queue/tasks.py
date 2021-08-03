@@ -491,6 +491,14 @@ def drop_old_datasets():
     synchronize_solr_indexing()
 
 
+@shared_task
+def calculate_activity_aggregations_per_source():
+    ds = Dataset.objects.filter(is_parsed=True)
+    for d in ds:
+        aac = ActivityAggregationCalculation()
+        aac.parse_activity_aggregations_by_source(d.id)
+
+
 #
 # All deprecated DjangoRQ jobs
 # TODO: Get out the crowbar and clean out all of the old, unused bits and bobs.
