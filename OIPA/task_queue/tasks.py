@@ -492,6 +492,12 @@ def drop_old_datasets():
 
 
 @shared_task
+def parse_all_activity_aggregations():
+    aac = ActivityAggregationCalculation()
+    aac.parse_all_activity_aggregations()
+
+
+@shared_task
 def calculate_activity_aggregations_per_source():
     ds = Dataset.objects.filter(is_parsed=True)
     for d in ds:
