@@ -14,7 +14,7 @@ Django==2.0.13
 django-grappelli==2.11.1
 
 # for saving task status
-django-celery-results
+django-celery-results==2.0.0
 
 django-celery-beat==1.5.0
 
@@ -112,7 +112,12 @@ tzlocal==1.5.1
 # JSON decoder and encoder
 ujson==1.35
 
-uwsgi==2.0.17
+# Manually install UWSGI, as installation through requirements does not work.
+#    add-apt-repository ppa:deadsnakes/ppa
+#    apt-get update
+#    apt-get install build-essential python3.6-dev
+#    Pip install uwsgi
+# uwsgi==2.0.17
 
 # Use the latest version of Supervisor (4.0.0.dev0) from Github, because it's
 # not yet in PyPI:
@@ -165,7 +170,7 @@ pysolr==3.8.1
 #####
 # FLOWER FOR CELERY WORKER STATUS
 ######
-flower
+flower==0.9.7
 
 
 #####
@@ -175,4 +180,8 @@ flower
 # django-two-factor-auth==1.12.1
 phonenumbers==8.12.9
 
+# Required for commit hooks
 pre-commit==2.10.1
+
+# Update to be able to use Django Shell
+jedi==0.17.2
