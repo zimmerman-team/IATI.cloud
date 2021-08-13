@@ -29,7 +29,7 @@ from iati.models import Activity, Budget, Document, DocumentLink, Result
 from iati.transaction.models import Transaction
 from iati_organisation.models import Organisation
 from iati_synchroniser.models import (
-    AsyncTasksFinished, Dataset, DatasetNote, DatasetUpdateDates
+    AsyncTasksFinished, Dataset, DatasetNote, DatasetUpdateDates, Publisher
 )
 from OIPA.celery import app
 from solr.activity.tasks import ActivityTaskIndexing
@@ -92,7 +92,8 @@ def add_activity_to_solr(activity_id):
 @shared_task
 def automatic_incremental_parse(start_at=1,
                                 force=False,
-                                check_validation=True):
+                                check_validation=True,
+                                org_list=None):
     """
     There are several steps that need to be taken to complete an incremental
     parse/index.
@@ -160,13 +161,29 @@ def automatic_incremental_parse(start_at=1,
 
     # STEP FOUR -- PARSE ALL DATASETS #
     if start_at in (1, 2, 3, 4):
+        # compile a list of organisation IDs based on the supplied org list
+        org_ids = []
+        if org_list:
+            for p in Publisher.objects.filter(publisher_iati_id__in=org_list):
+                org_ids.append(p.id)
+
         # parse_all_existing_sources_task() does not actually run the parsing,
-        # Reusing the code here.
-        for dataset in Dataset.objects.all().filter(filetype=2):
+        # TODO: Reuse parse_all_existing_sources_task
+        # Reusing the code here. Datasets are named 1 and 2 because they
+        # Contain filetypes 1 and 2, activity and publisher respectively.
+        dataset1 = Dataset.objects.all().filter(filetype=1)
+        if org_ids:
+            dataset1 = dataset1.filter(publisher_id__in=org_ids)
+        dataset2 = Dataset.objects.all().filter(filetype=2)
+        if org_ids:
+            dataset2 = dataset2.filter(publisher_id__in=org_ids)
+
+        # As always, parse filetype 2 first.
+        for dataset in dataset2:
             parse_source_by_id_task.delay(dataset_id=dataset.id,
                                           force=force,
                                           check_validation=check_validation)
-        for dataset in Dataset.objects.all().filter(filetype=1):
+        for dataset in dataset1:
             parse_source_by_id_task.delay(dataset_id=dataset.id,
                                           force=force,
                                           check_validation=check_validation)
@@ -252,12 +269,40 @@ def parse_source_by_id_task(self, dataset_id, force=False,
 
 # This task is used to parse all existing
 @shared_task
-def parse_all_existing_sources_task(force=False, check_validation=True):
+def parse_all_existing_sources_task(force=False,
+                                    check_validation=True,
+                                    org_list=None):
     tasks = Tasks(
         parent_task='task_queue.tasks.parse_all_existing_sources_task',
         children_tasks=['task_queue.tasks.parse_source_by_id_task']
     )
     if tasks.is_parent():
+        # compile a list of organisation IDs based on the supplied org list
+        org_ids = []
+        if org_list:
+            for p in Publisher.objects.filter(publisher_iati_id__in=org_list):
+                org_ids.append(p.id)
+
+        # parse_all_existing_sources_task() does not actually run the parsing,
+        # Reusing the code here. Datasets are named 1 and 2 because they
+        # Contain filetypes 1 and 2, activity and publisher respectively.
+        dataset1 = Dataset.objects.all().filter(filetype=1)
+        if org_ids:
+            dataset1 = dataset1.filter(publisher_id__in=org_ids)
+        dataset2 = Dataset.objects.all().filter(filetype=2)
+        if org_ids:
+            dataset2 = dataset2.filter(publisher_id__in=org_ids)
+
+        # As always, parse filetype 2 first.
+        for dataset in dataset2:
+            parse_source_by_id_task.delay(dataset_id=dataset.id,
+                                          force=force,
+                                          check_validation=check_validation)
+        for dataset in dataset1:
+            parse_source_by_id_task.delay(dataset_id=dataset.id,
+                                          force=force,
+                                          check_validation=check_validation)
+
         for dataset in Dataset.objects.all().filter(filetype=2):
             parse_source_by_id_task.delay(dataset_id=dataset.id,
                                           force=force,
