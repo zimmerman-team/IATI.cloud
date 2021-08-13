@@ -193,7 +193,8 @@ def automatic_incremental_parse(start_at=1,
 
     # Restart the automatic_incremental_parse asynchronously and end this task.
     automatic_incremental_parse.delay(force=force,
-                                      check_validation=check_validation)
+                                      check_validation=check_validation,
+                                      org_list=org_list)
 
 
 # This task updates all of the currency exchange rates in the local database
@@ -299,15 +300,6 @@ def parse_all_existing_sources_task(force=False,
                                           force=force,
                                           check_validation=check_validation)
         for dataset in dataset1:
-            parse_source_by_id_task.delay(dataset_id=dataset.id,
-                                          force=force,
-                                          check_validation=check_validation)
-
-        for dataset in Dataset.objects.all().filter(filetype=2):
-            parse_source_by_id_task.delay(dataset_id=dataset.id,
-                                          force=force,
-                                          check_validation=check_validation)
-        for dataset in Dataset.objects.all().filter(filetype=1):
             parse_source_by_id_task.delay(dataset_id=dataset.id,
                                           force=force,
                                           check_validation=check_validation)
