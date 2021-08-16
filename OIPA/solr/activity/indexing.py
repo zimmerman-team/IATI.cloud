@@ -114,6 +114,11 @@ class ActivityIndexing(BaseIndexing):
             self.add_field('title_narrative_lang', [])
             self.add_field('title_narrative_text', [])
 
+            if title:
+                t = title.narratives.first()
+                if t.content:
+                    self.add_field('title_narrative_first', t.content)
+
             self.related_narrative(
                 title,
                 'title_narrative',
