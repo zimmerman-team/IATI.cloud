@@ -346,22 +346,18 @@ class ActivityAggregationCalculation():
         child_currency = getattr(
             activity.child_aggregation, aggregation_type + '_currency')
 
-        total_aggregation_currency = None
-
-        if (activity_value != 0 and child_value == 0
-                or activity_value == child_value):
-            total_aggregation_currency = activity_currency
-        elif activity_value == 0 and child_value != 0:
-            total_aggregation_currency = child_currency
-
         if (activity_value is not None) and (child_value is not None):
             total_aggregation_value = activity_value + child_value
+            total_aggregation_currency = activity_currency
         elif (activity_value is not None) and (child_value is None):
             total_aggregation_value = activity_value
+            total_aggregation_currency = activity_currency
         elif (activity_value is None) and (child_value is not None):
             total_aggregation_value = child_value
+            total_aggregation_currency = child_currency
         else:
             total_aggregation_value = None
+            total_aggregation_currency = None
 
         setattr(total_aggregation, aggregation_type +
                 '_currency', total_aggregation_currency)
