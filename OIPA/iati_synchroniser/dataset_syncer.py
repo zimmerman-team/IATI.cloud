@@ -96,6 +96,17 @@ class DatasetSyncer(object):
         dud.success = True
         dud.save()
 
+    def synchronize_single_source_with_iati_api(self, iati_id):
+        source_url = "https://iatiregistry.org/api/action/package_search?fq=id:{}".format(iati_id)  # NOQA: E501
+        results = self.get_data(source_url)
+
+        # do not verify SSL (for downloading dataset):
+        ssl._create_default_https_context = ssl._create_unverified_context
+
+        # update dataset
+        for dataset in results['result']['results']:
+            self.update_or_create_dataset(dataset)
+
     def update_or_create_publisher(self, publisher):
         """
 

@@ -28,9 +28,7 @@ from iati.activity_aggregation_calculation import (
 from iati.models import Activity, Budget, Document, DocumentLink, Result
 from iati.transaction.models import Transaction
 from iati_organisation.models import Organisation
-from iati_synchroniser.models import (
-    AsyncTasksFinished, Dataset, DatasetNote, DatasetUpdateDates
-)
+from iati_synchroniser.models import Dataset, DatasetNote, DatasetUpdateDates
 from OIPA.celery import app
 from solr.activity.tasks import ActivityTaskIndexing
 from solr.activity.tasks import solr as solr_activity
@@ -314,6 +312,24 @@ def revoke_all_tasks():
 def priority_queue_parse_source(dataset_id, force=False,
                                 check_validation=True):
     util_parse_source_by_id(dataset_id, force, check_validation)
+
+
+@shared_task
+def priority_queue_sync_dataset(dataset_id):
+    # Synchronise the dataset with the given id.
+    from django.core import management
+    management.call_command(
+        'get_new_single_source_from_iati_registry_and_download',
+        iati_id=dataset_id,
+        verbosity=0
+    )
+
+    d = Dataset.objects.filter(iati_id=dataset_id).first()
+    d.managed_by_aida = True
+    d.save()
+    priority_queue_parse_source.delay(dataset_id=d.id,
+                                      force=False,
+                                      check_validation=False)
 
 
 # Sometimes, for any reason, there is a little difference between records of

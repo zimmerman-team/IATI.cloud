@@ -30,6 +30,10 @@ urlpatterns = [
         'api.publisher.urls', namespace='publishers'
     )),
 
+    url(r'^data_manager/', include(
+        'api.data_manager.urls', namespace='data_manager'
+    )),
+
     # This endpoint is not working yet, so we remove it just for now
     # url(r'^chains/', include('api.chain.urls', namespace='chains')),
 

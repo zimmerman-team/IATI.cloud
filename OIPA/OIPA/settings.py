@@ -372,9 +372,13 @@ CELERY_ACKS_LATE = True
 CELERY_WORKER_PREFETCH_MULTIPLIER = 1  # limiting the number of reserved tasks.
 CELERY_TIMEZONE = 'UTC'
 CELERY_ENABLE_UTC = True
-CELERY_TASK_ROUTES = {'task_queue.tasks.revoke_all_tasks': {'queue':
-                                                            'revoke_queue'},
-                      'task_queue.tasks.priority_queue_parse_source': {'queue': 'priority_queue'}}  # NOQA: E501
+CELERY_TASK_ROUTES = {
+    'task_queue.tasks.revoke_all_tasks': {'queue': 'revoke_queue'},
+    'task_queue.tasks.priority_queue_parse_source': {'queue':
+                                                     'priority_queue'},
+    'task_queue.tasks.priority_queue_sync_dataset': {'queue':
+                                                     'priority_queue'},
+}
 CELERY_BROKER_URL = 'amqp://localhost'
 CELERY_RESULT_BACKEND = 'django-db'  # 'rpc://localhost'
 # 'db+postgresql://oipa:oipa@localhost/oipa'
@@ -436,6 +440,7 @@ VALIDATION = {
 
 # To be overwritten by local_settings.py in any case for security purposes.
 POSTMAN_API_KEY = 'OverwriteFromLocalSettings'
+AIDA_IATICLOUD_AUTH = 'OverwriteFromLocalSettings'
 
 try:
     from .local_settings import *  # noqa: F401, F403
