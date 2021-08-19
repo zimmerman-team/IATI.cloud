@@ -12,7 +12,7 @@ from iati_synchroniser.models import (
     Dataset, DatasetDownloadsStarted, DatasetFailedPickup, DatasetUpdateDates,
     Publisher
 )
-from task_queue.tasks import DatasetDownloadTask
+from task_queue.tasks import DatasetDownloadTask, PriorityDatasetDownloadTask
 
 DATASET_URL = 'https://iatiregistry.org/api/action/package_search?rows=200&{options}'  # NOQA: E501
 PUBLISHER_URL = 'https://iatiregistry.org/api/action/organization_list?all_fields=true&include_extras=true&limit=50&{options}'  # NOQA: E501
@@ -105,7 +105,7 @@ class DatasetSyncer(object):
 
         # update dataset
         for dataset in results['result']['results']:
-            self.update_or_create_dataset(dataset)
+            self.update_or_create_dataset(dataset, priority=True)
 
     def update_or_create_publisher(self, publisher):
         """
@@ -137,7 +137,7 @@ class DatasetSyncer(object):
 
         return obj
 
-    def update_or_create_dataset(self, dataset):
+    def update_or_create_dataset(self, dataset, priority=False):
         """
         Updates or creates a Dataset AND downloads it locally. Returns internal
         URL for the Dataset
@@ -152,7 +152,10 @@ class DatasetSyncer(object):
         DatasetDownloadsStarted.objects.create()
 
         # Pass the data generated here to the DatasetDownloadTask
-        DatasetDownloadTask.delay(dataset_data=dataset)
+        if priority:
+            PriorityDatasetDownloadTask(dataset_data=dataset)
+        else:
+            DatasetDownloadTask.delay(dataset_data=dataset)
 
     def remove_deprecated(self):
         """

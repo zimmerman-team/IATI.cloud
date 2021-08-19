@@ -6,6 +6,7 @@ import os
 
 import celery
 import requests
+import self as self
 from django.conf import settings
 from django.utils.encoding import smart_text
 
@@ -306,3 +307,7 @@ class DatasetDownloadTask(celery.Task):
 
         # URL string to save as a Dataset attribute:
         return os.path.join(main_download_dir, filename)
+
+
+class PriorityDatasetDownloadTask(DatasetDownloadTask):
+    pass

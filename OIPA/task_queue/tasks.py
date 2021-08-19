@@ -39,7 +39,7 @@ from solr.datasetnote.tasks import solr as solr_dataset_note
 from solr.result.tasks import solr as solr_result
 from solr.transaction.tasks import solr as solr_transaction
 from solr.transaction_sector.tasks import solr as solr_transaction_sector
-from task_queue.download import DatasetDownloadTask
+from task_queue.download import DatasetDownloadTask, PriorityDatasetDownloadTask
 from task_queue.utils import (
     Tasks, automatic_incremental_validation, await_async_subtasks,
     reset_automatic_incremental_parse_dbs, util_parse_source_by_id
@@ -54,6 +54,7 @@ redis_conn = Redis.from_url(settings.RQ_REDIS_URL)
 # Register a custom base task then Celery recognizes it
 DatasetValidationTask = app.register_task(DatasetValidationTask())
 DatasetDownloadTask = app.register_task(DatasetDownloadTask())
+PriorityDatasetDownloadTask = app.register_task(PriorityDatasetDownloadTask())
 
 
 #

@@ -378,6 +378,9 @@ CELERY_TASK_ROUTES = {
                                                      'priority_queue'},
     'task_queue.tasks.priority_queue_sync_dataset': {'queue':
                                                      'priority_queue'},
+    'task_queue.download.PriorityDatasetDownloadTask': {'queue':
+                                                        'priority_queue'},
+
 }
 CELERY_BROKER_URL = 'amqp://localhost'
 CELERY_RESULT_BACKEND = 'django-db'  # 'rpc://localhost'
