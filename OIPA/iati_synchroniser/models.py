@@ -83,6 +83,8 @@ class Dataset(models.Model):
     validation_status = JSONField(null=True, default=None)
     validation_md5 = models.CharField(max_length=512, null=True, blank=True)
 
+    managed_by_aida = models.BooleanField(null=False, default=False)
+
     class Meta:
         verbose_name_plural = "IATI XML sources"
         ordering = ["name"]
