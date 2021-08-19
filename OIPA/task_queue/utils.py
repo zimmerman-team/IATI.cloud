@@ -199,3 +199,32 @@ def automatic_incremental_validation(start_at, check_validation):
         started = len(Dataset.objects.all())
         await_async_subtasks(started)
     # STEP THREE -- End #
+
+
+def util_parse_source_by_id(dataset_id, force, check_validation):
+    if check_validation:
+        try:
+            dataset = Dataset.objects.filter(pk=dataset_id,
+                                             validation_status__critical__lte=0)  # NOQA: E501
+            dataset = dataset.first()
+            dataset.process(force_reparse=force)
+
+            # Save a row to the AsyncTasksFinished table.
+            AsyncTasksFinished.objects.create()
+        except AttributeError:
+            print('no dataset found')
+
+            # Save a row to the AsyncTasksFinished table.
+            AsyncTasksFinished.objects.create()
+            pass
+    else:
+        try:
+            dataset = Dataset.objects.get(pk=dataset_id)
+            dataset.process(force_reparse=force)
+
+            # Save a row to the AsyncTasksFinished table.
+            AsyncTasksFinished.objects.create()
+        except Dataset.DoesNotExist:
+            # Save a row to the AsyncTasksFinished table.
+            AsyncTasksFinished.objects.create()
+            pass

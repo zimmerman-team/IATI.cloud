@@ -44,7 +44,7 @@ from solr.transaction_sector.tasks import solr as solr_transaction_sector
 from task_queue.download import DatasetDownloadTask
 from task_queue.utils import (
     Tasks, automatic_incremental_validation, await_async_subtasks,
-    reset_automatic_incremental_parse_dbs
+    reset_automatic_incremental_parse_dbs, util_parse_source_by_id
 )
 from task_queue.validation import DatasetValidationTask
 
@@ -219,34 +219,11 @@ def get_validation_results_task():
 def parse_source_by_id_task(self, dataset_id, force=False,
                             check_validation=True):
     try:
-        if check_validation:
-            try:
-                dataset = Dataset.objects.filter(pk=dataset_id,
-                                                 validation_status__critical__lte=0)  # NOQA: E501
-                dataset = dataset.first()
-                dataset.process(force_reparse=force)
-
-                # Save a row to the AsyncTasksFinished table.
-                AsyncTasksFinished.objects.create()
-            except AttributeError:
-                print('no dataset found')
-
-                # Save a row to the AsyncTasksFinished table.
-                AsyncTasksFinished.objects.create()
-                pass
-        else:
-            try:
-                dataset = Dataset.objects.get(pk=dataset_id)
-                dataset.process(force_reparse=force)
-
-                # Save a row to the AsyncTasksFinished table.
-                AsyncTasksFinished.objects.create()
-            except Dataset.DoesNotExist:
-                # Save a row to the AsyncTasksFinished table.
-                AsyncTasksFinished.objects.create()
-                pass
+        util_parse_source_by_id(dataset_id, force, check_validation)
     except Exception as exc:
-        raise self.retry(kwargs={'dataset_id': dataset_id, 'force': True},
+        raise self.retry(kwargs={'dataset_id': dataset_id,
+                                 'force': True,
+                                 'check_validation': check_validation},
                          exc=exc)
 
 
@@ -331,6 +308,12 @@ def revoke_all_tasks():
 
         if is_empty_active_workers and is_empty_reserved_workers:
             is_empty_worker = True
+
+
+@shared_task
+def priority_queue_parse_source(dataset_id, force=False,
+                                check_validation=True):
+    util_parse_source_by_id(dataset_id, force, check_validation)
 
 
 # Sometimes, for any reason, there is a little difference between records of
