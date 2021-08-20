@@ -59,6 +59,14 @@ def handle_registration_update(publisher, register, auth):
     datasets = Dataset.objects.filter(publisher_id=p_id)
     if datasets:
         for d in datasets:
+            dataset_id = d.iati_id
+            if managed_by_aida:
+                from django.core import management
+                management.call_command(
+                    'get_new_single_source_from_iati_registry_and_download',
+                    iati_id=dataset_id,
+                    verbosity=0
+                )
             d.managed_by_aida = managed_by_aida
             d.save()
 
