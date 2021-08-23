@@ -188,6 +188,15 @@ def update_exchange_rates():
     r.update_rates(force=False)
 
 
+# This task updates all of the currency exchange rates in the local database
+@shared_task
+def new_update_exchange_rates():
+    # Task to
+    from currency_convert.imf_rate_parser import NewRateParser
+    r = NewRateParser()
+    r.parse_rates()
+
+
 # This task starts updating and retrieving datasets from the IATI registry
 @shared_task
 def get_new_sources_from_iati_api_task():

@@ -13,6 +13,13 @@ from currency_convert.models import MonthlyAverage
 from iati_codelists.models import Currency
 
 
+# New imports
+import csv
+import requests
+import datetime
+from itertools import islice
+
+
 class RateBrowser():
 
     def __init__(self):
@@ -195,3 +202,76 @@ class RateParser():
                 self.save_averages()
                 # reset data for next loop
                 self.reset_data()
+
+
+class NewRateParser:
+    """The new rate parser.
+
+    Rather than scraping thousands of IMF pages, this accesses the
+    codeforIATI exchangerates dataset, which we contributed to in order to
+    match the output of the old RateParser, which returned currencies converted
+    to SDRs in monthly average format.
+
+    The new dataset is found at:
+    https://github.com/codeforIATI/imf-exchangerates/
+
+    To use this dataset we:
+    Download the supplied .csv file. At time of implementation this contains:
+    Date, Rate, Currency (name like "EUR", "USD"), Frequency (M for monthly),
+    Source (IMF), Country Code ("AF"), Country ("Afghanistan"), in that order.
+
+    The former implementation resulted in a table with:
+    id, month, year, value, currency_id, imf_url
+
+    by mapping month and year to the Date, value to Rate, currency_id to
+    Currency, and the for now imf_url to the source repository from
+    codeforIATI, as I am unsure if anyone is using the imf_url.
+    """
+    def __init__(self):
+        self.csv_source = "https://codeforiati.org/imf-exchangerates/imf_exchangerates_ENSA_XDR.csv"  # NOQA: E501
+        self.codeforIATI_repository = "https://github.com/codeforIATI/imf-exchangerates"  # NOQA: E501
+        self.original_headers = [
+            'Date', 'Rate', 'Currency', 'Frequency', 'Source', 'Country code',
+            'Country'
+        ]
+
+    def bulk_save_monthly_averages(self, monthly_averages):
+        # Batch write MonthlyAverages
+        batch_size = 500
+        while True:
+            batch = list(islice(monthly_averages, batch_size))
+            if not batch:
+                break
+            MonthlyAverage.objects.bulk_create(batch, batch_size)
+
+    def parse_rates(self):
+        # Retrieve dataset from repo
+        response = requests.get(self.csv_source, timeout=30)
+        decoded_content = response.content.decode('utf-8').splitlines()
+        reader = csv.reader(decoded_content, delimiter=',')
+
+        # Check if the headers have not changed
+        headers = next(reader, None)
+        if not headers == self.original_headers:
+            return "Source dataset changed, contact an administrator."
+
+        # Loop over the data
+        data = list(reader)
+        monthly_averages = []
+        for row in data:
+            # Check if the currency exists and create a new one if not.
+            currency = Currency.objects.get_or_create(
+                code=row[2],
+                name=row[6]
+            )
+
+            # Create a monthly averages object to store later.
+            monthly_averages.append(MonthlyAverage(
+                currency=currency,
+                month=datetime.datetime.strptime(row[0], "%Y-%M-%d").month,
+                year=datetime.datetime.strptime(row[0], "%Y-%M-%d").year,
+                imf_url=self.codeforIATI_repository,
+                value=row[1]
+            ))
+        MonthlyAverage.objects.all().delete()
+        self.bulk_save_monthly_averages(monthly_averages)
