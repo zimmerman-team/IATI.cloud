@@ -2677,7 +2677,7 @@ class ActivityIndexing(BaseIndexing):
 
         self.add_field(
             "%s%s" % (prefix, "budget_value"),
-            int(data.budget_value) if data.budget_value else 0.0
+            data.budget_value if data.budget_value else 0.0
         )
         self.add_field(
             "%s%s" % (prefix, "budget_currency"),
@@ -2685,7 +2685,7 @@ class ActivityIndexing(BaseIndexing):
         )
         self.add_field(
             "%s%s" % (prefix, "disbursement_value"),
-            int(data.disbursement_value) if data.disbursement_value else 0.0
+            data.disbursement_value if data.disbursement_value else 0.0
         )
         self.add_field(
             "%s%s" % (prefix, "disbursement_currency"),
@@ -2693,7 +2693,7 @@ class ActivityIndexing(BaseIndexing):
         )
         self.add_field(
             "%s%s" % (prefix, "incoming_funds_value"),
-            int(data.incoming_funds_value) if data.incoming_funds_value else 0.0  # NOQA: E501
+            data.incoming_funds_value if data.incoming_funds_value else 0.0  # NOQA: E501
         )
         self.add_field(
             "%s%s" % (prefix, "incoming_funds_currency"),
@@ -2701,7 +2701,7 @@ class ActivityIndexing(BaseIndexing):
         )
         self.add_field(
             "%s%s" % (prefix, "commitment_value"),
-            int(data.commitment_value) if data.commitment_value else 0.0
+            data.commitment_value if data.commitment_value else 0.0
         )
         self.add_field(
             "%s%s" % (prefix, "commitment_currency"),
@@ -2709,7 +2709,7 @@ class ActivityIndexing(BaseIndexing):
         )
         self.add_field(
             "%s%s" % (prefix, "expenditure_value"),
-            int(data.expenditure_value) if data.expenditure_value else 0.0
+            data.expenditure_value if data.expenditure_value else 0.0
         )
         self.add_field(
             "%s%s" % (prefix, "expenditure_currency"),
@@ -2717,7 +2717,7 @@ class ActivityIndexing(BaseIndexing):
         )
         self.add_field(
             "%s%s" % (prefix, "interest_payment_value"),
-            int(data.interest_payment_value) if data.interest_payment_value else 0.0  # NOQA: E501
+            data.interest_payment_value if data.interest_payment_value else 0.0  # NOQA: E501
         )
         self.add_field(
             "%s%s" % (prefix, "interest_payment_currency"),
@@ -2725,7 +2725,7 @@ class ActivityIndexing(BaseIndexing):
         )
         self.add_field(
             "%s%s" % (prefix, "loan_repayment_value"),
-            int(data.loan_repayment_value) if data.loan_repayment_value else 0.0  # NOQA: E501
+            data.loan_repayment_value if data.loan_repayment_value else 0.0  # NOQA: E501
         )
         self.add_field(
             "%s%s" % (prefix, "loan_repayment_currency"),
@@ -2733,7 +2733,7 @@ class ActivityIndexing(BaseIndexing):
         )
         self.add_field(
             "%s%s" % (prefix, "reimbursement_value"),
-            int(data.reimbursement_value) if data.reimbursement_value else 0.0
+            data.reimbursement_value if data.reimbursement_value else 0.0
         )
         self.add_field(
             "%s%s" % (prefix, "reimbursement_currency"),
@@ -2741,7 +2741,7 @@ class ActivityIndexing(BaseIndexing):
         )
         self.add_field(
             "%s%s" % (prefix, "purchase_of_equity_value"),
-            int(data.purchase_of_equity_value) if data.purchase_of_equity_value else 0.0  # NOQA: E501
+            data.purchase_of_equity_value if data.purchase_of_equity_value else 0.0  # NOQA: E501
         )
         self.add_field(
             "%s%s" % (prefix, "purchase_of_equity_currency"),
@@ -2749,7 +2749,7 @@ class ActivityIndexing(BaseIndexing):
         )
         self.add_field(
             "%s%s" % (prefix, "sale_of_equity_value"),
-            int(data.sale_of_equity_value) if data.sale_of_equity_value else 0.0  # NOQA: E501
+            data.sale_of_equity_value if data.sale_of_equity_value else 0.0  # NOQA: E501
         )
         self.add_field(
             "%s%s" % (prefix, "sale_of_equity_currency"),
@@ -2757,7 +2757,7 @@ class ActivityIndexing(BaseIndexing):
         )
         self.add_field(
             "%s%s" % (prefix, "credit_guarantee_value"),
-            int(data.credit_guarantee_value) if data.credit_guarantee_value else 0.0  # NOQA: E501
+            data.credit_guarantee_value if data.credit_guarantee_value else 0.0  # NOQA: E501
         )
         self.add_field(
             "%s%s" % (prefix, "credit_guarantee_currency"),
@@ -2765,7 +2765,7 @@ class ActivityIndexing(BaseIndexing):
         )
         self.add_field(
             "%s%s" % (prefix, "incoming_commitment_value"),
-            int(data.incoming_commitment_value) if data.incoming_commitment_value else 0.0  # NOQA: E501
+            data.incoming_commitment_value if data.incoming_commitment_value else 0.0  # NOQA: E501
         )
         self.add_field(
             "%s%s" % (prefix, "incoming_commitment_currency"),
