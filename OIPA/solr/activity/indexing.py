@@ -10,6 +10,9 @@ from api.activity.serializers import (
     PlannedDisbursementSerializer, RelatedActivitySerializer,
     ReportingOrganisationSerializer, TitleSerializer
 )
+from iati.models import (
+    ActivityAggregation, ActivityPlusChildAggregation, ChildAggregation
+)
 from solr.activity.references import (
     ActivityDateReference, ActivityScopeReference, ActivityStatusReference,
     CapitalSpendReference, CollaborationTypeReference, ConditionsReference,
@@ -110,6 +113,11 @@ class ActivityIndexing(BaseIndexing):
             self.add_field('title_narrative', [])
             self.add_field('title_narrative_lang', [])
             self.add_field('title_narrative_text', [])
+
+            if title:
+                t = title.narratives.first()
+                if t.content:
+                    self.add_field('title_narrative_first', t.content)
 
             self.related_narrative(
                 title,
@@ -2656,6 +2664,119 @@ class ActivityIndexing(BaseIndexing):
                         value_string(forecast.value)
                     )
 
+    def aggregation_indexing(self, prefix):
+        activity = self.record
+
+        data = {}
+        if prefix == "activity_aggregation_":
+            data = ActivityAggregation.objects.filter(activity__iati_identifier=activity.iati_identifier)[0]  # NOQA: E501
+        if prefix == "activity_plus_child_aggregation_":
+            data = ActivityPlusChildAggregation.objects.filter(activity__iati_identifier=activity.iati_identifier)[0]  # NOQA: E501
+        if prefix == "child_aggregation_":
+            data = ChildAggregation.objects.filter(activity__iati_identifier=activity.iati_identifier)[0]  # NOQA: E501
+
+        self.add_field(
+            "%s%s" % (prefix, "budget_value"),
+            data.budget_value if data.budget_value else 0.0
+        )
+        self.add_field(
+            "%s%s" % (prefix, "budget_currency"),
+            str(data.budget_currency)
+        )
+        self.add_field(
+            "%s%s" % (prefix, "disbursement_value"),
+            data.disbursement_value if data.disbursement_value else 0.0
+        )
+        self.add_field(
+            "%s%s" % (prefix, "disbursement_currency"),
+            str(data.disbursement_currency)
+        )
+        self.add_field(
+            "%s%s" % (prefix, "incoming_funds_value"),
+            data.incoming_funds_value if data.incoming_funds_value else 0.0  # NOQA: E501
+        )
+        self.add_field(
+            "%s%s" % (prefix, "incoming_funds_currency"),
+            str(data.incoming_funds_currency)
+        )
+        self.add_field(
+            "%s%s" % (prefix, "commitment_value"),
+            data.commitment_value if data.commitment_value else 0.0
+        )
+        self.add_field(
+            "%s%s" % (prefix, "commitment_currency"),
+            str(data.commitment_currency)
+        )
+        self.add_field(
+            "%s%s" % (prefix, "expenditure_value"),
+            data.expenditure_value if data.expenditure_value else 0.0
+        )
+        self.add_field(
+            "%s%s" % (prefix, "expenditure_currency"),
+            str(data.expenditure_currency)
+        )
+        self.add_field(
+            "%s%s" % (prefix, "interest_payment_value"),
+            data.interest_payment_value if data.interest_payment_value else 0.0  # NOQA: E501
+        )
+        self.add_field(
+            "%s%s" % (prefix, "interest_payment_currency"),
+            str(data.interest_payment_currency)
+        )
+        self.add_field(
+            "%s%s" % (prefix, "loan_repayment_value"),
+            data.loan_repayment_value if data.loan_repayment_value else 0.0  # NOQA: E501
+        )
+        self.add_field(
+            "%s%s" % (prefix, "loan_repayment_currency"),
+            str(data.loan_repayment_currency)
+        )
+        self.add_field(
+            "%s%s" % (prefix, "reimbursement_value"),
+            data.reimbursement_value if data.reimbursement_value else 0.0
+        )
+        self.add_field(
+            "%s%s" % (prefix, "reimbursement_currency"),
+            str(data.reimbursement_currency)
+        )
+        self.add_field(
+            "%s%s" % (prefix, "purchase_of_equity_value"),
+            data.purchase_of_equity_value if data.purchase_of_equity_value else 0.0  # NOQA: E501
+        )
+        self.add_field(
+            "%s%s" % (prefix, "purchase_of_equity_currency"),
+            str(data.purchase_of_equity_currency)
+        )
+        self.add_field(
+            "%s%s" % (prefix, "sale_of_equity_value"),
+            data.sale_of_equity_value if data.sale_of_equity_value else 0.0  # NOQA: E501
+        )
+        self.add_field(
+            "%s%s" % (prefix, "sale_of_equity_currency"),
+            str(data.sale_of_equity_currency)
+        )
+        self.add_field(
+            "%s%s" % (prefix, "credit_guarantee_value"),
+            data.credit_guarantee_value if data.credit_guarantee_value else 0.0  # NOQA: E501
+        )
+        self.add_field(
+            "%s%s" % (prefix, "credit_guarantee_currency"),
+            str(data.credit_guarantee_currency)
+        )
+        self.add_field(
+            "%s%s" % (prefix, "incoming_commitment_value"),
+            data.incoming_commitment_value if data.incoming_commitment_value else 0.0  # NOQA: E501
+        )
+        self.add_field(
+            "%s%s" % (prefix, "incoming_commitment_currency"),
+            str(data.incoming_commitment_currency)
+        )
+
+    def activity_plus_child_aggregation(self):
+        self.aggregation_indexing("activity_aggregation_")
+        self.aggregation_indexing("activity_plus_child_aggregation_")
+        self.aggregation_indexing("child_aggregation_")
+
     def activity(self):
         activity = self.record
 
@@ -2772,6 +2893,7 @@ class ActivityIndexing(BaseIndexing):
         self.result()
         self.crs_add()
         self.fss()
+        self.activity_plus_child_aggregation()
 
     def to_representation(self, activity):
         self.record = activity
