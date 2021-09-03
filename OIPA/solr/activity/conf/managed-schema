@@ -128,6 +128,10 @@
     <field name="dataset_iati_version" type="string" multiValued="false" indexed="true" required="true" stored="true"/>
     <field name="dataset_date_created" type="pdate" multiValued="false" indexed="true" required="true" stored="true"/>
     <field name="dataset_date_updated" type="pdate" multiValued="false" indexed="true" required="true" stored="true"/>
+    <field name="dataset_iati_id" type="string" multiValued="false" indexed="true" required="true" stored="true"/>
+    <field name="dataset_name" type="string" multiValued="false" indexed="true" required="true" stored="true"/>
+    <field name="dataset_publisher_id" type="string" multiValued="false" indexed="true" required="true" stored="true"/>
+    <field name="dataset_publisher_iati_id" type="string" multiValued="false" indexed="true" required="true" stored="true"/>
 
     <field name="last_updated_datetime" type="string" multiValued="false" indexed="false" required="false" stored="true"/>
     <field name="last_updated_datetime_f" type="pdate" multiValued="false" indexed="true" required="false" stored="true"/>
@@ -676,79 +680,133 @@
 
     <!--Activity Aggregation Information -->
     <field name="activity_aggregation_budget_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="activity_aggregation_budget_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="activity_aggregation_budget_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="activity_aggregation_disbursement_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="activity_aggregation_disbursement_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="activity_aggregation_disbursement_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="activity_aggregation_incoming_funds_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="activity_aggregation_incoming_funds_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="activity_aggregation_incoming_funds_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="activity_aggregation_commitment_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="activity_aggregation_commitment_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="activity_aggregation_commitment_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="activity_aggregation_expenditure_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="activity_aggregation_expenditure_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="activity_aggregation_expenditure_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="activity_aggregation_interest_payment_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="activity_aggregation_interest_payment_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="activity_aggregation_interest_payment_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="activity_aggregation_loan_repayment_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="activity_aggregation_loan_repayment_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="activity_aggregation_loan_repayment_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="activity_aggregation_reimbursement_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="activity_aggregation_reimbursement_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="activity_aggregation_reimbursement_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="activity_aggregation_purchase_of_equity_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="activity_aggregation_purchase_of_equity_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="activity_aggregation_purchase_of_equity_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="activity_aggregation_sale_of_equity_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="activity_aggregation_sale_of_equity_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="activity_aggregation_sale_of_equity_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="activity_aggregation_credit_guarantee_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="activity_aggregation_credit_guarantee_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="activity_aggregation_credit_guarantee_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="activity_aggregation_incoming_commitment_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="activity_aggregation_incoming_commitment_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="activity_aggregation_incoming_commitment_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="activity_aggregation_outgoing_pledge_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="activity_aggregation_outgoing_pledge_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="activity_aggregation_outgoing_pledge_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="activity_aggregation_incoming_pledge_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="activity_aggregation_incoming_pledge_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="activity_aggregation_incoming_pledge_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
 
     <field name="child_aggregation_budget_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="child_aggregation_budget_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="child_aggregation_budget_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="child_aggregation_disbursement_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="child_aggregation_disbursement_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="child_aggregation_disbursement_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="child_aggregation_incoming_funds_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="child_aggregation_incoming_funds_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="child_aggregation_incoming_funds_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="child_aggregation_commitment_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="child_aggregation_commitment_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="child_aggregation_commitment_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="child_aggregation_expenditure_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="child_aggregation_expenditure_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="child_aggregation_expenditure_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="child_aggregation_interest_payment_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="child_aggregation_interest_payment_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="child_aggregation_interest_payment_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="child_aggregation_loan_repayment_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="child_aggregation_loan_repayment_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="child_aggregation_loan_repayment_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="child_aggregation_reimbursement_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="child_aggregation_reimbursement_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="child_aggregation_reimbursement_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="child_aggregation_purchase_of_equity_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="child_aggregation_purchase_of_equity_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="child_aggregation_purchase_of_equity_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="child_aggregation_sale_of_equity_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="child_aggregation_sale_of_equity_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="child_aggregation_sale_of_equity_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="child_aggregation_credit_guarantee_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="child_aggregation_credit_guarantee_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="child_aggregation_credit_guarantee_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="child_aggregation_incoming_commitment_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="child_aggregation_incoming_commitment_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="child_aggregation_incoming_commitment_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="child_aggregation_outgoing_pledge_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="child_aggregation_outgoing_pledge_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="child_aggregation_outgoing_pledge_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="child_aggregation_incoming_pledge_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="child_aggregation_incoming_pledge_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="child_aggregation_incoming_pledge_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
 
     <field name="activity_plus_child_aggregation_budget_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="activity_plus_child_aggregation_budget_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="activity_plus_child_aggregation_budget_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="activity_plus_child_aggregation_disbursement_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="activity_plus_child_aggregation_disbursement_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="activity_plus_child_aggregation_disbursement_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="activity_plus_child_aggregation_incoming_funds_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="activity_plus_child_aggregation_incoming_funds_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="activity_plus_child_aggregation_incoming_funds_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="activity_plus_child_aggregation_commitment_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="activity_plus_child_aggregation_commitment_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="activity_plus_child_aggregation_commitment_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="activity_plus_child_aggregation_expenditure_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="activity_plus_child_aggregation_expenditure_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="activity_plus_child_aggregation_expenditure_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="activity_plus_child_aggregation_interest_payment_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="activity_plus_child_aggregation_interest_payment_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="activity_plus_child_aggregation_interest_payment_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="activity_plus_child_aggregation_loan_repayment_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="activity_plus_child_aggregation_loan_repayment_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="activity_plus_child_aggregation_loan_repayment_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="activity_plus_child_aggregation_reimbursement_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="activity_plus_child_aggregation_reimbursement_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="activity_plus_child_aggregation_reimbursement_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="activity_plus_child_aggregation_purchase_of_equity_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="activity_plus_child_aggregation_purchase_of_equity_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="activity_plus_child_aggregation_purchase_of_equity_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="activity_plus_child_aggregation_sale_of_equity_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="activity_plus_child_aggregation_sale_of_equity_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="activity_plus_child_aggregation_sale_of_equity_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="activity_plus_child_aggregation_credit_guarantee_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="activity_plus_child_aggregation_credit_guarantee_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="activity_plus_child_aggregation_credit_guarantee_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="activity_plus_child_aggregation_incoming_commitment_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="activity_plus_child_aggregation_incoming_commitment_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="activity_plus_child_aggregation_incoming_commitment_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="activity_plus_child_aggregation_outgoing_pledge_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="activity_plus_child_aggregation_outgoing_pledge_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="activity_plus_child_aggregation_outgoing_pledge_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="activity_plus_child_aggregation_incoming_pledge_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="activity_plus_child_aggregation_incoming_pledge_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="activity_plus_child_aggregation_incoming_pledge_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
 
     <!--Activity Core - End -->
 

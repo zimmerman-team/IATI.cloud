@@ -59,6 +59,18 @@ class ActivityIndexing(BaseIndexing):
             'dataset_date_updated',
             date_string(get_child_attr(activity, 'dataset.date_updated'))
         )
+        self.add_field(
+            'dataset_iati_id',
+            activity.dataset.iati_id)
+        self.add_field(
+            'dataset_name',
+            activity.dataset.name)
+        self.add_field(
+            'dataset_publisher_id',
+            activity.dataset.publisher.iati_id)
+        self.add_field(
+            'dataset_publisher_iati_id',
+            activity.dataset.publisher.publisher_iati_id)
 
     def reporting_org(self):
         reporting_org = self.record.reporting_organisations.first()
@@ -2664,6 +2676,25 @@ class ActivityIndexing(BaseIndexing):
                         value_string(forecast.value)
                     )
 
+    def aggregation_indexing_field(self, prefix, field_name, type, data):
+        """
+        We want to add data for the field that is called prefix_field_name.
+        The content is retrieved from data variable with the field_name as
+        attribute. The type can be: value, currency or sum.
+        """
+        value_field = getattr(data, field_name, None)
+        value = None
+        if type == "value" or type == "sum":
+            value = value_field if value_field else 0.0
+        if type == "currency":
+            value = str(value)
+
+        if value:
+            self.add_field(
+                "%s%s" % (prefix, "budget_value"),
+                value
+            )
+
     def aggregation_indexing(self, prefix):
         activity = self.record
 
@@ -2680,12 +2711,20 @@ class ActivityIndexing(BaseIndexing):
             data.budget_value if data.budget_value else 0.0
         )
         self.add_field(
+            "%s%s" % (prefix, "budget_value_usd"),
+            data.budget_value_usd if data.budget_value_usd else 0.0
+        )
+        self.add_field(
             "%s%s" % (prefix, "budget_currency"),
             str(data.budget_currency)
         )
         self.add_field(
             "%s%s" % (prefix, "disbursement_value"),
             data.disbursement_value if data.disbursement_value else 0.0
+        )
+        self.add_field(
+            "%s%s" % (prefix, "disbursement_value_usd"),
+            data.disbursement_value_usd if data.disbursement_value_usd else 0.0
         )
         self.add_field(
             "%s%s" % (prefix, "disbursement_currency"),
@@ -2696,12 +2735,20 @@ class ActivityIndexing(BaseIndexing):
             data.incoming_funds_value if data.incoming_funds_value else 0.0  # NOQA: E501
         )
         self.add_field(
+            "%s%s" % (prefix, "incoming_funds_value_usd"),
+            data.incoming_funds_value_usd if data.incoming_funds_value_usd else 0.0  # NOQA: E501
+        )
+        self.add_field(
             "%s%s" % (prefix, "incoming_funds_currency"),
             str(data.incoming_funds_currency)
         )
         self.add_field(
             "%s%s" % (prefix, "commitment_value"),
             data.commitment_value if data.commitment_value else 0.0
+        )
+        self.add_field(
+            "%s%s" % (prefix, "commitment_value_usd"),
+            data.commitment_value_usd if data.commitment_value_usd else 0.0
         )
         self.add_field(
             "%s%s" % (prefix, "commitment_currency"),
@@ -2712,12 +2759,20 @@ class ActivityIndexing(BaseIndexing):
             data.expenditure_value if data.expenditure_value else 0.0
         )
         self.add_field(
+            "%s%s" % (prefix, "expenditure_value_usd"),
+            data.expenditure_value_usd if data.expenditure_value_usd else 0.0
+        )
+        self.add_field(
             "%s%s" % (prefix, "expenditure_currency"),
             str(data.expenditure_currency)
         )
         self.add_field(
             "%s%s" % (prefix, "interest_payment_value"),
             data.interest_payment_value if data.interest_payment_value else 0.0  # NOQA: E501
+        )
+        self.add_field(
+            "%s%s" % (prefix, "interest_payment_value_usd"),
+            data.interest_payment_value_usd if data.interest_payment_value_usd else 0.0  # NOQA: E501
         )
         self.add_field(
             "%s%s" % (prefix, "interest_payment_currency"),
@@ -2728,12 +2783,20 @@ class ActivityIndexing(BaseIndexing):
             data.loan_repayment_value if data.loan_repayment_value else 0.0  # NOQA: E501
         )
         self.add_field(
+            "%s%s" % (prefix, "loan_repayment_value_usd"),
+            data.loan_repayment_value_usd if data.loan_repayment_value_usd else 0.0  # NOQA: E501
+        )
+        self.add_field(
             "%s%s" % (prefix, "loan_repayment_currency"),
             str(data.loan_repayment_currency)
         )
         self.add_field(
             "%s%s" % (prefix, "reimbursement_value"),
             data.reimbursement_value if data.reimbursement_value else 0.0
+        )
+        self.add_field(
+            "%s%s" % (prefix, "reimbursement_value_usd"),
+            data.reimbursement_value_usd if data.reimbursement_value_usd else 0.0  # NOQA: E501
         )
         self.add_field(
             "%s%s" % (prefix, "reimbursement_currency"),
@@ -2744,12 +2807,20 @@ class ActivityIndexing(BaseIndexing):
             data.purchase_of_equity_value if data.purchase_of_equity_value else 0.0  # NOQA: E501
         )
         self.add_field(
+            "%s%s" % (prefix, "purchase_of_equity_value_usd"),
+            data.purchase_of_equity_value_usd if data.purchase_of_equity_value_usd else 0.0  # NOQA: E501
+        )
+        self.add_field(
             "%s%s" % (prefix, "purchase_of_equity_currency"),
             str(data.purchase_of_equity_currency)
         )
         self.add_field(
             "%s%s" % (prefix, "sale_of_equity_value"),
             data.sale_of_equity_value if data.sale_of_equity_value else 0.0  # NOQA: E501
+        )
+        self.add_field(
+            "%s%s" % (prefix, "sale_of_equity_value_usd"),
+            data.sale_of_equity_value_usd if data.sale_of_equity_value_usd else 0.0  # NOQA: E501
         )
         self.add_field(
             "%s%s" % (prefix, "sale_of_equity_currency"),
@@ -2760,6 +2831,10 @@ class ActivityIndexing(BaseIndexing):
             data.credit_guarantee_value if data.credit_guarantee_value else 0.0  # NOQA: E501
         )
         self.add_field(
+            "%s%s" % (prefix, "credit_guarantee_value_usd"),
+            data.credit_guarantee_value_usd if data.credit_guarantee_value_usd else 0.0  # NOQA: E501
+        )
+        self.add_field(
             "%s%s" % (prefix, "credit_guarantee_currency"),
             str(data.credit_guarantee_currency)
         )
@@ -2768,8 +2843,36 @@ class ActivityIndexing(BaseIndexing):
             data.incoming_commitment_value if data.incoming_commitment_value else 0.0  # NOQA: E501
         )
         self.add_field(
+            "%s%s" % (prefix, "incoming_commitment_value_usd"),
+            data.incoming_commitment_value_usd if data.incoming_commitment_value_usd else 0.0  # NOQA: E501
+        )
+        self.add_field(
             "%s%s" % (prefix, "incoming_commitment_currency"),
             str(data.incoming_commitment_currency)
+        )
+        self.add_field(
+            "%s%s" % (prefix, "outgoing_pledge_value"),
+            data.outgoing_pledge_value if data.outgoing_pledge_value else 0.0  # NOQA: E501
+        )
+        self.add_field(
+            "%s%s" % (prefix, "outgoing_pledge_value_usd"),
+            data.outgoing_pledge_value_usd if data.outgoing_pledge_value_usd else 0.0  # NOQA: E501
+        )
+        self.add_field(
+            "%s%s" % (prefix, "outgoing_pledge_currency"),
+            str(data.outgoing_pledge_currency)
+        )
+        self.add_field(
+            "%s%s" % (prefix, "incoming_pledge_value"),
+            data.incoming_pledge_value if data.incoming_pledge_value else 0.0  # NOQA: E501
+        )
+        self.add_field(
+            "%s%s" % (prefix, "incoming_pledge_value_usd"),
+            data.incoming_pledge_value_usd if data.incoming_pledge_value_usd else 0.0  # NOQA: E501
+        )
+        self.add_field(
+            "%s%s" % (prefix, "incoming_pledge_currency"),
+            str(data.incoming_pledge_currency)
         )
 
     def activity_plus_child_aggregation(self):

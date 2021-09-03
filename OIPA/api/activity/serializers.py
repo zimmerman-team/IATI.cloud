@@ -608,6 +608,13 @@ class ActivityDateSerializer(ModelSerializerNoValidation):
         fields = ('id', 'activity', 'iso_date', 'type', 'narrative')
 
 
+def value_field():
+    return serializers.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        coerce_to_string=False)
+
+
 class ActivityAggregationSerializer(DynamicFieldsSerializer):
     budget_value = serializers.DecimalField(
         max_digits=15,
@@ -676,6 +683,33 @@ class ActivityAggregationSerializer(DynamicFieldsSerializer):
         decimal_places=2,
         coerce_to_string=False)
     incoming_commitment_currency = serializers.CharField()
+
+    outgoing_pledge_value = serializers.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        coerce_to_string=False)
+    outgoing_pledge_currency = serializers.CharField()
+
+    incoming_pledge_value = serializers.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        coerce_to_string=False)
+    incoming_pledge_currency = serializers.CharField()
+
+    budget_value_usd = value_field()
+    disbursement_value_usd = value_field()
+    incoming_funds_value_usd = value_field()
+    commitment_value_usd = value_field()
+    expenditure_value_usd = value_field()
+    interest_payment_value_usd = value_field()
+    loan_repayment_value_usd = value_field()
+    reimbursement_value_usd = value_field()
+    purchase_of_equity_value_usd = value_field()
+    sale_of_equity_value_usd = value_field()
+    credit_guarantee_value_usd = value_field()
+    incoming_commitment_value_usd = value_field()
+    outgoing_pledge_value_usd = value_field()
+    incoming_pledge_value_usd = value_field()
 
 
 class CustomReportingOrganisationURLSerializer(
