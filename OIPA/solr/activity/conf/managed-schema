@@ -148,7 +148,7 @@
     <field name="title" type="text_general" indexed="false" required="false" stored="true"/>
     <field name="title_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
     <field name="title_narrative" type="text_general" indexed="true" required="false" stored="true"/>
-    <field name="title_narrative_first" type="string" indexed="true" required="false" stored="true"/>
+    <field name="title_narrative_first" type="text_general" indexed="true" required="false" stored="true"/>
     <field name="title_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="title_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
 
@@ -231,7 +231,7 @@
     <field name="recipient_country" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
     <field name="recipient_country_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
     <field name="recipient_country_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-    <field name="recipient_country_name" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="recipient_country_name" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="recipient_country_percentage" type="pdoubles" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="recipient_country_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
     <field name="recipient_country_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
