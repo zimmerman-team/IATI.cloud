@@ -447,6 +447,132 @@ class AbstractActivityAggregation(models.Model):
         default=None,
         blank=True,
     )
+    outgoing_pledge_value = models.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        db_index=True,
+    )
+    outgoing_pledge_currency = models.CharField(
+        max_length=3,
+        null=True,
+        default=None,
+        blank=True,
+    )
+    incoming_pledge_value = models.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        db_index=True,
+    )
+    incoming_pledge_currency = models.CharField(
+        max_length=3,
+        null=True,
+        default=None,
+        blank=True,
+    )
+
+    # Add usd converted value option to the aggregations
+    budget_value_usd = models.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        db_index=True,
+    )
+    disbursement_value_usd = models.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        db_index=True,
+    )
+    incoming_funds_value_usd = models.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        db_index=True,
+    )
+    commitment_value_usd = models.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        db_index=True,
+    )
+    expenditure_value_usd = models.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        db_index=True,
+    )
+    interest_payment_value_usd = models.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        db_index=True,
+    )
+    loan_repayment_value_usd = models.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        db_index=True,
+    )
+    reimbursement_value_usd = models.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        db_index=True,
+    )
+    purchase_of_equity_value_usd = models.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        db_index=True,
+    )
+    sale_of_equity_value_usd = models.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        db_index=True,
+    )
+    credit_guarantee_value_usd = models.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        db_index=True,
+    )
+    incoming_commitment_value_usd = models.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        db_index=True,
+    )
+    outgoing_pledge_value_usd = models.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        db_index=True,
+    )
+    incoming_pledge_value_usd = models.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        db_index=True,
+    )
 
     class Meta:
         abstract = True
@@ -463,7 +589,9 @@ class AbstractActivityAggregation(models.Model):
             ["purchase_of_equity_value", "activity"],
             ["sale_of_equity_value", "activity"],
             ["credit_guarantee_value", "activity"],
-            ["incoming_commitment_value", "activity"]
+            ["incoming_commitment_value", "activity"],
+            ["outgoing_pledge_value", "activity"],
+            ["incoming_pledge_value", "activity"]
         ]
 
 
