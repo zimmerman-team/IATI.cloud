@@ -608,7 +608,10 @@ class ActivityDateSerializer(ModelSerializerNoValidation):
         fields = ('id', 'activity', 'iso_date', 'type', 'narrative')
 
 
-def value_field():
+def aggregation_value_field():
+    """
+    Aggregation value fields are always 15 max digits, 2 decimal places.
+    """
     return serializers.DecimalField(
         max_digits=15,
         decimal_places=2,
@@ -616,100 +619,61 @@ def value_field():
 
 
 class ActivityAggregationSerializer(DynamicFieldsSerializer):
-    budget_value = serializers.DecimalField(
-        max_digits=15,
-        decimal_places=2,
-        coerce_to_string=False)
+    budget_value = aggregation_value_field()
+    budget_value_usd = aggregation_value_field()
     budget_currency = serializers.CharField()
-    disbursement_value = serializers.DecimalField(
-        max_digits=15,
-        decimal_places=2,
-        coerce_to_string=False)
+
+    disbursement_value = aggregation_value_field()
+    disbursement_value_usd = aggregation_value_field()
     disbursement_currency = serializers.CharField()
-    incoming_funds_value = serializers.DecimalField(
-        max_digits=15,
-        decimal_places=2,
-        coerce_to_string=False)
+
+    incoming_funds_value = aggregation_value_field()
+    incoming_funds_value_usd = aggregation_value_field()
     incoming_funds_currency = serializers.CharField()
-    commitment_value = serializers.DecimalField(
-        max_digits=15,
-        decimal_places=2,
-        coerce_to_string=False)
+
+    commitment_value = aggregation_value_field()
+    commitment_value_usd = aggregation_value_field()
     commitment_currency = serializers.CharField()
-    expenditure_value = serializers.DecimalField(
-        max_digits=15,
-        decimal_places=2,
-        coerce_to_string=False)
+
+    expenditure_value = aggregation_value_field()
+    expenditure_value_usd = aggregation_value_field()
     expenditure_currency = serializers.CharField()
 
-    interest_payment_value = serializers.DecimalField(
-        max_digits=15,
-        decimal_places=2,
-        coerce_to_string=False)
+    interest_payment_value = aggregation_value_field()
+    interest_payment_value_usd = aggregation_value_field()
     interest_payment_currency = serializers.CharField()
 
-    loan_repayment_value = serializers.DecimalField(
-        max_digits=15,
-        decimal_places=2,
-        coerce_to_string=False)
+    loan_repayment_value = aggregation_value_field()
+    loan_repayment_value_usd = aggregation_value_field()
     loan_repayment_currency = serializers.CharField()
 
-    reimbursement_value = serializers.DecimalField(
-        max_digits=15,
-        decimal_places=2,
-        coerce_to_string=False)
+    reimbursement_value = aggregation_value_field()
+    reimbursement_value_usd = aggregation_value_field()
     reimbursement_currency = serializers.CharField()
 
-    purchase_of_equity_value = serializers.DecimalField(
-        max_digits=15,
-        decimal_places=2,
-        coerce_to_string=False)
+    purchase_of_equity_value = aggregation_value_field()
+    purchase_of_equity_value_usd = aggregation_value_field()
     purchase_of_equity_currency = serializers.CharField()
 
-    sale_of_equity_value = serializers.DecimalField(
-        max_digits=15,
-        decimal_places=2,
-        coerce_to_string=False)
+    sale_of_equity_value = aggregation_value_field()
+    sale_of_equity_value_usd = aggregation_value_field()
     sale_of_equity_currency = serializers.CharField()
 
-    credit_guarantee_value = serializers.DecimalField(
-        max_digits=15,
-        decimal_places=2,
-        coerce_to_string=False)
+    credit_guarantee_value = aggregation_value_field()
+    credit_guarantee_value_usd = aggregation_value_field()
     credit_guarantee_currency = serializers.CharField()
 
-    incoming_commitment_value = serializers.DecimalField(
-        max_digits=15,
-        decimal_places=2,
-        coerce_to_string=False)
+    incoming_commitment_value = aggregation_value_field()
+    incoming_commitment_value_usd = aggregation_value_field()
     incoming_commitment_currency = serializers.CharField()
 
-    outgoing_pledge_value = serializers.DecimalField(
-        max_digits=15,
-        decimal_places=2,
-        coerce_to_string=False)
+    outgoing_pledge_value = aggregation_value_field()
+    outgoing_pledge_value_usd = aggregation_value_field()
     outgoing_pledge_currency = serializers.CharField()
 
-    incoming_pledge_value = serializers.DecimalField(
-        max_digits=15,
-        decimal_places=2,
-        coerce_to_string=False)
+    incoming_pledge_value = aggregation_value_field()
+    incoming_pledge_value_usd = aggregation_value_field()
     incoming_pledge_currency = serializers.CharField()
-
-    budget_value_usd = value_field()
-    disbursement_value_usd = value_field()
-    incoming_funds_value_usd = value_field()
-    commitment_value_usd = value_field()
-    expenditure_value_usd = value_field()
-    interest_payment_value_usd = value_field()
-    loan_repayment_value_usd = value_field()
-    reimbursement_value_usd = value_field()
-    purchase_of_equity_value_usd = value_field()
-    sale_of_equity_value_usd = value_field()
-    credit_guarantee_value_usd = value_field()
-    incoming_commitment_value_usd = value_field()
-    outgoing_pledge_value_usd = value_field()
-    incoming_pledge_value_usd = value_field()
 
 
 class CustomReportingOrganisationURLSerializer(
