@@ -161,32 +161,7 @@ def automatic_incremental_parse(start_at=1,
 
     # STEP FOUR -- PARSE ALL DATASETS #
     if start_at in (1, 2, 3, 4):
-        # compile a list of organisation IDs based on the supplied org list
-        org_ids = []
-        if org_list:
-            for p in Publisher.objects.filter(publisher_iati_id__in=org_list):
-                org_ids.append(p.id)
-
-        # parse_all_existing_sources_task() does not actually run the parsing,
-        # TODO: Reuse parse_all_existing_sources_task
-        # Reusing the code here. Datasets are named 1 and 2 because they
-        # Contain filetypes 1 and 2, activity and publisher respectively.
-        dataset1 = Dataset.objects.all().filter(filetype=1)
-        if org_ids:
-            dataset1 = dataset1.filter(publisher_id__in=org_ids)
-        dataset2 = Dataset.objects.all().filter(filetype=2)
-        if org_ids:
-            dataset2 = dataset2.filter(publisher_id__in=org_ids)
-
-        # As always, parse filetype 2 first.
-        for dataset in dataset2:
-            parse_source_by_id_task.delay(dataset_id=dataset.id,
-                                          force=force,
-                                          check_validation=check_validation)
-        for dataset in dataset1:
-            parse_source_by_id_task.delay(dataset_id=dataset.id,
-                                          force=force,
-                                          check_validation=check_validation)
+        start_dataset_parsing(check_validation, force, org_list)
         started = len(Dataset.objects.all())
         await_async_subtasks(started)
     # STEP FOUR -- End #
@@ -195,6 +170,33 @@ def automatic_incremental_parse(start_at=1,
     automatic_incremental_parse.delay(force=force,
                                       check_validation=check_validation,
                                       org_list=org_list)
+    started = len(Dataset.objects.all())
+    await_async_subtasks(started)
+
+
+def start_dataset_parsing(check_validation, force, org_list):
+    # compile a list of organisation IDs based on the supplied org list
+    org_ids = []
+    if org_list:
+        for p in Publisher.objects.filter(publisher_iati_id__in=org_list):
+            org_ids.append(p.id)
+    # parse_all_existing_sources_task() does not actually run the parsing,
+    # Reusing the code here. Datasets are named 1 and 2 because they
+    # Contain filetypes 1 and 2, activity and publisher respectively.
+    dataset1 = Dataset.objects.all().filter(filetype=1)
+    dataset2 = Dataset.objects.all().filter(filetype=2)
+    if org_ids:
+        dataset1 = dataset1.filter(publisher_id__in=org_ids)
+        dataset2 = dataset2.filter(publisher_id__in=org_ids)
+    # As always, parse filetype 2 first.
+    for dataset in dataset2:
+        parse_source_by_id_task.delay(dataset_id=dataset.id,
+                                      force=force,
+                                      check_validation=check_validation)
+    for dataset in dataset1:
+        parse_source_by_id_task.delay(dataset_id=dataset.id,
+                                      force=force,
+                                      check_validation=check_validation)
 
 
 # This task updates all of the currency exchange rates in the local database
@@ -278,31 +280,7 @@ def parse_all_existing_sources_task(force=False,
         children_tasks=['task_queue.tasks.parse_source_by_id_task']
     )
     if tasks.is_parent():
-        # compile a list of organisation IDs based on the supplied org list
-        org_ids = []
-        if org_list:
-            for p in Publisher.objects.filter(publisher_iati_id__in=org_list):
-                org_ids.append(p.id)
-
-        # parse_all_existing_sources_task() does not actually run the parsing,
-        # Reusing the code here. Datasets are named 1 and 2 because they
-        # Contain filetypes 1 and 2, activity and publisher respectively.
-        dataset1 = Dataset.objects.all().filter(filetype=1)
-        if org_ids:
-            dataset1 = dataset1.filter(publisher_id__in=org_ids)
-        dataset2 = Dataset.objects.all().filter(filetype=2)
-        if org_ids:
-            dataset2 = dataset2.filter(publisher_id__in=org_ids)
-
-        # As always, parse filetype 2 first.
-        for dataset in dataset2:
-            parse_source_by_id_task.delay(dataset_id=dataset.id,
-                                          force=force,
-                                          check_validation=check_validation)
-        for dataset in dataset1:
-            parse_source_by_id_task.delay(dataset_id=dataset.id,
-                                          force=force,
-                                          check_validation=check_validation)
+        start_dataset_parsing(check_validation, force, org_list)
 
 
 # This task is used to parse all datasets for a specific organisation by
