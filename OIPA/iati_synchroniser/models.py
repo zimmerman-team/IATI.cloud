@@ -234,6 +234,12 @@ class DatasetUpdateDates(models.Model):
         null=False, blank=True, auto_now=False)
 
 
+# This model is added for interrupting the incremental parsing procedure
+class InterruptIncrementalParse(models.Model):
+    timestamp = models.DateTimeField(
+        null=False, blank=True, auto_now=True)
+
+
 # This model is added for the automation of the incremental parsing procedure
 class DatasetDownloadsStarted(models.Model):
     timestamp = models.DateTimeField(
