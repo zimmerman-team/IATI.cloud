@@ -288,6 +288,8 @@ class ActivityIndexing(BaseIndexing):
             self.add_field('activity_date_narrative_lang', [])
             self.add_field('activity_date_narrative_text', [])
 
+            common_start = None
+            common_end = None
             for activity_date in activity_dates_all:
                 self.add_value_list(
                     'activity_date',
@@ -322,6 +324,8 @@ class ActivityIndexing(BaseIndexing):
                         'activity_date_start_planned_f',
                         activity_date.iso_date
                     )
+                    if not common_start:
+                        common_start = activity_date.iso_date
                 elif activity_date.type_id == '2':
                     self.add_field(
                         'activity_date_start_actual',
@@ -331,6 +335,7 @@ class ActivityIndexing(BaseIndexing):
                         'activity_date_start_actual_f',
                         activity_date.iso_date
                     )
+                    common_start = activity_date.iso_date
                 elif activity_date.type_id == '3':
                     self.add_field(
                         'activity_date_end_planned',
@@ -340,6 +345,8 @@ class ActivityIndexing(BaseIndexing):
                         'activity_date_end_planned_f',
                         activity_date.iso_date
                     )
+                    if not common_end:
+                        common_end = activity_date.iso_date
                 elif activity_date.type_id == '4':
                     self.add_field(
                         'activity_date_end_actual',
@@ -349,12 +356,31 @@ class ActivityIndexing(BaseIndexing):
                         'activity_date_end_actual_f',
                         activity_date.iso_date
                     )
+                    common_end = activity_date.iso_date
 
                 self.related_narrative(
                     activity_date,
                     'activity_date_narrative',
                     'activity_date_narrative_text',
                     'activity_date_narrative_lang'
+                )
+            if common_start:
+                self.add_field(
+                    'activity_date_start_common',
+                    str(common_start)
+                )
+                self.add_field(
+                    'activity_date_start_common_f',
+                    common_start
+                )
+            if common_end:
+                self.add_field(
+                    'activity_date_end_common',
+                    str(common_end)
+                )
+                self.add_field(
+                    'activity_date_end_common_f',
+                    common_end
                 )
 
     def contact_info(self):
