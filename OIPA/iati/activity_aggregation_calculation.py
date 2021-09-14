@@ -9,6 +9,7 @@ from iati.models import (
     ChildAggregation
 )
 from iati.transaction.models import Transaction
+from solr.activity.tasks import ActivityTaskIndexing
 
 
 class ActivityAggregationCalculation():
@@ -46,6 +47,9 @@ class ActivityAggregationCalculation():
                 self.calculate_activity_plus_child_aggregations(
                     parent_activity)
                 parent_activity.save()
+                # After updating the parent activity, this should trigger
+                # indexing as well.
+                ActivityTaskIndexing(parent_activity, related=True).run()
 
     def set_aggregation(
             self,
