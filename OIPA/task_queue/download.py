@@ -298,7 +298,8 @@ class DatasetDownloadTask(celery.Task):
                 'date_created': dataset_data['metadata_created'],
                 'date_updated': dataset_data['metadata_modified'],
                 'sync_sha1': sync_sha1,
-                'internal_url': internal_url
+                'internal_url': internal_url,
+                'old_date_marker': None
             }
         )
         # Save a row to the AsyncTasksFinished table.

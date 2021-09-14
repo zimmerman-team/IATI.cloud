@@ -493,16 +493,29 @@ def drop_old_datasets():
     old_datasets = Dataset.objects.filter(
         last_found_in_registry__lt=previous_dud.timestamp)
 
+    now = datetime.datetime.now()
     for ds in old_datasets:
+        # We want to hold old datasets for 3 days, so we need to annotate old
+        # datasets as thus.
+        if not ds.old_date_marker:
+            ds.old_date_marker = now
+            ds.save()
+
+    # Define which datasets need to be deleted
+    grace_period_length = 3
+    delete_before_date = now - datetime.timedelta(days=grace_period_length)
+    old_datasets_to_delete = old_datasets.filter(
+        old_date_marker__lt=delete_before_date)
+    for ds in old_datasets_to_delete:
+        old = None
         if ds.filetype == 1:
-            old_activities = Activity.objects.filter(dataset_id=ds.id)
-            if len(old_activities) > 0:
-                old_activities.delete()
+            old = Activity.objects.filter(dataset_id=ds.id)
         if ds.filetype == 2:
-            old_organisation = Organisation.objects.filter(dataset_id=ds.id)
-            if len(old_organisation) > 0:
-                old_organisation.delete()
-    old_datasets.delete()
+            old = Organisation.objects.filter(dataset_id=ds.id)
+        if old and len(old) > 0:
+            old.delete()
+
+    old_datasets_to_delete.delete()
     synchronize_solr_indexing()
 
 

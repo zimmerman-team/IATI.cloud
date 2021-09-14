@@ -83,6 +83,10 @@ class Dataset(models.Model):
     validation_status = JSONField(null=True, default=None)
     validation_md5 = models.CharField(max_length=512, null=True, blank=True)
 
+    # Used to ensure we only delete old datasets.
+    old_date_marker = models.DateTimeField(
+        default=None, blank=True, null=True)
+
     class Meta:
         verbose_name_plural = "IATI XML sources"
         ordering = ["name"]
