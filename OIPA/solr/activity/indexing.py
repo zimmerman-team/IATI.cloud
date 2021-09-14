@@ -10,6 +10,9 @@ from api.activity.serializers import (
     PlannedDisbursementSerializer, RelatedActivitySerializer,
     ReportingOrganisationSerializer, TitleSerializer
 )
+from iati.models import (
+    ActivityAggregation, ActivityPlusChildAggregation, ChildAggregation
+)
 from solr.activity.references import (
     ActivityDateReference, ActivityScopeReference, ActivityStatusReference,
     CapitalSpendReference, CollaborationTypeReference, ConditionsReference,
@@ -56,6 +59,18 @@ class ActivityIndexing(BaseIndexing):
             'dataset_date_updated',
             date_string(get_child_attr(activity, 'dataset.date_updated'))
         )
+        self.add_field(
+            'dataset_iati_id',
+            activity.dataset.iati_id)
+        self.add_field(
+            'dataset_name',
+            activity.dataset.name)
+        self.add_field(
+            'dataset_publisher_id',
+            activity.dataset.publisher.iati_id)
+        self.add_field(
+            'dataset_publisher_iati_id',
+            activity.dataset.publisher.publisher_iati_id)
 
     def reporting_org(self):
         reporting_org = self.record.reporting_organisations.first()
@@ -110,6 +125,11 @@ class ActivityIndexing(BaseIndexing):
             self.add_field('title_narrative', [])
             self.add_field('title_narrative_lang', [])
             self.add_field('title_narrative_text', [])
+
+            if title:
+                t = title.narratives.first()
+                if t.content:
+                    self.add_field('title_narrative_first', t.content)
 
             self.related_narrative(
                 title,
@@ -2656,6 +2676,84 @@ class ActivityIndexing(BaseIndexing):
                         value_string(forecast.value)
                     )
 
+    def agg_field(self, prefix, field_name, field_type, data):
+        """
+        We want to add data for the field that is called prefix_field_name.
+        The content is retrieved from data variable with the field_name as
+        attribute. The type can be: value, currency or sum.
+        """
+        value_field = getattr(data, field_name, None)
+        value = None
+        if field_type == "value" or field_type == "sum":
+            value = value_field if value_field else 0.0
+        if field_type == "currency":
+            value = str(value)
+
+        if value:
+            self.add_field(
+                "%s%s" % (prefix, field_name),
+                value
+            )
+
+    def aggregation_indexing(self, prefix):
+        activity = self.record
+
+        data = {}
+        if prefix == "activity_aggregation_":
+            data = ActivityAggregation.objects.filter(activity__iati_identifier=activity.iati_identifier)[0]  # NOQA: E501
+        if prefix == "activity_plus_child_aggregation_":
+            data = ActivityPlusChildAggregation.objects.filter(activity__iati_identifier=activity.iati_identifier)[0]  # NOQA: E501
+        if prefix == "child_aggregation_":
+            data = ChildAggregation.objects.filter(activity__iati_identifier=activity.iati_identifier)[0]  # NOQA: E501
+
+        self.agg_field(prefix, "budget_value", "value", data)
+        self.agg_field(prefix, "budget_value_usd", "value", data)
+        self.agg_field(prefix, "budget_currency", "value", data)
+        self.agg_field(prefix, "disbursement_value", "value", data)
+        self.agg_field(prefix, "disbursement_value_usd", "value", data)
+        self.agg_field(prefix, "disbursement_currency", "value", data)
+        self.agg_field(prefix, "incoming_funds_value", "value", data)
+        self.agg_field(prefix, "incoming_funds_value_usd", "value", data)
+        self.agg_field(prefix, "incoming_funds_currency", "value", data)
+        self.agg_field(prefix, "commitment_value", "value", data)
+        self.agg_field(prefix, "commitment_value_usd", "value", data)
+        self.agg_field(prefix, "commitment_currency", "value", data)
+        self.agg_field(prefix, "expenditure_value", "value", data)
+        self.agg_field(prefix, "expenditure_value_usd", "value", data)
+        self.agg_field(prefix, "expenditure_currency", "value", data)
+        self.agg_field(prefix, "interest_payment_value", "value", data)
+        self.agg_field(prefix, "interest_payment_value_usd", "value", data)
+        self.agg_field(prefix, "interest_payment_currency", "value", data)
+        self.agg_field(prefix, "loan_repayment_value", "value", data)
+        self.agg_field(prefix, "loan_repayment_value_usd", "value", data)
+        self.agg_field(prefix, "loan_repayment_currency", "value", data)
+        self.agg_field(prefix, "reimbursement_value", "value", data)
+        self.agg_field(prefix, "reimbursement_value_usd", "value", data)
+        self.agg_field(prefix, "reimbursement_currency", "value", data)
+        self.agg_field(prefix, "purchase_of_equity_value", "value", data)
+        self.agg_field(prefix, "purchase_of_equity_value_usd", "value", data)
+        self.agg_field(prefix, "purchase_of_equity_currency", "value", data)
+        self.agg_field(prefix, "sale_of_equity_value", "value", data)
+        self.agg_field(prefix, "sale_of_equity_value_usd", "value", data)
+        self.agg_field(prefix, "sale_of_equity_currency", "value", data)
+        self.agg_field(prefix, "credit_guarantee_value", "value", data)
+        self.agg_field(prefix, "credit_guarantee_value_usd", "value", data)
+        self.agg_field(prefix, "credit_guarantee_currency", "value", data)
+        self.agg_field(prefix, "incoming_commitment_value", "value", data)
+        self.agg_field(prefix, "incoming_commitment_value_usd", "value", data)
+        self.agg_field(prefix, "incoming_commitment_currency", "value", data)
+        self.agg_field(prefix, "outgoing_pledge_value", "value", data)
+        self.agg_field(prefix, "outgoing_pledge_value_usd", "value", data)
+        self.agg_field(prefix, "outgoing_pledge_currency", "value", data)
+        self.agg_field(prefix, "incoming_pledge_value", "value", data)
+        self.agg_field(prefix, "incoming_pledge_value_usd", "value", data)
+        self.agg_field(prefix, "incoming_pledge_currency", "value", data)
+
+    def activity_plus_child_aggregation(self):
+        self.aggregation_indexing("activity_aggregation_")
+        self.aggregation_indexing("activity_plus_child_aggregation_")
+        self.aggregation_indexing("child_aggregation_")
+
     def activity(self):
         activity = self.record
 
@@ -2772,6 +2870,7 @@ class ActivityIndexing(BaseIndexing):
         self.result()
         self.crs_add()
         self.fss()
+        self.activity_plus_child_aggregation()
 
     def to_representation(self, activity):
         self.record = activity

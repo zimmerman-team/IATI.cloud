@@ -2534,8 +2534,9 @@ class Parse(IatiParser):
                 element.attrib.get('value-date'))
 
         # we don't want to farm out activity level elements/value to
-        # transaction
-        # currency = self._get_currency_or_raise('transaction/value', currency)
+        # transaction.  However, we need to select the default currency if no
+        # currency is added to the value field by the data manager.
+        currency = self._get_currency_or_raise('transaction/value', currency)
 
         transaction = self.get_model('Transaction')
         transaction.value_string = value
@@ -5629,7 +5630,7 @@ class Parse(IatiParser):
             participating_organisations)
         post_save.set_transaction_provider_receiver_activity(activity)
         post_save.set_derived_activity_dates(activity)
-        # post_save.set_activity_aggregations(activity)
+        post_save.set_activity_aggregations(activity)
         post_save.update_activity_search_index(activity)
 
         # TODO: This is right related to this documnetation

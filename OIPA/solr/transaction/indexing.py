@@ -319,6 +319,35 @@ class TransactionIndexing(BaseIndexing):
                 activity_sector.percentage
             )
 
+        self.add_field('policy_marker_code', [])
+        self.add_field('policy_marker_significance', [])
+        for pm in transaction.activity.activitypolicymarker_set.all():
+            self.add_value_list(
+                'policy_marker_code',
+                pm.code_id
+            )
+            self.add_value_list(
+                'policy_marker_significance',
+                pm.significance_id
+            )
+
+        self.add_field('tag_code', [])
+        self.add_field('tag_narrative', [])
+        self.add_field('tag_narrative_text', [])
+        self.add_field('tag_narrative_lang', [])
+        for activity_tag in transaction.activity.activitytag_set.all():
+            self.add_value_list(
+                'tag_code',
+                activity_tag.code
+            )
+
+            self.related_narrative(
+                activity_tag,
+                'tag_narrative',
+                'tag_narrative_text',
+                'tag_narrative_lang'
+            )
+
         add_participating_org(self, transaction.activity)
         add_activity_additional_filter_fields(self, transaction.activity)
         add_activity_date_fields(self, transaction.activity)

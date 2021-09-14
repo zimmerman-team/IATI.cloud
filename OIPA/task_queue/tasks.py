@@ -29,7 +29,7 @@ from iati.models import Activity, Budget, Document, DocumentLink, Result
 from iati.transaction.models import Transaction
 from iati_organisation.models import Organisation
 from iati_synchroniser.models import (
-    AsyncTasksFinished, Dataset, DatasetNote, DatasetUpdateDates
+    AsyncTasksFinished, Dataset, DatasetNote, DatasetUpdateDates, Publisher
 )
 from OIPA.celery import app
 from solr.activity.tasks import ActivityTaskIndexing
@@ -92,7 +92,8 @@ def add_activity_to_solr(activity_id):
 @shared_task
 def automatic_incremental_parse(start_at=1,
                                 force=False,
-                                check_validation=True):
+                                check_validation=True,
+                                org_list=None):
     """
     There are several steps that need to be taken to complete an incremental
     parse/index.
@@ -160,22 +161,41 @@ def automatic_incremental_parse(start_at=1,
 
     # STEP FOUR -- PARSE ALL DATASETS #
     if start_at in (1, 2, 3, 4):
-        # parse_all_existing_sources_task() does not actually run the parsing,
-        # Reusing the code here.
-        for dataset in Dataset.objects.all().filter(filetype=2):
-            parse_source_by_id_task.delay(dataset_id=dataset.id,
-                                          force=force,
-                                          check_validation=check_validation)
-        for dataset in Dataset.objects.all().filter(filetype=1):
-            parse_source_by_id_task.delay(dataset_id=dataset.id,
-                                          force=force,
-                                          check_validation=check_validation)
+        start_dataset_parsing(check_validation, force, org_list)
         started = len(Dataset.objects.all())
         await_async_subtasks(started)
     # STEP FOUR -- End #
 
     # Restart the automatic_incremental_parse asynchronously and end this task.
     automatic_incremental_parse.delay(force=force,
+                                      check_validation=check_validation,
+                                      org_list=org_list)
+    started = len(Dataset.objects.all())
+    await_async_subtasks(started)
+
+
+def start_dataset_parsing(check_validation, force, org_list):
+    # compile a list of organisation IDs based on the supplied org list
+    org_ids = []
+    if org_list:
+        for p in Publisher.objects.filter(publisher_iati_id__in=org_list):
+            org_ids.append(p.id)
+    # parse_all_existing_sources_task() does not actually run the parsing,
+    # Reusing the code here. Datasets are named 1 and 2 because they
+    # Contain filetypes 1 and 2, activity and publisher respectively.
+    dataset1 = Dataset.objects.all().filter(filetype=1)
+    dataset2 = Dataset.objects.all().filter(filetype=2)
+    if org_ids:
+        dataset1 = dataset1.filter(publisher_id__in=org_ids)
+        dataset2 = dataset2.filter(publisher_id__in=org_ids)
+    # As always, parse filetype 2 first.
+    for dataset in dataset2:
+        parse_source_by_id_task.delay(dataset_id=dataset.id,
+                                      force=force,
+                                      check_validation=check_validation)
+    for dataset in dataset1:
+        parse_source_by_id_task.delay(dataset_id=dataset.id,
+                                      force=force,
                                       check_validation=check_validation)
 
 
@@ -252,20 +272,15 @@ def parse_source_by_id_task(self, dataset_id, force=False,
 
 # This task is used to parse all existing
 @shared_task
-def parse_all_existing_sources_task(force=False, check_validation=True):
+def parse_all_existing_sources_task(force=False,
+                                    check_validation=True,
+                                    org_list=None):
     tasks = Tasks(
         parent_task='task_queue.tasks.parse_all_existing_sources_task',
         children_tasks=['task_queue.tasks.parse_source_by_id_task']
     )
     if tasks.is_parent():
-        for dataset in Dataset.objects.all().filter(filetype=2):
-            parse_source_by_id_task.delay(dataset_id=dataset.id,
-                                          force=force,
-                                          check_validation=check_validation)
-        for dataset in Dataset.objects.all().filter(filetype=1):
-            parse_source_by_id_task.delay(dataset_id=dataset.id,
-                                          force=force,
-                                          check_validation=check_validation)
+        start_dataset_parsing(check_validation, force, org_list)
 
 
 # This task is used to parse all datasets for a specific organisation by
@@ -491,6 +506,18 @@ def drop_old_datasets():
     synchronize_solr_indexing()
 
 
+@shared_task
+def parse_all_activity_aggregations():
+    aac = ActivityAggregationCalculation()
+    aac.parse_all_activity_aggregations()
+
+
+@shared_task
+def calculate_activity_aggregations_per_source(dataset_id):
+    aac = ActivityAggregationCalculation()
+    aac.parse_activity_aggregations_by_source(dataset_id)
+
+
 #
 # All deprecated DjangoRQ jobs
 # TODO: Get out the crowbar and clean out all of the old, unused bits and bobs.
@@ -660,10 +687,11 @@ def parse_source_by_id(source_id):
         return False
 
 
-@job
-def calculate_activity_aggregations_per_source(source_ref):
-    aac = ActivityAggregationCalculation()
-    aac.parse_activity_aggregations_by_source(source_ref)
+# F811 redefinition of unused 'calculate_activity_aggregations_per_source'
+# @job
+# def calculate_activity_aggregations_per_source(source_ref):
+#     aac = ActivityAggregationCalculation()
+#     aac.parse_activity_aggregations_by_source(source_ref)
 
 
 @job

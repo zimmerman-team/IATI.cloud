@@ -23,22 +23,33 @@ IATI is a global aid transparency standard and it makes information about aid sp
 
 
 ## Setting up your IATI Cloud environment
-1. Go to folder root/OIPA.<br>
-2. Create a virtual environment with the correct Python version, recommended name is ‘env’ (ex: `virtualenv env -p python3` )
+1. Go to folder root/OIPA.
+2. Create a virtual environment with the correct Python version, recommended name is ‘env’ ex:
+   ```
+   apt install python3-virtualenv
+   virtualenv --python=/usr/bin/python3.6 env
+   ```
 3. Activate the virtual environment (ex: `source env/bin/activate`)
-4. Install required libraries using `pip install -r requirements.txt`
-5. Make sure the following services are running on your installation: PostgreSQL,
+4. Install uwsgi manually:
+   ```
+   add-apt-repository ppa:deadsnakes/ppa
+   apt-get update
+   apt-get install build-essential python3.6-dev
+   Pip install uwsgi
+   ```
+5. Install required libraries using `pip install -r requirements.txt`
+6. Make sure the following services are running on your installation: PostgreSQL,
 (ex: `sudo systemctl status postgresql` )
-6. Run `pre-commit install --hook-type commit-msg`
-7. Create a PostgreSQL database
-8. Add the following .env file to the current working directory:
+7. Run `pre-commit install --hook-type commit-msg`
+8. Create a PostgreSQL database
+9. Add the following .env file to the current working directory:
 ```
 OIPA_DB_NAME=oipa
 OIPA_DB_USER=oipa
 OIPA_DB_PASSWORD=oipa
 DJANGO_SETTINGS_MODULE=OIPA.development_settings
 ```
-9. Add the file “local_settings.py” with the following information to the folder root/OIPA/OIPA:
+10. Add the file “local_settings.py” with the following information to the folder root/OIPA/OIPA:
 ```
 SOLR = {
   'indexing': True,
@@ -55,15 +66,15 @@ SOLR = {
 }
 DOWNLOAD_DATASETS = False
 ```
-10. Go back to the folder root/OIPA and run database migrations with the command `python manage.py migrate`
-11. Start the development server with the command `python manage.py runserver`
-12. Create a superuser account for django with the command `python manage.py createsuperuser`
-13. Start RabbitMQ with `brew service start rabbitmq` on mac or `sudo service rabbitmq-server start` on linux.
-14. Start Celery worker with the command: `celery -A OIPA worker --loglevel=info --concurrency=10`, change the concurrency to your liking.
-15. Start Celery beat with the command: `celery -A OIPA beat --loglevel=info -S django`
-16. Start Celery flower with the command: `celery flower -A OIPA --port=5555`
-17. Navigate to your Solr installation.
-18. To use Apache Solr you will need to create the following 7 cores:
+11. Go back to the folder root/OIPA and run database migrations with the command `python manage.py migrate`
+12. Start the development server with the command `python manage.py runserver`
+13. Create a superuser account for django with the command `python manage.py createsuperuser`
+14. Start RabbitMQ with `brew service start rabbitmq` on mac or `sudo service rabbitmq-server start` on linux.
+15. Start Celery worker with the command: `celery -A OIPA worker --loglevel=info --concurrency=10`, change the concurrency to your liking.
+16. Start Celery beat with the command: `celery -A OIPA beat --loglevel=info -S django`
+17. Start Celery flower with the command: `celery flower -A OIPA --port=5555`
+18. Navigate to your Solr installation.
+19. To use Apache Solr you will need to create the following 7 cores:
 - activity
 - budget
 - dataset
@@ -75,7 +86,7 @@ DOWNLOAD_DATASETS = False
 To create a core :
 - Input the following command on the command line: `bin/solr create -c [name of your core]`.
 - Copy the ‘managed-schema’ file from *OIPA/solr/[name of your core]/conf/* and paste it in the *server/solr/[name of your core]/conf/* folder of the solr core.
-19. Run the command `bin/solr start` to run Solr.
+20. Run the command `bin/solr start` to run Solr.
 
 You can now access the Django admin page at [http://localhost:8000/admin/](http://localhost:8000/admin/), the Flower Dashboard at [http://localhost:5555](http://localhost:5555) and the Apache Solr administrative dashboard at [localhost:8983/solr/#/](localhost:8983/solr/#/)
 
