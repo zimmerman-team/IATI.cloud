@@ -4,7 +4,8 @@ import requests
 from celery.task.control import inspect
 
 from iati_synchroniser.models import (
-    AsyncTasksFinished, Dataset, DatasetDownloadsStarted
+    AsyncTasksFinished, Dataset, DatasetDownloadsStarted,
+    InterruptIncrementalParse
 )
 from task_queue.validation import DatasetValidationTask
 
@@ -86,6 +87,13 @@ def extract_values(obj, key):
 
     results = extract(obj, arr, key)
     return results
+
+
+def check_incremental_parse_interrupt():
+    iip = InterruptIncrementalParse.objects.all()
+    ret = len(iip) > 0
+    iip.delete()
+    return ret
 
 
 def reset_automatic_incremental_parse_dbs():
