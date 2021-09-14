@@ -149,6 +149,8 @@
     <field name="activity_date_start_actual_f" type="pdate" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="activity_date_end_planned_f" type="pdate" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="activity_date_end_actual_f" type="pdate" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="activity_date_start_common_f" type="pdate" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="activity_date_end_common_f" type="pdate" multiValued="false" indexed="true" required="false" stored="true"/>
 
     <!-- fields for activity additional filters -->
 

@@ -29,7 +29,8 @@ from iati.models import Activity, Budget, Document, DocumentLink, Result
 from iati.transaction.models import Transaction
 from iati_organisation.models import Organisation
 from iati_synchroniser.models import (
-    AsyncTasksFinished, Dataset, DatasetNote, DatasetUpdateDates, Publisher
+    AsyncTasksFinished, Dataset, DatasetNote, DatasetUpdateDates,
+    InterruptIncrementalParse, Publisher
 )
 from OIPA.celery import app
 from solr.activity.tasks import ActivityTaskIndexing
@@ -44,7 +45,7 @@ from solr.transaction_sector.tasks import solr as solr_transaction_sector
 from task_queue.download import DatasetDownloadTask
 from task_queue.utils import (
     Tasks, automatic_incremental_validation, await_async_subtasks,
-    reset_automatic_incremental_parse_dbs
+    check_incremental_parse_interrupt, reset_automatic_incremental_parse_dbs
 )
 from task_queue.validation import DatasetValidationTask
 
@@ -137,6 +138,11 @@ def automatic_incremental_parse(start_at=1,
     of the datasets have been parsed, and when all async tasks finish, we have
     completed the incremental parse/index. The process can then start anew.
     """
+    # Check for interruption first, in case interruption was requested after
+    # the start of the delayed new task.
+    if check_incremental_parse_interrupt():
+        return "Automatic Incremental Parse interrupted"
+
     # Before starting, reset the databases we use for checks, in case they
     # Still contain data.
     reset_automatic_incremental_parse_dbs()
@@ -197,6 +203,12 @@ def start_dataset_parsing(check_validation, force, org_list):
         parse_source_by_id_task.delay(dataset_id=dataset.id,
                                       force=force,
                                       check_validation=check_validation)
+
+
+# Soft Interrupt the incremental parsing task
+@shared_task
+def soft_interrupt_incremental_parse():
+    InterruptIncrementalParse.objects.create()
 
 
 # This task updates all of the currency exchange rates in the local database
@@ -493,16 +505,29 @@ def drop_old_datasets():
     old_datasets = Dataset.objects.filter(
         last_found_in_registry__lt=previous_dud.timestamp)
 
+    now = datetime.datetime.now()
     for ds in old_datasets:
+        # We want to hold old datasets for 3 days, so we need to annotate old
+        # datasets as thus.
+        if not ds.old_date_marker:
+            ds.old_date_marker = now
+            ds.save()
+
+    # Define which datasets need to be deleted
+    grace_period_length = 3
+    delete_before_date = now - datetime.timedelta(days=grace_period_length)
+    old_datasets_to_delete = old_datasets.filter(
+        old_date_marker__lt=delete_before_date)
+    for ds in old_datasets_to_delete:
+        old = None
         if ds.filetype == 1:
-            old_activities = Activity.objects.filter(dataset_id=ds.id)
-            if len(old_activities) > 0:
-                old_activities.delete()
+            old = Activity.objects.filter(dataset_id=ds.id)
         if ds.filetype == 2:
-            old_organisation = Organisation.objects.filter(dataset_id=ds.id)
-            if len(old_organisation) > 0:
-                old_organisation.delete()
-    old_datasets.delete()
+            old = Organisation.objects.filter(dataset_id=ds.id)
+        if old and len(old) > 0:
+            old.delete()
+
+    old_datasets_to_delete.delete()
     synchronize_solr_indexing()
 
 

@@ -83,6 +83,10 @@ class Dataset(models.Model):
     validation_status = JSONField(null=True, default=None)
     validation_md5 = models.CharField(max_length=512, null=True, blank=True)
 
+    # Used to ensure we only delete old datasets.
+    old_date_marker = models.DateTimeField(
+        default=None, blank=True, null=True)
+
     class Meta:
         verbose_name_plural = "IATI XML sources"
         ordering = ["name"]
@@ -232,6 +236,12 @@ class DatasetUpdateDates(models.Model):
     success = models.BooleanField(null=False, default=False)
     timestamp = models.DateTimeField(
         null=False, blank=True, auto_now=False)
+
+
+# This model is added for interrupting the incremental parsing procedure
+class InterruptIncrementalParse(models.Model):
+    timestamp = models.DateTimeField(
+        null=False, blank=True, auto_now=True)
 
 
 # This model is added for the automation of the incremental parsing procedure
