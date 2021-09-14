@@ -45,6 +45,8 @@ def add_recipient_region(serializer, activity):
 
 def add_activity_date(serializer, activity):
     activity_date_all = activity.activitydate_set.all()
+    common_start = None
+    common_end = None
     if activity_date_all:
         for activity_date in activity_date_all:
             if activity_date.type_id == '1':
@@ -52,21 +54,31 @@ def add_activity_date(serializer, activity):
                     'activity_date_start_planned_f',
                     activity_date.iso_date
                 )
+                if not common_start:
+                    common_start = activity_date.iso_date
             elif activity_date.type_id == '2':
                 serializer.add_field(
                     'activity_date_start_actual_f',
                     activity_date.iso_date
                 )
+                common_start = activity_date.iso_date
             elif activity_date.type_id == '3':
                 serializer.add_field(
                     'activity_date_end_planned_f',
                     activity_date.iso_date
                 )
+                if not common_end:
+                    common_end = activity_date.iso_date
             elif activity_date.type_id == '4':
                 serializer.add_field(
                     'activity_date_end_actual_f',
                     activity_date.iso_date
                 )
+                common_end = activity_date.iso_date
+    if common_start:
+        serializer.add_field('activity_date_start_common_f', common_start)
+    if common_end:
+        serializer.add_field('activity_date_end_common_f', common_end)
 
 
 def add_participating_org(serializer, activity):

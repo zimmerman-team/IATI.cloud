@@ -196,10 +196,14 @@
     <field name="activity_date_start_actual" type="string" multiValued="false" indexed="false" required="false" stored="true"/>
     <field name="activity_date_end_planned" type="string" multiValued="false" indexed="false" required="false" stored="true"/>
     <field name="activity_date_end_actual" type="string" multiValued="false" indexed="false" required="false" stored="true"/>
+    <field name="activity_date_start_common" type="string" multiValued="false" indexed="false" required="false" stored="true"/>
+    <field name="activity_date_end_common" type="string" multiValued="false" indexed="false" required="false" stored="true"/>
     <field name="activity_date_start_planned_f" type="pdate" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="activity_date_start_actual_f" type="pdate" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="activity_date_end_planned_f" type="pdate" multiValued="false" indexed="true" required="false" stored="true"/>
     <field name="activity_date_end_actual_f" type="pdate" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="activity_date_start_common_f" type="pdate" multiValued="false" indexed="true" required="false" stored="true"/>
+    <field name="activity_date_end_common_f" type="pdate" multiValued="false" indexed="true" required="false" stored="true"/>
 
     <field name="contact_info" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
     <field name="contact_info_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>

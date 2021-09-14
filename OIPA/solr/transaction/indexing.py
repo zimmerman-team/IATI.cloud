@@ -12,6 +12,9 @@ def add_activity_date_fields(serializer, activity):
     activity_dates_all = activity.activitydate_set.all()
     if not activity_dates_all:
         return
+
+    common_start = None
+    common_end = None
     for activity_date in activity_dates_all:
         if activity_date.type_id == '1':
             serializer.add_field(
@@ -22,6 +25,8 @@ def add_activity_date_fields(serializer, activity):
                 'activity_date_start_planned_f',
                 activity_date.iso_date
             )
+            if not common_start:
+                common_start = activity_date.iso_date
         elif activity_date.type_id == '2':
             serializer.add_field(
                 'activity_date_start_actual',
@@ -31,6 +36,7 @@ def add_activity_date_fields(serializer, activity):
                 'activity_date_start_actual_f',
                 activity_date.iso_date
             )
+            common_start = activity_date.iso_date
         elif activity_date.type_id == '3':
             serializer.add_field(
                 'activity_date_end_planned',
@@ -40,6 +46,8 @@ def add_activity_date_fields(serializer, activity):
                 'activity_date_end_planned_f',
                 activity_date.iso_date
             )
+            if not common_end:
+                common_end = activity_date.iso_date
         elif activity_date.type_id == '4':
             serializer.add_field(
                 'activity_date_end_actual',
@@ -49,6 +57,13 @@ def add_activity_date_fields(serializer, activity):
                 'activity_date_end_actual_f',
                 activity_date.iso_date
             )
+            common_end = activity_date.iso_date
+    if common_start:
+        serializer.add_field('activity_date_start_common', str(common_start))
+        serializer.add_field('activity_date_start_common_f', common_start)
+    if common_end:
+        serializer.add_field('activity_date_end_common', str(common_end))
+        serializer.add_field('activity_date_end_common_f', common_end)
 
 
 class TransactionIndexing(BaseIndexing):
