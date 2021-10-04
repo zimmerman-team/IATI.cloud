@@ -1005,7 +1005,11 @@ class Parse(IatiParser):
                     "code",
                     "code is unspecified or invalid")
             region = Region()
-            region.code = code
+            # Adding ref_code to avoid having multiple regions with the same
+            # code, blocking aggregation and filtering, solution is based on
+            # discussion with the iati community.
+            ref = element.attrib.get('ref')
+            region.code = f"{ref}_{code}"
             region.name = 'Vocabulary 99'
             region.region_vocabulary = region_vocabulary
             region.save()
@@ -1433,7 +1437,11 @@ class Parse(IatiParser):
 
             if not sector:
                 sector = models.Sector()
-                sector.code = code
+                # Adding ref_code to avoid having multiple regions with the
+                # same code, blocking aggregation and filtering, solution is
+                # based on discussion with the iati community.
+                ref = element.attrib.get('ref')
+                sector.code = f"{ref}_{code}"
                 sector.vocabulary = vocabulary
                 sector.name = 'Vocabulary 99 or 98'
                 sector.description = 'The sector reported corresponds to a sector vocabulary maintained by the reporting organisation for this activity'  # NOQA: E501
@@ -2641,7 +2649,11 @@ class Parse(IatiParser):
 
             if not sector:
                 sector = models.Sector()
-                sector.code = code
+                # Adding ref_code to avoid having multiple regions with the
+                # same code, blocking aggregation and filtering, solution is
+                # based on discussion with the iati community.
+                ref = element.attrib.get('ref')
+                sector.code = f"{ref}_{code}"
                 sector.vocabulary = vocabulary
                 sector.name = 'Vocabulary 99 or 98'
                 sector.description = 'The sector reported corresponds to a sector vocabulary maintained by the reporting organisation for this activity'  # NOQA: E501

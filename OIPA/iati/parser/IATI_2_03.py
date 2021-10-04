@@ -1051,7 +1051,11 @@ class Parse(IatiParser):
                     "code is unspecified or invalid")
 
             region = Region()
-            region.code = code
+            # Adding ref_code to avoid having multiple regions with the same
+            # code, blocking aggregation and filtering, solution is based on
+            # discussion with the iati community.
+            ref = element.attrib.get('ref')
+            region.code = f"{ref}_{code}"
             region.name = 'Vocabulary 99'
             region.region_vocabulary = region_vocabulary
             region.save()
