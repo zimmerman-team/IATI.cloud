@@ -57,6 +57,7 @@ class ActivityAggregationCalculation():
             currency_field_name,
             value_field_name,
             value_usd_field_name,
+            value_gbp_field_name,
             aggregation_object):
         """
         aggregation object contains: 0: currency, 1: date of transaction,
@@ -68,6 +69,7 @@ class ActivityAggregationCalculation():
 
         value = (0, None)[len(aggregation_object) <= 0]
         value_usd = (0, None)[len(aggregation_object) <= 0]
+        value_gbp = (0, None)[len(aggregation_object) <= 0]
 
         for agg_item in aggregation_object:
             currency = agg_item[0]
@@ -77,13 +79,20 @@ class ActivityAggregationCalculation():
                     currency if currency else default_currency
 
                 if conversion_currency:
-                    converted_value = round(convert.currency_from_to(
+                    converted_value_usd = round(convert.currency_from_to(
                         conversion_currency,
                         'USD',
                         agg_item[1],
                         agg_item[2]),
                         2)
-                    value_usd = value_usd + converted_value
+                    value_usd = value_usd + converted_value_usd
+                    converted_value_gbp = round(convert.currency_from_to(
+                        conversion_currency,
+                        'GBP',
+                        agg_item[1],
+                        agg_item[2]),
+                        2)
+                    value_gbp = value_gbp + converted_value_gbp
 
         if len(aggregation_object) > 1:
             # mixed currencies, set as None
@@ -92,6 +101,7 @@ class ActivityAggregationCalculation():
         setattr(activity_aggregation, currency_field_name, currency)
         setattr(activity_aggregation, value_field_name, value)
         setattr(activity_aggregation, value_usd_field_name, value_usd)
+        setattr(activity_aggregation, value_gbp_field_name, value_gbp)
 
         return activity_aggregation
 
@@ -113,6 +123,7 @@ class ActivityAggregationCalculation():
             'budget_currency',
             'budget_value',
             'budget_value_usd',
+            'budget_value_gbp',
             budget_total)
 
         incoming_fund_total = activity.transaction_set.filter(
@@ -124,6 +135,7 @@ class ActivityAggregationCalculation():
             'incoming_funds_currency',
             'incoming_funds_value',
             'incoming_funds_value_usd',
+            'incoming_funds_value_gbp',
             incoming_fund_total)
 
         commitment_total = activity.transaction_set.filter(
@@ -135,6 +147,7 @@ class ActivityAggregationCalculation():
             'commitment_currency',
             'commitment_value',
             'commitment_value_usd',
+            'commitment_value_gbp',
             commitment_total)
 
         disbursement_total = activity.transaction_set.filter(
@@ -146,6 +159,7 @@ class ActivityAggregationCalculation():
             'disbursement_currency',
             'disbursement_value',
             'disbursement_value_usd',
+            'disbursement_value_gbp',
             disbursement_total)
 
         expenditure_total = activity.transaction_set.filter(
@@ -157,6 +171,7 @@ class ActivityAggregationCalculation():
             'expenditure_currency',
             'expenditure_value',
             'expenditure_value_usd',
+            'expenditure_value_gbp',
             expenditure_total)
 
         interest_payment_total = activity.transaction_set.filter(
@@ -168,6 +183,7 @@ class ActivityAggregationCalculation():
             'interest_payment_currency',
             'interest_payment_value',
             'interest_payment_value_usd',
+            'interest_payment_value_gbp',
             interest_payment_total)
 
         loan_repayment_total = activity.transaction_set.filter(
@@ -179,6 +195,7 @@ class ActivityAggregationCalculation():
             'loan_repayment_currency',
             'loan_repayment_value',
             'loan_repayment_value_usd',
+            'loan_repayment_value_gbp',
             loan_repayment_total)
 
         reimbursement_total = activity.transaction_set.filter(
@@ -190,6 +207,7 @@ class ActivityAggregationCalculation():
             'reimbursement_currency',
             'reimbursement_value',
             'reimbursement_value_usd',
+            'reimbursement_value_gbp',
             reimbursement_total)
 
         purchase_of_equity_total = activity.transaction_set.filter(
@@ -201,6 +219,7 @@ class ActivityAggregationCalculation():
             'purchase_of_equity_currency',
             'purchase_of_equity_value',
             'purchase_of_equity_value_usd',
+            'purchase_of_equity_value_gbp',
             purchase_of_equity_total)
 
         sale_of_equity_total = activity.transaction_set.filter(
@@ -212,6 +231,7 @@ class ActivityAggregationCalculation():
             'sale_of_equity_currency',
             'sale_of_equity_value',
             'sale_of_equity_value_usd',
+            'sale_of_equity_value_gbp',
             sale_of_equity_total)
 
         credit_guarantee_total = activity.transaction_set.filter(
@@ -223,6 +243,7 @@ class ActivityAggregationCalculation():
             'credit_guarantee_currency',
             'credit_guarantee_value',
             'credit_guarantee_value_usd',
+            'credit_guarantee_value_gbp',
             credit_guarantee_total)
 
         incoming_commitment_total = activity.transaction_set.filter(
@@ -234,6 +255,7 @@ class ActivityAggregationCalculation():
             'incoming_commitment_currency',
             'incoming_commitment_value',
             'incoming_commitment_value_usd',
+            'incoming_commitment_value_gbp',
             incoming_commitment_total)
 
         outgoing_pledge_total = activity.transaction_set.filter(
@@ -245,6 +267,7 @@ class ActivityAggregationCalculation():
             'outgoing_pledge_currency',
             'outgoing_pledge_value',
             'outgoing_pledge_value_usd',
+            'outgoing_pledge_value_gbp',
             outgoing_pledge_total)
 
         incoming_pledge_total = activity.transaction_set.filter(
@@ -256,6 +279,7 @@ class ActivityAggregationCalculation():
             'incoming_pledge_currency',
             'incoming_pledge_value',
             'incoming_pledge_value_usd',
+            'incoming_pledge_value_gbp',
             incoming_pledge_total)
 
         # raises IntegrityError when an activity appears in multiple sources
@@ -305,6 +329,7 @@ class ActivityAggregationCalculation():
             'budget_currency',
             'budget_value',
             'budget_value_usd',
+            'budget_value_gbp',
             budget_total)
 
         incoming_fund_total = self.calculate_child_transaction_aggregation(
@@ -314,6 +339,7 @@ class ActivityAggregationCalculation():
             'incoming_funds_currency',
             'incoming_funds_value',
             'incoming_funds_value_usd',
+            'incoming_funds_value_gbp',
             incoming_fund_total)
 
         commitment_total = self.calculate_child_transaction_aggregation(
@@ -323,6 +349,7 @@ class ActivityAggregationCalculation():
             'commitment_currency',
             'commitment_value',
             'commitment_value_usd',
+            'commitment_value_gbp',
             commitment_total)
 
         disbursement_total = self.calculate_child_transaction_aggregation(
@@ -332,6 +359,7 @@ class ActivityAggregationCalculation():
             'disbursement_currency',
             'disbursement_value',
             'disbursement_value_usd',
+            'disbursement_value_gbp',
             disbursement_total)
 
         expenditure_total = self.calculate_child_transaction_aggregation(
@@ -341,6 +369,7 @@ class ActivityAggregationCalculation():
             'expenditure_currency',
             'expenditure_value',
             'expenditure_value_usd',
+            'expenditure_value_gbp',
             expenditure_total)
 
         interest_payment_total = self.calculate_child_transaction_aggregation(
@@ -350,6 +379,7 @@ class ActivityAggregationCalculation():
             'interest_payment_currency',
             'interest_payment_value',
             'interest_payment_value_usd',
+            'interest_payment_value_gbp',
             interest_payment_total)
 
         loan_repayment_total = self.calculate_child_transaction_aggregation(
@@ -359,6 +389,7 @@ class ActivityAggregationCalculation():
             'loan_repayment_currency',
             'loan_repayment_value',
             'loan_repayment_value_usd',
+            'loan_repayment_value_gbp',
             loan_repayment_total)
 
         reimbursement_total = self.calculate_child_transaction_aggregation(
@@ -368,6 +399,7 @@ class ActivityAggregationCalculation():
             'reimbursement_currency',
             'reimbursement_value',
             'reimbursement_value_usd',
+            'reimbursement_value_gbp',
             reimbursement_total)
 
         purchase_of_equity_total = self\
@@ -378,6 +410,7 @@ class ActivityAggregationCalculation():
             'purchase_of_equity_currency',
             'purchase_of_equity_value',
             'purchase_of_equity_value_usd',
+            'purchase_of_equity_value_gbp',
             purchase_of_equity_total)
 
         sale_of_equity_total = self.calculate_child_transaction_aggregation(
@@ -387,6 +420,7 @@ class ActivityAggregationCalculation():
             'sale_of_equity_currency',
             'sale_of_equity_value',
             'sale_of_equity_value_usd',
+            'sale_of_equity_value_gbp',
             sale_of_equity_total)
 
         credit_guarantee_total = self.calculate_child_transaction_aggregation(
@@ -396,6 +430,7 @@ class ActivityAggregationCalculation():
             'credit_guarantee_currency',
             'credit_guarantee_value',
             'credit_guarantee_value_usd',
+            'credit_guarantee_value_gbp',
             credit_guarantee_total)
 
         incoming_commitment_total = self\
@@ -406,6 +441,7 @@ class ActivityAggregationCalculation():
             'incoming_commitment_currency',
             'incoming_commitment_value',
             'incoming_commitment_value_usd',
+            'incoming_commitment_value_gbp',
             incoming_commitment_total)
 
         outgoing_pledge_total = self.calculate_child_transaction_aggregation(
@@ -415,6 +451,7 @@ class ActivityAggregationCalculation():
             'outgoing_pledge_currency',
             'outgoing_pledge_value',
             'outgoing_pledge_value_usd',
+            'outgoing_pledge_value_gbp',
             outgoing_pledge_total)
 
         incoming_pledge_total = self\
@@ -425,6 +462,7 @@ class ActivityAggregationCalculation():
             'incoming_pledge_currency',
             'incoming_pledge_value',
             'incoming_pledge_value_usd',
+            'incoming_pledge_value_gbp',
             incoming_pledge_total)
 
         # raises IntegrityError when an activity appears in multiple sources
@@ -447,30 +485,38 @@ class ActivityAggregationCalculation():
             activity.activity_aggregation, aggregation_type + '_value')
         activity_value_usd = getattr(
             activity.activity_aggregation, aggregation_type + '_value_usd')
+        activity_value_gbp = getattr(
+            activity.activity_aggregation, aggregation_type + '_value_gbp')
         activity_currency = getattr(
             activity.activity_aggregation, aggregation_type + '_currency')
         child_value = getattr(activity.child_aggregation,
                               aggregation_type + '_value')
         child_value_usd = getattr(activity.child_aggregation,
                                   aggregation_type + '_value_usd')
+        child_value_gbp = getattr(activity.child_aggregation,
+                                  aggregation_type + '_value_gbp')
         child_currency = getattr(
             activity.child_aggregation, aggregation_type + '_currency')
 
         if (activity_value is not None) and (child_value is not None):
             total_aggregation_value = activity_value + child_value
             total_aggregation_value_usd = activity_value_usd + child_value_usd
+            total_aggregation_value_gbp = activity_value_gbp + child_value_gbp
             total_aggregation_currency = activity_currency
         elif (activity_value is not None) and (child_value is None):
             total_aggregation_value = activity_value
             total_aggregation_value_usd = activity_value_usd
+            total_aggregation_value_gbp = activity_value_gbp
             total_aggregation_currency = activity_currency
         elif (activity_value is None) and (child_value is not None):
             total_aggregation_value = child_value
             total_aggregation_value_usd = child_value_usd
+            total_aggregation_value_gbp = child_value_gbp
             total_aggregation_currency = child_currency
         else:
             total_aggregation_value = None
             total_aggregation_value_usd = None
+            total_aggregation_value_gbp = None
             total_aggregation_currency = None
 
         setattr(total_aggregation, aggregation_type +
@@ -479,6 +525,8 @@ class ActivityAggregationCalculation():
                 '_value', total_aggregation_value)
         setattr(total_aggregation, aggregation_type +
                 '_value_usd', total_aggregation_value_usd)
+        setattr(total_aggregation, aggregation_type +
+                '_value_gbp', total_aggregation_value_gbp)
 
         return total_aggregation
 

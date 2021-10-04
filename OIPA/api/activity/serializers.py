@@ -621,58 +621,72 @@ def aggregation_value_field():
 class ActivityAggregationSerializer(DynamicFieldsSerializer):
     budget_value = aggregation_value_field()
     budget_value_usd = aggregation_value_field()
+    budget_value_gbp = aggregation_value_field()
     budget_currency = serializers.CharField()
 
     disbursement_value = aggregation_value_field()
     disbursement_value_usd = aggregation_value_field()
+    disbursement_value_gbp = aggregation_value_field()
     disbursement_currency = serializers.CharField()
 
     incoming_funds_value = aggregation_value_field()
     incoming_funds_value_usd = aggregation_value_field()
+    incoming_funds_value_gbp = aggregation_value_field()
     incoming_funds_currency = serializers.CharField()
 
     commitment_value = aggregation_value_field()
     commitment_value_usd = aggregation_value_field()
+    commitment_value_gbp = aggregation_value_field()
     commitment_currency = serializers.CharField()
 
     expenditure_value = aggregation_value_field()
     expenditure_value_usd = aggregation_value_field()
+    expenditure_value_gbp = aggregation_value_field()
     expenditure_currency = serializers.CharField()
 
     interest_payment_value = aggregation_value_field()
     interest_payment_value_usd = aggregation_value_field()
+    interest_payment_value_gbp = aggregation_value_field()
     interest_payment_currency = serializers.CharField()
 
     loan_repayment_value = aggregation_value_field()
     loan_repayment_value_usd = aggregation_value_field()
+    loan_repayment_value_gbp = aggregation_value_field()
     loan_repayment_currency = serializers.CharField()
 
     reimbursement_value = aggregation_value_field()
     reimbursement_value_usd = aggregation_value_field()
+    reimbursement_value_gbp = aggregation_value_field()
     reimbursement_currency = serializers.CharField()
 
     purchase_of_equity_value = aggregation_value_field()
     purchase_of_equity_value_usd = aggregation_value_field()
+    purchase_of_equity_value_gbp = aggregation_value_field()
     purchase_of_equity_currency = serializers.CharField()
 
     sale_of_equity_value = aggregation_value_field()
     sale_of_equity_value_usd = aggregation_value_field()
+    sale_of_equity_value_gbp = aggregation_value_field()
     sale_of_equity_currency = serializers.CharField()
 
     credit_guarantee_value = aggregation_value_field()
     credit_guarantee_value_usd = aggregation_value_field()
+    credit_guarantee_value_gbp = aggregation_value_field()
     credit_guarantee_currency = serializers.CharField()
 
     incoming_commitment_value = aggregation_value_field()
     incoming_commitment_value_usd = aggregation_value_field()
+    incoming_commitment_value_gbp = aggregation_value_field()
     incoming_commitment_currency = serializers.CharField()
 
     outgoing_pledge_value = aggregation_value_field()
     outgoing_pledge_value_usd = aggregation_value_field()
+    outgoing_pledge_value_gbp = aggregation_value_field()
     outgoing_pledge_currency = serializers.CharField()
 
     incoming_pledge_value = aggregation_value_field()
     incoming_pledge_value_usd = aggregation_value_field()
+    incoming_pledge_value_gbp = aggregation_value_field()
     incoming_pledge_currency = serializers.CharField()
 
 
