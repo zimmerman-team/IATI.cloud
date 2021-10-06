@@ -484,17 +484,17 @@ class ActivityAggregationCalculation():
         activity_value = getattr(
             activity.activity_aggregation, aggregation_type + '_value')
         activity_value_usd = getattr(
-            activity.activity_aggregation, aggregation_type + '_value_usd')
+            activity.activity_aggregation, aggregation_type + '_value_usd') or 0  # NOQA: E501
         activity_value_gbp = getattr(
-            activity.activity_aggregation, aggregation_type + '_value_gbp')
+            activity.activity_aggregation, aggregation_type + '_value_gbp') or 0  # NOQA: E501
         activity_currency = getattr(
             activity.activity_aggregation, aggregation_type + '_currency')
         child_value = getattr(activity.child_aggregation,
                               aggregation_type + '_value')
         child_value_usd = getattr(activity.child_aggregation,
-                                  aggregation_type + '_value_usd')
+                                  aggregation_type + '_value_usd') or 0
         child_value_gbp = getattr(activity.child_aggregation,
-                                  aggregation_type + '_value_gbp')
+                                  aggregation_type + '_value_gbp') or 0
         child_currency = getattr(
             activity.child_aggregation, aggregation_type + '_currency')
 

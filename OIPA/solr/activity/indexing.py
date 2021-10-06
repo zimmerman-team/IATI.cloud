@@ -125,11 +125,12 @@ class ActivityIndexing(BaseIndexing):
             self.add_field('title_narrative', [])
             self.add_field('title_narrative_lang', [])
             self.add_field('title_narrative_text', [])
-
             if title:
                 t = title.narratives.first()
-                if t.content:
-                    self.add_field('title_narrative_first', t.content)
+                t_first = ' '
+                if t and t.content:
+                    t_first = t.content
+                self.add_field('title_narrative_first', t_first)
 
             self.related_narrative(
                 title,
@@ -1634,6 +1635,10 @@ class ActivityIndexing(BaseIndexing):
                     self.indexing['transaction_tied_status_code'].append(' ')
 
     def document_link(self):
+        """
+        Indexes the document link field,
+        Use json renderer to also index child elements.
+        """
         document_link_all = self.record.documentlink_set.filter(
             result_id__isnull=True,
             result_indicator_id__isnull=True,
