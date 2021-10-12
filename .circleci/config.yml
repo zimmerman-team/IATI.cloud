@@ -122,7 +122,7 @@ jobs:
             - run:
                   name: Add target host to known_hosts files
                   command: |
-                      if [ "${CIRCLE_BRANCH}" == "master" ]; then
+                      if [ "${CIRCLE_BRANCH}" == "main" ]; then
                         ssh-keyscan "$SSH_HOST_PROD_1" >> ~/.ssh/known_hosts
                       fi
             - add_ssh_keys:
@@ -133,7 +133,7 @@ jobs:
             - run:
                   name: Deploy
                   command: |
-                      if [ "${CIRCLE_BRANCH}" == "master" ]; then
+                      if [ "${CIRCLE_BRANCH}" == "main" ]; then
                         ssh "$SSH_USER"@"$SSH_HOST_PROD_1" "cd OIPA/OIPA; source env/bin/activate; echo '"$SSH_PROD_PASS_1"' | sudo -S git pull; pip install -r requirements.txt; ./manage.py migrate; echo '"$SSH_PROD_PASS_1"' | sudo -S service supervisor restart"
                       fi
     deploy_production_2:
@@ -144,7 +144,7 @@ jobs:
             - run:
                   name: Add target host to known_hosts files
                   command: |
-                      if [ "${CIRCLE_BRANCH}" == "master" ]; then
+                      if [ "${CIRCLE_BRANCH}" == "main" ]; then
                         ssh-keyscan "$SSH_HOST_PROD_2" >> ~/.ssh/known_hosts
                       fi
             - add_ssh_keys:
@@ -155,7 +155,7 @@ jobs:
             - run:
                   name: Deploy
                   command: |
-                      if [ "${CIRCLE_BRANCH}" == "master" ]; then
+                      if [ "${CIRCLE_BRANCH}" == "main" ]; then
                         ssh "$SSH_USER"@"$SSH_HOST_PROD_2" "cd OIPA/OIPA; source env/bin/activate; echo '"$SSH_PROD_PASS_2"' | sudo -S git pull; pip install -r requirements.txt; ./manage.py migrate; echo '"$SSH_PROD_PASS_2"' | sudo -S service supervisor restart"
                       fi
     release:
@@ -185,31 +185,30 @@ workflows:
             #                      branches:
             #                          only:
             #                              - develop
-            - deploy_production_1:
-                  requires:
-                      - test
-                  filters:
-                      branches:
-                          only:
-                              - master
-            - deploy_production_2:
-                  requires:
-                      - test
-                  filters:
-                      branches:
-                          only:
-                              - master
+            #            - deploy_production_1:
+            #                  requires:
+            #                      - test
+            #                  filters:
+            #                      branches:
+            #                          only:
+            #                              - main
+            #            - deploy_production_2:
+            #                  requires:
+            #                      - test
+            #                  filters:
+            #                      branches:
+            #                          only:
+            #                              - main
             - release:
                   requires:
-                      - deploy_production_1
-                      - deploy_production_2
+                      - test
                   filters:
                       branches:
                           only:
-                              - master
+                              - main
             - prerelease:
-                  #                  requires:
-                  #                      - deploy_staging
+                  requires:
+                      - test
                   filters:
                       branches:
                           only:
