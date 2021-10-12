@@ -125,11 +125,12 @@ class ActivityIndexing(BaseIndexing):
             self.add_field('title_narrative', [])
             self.add_field('title_narrative_lang', [])
             self.add_field('title_narrative_text', [])
-
             if title:
                 t = title.narratives.first()
-                if t.content:
-                    self.add_field('title_narrative_first', t.content)
+                t_first = ' '
+                if t and t.content:
+                    t_first = t.content
+                self.add_field('title_narrative_first', t_first)
 
             self.related_narrative(
                 title,
@@ -1634,6 +1635,10 @@ class ActivityIndexing(BaseIndexing):
                     self.indexing['transaction_tied_status_code'].append(' ')
 
     def document_link(self):
+        """
+        Indexes the document link field,
+        Use json renderer to also index child elements.
+        """
         document_link_all = self.record.documentlink_set.filter(
             result_id__isnull=True,
             result_indicator_id__isnull=True,
@@ -2726,53 +2731,70 @@ class ActivityIndexing(BaseIndexing):
 
         data = {}
         if prefix == "activity_aggregation_":
-            data = ActivityAggregation.objects.filter(activity__iati_identifier=activity.iati_identifier)[0]  # NOQA: E501
+            data = ActivityAggregation.objects.filter(
+                activity__iati_identifier=activity.iati_identifier)[0]
         if prefix == "activity_plus_child_aggregation_":
-            data = ActivityPlusChildAggregation.objects.filter(activity__iati_identifier=activity.iati_identifier)[0]  # NOQA: E501
+            data = ActivityPlusChildAggregation.objects.filter(
+                activity__iati_identifier=activity.iati_identifier)[0]
         if prefix == "child_aggregation_":
-            data = ChildAggregation.objects.filter(activity__iati_identifier=activity.iati_identifier)[0]  # NOQA: E501
+            data = ChildAggregation.objects.filter(
+                activity__iati_identifier=activity.iati_identifier)[0]
 
         self.agg_field(prefix, "budget_value", "value", data)
         self.agg_field(prefix, "budget_value_usd", "value", data)
+        self.agg_field(prefix, "budget_value_gbp", "value", data)
         self.agg_field(prefix, "budget_currency", "value", data)
         self.agg_field(prefix, "disbursement_value", "value", data)
         self.agg_field(prefix, "disbursement_value_usd", "value", data)
+        self.agg_field(prefix, "disbursement_value_gbp", "value", data)
         self.agg_field(prefix, "disbursement_currency", "value", data)
         self.agg_field(prefix, "incoming_funds_value", "value", data)
         self.agg_field(prefix, "incoming_funds_value_usd", "value", data)
+        self.agg_field(prefix, "incoming_funds_value_gbp", "value", data)
         self.agg_field(prefix, "incoming_funds_currency", "value", data)
         self.agg_field(prefix, "commitment_value", "value", data)
         self.agg_field(prefix, "commitment_value_usd", "value", data)
+        self.agg_field(prefix, "commitment_value_gbp", "value", data)
         self.agg_field(prefix, "commitment_currency", "value", data)
         self.agg_field(prefix, "expenditure_value", "value", data)
         self.agg_field(prefix, "expenditure_value_usd", "value", data)
+        self.agg_field(prefix, "expenditure_value_gbp", "value", data)
         self.agg_field(prefix, "expenditure_currency", "value", data)
         self.agg_field(prefix, "interest_payment_value", "value", data)
         self.agg_field(prefix, "interest_payment_value_usd", "value", data)
+        self.agg_field(prefix, "interest_payment_value_gbp", "value", data)
         self.agg_field(prefix, "interest_payment_currency", "value", data)
         self.agg_field(prefix, "loan_repayment_value", "value", data)
         self.agg_field(prefix, "loan_repayment_value_usd", "value", data)
+        self.agg_field(prefix, "loan_repayment_value_gbp", "value", data)
         self.agg_field(prefix, "loan_repayment_currency", "value", data)
         self.agg_field(prefix, "reimbursement_value", "value", data)
         self.agg_field(prefix, "reimbursement_value_usd", "value", data)
+        self.agg_field(prefix, "reimbursement_value_gbp", "value", data)
         self.agg_field(prefix, "reimbursement_currency", "value", data)
         self.agg_field(prefix, "purchase_of_equity_value", "value", data)
         self.agg_field(prefix, "purchase_of_equity_value_usd", "value", data)
+        self.agg_field(prefix, "purchase_of_equity_value_gbp", "value", data)
         self.agg_field(prefix, "purchase_of_equity_currency", "value", data)
         self.agg_field(prefix, "sale_of_equity_value", "value", data)
         self.agg_field(prefix, "sale_of_equity_value_usd", "value", data)
+        self.agg_field(prefix, "sale_of_equity_value_gbp", "value", data)
         self.agg_field(prefix, "sale_of_equity_currency", "value", data)
         self.agg_field(prefix, "credit_guarantee_value", "value", data)
         self.agg_field(prefix, "credit_guarantee_value_usd", "value", data)
+        self.agg_field(prefix, "credit_guarantee_value_gbp", "value", data)
         self.agg_field(prefix, "credit_guarantee_currency", "value", data)
         self.agg_field(prefix, "incoming_commitment_value", "value", data)
         self.agg_field(prefix, "incoming_commitment_value_usd", "value", data)
+        self.agg_field(prefix, "incoming_commitment_value_gbp", "value", data)
         self.agg_field(prefix, "incoming_commitment_currency", "value", data)
         self.agg_field(prefix, "outgoing_pledge_value", "value", data)
         self.agg_field(prefix, "outgoing_pledge_value_usd", "value", data)
+        self.agg_field(prefix, "outgoing_pledge_value_gbp", "value", data)
         self.agg_field(prefix, "outgoing_pledge_currency", "value", data)
         self.agg_field(prefix, "incoming_pledge_value", "value", data)
         self.agg_field(prefix, "incoming_pledge_value_usd", "value", data)
+        self.agg_field(prefix, "incoming_pledge_value_gbp", "value", data)
         self.agg_field(prefix, "incoming_pledge_currency", "value", data)
 
     def activity_plus_child_aggregation(self):

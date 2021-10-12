@@ -290,289 +290,86 @@ class ActivityDefaultAidType(models.Model):
         return "%s - %s" % (self.activity.id, self.aid_type.code)
 
 
-class AbstractActivityAggregation(models.Model):
-    budget_value = models.DecimalField(
+def value_decimal_field():
+    return models.DecimalField(
         max_digits=15,
         decimal_places=2,
         null=True,
         blank=True,
         db_index=True,
     )
-    budget_currency = models.CharField(
-        max_length=3,
-        null=True,
-        default=None,
-        blank=True,
-    )
-    disbursement_value = models.DecimalField(
-        max_digits=15,
-        decimal_places=2,
-        null=True,
-        blank=True,
-        db_index=True,
-    )
-    disbursement_currency = models.CharField(
-        max_length=3,
-        null=True,
-        default=None,
-        blank=True,
-    )
-    incoming_funds_value = models.DecimalField(
-        max_digits=15,
-        decimal_places=2,
-        null=True,
-        blank=True,
-        db_index=True,
-    )
-    incoming_funds_currency = models.CharField(
-        max_length=3,
-        null=True,
-        default=None,
-        blank=True,
-    )
-    commitment_value = models.DecimalField(
-        max_digits=15,
-        decimal_places=2,
-        null=True,
-        blank=True,
-        db_index=True,
-    )
-    commitment_currency = models.CharField(
-        max_length=3,
-        null=True,
-        default=None,
-        blank=True,
-    )
-    expenditure_value = models.DecimalField(
-        max_digits=15,
-        decimal_places=2,
-        null=True,
-        blank=True,
-        db_index=True,
-    )
-    expenditure_currency = models.CharField(
-        max_length=3,
-        null=True,
-        default=None,
-        blank=True,
-    )
-    interest_payment_value = models.DecimalField(
-        max_digits=15,
-        decimal_places=2,
-        null=True,
-        blank=True,
-        db_index=True,
-    )
-    interest_payment_currency = models.CharField(
-        max_length=3,
-        null=True,
-        default=None,
-        blank=True,
-    )
-    loan_repayment_value = models.DecimalField(
-        max_digits=15,
-        decimal_places=2,
-        null=True,
-        blank=True,
-        db_index=True,
-    )
-    loan_repayment_currency = models.CharField(
-        max_length=3,
-        null=True,
-        default=None,
-        blank=True,
-    )
-    reimbursement_value = models.DecimalField(
-        max_digits=15,
-        decimal_places=2,
-        null=True,
-        blank=True,
-        db_index=True,
-    )
-    reimbursement_currency = models.CharField(
-        max_length=3,
-        null=True,
-        default=None,
-        blank=True,
-    )
-    purchase_of_equity_value = models.DecimalField(
-        max_digits=15,
-        decimal_places=2,
-        null=True,
-        blank=True,
-        db_index=True,
-    )
-    purchase_of_equity_currency = models.CharField(
-        max_length=3,
-        null=True,
-        default=None,
-        blank=True,
-    )
-    sale_of_equity_value = models.DecimalField(
-        max_digits=15,
-        decimal_places=2,
-        null=True,
-        blank=True,
-        db_index=True,
-    )
-    sale_of_equity_currency = models.CharField(
-        max_length=3,
-        null=True,
-        default=None,
-        blank=True,
-    )
-    credit_guarantee_value = models.DecimalField(
-        max_digits=15,
-        decimal_places=2,
-        null=True,
-        blank=True,
-        db_index=True,
-    )
-    credit_guarantee_currency = models.CharField(
-        max_length=3,
-        null=True,
-        default=None,
-        blank=True,
-    )
-    incoming_commitment_value = models.DecimalField(
-        max_digits=15,
-        decimal_places=2,
-        null=True,
-        blank=True,
-        db_index=True,
-    )
-    incoming_commitment_currency = models.CharField(
-        max_length=3,
-        null=True,
-        default=None,
-        blank=True,
-    )
-    outgoing_pledge_value = models.DecimalField(
-        max_digits=15,
-        decimal_places=2,
-        null=True,
-        blank=True,
-        db_index=True,
-    )
-    outgoing_pledge_currency = models.CharField(
-        max_length=3,
-        null=True,
-        default=None,
-        blank=True,
-    )
-    incoming_pledge_value = models.DecimalField(
-        max_digits=15,
-        decimal_places=2,
-        null=True,
-        blank=True,
-        db_index=True,
-    )
-    incoming_pledge_currency = models.CharField(
+
+
+def value_currency_field():
+    return models.CharField(
         max_length=3,
         null=True,
         default=None,
         blank=True,
     )
 
+
+class AbstractActivityAggregation(models.Model):
+    budget_value = value_decimal_field()
+    budget_currency = value_currency_field()
+    disbursement_value = value_decimal_field()
+    disbursement_currency = value_currency_field()
+    incoming_funds_value = value_decimal_field()
+    incoming_funds_currency = value_currency_field()
+    commitment_value = value_decimal_field()
+    commitment_currency = value_currency_field()
+    expenditure_value = value_decimal_field()
+    expenditure_currency = value_currency_field()
+    interest_payment_value = value_decimal_field()
+    interest_payment_currency = value_currency_field()
+    loan_repayment_value = value_decimal_field()
+    loan_repayment_currency = value_currency_field()
+    reimbursement_value = value_decimal_field()
+    reimbursement_currency = value_currency_field()
+    purchase_of_equity_value = value_decimal_field()
+    purchase_of_equity_currency = value_currency_field()
+    sale_of_equity_value = value_decimal_field()
+    sale_of_equity_currency = value_currency_field()
+    credit_guarantee_value = value_decimal_field()
+    credit_guarantee_currency = value_currency_field()
+    incoming_commitment_value = value_decimal_field()
+    incoming_commitment_currency = value_currency_field()
+    outgoing_pledge_value = value_decimal_field()
+    outgoing_pledge_currency = value_currency_field()
+    incoming_pledge_value = value_decimal_field()
+    incoming_pledge_currency = value_currency_field()
+
     # Add usd converted value option to the aggregations
-    budget_value_usd = models.DecimalField(
-        max_digits=15,
-        decimal_places=2,
-        null=True,
-        blank=True,
-        db_index=True,
-    )
-    disbursement_value_usd = models.DecimalField(
-        max_digits=15,
-        decimal_places=2,
-        null=True,
-        blank=True,
-        db_index=True,
-    )
-    incoming_funds_value_usd = models.DecimalField(
-        max_digits=15,
-        decimal_places=2,
-        null=True,
-        blank=True,
-        db_index=True,
-    )
-    commitment_value_usd = models.DecimalField(
-        max_digits=15,
-        decimal_places=2,
-        null=True,
-        blank=True,
-        db_index=True,
-    )
-    expenditure_value_usd = models.DecimalField(
-        max_digits=15,
-        decimal_places=2,
-        null=True,
-        blank=True,
-        db_index=True,
-    )
-    interest_payment_value_usd = models.DecimalField(
-        max_digits=15,
-        decimal_places=2,
-        null=True,
-        blank=True,
-        db_index=True,
-    )
-    loan_repayment_value_usd = models.DecimalField(
-        max_digits=15,
-        decimal_places=2,
-        null=True,
-        blank=True,
-        db_index=True,
-    )
-    reimbursement_value_usd = models.DecimalField(
-        max_digits=15,
-        decimal_places=2,
-        null=True,
-        blank=True,
-        db_index=True,
-    )
-    purchase_of_equity_value_usd = models.DecimalField(
-        max_digits=15,
-        decimal_places=2,
-        null=True,
-        blank=True,
-        db_index=True,
-    )
-    sale_of_equity_value_usd = models.DecimalField(
-        max_digits=15,
-        decimal_places=2,
-        null=True,
-        blank=True,
-        db_index=True,
-    )
-    credit_guarantee_value_usd = models.DecimalField(
-        max_digits=15,
-        decimal_places=2,
-        null=True,
-        blank=True,
-        db_index=True,
-    )
-    incoming_commitment_value_usd = models.DecimalField(
-        max_digits=15,
-        decimal_places=2,
-        null=True,
-        blank=True,
-        db_index=True,
-    )
-    outgoing_pledge_value_usd = models.DecimalField(
-        max_digits=15,
-        decimal_places=2,
-        null=True,
-        blank=True,
-        db_index=True,
-    )
-    incoming_pledge_value_usd = models.DecimalField(
-        max_digits=15,
-        decimal_places=2,
-        null=True,
-        blank=True,
-        db_index=True,
-    )
+    budget_value_usd = value_decimal_field()
+    disbursement_value_usd = value_decimal_field()
+    incoming_funds_value_usd = value_decimal_field()
+    commitment_value_usd = value_decimal_field()
+    expenditure_value_usd = value_decimal_field()
+    interest_payment_value_usd = value_decimal_field()
+    loan_repayment_value_usd = value_decimal_field()
+    reimbursement_value_usd = value_decimal_field()
+    purchase_of_equity_value_usd = value_decimal_field()
+    sale_of_equity_value_usd = value_decimal_field()
+    credit_guarantee_value_usd = value_decimal_field()
+    incoming_commitment_value_usd = value_decimal_field()
+    outgoing_pledge_value_usd = value_decimal_field()
+    incoming_pledge_value_usd = value_decimal_field()
+
+    # Add gbp converted value option to the aggregations
+    budget_value_gbp = value_decimal_field()
+    disbursement_value_gbp = value_decimal_field()
+    incoming_funds_value_gbp = value_decimal_field()
+    commitment_value_gbp = value_decimal_field()
+    expenditure_value_gbp = value_decimal_field()
+    interest_payment_value_gbp = value_decimal_field()
+    loan_repayment_value_gbp = value_decimal_field()
+    reimbursement_value_gbp = value_decimal_field()
+    purchase_of_equity_value_gbp = value_decimal_field()
+    sale_of_equity_value_gbp = value_decimal_field()
+    credit_guarantee_value_gbp = value_decimal_field()
+    incoming_commitment_value_gbp = value_decimal_field()
+    outgoing_pledge_value_gbp = value_decimal_field()
+    incoming_pledge_value_gbp = value_decimal_field()
 
     class Meta:
         abstract = True

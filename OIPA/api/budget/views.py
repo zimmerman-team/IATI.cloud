@@ -13,7 +13,7 @@ from api.budget.serializers import BudgetSerializer
 from api.country.serializers import CountrySerializer
 from api.generics.filters import SearchFilter
 from api.generics.views import DynamicListView
-from api.organisation.serializers import OrganisationSerializer
+from api.organisation.serializers import OrganisationAggregationSerializer
 from api.region.serializers import RegionSerializer
 from api.sector.serializers import SectorSerializer
 from geodata.models import Country, Region
@@ -191,7 +191,7 @@ class BudgetAggregations(AggregationView):
             fields="activity__reporting_organisations__organisation__id",
             renamed_fields="reporting_organisation",
             queryset=Organisation.objects.all(),
-            serializer=OrganisationSerializer,
+            serializer=OrganisationAggregationSerializer,
             serializer_main_field='id',
             name_search_field=  # NOQA: E251
             "activity__reporting_organisations__organisation__primary_name",
