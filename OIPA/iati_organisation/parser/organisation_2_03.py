@@ -776,11 +776,13 @@ class Parse(IatiParser):
             # if code region is not available the make a new one
 
             region = Region()
-            region.code = code
             region.region_vocabulary = recipient_region_vocabulary
-            region.name = '{code}'.format(
-                code=code
-            )
+            # Adding ref_code to avoid having multiple regions with the same
+            # code, blocking aggregation and filtering, solution is based on
+            # discussion with the iati community.
+            ref = element.attrib.get('ref')
+            region.code = f"{ref}_{code}"
+            region.name = 'Vocabulary 99'
             region.save()
 
         elif not recipient_region:
