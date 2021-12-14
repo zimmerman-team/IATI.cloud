@@ -1054,8 +1054,12 @@ class Parse(IatiParser):
             # Adding ref_code to avoid having multiple regions with the same
             # code, blocking aggregation and filtering, solution is based on
             # discussion with the iati community.
-            ref = element.attrib.get('ref')
-            region.code = f"{ref}_{code}"
+            org_id = self.get_model('Organisation').organisation_identifier
+            if org_id == "GB-GOV-1":
+                region.code = code
+            else:
+                ref = element.attrib.get('ref')
+                region.code = f"{ref}_{code}"
             region.name = 'Vocabulary 99'
             region.region_vocabulary = region_vocabulary
             region.save()

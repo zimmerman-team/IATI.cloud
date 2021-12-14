@@ -1008,8 +1008,12 @@ class Parse(IatiParser):
             # Adding ref_code to avoid having multiple regions with the same
             # code, blocking aggregation and filtering, solution is based on
             # discussion with the iati community.
-            ref = element.attrib.get('ref')
-            region.code = f"{ref}_{code}"
+            org_id = self.get_model('Organisation').organisation_identifier
+            if org_id == "GB-GOV-1":
+                region.code = code
+            else:
+                ref = element.attrib.get('ref')
+                region.code = f"{ref}_{code}"
             region.name = 'Vocabulary 99'
             region.region_vocabulary = region_vocabulary
             region.save()
@@ -1440,8 +1444,12 @@ class Parse(IatiParser):
                 # Adding ref_code to avoid having multiple regions with the
                 # same code, blocking aggregation and filtering, solution is
                 # based on discussion with the iati community.
-                ref = element.attrib.get('ref')
-                sector.code = f"{ref}_{code}"
+                org_id = self.get_model('Organisation').organisation_identifier
+                if org_id == "GB-GOV-1":
+                    sector.code = code
+                else:
+                    ref = element.attrib.get('ref')
+                    sector.code = f"{ref}_{code}"
                 sector.vocabulary = vocabulary
                 sector.name = 'Vocabulary 99 or 98'
                 sector.description = 'The sector reported corresponds to a sector vocabulary maintained by the reporting organisation for this activity'  # NOQA: E501
@@ -2652,8 +2660,12 @@ class Parse(IatiParser):
                 # Adding ref_code to avoid having multiple regions with the
                 # same code, blocking aggregation and filtering, solution is
                 # based on discussion with the iati community.
-                ref = element.attrib.get('ref')
-                sector.code = f"{ref}_{code}"
+                org_id = self.get_model('Organisation').organisation_identifier
+                if org_id == "GB-GOV-1":
+                    sector.code = code
+                else:
+                    ref = element.attrib.get('ref')
+                    sector.code = f"{ref}_{code}"
                 sector.vocabulary = vocabulary
                 sector.name = 'Vocabulary 99 or 98'
                 sector.description = 'The sector reported corresponds to a sector vocabulary maintained by the reporting organisation for this activity'  # NOQA: E501

@@ -781,8 +781,14 @@ class Parse(IatiParser):
             # code, blocking aggregation and filtering, solution is based on
             # discussion with the iati community.
             ref = element.attrib.get('ref')
-            region.code = f"{ref}_{code}"
-            region.name = 'Vocabulary 99'
+            if self.organisation_identifier == "GB-GOV-1":
+                region.code = code
+                region.name = '{code}'.format(
+                    code=code
+                )
+            else:
+                region.code = f"{ref}_{code}"
+                region.name = 'Vocabulary 99'
             region.save()
 
         elif not recipient_region:
