@@ -546,7 +546,7 @@ def calculate_activity_aggregations_per_source(dataset_id):
 @shared_task
 def find_and_replace_dataset_url(find_url, replace_url):
     for source in Dataset.objects.filter(source_url__icontains=find_url):
-        source.source_url = replace_url
+        source.source_url = source.source_url.replace(find_url, replace_url)
         source.save()
 
 
