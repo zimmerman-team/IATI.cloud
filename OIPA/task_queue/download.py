@@ -82,16 +82,23 @@ class DatasetDownloadTask(celery.Task):
         iati_version = self.get_iati_version(dataset_data)
 
         # PUBLISHER_IATI_ID:
-        publisher_iati_id = self.get_val_in_list_of_dicts(
+        publisher_iati_id_container = self.get_val_in_list_of_dicts(
             'publisher_iati_id',
             dataset_data['extras']
-        ).get('value')
+        )
+        publisher_iati_id = None
+        if publisher_iati_id_container:
+            publisher_iati_id = publisher_iati_id_container.get('value')
 
         try:
             publisher = Publisher.objects.get(
                 iati_id=dataset_data['organization']['id'])
+            if not publisher_iati_id:
+                publisher_iati_id = publisher.publisher_iati_id
         except Publisher.DoesNotExist:
             publisher = None
+        if not publisher_iati_id:
+            publisher_iati_id = dataset_data['organization']['id']
 
         # FILETYPE:
         filetype = self.get_dataset_filetype(dataset_data)
