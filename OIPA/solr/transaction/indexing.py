@@ -335,6 +335,7 @@ class TransactionIndexing(BaseIndexing):
             )
 
         self.add_field('policy_marker_code', [])
+        self.add_field('policy_marker_combined', [])
         self.add_field('policy_marker_significance', [])
         for pm in transaction.activity.activitypolicymarker_set.all():
             self.add_value_list(
@@ -345,6 +346,10 @@ class TransactionIndexing(BaseIndexing):
                 'policy_marker_significance',
                 pm.significance_id
             )
+            # Policy Marker Combined
+            if pm.code_id and pm.significance_id:
+                pmc_str = f'{pm.code_id}__{pm.significance_id}'
+                self.add_value_list('policy_marker_combined', pmc_str)
 
         self.add_field('tag_code', [])
         self.add_field('tag_narrative', [])

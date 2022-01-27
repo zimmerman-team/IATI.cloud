@@ -330,6 +330,7 @@
     <field name="policy_marker_vocabulary" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="policy_marker_vocabulary_uri" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="policy_marker_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="policy_marker_combined" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="policy_marker_significance" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
 
     <field name="policy_marker_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
