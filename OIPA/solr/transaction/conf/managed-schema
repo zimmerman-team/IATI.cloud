@@ -176,6 +176,7 @@
     <field name="other_identifier_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
 
     <field name="policy_marker_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+    <field name="policy_marker_combined" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
     <field name="policy_marker_significance" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
 
     <field name="tag_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
