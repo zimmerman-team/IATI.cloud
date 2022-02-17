@@ -66,6 +66,32 @@ SOLR = {
   }
 }
 DOWNLOAD_DATASETS = False
+
+# Update the local solr connections:
+SOLR_URL = <replace with desired solr url>
+SOLR_PUBLISHER = f'{SOLR_URL}/publisher'
+SOLR_PUBLISHER_URL = f'{SOLR_PUBLISHER}/update'
+SOLR_DATASET = f'{SOLR_URL}/dataset'
+SOLR_DATASET_URL = f'{SOLR_DATASET}/update'
+SOLR_ACTIVITY = f'{SOLR_URL}/activity'
+SOLR_ACTIVITY_URL = f'{SOLR_ACTIVITY}/update'
+SOLR_TRANSACTION = f'{SOLR_URL}/transaction'
+SOLR_TRANSACTION_URL = f'{SOLR_TRANSACTION}/update'
+SOLR_BUDGET = f'{SOLR_URL}/budget'
+SOLR_BUDGET_URL = f'{SOLR_BUDGET}/update'
+SOLR_RESULT = f'{SOLR_URL}/result'
+SOLR_RESULT_URL = f'{SOLR_RESULT}/update'
+SOLR_ORGANISATION = f'{SOLR_URL}/organisation'
+SOLR_ORGANISATION_URL = f'{SOLR_ORGANISATION}/update'
+
+# Validator
+VALIDATOR_API_KEY = <replace with IATI Validator api key>
+
+# Specify if we want to download new metadata and datasets. only use for local development
+FRESH = <replace with True or false, always true for first run>
+
+# Mongo connection string
+MONGO_CONNECTION_STRING = <replace with pymongo conn string, default localhost would be 'localhost:27017'>
 ```
 11. Go back to the folder root/OIPA and run database migrations with the command `python manage.py migrate`
 12. Start the development server with the command `python manage.py runserver`
