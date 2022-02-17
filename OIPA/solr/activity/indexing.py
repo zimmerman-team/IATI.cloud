@@ -987,7 +987,7 @@ class ActivityIndexing(BaseIndexing):
                 )
                 # Policy Marker Combined
                 if policy_marker.code_id and policy_marker.significance_id:
-                    pmc_str = f'{policy_marker.code_id}__{policy_marker.significance_id}'
+                    pmc_str = f'{policy_marker.code_id}__{policy_marker.significance_id}'  # NOQA: E501
                     self.add_value_list('policy_marker_combined', pmc_str)
 
                 self.related_narrative(
