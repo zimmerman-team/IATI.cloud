@@ -20,7 +20,7 @@ def retrieve(url, name=None):
     :return: A list of dictionaries
     """
     if not settings.FRESH:
-        path = f'{settings.HERE_PATH}{name}.json'
+        path = f'{settings.HERE_PATH}/{name}.json'
         with open(path) as file:
             return json.load(file)
     metadata_res = requests.get(url).json()
@@ -37,7 +37,7 @@ def index(name, metadata, url):
     :param url: The url to the Solr core
     :return: None
     """
-    path = f'{settings.HERE_PATH}{name}.json'
+    path = f'{settings.HERE_PATH}/{name}.json'
     with open(path, 'w') as json_file:
         json.dump(metadata, json_file)
 
