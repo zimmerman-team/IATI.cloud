@@ -1,0 +1,115 @@
+<!-- TODO -->
+<p>
+    last-updated-datetime pdate
+    lang str
+    default-currency str
+  <field name="last-updated-datetime" type="pdate"/>
+  <field name="lang" type="text_general_single"/>
+  <field name="default-currency" type="text_general_single"/>
+
+    <!-- 1..1 -->
+    organisation-identifier str
+
+    <!-- 1..* -->
+    organisation-narrative strs
+    organisation-narrative.lang strs
+
+    <!-- 1..1 -->
+    reporting-org.ref str
+    reporting-org.type str
+    reporting-org.secondary-reporter bool
+    reporting-org.narrative strs
+    reporting-org.narrative.lang strs
+
+    <!-- 1..* -->
+    total-budget.status ints
+    total-budget.period-start pdates
+    total-budget.period-end pdates
+    total-budget.value ints
+    total-budget.budget-line.ref
+    total-budget.budget-line.value
+    total-budget.budget-line.value.currency
+    total-budget.budget-line.value.value-date
+    total-budget.budget-line.narrative
+    total-budget.budget-line.narrative.lang
+
+    <!-- 1..* -->
+    reporting-org-budget.status
+    reporting-org-budget.recipient-org.ref
+    reporting-org-budget.recipient-org.narrative
+    reporting-org-budget.recipient-org.narrative.lang
+    reporting-org-budget.period-start
+    reporting-org-budget.period-end
+    reporting-org-budget.value
+    reporting-org-budget.value.currency
+    reporting-org-budget.value.value-date
+    reporting-org-budget.budget-line.ref
+    reporting-org-budget.budget-line.value
+    reporting-org-budget.budget-line.value.currency
+    reporting-org-budget.budget-line.value.value-date
+    reporting-org-budget.budget-line.narrative
+    reporting-org-budget.budget-line.narrative.lang
+
+    <!-- 1..* -->
+    recipient-region-budget.status
+    recipient-region-budget.recipient-region.vocabulary
+    recipient-region-budget.recipient-region.vocabulary-uri
+    recipient-region-budget.recipient-region.code
+    recipient-region-budget.recipient-region.narrative
+    recipient-region-budget.recipient-region.narrative.lang
+    recipient-region-budget.period-start
+    recipient-region-budget.period-end
+    recipient-region-budget.value
+    recipient-region-budget.value.currency
+    recipient-region-budget.value.value-date
+    recipient-region-budget.budget-line.ref
+    recipient-region-budget.budget-line.value
+    recipient-region-budget.budget-line.value.currency
+    recipient-region-budget.budget-line.value.value-date
+    recipient-region-budget.budget-line.narrative
+    recipient-region-budget.budget-line.narrative.lang
+
+    <!-- 1..* -->
+    recipient-country-budget.status
+    recipient-country-budget.recipient-country.code
+    recipient-country-budget.recipient-country.narrative
+    recipient-country-budget.recipient-country.narrative.lang
+    recipient-country-budget.period-start
+    recipient-country-budget.period-end
+    recipient-country-budget.value
+    recipient-country-budget.value.currency
+    recipient-country-budget.value.value-date
+    recipient-country-budget.budget-line.ref
+    recipient-country-budget.budget-line.value
+    recipient-country-budget.budget-line.value.currency
+    recipient-country-budget.budget-line.value.value-date
+    recipient-country-budget.budget-line.narrative
+    recipient-country-budget.budget-line.narrative.lang
+
+    <!-- 1..* -->
+    total-expenditure.period-start
+    total-expenditure.period-end
+    total-expenditure.value
+    total-expenditure.value.currency
+    total-expenditure.value.value-date
+    total-expenditure.value.expense-line.ref
+    total-expenditure.value.expense-line.value
+    total-expenditure.value.expense-line.value.currency
+    total-expenditure.value.expense-line.value.value-date
+    total-expenditure.value.expense-line.narrative
+    total-expenditure.value.expense-line.narrative.lang
+
+    <!-- 1..* -->
+    document-link.url
+    document-link.format
+    document-link.recipient-country.code
+    document-link.recipient-country.narrative
+    document-link.recipient-country.narrative.lang
+    document-link.title.narrative
+    document-link.title.narrative.lang
+    document-link.description.narrative
+    document-link.description.narrative.lang
+    document-link.category.code
+    document-link.language.code
+    document-link.document-date
+</p>
