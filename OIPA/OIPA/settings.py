@@ -446,11 +446,11 @@ METADATA_PUBLISHER_URL = 'https://registry.codeforiati.org/publisher_list.json'
 METADATA_DATASET_URL = 'https://registry.codeforiati.org/dataset_list.json'
 DATASET_URL = 'https://gitlab.com/codeforIATI/iati-data/-/archive/main/iati-data-main.zip'
 
-# Needs to be overwritten from local settings
-SOLR_POST_TOOL = '/opt/solr/bin/post'
+# Can be overwritten from local settings. We provided one, as described in direct_indexing/solr/POST.MD
+SOLR_POST_TOOL = os.path.join(BASE_DIR, 'direct_indexing/solr/bin/post')
 
 # Validator, needs to be overwritten from local settings
-VALIDATOR_API_KEY = '<replace with IATI Validator api key>'
+VALIDATOR_API_KEY = '<replace with IATI Validator api key>'  # This key will fail
 
 # Specify if we want to download new metadata and datasets.
 FRESH = True
