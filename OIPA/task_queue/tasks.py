@@ -22,6 +22,7 @@ from rq.job import Job
 from api.export.serializers import ActivityXMLSerializer
 from api.renderers import XMLRenderer
 from common.download_file import DownloadFile, hash_file
+from direct_indexing import direct_indexing
 from iati.activity_aggregation_calculation import (
     ActivityAggregationCalculation
 )
@@ -57,6 +58,17 @@ redis_conn = Redis.from_url(settings.RQ_REDIS_URL)
 # Register a custom base task then Celery recognizes it
 DatasetValidationTask = app.register_task(DatasetValidationTask())
 DatasetDownloadTask = app.register_task(DatasetDownloadTask())
+
+
+#
+# Direct Indexing
+#
+@shared_task
+def run_direct_indexing():
+    """
+    Simply trigger the direct indexing process.
+    """
+    direct_indexing.run()
 
 
 #
