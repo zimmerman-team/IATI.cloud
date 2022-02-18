@@ -462,7 +462,7 @@ CURRENCIES_JSON = os.path.join(BASE_DIR, 'direct_indexing/data_sources/currency_
 MONGO_CONNECTION_STRING = 'localhost:27017'
 
 # default direct-indexing solr connections - can be overwritten from local_settings
-SOLR_URL = 'localhost:8983'
+SOLR_URL = 'http://localhost:8983/solr'  # If you set the solr url, make sure to exclude the hashtag, but include /solr
 SOLR_PUBLISHER = f'{SOLR_URL}/publisher'
 SOLR_PUBLISHER_URL = f'{SOLR_PUBLISHER}/update'
 SOLR_DATASET = f'{SOLR_URL}/dataset'

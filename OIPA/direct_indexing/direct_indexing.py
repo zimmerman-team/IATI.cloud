@@ -11,7 +11,7 @@ def clear_indices():
     """
     cores = ['dataset', 'publisher', 'activity', 'transaction', 'budget', 'result', 'organisation']
     for core in cores:
-        solr = pysolr.Solr(f'{settings.SOLR_URL}/solr/{core}', always_commit=True)
+        solr = pysolr.Solr(f'{settings.SOLR_URL}/{core}', always_commit=True)
         solr.delete(q='*:*')
 
 
