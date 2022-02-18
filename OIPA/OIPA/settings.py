@@ -479,6 +479,8 @@ SOLR_ORGANISATION = f'{SOLR_URL}/organisation'
 SOLR_ORGANISATION_URL = f'{SOLR_ORGANISATION}/update'
 
 HERE_PATH = os.path.join(BASE_DIR, 'direct_indexing/data_sources/datasets')
+DATA_EXTRACTED_PATH = os.path.join(HERE_PATH, 'iati-data-main/data')
+
 try:
     from .local_settings import *  # noqa: F401, F403
 except ImportError:
