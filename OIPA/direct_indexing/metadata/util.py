@@ -51,6 +51,7 @@ def download_dataset():
     :return: None
     """
     if not settings.FRESH:
+        logging.info('-- Using pre-downloaded dataset')
         return  # Assume the dataset is already downloaded and unzipped
     dataset_zip = 'iati-data-main.zip'  # Location of the zip file
     dataset_zip_folder = settings.HERE_PATH + os.path.splitext(dataset_zip)[0]
