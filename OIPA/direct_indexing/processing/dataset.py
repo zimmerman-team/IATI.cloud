@@ -49,7 +49,7 @@ def run(dataset, codelist, currencies):
     if validation_status == 'Valid':
         index_dataset(dataset_filepath, dataset_filetype, codelist, currencies)
     # Add an indexing status to the dataset metadata.
-    dataset['iati-cloud-indexed'] = indexed
+    dataset['iati_cloud_indexed'] = indexed
     return dataset
 
 
