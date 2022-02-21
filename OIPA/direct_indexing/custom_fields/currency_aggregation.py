@@ -5,6 +5,21 @@ from pymongo import MongoClient
 
 
 def currency_aggregation(data):
+    """
+    Aggregate currency data.
+    We use a mongodb approach where the data is temporarily stored in a mongo database,
+    to do the aggregations as efficiently as possible.
+    This was tested to be much faster than a python approach.
+    We could still test with postgres, as we already have an integration for the use of celery.
+
+    The aggregations are split into two levels, activity level and child level.
+    First, each activity is aggregated, then the updated dataset is stored in mongo, to be able
+    to aggregate on the child data as well.
+
+    :param data: List of activities.
+    :return: the dataset updated with aggregations.
+    """
+
     try:
         # Prepare data and connection
         data = prepare_data(data)
@@ -34,7 +49,13 @@ def currency_aggregation(data):
 
 
 def prepare_data(data):
-    # Prep data, mongo cannot query on strings with periods, as they are used as object separators.
+    """
+    Mongo cannot query on strings with periods, as they are used as object separators.
+    Note: This needs to be reversed in clean_aggregation_result.
+
+    :param data: List of activities.
+    :return: List of activities with aggregation field periods replaced by dashes.
+    """
     for activity in data:
         if 'transaction.value-usd' in activity.keys():
             activity['transaction-value-usd'] = activity.pop('transaction.value-usd')
@@ -44,6 +65,12 @@ def prepare_data(data):
 
 
 def connect_to_mongo(data):
+    """
+    Create a connection to the mongo database.
+
+    :param data: List of activities.
+    :return: Mongo database and connection.
+    """
     try:
         # Connect to mongo
         client = MongoClient(settings.MONGO_CONNECTION_STRING)
@@ -59,7 +86,15 @@ def connect_to_mongo(data):
 
 
 def get_aggregations(dba):
-    # Retrieve activity budget aggregation:
+    """
+    Do the mongo aggregations for every activity.
+    Retrieve the aggregations for budgets, transactions (split into sum and per-transaction-type)
+    and planned disbursements.
+
+    :param dba: Mongo database with the activities.
+    :return: A dict with the aggregations.
+    """
+    # Retrieve activity budget aggregation
     budget_agg = list(dba.aggregate([
         {"$unwind": "$budget"},
         {"$group": {
@@ -105,7 +140,12 @@ def get_aggregations(dba):
 
 
 def get_aggregation_fields():
-    # Prepare list of fields to be aggregated
+    """
+    Get the aggregation fields.
+
+    :return: flattened aggregation fields, formatted aggregation fields,
+                and the latter for child and activity-plus-child.
+    """
     aggregation_fields = {
         "budget": "activity-aggregation-budget-value",
         "budget_usd": "activity-aggregation-budget-value-usd",
@@ -175,6 +215,12 @@ def get_aggregation_fields():
 
 
 def index_activity_data(data):
+    """
+    Indexes the activity data list by activity ID.
+
+    :param data: the activity data list
+    :return: a dictionary with the activity iati id as the key, and the location in the data array as the value.
+    """
     i = 0
     activity_indexes = {}
     for activity in data:
@@ -184,6 +230,15 @@ def index_activity_data(data):
 
 
 def process_activity_aggregations(data, activity_aggregations, activity_indexes, aggregation_fields):
+    """
+    Processes the activity aggregations.
+    This means that the values of the aggregations are retrieved and stored into the relevant activities.
+
+    :param data: the activity data list
+    :param activity_aggregations: the activity aggregations
+    :param activity_indexes: the activity indexes
+    :param aggregation_fields: the aggregation fields
+    """
     budget_agg = activity_aggregations['budget']
     transaction_agg = activity_aggregations['transaction']
     transaction_usd_agg = activity_aggregations['transaction-usd']
@@ -248,14 +303,27 @@ def process_activity_aggregations(data, activity_aggregations, activity_indexes,
 
 
 def refresh_mongo_data(dba, data):
-    # Refresh mongo data so we can access the new activity aggregation,
-    # as the child aggregations are the sums of their children
+    """
+    Refresh mongo data so we can access the new activity aggregation,
+    as the child aggregations are the sums of their children
+
+    :param dba: the mongo activities database.
+    :param data: the data to refresh
+    :return: the refreshed data
+    """
     dba.drop()  # Drop previous dataset
     dba.insert_many(data)  # Re-submit updated dataset
     return dba
 
 
 def get_child_aggregations(dba, aggregation_fields):
+    """
+    Retrieves the child aggregations from the database.
+
+    :param dba: the mongo activities database.
+    :param aggregation_fields: the aggregation fields
+    :return: the child aggregations
+    """
     # Prepare group object which sums up each aggregation field.
     group_object = {"_id": "$related-activity.ref"}
     for key in aggregation_fields:
@@ -273,6 +341,16 @@ def get_child_aggregations(dba, aggregation_fields):
 
 def process_child_aggregations(data, children_agg, activity_indexes, aggregation_fields, child_aggregation_fields,
                                parent_plus_child_aggregation_fields):
+    """
+    Process the child aggregations and add them to the data.
+
+    :param data: the activities dataset
+    :param children_agg: the child aggregations
+    :param activity_indexes: the activity indexes
+    :param aggregation_fields: the aggregation fields
+    :param child_aggregation_fields: the child aggregation fields
+    :param parent_plus_child_aggregation_fields: the parent plus child aggregation fields
+    """
     for agg in children_agg:
         if agg['_id'] not in activity_indexes.keys():
             # skip activities that are not in the parent dataset
@@ -308,6 +386,15 @@ def process_child_aggregations(data, children_agg, activity_indexes, aggregation
 
 
 def clean_aggregation_result(data, aggregation_fields, formatted_aggregation_fields):
+    """
+    Rename any fields in the aggregation_fields dict to the corresponding formatted_aggregation_fields dict.
+    As well as the initially renamed transaction value fields.
+
+    :param data: the activities dataset
+    :param aggregation_fields: the aggregation fields
+    :param formatted_aggregation_fields: the formatted aggregation fields
+    :return: the cleaned data
+    """
     for activity in data:
         if '_id' in activity.keys():
             activity.pop('_id')  # Remove mongo introduced '_id'.
