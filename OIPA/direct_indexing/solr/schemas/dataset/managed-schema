@@ -467,7 +467,7 @@
   <field name="author" type="text_general_single"/>
   <field name="author_email" type="text_general_single"/>
   <field name="creator_user_id" type="text_general_single"/>
-  <field name="dataset_valid" type="boolean"/>
+  <field name="dataset_valid" type="text_general_single"/>
   <field name="extras.activity_count" type="text_general_single"/>
   <field name="extras.activity_period-from" type="text_general_single"/>
   <field name="extras.activity_period-to" type="text_general_single"/>
