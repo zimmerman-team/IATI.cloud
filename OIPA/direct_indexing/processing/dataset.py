@@ -47,7 +47,7 @@ def run(dataset, codelist, currencies):
     # Index the relevant datasets,
     # these are activity files of a valid version and that have been successfully validated (not critical)
     if validation_status == 'Valid':
-        index_dataset(dataset_filepath, dataset_filetype, codelist, currencies)
+        indexed = index_dataset(dataset_filepath, dataset_filetype, codelist, currencies)
     # Add an indexing status to the dataset metadata.
     dataset['iati_cloud_indexed'] = indexed
     return dataset

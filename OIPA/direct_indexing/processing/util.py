@@ -26,7 +26,7 @@ def get_dataset_filepath(dataset):
         pass
     if org_name:
         dataset_name = dataset['name']  # Name is a required field
-        path_string = settings.DATA_EXTRACTED_PATH + org_name + '/' + dataset_name + '.xml'
+        path_string = settings.DATA_EXTRACTED_PATH + '/' + org_name + '/' + dataset_name + '.xml'
     return path_string
 
 
