@@ -29,7 +29,11 @@ def currency_conversion(data, currencies):
                 value.append(c_value)
                 rate.append(c_rate)
                 if field == 'transaction':
-                    t_type.append(item['transaction-type']['code'])
+                    app = 0  # Transaction type/code are 1..1 in the standard, therefore app should always be non-zero.
+                    if 'transaction-type' in item.keys():
+                        if 'code' in item['transaction-type'].keys():
+                            app = item['transaction-type']['code']
+                    t_type.append(app)
                 if first_currency == "":
                     first_currency = currency
         else:  # data is a reference thus not assigned
@@ -38,11 +42,16 @@ def currency_conversion(data, currencies):
             value.append(c_value)
             rate.append(c_rate)
             if field == 'transaction':
-                t_type.append(data['transaction']['transaction-type']['code'])
+                app = 0  # Transaction type/code are 1..1 in the standard, therefore app should always be non-zero.
+                if 'transaction-type' in data[field].keys():
+                    if 'code' in data[field]['transaction-type'].keys():
+                        app = data['transaction']['transaction-type']['code']
+                t_type.append(app)
 
         if len(value) > 0:
+            summed_value = sum([0 if v is None else v for v in value])
             data[f'{field}.value-usd'] = value
-            data[f'{field}.value-usd.sum'] = sum(value)
+            data[f'{field}.value-usd.sum'] = summed_value
             data[f'{field}.value-usd.conversion-rate'] = rate
             data[f'{field}.value-usd.conversion-currency'] = first_currency
             if field == 'transaction':

@@ -1,3 +1,5 @@
+import logging
+
 import pysolr
 from django.conf import settings
 
@@ -9,10 +11,14 @@ def clear_indices():
     """
     Clear all indices as indicated by the 'cores' variable.
     """
-    cores = ['dataset', 'publisher', 'activity', 'transaction', 'budget', 'result', 'organisation']
-    for core in cores:
-        solr = pysolr.Solr(f'{settings.SOLR_URL}/{core}', always_commit=True)
-        solr.delete(q='*:*')
+    try:
+        cores = ['dataset', 'publisher', 'activity', 'transaction', 'budget', 'result', 'organisation']
+        for core in cores:
+            solr = pysolr.Solr(f'{settings.SOLR_URL}/{core}', always_commit=True)
+            solr.delete(q='*:*')
+    except:  # noqa
+        logging.error('Could not clear indices')
+        raise Exception("A fatal error has occurred.")  # This exception should stop the process
 
 
 def run():

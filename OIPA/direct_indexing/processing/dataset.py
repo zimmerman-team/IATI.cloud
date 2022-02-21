@@ -103,7 +103,8 @@ def convert_and_save_xml_to_processed_json(filepath, filetype, codelist, currenc
     data = recursive_attribute_cleaning(data)
 
     # Add our additional custom fields
-    data = custom_fields.add_all(data, codelist, currencies)
+    if filetype == 'activity':
+        data = custom_fields.add_all(data, codelist, currencies)
 
     # Activity subtypes
     subtypes = dict()

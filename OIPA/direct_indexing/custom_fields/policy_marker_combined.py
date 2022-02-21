@@ -9,16 +9,18 @@ def policy_marker_combined(data):
     :param data: reference to the activity in the data
     """
     try:
-        data['policy-marker.combined'] = []
         s = 'significance'
-        for pm in data['policy-marker']:
-            # data.
-            code = pm['code']
-            if s in pm.keys() and pm[s] is not None:
-                pmc = f'{code}__{pm[s]}'
-            else:
-                pmc = f'{code}__n'
-            data['policy-marker.combined'].append(pmc)
+        if 'policy-marker' in data.keys():
+            data['policy-marker.combined'] = []
+            for pm in data['policy-marker']:
+                if 'code' not in pm.keys():
+                    continue  # skip if there is no code reported
+                code = pm['code']
+                if s in pm.keys() and pm[s] is not None:
+                    pmc = f'{code}__{pm[s]}'
+                else:
+                    pmc = f'{code}__n'
+                data['policy-marker.combined'].append(pmc)
     except:  # NOQA
         pass  # No policy marker found
     return data
