@@ -6,7 +6,9 @@ def title_narrative_first(data):
     :param data: reference to the activity in the data
     """
     try:
-        data['title.narrative.first'] = data['title']['narrative'][0]
+        if 'title' in data.keys():
+            if 'narrative' in data['title'].keys():
+                data['title.narrative.first'] = data['title']['narrative'][0]
     except:  # NOQA
         pass  # No narrative to be added
     return data
