@@ -15,7 +15,7 @@ def clear_indices():
         cores = ['dataset', 'publisher', 'activity', 'transaction', 'budget', 'result', 'organisation']
         for core in cores:
             solr = pysolr.Solr(f'{settings.SOLR_URL}/{core}', always_commit=True)
-            solr.delete(q='*:*')
+            _solr_out = solr.delete(q='*:*')
     except:  # noqa
         logging.error('Could not clear indices')
         raise Exception("A fatal error has occurred.")  # This exception should stop the process

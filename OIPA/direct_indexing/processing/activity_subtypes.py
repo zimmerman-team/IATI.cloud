@@ -19,7 +19,7 @@ def extract_subtype(activity, subtype):
 
     :param activity: the parent activity
     :param subtype: the subtype to extract
-    :return: the extracted subtype
+    :return: the extracted subtype as a list
     """
     if subtype not in AVAILABLE_SUBTYPES.keys() or subtype not in activity.keys():
         return []  # Make sure we do not return any data when there is none.
@@ -60,10 +60,10 @@ def extract_all_subtypes(subtypes, data):
         if type(data) is list:
             for activity in data:
                 for key in subtypes.keys():
-                    subtypes[key] = extract_subtype(activity, key)
+                    subtypes[key] += extract_subtype(activity, key)
         else:
             for key in subtypes.keys():
-                subtypes[key] = extract_subtype(data, key)
+                subtypes[key] += extract_subtype(data, key)
 
         return subtypes
     except Exception as e:
