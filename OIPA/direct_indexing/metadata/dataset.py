@@ -27,8 +27,12 @@ def index_datasets_and_dataset_metadata():
 
     cl, cu = load_currencies_and_codelists()
     logging.info('-- Walk the metadata')
+    number_of_datasets = len(dataset_metadata)
+    i = 1
     for dataset in dataset_metadata:
+        logging.info(f'--- Processing dataset {i} of {number_of_datasets}')
         dataset_processing.run(dataset, cl, cu)
+        i += 1
 
     logging.info('-- Save the dataset metadata')
     index('dataset_metadata', dataset_metadata, settings.SOLR_DATASET_URL)
