@@ -71,6 +71,24 @@ def run_direct_indexing():
     direct_indexing.run()
 
 
+@shared_task
+def clear_direct_indexing_cores():
+    """
+    Simply trigger the direct indexing process.
+    """
+    direct_indexing.clear_indices()
+
+
+@shared_task
+def update_exchange_rates():
+    """
+    This task updates all of the currency exchange rates in the local database and updates the exchange rates dump.
+    """
+    from currency_convert.imf_rate_parser import RateParser
+    r = RateParser()
+    r.update_rates(force=False)
+
+
 #
 # All utility functions for the registered Celery tasks
 # TODO: 25-02-2020 Move utility functions to utils || remove this todo.
@@ -221,15 +239,6 @@ def start_dataset_parsing(check_validation, force, org_list):
 @shared_task
 def soft_interrupt_incremental_parse():
     InterruptIncrementalParse.objects.create()
-
-
-# This task updates all of the currency exchange rates in the local database
-@shared_task
-def update_exchange_rates():
-    # Task to
-    from currency_convert.imf_rate_parser import RateParser
-    r = RateParser()
-    r.update_rates(force=False)
 
 
 # This task starts updating and retrieving datasets from the IATI registry
