@@ -63,21 +63,22 @@ def download_dataset():
             logging.info('-- Using pre-downloaded dataset')
             return  # Assume the dataset is already downloaded and unzipped
         dataset_zip = 'iati-data-main.zip'  # Location of the zip file
-        dataset_zip_folder = settings.HERE_PATH + os.path.splitext(dataset_zip)[0]
+        dataset_zip_folder = f'{settings.HERE_PATH}/{os.path.splitext(dataset_zip)[0]}'
+        dataset_zip_loc = f'{settings.HERE_PATH}/{dataset_zip}'
 
         # ---- Download and unzip the IATI Datasets ----
         logging.info('-- Download the actual Dataset')
         # Download the dataset
         urlopener = urllib.request.URLopener()
-        urlopener.retrieve(settings.DATASET_URL, dataset_zip)
+        urlopener.retrieve(settings.DATASET_URL, dataset_zip_loc)
 
         logging.info('-- Unzip the dataset')
         # Remove any existing previous data
         if os.path.isdir(dataset_zip_folder):
             shutil.rmtree(dataset_zip_folder)
         # Unzip the dataset
-        with zipfile.ZipFile(dataset_zip, 'r') as data_zip:
-            data_zip.extractall()
+        with zipfile.ZipFile(dataset_zip_loc, 'r') as data_zip:
+            data_zip.extractall(settings.HERE_PATH)
     except:  # NOQA
         logging.error('Error downloading dataset')
         raise Exception("A fatal error has occurred.")  # This exception should stop the process
