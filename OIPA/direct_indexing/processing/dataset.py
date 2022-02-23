@@ -70,7 +70,7 @@ def index_dataset(internal_url, dataset_filetype, codelist, currencies):
             index_to_core(core_url, json_path)
         return True
     except Exception as e:
-        logging.warning(f'Exception occurred while indexing {dataset_filetype} dataset: {internal_url}\n\n{e}')
+        logging.warning(f'Exception occurred while indexing {dataset_filetype} dataset: {internal_url}\n{e}')
         return False
 
 
