@@ -22,6 +22,8 @@ def currency_aggregation(data):
 
     try:
         # Prepare data and connection
+        if type(data) is dict:
+            data = [data]  # Needs to be list for aggregation
         data = prepare_data(data)
         dba, client = connect_to_mongo(data)
         # Aggregate currencies on activity level.
@@ -284,8 +286,9 @@ def process_activity_aggregations(data, activity_aggregations, activity_indexes,
             continue
         index_of_activity = activity_indexes[agg['_id'][0]]
         transaction_type = agg['_id'][1]
-        data[index_of_activity][f'{aggregation_fields[tt_underscored[transaction_type]]}'] = \
-            agg['transaction-value-sum']
+        if type(transaction_type) is int:
+            data[index_of_activity][f'{aggregation_fields[tt_underscored[transaction_type]]}'] = \
+                agg['transaction-value-sum']
 
     for agg in transaction_usd_agg:
         if agg['_id'][0] not in activity_indexes.keys():
@@ -293,11 +296,12 @@ def process_activity_aggregations(data, activity_aggregations, activity_indexes,
         # Find the index of the relevant activity
         index_of_activity = activity_indexes[agg['_id'][0]]
         transaction_type = agg['_id'][1]
-        data[index_of_activity][f'{aggregation_fields[tt_underscored[transaction_type]]}_usd'] = agg[
-            'transaction-value-usd-sum']
-        if 'transaction-value-usd-conversion-currency' in data[index_of_activity].keys():
-            data[index_of_activity][f'{aggregation_fields[tt_underscored[transaction_type]]}_currency'] = \
-                data[index_of_activity]['transaction.value-usd.conversion-currency']
+        if type(transaction_type) is int:
+            data[index_of_activity][f'{aggregation_fields[tt_underscored[transaction_type]]}_usd'] = agg[
+                'transaction-value-usd-sum']
+            if 'transaction-value-usd-conversion-currency' in data[index_of_activity].keys():
+                data[index_of_activity][f'{aggregation_fields[tt_underscored[transaction_type]]}_currency'] = \
+                    data[index_of_activity]['transaction.value-usd.conversion-currency']
 
     return data
 
