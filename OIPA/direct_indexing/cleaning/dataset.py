@@ -134,10 +134,10 @@ def extract_single_values(add_fields, value, key, data):
     """
     if type(value) == list and len(value) == 0:
         # Skip empty elements.
-        pass
+        return add_fields
     if type(value) in [int, str, float]:  # if the value is directly available
         data[key] = value
-        pass
+        return add_fields
     if '$' in value.keys():
         data[key] = value['$']
     else:
