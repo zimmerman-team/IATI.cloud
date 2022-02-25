@@ -28,7 +28,7 @@ def extract_subtype(activity, subtype):
     try:
         # get subtype
         subtype_in_data = activity[subtype]
-        if type(subtype_in_data) == dict:
+        if type(subtype_in_data) is dict:
             subtype_in_data = [subtype_in_data]
         # traverse subtype list
         for subtype_element in list(subtype_in_data):

@@ -16,10 +16,11 @@ def policy_marker_combined(data):
                 if 'code' not in pm.keys():
                     continue  # skip if there is no code reported
                 code = pm['code']
+                pmc = f'{code}__'
                 if s in pm.keys() and pm[s] is not None:
-                    pmc = f'{code}__{pm[s]}'
+                    pmc += str(pm[s])
                 else:
-                    pmc = f'{code}__n'
+                    pmc += 'n'
                 data['policy-marker.combined'].append(pmc)
     except:  # NOQA
         pass  # No policy marker found

@@ -24,7 +24,7 @@ def recursive_attribute_cleaning(data):
             elif key in ['value', 'forecast', 'narrative']:
                 # A value is always single value,
                 # but narrative and forecast can be multiple values.
-                if type(value) == list:
+                if type(value) is list:
                     add_fields = extract_list_values(add_fields, value, key, data)
 
                 else:  # if there is only a single entry
@@ -38,7 +38,7 @@ def recursive_attribute_cleaning(data):
             data[key] = add_fields[key]
     # If a dataset is a list, it will contain multiple dicts, so loop over and
     # process the individual dicts.
-    elif type(data) == list:
+    elif type(data) is list:
         for i in range(len(data)):
             data[i] = recursive_attribute_cleaning(data[i])
 
@@ -57,7 +57,7 @@ def extract_literal_values(value, key, data):
     :param data: the overarching data.
     :return: None, as data is a reference
     """
-    if type(value) == list:
+    if type(value) is list:
         # initialize array and add each element to the array
         data[key] = []
         for element in value:
@@ -98,12 +98,9 @@ def extract_list_values(add_fields, value, key, data):
             data[key].append(element['$'])
         else:
             data[key].append(' ')
-        if '@currency' in element.keys():
-            add_fields['%s.currency' % element].append(element['@currency'])
-        if '@value-date' in element.keys():
-            add_fields['%s.value-date' % element].append(element['@value-date'])
-        if '@year' in element.keys():
-            add_fields['%s.year' % key].append(element['@year'])
+        for string in ['@currency', '@value-date', '@year']:
+            if string in element.keys():
+                add_fields[f'{element}.{string[1:]}'].append(element[string])
         if '@{http://www.w3.org/XML/1998/namespace}lang' in element.keys():
             add_fields['%s.lang' % key].append(
                 element['@{http://www.w3.org/XML/1998/namespace}lang'])
@@ -132,7 +129,7 @@ def extract_single_values(add_fields, value, key, data):
     :param data: the overarching data.
     :return: the additional fields to be appended to the dataset.
     """
-    if type(value) == list and len(value) == 0:
+    if type(value) is list and len(value) == 0:
         # Skip empty elements.
         return add_fields
     if type(value) in [int, str, float]:  # if the value is directly available
@@ -142,12 +139,9 @@ def extract_single_values(add_fields, value, key, data):
         data[key] = value['$']
     else:
         data[key] = ' '
-    if '@currency' in value.keys():
-        add_fields['%s.currency' % key] = value['@currency']
-    if '@value-date' in value.keys():
-        add_fields['%s.value-date' % key] = value['@value-date']
-    if '@year' in value.keys():
-        add_fields['%s.year' % key] = value['@year']
+    for string in ['@currency', '@value-date', '@year']:
+        if string in value.keys():
+            add_fields[f'{key}.{string[1:]}'] = value[string]
     # The language can still be a child element which has not
     # yet been converted within recursion.
     if '@{http://www.w3.org/XML/1998/namespace}lang' in value.keys():
