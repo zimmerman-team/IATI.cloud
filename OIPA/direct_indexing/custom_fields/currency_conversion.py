@@ -22,7 +22,7 @@ def currency_conversion(data, currencies):
         rate = []
         t_type = []
         first_currency = ""
-        if type(data[field]) == list:
+        if type(data[field]) is list:
             for item in data[field]:
                 c_value, c_rate, currency = convert(item, currencies,
                                                     default_currency=default_currency)
@@ -101,21 +101,20 @@ def get_ym(data):
     :return: year and month or None if not found
     """
     try:
-        if 'value.value-date' in data.keys():
-            date = data['value.value-date']
-            year = int(date[:4])
-            month = int(date[5:7])
-
-            # If the month is in the future, pick current year/month
-            now = datetime.datetime.now()
-            if year > now.year:
-                year = now.year
-
-            if year == now.year and month > now.month:
-                month = now.month
-
-            return year, month
-        else:
+        if 'value.value-date' not in data.keys():
             return None, None
+        date = data['value.value-date']
+        year = int(date[:4])
+        month = int(date[5:7])
+
+        # If the month is in the future, pick current year/month
+        now = datetime.datetime.now()
+        if year > now.year:
+            year = now.year
+
+        if year == now.year and month > now.month:
+            month = now.month
+
+        return year, month
     except:  # NOQA
         return None, None  # No valid date was found

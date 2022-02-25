@@ -15,7 +15,7 @@ def add_all(data, codelists, currencies):
     :param currencies: an initialized currencies object.
     :return: the updated dataset.
     """
-    if type(data) == list:
+    if type(data) is list:
         for activity in data:
             process_activity(activity, codelists, currencies)
     else:

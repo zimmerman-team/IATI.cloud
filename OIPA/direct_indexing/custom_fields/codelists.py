@@ -19,7 +19,7 @@ def add_codelist_fields(data, codelists):
     # recipient-country.name
     data['recipient-country.name'] = []
     if 'recipient-country' in data.keys():
-        if type(data['recipient-country']) == list:
+        if type(data['recipient-country']) is list:
             for rc in data['recipient-country']:
                 if 'code' in rc.keys():
                     data['recipient-country.name'].append(
@@ -35,7 +35,7 @@ def add_codelist_fields(data, codelists):
     # recipient-region.name
     data['recipient-region.name'] = []
     if 'recipient-region' in data.keys():
-        if type(data['recipient-region']) == list:
+        if type(data['recipient-region']) is list:
             for rr in data['recipient-region']:
                 if 'code' in rr.keys():
                     data['recipient-region.name'].append(
@@ -51,7 +51,7 @@ def add_codelist_fields(data, codelists):
     # default-aid-type.name
     data['default-aid-type.name'] = []
     if 'default-aid-type' in data.keys():
-        if type(data['default-aid-type']) == list:
+        if type(data['default-aid-type']) is list:
             for dt in data['default-aid-type']:
                 if 'code' in dt.keys():
                     data['default-aid-type.name'].append(
@@ -67,7 +67,7 @@ def add_codelist_fields(data, codelists):
     # transaction-receiver-org.type.name
     data['transaction.receiver-org.type.name'] = []
     if 'transaction' in data.keys():
-        if type(data['transaction']) == list:
+        if type(data['transaction']) is list:
             for tr in data['transaction']:
                 if 'receiver-org' in tr.keys():
                     if 'type' in tr['receiver-org'].keys():
