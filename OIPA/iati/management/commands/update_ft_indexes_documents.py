@@ -1,8 +1,6 @@
 from django.core.management.base import BaseCommand
 
-from iati.document_search_indexes import (
-    reindex_all_documents, reindex_document
-)
+from iati.document_search_indexes import reindex_all_documents, reindex_document
 from iati.models import Document
 
 

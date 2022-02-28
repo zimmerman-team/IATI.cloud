@@ -5,9 +5,7 @@ from lxml.etree import Element
 from mock import MagicMock
 
 from geodata.models import Country
-from iati_codelists.factory.codelist_factory import (
-    AidTypeCategoryFactory, AidTypeFactory
-)
+from iati_codelists.factory.codelist_factory import AidTypeCategoryFactory, AidTypeFactory
 from iati_codelists.models import AidType, AidTypeCategory
 from iati_synchroniser.codelist_importer import CodeListImporter
 

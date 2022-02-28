@@ -5,15 +5,13 @@ from rest_framework.fields import SkipField
 from rest_framework.relations import PKOnlyObject
 
 from api.codelist.serializers import (
-    CodelistSerializer, OrganisationNarrativeContainerSerializer,
-    OrganisationNarrativeSerializer
+    CodelistSerializer, OrganisationNarrativeContainerSerializer, OrganisationNarrativeSerializer
 )
 from api.country.serializers import CountrySerializer
 from api.fields import EncodedHyperlinkedIdentityField
 from api.generics.fields import BoolToNumField
 from api.generics.serializers import (
-    DynamicFieldsModelSerializer, DynamicFieldsSerializer,
-    ModelSerializerNoValidation, SerializerNoValidation
+    DynamicFieldsModelSerializer, DynamicFieldsSerializer, ModelSerializerNoValidation, SerializerNoValidation
 )
 from api.generics.utils import get_or_none, get_or_raise, handle_errors
 from api.region.serializers import BasicRegionSerializer

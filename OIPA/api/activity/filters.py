@@ -4,23 +4,19 @@ from django.db.models import Q
 from django.db.models.fields import FieldDoesNotExist
 from django.db.models.fields.related import ForeignObjectRel, OneToOneRel
 from django_filters import (
-    BooleanFilter, CharFilter, DateFilter, DateTimeFilter, FilterSet,
-    NumberFilter, TypedChoiceFilter
+    BooleanFilter, CharFilter, DateFilter, DateTimeFilter, FilterSet, NumberFilter, TypedChoiceFilter
 )
 from django_filters.widgets import BooleanWidget
 from rest_framework import filters
 
 from api.generics.filters import (
-    CommaSeparatedCharFilter, CommaSeparatedStickyCharFilter,
-    IsNullBooleanFilter, StartsWithInCommaSeparatedCharFilter,
+    CommaSeparatedCharFilter, CommaSeparatedStickyCharFilter, IsNullBooleanFilter, StartsWithInCommaSeparatedCharFilter,
     TogetherFilterSet, ToManyFilter, ToManyNotInFilter
 )
 from iati.models import (
-    Activity, ActivityParticipatingOrganisation, ActivityPolicyMarker,
-    ActivityRecipientCountry, ActivityRecipientRegion,
-    ActivityReportingOrganisation, ActivitySector, Budget, DocumentLink,
-    HumanitarianScope, OtherIdentifier, RelatedActivity, Result,
-    ResultIndicatorPeriod, ResultIndicatorTitle
+    Activity, ActivityParticipatingOrganisation, ActivityPolicyMarker, ActivityRecipientCountry,
+    ActivityRecipientRegion, ActivityReportingOrganisation, ActivitySector, Budget, DocumentLink, HumanitarianScope,
+    OtherIdentifier, RelatedActivity, Result, ResultIndicatorPeriod, ResultIndicatorTitle
 )
 from iati.transaction.models import Transaction
 from iati_synchroniser.models import Dataset, Publisher

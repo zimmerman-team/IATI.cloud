@@ -23,15 +23,12 @@ from api.export.serializers import ActivityXMLSerializer
 from api.renderers import XMLRenderer
 from common.download_file import DownloadFile, hash_file
 from direct_indexing import direct_indexing
-from iati.activity_aggregation_calculation import (
-    ActivityAggregationCalculation
-)
+from iati.activity_aggregation_calculation import ActivityAggregationCalculation
 from iati.models import Activity, Budget, Document, DocumentLink, Result
 from iati.transaction.models import Transaction
 from iati_organisation.models import Organisation
 from iati_synchroniser.models import (
-    AsyncTasksFinished, Dataset, DatasetNote, DatasetUpdateDates,
-    InterruptIncrementalParse, Publisher
+    AsyncTasksFinished, Dataset, DatasetNote, DatasetUpdateDates, InterruptIncrementalParse, Publisher
 )
 from OIPA.celery import app
 from solr.activity.tasks import ActivityTaskIndexing
@@ -45,8 +42,8 @@ from solr.transaction.tasks import solr as solr_transaction
 from solr.transaction_sector.tasks import solr as solr_transaction_sector
 from task_queue.download import DatasetDownloadTask
 from task_queue.utils import (
-    Tasks, automatic_incremental_validation, await_async_subtasks,
-    check_incremental_parse_interrupt, reset_automatic_incremental_parse_dbs
+    Tasks, automatic_incremental_validation, await_async_subtasks, check_incremental_parse_interrupt,
+    reset_automatic_incremental_parse_dbs
 )
 from task_queue.validation import DatasetValidationTask
 

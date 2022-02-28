@@ -1,7 +1,5 @@
 from rest_framework_extensions.key_constructor.bits import QueryParamsKeyBit
-from rest_framework_extensions.key_constructor.constructors import (
-    DefaultKeyConstructor
-)
+from rest_framework_extensions.key_constructor.constructors import DefaultKeyConstructor
 
 
 class QueryParamsKeyConstructor(DefaultKeyConstructor):

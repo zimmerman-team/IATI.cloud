@@ -9,10 +9,7 @@ import requests
 from django.conf import settings
 from django.utils.encoding import smart_text
 
-from iati_synchroniser.models import (
-    AsyncTasksFinished, Dataset, DatasetFailedPickup, Publisher,
-    filetype_choices
-)
+from iati_synchroniser.models import AsyncTasksFinished, Dataset, DatasetFailedPickup, Publisher, filetype_choices
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)

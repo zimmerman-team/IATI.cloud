@@ -4,8 +4,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.forms import ModelForm
 
 from iati.models import (
-    Activity, ActivityParticipatingOrganisation, ActivityReportingOrganisation,
-    DocumentLink, Location, Narrative, RelatedActivity
+    Activity, ActivityParticipatingOrganisation, ActivityReportingOrganisation, DocumentLink, Location, Narrative,
+    RelatedActivity
 )
 
 

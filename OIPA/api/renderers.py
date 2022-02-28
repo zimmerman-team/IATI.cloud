@@ -20,22 +20,16 @@ from six import BytesIO
 
 from api.iati.elements import ElementReference
 from api.iati.references import (
-    ActivityDateReference, ActivityReference, ActivityScopeReference,
-    ActivityStatusReference, BudgetReference, CapitalSpendReference,
-    CollaborationTypeReference, ConditionsReference, ContactInfoReference,
-    CountryBudgetItemsReference, CrsAddReference, DefaultAidTypeReference,
-    DefaultCurrencyOrgReference, DefaultFinanceTypeReference,
-    DefaultFlowTypeReference, DefaultTiedStatusReference, DescriptionReference,
-    DocumentLinkOrgReference, DocumentLinkReference, FssReference,
-    HumanitarianScopeReference, LastUpdatedDatetimeOrgReference,
-    LegacyDataReference, LocationReference, NameOrgReference,
-    OrganisationReference, OtherIdentifierReference, ParticipatingOrgReference,
-    PlannedDisbursementReference, PolicyMarkerReference,
-    RecipientCountryBudgetOrgReference, RecipientCountryReference,
-    RecipientOrgBudgetOrgReference, RecipientRegionBudgetOrgReference,
-    RecipientRegionReference, RelatedActivityReference,
-    ReportingOrgOrgReference, ReportingOrgReference, ResultReference,
-    SectorReference, TagReference, TitleReference, TotalBudgetOrgReference,
+    ActivityDateReference, ActivityReference, ActivityScopeReference, ActivityStatusReference, BudgetReference,
+    CapitalSpendReference, CollaborationTypeReference, ConditionsReference, ContactInfoReference,
+    CountryBudgetItemsReference, CrsAddReference, DefaultAidTypeReference, DefaultCurrencyOrgReference,
+    DefaultFinanceTypeReference, DefaultFlowTypeReference, DefaultTiedStatusReference, DescriptionReference,
+    DocumentLinkOrgReference, DocumentLinkReference, FssReference, HumanitarianScopeReference,
+    LastUpdatedDatetimeOrgReference, LegacyDataReference, LocationReference, NameOrgReference, OrganisationReference,
+    OtherIdentifierReference, ParticipatingOrgReference, PlannedDisbursementReference, PolicyMarkerReference,
+    RecipientCountryBudgetOrgReference, RecipientCountryReference, RecipientOrgBudgetOrgReference,
+    RecipientRegionBudgetOrgReference, RecipientRegionReference, RelatedActivityReference, ReportingOrgOrgReference,
+    ReportingOrgReference, ResultReference, SectorReference, TagReference, TitleReference, TotalBudgetOrgReference,
     TotalExpenditureOrgReference, TransactionReference, XmlLangReference
 )
 

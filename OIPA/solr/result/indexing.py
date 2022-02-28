@@ -1,14 +1,11 @@
 from rest_framework.renderers import JSONRenderer
 
 from api.activity.serializers import (
-    DocumentLinkSerializer, ResultIndicatorReferenceSerializer,
-    ResultIndicatorSerializer, ResultReferenceSerializer
+    DocumentLinkSerializer, ResultIndicatorReferenceSerializer, ResultIndicatorSerializer, ResultReferenceSerializer
 )
 from iati.models import ResultIndicatorPeriodTarget
 from solr.indexing import BaseIndexing
-from solr.utils import (
-    add_reporting_org, bool_string, get_child_attr, value_string
-)
+from solr.utils import add_reporting_org, bool_string, get_child_attr, value_string
 
 
 class ResultIndexing(BaseIndexing):

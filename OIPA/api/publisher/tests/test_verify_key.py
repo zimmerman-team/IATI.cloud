@@ -5,12 +5,8 @@ from django.test import RequestFactory
 from rest_framework.test import APIClient, APITestCase
 
 from iati.factory.iati_factory import OrganisationFactory
-from iati.permissions.factories import (
-    OrganisationAdminGroupFactory, OrganisationUserFactory
-)
-from iati.permissions.models import (
-    OrganisationAdminGroup, OrganisationGroup, OrganisationUser
-)
+from iati.permissions.factories import OrganisationAdminGroupFactory, OrganisationUserFactory
+from iati.permissions.models import OrganisationAdminGroup, OrganisationGroup, OrganisationUser
 from iati_synchroniser.models import Publisher
 
 

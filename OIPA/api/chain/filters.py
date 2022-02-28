@@ -1,8 +1,6 @@
 from django_filters import FilterSet, NumberFilter
 
-from api.generics.filters import (
-    BooleanFilter, CharFilter, CommaSeparatedCharFilter
-)
+from api.generics.filters import BooleanFilter, CharFilter, CommaSeparatedCharFilter
 from traceability.models import Chain, ChainLink, ChainNode, ChainNodeError
 
 

@@ -1,14 +1,9 @@
-from django.contrib.contenttypes.fields import (
-    GenericForeignKey, GenericRelation
-)
+from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 
 from geodata.models import Country, Region
-from iati.models import (
-    BudgetStatus, Currency, DocumentCategory, FileFormat, Language,
-    OrganisationType, Version
-)
+from iati.models import BudgetStatus, Currency, DocumentCategory, FileFormat, Language, OrganisationType, Version
 from iati_vocabulary.models import RegionVocabulary
 
 from .organisation_manager import OrganisationManager

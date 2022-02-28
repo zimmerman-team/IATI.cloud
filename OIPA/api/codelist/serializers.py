@@ -1,10 +1,7 @@
 from django.urls import reverse
 from rest_framework import serializers
 
-from api.generics.serializers import (
-    DynamicFieldsModelSerializer, ModelSerializerNoValidation,
-    SerializerNoValidation
-)
+from api.generics.serializers import DynamicFieldsModelSerializer, ModelSerializerNoValidation, SerializerNoValidation
 from iati.models import DocumentCategory, Narrative
 from iati_codelists.models import AidType
 from iati_organisation.models import OrganisationNarrative

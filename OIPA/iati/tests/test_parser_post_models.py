@@ -7,12 +7,8 @@ from iati.factory import iati_factory
 from iati.models import BudgetSector, Sector
 from iati.parser import post_save
 from iati.parser.IATI_2_01 import Parse as Parser_201
-from iati.transaction.factories import (
-    TransactionFactory, TransactionTypeFactory
-)
-from iati.transaction.models import (
-    TransactionRecipientCountry, TransactionRecipientRegion, TransactionSector
-)
+from iati.transaction.factories import TransactionFactory, TransactionTypeFactory
+from iati.transaction.models import TransactionRecipientCountry, TransactionRecipientRegion, TransactionSector
 from iati_codelists.factory.codelist_factory import (
     BudgetStatusFactory, BudgetTypeFactory, SectorFactory, VersionFactory
 )

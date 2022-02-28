@@ -4,13 +4,8 @@ from rest_framework import filters
 
 from api.activity.views import ActivityList
 from api.aggregation.views import Aggregation, AggregationView, GroupBy
-from api.chain.filters import (
-    ChainFilter, ChainLinkFilter, ChainNodeErrorFilter, ChainNodeFilter
-)
-from api.chain.serializers import (
-    ChainLinkSerializer, ChainNodeErrorSerializer, ChainNodeSerializer,
-    ChainSerializer
-)
+from api.chain.filters import ChainFilter, ChainLinkFilter, ChainNodeErrorFilter, ChainNodeFilter
+from api.chain.serializers import ChainLinkSerializer, ChainNodeErrorSerializer, ChainNodeSerializer, ChainSerializer
 from api.generics.views import DynamicDetailView, DynamicListView
 from api.pagination import CustomTransactionPagination
 from api.transaction.filters import TransactionFilter

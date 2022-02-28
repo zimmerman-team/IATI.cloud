@@ -5,9 +5,7 @@ from rest_framework.filters import OrderingFilter
 from rest_framework_extensions.cache.mixins import CacheResponseMixin
 
 from api.codelist.filters import AllDjangoFilterBackend
-from api.codelist.serializers import (
-    CodelistItemSerializer, CodelistMetaSerializer
-)
+from api.codelist.serializers import CodelistItemSerializer, CodelistMetaSerializer
 from api.generics.views import DynamicListView
 from geodata.models import Region
 from iati_synchroniser.models import Codelist

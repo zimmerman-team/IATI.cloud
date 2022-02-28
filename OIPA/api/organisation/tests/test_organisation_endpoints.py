@@ -5,12 +5,9 @@ from django.test import TestCase
 from django.urls import reverse
 from rest_framework.test import APIClient
 
-from iati_codelists.models import (
-    DocumentCategory, DocumentCategoryCategory, FileFormat, Language, Version
-)
+from iati_codelists.models import DocumentCategory, DocumentCategoryCategory, FileFormat, Language, Version
 from iati_organisation.models import (
-    Organisation, OrganisationDocumentLink, OrganisationDocumentLinkCategory,
-    OrganisationName, OrganisationNarrative
+    Organisation, OrganisationDocumentLink, OrganisationDocumentLinkCategory, OrganisationName, OrganisationNarrative
 )
 
 

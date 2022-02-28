@@ -1,8 +1,6 @@
 from decimal import Decimal
 
-from django.contrib.contenttypes.fields import (
-    GenericForeignKey, GenericRelation
-)
+from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.gis.db.models import PointField
 from django.contrib.postgres.indexes import GinIndex
@@ -12,22 +10,18 @@ from djorm_pgfulltext.fields import VectorField
 
 from geodata.models import Country, Region
 from iati_codelists.models import (
-    ActivityDateType, ActivityScope, ActivityStatus, AidType, BudgetIdentifier,
-    BudgetNotProvided, BudgetStatus, BudgetType, CollaborationType,
-    ConditionType, ContactType, CRSChannelCode, Currency, DescriptionType,
-    DocumentCategory, FileFormat, FinanceType, FlowType, GeographicExactness,
-    GeographicLocationClass, GeographicLocationReach, HumanitarianScopeType,
-    IndicatorMeasure, Language, LoanRepaymentPeriod, LoanRepaymentType,
-    LocationType, OrganisationRole, OrganisationType, OtherFlags,
-    OtherIdentifierType, PolicyMarker, PolicySignificance, RelatedActivityType,
-    ResultType, Sector, TiedStatus, Version
+    ActivityDateType, ActivityScope, ActivityStatus, AidType, BudgetIdentifier, BudgetNotProvided, BudgetStatus,
+    BudgetType, CollaborationType, ConditionType, ContactType, CRSChannelCode, Currency, DescriptionType,
+    DocumentCategory, FileFormat, FinanceType, FlowType, GeographicExactness, GeographicLocationClass,
+    GeographicLocationReach, HumanitarianScopeType, IndicatorMeasure, Language, LoanRepaymentPeriod, LoanRepaymentType,
+    LocationType, OrganisationRole, OrganisationType, OtherFlags, OtherIdentifierType, PolicyMarker, PolicySignificance,
+    RelatedActivityType, ResultType, Sector, TiedStatus, Version
 )
 from iati_organisation.models import Organisation
 from iati_synchroniser.models import Dataset, Publisher
 from iati_vocabulary.models import (
-    BudgetIdentifierVocabulary, GeographicVocabulary,
-    HumanitarianScopeVocabulary, IndicatorVocabulary, PolicyMarkerVocabulary,
-    RegionVocabulary, ResultVocabulary, SectorVocabulary, TagVocabulary
+    BudgetIdentifierVocabulary, GeographicVocabulary, HumanitarianScopeVocabulary, IndicatorVocabulary,
+    PolicyMarkerVocabulary, RegionVocabulary, ResultVocabulary, SectorVocabulary, TagVocabulary
 )
 
 # FIXME: relative imports:!

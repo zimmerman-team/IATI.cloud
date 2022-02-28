@@ -3,10 +3,7 @@ import time
 import requests
 from celery.task.control import inspect
 
-from iati_synchroniser.models import (
-    AsyncTasksFinished, Dataset, DatasetDownloadsStarted,
-    InterruptIncrementalParse
-)
+from iati_synchroniser.models import AsyncTasksFinished, Dataset, DatasetDownloadsStarted, InterruptIncrementalParse
 from task_queue.validation import DatasetValidationTask
 
 

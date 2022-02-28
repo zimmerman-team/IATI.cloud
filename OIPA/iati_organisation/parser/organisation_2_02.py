@@ -3,19 +3,15 @@ import logging
 from django.conf import settings
 
 from geodata.models import Country, Region
-from iati.parser.exceptions import (
-    FieldValidationError, ParserError, RequiredFieldError
-)
+from iati.parser.exceptions import FieldValidationError, ParserError, RequiredFieldError
 from iati.parser.iati_parser import IatiParser
 from iati_codelists import models as codelist_models
 from iati_organisation.models import (
-    DocumentLinkRecipientCountry, DocumentLinkTitle, Organisation,
-    OrganisationDocumentLink, OrganisationDocumentLinkCategory,
-    OrganisationDocumentLinkLanguage, OrganisationName, OrganisationNarrative,
-    OrganisationReportingOrganisation, RecipientCountryBudget,
-    RecipientCountryBudgetLine, RecipientOrgBudget, RecipientOrgBudgetLine,
-    RecipientRegionBudget, RecipientRegionBudgetLine, TotalBudget,
-    TotalBudgetLine, TotalExpenditure, TotalExpenditureLine
+    DocumentLinkRecipientCountry, DocumentLinkTitle, Organisation, OrganisationDocumentLink,
+    OrganisationDocumentLinkCategory, OrganisationDocumentLinkLanguage, OrganisationName, OrganisationNarrative,
+    OrganisationReportingOrganisation, RecipientCountryBudget, RecipientCountryBudgetLine, RecipientOrgBudget,
+    RecipientOrgBudgetLine, RecipientRegionBudget, RecipientRegionBudgetLine, TotalBudget, TotalBudgetLine,
+    TotalExpenditure, TotalExpenditureLine
 )
 from iati_organisation.parser import post_save
 from iati_vocabulary.models import RegionVocabulary

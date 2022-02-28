@@ -2,9 +2,7 @@ import unittest
 
 from django.test import RequestFactory, TestCase
 
-from iati.permissions.factories import (
-    OrganisationAdminGroupFactory, UserFactory
-)
+from iati.permissions.factories import OrganisationAdminGroupFactory, UserFactory
 
 
 class TestDatasetPublish(TestCase):

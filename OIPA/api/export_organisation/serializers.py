@@ -2,9 +2,7 @@ from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer, Serializer
 
 from api.generics.fields import BoolToNumField
-from api.generics.serializers import (
-    DynamicFieldsSerializer, SkipNullMixin, XMLMetaMixin
-)
+from api.generics.serializers import DynamicFieldsSerializer, SkipNullMixin, XMLMetaMixin
 from geodata.models import Country, Region
 from iati_organisation import models as org_models
 

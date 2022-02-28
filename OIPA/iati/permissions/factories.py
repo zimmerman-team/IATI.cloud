@@ -2,9 +2,7 @@ from django.contrib.auth.models import User
 from factory import RelatedFactory, SubFactory
 from factory.django import DjangoModelFactory
 
-from iati.permissions.models import (
-    OrganisationAdminGroup, OrganisationGroup, OrganisationUser
-)
+from iati.permissions.models import OrganisationAdminGroup, OrganisationGroup, OrganisationUser
 from iati_synchroniser.factory import synchroniser_factory
 
 

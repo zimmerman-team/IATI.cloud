@@ -3,9 +3,7 @@ from django.conf.urls import url
 import api
 from api.export_organisation.views import OrganisationNextExportList
 from api.publisher import views
-from api.transaction.views import (
-    TransactionSectorDetail, TransactionSectorList
-)
+from api.transaction.views import TransactionSectorDetail, TransactionSectorList
 
 app_name = 'api'
 urlpatterns = [

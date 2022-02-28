@@ -1,8 +1,7 @@
 from django.db.models import Max
 
 from iati.models import (
-    Activity, ActivityParticipatingOrganisation, RelatedActivity,
-    ResultIndicatorReference, ResultReference
+    Activity, ActivityParticipatingOrganisation, RelatedActivity, ResultIndicatorReference, ResultReference
 )
 from iati.transaction.models import TransactionProvider, TransactionReceiver
 
