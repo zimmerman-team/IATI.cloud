@@ -96,19 +96,18 @@ def convert_and_save_xml_to_processed_json(filepath, filetype, codelist, currenc
     # Convert the tree to json using BadgerFish method.
     data = bf.data(ET.fromstring(tree))
     # Retrieve activities
+    data_found = False
     if filetype == 'activity' and 'iati-activities' in data.keys():
         if 'iati-activity' in data['iati-activities'].keys():
             data = data['iati-activities']['iati-activity']
-        else:
-            return False
+            data_found = True
     elif filetype == 'organisation' and 'iati-organisations' in data.keys():
         if 'iati-organisation' in data['iati-organisations'].keys():
             data = data['iati-organisations']['iati-organisation']
-        else:
-            return False
-    else:
-        return False
+            data_found = True
 
+    if not data_found:
+        return data_found
     # Clean the dataset
     data = recursive_attribute_cleaning(data)
 
