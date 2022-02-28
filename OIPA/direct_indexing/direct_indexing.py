@@ -16,9 +16,10 @@ def clear_indices():
         for core in cores:
             solr = pysolr.Solr(f'{settings.SOLR_URL}/{core}', always_commit=True)
             _solr_out = solr.delete(q='*:*')
-    except:  # noqa
+            logging.debug(_solr_out)
+    except pysolr.SolrError:
         logging.error('Could not clear indices')
-        raise Exception("A fatal error has occurred.")  # This exception should stop the process
+        raise
 
 
 def run():

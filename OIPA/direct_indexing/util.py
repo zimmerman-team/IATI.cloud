@@ -15,9 +15,10 @@ def clear_core(core_url):
     try:
         core = pysolr.Solr(core_url, always_commit=True)
         _solr_out = core.delete(q='*:*')
-    except: # NOQA
+        logging.debug(_solr_out)
+    except pysolr.SolrError:
         logging.error(f"Unable to clear core {core_url}")
-        raise Exception("A fatal error has occurred.")  # This exception should stop the process
+        raise
 
 
 def index_to_core(url, json_path):
@@ -29,6 +30,7 @@ def index_to_core(url, json_path):
     """
     try:
         _solr_out = subprocess.call([settings.SOLR_POST_TOOL, '-url', url, json_path, '-out', 'no'])
-    except:  # NOQA
+        logging.debug(_solr_out)
+    except pysolr.SolrError:
         logging.error(f"Unable to index to {url}")
-        raise Exception("A fatal error has occurred.")  # This exception should stop the process
+        raise

@@ -18,12 +18,11 @@ def get_dataset_filepath(dataset):
     """
     org_name = None
     path_string = None
-    try:
-        if 'organization' in dataset.keys():
-            if 'name' in dataset['organization'].keys():
-                org_name = dataset['organization']['name']
-    except:  # NOQA
-        pass
+    if 'organization' in dataset.keys():
+        if dataset['organization'] is None:
+            return None
+        if 'name' in dataset['organization'].keys():
+            org_name = dataset['organization']['name']
     if org_name:
         dataset_name = dataset['name']  # Name is a required field
         path_string = settings.DATA_EXTRACTED_PATH + '/' + org_name + '/' + dataset_name + '.xml'
@@ -54,22 +53,21 @@ def get_dataset_version_validity(dataset, dataset_filepath):
         # If we cannot find a file, we cannot index it and it is not valid.
         return False
 
-    if 'extras.iati_version' in dataset.keys():
-        if dataset['extras.iati_version'] in VALID_VERSIONS:
+    version = 'extras.iati_version'
+    if version in dataset.keys():
+        if dataset[version] in VALID_VERSIONS:
             return True
-        elif dataset['extras.iati_version'] in INVALID_VERSIONS:
+        elif dataset[version] in INVALID_VERSIONS:
             return False
         else:  # Retrieve version from dataset file as the version is not reported in metadata
             # First check if the dataset is considered valid, otherwise we can skip
-            try:
-                # Dataset always has a resource which always has a hash
-                # TODO: ENABLE DATASET VALIDATION once https://github.com/IATI/validator-services/issues/117 resolved
-                # dataset_valid = get_dataset_validation(dataset['resources'][0]['hash'])
-                # if not dataset_valid:
-                #     return False
-                return valid_version_from_file(dataset_filepath)
-            except:  # NOQA
-                return False
+            # Dataset always has a resource which always has a hash
+            # TODO: ENABLE DATASET VALIDATION once https://github.com/IATI/validator-services/issues/117 resolved
+            # dataset_valid = get_dataset_validation(dataset['resources'][0]['hash'])
+            # if not dataset_valid:
+            #     return False
+            return valid_version_from_file(dataset_filepath)
+
     else:
         return valid_version_from_file(dataset_filepath)
 

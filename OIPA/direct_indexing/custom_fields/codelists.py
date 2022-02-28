@@ -1,3 +1,6 @@
+CODELIST_POSTFIX = '.name'
+
+
 def add_codelist_fields(data, codelists):
     """
     Can be single or multivalued.
@@ -7,79 +10,73 @@ def add_codelist_fields(data, codelists):
     :param codelists: an initialized codelist object.
     :return: the updated dataset.
     """
-
     # reporting-org.type.name
-    if 'reporting-org' in data.keys():
-        if 'type' in data['reporting-org'].keys():
-            data['reporting-org.type.name'] = codelists.get_value(
-                'OrganisationType',
-                str(data['reporting-org']['type']),  # Convert numeric to string
-            )
+    data = extract_single_field(data, 'reporting-org', 'type', 'OrganisationType', codelists)
 
     # recipient-country.name
-    data['recipient-country.name'] = []
-    if 'recipient-country' in data.keys():
-        if type(data['recipient-country']) is list:
-            for rc in data['recipient-country']:
-                if 'code' in rc.keys():
-                    data['recipient-country.name'].append(
-                        codelists.get_value('Country', str(rc['code']))
-                    )
-        else:
-            if 'code' in data['recipient-country'].keys():
-                data['recipient-country.name'].append(
-                    codelists.get_value('Country',
-                                        str(data['recipient-country']['code']))
-                )
+    data = extract_list_field(data, 'recipient-country', 'code', 'Country', codelists)
 
     # recipient-region.name
-    data['recipient-region.name'] = []
-    if 'recipient-region' in data.keys():
-        if type(data['recipient-region']) is list:
-            for rr in data['recipient-region']:
-                if 'code' in rr.keys():
-                    data['recipient-region.name'].append(
-                        codelists.get_value('Region', rr['code'])
-                    )
-        else:
-            if 'code' in data['recipient-region'].keys():
-                data['recipient-region.name'].append(
-                    codelists.get_value('Region',
-                                        str(data['recipient-region']['code']))
-                )
+    data = extract_list_field(data, 'recipient-region', 'code', 'Region', codelists)
 
     # default-aid-type.name
-    data['default-aid-type.name'] = []
-    if 'default-aid-type' in data.keys():
-        if type(data['default-aid-type']) is list:
-            for dt in data['default-aid-type']:
-                if 'code' in dt.keys():
-                    data['default-aid-type.name'].append(
-                        codelists.get_value('AidType', dt['code'])
-                    )
-        else:
-            if 'code' in data['default-aid-type'].keys():
-                data['default-aid-type.name'].append(
-                    codelists.get_value('AidType',
-                                        str(data['default-aid-type']['code']))
-                )
+    data = extract_list_field(data, 'default-aid-type', 'code', 'AidType', codelists)
 
-    # transaction-receiver-org.type.name
-    data['transaction.receiver-org.type.name'] = []
-    if 'transaction' in data.keys():
-        if type(data['transaction']) is list:
-            for tr in data['transaction']:
-                if 'receiver-org' in tr.keys():
-                    if 'type' in tr['receiver-org'].keys():
-                        data['transaction.receiver-org.type.name'].append(
-                            codelists.get_value('OrganisationType', tr['receiver-org']['type'])  # NOQA
-                        )
-        else:
-            if 'receiver-org' in data['transaction'].keys():
-                if 'type' in data['transaction']['receiver-org'].keys():
-                    data['transaction.receiver-org.type.name'].append(
-                        codelists.get_value('OrganisationType',
-                                            str(data['transaction']['receiver-org']['type']))  # NOQA
-                    )
+    # transaction.receiver-org.type.name
+    data = extract_nested_list_field(data, 'transaction', 'receiver-org', 'type', 'OrganisationType', codelists)
+    return data
+
+
+def extract_single_field(data, field_name, field_type, codelist_name, codelists):
+    if field_name not in data.keys():
+        return data
+    if field_type not in data[field_name].keys():
+        return data
+
+    data[f'{field_name}.{field_type}{CODELIST_POSTFIX}'] = codelists.get_value(
+        codelist_name,
+        str(data[field_name][field_type]),  # Convert numeric to string
+    )
+    return data
+
+
+def extract_list_field(data, field_name, field_type, codelist_name, codelists):
+    postfixed_field_name = f'{field_name}{CODELIST_POSTFIX}'
+    data[postfixed_field_name] = []
+    if field_name not in data.keys():
+        return data
+
+    if type(data[field_name]) is list:
+        for rc in data[field_name]:
+            check_and_get(field_type, rc, data, postfixed_field_name, codelists, codelist_name)
+    else:
+        check_and_get(field_type, data[field_name], data, postfixed_field_name, codelists, codelist_name)
 
     return data
+
+
+def extract_nested_list_field(data, parent_field_name, field_name, field_type, codelist_name, codelists):
+    postfixed_field_name = f'{parent_field_name}.{field_name}.{field_type}{CODELIST_POSTFIX}'
+    data[postfixed_field_name] = []
+    if parent_field_name not in data.keys():
+        return data
+    if type(data[parent_field_name]) is list:
+        for tr in data[parent_field_name]:
+            if field_name in tr.keys():
+                check_and_get(field_type, tr[field_name], data, postfixed_field_name, codelists, codelist_name)
+    else:
+        if field_name in data[parent_field_name].keys():
+            check_and_get(field_type, data[parent_field_name][field_name],
+                          data, postfixed_field_name, codelists, codelist_name)
+
+    return data
+
+
+def check_and_get(field_type, codelist_field, data, postfixed_field_name, codelists, codelist_name):
+    """
+    Uses input information related to codelist item, to retrieve codelist value for relevant field
+    """
+    if field_type in codelist_field.keys():
+        data[postfixed_field_name].append(
+            codelists.get_value(codelist_name, str(codelist_field[field_type]))
+        )

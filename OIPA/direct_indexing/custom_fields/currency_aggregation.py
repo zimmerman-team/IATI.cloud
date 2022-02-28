@@ -2,6 +2,19 @@ import logging
 
 from django.conf import settings
 from pymongo import MongoClient
+from pymongo.errors import PyMongoError
+
+TVU_DASHES = 'transaction-value-usd'
+TVU_CLEAN = 'transaction.value-usd'
+TVU_DASHES_TYPE = 'transaction-value-usd-type'
+TVU_CLEAN_TYPE = 'transaction.value-usd-type'
+MONGO_UNWIND = '$unwind'
+MONGO_GROUP = '$group'
+MONGO_IID = '$iati-identifier'
+
+BV_USD_CURR = 'budget.value-usd.conversion-currency'
+PDV_USD_CURR = 'planned-disbursement.value-usd.conversion-currency'
+TV_USD_CURR = 'transaction.value-usd.conversion-currency'
 
 
 def currency_aggregation(data):
@@ -32,21 +45,18 @@ def currency_aggregation(data):
             parent_plus_child_aggregation_fields = get_aggregation_fields()
         activity_indexes = index_activity_data(data)
         data = process_activity_aggregations(data, activity_aggregations, activity_indexes, aggregation_fields)
-
         # Aggregate child currencies
         dba = refresh_mongo_data(dba, data)
         child_aggregations = get_child_aggregations(dba, aggregation_fields)
         data = process_child_aggregations(data, child_aggregations, activity_indexes, aggregation_fields,
                                           child_aggregation_fields, parent_plus_child_aggregation_fields)
-
         # Close mongo connection
         client.close()
 
         # Clean up data names
         data = clean_aggregation_result(data, aggregation_fields, formatted_aggregation_fields)
-    except Exception as e:  # NOQA
-        logging.error("Error in currency aggregation")
-        logging.info(e)
+    except PyMongoError:
+        pass  # Return the data as is, if there is an error.
     return data
 
 
@@ -59,10 +69,10 @@ def prepare_data(data):
     :return: List of activities with aggregation field periods replaced by dashes.
     """
     for activity in data:
-        if 'transaction.value-usd' in activity.keys():
-            activity['transaction-value-usd'] = activity.pop('transaction.value-usd')
-        if 'transaction.value-usd-type' in activity.keys():
-            activity['transaction-value-usd-type'] = activity.pop('transaction.value-usd-type')
+        if TVU_CLEAN in activity.keys():
+            activity[TVU_DASHES] = activity.pop(TVU_CLEAN)
+        if TVU_CLEAN_TYPE in activity.keys():
+            activity[TVU_DASHES_TYPE] = activity.pop(TVU_CLEAN_TYPE)
     return data
 
 
@@ -82,9 +92,9 @@ def connect_to_mongo(data):
         dba.insert_many(data)  # This introduces '_id' key to each data point
 
         return dba, client
-    except:  # NOQA
-        logging.error("Error in connecting to mongo")
-        raise Exception("A fatal error has occurred.")  # This exception should stop the process
+    except PyMongoError as e:  # NOQA
+        logging.error(f"Error in connecting to mongo: {e}")
+        raise
 
 
 def get_aggregations(dba):
@@ -98,37 +108,37 @@ def get_aggregations(dba):
     """
     # Retrieve activity budget aggregation
     budget_agg = list(dba.aggregate([
-        {"$unwind": "$budget"},
-        {"$group": {
-            "_id": "$iati-identifier",
+        {MONGO_UNWIND: "$budget"},
+        {MONGO_GROUP: {
+            "_id": MONGO_IID,
             "budget-value-sum": {"$sum": "$budget.value"},
         }}
     ]))
 
     # transactions
     transaction_agg = list(dba.aggregate([
-        {"$unwind": "$transaction"},
-        {"$group": {
-            "_id": ["$iati-identifier", "$transaction.transaction-type.code"],
+        {MONGO_UNWIND: "$transaction"},
+        {MONGO_GROUP: {
+            "_id": [MONGO_IID, "$transaction.transaction-type.code"],
             "transaction-value-sum": {"$sum": "$transaction.value"},
         }}
     ]))
 
     # Research array index rather than 2 unwinds.
     transaction_usd_agg = list(dba.aggregate([
-        {"$unwind": "$transaction-value-usd-type"},
-        {"$unwind": "$transaction-value-usd"},
-        {"$group": {
-            "_id": ["$iati-identifier", "$transaction-value-usd-type"],
+        {MONGO_UNWIND: "$transaction-value-usd-type"},
+        {MONGO_UNWIND: "$transaction-value-usd"},
+        {MONGO_GROUP: {
+            "_id": [MONGO_IID, "$transaction-value-usd-type"],
             "transaction-value-usd-sum": {"$sum": "$transaction-value-usd"},
         }}
     ]))
 
     # Planned disbursement
     planned_disbursement_agg = list(dba.aggregate([
-        {"$unwind": "$planned-disbursement"},
-        {"$group": {
-            "_id": "$iati-identifier",
+        {MONGO_UNWIND: "$planned-disbursement"},
+        {MONGO_GROUP: {
+            "_id": MONGO_IID,
             "planned-disbursement-value-sum": {"$sum": "$planned-disbursement.value"},
         }}
     ]))
@@ -223,11 +233,10 @@ def index_activity_data(data):
     :param data: the activity data list
     :return: a dictionary with the activity iati id as the key, and the location in the data array as the value.
     """
-    i = 0
     activity_indexes = {}
-    for activity in data:
-        activity_indexes[activity['iati-identifier']] = i
-        i = i + 1
+    for i, activity in enumerate(data):
+        if 'iati-identifier' in activity.keys():
+            activity_indexes[activity['iati-identifier']] = i
     return activity_indexes
 
 
@@ -245,33 +254,9 @@ def process_activity_aggregations(data, activity_aggregations, activity_indexes,
     transaction_agg = activity_aggregations['transaction']
     transaction_usd_agg = activity_aggregations['transaction-usd']
     planned_disbursement_agg = activity_aggregations['planned-disbursement']
-
     # Process the aggregated data
-    for agg in budget_agg:
-        # Find the index of the relevant activity
-        if agg['_id'] not in activity_indexes.keys():
-            continue
-        index_of_activity = activity_indexes[agg['_id']]
-        data[index_of_activity][aggregation_fields['budget']] = agg['budget-value-sum']
-        if 'budget.value-usd.sum' in data[index_of_activity].keys():
-            data[index_of_activity][aggregation_fields['budget_usd']] = data[index_of_activity]['budget.value-usd.sum']
-        if 'budget.value-usd.conversion-currency' in data[index_of_activity].keys():
-            data[index_of_activity][aggregation_fields['budget_currency']] = data[index_of_activity][
-                'budget.value-usd.conversion-currency']
-
-    for agg in planned_disbursement_agg:
-        # Find the index of the relevant activity
-        if agg['_id'] not in activity_indexes.keys():
-            continue
-        index_of_activity = activity_indexes[agg['_id']]
-        data[index_of_activity][aggregation_fields['planned_disbursement']] = agg['planned-disbursement-value-sum']
-        if 'planned-disbursement.value-usd.sum' in data[index_of_activity].keys():
-            data[index_of_activity][aggregation_fields['planned_disbursement_usd']] = data[index_of_activity][
-                'planned-disbursement.value-usd.sum']
-        if 'planned-disbursement.value-usd.conversion-currency' in data[index_of_activity].keys():
-            data[index_of_activity][aggregation_fields['planned_disbursement_currency']] = data[index_of_activity][
-                'planned-disbursement.value-usd.conversion-currency']
-
+    process_budget_agg(budget_agg, activity_indexes, aggregation_fields, data)
+    process_planned_disbursement_agg(planned_disbursement_agg, activity_indexes, aggregation_fields, data)
     # Transaction types, starting with none to make array index match the transaction type code from the codelist
     transaction_types = [None, "incoming-funds", "outgoing-commitment", "disbursement",
                          "expenditure", "interest-payment", "loan-repayment",
@@ -279,30 +264,8 @@ def process_activity_aggregations(data, activity_aggregations, activity_indexes,
                          "credit-guarantee", "incoming-commitment", "outgoing-pledge",
                          "incoming-pledge"]
     tt_underscored = [t.replace("-", "_") if t else None for t in transaction_types]
-
-    for agg in transaction_agg:
-        # Find the index of the relevant activity
-        if agg['_id'][0] not in activity_indexes.keys():
-            continue
-        index_of_activity = activity_indexes[agg['_id'][0]]
-        transaction_type = agg['_id'][1]
-        if type(transaction_type) is int:
-            data[index_of_activity][f'{aggregation_fields[tt_underscored[transaction_type]]}'] = \
-                agg['transaction-value-sum']
-
-    for agg in transaction_usd_agg:
-        if agg['_id'][0] not in activity_indexes.keys():
-            continue
-        # Find the index of the relevant activity
-        index_of_activity = activity_indexes[agg['_id'][0]]
-        transaction_type = agg['_id'][1]
-        if type(transaction_type) is int:
-            data[index_of_activity][f'{aggregation_fields[tt_underscored[transaction_type]]}_usd'] = agg[
-                'transaction-value-usd-sum']
-            if 'transaction-value-usd-conversion-currency' in data[index_of_activity].keys():
-                data[index_of_activity][f'{aggregation_fields[tt_underscored[transaction_type]]}_currency'] = \
-                    data[index_of_activity]['transaction.value-usd.conversion-currency']
-
+    process_transaction_agg(transaction_agg, activity_indexes, aggregation_fields, data, tt_underscored)
+    process_transaction_usd_agg(transaction_usd_agg, activity_indexes, aggregation_fields, data, tt_underscored)
     return data
 
 
@@ -336,9 +299,9 @@ def get_child_aggregations(dba, aggregation_fields):
 
     # Get aggregations for all fields
     children_agg = list(dba.aggregate([
-        {"$unwind": "$related-activity"},
+        {MONGO_UNWIND: "$related-activity"},
         {"$match": {"related-activity.type": 2}},
-        {"$group": group_object}
+        {MONGO_GROUP: group_object}
     ]))
     return children_agg
 
@@ -373,20 +336,29 @@ def process_child_aggregations(data, children_agg, activity_indexes, aggregation
             data[index_of_activity][parent_plus_child_aggregation_fields[key]] = agg[key] + parent_value
 
             # Make sure we add the currency as well:
-            if key + "_currency" in child_aggregation_fields.keys():  # Check once as both have the same keys
-                currency = "USD"  # Default to USD
-                if key == 'budget' and 'budget.value-usd.conversion-currency' in data[index_of_activity].keys():
-                    currency = data[index_of_activity]['budget.value-usd.conversion-currency']
-                if key == 'planned-disbursement' \
-                        and 'budget.value-usd.conversion-currency' in data[index_of_activity].keys():
-                    currency = data[index_of_activity]['planned-disbursement.value-usd.conversion-currency']
-                if key == 'transaction' \
-                        and 'transaction.value-usd.conversion-currency' in data[index_of_activity].keys():
-                    currency = data[index_of_activity]['transaction.value-usd.conversion-currency']
-                data[index_of_activity][child_aggregation_fields[key + "_currency"]] = currency
-                data[index_of_activity][parent_plus_child_aggregation_fields[key + "_currency"]] = currency
+            process_child_agg_currencies(data, key, index_of_activity,
+                                         child_aggregation_fields, parent_plus_child_aggregation_fields)
 
     return data
+
+
+def process_child_agg_currencies(data, key, index_of_activity,
+                                 child_aggregation_fields, parent_plus_child_aggregation_fields):
+    """
+    Make sure we have the currencies for each of the child aggregations.
+    """
+    if key + "_currency" in child_aggregation_fields.keys():  # Check once as both have the same keys
+        currency = "USD"  # Default to USD
+        if key == 'budget' and BV_USD_CURR in data[index_of_activity].keys():
+            currency = data[index_of_activity][BV_USD_CURR]
+        if key == 'planned-disbursement' \
+                and BV_USD_CURR in data[index_of_activity].keys():
+            currency = data[index_of_activity][PDV_USD_CURR]
+        if key == 'transaction' \
+                and TV_USD_CURR in data[index_of_activity].keys():
+            currency = data[index_of_activity][TV_USD_CURR]
+        data[index_of_activity][child_aggregation_fields[key + "_currency"]] = currency
+        data[index_of_activity][parent_plus_child_aggregation_fields[key + "_currency"]] = currency
 
 
 def clean_aggregation_result(data, aggregation_fields, formatted_aggregation_fields):
@@ -402,10 +374,10 @@ def clean_aggregation_result(data, aggregation_fields, formatted_aggregation_fie
     for activity in data:
         if '_id' in activity.keys():
             activity.pop('_id')  # Remove mongo introduced '_id'.
-        if 'transaction-value-usd' in activity.keys():
-            activity['transaction.value-usd'] = activity.pop('transaction-value-usd')
-        if 'transaction-value-usd-type' in activity.keys():
-            activity['transaction.value-usd-type'] = activity.pop('transaction-value-usd-type')
+        if TVU_DASHES in activity.keys():
+            activity[TVU_CLEAN] = activity.pop(TVU_DASHES)
+        if TVU_DASHES_TYPE in activity.keys():
+            activity[TVU_CLEAN_TYPE] = activity.pop(TVU_DASHES_TYPE)
 
         # Go through the - appended aggregation_fields and rename to formatted_aggregation_fields
         for key, value in aggregation_fields.items():
@@ -413,3 +385,61 @@ def clean_aggregation_result(data, aggregation_fields, formatted_aggregation_fie
                 continue
             activity[formatted_aggregation_fields[key]] = activity.pop(value)
     return data
+
+
+def process_budget_agg(budget_agg, activity_indexes, aggregation_fields, data):
+    for agg in budget_agg:
+        # Find the index of the relevant activity
+        if agg['_id'] not in activity_indexes.keys():
+            continue
+        index_of_activity = activity_indexes[agg['_id']]
+        data[index_of_activity][aggregation_fields['budget']] = agg['budget-value-sum']
+        if 'budget.value-usd.sum' in data[index_of_activity].keys():
+            data[index_of_activity][aggregation_fields['budget_usd']] = data[index_of_activity]['budget.value-usd.sum']
+        if BV_USD_CURR in data[index_of_activity].keys():
+            data[index_of_activity][aggregation_fields['budget_currency']] = data[index_of_activity][
+                BV_USD_CURR]
+
+
+def process_planned_disbursement_agg(planned_disbursement_agg, activity_indexes, aggregation_fields, data):
+    for agg in planned_disbursement_agg:
+        # Find the index of the relevant activity
+        if agg['_id'] not in activity_indexes.keys():
+            continue
+        index_of_activity = activity_indexes[agg['_id']]
+        data[index_of_activity][aggregation_fields['planned_disbursement']] = agg['planned-disbursement-value-sum']
+        if 'planned-disbursement.value-usd.sum' in data[index_of_activity].keys():
+            data[index_of_activity][aggregation_fields['planned_disbursement_usd']] = data[index_of_activity][
+                'planned-disbursement.value-usd.sum']
+        if PDV_USD_CURR in data[index_of_activity].keys():
+            data[index_of_activity][aggregation_fields['planned_disbursement_currency']] = data[index_of_activity][
+                PDV_USD_CURR]
+
+
+def process_transaction_agg(transaction_agg, activity_indexes, aggregation_fields, data, types):
+    for agg in transaction_agg:
+        # Find the index of the relevant activity
+        if agg['_id'][0] not in activity_indexes.keys():
+            continue
+        index_of_activity = activity_indexes[agg['_id'][0]]
+        transaction_type = agg['_id'][1]
+        if type(transaction_type) is int:
+            data[index_of_activity][f'{aggregation_fields[types[transaction_type]]}'] = \
+                agg['transaction-value-sum']
+
+
+def process_transaction_usd_agg(transaction_usd_agg, activity_indexes, aggregation_fields, data, types):
+    for agg in transaction_usd_agg:
+        if agg['_id'][0] not in activity_indexes.keys():
+            continue
+        # Find the index of the relevant activity
+        index_of_activity = activity_indexes[agg['_id'][0]]
+        transaction_type = agg['_id'][1]
+        if not transaction_type:
+            continue
+        if type(transaction_type) is int:
+            data[index_of_activity][f'{aggregation_fields[types[transaction_type]]}_usd'] = agg[
+                'transaction-value-usd-sum']
+            if 'transaction-value-usd-conversion-currency' in data[index_of_activity].keys():
+                data[index_of_activity][f'{aggregation_fields[types[transaction_type]]}_currency'] = \
+                    data[index_of_activity][TV_USD_CURR]

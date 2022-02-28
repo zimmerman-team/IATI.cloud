@@ -1,5 +1,9 @@
 from collections import OrderedDict
 
+LANG_STR = 'lang'
+XML_LANG_STR = '@{http://www.w3.org/XML/1998/namespace}' + LANG_STR
+XML_LANG_STR_STRIPPED = XML_LANG_STR[1:]
+
 
 def recursive_attribute_cleaning(data):
     """
@@ -12,27 +16,11 @@ def recursive_attribute_cleaning(data):
         # Filter out any @ symbols in the keys. (@attribute to attribute)
         data = {key.replace('@', ''): item for key, item in data.items()}
         # Remove the lang xml tag
-        data = {key.replace('{http://www.w3.org/XML/1998/namespace}lang', 'lang'): item for key, item in data.items()}
+        data = {key.replace(XML_LANG_STR_STRIPPED, LANG_STR): item for key, item in data.items()}
         # A list of fields that need to be appended to the dataset
         add_fields = {}
         for key, value in data.items():
-            # These fields always contain a single value, but can be in a list
-            if key in [
-                'iati-identifier', 'telephone', 'email', 'website', 'pos', 'channel-code', 'organisation-identifier'
-            ]:
-                extract_literal_values(value, key, data)
-            elif key in ['value', 'forecast', 'narrative']:
-                # A value is always single value,
-                # but narrative and forecast can be multiple values.
-                if type(value) is list:
-                    add_fields = extract_list_values(add_fields, value, key, data)
-
-                else:  # if there is only a single entry
-                    add_fields = extract_single_values(add_fields, value, key, data)
-            # If the fields are not yet at the lowest level of key-value pair,
-            # process the underlying field.
-            elif type(value) in [OrderedDict, list]:
-                data[key] = recursive_attribute_cleaning(value)
+            add_fields = extract_key_value_fields(data, add_fields, key, value)
         # Add the fields to be appended to the dataset
         for key in add_fields:
             data[key] = add_fields[key]
@@ -41,8 +29,36 @@ def recursive_attribute_cleaning(data):
     elif type(data) is list:
         for i in range(len(data)):
             data[i] = recursive_attribute_cleaning(data[i])
-
     return data
+
+
+def extract_key_value_fields(data, add_fields, key, value):
+    """
+    These fields always contain a single value, but can be in a list
+
+    :param data: the overarching data.
+    :param add_fields: the additional fields to be appended to the dataset.
+    :param key: the key of the key:value pair.
+    :param value: the value of the key:value pair.
+    """
+    if key in [
+        'iati-identifier', 'telephone', 'email', 'website', 'pos', 'channel-code', 'organisation-identifier'
+    ]:
+        extract_literal_values(value, key, data)
+    elif key in ['value', 'forecast', 'narrative']:
+        # A value is always single value,
+        # but narrative and forecast can be multiple values.
+        if type(value) is list:
+            add_fields = extract_list_values(add_fields, value, key, data)
+
+        else:  # if there is only a single entry
+            add_fields = extract_single_values(add_fields, value, key, data)
+    # If the fields are not yet at the lowest level of key-value pair,
+    # process the underlying field.
+    elif type(value) in [OrderedDict, list]:
+        data[key] = recursive_attribute_cleaning(value)
+
+    return add_fields
 
 
 def extract_literal_values(value, key, data):
@@ -92,23 +108,36 @@ def extract_list_values(add_fields, value, key, data):
     for item in ['currency', 'value_date', 'year', 'lang']:
         add_fields[f'{key}.{item}'] = []
     for element in value:
-        if len(element) == 0:  # Skip empty elements.
-            continue
-        if '$' in element.keys():
-            data[key].append(element['$'])
-        else:
-            data[key].append(' ')
-        for string in ['@currency', '@value-date', '@year']:
-            if string in element.keys():
-                add_fields[f'{element}.{string[1:]}'].append(element[string])
-        if '@{http://www.w3.org/XML/1998/namespace}lang' in element.keys():
-            add_fields['%s.lang' % key].append(
-                element['@{http://www.w3.org/XML/1998/namespace}lang'])
-        else:  # Avoid having an inconsistent length between narrative lang and value
-            if key is not 'value':
-                add_fields['%s.lang' % key].append(' ')
+        list_values(element, data, key, add_fields)
 
     return add_fields
+
+
+def list_values(element, data, key, add_fields):
+    """
+    Extract all of the list items to the additional fields
+
+    :param element: the element to be processed.
+    :param data: the overarching data.
+    :param key: the key of the key:value pair.
+    :param add_fields: the additional fields to be appended to the dataset.
+    """
+    if len(element) == 0:  # Skip empty elements.
+        return data, add_fields
+    if '$' in element.keys():
+        data[key].append(element['$'])
+    else:
+        data[key].append(' ')
+    for string in ['@currency', '@value-date', '@year']:
+        if string in element.keys():
+            add_fields[f'{element}.{string[1:]}'].append(element[string])
+    if XML_LANG_STR in element.keys():
+        add_fields[f'{key}.{LANG_STR}'].append(
+            element[XML_LANG_STR])
+    else:  # Avoid having an inconsistent length between narrative lang and value
+        if key != 'value':
+            add_fields[f'{key}.{LANG_STR}'].append(' ')
+    return data, add_fields
 
 
 def extract_single_values(add_fields, value, key, data):
@@ -135,6 +164,9 @@ def extract_single_values(add_fields, value, key, data):
     if type(value) in [int, str, float]:  # if the value is directly available
         data[key] = value
         return add_fields
+    if type(value) is bool:
+        data[key] = 0
+        return add_fields
     if '$' in value.keys():
         data[key] = value['$']
     else:
@@ -144,11 +176,11 @@ def extract_single_values(add_fields, value, key, data):
             add_fields[f'{key}.{string[1:]}'] = value[string]
     # The language can still be a child element which has not
     # yet been converted within recursion.
-    if '@{http://www.w3.org/XML/1998/namespace}lang' in value.keys():
-        add_fields['%s.lang' % key] = value[
-            '@{http://www.w3.org/XML/1998/namespace}lang']
+    if XML_LANG_STR in value.keys():
+        add_fields[f'{key}.{LANG_STR}'] = value[
+            XML_LANG_STR]
     else:
-        if key is not 'value':
-            add_fields['%s.lang' % key] = ' '
+        if key != 'value':
+            add_fields[f'{key}.{LANG_STR}'] = ' '
 
     return add_fields

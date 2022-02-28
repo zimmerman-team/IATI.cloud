@@ -68,9 +68,11 @@ def index_dataset(internal_url, dataset_filetype, codelist, currencies):
         json_path = convert_and_save_xml_to_processed_json(internal_url, dataset_filetype, codelist, currencies)
         if json_path:
             index_to_core(core_url, json_path)
+        else:
+            return False
         return True
-    except Exception as e:
-        logging.warning(f'Exception occurred while indexing {dataset_filetype} dataset: {internal_url}\n{e}')
+    except Exception as e:  # NOQA
+        logging.warning(f'Exception occurred while indexing {dataset_filetype} dataset:\n{internal_url}\n{e}\nTherefore the dataset will not be indexed.')  # NOQA
         return False
 
 
@@ -94,10 +96,18 @@ def convert_and_save_xml_to_processed_json(filepath, filetype, codelist, currenc
     # Convert the tree to json using BadgerFish method.
     data = bf.data(ET.fromstring(tree))
     # Retrieve activities
-    if filetype == 'activity':
-        data = data['iati-activities']['iati-activity']
-    if filetype == 'organisation':
-        data = data['iati-organisations']['iati-organisation']
+    if filetype == 'activity' and 'iati-activities' in data.keys():
+        if 'iati-activity' in data['iati-activities'].keys():
+            data = data['iati-activities']['iati-activity']
+        else:
+            return False
+    elif filetype == 'organisation' and 'iati-organisations' in data.keys():
+        if 'iati-organisation' in data['iati-organisations'].keys():
+            data = data['iati-organisations']['iati-organisation']
+        else:
+            return False
+    else:
+        return False
 
     # Clean the dataset
     data = recursive_attribute_cleaning(data)

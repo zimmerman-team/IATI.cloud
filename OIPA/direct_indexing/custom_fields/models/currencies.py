@@ -1,28 +1,23 @@
 import json
-import logging
 from functools import lru_cache
 
 from django.conf import settings
 
 
-@lru_cache(maxsize=None)
 class Currencies(object):
     """
     An object instantiating and containing the currencies
     """
 
     def __init__(self):
-        self.currencies = self.read_currencies()
+        self.currencies_list = self.read_currencies()
 
     def read_currencies(self):
         path = settings.CURRENCIES_JSON
-        try:
-            with open(path) as file:
-                return json.load(file)
-        except Exception as e:
-            logging.error(e)
-            return None
+        with open(path) as file:
+            return json.load(file)
 
+    @lru_cache(maxsize=100)  # Cache the last 100 results
     def get_currency(self, month, year, currency_id):
         """
         Get the currency for a given month and year.
@@ -41,7 +36,7 @@ class Currencies(object):
             (
                 item
                 for item
-                in self.currencies
+                in self.currencies_list
                 if item['month'] == month and item['year'] == year and item['currency_id'] == currency_id  # noqa
             ), None
         )
