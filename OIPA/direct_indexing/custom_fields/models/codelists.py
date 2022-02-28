@@ -58,7 +58,6 @@ class Codelists(object):
                 for single_code in code:
                     if item[key] == str(single_code):  # Ensure code is string
                         ret.append(item[tbr])
-                        continue
             else:
                 if item[key] == code:  # single codes are passed as string
                     return item[tbr]
