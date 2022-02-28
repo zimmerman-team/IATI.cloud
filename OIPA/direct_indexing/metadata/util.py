@@ -26,9 +26,9 @@ def retrieve(url, name=None):
                 return json.load(file)
         metadata_res = requests.get(url).json()
         return metadata_res['result']
-    except:  # NOQA
-        logging.error(f'Error retrieving {url}')
-        raise Exception("A fatal error has occurred.")  # This exception should stop the process
+    except requests.exceptions.RequestException as e:
+        logging.error(f'Error retrieving {url}, due to {e}')
+        raise
 
 
 def index(name, metadata, url):
@@ -41,15 +41,11 @@ def index(name, metadata, url):
     :param url: The url to the Solr core
     :return: None
     """
-    try:
-        path = f'{settings.HERE_PATH}/{name}.json'
-        with open(path, 'w') as json_file:
-            json.dump(metadata, json_file)
+    path = f'{settings.HERE_PATH}/{name}.json'
+    with open(path, 'w') as json_file:
+        json.dump(metadata, json_file)
 
-        index_to_core(url, path)
-    except:  # NOQA
-        logging.error(f'Error indexing {name}')
-        raise Exception("A fatal error has occurred.")  # This exception should stop the process
+    index_to_core(url, path)
 
 
 def download_dataset():
@@ -79,6 +75,9 @@ def download_dataset():
         # Unzip the dataset
         with zipfile.ZipFile(dataset_zip_loc, 'r') as data_zip:
             data_zip.extractall(settings.HERE_PATH)
-    except:  # NOQA
-        logging.error('Error downloading dataset')
-        raise Exception("A fatal error has occurred.")  # This exception should stop the process
+    except urllib.error.URLError as e:
+        logging.error(f'Error downloading dataset, due to {e}')
+        raise
+    except urllib.error.HTTPError as e:
+        logging.error(f'Error downloading dataset, due to {e}')
+        raise

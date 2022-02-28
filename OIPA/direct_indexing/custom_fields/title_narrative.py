@@ -1,3 +1,6 @@
+from collections import OrderedDict
+
+
 def title_narrative_first(data):
     """
     Requested by FCDO. Single valued field.
@@ -5,10 +8,13 @@ def title_narrative_first(data):
 
     :param data: reference to the activity in the data
     """
-    try:
-        if 'title' in data.keys():
-            if 'narrative' in data['title'].keys():
-                data['title.narrative.first'] = data['title']['narrative'][0]
-    except:  # NOQA
-        pass  # No narrative to be added
+    if type(data) not in [dict, OrderedDict]:
+        return data
+    if 'title' not in data.keys():
+        return data
+    if 'narrative' in data['title'].keys():
+        if type(data['title']['narrative']) is list:
+            data['title.narrative.first'] = data['title']['narrative'][0]
+        else:
+            data['title.narrative.first'] = data['title']['narrative']
     return data

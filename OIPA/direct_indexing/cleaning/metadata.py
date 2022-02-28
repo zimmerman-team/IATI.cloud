@@ -14,18 +14,26 @@ def clean_dataset_metadata(dataset):
     """
     # Clean resource fields by removing empty items
     if 'resources' in dataset.keys():
-        for item in dataset['resources']:
-            for key in list(item):
-                if item[key] == '':
-                    item.pop(key)
+        clean_resources(dataset)
     if 'extras' in dataset.keys():
-        items_to_pop = []
-        for item in dataset['extras']:
-            # Clean empty extra fields
-            if item['value'] == '':
-                items_to_pop.append(item)
-            # Add single valued field names for each "extra" key.
-            extras_name = f"extras.{item['key']}"
-            dataset[extras_name] = item['value']
-        dataset['extras'] = [d for d in dataset['extras'] if d not in items_to_pop]
+        clean_extras(dataset)
     return dataset
+
+
+def clean_resources(dataset):
+    for item in dataset['resources']:
+        for key in list(item):  # use list(item) to iterate over a copy of the keys
+            if item[key] == '':
+                item.pop(key)
+
+
+def clean_extras(dataset):
+    items_to_pop = []
+    for item in dataset['extras']:
+        # Clean empty extra fields
+        if item['value'] == '':
+            items_to_pop.append(item)
+        # Add single valued field names for each "extra" key.
+        extras_name = f"extras.{item['key']}"
+        dataset[extras_name] = item['value']
+    dataset['extras'] = [d for d in dataset['extras'] if d not in items_to_pop]

@@ -10,17 +10,21 @@ def activity_dates(data):
 
     :param data: reference to the activity in the data
     """
-    try:
-        if 'activity-date' in data.keys():
-            for date in data['activity-date']:
-                # This approach was tested to be the fastest with 10.000 runs
-                i = 1
-                for s in ['start', 'end']:
-                    for ss in ['planned', 'actual']:
-                        if 'type' in date.keys() and 'iso-date' in data.keys():
-                            if date['type'] == i:
-                                data[f'activity-date.{s}-{ss}'] = date['iso-date']
-                        i += 1
-    except:  # NOQA
-        pass  # No iso date found
+    if 'activity-date' in data.keys():
+        if type(data['activity-date']) is dict:
+            data['activity-date'] = [data['activity-date']]
+        for date in data['activity-date']:
+            data = extract_activity_dates(date, data)
+    return data
+
+
+def extract_activity_dates(date, data):
+    # This approach was tested to be the fastest with 10.000 runs
+    i = 1
+    for s in ['start', 'end']:
+        for ss in ['planned', 'actual']:
+            if 'type' in date.keys() and 'iso-date' in data.keys():
+                if date['type'] == i:
+                    data[f'activity-date.{s}-{ss}'] = date['iso-date']
+            i += 1
     return data

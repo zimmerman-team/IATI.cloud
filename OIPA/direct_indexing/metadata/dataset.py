@@ -1,5 +1,6 @@
 import logging
 
+import requests
 from django.conf import settings
 
 from direct_indexing.custom_fields.models import codelists, currencies
@@ -47,14 +48,10 @@ def load_currencies_and_codelists():
     logging.info('-- Load currencies and codelists')
     try:
         cl = codelists.Codelists()
-    except:  # NOQA
+    except requests.exceptions.RequestException:
         logging.error('Codelists not available')
-        raise Exception("A fatal error has occurred.")  # This exception should stop the process
+        raise
 
-    try:
-        cu = currencies.Currencies()
-    except:  # NOQA
-        logging.error('Currencies not available')
-        raise Exception("A fatal error has occurred.")  # This exception should stop the process
+    cu = currencies.Currencies()
 
     return cl, cu

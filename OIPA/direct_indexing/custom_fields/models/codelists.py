@@ -22,7 +22,7 @@ class Codelists(object):
     """
 
     def __init__(self):
-        self.codelists = {}
+        self.codelists_dict = {}
         self.read_codelists()
 
     def read_codelists(self):
@@ -35,7 +35,7 @@ class Codelists(object):
         for key, value in SOURCES.items():
             r = requests.get(value)
             data = r.json()['data']
-            self.codelists[key] = data
+            self.codelists_dict[key] = data
 
     def get_value(self, codelist_name, code, key='code', tbr='name'):
         """
@@ -49,18 +49,17 @@ class Codelists(object):
         :param tbr: the field to be retrieved, for example 'name' or 'description', default is 'name'.
         :return: The content of the codelist at the given code, or a list of those values if the 'code' is a list
         """
-        try:
-            codelist = self.codelists[codelist_name]
-            ret = []
-            for item in codelist:
-                if type(code) is list:
-                    for single_code in code:
-                        if item[key] == str(single_code):  # Ensure code is string
-                            ret.append(item[tbr])
-                            continue
-                else:
-                    if item[key] == code:  # single codes are passed as string
-                        return item[tbr]
-            return ret
-        except:  # NOQA
-            return ['Value was not found in current codelists.']
+        if codelist_name not in self.codelists_dict.keys():
+            return []
+        codelist = self.codelists_dict[codelist_name]
+        ret = []
+        for item in codelist:
+            if type(code) is list:
+                for single_code in code:
+                    if item[key] == str(single_code):  # Ensure code is string
+                        ret.append(item[tbr])
+                        continue
+            else:
+                if item[key] == code:  # single codes are passed as string
+                    return item[tbr]
+        return ret
