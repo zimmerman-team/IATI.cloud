@@ -2,8 +2,7 @@ import logging
 
 from iati_codelists.models import Language, OrganisationType, Version
 from iati_organisation.models import (
-    Organisation, OrganisationName, OrganisationNarrative,
-    OrganisationReportingOrganisation
+    Organisation, OrganisationName, OrganisationNarrative, OrganisationReportingOrganisation
 )
 
 # Get an instance of a logger

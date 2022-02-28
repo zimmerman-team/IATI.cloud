@@ -3,13 +3,10 @@ import copy
 from django.db.models.fields.related import ForeignKey, OneToOneField
 from rest_framework import mixins
 from rest_framework.generics import (
-    GenericAPIView, ListAPIView, ListCreateAPIView, RetrieveAPIView,
-    RetrieveUpdateDestroyAPIView
+    GenericAPIView, ListAPIView, ListCreateAPIView, RetrieveAPIView, RetrieveUpdateDestroyAPIView
 )
 
-from api.generics.serializers import (
-    DynamicFieldsModelSerializer, DynamicFieldsSerializer
-)
+from api.generics.serializers import DynamicFieldsModelSerializer, DynamicFieldsSerializer
 
 
 class DynamicView(GenericAPIView):

@@ -4,10 +4,7 @@ from django.db.models import Sum
 from django.db.utils import IntegrityError as Integrity
 
 from currency_convert import convert
-from iati.models import (
-    Activity, ActivityAggregation, ActivityPlusChildAggregation,
-    ChildAggregation
-)
+from iati.models import Activity, ActivityAggregation, ActivityPlusChildAggregation, ChildAggregation
 from iati.transaction.models import Transaction
 from solr.activity.tasks import ActivityTaskIndexing
 

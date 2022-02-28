@@ -3,17 +3,16 @@ from datetime import date
 from factory import SubFactory
 
 from iati.factory.iati_factory import (
-    ActivityFactory, CountryFactory, NoDatabaseFactory, RegionFactory,
-    RegionVocabularyFactory, SectorFactory, SectorVocabularyFactory
+    ActivityFactory, CountryFactory, NoDatabaseFactory, RegionFactory, RegionVocabularyFactory, SectorFactory,
+    SectorVocabularyFactory
 )
 from iati.transaction.models import (
-    Transaction, TransactionDescription, TransactionProvider,
-    TransactionReceiver, TransactionRecipientCountry,
+    Transaction, TransactionDescription, TransactionProvider, TransactionReceiver, TransactionRecipientCountry,
     TransactionRecipientRegion, TransactionSector, TransactionType
 )
 from iati_codelists.factory.codelist_factory import (
-    CurrencyFactory, DisbursementChannelFactory, FinanceTypeFactory,
-    FlowTypeFactory, OrganisationTypeFactory, TiedStatusFactory
+    CurrencyFactory, DisbursementChannelFactory, FinanceTypeFactory, FlowTypeFactory, OrganisationTypeFactory,
+    TiedStatusFactory
 )
 
 

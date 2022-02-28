@@ -6,8 +6,7 @@ from lxml import etree
 
 from api.iati.attributes import DataAttribute
 from api.iati.elements import (
-    AttributeRecord, ElementBase, ElementRecord, ElementReference,
-    ElementWithNarrativeReference
+    AttributeRecord, ElementBase, ElementRecord, ElementReference, ElementWithNarrativeReference
 )
 
 

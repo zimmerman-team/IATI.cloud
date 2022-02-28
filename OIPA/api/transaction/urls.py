@@ -2,8 +2,7 @@ from django.conf.urls import url
 from django.views.decorators.cache import cache_page
 
 from api.transaction.views import (
-    TransactionAggregation, TransactionDetail, TransactionList,
-    TransactionSectorDetail, TransactionSectorList
+    TransactionAggregation, TransactionDetail, TransactionList, TransactionSectorDetail, TransactionSectorList
 )
 from OIPA.production_settings import API_CACHE_SECONDS
 

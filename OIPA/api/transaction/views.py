@@ -4,9 +4,7 @@ from django.db.models.functions import Cast
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.generics import (
-    ListCreateAPIView, RetrieveUpdateDestroyAPIView
-)
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework_extensions.cache.mixins import CacheResponseMixin
 
 from api.activity.serializers import CodelistSerializer
@@ -18,21 +16,14 @@ from api.organisation.serializers import OrganisationAggregationSerializer
 from api.pagination import CustomTransactionPagination
 from api.region.serializers import RegionSerializer
 from api.sector.serializers import SectorSerializer
-from api.transaction.filters import (
-    RelatedOrderingFilter, TransactionAggregationFilter, TransactionFilter
-)
-from api.transaction.serializers import (
-    TransactionSectorSerializer, TransactionSerializer
-)
+from api.transaction.filters import RelatedOrderingFilter, TransactionAggregationFilter, TransactionFilter
+from api.transaction.serializers import TransactionSectorSerializer, TransactionSerializer
 from geodata.models import Country, Region
 from iati.models import (
-    ActivityParticipatingOrganisation, ActivityStatus, AidType,
-    CollaborationType, DocumentCategory, FinanceType, FlowType, Organisation,
-    OrganisationType, PolicySignificance, Sector, TiedStatus
+    ActivityParticipatingOrganisation, ActivityStatus, AidType, CollaborationType, DocumentCategory, FinanceType,
+    FlowType, Organisation, OrganisationType, PolicySignificance, Sector, TiedStatus
 )
-from iati.transaction.models import (
-    Transaction, TransactionSector, TransactionType
-)
+from iati.transaction.models import Transaction, TransactionSector, TransactionType
 
 
 class TransactionList(DynamicListView):

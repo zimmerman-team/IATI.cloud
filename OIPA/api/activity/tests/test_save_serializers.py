@@ -14,35 +14,24 @@ from rest_framework.test import APIClient
 from api.activity import serializers
 from iati import models as iati_models
 from iati.factory.iati_factory import (
-    ActivityDateFactory, ActivityDateTypeFactory, ActivityFactory,
-    ActivityPolicyMarkerFactory, ActivityRecipientCountryFactory,
-    ActivityRecipientRegionFactory, ActivitySectorFactory, BudgetFactory,
-    BudgetItemFactory, BudgetStatusFactory, BudgetTypeFactory,
-    ConditionFactory, ConditionsFactory, ContactInfoFactory,
-    ContactTypeFactory, CountryBudgetItemFactory, CountryFactory,
-    CrsAddFactory, CrsAddOtherFlagsFactory, CurrencyFactory,
-    DescriptionFactory, DescriptionTypeFactory, DocumentLinkCategoryFactory,
-    DocumentLinkFactory, DocumentLinkLanguageFactory, FinanceTypeFactory,
-    FlowTypeFactory, FssFactory, FssForecastFactory,
-    GeographicExactnessFactory, GeographicLocationClassFactory,
-    GeographicLocationReachFactory, GeographicVocabularyFactory,
-    HumanitarianScopeFactory, HumanitarianScopeTypeFactory,
-    HumanitarianScopeVocabularyFactory, IndicatorMeasureFactory,
-    LegacyDataFactory, LoanRepaymentPeriodFactory, LoanRepaymentTypeFactory,
-    LocationFactory, LocationTypeFactory, OrganisationFactory,
-    OrganisationRoleFactory, OrganisationTypeFactory, OtherIdentifierFactory,
-    ParticipatingOrganisationFactory, PlannedDisbursementFactory,
-    PolicyMarkerFactory, PolicyMarkerVocabularyFactory,
-    PolicySignificanceFactory, RegionFactory, RegionVocabularyFactory,
-    RelatedActivityFactory, ResultFactory, ResultIndicatorFactory,
-    ResultIndicatorPeriodTargetFactory, ResultIndicatorReferenceFactory,
-    ResultTypeFactory, SectorFactory, SectorVocabularyFactory,
-    TiedStatusFactory, TitleFactory
+    ActivityDateFactory, ActivityDateTypeFactory, ActivityFactory, ActivityPolicyMarkerFactory,
+    ActivityRecipientCountryFactory, ActivityRecipientRegionFactory, ActivitySectorFactory, BudgetFactory,
+    BudgetItemFactory, BudgetStatusFactory, BudgetTypeFactory, ConditionFactory, ConditionsFactory, ContactInfoFactory,
+    ContactTypeFactory, CountryBudgetItemFactory, CountryFactory, CrsAddFactory, CrsAddOtherFlagsFactory,
+    CurrencyFactory, DescriptionFactory, DescriptionTypeFactory, DocumentLinkCategoryFactory, DocumentLinkFactory,
+    DocumentLinkLanguageFactory, FinanceTypeFactory, FlowTypeFactory, FssFactory, FssForecastFactory,
+    GeographicExactnessFactory, GeographicLocationClassFactory, GeographicLocationReachFactory,
+    GeographicVocabularyFactory, HumanitarianScopeFactory, HumanitarianScopeTypeFactory,
+    HumanitarianScopeVocabularyFactory, IndicatorMeasureFactory, LegacyDataFactory, LoanRepaymentPeriodFactory,
+    LoanRepaymentTypeFactory, LocationFactory, LocationTypeFactory, OrganisationFactory, OrganisationRoleFactory,
+    OrganisationTypeFactory, OtherIdentifierFactory, ParticipatingOrganisationFactory, PlannedDisbursementFactory,
+    PolicyMarkerFactory, PolicyMarkerVocabularyFactory, PolicySignificanceFactory, RegionFactory,
+    RegionVocabularyFactory, RelatedActivityFactory, ResultFactory, ResultIndicatorFactory,
+    ResultIndicatorPeriodTargetFactory, ResultIndicatorReferenceFactory, ResultTypeFactory, SectorFactory,
+    SectorVocabularyFactory, TiedStatusFactory, TitleFactory
 )
 from iati.parser.exceptions import FieldValidationError
-from iati.permissions.factories import (
-    OrganisationAdminGroupFactory, OrganisationUserFactory
-)
+from iati.permissions.factories import OrganisationAdminGroupFactory, OrganisationUserFactory
 from iati.transaction import factories as transaction_factory
 from iati.transaction import models as transaction_models
 from iati_codelists.factory import codelist_factory

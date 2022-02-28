@@ -5,12 +5,9 @@ import ssl
 import urllib
 
 from iati_organisation.models import Organisation
-from iati_synchroniser.create_publisher_organisation import (
-    create_publisher_organisation
-)
+from iati_synchroniser.create_publisher_organisation import create_publisher_organisation
 from iati_synchroniser.models import (
-    Dataset, DatasetDownloadsStarted, DatasetFailedPickup, DatasetUpdateDates,
-    Publisher
+    Dataset, DatasetDownloadsStarted, DatasetFailedPickup, DatasetUpdateDates, Publisher
 )
 from task_queue.tasks import DatasetDownloadTask
 

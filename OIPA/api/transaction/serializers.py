@@ -1,11 +1,7 @@
 from rest_framework import serializers
 
-from api.activity.serializers import (
-    ActivitySerializer, handle_errors, save_narratives
-)
-from api.codelist.serializers import (
-    CodelistSerializer, NarrativeSerializer, VocabularySerializer
-)
+from api.activity.serializers import ActivitySerializer, handle_errors, save_narratives
+from api.codelist.serializers import CodelistSerializer, NarrativeSerializer, VocabularySerializer
 from api.country.serializers import CountrySerializer
 from api.generics.serializers import DynamicFieldsModelSerializer
 from api.generics.utils import get_or_raise

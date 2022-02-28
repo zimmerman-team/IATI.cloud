@@ -4,9 +4,7 @@ from django.test import TestCase
 
 from iati.factory import iati_factory
 from iati_organisation.models import Organisation
-from iati_synchroniser.create_publisher_organisation import (
-    create_publisher_organisation
-)
+from iati_synchroniser.create_publisher_organisation import create_publisher_organisation
 from iati_synchroniser.factory import synchroniser_factory
 
 

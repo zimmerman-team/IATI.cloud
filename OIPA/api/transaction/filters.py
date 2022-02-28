@@ -4,17 +4,15 @@ from django_filters import BooleanFilter, DateFilter, FilterSet, NumberFilter
 from rest_framework import filters
 
 from api.generics.filters import (
-    CommaSeparatedCharFilter, CommaSeparatedStickyCharFilter, ToManyFilter,
-    ToManyNotInFilter
+    CommaSeparatedCharFilter, CommaSeparatedStickyCharFilter, ToManyFilter, ToManyNotInFilter
 )
 from iati.models import (
-    ActivityParticipatingOrganisation, ActivityRecipientCountry,
-    ActivityRecipientRegion, ActivityReportingOrganisation, ActivitySector,
-    Budget, DocumentLink, RelatedActivity, Result
+    ActivityParticipatingOrganisation, ActivityRecipientCountry, ActivityRecipientRegion, ActivityReportingOrganisation,
+    ActivitySector, Budget, DocumentLink, RelatedActivity, Result
 )
 from iati.transaction.models import (
-    Transaction, TransactionProvider, TransactionReceiver,
-    TransactionRecipientCountry, TransactionRecipientRegion, TransactionSector
+    Transaction, TransactionProvider, TransactionReceiver, TransactionRecipientCountry, TransactionRecipientRegion,
+    TransactionSector
 )
 
 

@@ -1,8 +1,5 @@
 from solr.indexing import BaseIndexing
-from solr.utils import (
-    add_reporting_org, bool_string, date_string, decimal_string,
-    get_child_attr, value_string
-)
+from solr.utils import add_reporting_org, bool_string, date_string, decimal_string, get_child_attr, value_string
 
 
 def add_recipient_country(serializer, activity):

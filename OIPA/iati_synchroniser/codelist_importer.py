@@ -10,17 +10,12 @@ from lxml import etree
 
 from geodata.models import Country, Region
 from iati_codelists.models import (
-    AidType, AidTypeVocabulary, FileFormat, FinanceTypeCategory,
-    OrganisationIdentifier, OrganisationRegistrationAgency, Sector,
-    SectorCategory
+    AidType, AidTypeVocabulary, FileFormat, FinanceTypeCategory, OrganisationIdentifier, OrganisationRegistrationAgency,
+    Sector, SectorCategory
 )
-from iati_synchroniser.aid_type_codes_for_vocab3_importer import (
-    AidTypeVocab3Importer
-)
+from iati_synchroniser.aid_type_codes_for_vocab3_importer import AidTypeVocab3Importer
 from iati_synchroniser.dac_sector_importer import DacSectorImporter
-from iati_synchroniser.humanitrian_global_clusters_import import (
-    GlobalClustersSectorImporter
-)
+from iati_synchroniser.humanitrian_global_clusters_import import GlobalClustersSectorImporter
 from iati_synchroniser.m49_regions_importer import M49RegionsImporter
 from iati_synchroniser.models import Codelist
 from iati_synchroniser.sdg_sector_importer import SdgSectorImporter

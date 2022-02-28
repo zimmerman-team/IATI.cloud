@@ -1,6 +1,4 @@
-from api.generics.filters import (
-    BooleanFilter, CommaSeparatedCharFilter, TogetherFilterSet
-)
+from api.generics.filters import BooleanFilter, CommaSeparatedCharFilter, TogetherFilterSet
 from iati_organisation.models import Organisation
 
 

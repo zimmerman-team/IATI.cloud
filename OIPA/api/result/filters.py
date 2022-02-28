@@ -4,13 +4,12 @@ from django_filters import BooleanFilter, DateFilter, NumberFilter
 from rest_framework import filters
 
 from api.generics.filters import (
-    CommaSeparatedCharFilter, CommaSeparatedStickyCharFilter,
-    StickyBooleanFilter, StickyCharFilter, TogetherFilterSet, ToManyFilter
+    CommaSeparatedCharFilter, CommaSeparatedStickyCharFilter, StickyBooleanFilter, StickyCharFilter, TogetherFilterSet,
+    ToManyFilter
 )
 from iati.models import (
-    ActivityParticipatingOrganisation, ActivityRecipientCountry,
-    ActivityRecipientRegion, ActivityReportingOrganisation, ActivitySector,
-    DocumentLink, RelatedActivity, Result
+    ActivityParticipatingOrganisation, ActivityRecipientCountry, ActivityRecipientRegion, ActivityReportingOrganisation,
+    ActivitySector, DocumentLink, RelatedActivity, Result
 )
 
 

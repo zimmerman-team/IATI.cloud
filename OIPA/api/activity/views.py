@@ -4,45 +4,31 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import authentication, mixins, status
-from rest_framework.generics import (
-    GenericAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
-)
+from rest_framework.generics import GenericAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_extensions.cache.mixins import CacheResponseMixin
 
-from api.activity.filters import (
-    ActivityAggregationFilter, ActivityFilter, RelatedOrderingFilter
-)
+from api.activity.filters import ActivityAggregationFilter, ActivityFilter, RelatedOrderingFilter
 from api.activity.serializers import (
-    ActivityDateSerializer, ActivityDetailSerializer,
-    ActivityPolicyMarkerSerializer, ActivityRecipientRegionSerializer,
-    ActivitySectorSerializer, ActivitySerializer,
-    ActivitySerializerByIatiIdentifier, BudgetItemSerializer, BudgetSerializer,
-    CodelistSerializer, ConditionSerializer, ConditionsSerializer,
-    ContactInfoSerializer, CountryBudgetItemsSerializer,
-    CrsAddOtherFlagsSerializer, CrsAddSerializer, DescriptionSerializer,
-    DocumentLinkCategorySerializer, DocumentLinkLanguageSerializer,
-    DocumentLinkSerializer, FssForecastSerializer, FssSerializer,
-    HumanitarianScopeSerializer, LegacyDataSerializer, LocationSerializer,
-    OtherIdentifierSerializer, ParticipatingOrganisationSerializer,
-    PlannedDisbursementSerializer, RecipientCountrySerializer,
-    RelatedActivitySerializer, ReportingOrganisationSerializer,
-    ResultIndicatorPeriodActualDimensionSerializer,
-    ResultIndicatorPeriodActualLocationSerializer,
-    ResultIndicatorPeriodSerializer,
-    ResultIndicatorPeriodTargetDimensionSerializer,
-    ResultIndicatorPeriodTargetLocationSerializer,
-    ResultIndicatorReferenceSerializer, ResultIndicatorSerializer,
-    ResultSerializer
+    ActivityDateSerializer, ActivityDetailSerializer, ActivityPolicyMarkerSerializer, ActivityRecipientRegionSerializer,
+    ActivitySectorSerializer, ActivitySerializer, ActivitySerializerByIatiIdentifier, BudgetItemSerializer,
+    BudgetSerializer, CodelistSerializer, ConditionSerializer, ConditionsSerializer, ContactInfoSerializer,
+    CountryBudgetItemsSerializer, CrsAddOtherFlagsSerializer, CrsAddSerializer, DescriptionSerializer,
+    DocumentLinkCategorySerializer, DocumentLinkLanguageSerializer, DocumentLinkSerializer, FssForecastSerializer,
+    FssSerializer, HumanitarianScopeSerializer, LegacyDataSerializer, LocationSerializer, OtherIdentifierSerializer,
+    ParticipatingOrganisationSerializer, PlannedDisbursementSerializer, RecipientCountrySerializer,
+    RelatedActivitySerializer, ReportingOrganisationSerializer, ResultIndicatorPeriodActualDimensionSerializer,
+    ResultIndicatorPeriodActualLocationSerializer, ResultIndicatorPeriodSerializer,
+    ResultIndicatorPeriodTargetDimensionSerializer, ResultIndicatorPeriodTargetLocationSerializer,
+    ResultIndicatorReferenceSerializer, ResultIndicatorSerializer, ResultSerializer
 )
 from api.activity.validators import activity_required_fields
 from api.aggregation.views import Aggregation, AggregationView, GroupBy
 from api.country.serializers import CountrySerializer
 from api.generics.filters import DistanceFilter, SearchFilter
 from api.generics.views import (
-    DynamicDetailCRUDView, DynamicDetailView, DynamicListCRUDView,
-    DynamicListView, SaveAllSerializer
+    DynamicDetailCRUDView, DynamicDetailView, DynamicListCRUDView, DynamicListView, SaveAllSerializer
 )
 from api.publisher.permissions import PublisherPermissions
 from api.region.serializers import RegionSerializer
@@ -52,17 +38,13 @@ from api.transaction.serializers import TransactionSerializer
 from geodata.models import Country, Region
 from iati.activity_search_indexes import reindex_activity
 from iati.models import (
-    Activity, ActivityDate, ActivityParticipatingOrganisation,
-    ActivityPolicyMarker, ActivityRecipientCountry, ActivityRecipientRegion,
-    ActivityReportingOrganisation, ActivitySector, ActivityStatus, Budget,
-    BudgetItem, CollaborationType, Condition, Conditions, ContactInfo,
-    CountryBudgetItem, CrsAdd, CrsAddOtherFlags, Description, DocumentCategory,
-    DocumentLink, DocumentLinkCategory, DocumentLinkLanguage, Fss, FssForecast,
-    HumanitarianScope, LegacyData, Location, OrganisationType, OtherIdentifier,
-    PlannedDisbursement, PolicySignificance, RelatedActivity, Result,
-    ResultIndicator, ResultIndicatorPeriod,
-    ResultIndicatorPeriodActualDimension, ResultIndicatorPeriodTargetDimension,
-    ResultIndicatorReference, Sector
+    Activity, ActivityDate, ActivityParticipatingOrganisation, ActivityPolicyMarker, ActivityRecipientCountry,
+    ActivityRecipientRegion, ActivityReportingOrganisation, ActivitySector, ActivityStatus, Budget, BudgetItem,
+    CollaborationType, Condition, Conditions, ContactInfo, CountryBudgetItem, CrsAdd, CrsAddOtherFlags, Description,
+    DocumentCategory, DocumentLink, DocumentLinkCategory, DocumentLinkLanguage, Fss, FssForecast, HumanitarianScope,
+    LegacyData, Location, OrganisationType, OtherIdentifier, PlannedDisbursement, PolicySignificance, RelatedActivity,
+    Result, ResultIndicator, ResultIndicatorPeriod, ResultIndicatorPeriodActualDimension,
+    ResultIndicatorPeriodTargetDimension, ResultIndicatorReference, Sector
 )
 from iati.transaction.models import Transaction
 from iati_codelists.models import FileFormat, TransactionType

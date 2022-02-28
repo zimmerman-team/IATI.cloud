@@ -12,21 +12,17 @@ from rest_framework.views import APIView
 from rest_framework_extensions.cache.mixins import CacheResponseMixin
 
 from api.aggregation.views import Aggregation, AggregationView, GroupBy
-from api.dataset.filters import (
-    DatasetFailedPickupFilter, DatasetFilter, NoteFilter
-)
+from api.dataset.filters import DatasetFailedPickupFilter, DatasetFilter, NoteFilter
 from api.dataset.serializers import (
-    DatasetFailedPickupSerializer, DatasetNoteSerializer, DatasetSerializer,
-    SimpleDatasetSerializer, SimplePublisherSerializer
+    DatasetFailedPickupSerializer, DatasetNoteSerializer, DatasetSerializer, SimpleDatasetSerializer,
+    SimplePublisherSerializer
 )
 from api.export.views import IATIActivityList
 from api.generics.views import DynamicListView
 from api.publisher.permissions import OrganisationAdminGroupPermissions
 from iati.models import Activity
 from iati_organisation.models import Organisation
-from iati_synchroniser.models import (
-    Dataset, DatasetFailedPickup, DatasetNote, Publisher
-)
+from iati_synchroniser.models import Dataset, DatasetFailedPickup, DatasetNote, Publisher
 
 
 class DatasetPagination(pagination.PageNumberPagination):

@@ -18,9 +18,8 @@ from api.region.serializers import RegionSerializer
 from api.sector.serializers import SectorSerializer
 from geodata.models import Country, Region
 from iati.models import (
-    ActivityParticipatingOrganisation, ActivityStatus, Budget,
-    CollaborationType, DocumentCategory, Organisation, OrganisationType,
-    Sector
+    ActivityParticipatingOrganisation, ActivityStatus, Budget, CollaborationType, DocumentCategory, Organisation,
+    OrganisationType, Sector
 )
 from iati_codelists.models import BudgetType
 

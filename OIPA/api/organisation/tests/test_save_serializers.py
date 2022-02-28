@@ -10,9 +10,7 @@ from rest_framework.test import APIClient
 from geodata.factory.geodata_factory import RegionFactory
 from iati import models as iati_models
 from iati.factory import iati_factory
-from iati.permissions.factories import (
-    OrganisationAdminGroupFactory, OrganisationUserFactory
-)
+from iati.permissions.factories import OrganisationAdminGroupFactory, OrganisationUserFactory
 from iati_codelists.factory import codelist_factory
 from iati_organisation import models as org_models
 from iati_vocabulary.factory.vocabulary_factory import RegionVocabularyFactory

@@ -10,25 +10,18 @@ import geodata
 import iati
 import iati_organisation
 from iati_codelists.factory.codelist_factory import (
-    ActivityDateTypeFactory, ActivityScopeFactory, ActivityStatusFactory,
-    BudgetIdentifierFactory, BudgetStatusFactory, BudgetTypeFactory,
-    CollaborationTypeFactory, ConditionTypeFactory, ContactTypeFactory,
-    CRSChannelCodeFactory, CurrencyFactory, DescriptionTypeFactory,
-    DocumentCategoryFactory, FileFormatFactory, FinanceTypeFactory,
-    FlowTypeFactory, GeographicExactnessFactory,
-    GeographicLocationClassFactory, GeographicLocationReachFactory,
-    HumanitarianScopeTypeFactory, IndicatorMeasureFactory, LanguageFactory,
-    LoanRepaymentPeriodFactory, LoanRepaymentTypeFactory, LocationTypeFactory,
-    OrganisationRoleFactory, OrganisationTypeFactory, OtherFlagsFactory,
-    OtherIdentifierTypeFactory, PolicyMarkerFactory, PolicySignificanceFactory,
-    RelatedActivityTypeFactory, ResultTypeFactory, SectorFactory,
-    TiedStatusFactory, VersionFactory
+    ActivityDateTypeFactory, ActivityScopeFactory, ActivityStatusFactory, BudgetIdentifierFactory, BudgetStatusFactory,
+    BudgetTypeFactory, CollaborationTypeFactory, ConditionTypeFactory, ContactTypeFactory, CRSChannelCodeFactory,
+    CurrencyFactory, DescriptionTypeFactory, DocumentCategoryFactory, FileFormatFactory, FinanceTypeFactory,
+    FlowTypeFactory, GeographicExactnessFactory, GeographicLocationClassFactory, GeographicLocationReachFactory,
+    HumanitarianScopeTypeFactory, IndicatorMeasureFactory, LanguageFactory, LoanRepaymentPeriodFactory,
+    LoanRepaymentTypeFactory, LocationTypeFactory, OrganisationRoleFactory, OrganisationTypeFactory, OtherFlagsFactory,
+    OtherIdentifierTypeFactory, PolicyMarkerFactory, PolicySignificanceFactory, RelatedActivityTypeFactory,
+    ResultTypeFactory, SectorFactory, TiedStatusFactory, VersionFactory
 )
 from iati_vocabulary.factory.vocabulary_factory import (
-    BudgetIdentifierVocabularyFactory, GeographicVocabularyFactory,
-    HumanitarianScopeVocabularyFactory, IndicatorVocabularyFactory,
-    PolicyMarkerVocabularyFactory, RegionVocabularyFactory,
-    SectorVocabularyFactory
+    BudgetIdentifierVocabularyFactory, GeographicVocabularyFactory, HumanitarianScopeVocabularyFactory,
+    IndicatorVocabularyFactory, PolicyMarkerVocabularyFactory, RegionVocabularyFactory, SectorVocabularyFactory
 )
 
 

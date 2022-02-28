@@ -1,34 +1,24 @@
 from rest_framework.renderers import JSONRenderer
 
 from api.activity.serializers import (
-    ActivityDateSerializer, ActivityDefaultAidTypeSerializer,
-    ActivityPolicyMarkerSerializer, ActivityTagSerializer, BudgetSerializer,
-    ConditionsSerializer, ContactInfoSerializer, CountryBudgetItemsSerializer,
-    CrsAddSerializer, DescriptionSerializer, DocumentLinkSerializer,
-    FssSerializer, HumanitarianScopeSerializer, LegacyDataSerializer,
-    OtherIdentifierSerializer, ParticipatingOrganisationSerializer,
-    PlannedDisbursementSerializer, RelatedActivitySerializer,
-    ReportingOrganisationSerializer, TitleSerializer
+    ActivityDateSerializer, ActivityDefaultAidTypeSerializer, ActivityPolicyMarkerSerializer, ActivityTagSerializer,
+    BudgetSerializer, ConditionsSerializer, ContactInfoSerializer, CountryBudgetItemsSerializer, CrsAddSerializer,
+    DescriptionSerializer, DocumentLinkSerializer, FssSerializer, HumanitarianScopeSerializer, LegacyDataSerializer,
+    OtherIdentifierSerializer, ParticipatingOrganisationSerializer, PlannedDisbursementSerializer,
+    RelatedActivitySerializer, ReportingOrganisationSerializer, TitleSerializer
 )
-from iati.models import (
-    ActivityAggregation, ActivityPlusChildAggregation, ChildAggregation
-)
+from iati.models import ActivityAggregation, ActivityPlusChildAggregation, ChildAggregation
 from solr.activity.references import (
-    ActivityDateReference, ActivityScopeReference, ActivityStatusReference,
-    CapitalSpendReference, CollaborationTypeReference, ConditionsReference,
-    ContactInfoReference, CountryBudgetItemsReference, CrsAddReference,
-    DefaultAidTypeReference, DefaultFinanceTypeReference,
-    DefaultFlowTypeReference, DefaultTiedStatusReference, DescriptionReference,
-    DocumentLinkReference, FssReference, HumanitarianScopeReference,
-    LegacyDataReference, LocationReference, OtherIdentifierReference,
-    ParticipatingOrgReference, PlannedDisbursementReference,
-    PolicyMarkerReference, RecipientCountryReference, RecipientRegionReference,
-    RelatedActivityReference, ReportingOrgReference, SectorReference,
-    TagReference, TitleReference
+    ActivityDateReference, ActivityScopeReference, ActivityStatusReference, CapitalSpendReference,
+    CollaborationTypeReference, ConditionsReference, ContactInfoReference, CountryBudgetItemsReference, CrsAddReference,
+    DefaultAidTypeReference, DefaultFinanceTypeReference, DefaultFlowTypeReference, DefaultTiedStatusReference,
+    DescriptionReference, DocumentLinkReference, FssReference, HumanitarianScopeReference, LegacyDataReference,
+    LocationReference, OtherIdentifierReference, ParticipatingOrgReference, PlannedDisbursementReference,
+    PolicyMarkerReference, RecipientCountryReference, RecipientRegionReference, RelatedActivityReference,
+    ReportingOrgReference, SectorReference, TagReference, TitleReference
 )
 from solr.activity.serializers import (
-    ActivityRecipientRegionSerializer, ActivitySectorSerializer,
-    LocationSerializer, RecipientCountrySerializer
+    ActivityRecipientRegionSerializer, ActivitySectorSerializer, LocationSerializer, RecipientCountrySerializer
 )
 from solr.budget.references import BudgetReference
 from solr.indexing import BaseIndexing
@@ -37,9 +27,8 @@ from solr.result.serializers import ResultSerializer
 from solr.transaction.references import TransactionReference
 from solr.transaction.serializers import TransactionSerializer
 from solr.utils import (
-    bool_string, date_string, decimal_string, get_child_attr,
-    get_narrative_lang_list, make_normalized_usd_namespace_element,
-    value_string
+    bool_string, date_string, decimal_string, get_child_attr, get_narrative_lang_list,
+    make_normalized_usd_namespace_element, value_string
 )
 
 

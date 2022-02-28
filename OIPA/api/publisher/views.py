@@ -13,9 +13,7 @@ from api.publisher import serializers
 from api.publisher.filters import PublisherFilter
 from api.publisher.permissions import OrganisationAdminGroupPermissions
 from common.util import get_or_none
-from iati.permissions.models import (
-    OrganisationAdminGroup, OrganisationGroup, OrganisationUser
-)
+from iati.permissions.models import OrganisationAdminGroup, OrganisationGroup, OrganisationUser
 from iati_organisation.models import Organisation
 from iati_synchroniser.models import Publisher
 

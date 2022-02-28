@@ -5,9 +5,7 @@ Methods triggered after activity has been parsed
 from decimal import Decimal
 
 from iati import activity_search_indexes, models
-from iati.activity_aggregation_calculation import (
-    ActivityAggregationCalculation
-)
+from iati.activity_aggregation_calculation import ActivityAggregationCalculation
 from iati.transaction import models as transaction_models
 
 

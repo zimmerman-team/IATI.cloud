@@ -13,10 +13,7 @@ from geodata.models import Country, Region
 # FIXME:
 from iati import models
 from iati.parser import post_save, post_save_validators
-from iati.parser.exceptions import (
-    FieldValidationError, IgnoredVocabularyError, ParserError,
-    RequiredFieldError
-)
+from iati.parser.exceptions import FieldValidationError, IgnoredVocabularyError, ParserError, RequiredFieldError
 from iati.parser.higher_order_parser import provider_org, receiver_org
 from iati.parser.iati_parser import IatiParser
 from iati.transaction import models as transaction_models

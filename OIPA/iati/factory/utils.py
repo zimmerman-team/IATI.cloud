@@ -1,35 +1,23 @@
 from iati.factory.iati_factory import (
-    ActivityDateFactory, ActivityFactory, ActivityPolicyMarkerFactory,
-    ActivityRecipientCountryFactory, ActivityRecipientRegionFactory,
-    ActivitySectorFactory, BudgetFactory, BudgetItemFactory, ConditionFactory,
-    ConditionsFactory, ContactInfoDepartmentFactory, ContactInfoFactory,
-    ContactInfoJobTitleFactory, ContactInfoMailingAddressFactory,
-    ContactInfoOrganisationFactory, ContactInfoPersonNameFactory,
-    CountryBudgetItemFactory, CrsAddFactory, CrsAddOtherFlagsFactory,
-    DescriptionFactory, DocumentLinkCategoryFactory, DocumentLinkFactory,
-    DocumentLinkLanguageFactory, FssFactory, FssForecastFactory,
-    HumanitarianScopeFactory, LegacyDataFactory, LocationAdministrativeFactory,
-    LocationFactory, NarrativeFactory, OrganisationFactory,
-    OrganisationNarrativeFactory, OtherIdentifierFactory,
-    ParticipatingOrganisationFactory, PlannedDisbursementFactory,
-    PlannedDisbursementProviderFactory, PlannedDisbursementReceiverFactory,
-    RelatedActivityFactory, ResultFactory,
-    ResultIndicatorBaselineCommentFactory, ResultIndicatorBaselineFactory,
-    ResultIndicatorFactory, ResultIndicatorPeriodActualCommentFactory,
-    ResultIndicatorPeriodActualDimensionFactory,
-    ResultIndicatorPeriodActualFactory,
-    ResultIndicatorPeriodActualLocationFactory, ResultIndicatorPeriodFactory,
-    ResultIndicatorPeriodTargetCommentFactory,
-    ResultIndicatorPeriodTargetDimensionFactory,
-    ResultIndicatorPeriodTargetFactory,
-    ResultIndicatorPeriodTargetLocationFactory,
-    ResultIndicatorReferenceFactory, TitleFactory
+    ActivityDateFactory, ActivityFactory, ActivityPolicyMarkerFactory, ActivityRecipientCountryFactory,
+    ActivityRecipientRegionFactory, ActivitySectorFactory, BudgetFactory, BudgetItemFactory, ConditionFactory,
+    ConditionsFactory, ContactInfoDepartmentFactory, ContactInfoFactory, ContactInfoJobTitleFactory,
+    ContactInfoMailingAddressFactory, ContactInfoOrganisationFactory, ContactInfoPersonNameFactory,
+    CountryBudgetItemFactory, CrsAddFactory, CrsAddOtherFlagsFactory, DescriptionFactory, DocumentLinkCategoryFactory,
+    DocumentLinkFactory, DocumentLinkLanguageFactory, FssFactory, FssForecastFactory, HumanitarianScopeFactory,
+    LegacyDataFactory, LocationAdministrativeFactory, LocationFactory, NarrativeFactory, OrganisationFactory,
+    OrganisationNarrativeFactory, OtherIdentifierFactory, ParticipatingOrganisationFactory, PlannedDisbursementFactory,
+    PlannedDisbursementProviderFactory, PlannedDisbursementReceiverFactory, RelatedActivityFactory, ResultFactory,
+    ResultIndicatorBaselineCommentFactory, ResultIndicatorBaselineFactory, ResultIndicatorFactory,
+    ResultIndicatorPeriodActualCommentFactory, ResultIndicatorPeriodActualDimensionFactory,
+    ResultIndicatorPeriodActualFactory, ResultIndicatorPeriodActualLocationFactory, ResultIndicatorPeriodFactory,
+    ResultIndicatorPeriodTargetCommentFactory, ResultIndicatorPeriodTargetDimensionFactory,
+    ResultIndicatorPeriodTargetFactory, ResultIndicatorPeriodTargetLocationFactory, ResultIndicatorReferenceFactory,
+    TitleFactory
 )
 from iati.transaction.factories import (
-    TransactionDescriptionFactory, TransactionFactory,
-    TransactionProviderFactory, TransactionReceiverFactory,
-    TransactionRecipientCountryFactory, TransactionRecipientRegionFactory,
-    TransactionSectorFactory
+    TransactionDescriptionFactory, TransactionFactory, TransactionProviderFactory, TransactionReceiverFactory,
+    TransactionRecipientCountryFactory, TransactionRecipientRegionFactory, TransactionSectorFactory
 )
 
 

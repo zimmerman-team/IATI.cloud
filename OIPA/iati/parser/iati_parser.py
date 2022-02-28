@@ -14,8 +14,7 @@ from lxml import etree
 from common.util import findnth_occurence_in_string, normalise_unicode_string
 from iati.models import Activity
 from iati.parser.exceptions import (
-    FieldValidationError, IgnoredVocabularyError, NoUpdateRequired,
-    ParserError, RequiredFieldError, ValidationError
+    FieldValidationError, IgnoredVocabularyError, NoUpdateRequired, ParserError, RequiredFieldError, ValidationError
 )
 from iati_codelists import models as codelist_models
 from iati_synchroniser.models import DatasetNote

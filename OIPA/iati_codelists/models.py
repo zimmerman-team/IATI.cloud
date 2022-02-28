@@ -1,8 +1,7 @@
 from django.db import models
 
 from iati_vocabulary.models import (
-    AidTypeVocabulary, BudgetIdentifierVocabulary, PolicyMarkerVocabulary,
-    SectorVocabulary
+    AidTypeVocabulary, BudgetIdentifierVocabulary, PolicyMarkerVocabulary, SectorVocabulary
 )
 
 

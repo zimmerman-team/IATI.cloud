@@ -1,26 +1,19 @@
 from rest_framework.renderers import JSONRenderer
 
 from api.organisation.serializers import (
-    OrganisationDocumentLinkSerializer, OrganisationNameSerializer,
-    OrganisationRecipientOrgBudgetSerializer,
+    OrganisationDocumentLinkSerializer, OrganisationNameSerializer, OrganisationRecipientOrgBudgetSerializer,
     OrganisationTotalBudgetSerializer, OrganisationTotalExpenditureSerializer
 )
 from solr.activity.references import ReportingOrgReference
 from solr.indexing import BaseIndexing
 from solr.organisation.references import (
-    DocumentLinkOrgReference, NameOrgReference,
-    RecipientCountryBudgetOrgReference, RecipientOrgBudgetOrgReference,
-    RecipientRegionBudgetOrgReference, TotalBudgetOrgReference,
-    TotalExpenditureOrgReference
+    DocumentLinkOrgReference, NameOrgReference, RecipientCountryBudgetOrgReference, RecipientOrgBudgetOrgReference,
+    RecipientRegionBudgetOrgReference, TotalBudgetOrgReference, TotalExpenditureOrgReference
 )
 from solr.organisation.serializers import (
-    OrganisationRecipientCountryBudgetSerializer,
-    OrganisationRecipientRegionBudgetSerializer
+    OrganisationRecipientCountryBudgetSerializer, OrganisationRecipientRegionBudgetSerializer
 )
-from solr.utils import (
-    bool_string, date_string, decimal_string, get_child_attr,
-    get_narrative_lang_list, value_string
-)
+from solr.utils import bool_string, date_string, decimal_string, get_child_attr, get_narrative_lang_list, value_string
 
 
 class OrganisationIndexing(BaseIndexing):

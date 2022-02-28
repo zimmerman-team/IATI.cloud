@@ -1,10 +1,7 @@
-from solr.budget.indexing import (
-    add_activity_additional_filter_fields, add_participating_org
-)
+from solr.budget.indexing import add_activity_additional_filter_fields, add_participating_org
 from solr.indexing import BaseIndexing
 from solr.utils import (
-    add_reporting_org, bool_string, date_string, decimal_string,
-    get_child_attr, get_narrative_lang_list
+    add_reporting_org, bool_string, date_string, decimal_string, get_child_attr, get_narrative_lang_list
 )
 
 

@@ -4,9 +4,7 @@ from rest_framework import serializers
 
 from api.generics.serializers import DynamicFieldsModelSerializer
 from api.publisher.serializers import PublisherSerializer
-from iati.permissions.models import (
-    OrganisationAdminGroup, OrganisationGroup, OrganisationUser
-)
+from iati.permissions.models import OrganisationAdminGroup, OrganisationGroup, OrganisationUser
 
 
 class OrganisationGroupSerializer(serializers.ModelSerializer):
