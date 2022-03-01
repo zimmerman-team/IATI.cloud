@@ -1,3 +1,6 @@
+FIELDS = [f'{i}-{j}' for i in ['start', 'end'] for j in ['planned', 'actual']]
+
+
 def activity_dates(data):
     """
     Requested by FCDO. Single valued fields.
@@ -20,11 +23,8 @@ def activity_dates(data):
 
 def extract_activity_dates(date, data):
     # This approach was tested to be the fastest with 10.000 runs
-    i = 1
-    for s in ['start', 'end']:
-        for ss in ['planned', 'actual']:
-            if 'type' in date.keys() and 'iso-date' in data.keys():
-                if date['type'] == i:
-                    data[f'activity-date.{s}-{ss}'] = date['iso-date']
-            i += 1
+    if 'type' in date and 'iso-date' in date:
+        for i, field in enumerate(FIELDS, 1):
+            if date['type'] == i:
+                data[f'activity-date.{field}'] = date['iso-date']
     return data
