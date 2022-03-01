@@ -97,12 +97,12 @@ def convert_and_save_xml_to_processed_json(filepath, filetype, codelist, currenc
     data = bf.data(ET.fromstring(tree))
     # Retrieve activities
     data_found = False
-    if filetype == 'activity' and 'iati-activities' in data.keys():
-        if 'iati-activity' in data['iati-activities'].keys():
+    if filetype == 'activity' and 'iati-activities' in data:
+        if 'iati-activity' in data['iati-activities']:
             data = data['iati-activities']['iati-activity']
             data_found = True
-    elif filetype == 'organisation' and 'iati-organisations' in data.keys():
-        if 'iati-organisation' in data['iati-organisations'].keys():
+    elif filetype == 'organisation' and 'iati-organisations' in data:
+        if 'iati-organisation' in data['iati-organisations']:
             data = data['iati-organisations']['iati-organisation']
             data_found = True
 
@@ -118,7 +118,7 @@ def convert_and_save_xml_to_processed_json(filepath, filetype, codelist, currenc
     # Activity subtypes
     subtypes = dict()
     if filetype == 'activity':
-        for key in activity_subtypes.AVAILABLE_SUBTYPES.keys():
+        for key in activity_subtypes.AVAILABLE_SUBTYPES:
             subtypes[key] = []
 
         subtypes = activity_subtypes.extract_all_subtypes(subtypes, data)

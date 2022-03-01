@@ -49,7 +49,7 @@ class Codelists(object):
         :param tbr: the field to be retrieved, for example 'name' or 'description', default is 'name'.
         :return: The content of the codelist at the given code, or a list of those values if the 'code' is a list
         """
-        if codelist_name not in self.codelists_dict.keys():
+        if codelist_name not in self.codelists_dict:
             return []
         codelist = self.codelists_dict[codelist_name]
         ret = []

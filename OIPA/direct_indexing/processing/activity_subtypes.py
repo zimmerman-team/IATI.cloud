@@ -19,7 +19,7 @@ def extract_subtype(activity, subtype):
     :param subtype: the subtype to extract
     :return: the extracted subtype as a list
     """
-    if subtype not in AVAILABLE_SUBTYPES.keys() or subtype not in activity.keys():
+    if subtype not in AVAILABLE_SUBTYPES or subtype not in activity:
         return []  # Make sure we do not return any data when there is none.
     # Create a list of the extracted subtypes
     subtype_list = []
@@ -34,8 +34,8 @@ def extract_subtype(activity, subtype):
             continue
         # Get the value of the subtype element into a new dict with the key being the subtype.
         subtype_dict = {subtype: dict(subtype_element)}
-        for key in activity.keys():
-            if key in AVAILABLE_SUBTYPES.keys():
+        for key in activity:
+            if key in AVAILABLE_SUBTYPES:
                 continue
             subtype_dict[key] = activity[key]
         subtype_list.append(subtype_dict)
@@ -53,10 +53,10 @@ def extract_all_subtypes(subtypes, data):
     """
     if type(data) is list:
         for activity in data:
-            for key in subtypes.keys():
+            for key in subtypes:
                 subtypes[key] += extract_subtype(activity, key)
     else:
-        for key in subtypes.keys():
+        for key in subtypes:
             subtypes[key] += extract_subtype(data, key)
 
     return subtypes

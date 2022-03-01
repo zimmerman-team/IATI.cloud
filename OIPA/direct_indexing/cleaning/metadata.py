@@ -13,9 +13,9 @@ def clean_dataset_metadata(dataset):
     :return: The dataset with the cleaned metadata
     """
     # Clean resource fields by removing empty items
-    if 'resources' in dataset.keys():
+    if 'resources' in dataset:
         clean_resources(dataset)
-    if 'extras' in dataset.keys():
+    if 'extras' in dataset:
         clean_extras(dataset)
     return dataset
 

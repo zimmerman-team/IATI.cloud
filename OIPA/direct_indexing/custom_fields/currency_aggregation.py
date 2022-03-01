@@ -69,9 +69,9 @@ def prepare_data(data):
     :return: List of activities with aggregation field periods replaced by dashes.
     """
     for activity in data:
-        if TVU_CLEAN in activity.keys():
+        if TVU_CLEAN in activity:
             activity[TVU_DASHES] = activity.pop(TVU_CLEAN)
-        if TVU_CLEAN_TYPE in activity.keys():
+        if TVU_CLEAN_TYPE in activity:
             activity[TVU_DASHES_TYPE] = activity.pop(TVU_CLEAN_TYPE)
     return data
 
@@ -235,7 +235,7 @@ def index_activity_data(data):
     """
     activity_indexes = {}
     for i, activity in enumerate(data):
-        if 'iati-identifier' in activity.keys():
+        if 'iati-identifier' in activity:
             activity_indexes[activity['iati-identifier']] = i
     return activity_indexes
 
@@ -319,19 +319,19 @@ def process_child_aggregations(data, children_agg, activity_indexes, aggregation
     :param parent_plus_child_aggregation_fields: the parent plus child aggregation fields
     """
     for agg in children_agg:
-        if agg['_id'] not in activity_indexes.keys():
+        if agg['_id'] not in activity_indexes:
             # skip activities that are not in the parent dataset
             # TODO: Add "post indexing" function that adds these remaining aggregations to the data
             continue
             # Find the index of the relevant activity
         index_of_activity = activity_indexes[agg.pop('_id')]
 
-        for key in agg.keys():
+        for key in agg:
             # Add the child aggregations to the data
             data[index_of_activity][child_aggregation_fields[key]] = agg[key]
             # Add the parent plus child aggregations to the data
             parent_value = 0  # Only retrieve value if the value exists in parent
-            if aggregation_fields[key] in data[index_of_activity].keys():
+            if aggregation_fields[key] in data[index_of_activity]:
                 parent_value = data[index_of_activity][aggregation_fields[key]]
             data[index_of_activity][parent_plus_child_aggregation_fields[key]] = agg[key] + parent_value
 
@@ -347,15 +347,15 @@ def process_child_agg_currencies(data, key, index_of_activity,
     """
     Make sure we have the currencies for each of the child aggregations.
     """
-    if key + "_currency" in child_aggregation_fields.keys():  # Check once as both have the same keys
+    if key + "_currency" in child_aggregation_fields:  # Check once as both have the same keys
         currency = "USD"  # Default to USD
-        if key == 'budget' and BV_USD_CURR in data[index_of_activity].keys():
+        if key == 'budget' and BV_USD_CURR in data[index_of_activity]:
             currency = data[index_of_activity][BV_USD_CURR]
         if key == 'planned-disbursement' \
-                and BV_USD_CURR in data[index_of_activity].keys():
+                and BV_USD_CURR in data[index_of_activity]:
             currency = data[index_of_activity][PDV_USD_CURR]
         if key == 'transaction' \
-                and TV_USD_CURR in data[index_of_activity].keys():
+                and TV_USD_CURR in data[index_of_activity]:
             currency = data[index_of_activity][TV_USD_CURR]
         data[index_of_activity][child_aggregation_fields[key + "_currency"]] = currency
         data[index_of_activity][parent_plus_child_aggregation_fields[key + "_currency"]] = currency
@@ -372,16 +372,16 @@ def clean_aggregation_result(data, aggregation_fields, formatted_aggregation_fie
     :return: the cleaned data
     """
     for activity in data:
-        if '_id' in activity.keys():
+        if '_id' in activity:
             activity.pop('_id')  # Remove mongo introduced '_id'.
-        if TVU_DASHES in activity.keys():
+        if TVU_DASHES in activity:
             activity[TVU_CLEAN] = activity.pop(TVU_DASHES)
-        if TVU_DASHES_TYPE in activity.keys():
+        if TVU_DASHES_TYPE in activity:
             activity[TVU_CLEAN_TYPE] = activity.pop(TVU_DASHES_TYPE)
 
         # Go through the - appended aggregation_fields and rename to formatted_aggregation_fields
         for key, value in aggregation_fields.items():
-            if value not in activity.keys():
+            if value not in activity:
                 continue
             activity[formatted_aggregation_fields[key]] = activity.pop(value)
     return data
@@ -390,13 +390,13 @@ def clean_aggregation_result(data, aggregation_fields, formatted_aggregation_fie
 def process_budget_agg(budget_agg, activity_indexes, aggregation_fields, data):
     for agg in budget_agg:
         # Find the index of the relevant activity
-        if agg['_id'] not in activity_indexes.keys():
+        if agg['_id'] not in activity_indexes:
             continue
         index_of_activity = activity_indexes[agg['_id']]
         data[index_of_activity][aggregation_fields['budget']] = agg['budget-value-sum']
-        if 'budget.value-usd.sum' in data[index_of_activity].keys():
+        if 'budget.value-usd.sum' in data[index_of_activity]:
             data[index_of_activity][aggregation_fields['budget_usd']] = data[index_of_activity]['budget.value-usd.sum']
-        if BV_USD_CURR in data[index_of_activity].keys():
+        if BV_USD_CURR in data[index_of_activity]:
             data[index_of_activity][aggregation_fields['budget_currency']] = data[index_of_activity][
                 BV_USD_CURR]
 
@@ -404,14 +404,14 @@ def process_budget_agg(budget_agg, activity_indexes, aggregation_fields, data):
 def process_planned_disbursement_agg(planned_disbursement_agg, activity_indexes, aggregation_fields, data):
     for agg in planned_disbursement_agg:
         # Find the index of the relevant activity
-        if agg['_id'] not in activity_indexes.keys():
+        if agg['_id'] not in activity_indexes:
             continue
         index_of_activity = activity_indexes[agg['_id']]
         data[index_of_activity][aggregation_fields['planned_disbursement']] = agg['planned-disbursement-value-sum']
-        if 'planned-disbursement.value-usd.sum' in data[index_of_activity].keys():
+        if 'planned-disbursement.value-usd.sum' in data[index_of_activity]:
             data[index_of_activity][aggregation_fields['planned_disbursement_usd']] = data[index_of_activity][
                 'planned-disbursement.value-usd.sum']
-        if PDV_USD_CURR in data[index_of_activity].keys():
+        if PDV_USD_CURR in data[index_of_activity]:
             data[index_of_activity][aggregation_fields['planned_disbursement_currency']] = data[index_of_activity][
                 PDV_USD_CURR]
 
@@ -419,7 +419,7 @@ def process_planned_disbursement_agg(planned_disbursement_agg, activity_indexes,
 def process_transaction_agg(transaction_agg, activity_indexes, aggregation_fields, data, types):
     for agg in transaction_agg:
         # Find the index of the relevant activity
-        if agg['_id'][0] not in activity_indexes.keys():
+        if agg['_id'][0] not in activity_indexes:
             continue
         index_of_activity = activity_indexes[agg['_id'][0]]
         transaction_type = agg['_id'][1]
@@ -430,7 +430,7 @@ def process_transaction_agg(transaction_agg, activity_indexes, aggregation_field
 
 def process_transaction_usd_agg(transaction_usd_agg, activity_indexes, aggregation_fields, data, types):
     for agg in transaction_usd_agg:
-        if agg['_id'][0] not in activity_indexes.keys():
+        if agg['_id'][0] not in activity_indexes:
             continue
         # Find the index of the relevant activity
         index_of_activity = activity_indexes[agg['_id'][0]]
@@ -440,6 +440,6 @@ def process_transaction_usd_agg(transaction_usd_agg, activity_indexes, aggregati
         if type(transaction_type) is int:
             data[index_of_activity][f'{aggregation_fields[types[transaction_type]]}_usd'] = agg[
                 'transaction-value-usd-sum']
-            if 'transaction-value-usd-conversion-currency' in data[index_of_activity].keys():
+            if 'transaction-value-usd-conversion-currency' in data[index_of_activity]:
                 data[index_of_activity][f'{aggregation_fields[types[transaction_type]]}_currency'] = \
                     data[index_of_activity][TV_USD_CURR]

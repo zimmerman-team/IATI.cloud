@@ -18,10 +18,10 @@ def get_dataset_filepath(dataset):
     """
     org_name = None
     path_string = None
-    if 'organization' in dataset.keys():
+    if 'organization' in dataset:
         if dataset['organization'] is None:
             return None
-        if 'name' in dataset['organization'].keys():
+        if 'name' in dataset['organization']:
             org_name = dataset['organization']['name']
     if org_name:
         dataset_name = dataset['name']  # Name is a required field
@@ -54,7 +54,7 @@ def get_dataset_version_validity(dataset, dataset_filepath):
         return False
 
     version = 'extras.iati_version'
-    if version in dataset.keys():
+    if version in dataset:
         if dataset[version] in VALID_VERSIONS:
             return True
         elif dataset[version] in INVALID_VERSIONS:
@@ -79,7 +79,7 @@ def get_dataset_filetype(dataset):
     :param dataset: The dataset to check.
     :return: Nonoe or the filetype, activity or organisation.
     """
-    if 'extras.filetype' not in dataset.keys():
+    if 'extras.filetype' not in dataset:
         return 'None'
     else:
         return dataset['extras.filetype']
@@ -99,7 +99,7 @@ def valid_version_from_file(filepath):
         etree = element_tree.parse(filepath, parser=parser)
         root = etree.getroot()
         res = False
-        if 'version' in root.attrib.keys():
+        if 'version' in root.attrib:
             version = root.attrib['version']
             res = version in VALID_VERSIONS
         return res
@@ -122,7 +122,7 @@ def get_dataset_validation(dataset_hash):
     r = requests.get(validator_url, headers=header)
     res = r.json()
 
-    if 'valid' in res.keys():
+    if 'valid' in res:
         return res['valid']
 
     return True
