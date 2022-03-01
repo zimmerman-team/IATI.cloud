@@ -13,7 +13,7 @@ def activity_dates(data):
 
     :param data: reference to the activity in the data
     """
-    if 'activity-date' in data.keys():
+    if 'activity-date' in data:
         if type(data['activity-date']) is dict:
             data['activity-date'] = [data['activity-date']]
         for date in data['activity-date']:

@@ -28,9 +28,9 @@ def add_codelist_fields(data, codelists):
 
 
 def extract_single_field(data, field_name, field_type, codelist_name, codelists):
-    if field_name not in data.keys():
+    if field_name not in data:
         return data
-    if field_type not in data[field_name].keys():
+    if field_type not in data[field_name]:
         return data
 
     data[f'{field_name}.{field_type}{CODELIST_POSTFIX}'] = codelists.get_value(
@@ -43,7 +43,7 @@ def extract_single_field(data, field_name, field_type, codelist_name, codelists)
 def extract_list_field(data, field_name, field_type, codelist_name, codelists):
     postfixed_field_name = f'{field_name}{CODELIST_POSTFIX}'
     data[postfixed_field_name] = []
-    if field_name not in data.keys():
+    if field_name not in data:
         return data
 
     if type(data[field_name]) is list:
@@ -58,14 +58,14 @@ def extract_list_field(data, field_name, field_type, codelist_name, codelists):
 def extract_nested_list_field(data, parent_field_name, field_name, field_type, codelist_name, codelists):
     postfixed_field_name = f'{parent_field_name}.{field_name}.{field_type}{CODELIST_POSTFIX}'
     data[postfixed_field_name] = []
-    if parent_field_name not in data.keys():
+    if parent_field_name not in data:
         return data
     if type(data[parent_field_name]) is list:
         for tr in data[parent_field_name]:
-            if field_name in tr.keys():
+            if field_name in tr:
                 check_and_get(field_type, tr[field_name], data, postfixed_field_name, codelists, codelist_name)
     else:
-        if field_name in data[parent_field_name].keys():
+        if field_name in data[parent_field_name]:
             check_and_get(field_type, data[parent_field_name][field_name],
                           data, postfixed_field_name, codelists, codelist_name)
 
@@ -76,7 +76,7 @@ def check_and_get(field_type, codelist_field, data, postfixed_field_name, codeli
     """
     Uses input information related to codelist item, to retrieve codelist value for relevant field
     """
-    if field_type in codelist_field.keys():
+    if field_type in codelist_field:
         data[postfixed_field_name].append(
             codelists.get_value(codelist_name, str(codelist_field[field_type]))
         )

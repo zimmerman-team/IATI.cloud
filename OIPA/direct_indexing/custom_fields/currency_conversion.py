@@ -11,11 +11,11 @@ def currency_conversion(data, currencies):
     :param currencies: an initialized currencies object.
     """
     default_currency = None
-    if 'default-currency' in data.keys():
+    if 'default-currency' in data:
         default_currency = data['default-currency']
 
     for field in ['budget', 'planned-disbursement', 'transaction']:
-        if field not in data.keys():
+        if field not in data:
             continue
 
         value = []
@@ -42,8 +42,8 @@ def convert_currencies_from_list(data, field, currencies, default_currency, valu
         rate.append(c_rate)
         if field == 'transaction':
             app = 0  # Transaction type/code are 1..1 in the standard, therefore app should always be non-zero.
-            if 'transaction-type' in item.keys():
-                if 'code' in item['transaction-type'].keys():
+            if 'transaction-type' in item:
+                if 'code' in item['transaction-type']:
                     app = item['transaction-type']['code']
             t_type.append(app)
         if first_currency == "":
@@ -59,8 +59,8 @@ def convert_currencies_from_dict(data, field, currencies, default_currency, valu
     rate.append(c_rate)
     if field == 'transaction':
         app = 0  # Transaction type/code are 1..1 in the standard, therefore app should always be non-zero.
-        if 'transaction-type' in data[field].keys():
-            if 'code' in data[field]['transaction-type'].keys():
+        if 'transaction-type' in data[field]:
+            if 'code' in data[field]['transaction-type']:
                 app = data['transaction']['transaction-type']['code']
         t_type.append(app)
     return value, rate, first_currency, t_type
@@ -77,11 +77,11 @@ def convert(data, currencies, default_currency=None, target_currency='USD'):
     :param target_currency: the target currency to convert to, defaults to USD.
     :return: the converted value and the conversion rate and the currency, or None, None, None.
     """
-    if 'value' not in data.keys():
+    if 'value' not in data:
         return None, None, None
 
     currency = None
-    if 'value.currency' in data.keys():
+    if 'value.currency' in data:
         currency = data['value.currency']
 
     if not currency and default_currency:
@@ -106,7 +106,7 @@ def get_ym(data):
     :param data: reference to the value in the data
     :return: year and month or None if not found
     """
-    if 'value.value-date' not in data.keys():
+    if 'value.value-date' not in data:
         return None, None
     date = data['value.value-date']
     if date is None or date == '':

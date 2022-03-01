@@ -77,11 +77,11 @@ def extract_literal_values(value, key, data):
         # initialize array and add each element to the array
         data[key] = []
         for element in value:
-            if '$' in element.keys():
+            if '$' in element:
                 data[key].append(element['$'])
     else:
         # Retrieve the single value if the field is not a list
-        if '$' in value.keys():
+        if '$' in value:
             data[key] = value['$']
 
 
@@ -124,14 +124,14 @@ def list_values(element, data, key, add_fields):
     """
     if len(element) == 0:  # Skip empty elements.
         return data, add_fields
-    if '$' in element.keys():
+    if '$' in element:
         data[key].append(element['$'])
     else:
         data[key].append(' ')
     for string in ['@currency', '@value-date', '@year']:
-        if string in element.keys():
+        if string in element:
             add_fields[f'{element}.{string[1:]}'].append(element[string])
-    if XML_LANG_STR in element.keys():
+    if XML_LANG_STR in element:
         add_fields[f'{key}.{LANG_STR}'].append(
             element[XML_LANG_STR])
     else:  # Avoid having an inconsistent length between narrative lang and value
@@ -167,16 +167,16 @@ def extract_single_values(add_fields, value, key, data):
     if type(value) is bool:
         data[key] = 0
         return add_fields
-    if '$' in value.keys():
+    if '$' in value:
         data[key] = value['$']
     else:
         data[key] = ' '
     for string in ['@currency', '@value-date', '@year']:
-        if string in value.keys():
+        if string in value:
             add_fields[f'{key}.{string[1:]}'] = value[string]
     # The language can still be a child element which has not
     # yet been converted within recursion.
-    if XML_LANG_STR in value.keys():
+    if XML_LANG_STR in value:
         add_fields[f'{key}.{LANG_STR}'] = value[
             XML_LANG_STR]
     else:

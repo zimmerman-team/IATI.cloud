@@ -10,9 +10,9 @@ def title_narrative_first(data):
     """
     if type(data) not in [dict, OrderedDict]:
         return data
-    if 'title' not in data.keys():
+    if 'title' not in data:
         return data
-    if 'narrative' in data['title'].keys():
+    if 'narrative' in data['title']:
         if type(data['title']['narrative']) is list:
             data['title.narrative.first'] = data['title']['narrative'][0]
         else:
