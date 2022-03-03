@@ -42,9 +42,8 @@ def convert_currencies_from_list(data, field, currencies, default_currency, valu
         rate.append(c_rate)
         if field == 'transaction':
             app = 0  # Transaction type/code are 1..1 in the standard, therefore app should always be non-zero.
-            if 'transaction-type' in item:
-                if 'code' in item['transaction-type']:
-                    app = item['transaction-type']['code']
+            if 'transaction-type' in item and 'code' in item['transaction-type']:
+                app = item['transaction-type']['code']
             t_type.append(app)
         if first_currency == "":
             first_currency = currency
@@ -59,9 +58,8 @@ def convert_currencies_from_dict(data, field, currencies, default_currency, valu
     rate.append(c_rate)
     if field == 'transaction':
         app = 0  # Transaction type/code are 1..1 in the standard, therefore app should always be non-zero.
-        if 'transaction-type' in data[field]:
-            if 'code' in data[field]['transaction-type']:
-                app = data['transaction']['transaction-type']['code']
+        if 'transaction-type' in data[field] and 'code' in data[field]['transaction-type']:
+            app = data['transaction']['transaction-type']['code']
         t_type.append(app)
     return value, rate, first_currency, t_type
 
