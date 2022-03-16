@@ -45,7 +45,8 @@ def index(name, metadata, url):
     with open(path, 'w') as json_file:
         json.dump(metadata, json_file)
 
-    index_to_core(url, path)
+    result = index_to_core(url, path)
+    return result
 
 
 def download_dataset():

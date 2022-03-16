@@ -6,6 +6,18 @@ from django.conf import settings
 from direct_indexing.metadata.dataset import index_datasets_and_dataset_metadata
 from direct_indexing.metadata.publisher import index_publisher_metadata
 
+def run():
+    """
+    Start the complete indexing process.
+    Steps:
+    . Clear all indices
+    . Index the publishers
+    . Index the datasets
+    """
+    clear_indices()
+    index_publisher_metadata()
+    index_datasets_and_dataset_metadata()
+
 
 def clear_indices():
     """
@@ -19,17 +31,15 @@ def clear_indices():
             logging.debug(_solr_out)
     except pysolr.SolrError:
         logging.error('Could not clear indices')
-        raise
+        raise pysolr.SolrError
 
 
-def run():
-    """
-    Start the complete indexing process.
-    Steps:
-    . Clear all indices
-    . Index the publishers
-    . Index the datasets
-    """
-    clear_indices()
-    index_publisher_metadata()
-    index_datasets_and_dataset_metadata()
+# Subsets of the indexing process
+def run_publisher_metadata():
+    result = index_publisher_metadata()
+    return result
+
+
+def run_dataset_metadata():
+    result = index_datasets_and_dataset_metadata()
+    return result

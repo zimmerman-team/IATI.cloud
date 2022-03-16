@@ -18,8 +18,8 @@ def index_publisher_metadata():
     logging.info('-- Retrieve Publisher metadata')
     publishers_metadata = retrieve(settings.METADATA_PUBLISHER_URL, 'publisher_metadata')
 
-    # Clear core to prevent duplicate data.
-    clear_core(settings.SOLR_PUBLISHER)
     # Index the metadata.
     logging.info('-- Save JSON publisher metadata')
-    index('publisher_metadata', publishers_metadata, settings.SOLR_PUBLISHER_URL)
+    indexing_status = index('publisher_metadata', publishers_metadata, settings.SOLR_PUBLISHER_URL)
+
+    return indexing_status
