@@ -1,11 +1,18 @@
 import logging
 
+from celery import shared_task
 import requests
 from django.conf import settings
 
-from direct_indexing.custom_fields.models import codelists, currencies
-from direct_indexing.metadata.util import download_dataset, index, retrieve
+from direct_indexing.custom_fields.models import codelists
 from direct_indexing.processing import dataset as dataset_processing
+from direct_indexing.metadata.util import download_dataset, retrieve
+
+
+@shared_task
+def direct_indexing_subtask_process_dataset(dataset):
+    result = dataset_processing.fun(dataset)
+    return result
 
 
 def index_datasets_and_dataset_metadata():
@@ -26,32 +33,25 @@ def index_datasets_and_dataset_metadata():
     logging.info('-- Retrieve metadata')
     dataset_metadata = retrieve(settings.METADATA_DATASET_URL, 'dataset_metadata')
 
-    cl, cu = load_currencies_and_codelists()
+    load_codelists()
     logging.info('-- Walk the metadata')
     number_of_datasets = len(dataset_metadata)
     for i, dataset in enumerate(dataset_metadata):
-        logging.info(f'--- Processing dataset {i+1} of {number_of_datasets}')
-        dataset_processing.run(dataset, cl, cu)
+        logging.info(f'--- Submitting dataset {i+1} of {number_of_datasets}')
+        direct_indexing_subtask_process_dataset.delay(dataset=dataset)
 
-    logging.info('-- Save the dataset metadata')
-    index('dataset_metadata', dataset_metadata, settings.SOLR_DATASET_URL)
+    res = '- All Indexing substasks started'
+    logging.info(res)
+    return res
 
-    logging.info('- Indexing complete')
 
-
-def load_currencies_and_codelists():
+def load_codelists():
     """
-    Safe loads currencies and codelists.
-
-    :return: a codelist and currency object, can be None.
+    Safe loads codelists.
     """
     logging.info('-- Load currencies and codelists')
     try:
-        cl = codelists.Codelists()
+        codelists.Codelists(download=True)
     except requests.exceptions.RequestException:
         logging.error('Codelists not available')
         raise
-
-    cu = currencies.Currencies()
-
-    return cl, cu

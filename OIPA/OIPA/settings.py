@@ -457,6 +457,7 @@ FRESH = True
 
 # Where the currencies are stored. Can be changed in local_settings
 CURRENCIES_JSON = os.path.join(BASE_DIR, 'direct_indexing/data_sources/currency_monthlyaverage.json')
+CODELISTS_JSON = os.path.join(BASE_DIR, 'direct_indexing/data_sources/codelists_dict.json')
 
 # Mongo connection string, overwrite from local_settings.
 MONGO_CONNECTION_STRING = 'localhost:27017'

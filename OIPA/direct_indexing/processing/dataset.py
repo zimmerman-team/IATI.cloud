@@ -9,12 +9,14 @@ from xmljson import badgerfish as bf
 from direct_indexing.cleaning.dataset import recursive_attribute_cleaning
 from direct_indexing.cleaning.metadata import clean_dataset_metadata
 from direct_indexing.custom_fields import custom_fields
+from direct_indexing.metadata.util import index
 from direct_indexing.processing import activity_subtypes
 from direct_indexing.processing.util import get_dataset_filepath, get_dataset_filetype, get_dataset_version_validity
 from direct_indexing.util import index_to_core
+from direct_indexing.custom_fields.models import codelists, currencies as cu
 
 
-def run(dataset, codelist, currencies):
+def fun(dataset):
     """
     Running the dataset means to take the steps.
     . Clean the dataset metadata.
@@ -29,6 +31,10 @@ def run(dataset, codelist, currencies):
     :param currencies: An initialized currencies object
     :return: The updated dataset metadata.
     """
+    logging.info(f'Indexing dataset {dataset}')
+
+    currencies = cu.Currencies()
+    codelist = codelists.Codelists()
     dataset = clean_dataset_metadata(dataset)
     dataset_filepath = get_dataset_filepath(dataset)
     valid_version = get_dataset_version_validity(dataset, dataset_filepath)
@@ -50,7 +56,11 @@ def run(dataset, codelist, currencies):
         indexed = index_dataset(dataset_filepath, dataset_filetype, codelist, currencies)
     # Add an indexing status to the dataset metadata.
     dataset['iati_cloud_indexed'] = indexed
-    return dataset
+
+    # Index the dataset metadata
+    logging.info('-- Save the dataset metadata')
+    result = index(f'metadata/{dataset["name"]}', dataset, settings.SOLR_DATASET_URL)
+    return result
 
 
 def index_dataset(internal_url, dataset_filetype, codelist, currencies):
@@ -67,10 +77,12 @@ def index_dataset(internal_url, dataset_filetype, codelist, currencies):
         core_url = settings.SOLR_ACTIVITY_URL if dataset_filetype == 'activity' else settings.SOLR_ORGANISATION_URL
         json_path = convert_and_save_xml_to_processed_json(internal_url, dataset_filetype, codelist, currencies)
         if json_path:
-            index_to_core(core_url, json_path)
-        else:
+            result = index_to_core(core_url, json_path)
+            logging.debug(f'result of indexing {result}')
+            if result is 'Successfully indexed':
+                return True
             return False
-        return True
+        return False
     except Exception as e:  # NOQA
         logging.warning(f'Exception occurred while indexing {dataset_filetype} dataset:\n{internal_url}\n{e}\nTherefore the dataset will not be indexed.')  # NOQA
         return False

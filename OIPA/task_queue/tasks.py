@@ -23,7 +23,6 @@ from api.export.serializers import ActivityXMLSerializer
 from api.renderers import XMLRenderer
 from common.download_file import DownloadFile, hash_file
 from direct_indexing import direct_indexing
-from direct_indexing.processing import dataset as dataset_processing
 from iati.activity_aggregation_calculation import ActivityAggregationCalculation
 from iati.models import Activity, Budget, Document, DocumentLink, Result
 from iati.transaction.models import Transaction
