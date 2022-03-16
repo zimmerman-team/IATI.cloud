@@ -23,6 +23,7 @@ from api.export.serializers import ActivityXMLSerializer
 from api.renderers import XMLRenderer
 from common.download_file import DownloadFile, hash_file
 from direct_indexing import direct_indexing
+from direct_indexing.processing import dataset as dataset_processing
 from iati.activity_aggregation_calculation import ActivityAggregationCalculation
 from iati.models import Activity, Budget, Document, DocumentLink, Result
 from iati.transaction.models import Transaction
@@ -61,7 +62,7 @@ DatasetDownloadTask = app.register_task(DatasetDownloadTask())
 # Direct Indexing
 #
 @shared_task
-def run_direct_indexing():
+def direct_indexing_run_unthreaded():
     """
     Simply trigger the direct indexing process.
     """
@@ -69,23 +70,65 @@ def run_direct_indexing():
 
 
 @shared_task
-def clear_direct_indexing_cores():
+def direct_indexing_clear_all_cores():
     """
     Simply trigger the direct indexing process.
     """
     direct_indexing.clear_indices()
 
 
+#
+# DIRECT INDEXING MANAGEMENT TASKS
+#
+@shared_task
+def direct_indexing_start():
+    # Clear the cores, do not use a task as this needs to finish before continuing
+    try:
+        direct_indexing.clear_indices()
+    except pysolr.SolrError:
+        # Stop the process and send a message to Celery Flower
+        return "Error clearing the direct indexing cores, check your Solr instance."
+    # Run the publisher metadata indexing subtask
+    direct_indexing_subtask_publisher_metadata.delay()
+    # Run the dataset metadata indexing subtask
+    direct_indexing_subtask_dataset_metadata.delay()
+    # Send clear message to Celery Flower
+    return "Both the publisher and dataset metadata indexing have begun."
+
+
+@shared_task
+def direct_indexing_subtask_publisher_metadata():
+    result = direct_indexing.run_publisher_metadata()
+    return result
+
+
+@shared_task
+def direct_indexing_subtask_dataset_metadata():
+    result = direct_indexing.run_dataset_metadata()
+    return result
+#
+# END DIRECT INDEXING MANAGEMENT TASKS
+#
+
+
+#
+# OTHER DEPENDENCY TASKS
+#
 @shared_task
 def update_exchange_rates():
     """
-    This task updates all of the currency exchange rates in the local database and updates the exchange rates dump.
+    This task updates all of the currency exchange rates in the local
+    database and updates the exchange rates dump.
     """
     from currency_convert.imf_rate_parser import RateParser
     r = RateParser()
     r.update_rates(force=False)
 
 
+#
+#
+#
+#
 #
 # All utility functions for the registered Celery tasks
 # TODO: 25-02-2020 Move utility functions to utils || remove this todo.
