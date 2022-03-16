@@ -29,11 +29,14 @@ def index_to_core(url, json_path):
     :param url: The url of the core to index into
     :param json_path: The path to the json file to index
     """
-    solr_out = subprocess.check_output([settings.SOLR_POST_TOOL, '-url', url, json_path],
-                                        stderr=subprocess.STDOUT).decode('utf-8')
-    result = "Successfully indexed"
-    if "SolrException" in solr_out:
-        message_index = re.search(r'\b(msg)\b', solr_out).start()+5  # +5 to get past the 'msg:'
-        solr_out = solr_out[message_index:]
-        result = solr_out[:re.search(r'\n', solr_out).start()-1]  # stop at newline excluding the ,
-    return result
+    try:
+        solr_out = subprocess.check_output([settings.SOLR_POST_TOOL, '-url', url, json_path],
+                                            stderr=subprocess.STDOUT).decode('utf-8')
+        result = 'Successfully indexed'
+        if 'SolrException' in solr_out:
+            message_index = re.search(r'\b(msg)\b', solr_out).start()+5  # +5 to get past the 'msg:'
+            solr_out = solr_out[message_index:]
+            result = solr_out[:re.search(r'\n', solr_out).start()-1]  # stop at newline excluding the ,
+        return result
+    except subprocess.CalledProcessError as e:
+        result = f'Failed to index: \n {e}'
