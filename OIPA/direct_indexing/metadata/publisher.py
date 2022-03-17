@@ -3,7 +3,6 @@ import logging
 from django.conf import settings
 
 from direct_indexing.metadata.util import index, retrieve
-from direct_indexing.util import clear_core
 
 
 def index_publisher_metadata():

@@ -9,11 +9,12 @@ from xmljson import badgerfish as bf
 from direct_indexing.cleaning.dataset import recursive_attribute_cleaning
 from direct_indexing.cleaning.metadata import clean_dataset_metadata
 from direct_indexing.custom_fields import custom_fields
+from direct_indexing.custom_fields.models import codelists
+from direct_indexing.custom_fields.models import currencies as cu
 from direct_indexing.metadata.util import index
 from direct_indexing.processing import activity_subtypes
 from direct_indexing.processing.util import get_dataset_filepath, get_dataset_filetype, get_dataset_version_validity
 from direct_indexing.util import index_to_core
-from direct_indexing.custom_fields.models import codelists, currencies as cu
 
 
 def fun(dataset):
@@ -79,7 +80,7 @@ def index_dataset(internal_url, dataset_filetype, codelist, currencies):
         if json_path:
             result = index_to_core(core_url, json_path)
             logging.debug(f'result of indexing {result}')
-            if result is 'Successfully indexed':
+            if result == 'Successfully indexed':
                 return True
             return False
         return False
