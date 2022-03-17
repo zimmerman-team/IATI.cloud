@@ -31,7 +31,7 @@ def index_to_core(url, json_path):
     """
     try:
         solr_out = subprocess.check_output([settings.SOLR_POST_TOOL, '-url', url, json_path],
-                                            stderr=subprocess.STDOUT).decode('utf-8')
+                                           stderr=subprocess.STDOUT).decode('utf-8')
         result = 'Successfully indexed'
         if 'SolrException' in solr_out:
             message_index = re.search(r'\b(msg)\b', solr_out).start()+5  # +5 to get past the 'msg:'

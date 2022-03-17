@@ -1,8 +1,8 @@
+import json
 from functools import lru_cache
 
-from django.conf import settings
 import requests
-import json
+from django.conf import settings
 
 # Original data source: https://codelists.codeforiati.org/api/
 CODELIST_URL = 'https://codelists.codeforiati.org/api/json/en/'
@@ -29,7 +29,7 @@ class Codelists(object):
             self.download_codelists()
         else:
             self.read_codelists()
-        
+
     def read_codelists(self):
         """
         Initialize the codelists by reading the listed json files and storing
@@ -40,7 +40,6 @@ class Codelists(object):
         path = settings.CODELISTS_JSON
         with open(path) as file:
             return json.load(file)
-
 
     def get_value(self, codelist_name, code, key='code', tbr='name'):
         """
@@ -67,7 +66,7 @@ class Codelists(object):
                 if item[key] == code:  # single codes are passed as string
                     return item[tbr]
         return ret
-    
+
     def get_codelists(self):
         return self.codelists_dict
 

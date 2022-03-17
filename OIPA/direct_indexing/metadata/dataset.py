@@ -1,12 +1,12 @@
 import logging
 
-from celery import shared_task
 import requests
+from celery import shared_task
 from django.conf import settings
 
 from direct_indexing.custom_fields.models import codelists
-from direct_indexing.processing import dataset as dataset_processing
 from direct_indexing.metadata.util import download_dataset, retrieve
+from direct_indexing.processing import dataset as dataset_processing
 
 
 @shared_task

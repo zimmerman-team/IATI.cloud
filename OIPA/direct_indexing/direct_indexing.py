@@ -6,6 +6,7 @@ from django.conf import settings
 from direct_indexing.metadata.dataset import index_datasets_and_dataset_metadata
 from direct_indexing.metadata.publisher import index_publisher_metadata
 
+
 def run():
     """
     Start the complete indexing process.
