@@ -1096,7 +1096,7 @@
   <copyField source="reporting-org.ref" dest="reporting_org_ref" />
   <copyField source="reporting-org.type" dest="reporting_org_type_code" />
   <copyField source="reporting-org.secondary-reporter" dest="reporting_org_secondary_reporter" />
-  <copyField source="reporting-org.narrative" dest="reporting_org_narrative" />>
+  <copyField source="reporting-org.narrative" dest="reporting_org_narrative" />
   <copyField source="title.narrative" dest="title_narrative_text" />
   <copyField source="title.narrative.lang" dest="title_narrative_lang" />
   <copyField source="description.type" dest="description_type" />
@@ -1522,4 +1522,75 @@
   <copyField source="activity-plus-child-aggregation.incoming-pledge.value" dest="activity_plus_child_aggregation_incoming_pledge_value" />
   <copyField source="activity-plus-child-aggregation.incoming-pledge.value-usd" dest="activity_plus_child_aggregation_incoming_pledge_value_usd" />
   <copyField source="activity-plus-child-aggregation.incoming-pledge.currency" dest="activity_plus_child_aggregation_incoming_pledge_currency" />
+
+  <!-- missing fields -->
+  <copyField source="title.narrative" dest="title_narrative" />
+  <copyField source="description.narrative" dest="description_narrative" />
+  <copyField source="participating-org.narrative" dest="participating_org_narrative" />
+  <copyField source="other-identifier.owner-org.narrative" dest="other_identifier_owner_org_narrative" />
+  <copyField source="activity-date.narrative" dest="activity_date_narrative" />
+  <copyField source="contact-info.organisation.narrative" dest="contact_info_organisation_narrative" />
+  <copyField source="contact-info.department.narrative" dest="contact_info_department_narrative" />
+  <copyField source="contact-info.person-name.narrative" dest="contact_info_person_name_narrative" />
+  <copyField source="contact-info.job-title.narrative" dest="contact_info_job_title_narrative" />
+  <copyField source="contact-info.mailing-address.narrative" dest="contact_info_mailing_address_narrative" />
+  <copyField source="recipient-country.narrative" dest="recipient_country_narrative" />
+  <copyField source="recipient-region.narrative" dest="recipient_region_narrative" />
+  <copyField source="location.name.narrative" dest="location_name_narrative" />
+  <copyField source="location.description.narrative" dest="location_description_narrative" />
+  <copyField source="location.activity-description.narrative" dest="location_activity_description_narrative" />
+  <copyField source="sector.narrative" dest="sector_narrative" />
+  <copyField source="tag.narrative" dest="tag_narrative" />
+  <copyField source="country-budget-items.budget-item.description.narrative" dest="country_budget_items_budget_description_narrative" />
+  <copyField source="humanitarian-scope.narrative" dest="humanitarian_scope_narrative" />
+  <copyField source="policy-marker.narrative" dest="policy_marker_narrative" />
+  <copyField source="planned-disbursement.provider-org.narrative" dest="planned_disbursement_provider_org_narrative" />
+  <copyField source="planned-disbursement.receiver-org.narrative" dest="planned_disbursement_receiver_org_narrative" />
+  <copyField source="transaction.description.narrative" dest="transaction_description_narrative" />
+  <copyField source="transaction.provider-org.narrative" dest="transaction_provider_org_narrative" />
+  <copyField source="transaction.receiver-org.narrative" dest="transaction_receiver_org_narrative" />
+  <copyField source="document-link.title.narrative" dest="document_link_title_narrative" />
+  <copyField source="document-link.description.narrative" dest="document_link_description_narrative" />
+  <copyField source="conditions.condition.narrative" dest="conditions_condition_narrative" />
+  <copyField source="result.title.narrative" dest="result_title_narrative" />
+  <copyField source="result.description.narrative" dest="result_description_narrative" />
+  <copyField source="result.document-link.title.narrative" dest="result_document_link_title_narrative" />
+  <copyField source="result.document-link.description.narrative" dest="result_document_link_description_narrative" />
+  <copyField source="result.indicator.title.narrative" dest="result_indicator_title_narrative" />
+  <copyField source="result.indicator.description.narrative" dest="result_indicator_description_narrative" />
+  <copyField source="result.indicator.document-link.title.narrative" dest="result_indicator_document_link_title_narrative" />
+  <copyField source="result.indicator.document-link.description.narrative" dest="result_indicator_document_link_description_narrative" />
+  <copyField source="result.indicator.baseline.comment.narrative" dest="result_indicator_baseline_comment_narrative" />
+  <copyField source="result.indicator.period.target.comment.narrative" dest="result_indicator_period_target_comment_narrative" />
+  <copyField source="result.indicator.period.target.document-link.title.narrative" dest="result_indicator_period_target_document_link_title_narrative" />
+  <copyField source="result.indicator.period.target.document-link.description.narrative" dest="result_indicator_period_target_document_link_description_narrative" />
+  <copyField source="result.indicator.period.actual.comment.narrative" dest="result_indicator_period_actual_comment_narrative" />
+  <copyField source="result.indicator.period.actual.document-link.title.narrative" dest="result_indicator_period_actual_document_link_title_narrative" />
+  <copyField source="result.indicator.period.actual.document-link.description.narrative" dest="result_indicator_period_actual_document_link_description_narrative" />
+  <copyField source="default-aid-type.code" dest="default_aid_type" />
+  <copyField source="default-aid-type.vocabulary" dest="default_aid_type_category_code" />
+  <copyField source="default-aid-type.name" dest="default_aid_type_category_name" />
+  <copyField source="budget.value-usd.conversion-rate" dest="budget_usd_conversion_rate" />
+  <copyField source="activity-aggregation.planned-disbursement.value" dest="activity_aggregation_commitment_currency" />
+  <copyField source="activity-aggregation.planned-disbursement.value_usd" dest="activity_aggregation_commitment_value" />
+  <copyField source="activity-aggregation.planned-disbursement.currency" dest="activity_aggregation_commitment_value_usd" />
+  <copyField source="child-aggregation.planned-disbursement.value" dest="activity_plus_child_aggregation_commitment_currency" />
+  <copyField source="child-aggregation.planned-disbursement.value_usd" dest="activity_plus_child_aggregation_commitment_value" />
+  <copyField source="child-aggregation.planned-disbursement.currency" dest="activity_plus_child_aggregation_commitment_value_usd" />
+  <copyField source="activity-plus-child-aggregation.planned-disbursement.value" dest="child_aggregation_commitment_currency" />
+  <copyField source="activity-plus-child-aggregation.planned-disbursement.value_usd" dest="child_aggregation_commitment_value" />
+  <copyField source="activity-plus-child-aggregation.planned-disbursement.currency" dest="child_aggregation_commitment_value_usd" />
+  <copyField source="activity-date.start-planned" dest="activity_date_start_planned_f" />
+  <copyField source="activity-date.start-actual" dest="activity_date_start_actual_f" />
+  <copyField source="activity-date.end-planned" dest="activity_date_end_planned_f" />
+  <copyField source="activity-date.end-actual" dest="activity_date_end_actual_f" />
+  <copyField source="planned-disbursement.value-usd.conversion-rate" dest="planned_disbursement_usd_conversion_rate" />
+  <copyField source="transaction.value-usd.conversion-rate" dest="transaction_usd_conversion_rate" />
+  <copyField source="result.indicator.baseline.document-link.title.narrative" dest="result_indicator_baseline_document_link_title" />
+  <copyField source="result.indicator.baseline.document-link.description.narrative" dest="result_indicator_baseline_document_link_description" />
+  <copyField source="result.indicator.period.actual.dimension.name" dest="result_indicator_period_actual_dimmension_name" />
+  <copyField source="result.indicator.period.actual.dimension.value" dest="result_indicator_period_actual_dimmension_value" />
+  <copyField source="result.indicator.period.target.dimension.name" dest="result_indicator_period_target_dimmension_name" />
+  <copyField source="result.indicator.period.target.dimension.value" dest="result_indicator_period_target_dimmension_value" />
+  <copyField source="result.reference.vocabulary-uri" dest="result_indicator_reference_vocabulary_uri" />
 </schema>
