@@ -471,19 +471,19 @@
   <!-- Note: narratives are always multi valued -->
   <!-- activity 1..1 -->
   <field name="last-updated-datetime" type="pdate"/>
-  <field name="lang" type="string"/>
-  <field name="default-currency" type="string"/>
+  <field name="lang" type="text_general_single"/>
+  <field name="default-currency" type="text_general_single"/>
   <field name="humanitarian" type="boolean"/>
   <field name="hierarchy" type="plong"/>
-  <field name="linked-data-uri" type="string"/>
-  <field name="budget-not-provided" type="string"/>
+  <field name="linked-data-uri" type="text_general_single"/>
+  <field name="budget-not-provided" type="text_general_single"/>
 
   <!-- activity.iati id 1..1 -->
-  <field name="iati-identifier" type="string"/>
+  <field name="iati-identifier" type="text_general_single"/>
 
   <!-- activity.reporting_org 1..1 -->
-  <field name="reporting-org.ref" type="string"/>
-  <field name="reporting-org.type" type="string"/>
+  <field name="reporting-org.ref" type="text_general_single"/>
+  <field name="reporting-org.type" type="text_general_single"/>
   <field name="reporting-org.secondary-reporter" type="boolean"/>
   <field name="reporting-org.narrative" type="text_general"/>
   <field name="reporting-org.narrative.lang" type="text_general"/>
@@ -539,7 +539,7 @@
   <field name="contact-info.mailing-address.narrative.lang" type="text_general"/>
 
   <!-- activity.activity-scope 0..1 -->
-  <field name="activity-scope.code" type="string"/>
+  <field name="activity-scope.code" type="text_general_single"/>
 
   <!-- activity.recipient-country 0..* -->
   <field name="recipient-country.code" type="text_general"/>
@@ -591,7 +591,7 @@
   <field name="tag.narrative.lang" type="text_general"/>
 
   <!-- activity.country-budget-items 0..1 budget item is 1..* -->
-  <field name="country-budget-items.vocabulary" type="string"/>
+  <field name="country-budget-items.vocabulary" type="text_general_single"/>
   <field name="country-budget-items.budget-item.code" type="text_general"/>
   <field name="country-budget-items.budget-item.percentage" type="pdoubles"/>
   <field name="country-budget-items.budget-item.description.narrative" type="text_general"/>
@@ -614,20 +614,20 @@
   <field name="policy-marker.narrative.lang" type="text_general"/>
 
   <!-- activity.collaboration-type 0..1 -->
-  <field name="collaboration-type.code" type="string"/>
+  <field name="collaboration-type.code" type="text_general_single"/>
 
   <!-- activity.default-flow-type 0..1 -->
-  <field name="default-flow-type.code" type="string"/>
+  <field name="default-flow-type.code" type="text_general_single"/>
 
   <!-- activity.default-finance-type 0..1 -->
-  <field name="default-finance-type.code" type="string"/>
+  <field name="default-finance-type.code" type="text_general_single"/>
 
   <!-- activity.default-aid-type 0..* -->
   <field name="default-aid-type.code" type="text_general"/>
   <field name="default-aid-type.vocabulary" type="text_general"/>
 
   <!-- activity.default-tied-status 0..1 -->
-  <field name="default-tied-status.code" type="string"/>
+  <field name="default-tied-status.code" type="text_general_single"/>
 
   <!-- activity.planned-disbursement 0..* -->
   <field name="planned-disbursement.type" type="text_general"/>
@@ -722,19 +722,19 @@
   <field name="crs-add.other-flags.significance" type="booleans"/>
   <field name="crs-add.loan-terms.rate-1" type="pdouble"/>
   <field name="crs-add.loan-terms.rate-2" type="pdouble"/>
-  <field name="crs-add.loan-terms.repayment-type.code" type="string"/>
-  <field name="crs-add.loan-terms.repayment-plan.code" type="string"/>
+  <field name="crs-add.loan-terms.repayment-type.code" type="text_general_single"/>
+  <field name="crs-add.loan-terms.repayment-plan.code" type="text_general_single"/>
   <field name="crs-add.loan-terms.commitment-date.iso-date" type="pdate"/>
   <field name="crs-add.loan-terms.repayment-first-date.iso-date" type="pdate"/>
   <field name="crs-add.loan-terms.repayment-final-date.iso-date" type="pdate"/>
   <field name="crs-add.loan-status.year" type="pdouble"/>
-  <field name="crs-add.loan-status.currency" type="string"/>
+  <field name="crs-add.loan-status.currency" type="text_general_single"/>
   <field name="crs-add.loan-status.value-date" type="pdate"/>
   <field name="crs-add.loan-status.interest-received" type="pdouble"/>
   <field name="crs-add.loan-status.principal-outstanding" type="pdouble"/>
   <field name="crs-add.loan-status.principal-arrears" type="pdouble"/>
   <field name="crs-add.loan-status.interest-arrears" type="pdouble"/>
-  <field name="crs-add.channel-code" type="string"/>
+  <field name="crs-add.channel-code" type="text_general_single"/>
 
   <!-- activity.fss 0..1 forecast 0..* -->
   <field name="fss.extraction-date" type="pdate"/>
@@ -919,7 +919,6 @@
   <field name="activity-plus-child-aggregation.incoming-pledge.value" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
   <field name="activity-plus-child-aggregation.incoming-pledge.value-usd" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
   <field name="activity-plus-child-aggregation.incoming-pledge.currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-  
 
   <dynamicField name="*_txt_en_split_tight" type="text_en_splitting_tight" indexed="true" stored="true"/>
   <dynamicField name="*_descendent_path" type="descendent_path" indexed="true" stored="true"/>
@@ -990,4 +989,348 @@
   <dynamicField name="*_f" type="pfloat" indexed="true" stored="true"/>
   <dynamicField name="*_d" type="pdouble" indexed="true" stored="true"/>
   <dynamicField name="*_p" type="location" indexed="true" stored="true"/>
+
+  <copyField source="last-updated-datetime" dest="last_updated_datetime" />
+  <copyField source="lang" dest="default_lang" />
+  <copyField source="default-currency" dest="default_currency" />
+  <copyField source="humanitarian" dest="humanitarian" />
+  <copyField source="hierarchy" dest="hierarchy" />
+  <copyField source="linked-data-uri" dest="linked_data_uri" />
+  <copyField source="iati-identifier" dest="iati_identifier" />
+  <copyField source="reporting-org.ref" dest="reporting_org_ref" />
+  <copyField source="reporting-org.type" dest="reporting_org_type_code" />
+  <copyField source="reporting-org.secondary-reporter" dest="reporting_org_secondary_reporter" />
+  <copyField source="reporting-org.narrative" dest="reporting_org_narrative" />>
+  <copyField source="title.narrative" dest="title_narrative_text" />
+  <copyField source="title.narrative.lang" dest="title_narrative_lang" />
+  <copyField source="description.type" dest="description_type" />
+  <copyField source="description.narrative" dest="description_narrative_text" />
+  <copyField source="description.narrative.lang" dest="description_narrative_lang" />
+  <copyField source="participating-org.ref" dest="participating_org_ref" />
+  <copyField source="participating-org.type" dest="participating_org_type" />
+  <copyField source="participating-org.role" dest="participating_org_role" />
+  <copyField source="participating-org.narrative" dest="participating_org_narrative_text" />
+  <copyField source="participating-org.narrative.lang" dest="participating_org_narrative_lang" />
+  <copyField source="other-identifier.ref" dest="other_identifier_ref" />
+  <copyField source="other-identifier.type" dest="other_identifier_type" />
+  <copyField source="other-identifier.owner-org.ref" dest="other_identifier_owner_org_ref" />
+  <copyField source="other-identifier.owner-org.narrative" dest="other_identifier_owner_org_narrative_text" />
+  <copyField source="other-identifier.owner-org.narrative.lang" dest="other_identifier_owner_org_narrative_lang" />
+  <copyField source="activity-status.code" dest="activity_status_code" />
+  <copyField source="activity-date.type" dest="activity_date_type" />
+  <copyField source="activity-date.iso-date" dest="activity_date_iso_date" />
+  <copyField source="activity-date.narrative" dest="activity_date_narrative_text" />
+  <copyField source="activity-date.narrative.lang" dest="activity_date_narrative_lang" />
+  <copyField source="contact-info.type" dest="contact_info_type" />
+  <copyField source="contact-info.organisation.narrative" dest="contact_info_organisation_narrative_text" />
+  <copyField source="contact-info.organisation.narrative.lang" dest="contact_info_organisation_narrative_lang" />
+  <copyField source="contact-info.department.narrative" dest="contact_info_department_narrative_text" />
+  <copyField source="contact-info.department.narrative.lang" dest="contact_info_department_narrative_lang" />
+  <copyField source="contact-info.person-name.narrative" dest="contact_info_person_name_narrative_text" />
+  <copyField source="contact-info.person-name.narrative.lang" dest="contact_info_person_name_narrative_lang" />
+  <copyField source="contact-info.job-title.narrative" dest="contact_info_job_title_narrative_lang" />
+  <copyField source="contact-info.job-title.narrative.lang" dest="contact_info_job_title_narrative_text" />
+  <copyField source="contact-info.telephone" dest="contact_info_telephone" />
+  <copyField source="contact-info.email" dest="contact_info_email" />
+  <copyField source="contact-info.website" dest="contact_info_website" />
+  <copyField source="contact-info.mailing-address.narrative" dest="contact_info_mailing_address_narrative_text" />
+  <copyField source="contact-info.mailing-address.narrative.lang" dest="contact_info_mailing_address_narrative_lang" />
+  <copyField source="activity-scope.code" dest="activity_scope_code" />
+  <copyField source="recipient-country.code" dest="recipient_country_code" />
+  <copyField source="recipient-country.percentage" dest="recipient_country_percentage" />
+  <copyField source="recipient-country.narrative" dest="recipient_country_narrative_text" />
+  <copyField source="recipient-country.narrative.lang" dest="recipient_country_narrative_lang" />
+  <copyField source="recipient-region.code" dest="recipient_region_code" />
+  <copyField source="recipient-region.vocabulary" dest="recipient_region_vocabulary" />
+  <copyField source="recipient-region.vocabulary-uri" dest="recipient_region_vocabulary_uri" />
+  <copyField source="recipient-region.percentage" dest="recipient_region_percentage" />
+  <copyField source="recipient-region.narrative" dest="recipient_region_narrative_text" />
+  <copyField source="recipient-region.narrative.lang" dest="recipient_region_narrative_lang" />
+  <copyField source="location.ref" dest="location_ref" />
+  <copyField source="location.location-reach.code" dest="location_reach_code" />
+  <copyField source="location.location-id.code" dest="location_id_code" />
+  <copyField source="location.location-id.vocabulary" dest="location_id_vocabulary" />
+  <copyField source="location.name.narrative" dest="location_name_narrative_text" />
+  <copyField source="location.name.narrative.lang" dest="location_name_narrative_lang" />
+  <copyField source="location.description.narrative" dest="location_description_narrative_text" />
+  <copyField source="location.description.narrative.lang" dest="location_description_narrative_lang" />
+  <copyField source="location.activity-description.narrative" dest="location_activity_description_narrative_text" />
+  <copyField source="location.activity-description.narrative.lang" dest="location_activity_description_narrative_lang" />
+  <copyField source="location.administrative.code" dest="location_administrative_code" />
+  <copyField source="location.administrative.vocabulary" dest="location_administrative_vocabulary" />
+  <copyField source="location.administrative.level" dest="location_administrative_level" />
+  <copyField source="location.point.pos" dest="location_point_pos" />
+  <copyField source="location.exactness.code" dest="location_exactness_code" />
+  <copyField source="location.location-class.code" dest="location_class_code" />
+  <copyField source="location.feature-designation.code" dest="location_feature_designation_code" />
+  <copyField source="sector.vocabulary" dest="sector_vocabulary" />
+  <copyField source="sector.vocabulary-uri" dest="sector_vocabulary_uri" />
+  <copyField source="sector.code" dest="sector_code" />
+  <copyField source="sector.percentage" dest="sector_percentage" />
+  <copyField source="sector.narrative" dest="sector_narrative_text" />
+  <copyField source="sector.narrative.lang" dest="sector_narrative_lang" />
+  <copyField source="tag.code" dest="tag_code" />
+  <copyField source="tag.vocabulary" dest="tag_vocabulary" />
+  <copyField source="tag.vocabulary-uri" dest="tag_vocabulary_uri" />
+  <copyField source="tag.narrative" dest="tag_narrative_text" />
+  <copyField source="tag.narrative.lang" dest="tag_narrative_lang" />
+  <copyField source="country-budget-items.vocabulary" dest="country_budget_items_vocabulary" />
+  <copyField source="country-budget-items.budget-item.code" dest="country_budget_items_budget_item_code" />
+  <copyField source="country-budget-items.budget-item.percentage" dest="country_budget_items_budget_item_percentage" />
+  <copyField source="country-budget-items.budget-item.description.narrative" dest="country_budget_items_budget_description_narrative_text" />
+  <copyField source="country-budget-items.budget-item.description.narrative.lang" dest="country_budget_items_budget_description_narrative_lang" />
+  <copyField source="humanitarian-scope.type" dest="humanitarian_scope_type" />
+  <copyField source="humanitarian-scope.vocabulary" dest="humanitarian_scope_vocabulary" />
+  <copyField source="humanitarian-scope.vocabulary-uri" dest="humanitarian_scope_vocabulary_uri" />
+  <copyField source="humanitarian-scope.code" dest="humanitarian_scope_code" />
+  <copyField source="humanitarian-scope.narrative" dest="humanitarian_scope_narrative_text" />
+  <copyField source="humanitarian-scope.narrative.lang" dest="humanitarian_scope_narrative_lang" />
+  <copyField source="policy-marker.vocabulary" dest="policy_marker_vocabulary" />
+  <copyField source="policy-marker.vocabulary-uri" dest="policy_marker_vocabulary_uri" />
+  <copyField source="policy-marker.code" dest="policy_marker_code" />
+  <copyField source="policy-marker.significance" dest="policy_marker_significance" />
+  <copyField source="policy-marker.narrative" dest="policy_marker_narrative_text" />
+  <copyField source="policy-marker.narrative.lang" dest="policy_marker_narrative_lang" />
+  <copyField source="collaboration-type.code" dest="collaboration_type_code" />
+  <copyField source="default-flow-type.code" dest="default_flow_type_code" />
+  <copyField source="default-finance-type.code" dest="default_finance_type_code" />
+  <copyField source="default-aid-type.code" dest="default_aid_type_code" />
+  <copyField source="default-aid-type.vocabulary" dest="default_aid_type_vocabulary" />
+  <copyField source="default-tied-status.code" dest="default_tied_status_code" />
+  <copyField source="planned-disbursement.type" dest="planned_disbursement_type" />
+  <copyField source="planned-disbursement.period-start.iso-date" dest="planned_disbursement_period_start_iso_date" />
+  <copyField source="planned-disbursement.period-end.iso-date" dest="planned_disbursement_period_end_iso_date" />
+  <copyField source="planned-disbursement.value" dest="planned_disbursement_value" />
+  <copyField source="planned-disbursement.value.currency" dest="planned_disbursement_value_currency" />
+  <copyField source="planned-disbursement.value.value-date" dest="planned_disbursement_value_date" />
+  <copyField source="planned-disbursement.provider-org.ref" dest="planned_disbursement_provider_org_ref" />
+  <copyField source="planned-disbursement.provider-org.provider-activity-id" dest="planned_disbursement_provider_org_provider_activity_id" />
+  <copyField source="planned-disbursement.provider-org.type" dest="planned_disbursement_provider_org_type" />
+  <copyField source="planned-disbursement.provider-org.narrative" dest="planned_disbursement_provider_org_narrative_text" />
+  <copyField source="planned-disbursement.provider-org.narrative.lang" dest="planned_disbursement_provider_org_narrative_lang" />
+  <copyField source="planned-disbursement.receiver-org.ref" dest="planned_disbursement_receiver_org_ref" />
+  <copyField source="planned-disbursement.receiver-org.receiver-activity-id" dest="planned_disbursement_receiver_org_provider_activity_id" />
+  <copyField source="planned-disbursement.receiver-org.type" dest="planned_disbursement_receiver_org_type" />
+  <copyField source="planned-disbursement.receiver-org.narrative" dest="planned_disbursement_receiver_org_narrative_text" />
+  <copyField source="planned-disbursement.receiver-org.narrative.lang" dest="planned_disbursement_receiver_org_narrative_lang" />
+  <copyField source="capital-spend.percentage" dest="capital_spend_percentage" />
+  <copyField source="transaction.ref" dest="transaction_ref" />
+  <copyField source="transaction.humanitarian" dest="transaction_humanitarian" />
+  <copyField source="transaction.transaction-type.code" dest="transaction_type" />
+  <copyField source="transaction.transaction-date.iso-date" dest="transaction_date_iso_date" />
+  <copyField source="transaction.value" dest="transaction_value" />
+  <copyField source="transaction.value.currency" dest="transaction_value_currency" />
+  <copyField source="transaction.value.value-date" dest="transaction_value_date" />
+  <copyField source="transaction.description.narrative" dest="transaction_description_narrative" />
+  <copyField source="transaction.description.narrative.lang" dest="transaction_description_lang" />
+  <copyField source="transaction.provider-org.ref" dest="transaction_provider_org_ref" />
+  <copyField source="transaction.provider-org.provider-activity-id" dest="transaction_provider_org_provider_activity_id" />
+  <copyField source="transaction.provider-org.type" dest="transaction_provider_org_type" />
+  <copyField source="transaction.provider-org.narrative" dest="transaction_provider_org_narrative_text" />
+  <copyField source="transaction.provider-org.narrative.lang" dest="transaction_provider_org_narrative_lang" />
+  <copyField source="transaction.receiver-org.ref" dest="transaction_receiver_org_ref" />
+  <copyField source="transaction.receiver-org.receiver-activity-id" dest="transaction_receiver_org_receiver_activity_id" />
+  <copyField source="transaction.receiver-org.type" dest="transaction_receiver_org_type_code" />
+  <copyField source="transaction.receiver-org.narrative" dest="transaction_receiver_org_narrative_text" />
+  <copyField source="transaction.receiver-org.narrative.lang" dest="transaction_receiver_org_narrative_lang" />
+  <copyField source="transaction.disbursement-channel.code" dest="transaction_disbursement_channel_code" />
+  <copyField source="transaction.sector.vocabulary" dest="transaction_sector_vocabulary" />
+  <copyField source="transaction.sector.vocabulary-uri" dest="transaction_sector_vocabulary_uri" />
+  <copyField source="transaction.sector.code" dest="transaction_sector_code" />
+  <copyField source="transaction.recipient-country.code" dest="transaction_recipient_country_code" />
+  <copyField source="transaction.recipient-region.code" dest="transaction_recipient_region_code" />
+  <copyField source="transaction.recipient-region.vocabulary" dest="transaction_recipient_region_vocabulary" />
+  <copyField source="transaction.flow-type.code" dest="transaction_flow_type_code" />
+  <copyField source="transaction.finance-type.code" dest="transaction_finance_type_code" />
+  <copyField source="transaction.aid-type.code" dest="transaction_aid_type_code" />
+  <copyField source="transaction.aid-type.vocabulary" dest="transaction_aid_type_vocabulary" />
+  <copyField source="transaction.tied-status.code" dest="transaction_tied_status_code" />
+  <copyField source="document-link.url" dest="document_link_url" />
+  <copyField source="document-link.format" dest="document_link_format" />
+  <copyField source="document-link.title.narrative" dest="document_link_title_narrative_text" />
+  <copyField source="document-link.title.narrative.lang" dest="document_link_title_narrative_lang" />
+  <copyField source="document-link.description.narrative" dest="document_link_description_narrative_text" />
+  <copyField source="document-link.description.narrative.lang" dest="document_link_description_narrative_lang" />
+  <copyField source="document-link.category.code" dest="document_link_category_code" />
+  <copyField source="document-link.language.code" dest="document_link_language_code" />
+  <copyField source="document-link.document-date.iso-date" dest="document_link_document_date_iso_date" />
+  <copyField source="related-activity.ref" dest="related_activity_ref" />
+  <copyField source="related-activity.type" dest="related_activity_type" />
+  <copyField source="legacy-data.name" dest="legacy_data_name" />
+  <copyField source="legacy-data.value" dest="legacy_data_value" />
+  <copyField source="legacy-data.iati-equivalent" dest="legacy_data_iati_equivalent" />
+  <copyField source="conditions.attached" dest="conditions_attached" />
+  <copyField source="conditions.condition.type" dest="conditions_condition_type" />
+  <copyField source="conditions.condition.narrative" dest="conditions_condition_narrative_text" />
+  <copyField source="conditions.condition.narrative.lang" dest="conditions_condition_narrative_lang" />
+  <copyField source="crs-add.other-flags.code" dest="crs_add_other_flags_code" />
+  <copyField source="crs-add.other-flags.significance" dest="crs_add_other_flags_significance" />
+  <copyField source="crs-add.loan-terms.rate-1" dest="crs_add_loan_terms_rate_1" />
+  <copyField source="crs-add.loan-terms.rate-2" dest="crs_add_loan_terms_rate_2" />
+  <copyField source="crs-add.loan-terms.repayment-type.code" dest="crs_add_loan_terms_repayment_type_code" />
+  <copyField source="crs-add.loan-terms.repayment-plan.code" dest="crs_add_loan_terms_repayment_plan_code" />
+  <copyField source="crs-add.loan-terms.commitment-date.iso-date" dest="crs_add_loan_terms_commitment_date_iso_date" />
+  <copyField source="crs-add.loan-terms.repayment-first-date.iso-date" dest="crs_add_loan_terms_repayment_first_date_iso_date" />
+  <copyField source="crs-add.loan-terms.repayment-final-date.iso-date" dest="crs_add_loan_terms_repayment_final_date_iso_date" />
+  <copyField source="crs-add.loan-status.year" dest="crs_add_loan_status_year" />
+  <copyField source="crs-add.loan-status.currency" dest="crs_add_loan_status_currency" />
+  <copyField source="crs-add.loan-status.value-date" dest="crs_add_loan_status_value_date" />
+  <copyField source="crs-add.loan-status.interest-received" dest="crs_add_loan_status_interest_received" />
+  <copyField source="crs-add.loan-status.principal-outstanding" dest="crs_add_loan_status_principal_outstanding" />
+  <copyField source="crs-add.loan-status.principal-arrears" dest="crs_add_loan_status_principal_arrears" />
+  <copyField source="crs-add.loan-status.interest-arrears" dest="crs_add_loan_status_interest_arrears" />
+  <copyField source="crs-add.channel-code" dest="crs_add_channel_code" />
+  <copyField source="fss.extraction-date" dest="fss_extraction_date" />
+  <copyField source="fss.priority" dest="fss_priority" />
+  <copyField source="fss.phaseout-year" dest="fss_phaseout_year" />
+  <copyField source="fss.forecast" dest="fss_forecast_value" />
+  <copyField source="fss.forecast.year" dest="fss_forecast_year" />
+  <copyField source="fss.forecast.currency" dest="fss_forecast_currency" />
+  <copyField source="fss.forecast.value-date" dest="fss_forecast_value_date" />
+  <copyField source="reporting-org.type.name" dest="reporting_org_type_name" />
+  <copyField source="recipient-country.name" dest="recipient_country_name" />
+  <copyField source="recipient-region.name" dest="recipient_region_name" />
+  <copyField source="default-aid-type.name" dest="default_aid_type_category_vocabulary" />
+  <copyField source="transaction.receiver-org.type.name" dest="transaction_receiver_org_type_name" />
+  <copyField source="title.narrative.first" dest="title_narrative_first" />
+  <copyField source="activity-date.start-planned" dest="activity_date_start_planned" />
+  <copyField source="activity-date.start-actual" dest="activity_date_start_actual" />
+  <copyField source="activity-date.end-planned" dest="activity_date_end_planned" />
+  <copyField source="activity-date.end-actual" dest="activity_date_end_actual" />
+  <copyField source="policy-marker.combined" dest="policy_marker_combined" />
+  <copyField source="budget.value-usd" dest="budget_value_usd" />
+  <copyField source="planned-disbursement.value-usd" dest="planned_disbursement_value_usd" />
+  <copyField source="transaction.value-usd" dest="transaction_value_usd" />
+  <copyField source="budget.value-usd.sum" dest="budget_value_usd_sum" />
+  <copyField source="planned-disbursement.value-usd.sum" dest="planned_disbursement_value_usd_sum" />
+  <copyField source="transaction.value-usd.sum" dest="transaction_value_usd_sum" />
+  <copyField source="budget.value-usd.conversion-rate" dest="budget_usd_conversion_rate" />
+  <copyField source="planned-disbursement.value-usd.conversion-rate" dest="planned_disbursement_usd_conversion_rate" />
+  <copyField source="transaction.value-usd.conversion-rate" dest="transaction_usd_conversion_rate" />
+  <copyField source="activity-aggregation.budget.value" dest="activity_aggregation_budget_value" />
+  <copyField source="activity-aggregation.budget.value_usd" dest="activity_aggregation_budget_value_usd" />
+  <copyField source="activity-aggregation.budget.currency" dest="activity_aggregation_budget_currency" />
+  <copyField source="activity-aggregation.incoming-funds.value" dest="activity_aggregation_incoming_funds_value" />
+  <copyField source="activity-aggregation.incoming-funds.value-usd" dest="activity_aggregation_incoming_funds_value_usd" />
+  <copyField source="activity-aggregation.incoming-funds.currency" dest="activity_aggregation_incoming_funds_currency" />
+  <copyField source="activity-aggregation.outgoing-commitment.value" dest="activity_aggregation_commitment_value" />
+  <copyField source="activity-aggregation.outgoing-commitment.value-usd" dest="activity_aggregation_commitment_value_usd" />
+  <copyField source="activity-aggregation.outgoing-commitment.currency" dest="activity_aggregation_commitment_currency" />
+  <copyField source="activity-aggregation.disbursement.value" dest="activity_aggregation_disbursement_value" />
+  <copyField source="activity-aggregation.disbursement.value-usd" dest="activity_aggregation_disbursement_value_usd" />
+  <copyField source="activity-aggregation.disbursement.currency" dest="activity_aggregation_disbursement_currency" />
+  <copyField source="activity-aggregation.expenditure.value" dest="activity_aggregation_expenditure_value" />
+  <copyField source="activity-aggregation.expenditure.value-usd" dest="activity_aggregation_expenditure_value_usd" />
+  <copyField source="activity-aggregation.expenditure.currency" dest="activity_aggregation_expenditure_currency" />
+  <copyField source="activity-aggregation.interest-payment.value" dest="activity_aggregation_interest_payment_value" />
+  <copyField source="activity-aggregation.interest-payment.value-usd" dest="activity_aggregation_interest_payment_value_usd" />
+  <copyField source="activity-aggregation.interest-payment.currency" dest="activity_aggregation_interest_payment_currency" />
+  <copyField source="activity-aggregation.loan-repayment.value" dest="activity_aggregation_loan_repayment_value" />
+  <copyField source="activity-aggregation.loan-repayment.value-usd" dest="activity_aggregation_loan_repayment_value_usd" />
+  <copyField source="activity-aggregation.loan-repayment.currency" dest="activity_aggregation_loan_repayment_currency" />
+  <copyField source="activity-aggregation.reimbursement.value" dest="activity_aggregation_reimbursement_value" />
+  <copyField source="activity-aggregation.reimbursement.value-usd" dest="activity_aggregation_reimbursement_value_usd" />
+  <copyField source="activity-aggregation.reimbursement.currency" dest="activity_aggregation_reimbursement_currency" />
+  <copyField source="activity-aggregation.purchase-of-equity.value" dest="activity_aggregation_purchase_of_equity_value" />
+  <copyField source="activity-aggregation.purchase-of-equity.value-usd" dest="activity_aggregation_purchase_of_equity_value_usd" />
+  <copyField source="activity-aggregation.purchase-of-equity.currency" dest="activity_aggregation_purchase_of_equity_currency" />
+  <copyField source="activity-aggregation.sale-of-equity.value" dest="activity_aggregation_sale_of_equity_value" />
+  <copyField source="activity-aggregation.sale-of-equity.value-usd" dest="activity_aggregation_sale_of_equity_value_usd" />
+  <copyField source="activity-aggregation.sale-of-equity.currency" dest="activity_aggregation_sale_of_equity_currency" />
+  <copyField source="activity-aggregation.credit-guarantee.value" dest="activity_aggregation_credit_guarantee_value" />
+  <copyField source="activity-aggregation.credit-guarantee.value-usd" dest="activity_aggregation_credit_guarantee_value_usd" />
+  <copyField source="activity-aggregation.credit-guarantee.currency" dest="activity_aggregation_credit_guarantee_currency" />
+  <copyField source="activity-aggregation.incoming-commitment.value" dest="activity_aggregation_incoming_commitment_value" />
+  <copyField source="activity-aggregation.incoming-commitment.value-usd" dest="activity_aggregation_incoming_commitment_value_usd" />
+  <copyField source="activity-aggregation.incoming-commitment.currency" dest="activity_aggregation_incoming_commitment_currency" />
+  <copyField source="activity-aggregation.outgoing-pledge.value" dest="activity_aggregation_outgoing_pledge_value" />
+  <copyField source="activity-aggregation.outgoing-pledge.value-usd" dest="activity_aggregation_outgoing_pledge_value_usd" />
+  <copyField source="activity-aggregation.outgoing-pledge.currency" dest="activity_aggregation_outgoing_pledge_currency" />
+  <copyField source="activity-aggregation.incoming-pledge.value" dest="activity_aggregation_incoming_pledge_value" />
+  <copyField source="activity-aggregation.incoming-pledge.value-usd" dest="activity_aggregation_incoming_pledge_value_usd" />
+  <copyField source="activity-aggregation.incoming-pledge.currency" dest="activity_aggregation_incoming_pledge_currency" />
+  <copyField source="child-aggregation.budget.value" dest="child_aggregation_budget_value" />
+  <copyField source="child-aggregation.budget.value_usd" dest="child_aggregation_budget_value_usd" />
+  <copyField source="child-aggregation.budget.currency" dest="child_aggregation_budget_currency" />
+  <copyField source="child-aggregation.incoming-funds.value" dest="child_aggregation_incoming_funds_value" />
+  <copyField source="child-aggregation.incoming-funds.value-usd" dest="child_aggregation_incoming_funds_value_usd" />
+  <copyField source="child-aggregation.incoming-funds.currency" dest="child_aggregation_incoming_funds_currency" />
+  <copyField source="child-aggregation.outgoing-commitment.value" dest="child_aggregation_commitment_value" />
+  <copyField source="child-aggregation.outgoing-commitment.value-usd" dest="child_aggregation_commitment_value_usd" />
+  <copyField source="child-aggregation.outgoing-commitment.currency" dest="child_aggregation_commitment_currency" />
+  <copyField source="child-aggregation.disbursement.value" dest="child_aggregation_disbursement_value" />
+  <copyField source="child-aggregation.disbursement.value-usd" dest="child_aggregation_disbursement_value_usd" />
+  <copyField source="child-aggregation.disbursement.currency" dest="child_aggregation_disbursement_currency" />
+  <copyField source="child-aggregation.expenditure.value" dest="child_aggregation_expenditure_value" />
+  <copyField source="child-aggregation.expenditure.value-usd" dest="child_aggregation_expenditure_value_usd" />
+  <copyField source="child-aggregation.expenditure.currency" dest="child_aggregation_expenditure_currency" />
+  <copyField source="child-aggregation.interest-payment.value" dest="child_aggregation_interest_payment_value" />
+  <copyField source="child-aggregation.interest-payment.value-usd" dest="child_aggregation_interest_payment_value_usd" />
+  <copyField source="child-aggregation.interest-payment.currency" dest="child_aggregation_interest_payment_currency" />
+  <copyField source="child-aggregation.loan-repayment.value" dest="child_aggregation_loan_repayment_value" />
+  <copyField source="child-aggregation.loan-repayment.value-usd" dest="child_aggregation_loan_repayment_value_usd" />
+  <copyField source="child-aggregation.loan-repayment.currency" dest="child_aggregation_loan_repayment_currency" />
+  <copyField source="child-aggregation.reimbursement.value" dest="child_aggregation_reimbursement_value" />
+  <copyField source="child-aggregation.reimbursement.value-usd" dest="child_aggregation_reimbursement_value_usd" />
+  <copyField source="child-aggregation.reimbursement.currency" dest="child_aggregation_reimbursement_currency" />
+  <copyField source="child-aggregation.purchase-of-equity.value" dest="child_aggregation_purchase_of_equity_value" />
+  <copyField source="child-aggregation.purchase-of-equity.value-usd" dest="child_aggregation_purchase_of_equity_value_usd" />
+  <copyField source="child-aggregation.purchase-of-equity.currency" dest="child_aggregation_purchase_of_equity_currency" />
+  <copyField source="child-aggregation.sale-of-equity.value" dest="child_aggregation_sale_of_equity_value" />
+  <copyField source="child-aggregation.sale-of-equity.value-usd" dest="child_aggregation_sale_of_equity_value_usd" />
+  <copyField source="child-aggregation.sale-of-equity.currency" dest="child_aggregation_sale_of_equity_currency" />
+  <copyField source="child-aggregation.credit-guarantee.value" dest="child_aggregation_credit_guarantee_value" />
+  <copyField source="child-aggregation.credit-guarantee.value-usd" dest="child_aggregation_credit_guarantee_value_usd" />
+  <copyField source="child-aggregation.credit-guarantee.currency" dest="child_aggregation_credit_guarantee_currency" />
+  <copyField source="child-aggregation.incoming-commitment.value" dest="child_aggregation_incoming_commitment_value" />
+  <copyField source="child-aggregation.incoming-commitment.value-usd" dest="child_aggregation_incoming_commitment_value_usd" />
+  <copyField source="child-aggregation.incoming-commitment.currency" dest="child_aggregation_incoming_commitment_currency" />
+  <copyField source="child-aggregation.outgoing-pledge.value" dest="child_aggregation_outgoing_pledge_value" />
+  <copyField source="child-aggregation.outgoing-pledge.value-usd" dest="child_aggregation_outgoing_pledge_value_usd" />
+  <copyField source="child-aggregation.outgoing-pledge.currency" dest="child_aggregation_outgoing_pledge_currency" />
+  <copyField source="child-aggregation.incoming-pledge.value" dest="child_aggregation_incoming_pledge_value" />
+  <copyField source="child-aggregation.incoming-pledge.value-usd" dest="child_aggregation_incoming_pledge_value_usd" />
+  <copyField source="child-aggregation.incoming-pledge.currency" dest="child_aggregation_incoming_pledge_currency" />
+  <copyField source="activity-plus-child-aggregation.budget.value" dest="activity_plus_child_aggregation_budget_value" />
+  <copyField source="activity-plus-child-aggregation.budget.value_usd" dest="activity_plus_child_aggregation_budget_value_usd" />
+  <copyField source="activity-plus-child-aggregation.budget.currency" dest="activity_plus_child_aggregation_budget_currency" />
+  <copyField source="activity-plus-child-aggregation.incoming-funds.value" dest="activity_plus_child_aggregation_incoming_funds_value" />
+  <copyField source="activity-plus-child-aggregation.incoming-funds.value-usd" dest="activity_plus_child_aggregation_incoming_funds_value_usd" />
+  <copyField source="activity-plus-child-aggregation.incoming-funds.currency" dest="activity_plus_child_aggregation_incoming_funds_currency" />
+  <copyField source="activity-plus-child-aggregation.outgoing-commitment.value" dest="activity_plus_child_aggregation_commitment_value" />
+  <copyField source="activity-plus-child-aggregation.outgoing-commitment.value-usd" dest="activity_plus_child_aggregation_commitment_value_usd" />
+  <copyField source="activity-plus-child-aggregation.outgoing-commitment.currency" dest="activity_plus_child_aggregation_commitment_currency" />
+  <copyField source="activity-plus-child-aggregation.disbursement.value" dest="activity_plus_child_aggregation_disbursement_value" />
+  <copyField source="activity-plus-child-aggregation.disbursement.value-usd" dest="activity_plus_child_aggregation_disbursement_value_usd" />
+  <copyField source="activity-plus-child-aggregation.disbursement.currency" dest="activity_plus_child_aggregation_disbursement_currency" />
+  <copyField source="activity-plus-child-aggregation.expenditure.value" dest="activity_plus_child_aggregation_expenditure_value" />
+  <copyField source="activity-plus-child-aggregation.expenditure.value-usd" dest="activity_plus_child_aggregation_expenditure_value_usd" />
+  <copyField source="activity-plus-child-aggregation.expenditure.currency" dest="activity_plus_child_aggregation_expenditure_currency" />
+  <copyField source="activity-plus-child-aggregation.interest-payment.value" dest="activity_plus_child_aggregation_interest_payment_value" />
+  <copyField source="activity-plus-child-aggregation.interest-payment.value-usd" dest="activity_plus_child_aggregation_interest_payment_value_usd" />
+  <copyField source="activity-plus-child-aggregation.interest-payment.currency" dest="activity_plus_child_aggregation_interest_payment_currency" />
+  <copyField source="activity-plus-child-aggregation.loan-repayment.value" dest="activity_plus_child_aggregation_loan_repayment_value" />
+  <copyField source="activity-plus-child-aggregation.loan-repayment.value-usd" dest="activity_plus_child_aggregation_loan_repayment_value_usd" />
+  <copyField source="activity-plus-child-aggregation.loan-repayment.currency" dest="activity_plus_child_aggregation_loan_repayment_currency" />
+  <copyField source="activity-plus-child-aggregation.reimbursement.value" dest="activity_plus_child_aggregation_reimbursement_value" />
+  <copyField source="activity-plus-child-aggregation.reimbursement.value-usd" dest="activity_plus_child_aggregation_reimbursement_value_usd" />
+  <copyField source="activity-plus-child-aggregation.reimbursement.currency" dest="activity_plus_child_aggregation_reimbursement_currency" />
+  <copyField source="activity-plus-child-aggregation.purchase-of-equity.value" dest="activity_plus_child_aggregation_purchase_of_equity_value" />
+  <copyField source="activity-plus-child-aggregation.purchase-of-equity.value-usd" dest="activity_plus_child_aggregation_purchase_of_equity_value_usd" />
+  <copyField source="activity-plus-child-aggregation.purchase-of-equity.currency" dest="activity_plus_child_aggregation_purchase_of_equity_currency" />
+  <copyField source="activity-plus-child-aggregation.sale-of-equity.value" dest="activity_plus_child_aggregation_sale_of_equity_value" />
+  <copyField source="activity-plus-child-aggregation.sale-of-equity.value-usd" dest="activity_plus_child_aggregation_sale_of_equity_value_usd" />
+  <copyField source="activity-plus-child-aggregation.sale-of-equity.currency" dest="activity_plus_child_aggregation_sale_of_equity_currency" />
+  <copyField source="activity-plus-child-aggregation.credit-guarantee.value" dest="activity_plus_child_aggregation_credit_guarantee_value" />
+  <copyField source="activity-plus-child-aggregation.credit-guarantee.value-usd" dest="activity_plus_child_aggregation_credit_guarantee_value_usd" />
+  <copyField source="activity-plus-child-aggregation.credit-guarantee.currency" dest="activity_plus_child_aggregation_credit_guarantee_currency" />
+  <copyField source="activity-plus-child-aggregation.incoming-commitment.value" dest="activity_plus_child_aggregation_incoming_commitment_value" />
+  <copyField source="activity-plus-child-aggregation.incoming-commitment.value-usd" dest="activity_plus_child_aggregation_incoming_commitment_value_usd" />
+  <copyField source="activity-plus-child-aggregation.incoming-commitment.currency" dest="activity_plus_child_aggregation_incoming_commitment_currency" />
+  <copyField source="activity-plus-child-aggregation.outgoing-pledge.value" dest="activity_plus_child_aggregation_outgoing_pledge_value" />
+  <copyField source="activity-plus-child-aggregation.outgoing-pledge.value-usd" dest="activity_plus_child_aggregation_outgoing_pledge_value_usd" />
+  <copyField source="activity-plus-child-aggregation.outgoing-pledge.currency" dest="activity_plus_child_aggregation_outgoing_pledge_currency" />
+  <copyField source="activity-plus-child-aggregation.incoming-pledge.value" dest="activity_plus_child_aggregation_incoming_pledge_value" />
+  <copyField source="activity-plus-child-aggregation.incoming-pledge.value-usd" dest="activity_plus_child_aggregation_incoming_pledge_value_usd" />
+  <copyField source="activity-plus-child-aggregation.incoming-pledge.currency" dest="activity_plus_child_aggregation_incoming_pledge_currency" />
 </schema>
