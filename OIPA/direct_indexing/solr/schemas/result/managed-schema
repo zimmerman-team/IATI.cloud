@@ -811,6 +811,8 @@
   <field name="activity-date.start-actual" type="pdate"/>
   <field name="activity-date.end-planned" type="pdate"/>
   <field name="activity-date.end-actual" type="pdate"/>
+  <field name="activity-date.common.start" type="pdate"/>
+  <field name="activity-date.common.end" type="pdate"/>
 
   <!-- Combined policy marker info -->
   <field name="policy-marker.combined" type="text_general"/>
@@ -1487,6 +1489,10 @@
   <copyField source="activity-date.start-actual" dest="activity_date_start_actual_f" />
   <copyField source="activity-date.end-planned" dest="activity_date_end_planned_f" />
   <copyField source="activity-date.end-actual" dest="activity_date_end_actual_f" />
+  <copyField source="activity-date.common.end" dest="activity_date_end_common" />
+  <copyField source="activity-date.common.start" dest="activity_date_start_common" />
+  <copyField source="activity-date.common.end" dest="activity_date_end_common_f" />
+  <copyField source="activity-date.common.start" dest="activity_date_start_common_f" />
   <copyField source="planned-disbursement.value-usd.conversion-rate" dest="planned_disbursement_usd_conversion_rate" />
   <copyField source="result.indicator.baseline.document-link.title.narrative" dest="result_indicator_baseline_document_link_title" />
   <copyField source="result.indicator.baseline.document-link.description.narrative" dest="result_indicator_baseline_document_link_description" />
@@ -1495,4 +1501,5 @@
   <copyField source="result.indicator.period.target.dimension.name" dest="result_indicator_period_target_dimmension_name" />
   <copyField source="result.indicator.period.target.dimension.value" dest="result_indicator_period_target_dimmension_value" />
   <copyField source="result.reference.vocabulary-uri" dest="result_indicator_reference_vocabulary_uri" />
+  <copyField source="last-updated-datetime" dest="last_updated_datetime_f" />
 </schema>
