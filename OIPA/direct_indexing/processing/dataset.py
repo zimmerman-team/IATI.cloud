@@ -40,6 +40,7 @@ def fun(dataset):
     dataset_filepath = get_dataset_filepath(dataset)
     valid_version = get_dataset_version_validity(dataset, dataset_filepath)
     dataset_filetype = get_dataset_filetype(dataset)
+    dataset_metadata = custom_fields.get_custom_metadata(dataset)
     # Validate the relevant files, mark others as invalid
     validation_status = 'Unvalidated'
     if valid_version:
@@ -54,7 +55,7 @@ def fun(dataset):
     # Index the relevant datasets,
     # these are activity files of a valid version and that have been successfully validated (not critical)
     if validation_status == 'Valid':
-        indexed = index_dataset(dataset_filepath, dataset_filetype, codelist, currencies)
+        indexed = index_dataset(dataset_filepath, dataset_filetype, codelist, currencies, dataset_metadata)
     # Add an indexing status to the dataset metadata.
     dataset['iati_cloud_indexed'] = indexed
 
@@ -64,7 +65,7 @@ def fun(dataset):
     return result
 
 
-def index_dataset(internal_url, dataset_filetype, codelist, currencies):
+def index_dataset(internal_url, dataset_filetype, codelist, currencies, dataset_metadata):
     """
     Index the dataset to the correct core.
 
@@ -76,7 +77,8 @@ def index_dataset(internal_url, dataset_filetype, codelist, currencies):
     """
     try:
         core_url = settings.SOLR_ACTIVITY_URL if dataset_filetype == 'activity' else settings.SOLR_ORGANISATION_URL
-        json_path = convert_and_save_xml_to_processed_json(internal_url, dataset_filetype, codelist, currencies)
+        json_path = convert_and_save_xml_to_processed_json(internal_url, dataset_filetype, codelist, currencies, 
+                                                           dataset_metadata)
         if json_path:
             result = index_to_core(core_url, json_path)
             logging.debug(f'result of indexing {result}')
@@ -89,7 +91,7 @@ def index_dataset(internal_url, dataset_filetype, codelist, currencies):
         return False
 
 
-def convert_and_save_xml_to_processed_json(filepath, filetype, codelist, currencies):
+def convert_and_save_xml_to_processed_json(filepath, filetype, codelist, currencies, dataset_metadata):
     """
     Read the XML into a convertible format and save it to a json file,
     after extracting the activity or organisations from it and cleaning the dataset.
@@ -126,7 +128,7 @@ def convert_and_save_xml_to_processed_json(filepath, filetype, codelist, currenc
 
     # Add our additional custom fields
     if filetype == 'activity':
-        data = custom_fields.add_all(data, codelist, currencies)
+        data = custom_fields.add_all(data, codelist, currencies, dataset_metadata)
 
     # Activity subtypes
     subtypes = dict()
