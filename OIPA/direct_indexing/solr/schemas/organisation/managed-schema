@@ -664,6 +664,85 @@
   <dynamicField name="*_d" type="pdouble" indexed="true" stored="true"/>
   <dynamicField name="*_p" type="location" indexed="true" stored="true"/>
 
+  <!-- Deprecated field copy TODO: Remove-->
+  <fieldType name="iati_narrative" class="solr.SortableTextField" positionIncrementGap="100" multiValued="true">
+    <analyzer type="index">
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.NGramFilterFactory" minGramSize="2" maxGramSize="100"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+    </analyzer>
+    <analyzer type="query">
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.NGramFilterFactory" minGramSize="2" maxGramSize="100"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+    </analyzer>
+  </fieldType>
+  <field name="organisation_identifier" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+
+  <field name="organisation_name" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="organisation_name_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="organisation_name_narrative" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="organisation_name_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="organisation_name_xml" type="text_general" multiValued="false" indexed="false" required="false" stored="true"/>
+
+  <field name="organisation_reported_org_xml" type="text_general" multiValued="false" indexed="false" required="false" stored="true"/>
+
+  <field name="organisation_type" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+
+  <field name="organisation_reported_in_iati" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="organisation_published" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+
+  <field name="organisation_last_updated_datetime" type="pdate" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="organisation_default_currency_code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="organisation_default_lang_code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+
+  <field name="organisation_total_budget" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="organisation_total_budget_period_start" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="organisation_total_budget_period_end" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="organisation_total_budget_value" type="pdoubles" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="organisation_total_budget_value_currency" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="organisation_total_budget_value_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="organisation_total_budget_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
+
+  <field name="organisation_recipient_org_budget" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="organisation_recipient_org_budget_period_start" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="organisation_recipient_org_budget_period_end" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="organisation_recipient_org_budget_value" type="pdoubles" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="organisation_recipient_org_budget_value_currency" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="organisation_recipient_org_budget_value_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="organisation_recipient_org_budget_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
+
+  <field name="organisation_recipient_region_budget" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="organisation_recipient_region_budget_period_start" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="organisation_recipient_region_budget_period_end" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="organisation_recipient_region_budget_value" type="pdoubles" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="organisation_recipient_region_budget_value_currency" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="organisation_recipient_region_budget_value_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="organisation_recipient_region_budget_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
+
+  <field name="organisation_recipient_country_budget" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="organisation_recipient_country_budget_period_start" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="organisation_recipient_country_budget_period_end" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="organisation_recipient_country_budget_value" type="pdoubles" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="organisation_recipient_country_budget_value_currency" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="organisation_recipient_country_budget_value_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="organisation_recipient_country_budget_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
+
+  <field name="organisation_total_expenditure" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="organisation_total_expenditure_period_start" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="organisation_total_expenditure_period_end" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="organisation_total_expenditure_value" type="pdoubles" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="organisation_total_expenditure_value_currency" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="organisation_total_expenditure_value_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="organisation_total_expenditure_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
+
+  <field name="organisation_document_link" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="organisation_document_link_url" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="organisation_document_link_format" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="organisation_document_link_document_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="organisation_document_link_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
+
+  <!-- Deprecated field copy TODO: Remove-->
   <copyField source="last-updated-datetime" dest="organisation_last_updated_datetime" />
   <copyField source="lang" dest="organisation_default_lang_code" />
   <copyField source="default-currency" dest="organisation_default_currency_code" />
