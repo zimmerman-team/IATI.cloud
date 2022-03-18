@@ -19,12 +19,13 @@ def add_all(data, codelists, currencies, metadata):
     if type(data) is list:
         for activity in data:
             process_activity(activity, codelists, currencies)
+            activity = {**activity, **metadata}
     else:
         process_activity(data, codelists, currencies)
+        data = {**data, **metadata}
 
     # Currency aggregation is done on the whole dataset, rather than on the activity level
     data = currency_aggregation(data)
-    data = data | metadata
     return data
 
 
