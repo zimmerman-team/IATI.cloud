@@ -20,11 +20,13 @@ def retrieve(url, name=None):
     :return: A list of dictionaries
     """
     try:
+        path = f'{settings.HERE_PATH}/{name}.json'
         if not settings.FRESH:
-            path = f'{settings.HERE_PATH}/{name}.json'
             with open(path) as file:
                 return json.load(file)
         metadata_res = requests.get(url).json()
+        with open(path, 'w') as file:
+            json.dump(metadata_res['result'], file)
         return metadata_res['result']
     except requests.exceptions.RequestException as e:
         logging.error(f'Error retrieving {url}, due to {e}')
