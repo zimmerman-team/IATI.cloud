@@ -1,7 +1,7 @@
 def dataset_metadata(metadata):
     """
     Select a subset of the dataset metadata to be stored alongside each
-    activity or organisation entry. The subset is defined in the 
+    activity or organisation entry. The subset is defined in the
     `fields` and `multivalued_fields` lists.
     """
     fields = [
