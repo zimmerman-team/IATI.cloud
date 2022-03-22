@@ -77,7 +77,7 @@ def index_dataset(internal_url, dataset_filetype, codelist, currencies, dataset_
     """
     try:
         core_url = settings.SOLR_ACTIVITY_URL if dataset_filetype == 'activity' else settings.SOLR_ORGANISATION_URL
-        json_path = convert_and_save_xml_to_processed_json(internal_url, dataset_filetype, codelist, currencies, 
+        json_path = convert_and_save_xml_to_processed_json(internal_url, dataset_filetype, codelist, currencies,
                                                            dataset_metadata)
         if json_path:
             result = index_to_core(core_url, json_path)
