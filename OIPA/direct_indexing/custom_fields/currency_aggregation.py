@@ -438,8 +438,8 @@ def process_transaction_usd_agg(transaction_usd_agg, activity_indexes, aggregati
         if not transaction_type:
             continue
         if type(transaction_type) is int:
-            data[index_of_activity][f'{aggregation_fields[types[transaction_type]]}_usd'] = agg[
+            data[index_of_activity][f'{aggregation_fields[types[transaction_type]]}-usd'] = agg[
                 'transaction-value-usd-sum']
             if 'transaction-value-usd-conversion-currency' in data[index_of_activity]:
-                data[index_of_activity][f'{aggregation_fields[types[transaction_type]]}_currency'] = \
+                data[index_of_activity][f'{aggregation_fields[types[transaction_type]]}-currency'] = \
                     data[index_of_activity][TV_USD_CURR]
