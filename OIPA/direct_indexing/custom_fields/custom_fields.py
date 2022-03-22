@@ -2,7 +2,7 @@ from direct_indexing.custom_fields.activity_dates import activity_dates
 from direct_indexing.custom_fields.codelists import add_codelist_fields
 from direct_indexing.custom_fields.currency_aggregation import currency_aggregation
 from direct_indexing.custom_fields.currency_conversion import currency_conversion
-from direct_indexing.custom_fields.dataset_metadata import dataset_metadata
+from direct_indexing.custom_fields.dataset_metadata import add_meta_to_activity, dataset_metadata
 from direct_indexing.custom_fields.policy_marker_combined import policy_marker_combined
 from direct_indexing.custom_fields.title_narrative import title_narrative_first
 
@@ -18,18 +18,15 @@ def add_all(data, codelists, currencies, metadata):
     """
     if type(data) is list:
         for activity in data:
-            process_activity(activity, codelists, currencies)
-            activity = {**activity, **metadata}
+            process_activity(activity, codelists, currencies, metadata)
     else:
-        process_activity(data, codelists, currencies)
-        data = {**data, **metadata}
-
+        process_activity(data, codelists, currencies, metadata)
     # Currency aggregation is done on the whole dataset, rather than on the activity level
     data = currency_aggregation(data)
     return data
 
 
-def process_activity(activity, codelists, currencies):
+def process_activity(activity, codelists, currencies, metadata):
     """
     Add all custom fields as described above.
 
@@ -43,6 +40,7 @@ def process_activity(activity, codelists, currencies):
     activity_dates(activity)
     policy_marker_combined(activity)
     currency_conversion(activity, currencies)
+    add_meta_to_activity(activity, metadata)
 
 
 def get_custom_metadata(metadata):

@@ -26,3 +26,12 @@ def dataset_metadata(metadata):
         if field in metadata:
             custom_metadata[f'dataset.{field}'] = metadata[field][0]
     return custom_metadata
+
+
+def add_meta_to_activity(activity, metadata):
+    """
+    Add the dataset metadata to the activity.
+    """
+    for field in metadata:
+        activity[field] = metadata[field]
+    return activity
