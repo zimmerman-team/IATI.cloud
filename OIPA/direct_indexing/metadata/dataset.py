@@ -39,10 +39,6 @@ def index_datasets_and_dataset_metadata():
     for i, dataset in enumerate(dataset_metadata):
         logging.info(f'--- Submitting dataset {i+1} of {number_of_datasets}')
         direct_indexing_subtask_process_dataset.delay(dataset=dataset)
-
-        if i>100:
-            break
-
     res = '- All Indexing substasks started'
     logging.info(res)
     return res
