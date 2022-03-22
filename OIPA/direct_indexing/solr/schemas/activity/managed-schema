@@ -881,10 +881,10 @@
 
   <!-- Activity aggregated currency data -->
   <field name="activity-aggregation.budget.value" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity-aggregation.budget.value_usd" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.budget.value-usd" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
   <field name="activity-aggregation.budget.currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
   <field name="activity-aggregation.planned-disbursement.value" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity-aggregation.planned-disbursement.value_usd" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.planned-disbursement.value-usd" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
   <field name="activity-aggregation.planned-disbursement.currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
   <field name="activity-aggregation.incoming-funds.value" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
   <field name="activity-aggregation.incoming-funds.value-usd" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
@@ -927,10 +927,10 @@
   <field name="activity-aggregation.incoming-pledge.currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
 
   <field name="child-aggregation.budget.value" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="child-aggregation.budget.value_usd" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.budget.value-usd" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
   <field name="child-aggregation.budget.currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
   <field name="child-aggregation.planned-disbursement.value" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="child-aggregation.planned-disbursement.value_usd" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.planned-disbursement.value-usd" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
   <field name="child-aggregation.planned-disbursement.currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
   <field name="child-aggregation.incoming-funds.value" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
   <field name="child-aggregation.incoming-funds.value-usd" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
@@ -973,10 +973,10 @@
   <field name="child-aggregation.incoming-pledge.currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
 
   <field name="activity-plus-child-aggregation.budget.value" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity-plus-child-aggregation.budget.value_usd" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.budget.value-usd" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
   <field name="activity-plus-child-aggregation.budget.currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
   <field name="activity-plus-child-aggregation.planned-disbursement.value" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity-plus-child-aggregation.planned-disbursement.value_usd" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.planned-disbursement.value-usd" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
   <field name="activity-plus-child-aggregation.planned-disbursement.currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
   <field name="activity-plus-child-aggregation.incoming-funds.value" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
   <field name="activity-plus-child-aggregation.incoming-funds.value-usd" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
@@ -1020,8 +1020,8 @@
   
   <!-- Additional dataset fields -->
   <field name="dataset.id" type="text_general_single" indexed="true" stored="true" />
-  <field name="dataset.metadata_created" type="text_general_single" indexed="true" stored="true" />
-  <field name="dataset.metadata_modified" type="text_general_single" indexed="true" stored="true" />
+  <field name="dataset.metadata_created" type="pdate" indexed="true" stored="true" />
+  <field name="dataset.metadata_modified" type="pdate" indexed="true" stored="true" />
   <field name="dataset.name" type="text_general_single" indexed="true" stored="true" />
   <field name="dataset.extras.iati_version" type="text_general_single" indexed="true" stored="true" />
   <field name="dataset.extras.publisher_iati_id" type="text_general_single" indexed="true" stored="true" />
@@ -1126,15 +1126,15 @@
         <filter class="solr.LowerCaseFilterFactory"/>
     </analyzer>
   </fieldType>
-  <field name="iati_identifier" type="non_case_sensitive" multiValued="false" indexed="true" required="true" stored="true"/>
+  <field name="iati_identifier" type="non_case_sensitive" multiValued="false" indexed="true" required="false" stored="true"/>
 
-  <field name="dataset_iati_version" type="string" multiValued="false" indexed="true" required="true" stored="true"/>
-  <field name="dataset_date_created" type="pdate" multiValued="false" indexed="true" required="true" stored="true"/>
-  <field name="dataset_date_updated" type="pdate" multiValued="false" indexed="true" required="true" stored="true"/>
-  <field name="dataset_iati_id" type="string" multiValued="false" indexed="true" required="true" stored="true"/>
-  <field name="dataset_name" type="string" multiValued="false" indexed="true" required="true" stored="true"/>
-  <field name="dataset_publisher_id" type="string" multiValued="false" indexed="true" required="true" stored="true"/>
-  <field name="dataset_publisher_iati_id" type="string" multiValued="false" indexed="true" required="true" stored="true"/>
+  <field name="dataset_iati_version" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="dataset_date_created" type="pdate" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="dataset_date_updated" type="pdate" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="dataset_iati_id" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="dataset_name" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="dataset_publisher_id" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="dataset_publisher_iati_id" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
 
   <field name="last_updated_datetime" type="string" multiValued="false" indexed="false" required="false" stored="true"/>
   <field name="last_updated_datetime_f" type="pdate" multiValued="false" indexed="true" required="false" stored="true"/>
@@ -2168,7 +2168,7 @@
   <copyField source="planned-disbursement.value-usd.conversion-rate" dest="planned_disbursement_usd_conversion_rate" />
   <copyField source="transaction.value-usd.conversion-rate" dest="transaction_usd_conversion_rate" />
   <copyField source="activity-aggregation.budget.value" dest="activity_aggregation_budget_value" />
-  <copyField source="activity-aggregation.budget.value_usd" dest="activity_aggregation_budget_value_usd" />
+  <copyField source="activity-aggregation.budget.value-usd" dest="activity_aggregation_budget_value_usd" />
   <copyField source="activity-aggregation.budget.currency" dest="activity_aggregation_budget_currency" />
   <copyField source="activity-aggregation.incoming-funds.value" dest="activity_aggregation_incoming_funds_value" />
   <copyField source="activity-aggregation.incoming-funds.value-usd" dest="activity_aggregation_incoming_funds_value_usd" />
@@ -2210,7 +2210,7 @@
   <copyField source="activity-aggregation.incoming-pledge.value-usd" dest="activity_aggregation_incoming_pledge_value_usd" />
   <copyField source="activity-aggregation.incoming-pledge.currency" dest="activity_aggregation_incoming_pledge_currency" />
   <copyField source="child-aggregation.budget.value" dest="child_aggregation_budget_value" />
-  <copyField source="child-aggregation.budget.value_usd" dest="child_aggregation_budget_value_usd" />
+  <copyField source="child-aggregation.budget.value-usd" dest="child_aggregation_budget_value_usd" />
   <copyField source="child-aggregation.budget.currency" dest="child_aggregation_budget_currency" />
   <copyField source="child-aggregation.incoming-funds.value" dest="child_aggregation_incoming_funds_value" />
   <copyField source="child-aggregation.incoming-funds.value-usd" dest="child_aggregation_incoming_funds_value_usd" />
@@ -2252,7 +2252,7 @@
   <copyField source="child-aggregation.incoming-pledge.value-usd" dest="child_aggregation_incoming_pledge_value_usd" />
   <copyField source="child-aggregation.incoming-pledge.currency" dest="child_aggregation_incoming_pledge_currency" />
   <copyField source="activity-plus-child-aggregation.budget.value" dest="activity_plus_child_aggregation_budget_value" />
-  <copyField source="activity-plus-child-aggregation.budget.value_usd" dest="activity_plus_child_aggregation_budget_value_usd" />
+  <copyField source="activity-plus-child-aggregation.budget.value-usd" dest="activity_plus_child_aggregation_budget_value_usd" />
   <copyField source="activity-plus-child-aggregation.budget.currency" dest="activity_plus_child_aggregation_budget_currency" />
   <copyField source="activity-plus-child-aggregation.incoming-funds.value" dest="activity_plus_child_aggregation_incoming_funds_value" />
   <copyField source="activity-plus-child-aggregation.incoming-funds.value-usd" dest="activity_plus_child_aggregation_incoming_funds_value_usd" />
@@ -2343,13 +2343,13 @@
   <copyField source="default-aid-type.name" dest="default_aid_type_category_name" />
   <copyField source="budget.value-usd.conversion-rate" dest="budget_usd_conversion_rate" />
   <copyField source="activity-aggregation.planned-disbursement.value" dest="activity_aggregation_commitment_currency" />
-  <copyField source="activity-aggregation.planned-disbursement.value_usd" dest="activity_aggregation_commitment_value" />
+  <copyField source="activity-aggregation.planned-disbursement.value-usd" dest="activity_aggregation_commitment_value" />
   <copyField source="activity-aggregation.planned-disbursement.currency" dest="activity_aggregation_commitment_value_usd" />
   <copyField source="child-aggregation.planned-disbursement.value" dest="activity_plus_child_aggregation_commitment_currency" />
-  <copyField source="child-aggregation.planned-disbursement.value_usd" dest="activity_plus_child_aggregation_commitment_value" />
+  <copyField source="child-aggregation.planned-disbursement.value-usd" dest="activity_plus_child_aggregation_commitment_value" />
   <copyField source="child-aggregation.planned-disbursement.currency" dest="activity_plus_child_aggregation_commitment_value_usd" />
   <copyField source="activity-plus-child-aggregation.planned-disbursement.value" dest="child_aggregation_commitment_currency" />
-  <copyField source="activity-plus-child-aggregation.planned-disbursement.value_usd" dest="child_aggregation_commitment_value" />
+  <copyField source="activity-plus-child-aggregation.planned-disbursement.value-usd" dest="child_aggregation_commitment_value" />
   <copyField source="activity-plus-child-aggregation.planned-disbursement.currency" dest="child_aggregation_commitment_value_usd" />
   <copyField source="activity-date.start-planned" dest="activity_date_start_planned_f" />
   <copyField source="activity-date.start-actual" dest="activity_date_start_actual_f" />
