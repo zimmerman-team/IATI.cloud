@@ -2244,15 +2244,6 @@
   <copyField source="default-aid-type.code" dest="default_aid_type" />
   <copyField source="default-aid-type.vocabulary" dest="default_aid_type_category_code" />
   <copyField source="default-aid-type.name" dest="default_aid_type_category_name" />
-  <copyField source="activity-aggregation.planned-disbursement.value" dest="activity_aggregation_commitment_currency" />
-  <copyField source="activity-aggregation.planned-disbursement.value-usd" dest="activity_aggregation_commitment_value" />
-  <copyField source="activity-aggregation.planned-disbursement.currency" dest="activity_aggregation_commitment_value_usd" />
-  <copyField source="child-aggregation.planned-disbursement.value" dest="activity_plus_child_aggregation_commitment_currency" />
-  <copyField source="child-aggregation.planned-disbursement.value-usd" dest="activity_plus_child_aggregation_commitment_value" />
-  <copyField source="child-aggregation.planned-disbursement.currency" dest="activity_plus_child_aggregation_commitment_value_usd" />
-  <copyField source="activity-plus-child-aggregation.planned-disbursement.value" dest="child_aggregation_commitment_currency" />
-  <copyField source="activity-plus-child-aggregation.planned-disbursement.value-usd" dest="child_aggregation_commitment_value" />
-  <copyField source="activity-plus-child-aggregation.planned-disbursement.currency" dest="child_aggregation_commitment_value_usd" />
   <copyField source="activity-date.start-planned" dest="activity_date_start_planned_f" />
   <copyField source="activity-date.start-actual" dest="activity_date_start_actual_f" />
   <copyField source="activity-date.end-planned" dest="activity_date_end_planned_f" />
@@ -2261,7 +2252,6 @@
   <copyField source="activity-date.common.start" dest="activity_date_start_common" />
   <copyField source="activity-date.common.end" dest="activity_date_end_common_f" />
   <copyField source="activity-date.common.start" dest="activity_date_start_common_f" />
-  <copyField source="planned-disbursement.value-usd.conversion-rate" dest="planned_disbursement_usd_conversion_rate" />
   <copyField source="result.indicator.baseline.document-link.title.narrative" dest="result_indicator_baseline_document_link_title" />
   <copyField source="result.indicator.baseline.document-link.description.narrative" dest="result_indicator_baseline_document_link_description" />
   <copyField source="result.indicator.period.actual.dimension.name" dest="result_indicator_period_actual_dimmension_name" />
