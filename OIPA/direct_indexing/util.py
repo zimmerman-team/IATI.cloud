@@ -1,4 +1,5 @@
 import logging
+import os
 import re
 import subprocess
 
@@ -37,6 +38,9 @@ def index_to_core(url, json_path):
             message_index = re.search(r'\b(msg)\b', solr_out).start()+5  # +5 to get past the 'msg:'
             solr_out = solr_out[message_index:]
             result = solr_out[:re.search(r'\n', solr_out).start()-1]  # stop at newline excluding the ,
+            # TODO: os.remove(json_path) for failure as well. Leaving it in for testing for now
+        else:
+            os.remove(json_path)  # On success, remove the json file
         return result
     except subprocess.CalledProcessError as e:
         result = f'Failed to index: \n {e}'
