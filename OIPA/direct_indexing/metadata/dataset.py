@@ -11,8 +11,11 @@ from direct_indexing.processing import dataset as dataset_processing
 
 @shared_task
 def direct_indexing_subtask_process_dataset(dataset):
-    result = dataset_processing.fun(dataset)
-    return result
+    dataset_indexing_result, result = dataset_processing.fun(dataset)
+    if result == 'Successfully indexed' and dataset_indexing_result == 'Successfully indexed':
+        return result
+    else:
+        raise Exception(f'Error indexing dataset {dataset["id"]}\nDataset metadata:\n{result}\nDataset indexing:\n{dataset_indexing_result}')  # NOQA
 
 
 def index_datasets_and_dataset_metadata():
