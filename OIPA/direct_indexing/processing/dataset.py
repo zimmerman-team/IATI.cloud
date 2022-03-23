@@ -55,14 +55,15 @@ def fun(dataset):
     # Index the relevant datasets,
     # these are activity files of a valid version and that have been successfully validated (not critical)
     if validation_status == 'Valid':
-        indexed = index_dataset(dataset_filepath, dataset_filetype, codelist, currencies, dataset_metadata)
+        indexed, dataset_indexing_result = index_dataset(dataset_filepath, dataset_filetype, codelist, currencies, dataset_metadata)
     # Add an indexing status to the dataset metadata.
     dataset['iati_cloud_indexed'] = indexed
 
     # Index the dataset metadata
     logging.info('-- Save the dataset metadata')
     result = index(f'metadata/{dataset["name"]}', dataset, settings.SOLR_DATASET_URL)
-    return result
+
+    return dataset_indexing_result, result
 
 
 def index_dataset(internal_url, dataset_filetype, codelist, currencies, dataset_metadata):
@@ -83,12 +84,12 @@ def index_dataset(internal_url, dataset_filetype, codelist, currencies, dataset_
             result = index_to_core(core_url, json_path)
             logging.debug(f'result of indexing {result}')
             if result == 'Successfully indexed':
-                return True
-            return False
-        return False
+                return True, result
+            return False, result
+        return False, "No JSON Path found"
     except Exception as e:  # NOQA
         logging.warning(f'Exception occurred while indexing {dataset_filetype} dataset:\n{internal_url}\n{e}\nTherefore the dataset will not be indexed.')  # NOQA
-        return False
+        return False, str(e)
 
 
 def convert_and_save_xml_to_processed_json(filepath, filetype, codelist, currencies, dataset_metadata):
