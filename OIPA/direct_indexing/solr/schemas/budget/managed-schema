@@ -2046,6 +2046,7 @@
   <copyField source="activity-plus-child-aggregation.incoming-pledge.currency" dest="activity_plus_child_aggregation_incoming_pledge_currency" />
 
   <!-- missing fields -->
+  <copyField source="budget-not-provided" dest="budget_not_provided" />
   <copyField source="title.narrative" dest="title_narrative" />
   <copyField source="description.narrative" dest="description_narrative" />
   <copyField source="participating-org.narrative" dest="participating_org_narrative" />
