@@ -1,3 +1,5 @@
+# This file is responsible for installing mongodb on the correct version required for this project.
+
 if [[ $(systemctl list-units --all -t service --full --no-legend "mongod.service" | sed 's/^\s*//g' | cut -f1 -d' ') == mongod.service ]];
 then 
     echo "MongoDB is already installed..."
@@ -36,4 +38,3 @@ echo "Restarting MongoDB"
 sudo service mongod stop  # stop/start to ensure that the config is updated
 sudo service mongod start
 
-echo "Installation Complete"
