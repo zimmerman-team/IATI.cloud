@@ -1276,21 +1276,18 @@
             <xsl:if
                     test="ancestor::response/descendant::str[@name='reporting_org_secondary_reporter']">
                 <xsl:value-of select="$delim"/>
-                <!--<xsl:value-of select="$quote"/>-->
             </xsl:if>
 
             <xsl:apply-templates select="ancestor::doc/descendant::arr[@name='reporting_org_narrative']/str"/>
 
             <xsl:if
                     test="ancestor::response/descendant::arr[@name='reporting_org_narrative']/str">
-                <!--<xsl:value-of select="$deliminquote"/>-->
                 <xsl:value-of select="$delim"/>
             </xsl:if>
 
             <xsl:apply-templates select="ancestor::doc/descendant::arr[@name='title_narrative']/str"/>
             <xsl:if
                     test="ancestor::response/descendant::arr[@name='title_narrative']/str">
-                <!--<xsl:value-of select="$deliminquote"/>-->
                 <xsl:value-of select="$delim"/>
 
             </xsl:if>
@@ -1298,7 +1295,6 @@
 
             <xsl:if
                     test="ancestor::response/descendant::arr[@name='description_narrative']/str">
-                <!-- <xsl:value-of select="$deliminquote"/>-->
                 <xsl:value-of select="$delim"/>
             </xsl:if>
 
@@ -1306,7 +1302,6 @@
 
             <xsl:if
                     test="ancestor::response/descendant::arr[@name='participating_org_ref']/str">
-                <!--<xsl:value-of select="$deliminquote"/>-->
                 <xsl:value-of select="$delim"/>
             </xsl:if>
 
@@ -1314,7 +1309,6 @@
 
             <xsl:if
                     test="ancestor::response/descendant::arr[@name='participating_org_type']/str">
-                <!--<xsl:value-of select="$deliminquote"/>-->
                 <xsl:value-of select="$delim"/>
             </xsl:if>
 
@@ -1322,7 +1316,6 @@
 
             <xsl:if
                     test="ancestor::response/descendant::arr[@name='participating_org_role']/str">
-                <!--<xsl:value-of select="$deliminquote"/>-->
                 <xsl:value-of select="$delim"/>
             </xsl:if>
 
