@@ -52,6 +52,7 @@ def fun(dataset):
     # Add the validation status to the dataset
     dataset['dataset_valid'] = validation_status
     indexed = False
+    dataset_indexing_result = "Dataset invalid"
     # Index the relevant datasets,
     # these are activity files of a valid version and that have been successfully validated (not critical)
     if validation_status == 'Valid':
@@ -81,7 +82,7 @@ def index_dataset(internal_url, dataset_filetype, codelist, currencies, dataset_
         json_path = convert_and_save_xml_to_processed_json(internal_url, dataset_filetype, codelist, currencies,
                                                            dataset_metadata)
         if json_path:
-            result = index_to_core(core_url, json_path)
+            result = index_to_core(core_url, json_path, remove=True)
             logging.debug(f'result of indexing {result}')
             if result == 'Successfully indexed':
                 return True, result
@@ -177,4 +178,4 @@ def index_subtypes(json_path, subtypes):
             json.dump(subtypes[subtype], json_file)
 
         solr_url = activity_subtypes.AVAILABLE_SUBTYPES[subtype]
-        index_to_core(solr_url, subtype_json_path)
+        index_to_core(solr_url, subtype_json_path, remove=True)
