@@ -23,7 +23,7 @@ def clear_core(core_url):
         raise
 
 
-def index_to_core(url, json_path):
+def index_to_core(url, json_path, remove=False):
     """
     Call the Solr post tool to index the json file into the Solr core.
 
@@ -39,8 +39,10 @@ def index_to_core(url, json_path):
             solr_out = solr_out[message_index:]
             result = solr_out[:re.search(r'\n', solr_out).start()-1]  # stop at newline excluding the ,
             # TODO: os.remove(json_path) for failure as well. Leaving it in for testing for now
+            logging.info("ERROR DATASET PATH: " + json_path)
         else:
-            os.remove(json_path)  # On success, remove the json file
+            if remove:
+                os.remove(json_path)  # On success, remove the json file
         return result
     except subprocess.CalledProcessError as e:
         result = f'Failed to index: \n {e}'

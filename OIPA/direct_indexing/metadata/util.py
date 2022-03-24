@@ -47,7 +47,7 @@ def index(name, metadata, url):
     with open(path, 'w') as json_file:
         json.dump(metadata, json_file)
 
-    result = index_to_core(url, path)
+    result = index_to_core(url, path)  # Do not remove the metadata file by using default remove=False
     return result
 
 
