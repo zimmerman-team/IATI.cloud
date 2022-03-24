@@ -856,42 +856,35 @@
             <xsl:if
                     test="ancestor::response/descendant::str[@name='reporting-org.secondary-reporter']">
                 <xsl:value-of select="$delim"/>
-                <!--<xsl:value-of select="$quote"/>-->
             </xsl:if>
             <xsl:apply-templates select="ancestor::doc/descendant::arr[@name='reporting-org.narrative']/str"/>
             <xsl:if
                     test="ancestor::response/descendant::arr[@name='reporting-org.narrative']/str">
-                <!--<xsl:value-of select="$deliminquote"/>-->
                 <xsl:value-of select="$delim"/>
             </xsl:if>
             <xsl:apply-templates select="ancestor::doc/descendant::arr[@name='title.narrative']/str"/>
             <xsl:if
                     test="ancestor::response/descendant::arr[@name='title.narrative']/str">
-                <!--<xsl:value-of select="$deliminquote"/>-->
                 <xsl:value-of select="$delim"/>
             </xsl:if>
             <xsl:apply-templates select="ancestor::doc/descendant::arr[@name='description.narrative']/str"/>
             <xsl:if
                     test="ancestor::response/descendant::arr[@name='description.narrative']/str">
-                <!-- <xsl:value-of select="$deliminquote"/>-->
                 <xsl:value-of select="$delim"/>
             </xsl:if>
             <xsl:apply-templates select="ancestor::doc/descendant::arr[@name='participating-org.ref']/str"/>
             <xsl:if
                     test="ancestor::response/descendant::arr[@name='participating-org.ref']/str">
-                <!--<xsl:value-of select="$deliminquote"/>-->
                 <xsl:value-of select="$delim"/>
             </xsl:if>
             <xsl:apply-templates select="ancestor::doc/descendant::arr[@name='participating-org.type']/str"/>
             <xsl:if
                     test="ancestor::response/descendant::arr[@name='participating-org.type']/str">
-                <!--<xsl:value-of select="$deliminquote"/>-->
                 <xsl:value-of select="$delim"/>
             </xsl:if>
             <xsl:apply-templates select="ancestor::doc/descendant::arr[@name='participating-org.role']/str"/>
             <xsl:if
                     test="ancestor::response/descendant::arr[@name='participating-org.role']/str">
-                <!--<xsl:value-of select="$deliminquote"/>-->
                 <xsl:value-of select="$delim"/>
             </xsl:if>
             <xsl:apply-templates select="ancestor::doc/descendant::arr[@name='participating-org.narrative']/str"/>
