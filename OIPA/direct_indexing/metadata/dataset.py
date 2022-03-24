@@ -17,7 +17,7 @@ def direct_indexing_subtask_process_dataset(dataset):
     elif dataset_indexing_result == 'Dataset invalid':
         return dataset_indexing_result
     else:
-        raise Exception(f'Error indexing dataset {dataset["id"]}\nDataset metadata:\n{result}\nDataset indexing:\n{str(dataset_indexing_result)}')  # NOQA
+        raise DatasetException(message=f'Error indexing dataset {dataset["id"]}\nDataset metadata:\n{result}\nDataset indexing:\n{str(dataset_indexing_result)}')  # NOQA
 
 
 def index_datasets_and_dataset_metadata():
@@ -59,3 +59,8 @@ def load_codelists():
     except requests.exceptions.RequestException:
         logging.error('Codelists not available')
         raise
+
+
+class DatasetException(Exception):
+    def __init__(self, message):
+        super().__init__(message)
