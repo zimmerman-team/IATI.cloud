@@ -9,6 +9,7 @@ sudo bash install_postgres.sh
 sudo bash install_python.sh
 sudo bash install_rabbitmq.sh
 sudo bash install_solr.sh
+sudo bash install_nginx.sh
 
 echo "Dependencies installed"
 echo "------------------------------------------------------"
