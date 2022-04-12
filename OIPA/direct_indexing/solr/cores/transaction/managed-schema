@@ -1030,6 +1030,8 @@
     </analyzer>
   </fieldType>
   <field name="iati_identifier" type="non_case_sensitive" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="title_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="title_narrative" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
 
   <field name="dataset_iati_version" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
   <field name="dataset_date_created" type="pdate" multiValued="false" indexed="true" required="false" stored="true"/>
@@ -1043,7 +1045,7 @@
   <field name="last_updated_datetime_f" type="pdate" multiValued="false" indexed="true" required="false" stored="true"/>
   <field name="default_lang" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
   <field name="default_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-  <!--<field name="humanitarian" type="string" multiValued="false" indexed="true" required="false" stored="true"/>-->
+  <field name="default_humanitarian" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
   <!-- <field name="hierarchy" type="string" multiValued="false" indexed="true" required="false" stored="true"/> -->
   <field name="linked_data_uri" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
 
@@ -1051,13 +1053,13 @@
   <field name="reporting_org_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
   <field name="reporting_org_ref" type="non_case_sensitive" multiValued="false" indexed="true" required="false" stored="true"/>
   <field name="reporting_org_type_code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="reporting_org_type" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
   <field name="reporting_org_type_name" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
   <field name="reporting_org_secondary_reporter" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
   <field name="reporting_org_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
 
   <field name="title" type="text_general" indexed="false" required="false" stored="true"/>
   <field name="title_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
-  <field name="title_narrative" type="text_general" indexed="true" required="false" stored="true"/>
   <field name="title_narrative_first" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
   <field name="title_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="title_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
@@ -1065,6 +1067,7 @@
   <field name="description" type="text_general" indexed="false" required="false" stored="true"/>
   <field name="description_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
   <field name="description_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="activity_description_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="description_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="description_narrative" type="text_general" indexed="true" required="false" stored="true"/>
   <field name="description_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
@@ -1094,7 +1097,8 @@
   <field name="activity_date" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
   <field name="activity_date_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
   <field name="activity_date_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="activity_date_iso_date" type="pdate" multiValued="true" indexed="false" required="false" stored="true"/>
+  <field name="activity_date_iso_date" type="string" multiValued="true" indexed="false" required="false" stored="true"/>
+  <field name="activity_date_iso_date_f" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="activity_date_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
   <field name="activity_date_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="activity_date_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
@@ -1145,20 +1149,26 @@
   <field name="recipient_country" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
   <field name="recipient_country_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
   <field name="recipient_country_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="activity_recipient_country_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="recipient_country_name" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="activity_recipient_country_name" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="recipient_country_percentage" type="pdoubles" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="recipient_country_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
   <field name="recipient_country_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="recipient_country_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
+  <field name="transaction_recipient_country_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
 
   <field name="recipient_region" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
   <field name="recipient_region_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
   <field name="recipient_region_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="activity_recipient_region_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="recipient_region_name" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="recipient_region_vocabulary" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="recipient_region_vocabulary_uri" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="transaction_recipient_region_vocabulary_uri" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="recipient_region_percentage" type="pdoubles" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="recipient_region_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
+  <field name="activity_recipient_region_name" type="string" indexed="true" required="false" stored="true"/>
   <field name="recipient_region_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="recipient_region_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
 
@@ -1182,6 +1192,7 @@
   <field name="location_description_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
 
   <field name="location_activity_description_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
+  <field name="activity_description_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
   <field name="location_activity_description_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="location_activity_description_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
 
@@ -1192,9 +1203,13 @@
   <field name="sector" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
   <field name="sector_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
   <field name="sector_vocabulary" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="activity_sector_vocabulary" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="sector_vocabulary_uri" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="sector_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="activity_sector_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="sector_percentage" type="pdoubles" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="activity_sector_percentage" type="pdoubles" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="transaction_sector_percentage" type="pdoubles" multiValued="true" indexed="true" required="false" stored="true"/>
 
   <field name="sector_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
   <field name="sector_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
@@ -1312,7 +1327,8 @@
   <field name="transaction_ref" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="transaction_humanitarian" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="transaction_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="transaction_date_iso_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="transaction_date_iso_date" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="transaction_date_iso_date_f" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="transaction_description_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="transaction_description_narrative" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
 
@@ -1765,17 +1781,21 @@
 
   <copyField source="last-updated-datetime" dest="last_updated_datetime" />
   <copyField source="lang" dest="default_lang" />
+  <copyField source="humanitarian" dest="default_humanitarian" />
   <copyField source="default-currency" dest="default_currency" />
   <copyField source="linked-data-uri" dest="linked_data_uri" />
   <copyField source="iati-identifier" dest="iati_identifier" />
   <copyField source="reporting-org.ref" dest="reporting_org_ref" />
   <copyField source="reporting-org.type" dest="reporting_org_type_code" />
+  <copyField source="reporting-org.type" dest="reporting_org_type" />
   <copyField source="reporting-org.secondary-reporter" dest="reporting_org_secondary_reporter" />
   <copyField source="reporting-org.narrative" dest="reporting_org_narrative" />
   <copyField source="title.narrative" dest="title_narrative_text" />
   <copyField source="title.narrative.lang" dest="title_narrative_lang" />
   <copyField source="description.type" dest="description_type" />
+  <copyField source="description.type" dest="activity_description_type" />
   <copyField source="description.narrative" dest="description_narrative_text" />
+  <copyField source="description.narrative" dest="activity_description_narrative" />
   <copyField source="description.narrative.lang" dest="description_narrative_lang" />
   <copyField source="participating-org.ref" dest="participating_org_ref" />
   <copyField source="participating-org.type" dest="participating_org_type" />
@@ -1790,6 +1810,7 @@
   <copyField source="activity-status.code" dest="activity_status_code" />
   <copyField source="activity-date.type" dest="activity_date_type" />
   <copyField source="activity-date.iso-date" dest="activity_date_iso_date" />
+  <copyField source="activity-date.iso-date" dest="activity_date_iso_date_f" />
   <copyField source="activity-date.narrative" dest="activity_date_narrative_text" />
   <copyField source="activity-date.narrative.lang" dest="activity_date_narrative_lang" />
   <copyField source="contact-info.type" dest="contact_info_type" />
@@ -1808,14 +1829,19 @@
   <copyField source="contact-info.mailing-address.narrative.lang" dest="contact_info_mailing_address_narrative_lang" />
   <copyField source="activity-scope.code" dest="activity_scope_code" />
   <copyField source="recipient-country.code" dest="recipient_country_code" />
+  <copyField source="recipient-country.code" dest="activity_recipient_country_code" />
   <copyField source="recipient-country.percentage" dest="recipient_country_percentage" />
   <copyField source="recipient-country.narrative" dest="recipient_country_narrative_text" />
+  <copyField source="recipient-country.narrative" dest="transaction_recipient_country_narrative" />
   <copyField source="recipient-country.narrative.lang" dest="recipient_country_narrative_lang" />
   <copyField source="recipient-region.code" dest="recipient_region_code" />
+  <copyField source="recipient-region.code" dest="activity_recipient_region_code" />
   <copyField source="recipient-region.vocabulary" dest="recipient_region_vocabulary" />
   <copyField source="recipient-region.vocabulary-uri" dest="recipient_region_vocabulary_uri" />
+  <copyField source="recipient-region.vocabulary-uri" dest="transaction_recipient_region_vocabulary_uri" />
   <copyField source="recipient-region.percentage" dest="recipient_region_percentage" />
   <copyField source="recipient-region.narrative" dest="recipient_region_narrative_text" />
+  <copyField source="recipient-region.narrative" dest="activity_recipient_region_name" />
   <copyField source="recipient-region.narrative.lang" dest="recipient_region_narrative_lang" />
   <copyField source="location.ref" dest="location_ref" />
   <copyField source="location.location-reach.code" dest="location_reach_code" />
@@ -1835,9 +1861,12 @@
   <copyField source="location.location-class.code" dest="location_class_code" />
   <copyField source="location.feature-designation.code" dest="location_feature_designation_code" />
   <copyField source="sector.vocabulary" dest="sector_vocabulary" />
+  <copyField source="sector.vocabulary" dest="activity_sector_vocabulary" />
   <copyField source="sector.vocabulary-uri" dest="sector_vocabulary_uri" />
   <copyField source="sector.code" dest="sector_code" />
+  <copyField source="sector.code" dest="activity_sector_code" />
   <copyField source="sector.percentage" dest="sector_percentage" />
+  <copyField source="sector.percentage" dest="activity_sector_percentage" />
   <copyField source="sector.narrative" dest="sector_narrative_text" />
   <copyField source="sector.narrative.lang" dest="sector_narrative_lang" />
   <copyField source="tag.code" dest="tag_code" />
@@ -1889,6 +1918,7 @@
   <copyField source="transaction.humanitarian" dest="transaction_humanitarian" />
   <copyField source="transaction.transaction-type.code" dest="transaction_type" />
   <copyField source="transaction.transaction-date.iso-date" dest="transaction_date_iso_date" />
+  <copyField source="transaction.transaction-date.iso-date" dest="transaction_date_iso_date_f" />
   <copyField source="transaction.value" dest="transaction_value" />
   <copyField source="transaction.value.currency" dest="transaction_value_currency" />
   <copyField source="transaction.value.value-date" dest="transaction_value_date" />
@@ -1960,6 +1990,7 @@
   <copyField source="fss.forecast.value-date" dest="fss_forecast_value_date" />
   <copyField source="reporting-org.type.name" dest="reporting_org_type_name" />
   <copyField source="recipient-country.name" dest="recipient_country_name" />
+  <copyField source="recipient-country.name" dest="activity_recipient_country_name" />
   <copyField source="recipient-region.name" dest="recipient_region_name" />
   <copyField source="transaction.receiver-org.type.name" dest="transaction_receiver_org_type_name" />
   <copyField source="title.narrative.first" dest="title_narrative_first" />
@@ -2125,7 +2156,6 @@
   <copyField source="policy-marker.narrative" dest="policy_marker_narrative" />
   <copyField source="planned-disbursement.provider-org.narrative" dest="planned_disbursement_provider_org_narrative" />
   <copyField source="planned-disbursement.receiver-org.narrative" dest="planned_disbursement_receiver_org_narrative" />
-  <copyField source="transaction.description.narrative" dest="transaction_description_narrative" />
   <copyField source="transaction.provider-org.narrative" dest="transaction_provider_org_narrative" />
   <copyField source="transaction.receiver-org.narrative" dest="transaction_receiver_org_narrative" />
   <copyField source="document-link.title.narrative" dest="document_link_title_narrative" />
@@ -2142,11 +2172,17 @@
   <copyField source="activity-date.common.start" dest="activity_date_start_common" />
   <copyField source="activity-date.common.end" dest="activity_date_end_common_f" />
   <copyField source="activity-date.common.start" dest="activity_date_start_common_f" />
-  <copyField source="transaction.value-usd.conversion-rate" dest="transaction_usd_conversion_rate" />
   <copyField source="last-updated-datetime" dest="last_updated_datetime_f" />
   <copyField source="dataset.metadata_created" dest="dataset_date_created" />
   <copyField source="dataset.id" dest="dataset_iati_id" />
   <copyField source="dataset.name" dest="dataset_name" />
   <copyField source="dataset.extras.publisher_iati_id" dest="dataset_publisher_iati_id" />
   <copyField source="dataset.extras.publisher" dest="dataset_publisher_id" />
+
+  <copyField source="title.narrative.lang" dest="title_lang" />
+  <copyField source="dataset.extras.iati_version" dest="dataset_iati_version" />
+  <copyField source="dataset.resources.url" dest="transaction_imf_link" />
+  <copyField source="transaction.receiver-org.type" dest="transaction_receiver_org_type" />
+  <copyField source="sector_percentage" dest="transaction_sector_percentage" />
+
 </schema>

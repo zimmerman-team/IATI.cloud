@@ -1011,7 +1011,7 @@
   <field name="last_updated_datetime_f" type="pdate" multiValued="false" indexed="true" required="false" stored="true"/>
   <field name="default_lang" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
   <field name="default_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-  <!--<field name="humanitarian" type="string" multiValued="false" indexed="true" required="false" stored="true"/>-->
+  <field name="default_humanitarian" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
   <!-- <field name="hierarchy" type="string" multiValued="false" indexed="true" required="false" stored="true"/> -->
   <field name="linked_data_uri" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
 
@@ -1234,10 +1234,13 @@
   <field name="budget_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
   <field name="budget_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="budget_status" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="budget_period_start_iso_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="budget_period_end_iso_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="budget_period_start_iso_date" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="budget_period_end_iso_date" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="budget_period_start_iso_date_f" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="budget_period_end_iso_date_f" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="budget_value_currency" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="budget_value_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="budget_value_date" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="budget_value_date_f" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="budget_value" type="pdoubles" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="budget_value_usd" type="pdoubles" multiValued="true" indexed="false" required="false" stored="true"/>
   <field name="budget_value_usd_sum" type="pdoubles" multiValued="false" indexed="false" required="false" stored="true"/>
@@ -1841,9 +1844,12 @@
   <copyField source="budget.status" dest="budget_status" />
   <copyField source="budget.period-start.iso-date" dest="budget_period_start_iso_date" />
   <copyField source="budget.period-end.iso-date" dest="budget_period_end_iso_date" />
+  <copyField source="budget.period-start.iso-date" dest="budget_period_start_iso_date_f" />
+  <copyField source="budget.period-end.iso-date" dest="budget_period_end_iso_date_f" />
   <copyField source="budget.value" dest="budget_value" />
   <copyField source="budget.value.currency" dest="budget_value_currency" />
   <copyField source="budget.value.value-date" dest="budget_value_date" />
+  <copyField source="budget.value.value-date" dest="budget_value_date_f" />
   <copyField source="planned-disbursement.type" dest="planned_disbursement_type" />
   <copyField source="planned-disbursement.period-start.iso-date" dest="planned_disbursement_period_start_iso_date" />
   <copyField source="planned-disbursement.period-end.iso-date" dest="planned_disbursement_period_end_iso_date" />
@@ -2089,4 +2095,7 @@
   <copyField source="dataset.name" dest="dataset_name" />
   <copyField source="dataset.extras.publisher_iati_id" dest="dataset_publisher_iati_id" />
   <copyField source="dataset.extras.publisher" dest="dataset_publisher_id" />
+  <copyField source="humanitarian" dest="default_humanitarian" />
+  <copyField source="dataset.extras.iati_version" dest="dataset_iati_version" />
+  <copyField source="dataset.resources.url" dest="budget_imf_link" />
 </schema>

@@ -1098,6 +1098,7 @@
   <field name="reporting_org_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
   <field name="reporting_org_ref" type="non_case_sensitive" multiValued="false" indexed="true" required="false" stored="true"/>
   <field name="reporting_org_type_code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="reporting_org_type" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
   <field name="reporting_org_type_name" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
   <field name="reporting_org_secondary_reporter" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
   <field name="reporting_org_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
@@ -1447,13 +1448,17 @@
   <field name="result" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
   <field name="result_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
   <field name="result_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="result_type_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="result_type_name" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="result_aggregation_status" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
 
   <field name="result_title_narrative" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="result_title" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="result_title_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="result_title_narrative_text" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
 
   <field name="result_description_narrative" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="result_description" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="result_description_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="result_description_narrative_text" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
 
@@ -1951,8 +1956,11 @@
   <copyField source="conditions.condition.narrative" dest="conditions_condition_narrative_text" />
   <copyField source="conditions.condition.narrative.lang" dest="conditions_condition_narrative_lang" />
   <copyField source="result.type" dest="result_type" />
+  <copyField source="result.type" dest="result_type_code" />
+  <copyField source="result.type" dest="result_type_name" />
   <copyField source="result.aggregation-status" dest="result_aggregation_status" />
   <copyField source="result.title.narrative" dest="result_title_narrative_text" />
+  <copyField source="result.title.narrative" dest="result_title" />
   <copyField source="result.title.narrative.lang" dest="result_title_narrative_lang" />
   <copyField source="result.description.narrative" dest="result_description_narrative_text" />
   <copyField source="result.description.narrative.lang" dest="result_description_narrative_lang" />
@@ -1965,9 +1973,11 @@
   <copyField source="result.document-link.category.code" dest="result_document_link_category_code" />
   <copyField source="result.document-link.language.code" dest="result_document_link_language_code" />
   <copyField source="result.document-link.document-date.iso-date" dest="result_document_link_document_date_iso_date" />
+  <copyField source="result.reference.code" dest="result_reference" />
   <copyField source="result.reference.code" dest="result_reference_code" />
   <copyField source="result.reference.vocabulary" dest="result_reference_vocabulary" />
   <copyField source="result.reference.vocabulary-uri" dest="result_reference_vocabulary_uri" />
+  <copyField source="result.indicator.measure" dest="result_indicator" />
   <copyField source="result.indicator.measure" dest="result_indicator_measure" />
   <copyField source="result.indicator.ascending" dest="result_indicator_ascending" />
   <copyField source="result.indicator.aggregation-status" dest="result_indicator_aggregation_status" />
@@ -1985,6 +1995,7 @@
   <copyField source="result.indicator.document-link.language.code" dest="result_indicator_document_link_language_code" />
   <copyField source="result.indicator.document-link.document-date.iso-date" dest="result_indicator_document_link_document_date_iso_date" />
   <copyField source="result.indicator.reference.vocabulary" dest="result_indicator_reference_vocabulary" />
+  <copyField source="result.indicator.reference.code" dest="result_indicator_reference" />
   <copyField source="result.indicator.reference.code" dest="result_indicator_reference_code" />
   <copyField source="result.indicator.reference.indicator-uri" dest="result_indicator_reference_indicator_uri" />
   <copyField source="result.indicator.baseline.iso-date" dest="result_indicator_baseline_iso_date" />
@@ -2061,6 +2072,7 @@
   <copyField source="fss.forecast.currency" dest="fss_forecast_currency" />
   <copyField source="fss.forecast.value-date" dest="fss_forecast_value_date" />
   <copyField source="reporting-org.type.name" dest="reporting_org_type_name" />
+  <copyField source="reporting-org.type.name" dest="reporting_org_type" />
   <copyField source="recipient-country.name" dest="recipient_country_name" />
   <copyField source="recipient-region.name" dest="recipient_region_name" />
   <copyField source="title.narrative.first" dest="title_narrative_first" />
@@ -2229,6 +2241,7 @@
   <copyField source="conditions.condition.narrative" dest="conditions_condition_narrative" />
   <copyField source="result.title.narrative" dest="result_title_narrative" />
   <copyField source="result.description.narrative" dest="result_description_narrative" />
+  <copyField source="result.description.narrative" dest="result_description" />
   <copyField source="result.document-link.title.narrative" dest="result_document_link_title_narrative" />
   <copyField source="result.document-link.description.narrative" dest="result_document_link_description_narrative" />
   <copyField source="result.indicator.title.narrative" dest="result_indicator_title_narrative" />
@@ -2266,4 +2279,5 @@
   <copyField source="dataset.name" dest="dataset_name" />
   <copyField source="dataset.extras.publisher_iati_id" dest="dataset_publisher_iati_id" />
   <copyField source="dataset.extras.publisher" dest="dataset_publisher_id" />
+  <copyField source="result.document-link.url" dest="result_document_link" />
 </schema>
