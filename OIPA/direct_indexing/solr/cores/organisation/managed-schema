@@ -749,6 +749,8 @@
   <copyField source="organisation-identifier" dest="organisation_identifier" />
   <copyField source="name.narrative" dest="organisation_name" />
   <copyField source="name.narrative.lang" dest="organisation_name_lang" />
+  <copyField source="name.narrative.lang" dest="organisation_name_narrative_lang" />
+  <copyField source="name.narrative" dest="organisation_name_narrative" />
   <copyField source="reporting-org.type" dest="organisation_type" />
   <copyField source="total-budget.period-start.iso-date" dest="organisation_total_budget_period_start" />
   <copyField source="total-budget.period-end.iso-date" dest="organisation_total_budget_period_end" />

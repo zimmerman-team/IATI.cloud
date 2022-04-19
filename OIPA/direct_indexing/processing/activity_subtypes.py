@@ -23,24 +23,68 @@ def extract_subtype(activity, subtype):
         return []  # Make sure we do not return any data when there is none.
     # Create a list of the extracted subtypes
     subtype_list = []
+    exclude_fields = []
+    for each_subtype in AVAILABLE_SUBTYPES:
+        if each_subtype == subtype:
+            continue
+        # Create a list of custom added fields to remove from the eventual dataset
+        exclude_fields += [
+            f'{each_subtype}.value-usd',
+            f'{each_subtype}.value-usd.sum',
+            f'{each_subtype}.value-usd.conversion-rate',
+            f'{each_subtype}.value-usd.conversion-currency',
+            f'{each_subtype}.value-usd-type'
+        ]
+    # Define the list of custom fields which relate to a specific subtype
+    include_fields = [
+        f'{subtype}.value-usd',
+        f'{subtype}.value-usd.conversion-rate',
+        f'{subtype}.value-usd.conversion-currency'
+    ]
 
     # get subtype
     subtype_in_data = activity[subtype]
     if type(subtype_in_data) is dict:
         subtype_in_data = [subtype_in_data]
     # traverse subtype list
-    for subtype_element in list(subtype_in_data):
+    for i, subtype_element in enumerate(list(subtype_in_data)):
         if not type(subtype_element) == dict:
-            continue
+            continue  # skip if the element is broken
         # Get the value of the subtype element into a new dict with the key being the subtype.
         subtype_dict = {subtype: dict(subtype_element)}
         for key in activity:
-            if key in AVAILABLE_SUBTYPES:
-                continue
-            subtype_dict[key] = activity[key]
+            subtype_dict = process_subtype_dict(subtype_dict, key, i, activity, exclude_fields, include_fields)
         subtype_list.append(subtype_dict)
 
     return subtype_list
+
+
+def process_subtype_dict(subtype_dict, key, i, activity, exclude_fields, include_fields):
+    """
+    Process the subtype dict.
+
+    :param subtype_dict: the subtype dict
+    :param key: the key of the field to look for
+    :param i: the index of the current subtype list
+    :param activity: the parent activity
+    :param exclude_fields: the fields to exclude
+    :param include_fields: the fields to include
+    """
+    if key in AVAILABLE_SUBTYPES:
+        pass  # Drop the other subtypes, in case of transaction we drop result and budget.
+    elif key in exclude_fields:
+        pass  # drop the customized other fields
+    elif key in include_fields:
+        # extract the single value for the current index of the subtype from the multivalued content field
+        if type(activity[key]) is list:
+            if i <= len(activity[key]):  # ensure we are not out of bounds
+                subtype_dict[key] = activity[key][i]
+        else:
+            subtype_dict[key] = activity[key]
+    else:
+        subtype_dict[key] = activity[key]  # keep additional activity fields for querying and filtering
+
+    return subtype_dict
 
 
 def extract_all_subtypes(subtypes, data):
