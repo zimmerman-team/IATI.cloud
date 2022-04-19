@@ -514,7 +514,7 @@
   <field name="other-identifier.owner-org.narrative.lang" type="text_general"/>
 
   <!-- activity.activity-status 1..1 -->
-  <field name="activity-status.code" type="text_general"/>
+  <field name="activity-status.code" type="text_general_single"/>
 
   <!-- activity.activity-date 1..* -->
   <field name="activity-date.type" type="text_general"/>
