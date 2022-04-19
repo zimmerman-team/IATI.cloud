@@ -818,17 +818,11 @@
   <field name="policy-marker.combined" type="text_general"/>
 
   <!-- Summed and converted currency values -->
-  <field name="budget.value-usd" type="pdoubles"/>
   <field name="planned-disbursement.value-usd" type="pdoubles"/>
-  <field name="transaction.value-usd" type="pdoubles"/>
 
-  <field name="budget.value-usd.sum" type="pdoubles"/>
   <field name="planned-disbursement.value-usd.sum" type="pdoubles"/>
-  <field name="transaction.value-usd.sum" type="pdoubles"/>
 
-  <field name="budget.value-usd.conversion-rate" type="pdoubles"/>
   <field name="planned-disbursement.value-usd.conversion-rate" type="pdoubles"/>
-  <field name="transaction.value-usd.conversion-rate" type="pdoubles"/>
 
   <!-- Activity aggregated currency data -->
   <field name="activity-aggregation.budget.value" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
@@ -1076,404 +1070,30 @@
         <filter class="solr.LowerCaseFilterFactory"/>
     </analyzer>
   </fieldType>
-  <field name="iati_identifier" type="non_case_sensitive" multiValued="false" indexed="true" required="false" stored="true"/>
-
-  <field name="dataset_iati_version" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="dataset_date_created" type="pdate" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="dataset_date_updated" type="pdate" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="dataset_iati_id" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="dataset_name" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="dataset_publisher_id" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="dataset_publisher_iati_id" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-
-  <field name="last_updated_datetime" type="string" multiValued="false" indexed="false" required="false" stored="true"/>
-  <field name="last_updated_datetime_f" type="pdate" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="default_lang" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="default_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="iati_identifier" type="string" multiValued="false" indexed="true" required="true" stored="true"/>
   <!--<field name="humanitarian" type="string" multiValued="false" indexed="true" required="false" stored="true"/>-->
-  <!-- <field name="hierarchy" type="string" multiValued="false" indexed="true" required="false" stored="true"/> -->
-  <field name="linked_data_uri" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
 
-  <field name="reporting_org" type="text_general" multiValued="false" indexed="false" required="false" stored="true"/>
-  <field name="reporting_org_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
   <field name="reporting_org_ref" type="non_case_sensitive" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="reporting_org_type_code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
   <field name="reporting_org_type" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
   <field name="reporting_org_type_name" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
   <field name="reporting_org_secondary_reporter" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
   <field name="reporting_org_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
 
-  <field name="title" type="text_general" indexed="false" required="false" stored="true"/>
-  <field name="title_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
-  <field name="title_narrative" type="text_general" indexed="true" required="false" stored="true"/>
-  <field name="title_narrative_first" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="title_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="title_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
+  <field name="result_type_code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="result_type_name" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="result_aggregation_status" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
 
-  <field name="description" type="text_general" indexed="false" required="false" stored="true"/>
-  <field name="description_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
-  <field name="description_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="description_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="description_narrative" type="text_general" indexed="true" required="false" stored="true"/>
-  <field name="description_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="description_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
-
-  <field name="participating_org" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
-  <field name="participating_org_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
-  <field name="participating_org_ref" type="non_case_sensitive" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="participating_org_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="participating_org_role" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="participating_org_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
-  <field name="participating_org_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="participating_org_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
-
-  <field name="other_identifier" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
-  <field name="other_identifier_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
-  <field name="other_identifier_ref" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="other_identifier_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="other_identifier_owner_org_ref" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="other_identifier_owner_org_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
-  <field name="other_identifier_owner_org_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="other_identifier_owner_org_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
-
-  <field name="activity_status_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
-  <field name="activity_status_code" type="string" indexed="true" required="false" stored="true"/>
-
-  <field name="activity_date" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
-  <field name="activity_date_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
-  <field name="activity_date_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="activity_date_iso_date" type="pdate" multiValued="true" indexed="false" required="false" stored="true"/>
-  <field name="activity_date_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
-  <field name="activity_date_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="activity_date_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
-  <field name="activity_date_start_planned" type="string" multiValued="false" indexed="false" required="false" stored="true"/>
-  <field name="activity_date_start_actual" type="string" multiValued="false" indexed="false" required="false" stored="true"/>
-  <field name="activity_date_end_planned" type="string" multiValued="false" indexed="false" required="false" stored="true"/>
-  <field name="activity_date_end_actual" type="string" multiValued="false" indexed="false" required="false" stored="true"/>
-  <field name="activity_date_start_common" type="string" multiValued="false" indexed="false" required="false" stored="true"/>
-  <field name="activity_date_end_common" type="string" multiValued="false" indexed="false" required="false" stored="true"/>
-  <field name="activity_date_start_planned_f" type="pdate" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_date_start_actual_f" type="pdate" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_date_end_planned_f" type="pdate" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_date_end_actual_f" type="pdate" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_date_start_common_f" type="pdate" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_date_end_common_f" type="pdate" multiValued="false" indexed="true" required="false" stored="true"/>
-
-  <field name="contact_info" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
-  <field name="contact_info_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
-  <field name="contact_info_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-
-  <field name="contact_info_organisation_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
-  <field name="contact_info_organisation_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="contact_info_organisation_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
-
-  <field name="contact_info_department_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
-  <field name="contact_info_department_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="contact_info_department_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
-
-  <field name="contact_info_person_name_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
-  <field name="contact_info_person_name_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="contact_info_person_name_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
-
-  <field name="contact_info_job_title_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
-  <field name="contact_info_job_title_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="contact_info_job_title_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
-
-  <field name="contact_info_mailing_address_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
-  <field name="contact_info_mailing_address_narrative_lang" type="iati_narrative" indexed="true" required="false" stored="true"/>
-  <field name="contact_info_mailing_address_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
-
-  <field name="contact_info_telephone" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="contact_info_email" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="contact_info_website" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-
-  <field name="activity_scope_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
-  <field name="activity_scope_code" type="string" indexed="true" required="false" stored="true"/>
-
-  <field name="recipient_country" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
-  <field name="recipient_country_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
-  <field name="recipient_country_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="recipient_country_name" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="recipient_country_percentage" type="pdoubles" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="recipient_country_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
-  <field name="recipient_country_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="recipient_country_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
-
-  <field name="recipient_region" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
-  <field name="recipient_region_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
-  <field name="recipient_region_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="recipient_region_name" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="recipient_region_vocabulary" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="recipient_region_vocabulary_uri" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="recipient_region_percentage" type="pdoubles" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="recipient_region_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
-  <field name="recipient_region_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="recipient_region_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
-
-  <field name="location" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
-  <field name="location_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
-  <field name="location_ref" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="location_reach_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="location_id_vocabulary" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="location_id_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="location_point_pos" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="location_exactness_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="location_class_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="location_feature_designation_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-
-  <field name="location_name_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
-  <field name="location_name_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="location_name_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
-
-  <field name="location_description_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
-  <field name="location_description_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="location_description_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
-
-  <field name="location_activity_description_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
-  <field name="location_activity_description_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="location_activity_description_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
-
-  <field name="location_administrative_vocabulary" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="location_administrative_level" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="location_administrative_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-
-  <field name="sector" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
-  <field name="sector_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
-  <field name="sector_vocabulary" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="sector_vocabulary_uri" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="sector_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="sector_percentage" type="pdoubles" multiValued="true" indexed="true" required="false" stored="true"/>
-
-  <field name="sector_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
-  <field name="sector_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="sector_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
-
-  <field name="tag" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
-  <field name="tag_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
-  <field name="tag_vocabulary" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="tag_vocabulary_uri" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="tag_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-
-  <field name="tag_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
-  <field name="tag_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="tag_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
-
-  <field name="country_budget_items" type="text_general" multiValued="false" indexed="false" required="false" stored="true"/>
-  <field name="country_budget_items_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
-  <field name="country_budget_items_vocabulary" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="country_budget_items_budget_item_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="country_budget_items_budget_item_percentage" type="pdoubles" multiValued="true" indexed="true" required="false" stored="true"/>
-
-  <field name="country_budget_items_budget_description_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
-  <field name="country_budget_items_budget_description_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="country_budget_items_budget_description_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
-
-  <field name="humanitarian_scope" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
-  <field name="humanitarian_scope_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
-  <field name="humanitarian_scope_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="humanitarian_scope_vocabulary" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="humanitarian_scope_vocabulary_uri" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="humanitarian_scope_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-
-  <field name="humanitarian_scope_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
-  <field name="humanitarian_scope_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="humanitarian_scope_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
-
-  <field name="policy_marker" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
-  <field name="policy_marker_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
-  <field name="policy_marker_vocabulary" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="policy_marker_vocabulary_uri" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="policy_marker_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="policy_marker_combined" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="policy_marker_significance" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-
-  <field name="policy_marker_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
-  <field name="policy_marker_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="policy_marker_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
-
-  <field name="collaboration_type_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
-  <field name="collaboration_type_code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-
-  <field name="default_flow_type_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
-  <field name="default_flow_type_code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-
-  <field name="default_finance_type_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
-  <field name="default_finance_type_code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-
-  <field name="default_aid_type" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
-  <field name="default_aid_type_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
-  <field name="default_aid_type_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="default_aid_type_vocabulary" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="default_aid_type_category_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="default_aid_type_category_name" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-
-  <field name="default_tied_status_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
-  <field name="default_tied_status_code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-
-  <field name="budget" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
-  <field name="budget_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
-  <field name="budget_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="budget_status" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="budget_period_start_iso_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="budget_period_end_iso_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="budget_value_currency" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="budget_value_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="budget_value" type="pdoubles" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="budget_value_usd" type="pdoubles" multiValued="true" indexed="false" required="false" stored="true"/>
-  <field name="budget_value_usd_sum" type="pdoubles" multiValued="false" indexed="false" required="false" stored="true"/>
-  <field name="budget_imf_link" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
-  <field name="budget_usd_conversion_rate" type="pdoubles" multiValued="true" indexed="false" required="false" stored="true"/>
-
-
-  <field name="planned_disbursement" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
-  <field name="planned_disbursement_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
-  <field name="planned_disbursement_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="planned_disbursement_period_start_iso_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="planned_disbursement_period_end_iso_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="planned_disbursement_value_currency" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="planned_disbursement_value_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="planned_disbursement_value" type="pdoubles" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="planned_disbursement_value_usd" type="pdoubles" multiValued="true" indexed="false" required="false" stored="true"/>
-  <field name="planned_disbursement_value_usd_sum" type="pdoubles" multiValued="false" indexed="false" required="false" stored="true"/>
-  <field name="planned_disbursement_imf_link" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
-  <field name="planned_disbursement_usd_conversion_rate" type="pdoubles" multiValued="true" indexed="false" required="false" stored="true"/>
-  <field name="planned_disbursement_provider_org_provider_activity_id" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="planned_disbursement_provider_org_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="planned_disbursement_provider_org_ref" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-
-  <field name="planned_disbursement_provider_org_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
-  <field name="planned_disbursement_provider_org_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="planned_disbursement_provider_org_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
-
-  <field name="planned_disbursement_receiver_org_provider_activity_id" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="planned_disbursement_receiver_org_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="planned_disbursement_receiver_org_ref" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="planned_disbursement_receiver_org_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
-  <field name="planned_disbursement_receiver_org_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="planned_disbursement_receiver_org_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
-
-  <field name="capital_spend_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
-  <field name="capital_spend_percentage" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-
-  <field name="transaction" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
-  <field name="transaction_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
-  <field name="transaction_ref" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="transaction_humanitarian" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="transaction_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="transaction_date_iso_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="transaction_description_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="transaction_description_narrative" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
-
-  <field name="transaction_value_currency" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="transaction_value_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="transaction_value" type="pdoubles" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="transaction_value_usd" type="pdoubles" multiValued="true" indexed="false" required="false" stored="true"/>
-  <field name="transaction_value_usd_sum" type="pdoubles" multiValued="false" indexed="false" required="false" stored="true"/>
-  <field name="transaction_imf_link" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
-  <field name="transaction_usd_conversion_rate" type="pdoubles" multiValued="true" indexed="false" required="false" stored="true"/>
-
-  <field name="transaction_provider_org_provider_activity_id" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="transaction_provider_org_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="transaction_provider_org_ref" type="non_case_sensitive" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="transaction_provider_org_narrative" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="transaction_provider_org_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="transaction_provider_org_narrative_text" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
-
-  <field name="transaction_receiver_org_receiver_activity_id" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="transaction_receiver_org_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-
-  <!-- transaction_receiver_org_type_code & transaction_receiver_org_type_name will be deleted -->
-  <field name="transaction_receiver_org_type_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="transaction_receiver_org_type_name" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-
-  <field name="transaction_receiver_org_ref" type="non_case_sensitive" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="transaction_receiver_org_narrative" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="transaction_receiver_org_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="transaction_receiver_org_narrative_text" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
-
-  <field name="transaction_disbursement_channel_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-
-  <field name="transaction_sector_vocabulary" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="transaction_sector_vocabulary_uri" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="transaction_sector_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-
-  <field name="transaction_recipient_country_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="transaction_recipient_region_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="transaction_recipient_region_vocabulary" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-
-  <field name="transaction_flow_type_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="transaction_finance_type_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-
-  <field name="transaction_aid_type_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="transaction_aid_type_vocabulary" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-
-  <field name="transaction_tied_status_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-
-  <field name="document_link" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
-  <field name="document_link_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
-  <field name="document_link_format" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="document_link_url" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-
-  <field name="document_link_title_narrative" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="document_link_title_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="document_link_title_narrative_text" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
-
-  <field name="document_link_description_narrative" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="document_link_description_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="document_link_description_narrative_text" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
-
-  <field name="document_link_category_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="document_link_language_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="document_link_document_date_iso_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
-
-  <field name="related_activity" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
-  <field name="related_activity_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
-  <field name="related_activity_ref" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="related_activity_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-
-  <field name="legacy_data" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
-  <field name="legacy_data_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
-  <field name="legacy_data_name" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="legacy_data_value" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="legacy_data_iati_equivalent" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-
-  <field name="conditions" type="text_general" multiValued="false" indexed="false" required="false" stored="true"/>
-  <field name="conditions_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
-  <field name="conditions_attached" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="conditions_condition_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="conditions_condition_narrative" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="conditions_condition_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="conditions_condition_narrative_text" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
-
-  <field name="result" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
-  <field name="result_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
-  <field name="result_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="result_type_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="result_type_name" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="result_aggregation_status" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-
-  <field name="result_title_narrative" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="result_title" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="result_title_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="result_title_narrative_text" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="result_title_narrative" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
 
+  <field name="result_description" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="result_description_narrative" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="result_description" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="result_description_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="result_description_narrative_text" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
 
   <field name="result_document_link" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="result_document_link_url" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="result_document_link_format" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-
   <field name="result_document_link_title_narrative" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="result_document_link_title_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="result_document_link_title_narrative_text" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
-
   <field name="result_document_link_description_narrative" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="result_document_link_description_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="result_document_link_description_narrative_text" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
-
   <field name="result_document_link_category_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="result_document_link_language_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="result_document_link_document_date_iso_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
@@ -1487,26 +1107,13 @@
   <field name="result_indicator_measure" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="result_indicator_ascending" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="result_indicator_aggregation_status" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-
   <field name="result_indicator_title_narrative" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="result_indicator_title_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="result_indicator_title_narrative_text" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
-
   <field name="result_indicator_description_narrative" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="result_indicator_description_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="result_indicator_description_narrative_text" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
 
   <field name="result_indicator_document_link_url" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="result_indicator_document_link_format" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-
   <field name="result_indicator_document_link_title_narrative" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="result_indicator_document_link_title_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="result_indicator_document_link_title_narrative_text" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
-
   <field name="result_indicator_document_link_description_narrative" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="result_indicator_document_link_description_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="result_indicator_document_link_description_narrative_text" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
-
   <field name="result_indicator_document_link_category_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="result_indicator_document_link_language_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="result_indicator_document_link_document_date_iso_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
@@ -1514,8 +1121,6 @@
   <field name="result_indicator_reference" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="result_indicator_reference_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="result_indicator_reference_vocabulary" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="result_indicator_reference_vocabulary_uri" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-
   <field name="result_indicator_reference_indicator_uri" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
 
   <field name="result_indicator_baseline_year" type="pint" multiValued="true" indexed="true" required="false" stored="true"/>
@@ -1524,22 +1129,12 @@
   <field name="result_indicator_baseline_location_ref" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="result_indicator_baseline_dimension_name" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="result_indicator_baseline_dimension_value" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-
   <field name="result_indicator_baseline_comment_narrative" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="result_indicator_baseline_comment_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="result_indicator_baseline_comment_narrative_text" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
 
   <field name="result_indicator_baseline_document_link_url" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="result_indicator_baseline_document_link_format" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-
   <field name="result_indicator_baseline_document_link_title" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="result_indicator_baseline_document_link_title_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="result_indicator_baseline_document_link_title_narrative_text" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
-
   <field name="result_indicator_baseline_document_link_description" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="result_indicator_baseline_document_link_description_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="result_indicator_baseline_document_link_description_text" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
-
   <field name="result_indicator_baseline_document_link_category_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="result_indicator_baseline_document_link_language_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="result_indicator_baseline_document_link_document_date_iso_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
@@ -1550,27 +1145,14 @@
   <field name="result_indicator_period_target_value" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="result_indicator_period_target_location_ref" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
 
-  <field name="result_indicator_period_target_dimension_name" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="result_indicator_period_target_dimension_value" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-
   <field name="result_indicator_period_target_dimmension_name" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="result_indicator_period_target_dimmension_value" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-
   <field name="result_indicator_period_target_comment_narrative" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="result_indicator_period_target_comment_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="result_indicator_period_target_comment_narrative_text" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
 
   <field name="result_indicator_period_target_document_link_url" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="result_indicator_period_target_document_link_format" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-
   <field name="result_indicator_period_target_document_link_title_narrative" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="result_indicator_period_target_document_link_title_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="result_indicator_period_target_document_link_title_narrative_text" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
-
   <field name="result_indicator_period_target_document_link_description_narrative" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="result_indicator_period_target_document_link_description_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="result_indicator_period_target_document_link_description_narrative_text" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
-
   <field name="result_indicator_period_target_document_link_category_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="result_indicator_period_target_document_link_language_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="result_indicator_period_target_document_link_document_date_iso_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
@@ -1578,398 +1160,37 @@
   <field name="result_indicator_period_actual_value" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="result_indicator_period_actual_location_ref" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
 
-  <field name="result_indicator_period_actual_dimension_name" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="result_indicator_period_actual_dimension_value" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-
   <field name="result_indicator_period_actual_dimmension_name" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="result_indicator_period_actual_dimmension_value" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-
   <field name="result_indicator_period_actual_comment_narrative" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="result_indicator_period_actual_comment_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="result_indicator_period_actual_comment_narrative_text" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
 
   <field name="result_indicator_period_actual_document_link_url" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="result_indicator_period_actual_document_link_format" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-
   <field name="result_indicator_period_actual_document_link_title_narrative" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="result_indicator_period_actual_document_link_title_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="result_indicator_period_actual_document_link_title_narrative_text" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
-
   <field name="result_indicator_period_actual_document_link_description_narrative" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="result_indicator_period_actual_document_link_description_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="result_indicator_period_actual_document_link_description_narrative_text" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
-
   <field name="result_indicator_period_actual_document_link_category_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="result_indicator_period_actual_document_link_language_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="result_indicator_period_actual_document_link_document_date_iso_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
 
-  <field name="fss" type="text_general" multiValued="false" indexed="false" required="false" stored="true"/>
-  <field name="fss_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
-  <field name="fss_extraction_date" type="pdate" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="fss_priority" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="fss_phaseout_year" type="pint" multiValued="false" indexed="true" required="false" stored="true"/>
-
-  <field name="fss_forecast_year" type="pint" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="fss_forecast_value_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="fss_forecast_currency" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="fss_forecast_value" type="pdoubles" multiValued="true" indexed="true" required="false" stored="true"/>
-
-  <field name="crs_add" type="text_general" multiValued="false" indexed="false" required="false" stored="true"/>
-  <field name="crs_add_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
-  <field name="crs_add_other_flags_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="crs_add_other_flags_significance" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-
-  <field name="crs_add_loan_terms_rate_1" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="crs_add_loan_terms_rate_2" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-
-  <field name="crs_add_loan_terms_repayment_type_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="crs_add_loan_terms_repayment_plan_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-
-  <field name="crs_add_loan_terms_commitment_date_iso_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
-
-  <field name="crs_add_loan_terms_repayment_first_date_iso_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="crs_add_loan_terms_repayment_final_date_iso_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
-
-  <field name="crs_add_loan_status_year" type="pint" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="crs_add_loan_status_currency" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="crs_add_loan_status_value_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
-
-  <field name="crs_add_loan_status_interest_received" type="pdoubles" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="crs_add_loan_status_principal_outstanding" type="pdoubles" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="crs_add_loan_status_principal_arrears" type="pdoubles" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="crs_add_loan_status_interest_arrears" type="pdoubles" multiValued="true" indexed="true" required="false" stored="true"/>
-
-  <field name="crs_add_channel_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-
-  <!--Activity Aggregation Information -->
-  <field name="activity_aggregation_budget_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_aggregation_budget_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_aggregation_budget_value_gbp" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_aggregation_budget_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_aggregation_disbursement_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_aggregation_disbursement_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_aggregation_disbursement_value_gbp" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_aggregation_disbursement_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_aggregation_incoming_funds_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_aggregation_incoming_funds_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_aggregation_incoming_funds_value_gbp" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_aggregation_incoming_funds_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_aggregation_commitment_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_aggregation_commitment_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_aggregation_commitment_value_gbp" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_aggregation_commitment_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_aggregation_expenditure_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_aggregation_expenditure_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_aggregation_expenditure_value_gbp" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_aggregation_expenditure_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_aggregation_interest_payment_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_aggregation_interest_payment_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_aggregation_interest_payment_value_gbp" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_aggregation_interest_payment_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_aggregation_loan_repayment_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_aggregation_loan_repayment_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_aggregation_loan_repayment_value_gbp" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_aggregation_loan_repayment_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_aggregation_reimbursement_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_aggregation_reimbursement_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_aggregation_reimbursement_value_gbp" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_aggregation_reimbursement_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_aggregation_purchase_of_equity_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_aggregation_purchase_of_equity_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_aggregation_purchase_of_equity_value_gbp" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_aggregation_purchase_of_equity_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_aggregation_sale_of_equity_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_aggregation_sale_of_equity_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_aggregation_sale_of_equity_value_gbp" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_aggregation_sale_of_equity_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_aggregation_credit_guarantee_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_aggregation_credit_guarantee_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_aggregation_credit_guarantee_value_gbp" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_aggregation_credit_guarantee_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_aggregation_incoming_commitment_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_aggregation_incoming_commitment_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_aggregation_incoming_commitment_value_gbp" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_aggregation_incoming_commitment_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_aggregation_outgoing_pledge_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_aggregation_outgoing_pledge_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_aggregation_outgoing_pledge_value_gbp" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_aggregation_outgoing_pledge_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_aggregation_incoming_pledge_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_aggregation_incoming_pledge_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_aggregation_incoming_pledge_value_gbp" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_aggregation_incoming_pledge_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-
-  <field name="child_aggregation_budget_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="child_aggregation_budget_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="child_aggregation_budget_value_gbp" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="child_aggregation_budget_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="child_aggregation_disbursement_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="child_aggregation_disbursement_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="child_aggregation_disbursement_value_gbp" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="child_aggregation_disbursement_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="child_aggregation_incoming_funds_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="child_aggregation_incoming_funds_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="child_aggregation_incoming_funds_value_gbp" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="child_aggregation_incoming_funds_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="child_aggregation_commitment_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="child_aggregation_commitment_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="child_aggregation_commitment_value_gbp" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="child_aggregation_commitment_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="child_aggregation_expenditure_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="child_aggregation_expenditure_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="child_aggregation_expenditure_value_gbp" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="child_aggregation_expenditure_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="child_aggregation_interest_payment_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="child_aggregation_interest_payment_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="child_aggregation_interest_payment_value_gbp" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="child_aggregation_interest_payment_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="child_aggregation_loan_repayment_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="child_aggregation_loan_repayment_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="child_aggregation_loan_repayment_value_gbp" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="child_aggregation_loan_repayment_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="child_aggregation_reimbursement_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="child_aggregation_reimbursement_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="child_aggregation_reimbursement_value_gbp" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="child_aggregation_reimbursement_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="child_aggregation_purchase_of_equity_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="child_aggregation_purchase_of_equity_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="child_aggregation_purchase_of_equity_value_gbp" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="child_aggregation_purchase_of_equity_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="child_aggregation_sale_of_equity_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="child_aggregation_sale_of_equity_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="child_aggregation_sale_of_equity_value_gbp" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="child_aggregation_sale_of_equity_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="child_aggregation_credit_guarantee_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="child_aggregation_credit_guarantee_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="child_aggregation_credit_guarantee_value_gbp" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="child_aggregation_credit_guarantee_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="child_aggregation_incoming_commitment_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="child_aggregation_incoming_commitment_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="child_aggregation_incoming_commitment_value_gbp" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="child_aggregation_incoming_commitment_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="child_aggregation_outgoing_pledge_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="child_aggregation_outgoing_pledge_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="child_aggregation_outgoing_pledge_value_gbp" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="child_aggregation_outgoing_pledge_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="child_aggregation_incoming_pledge_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="child_aggregation_incoming_pledge_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="child_aggregation_incoming_pledge_value_gbp" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="child_aggregation_incoming_pledge_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-
-  <field name="activity_plus_child_aggregation_budget_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_plus_child_aggregation_budget_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_plus_child_aggregation_budget_value_gbp" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_plus_child_aggregation_budget_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_plus_child_aggregation_disbursement_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_plus_child_aggregation_disbursement_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_plus_child_aggregation_disbursement_value_gbp" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_plus_child_aggregation_disbursement_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_plus_child_aggregation_incoming_funds_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_plus_child_aggregation_incoming_funds_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_plus_child_aggregation_incoming_funds_value_gbp" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_plus_child_aggregation_incoming_funds_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_plus_child_aggregation_commitment_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_plus_child_aggregation_commitment_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_plus_child_aggregation_commitment_value_gbp" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_plus_child_aggregation_commitment_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_plus_child_aggregation_expenditure_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_plus_child_aggregation_expenditure_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_plus_child_aggregation_expenditure_value_gbp" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_plus_child_aggregation_expenditure_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_plus_child_aggregation_interest_payment_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_plus_child_aggregation_interest_payment_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_plus_child_aggregation_interest_payment_value_gbp" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_plus_child_aggregation_interest_payment_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_plus_child_aggregation_loan_repayment_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_plus_child_aggregation_loan_repayment_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_plus_child_aggregation_loan_repayment_value_gbp" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_plus_child_aggregation_loan_repayment_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_plus_child_aggregation_reimbursement_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_plus_child_aggregation_reimbursement_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_plus_child_aggregation_reimbursement_value_gbp" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_plus_child_aggregation_reimbursement_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_plus_child_aggregation_purchase_of_equity_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_plus_child_aggregation_purchase_of_equity_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_plus_child_aggregation_purchase_of_equity_value_gbp" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_plus_child_aggregation_purchase_of_equity_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_plus_child_aggregation_sale_of_equity_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_plus_child_aggregation_sale_of_equity_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_plus_child_aggregation_sale_of_equity_value_gbp" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_plus_child_aggregation_sale_of_equity_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_plus_child_aggregation_credit_guarantee_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_plus_child_aggregation_credit_guarantee_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_plus_child_aggregation_credit_guarantee_value_gbp" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_plus_child_aggregation_credit_guarantee_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_plus_child_aggregation_incoming_commitment_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_plus_child_aggregation_incoming_commitment_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_plus_child_aggregation_incoming_commitment_value_gbp" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_plus_child_aggregation_incoming_commitment_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_plus_child_aggregation_outgoing_pledge_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_plus_child_aggregation_outgoing_pledge_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_plus_child_aggregation_outgoing_pledge_value_gbp" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_plus_child_aggregation_outgoing_pledge_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_plus_child_aggregation_incoming_pledge_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_plus_child_aggregation_incoming_pledge_value_usd" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_plus_child_aggregation_incoming_pledge_value_gbp" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="activity_plus_child_aggregation_incoming_pledge_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-
   <!-- TODO: REMOVE DEPRECATED copyfields -->
-
-  <copyField source="last-updated-datetime" dest="last_updated_datetime" />
-  <copyField source="lang" dest="default_lang" />
-  <copyField source="default-currency" dest="default_currency" />
-  <copyField source="linked-data-uri" dest="linked_data_uri" />
   <copyField source="iati-identifier" dest="iati_identifier" />
   <copyField source="reporting-org.ref" dest="reporting_org_ref" />
-  <copyField source="reporting-org.type" dest="reporting_org_type_code" />
+  <copyField source="reporting-org.type.name" dest="reporting_org_type" />
+  <copyField source="reporting-org.type.name" dest="reporting_org_type_name" />
   <copyField source="reporting-org.secondary-reporter" dest="reporting_org_secondary_reporter" />
   <copyField source="reporting-org.narrative" dest="reporting_org_narrative" />
-  <copyField source="title.narrative" dest="title_narrative_text" />
-  <copyField source="title.narrative.lang" dest="title_narrative_lang" />
-  <copyField source="description.type" dest="description_type" />
-  <copyField source="description.narrative" dest="description_narrative_text" />
-  <copyField source="description.narrative.lang" dest="description_narrative_lang" />
-  <copyField source="participating-org.ref" dest="participating_org_ref" />
-  <copyField source="participating-org.type" dest="participating_org_type" />
-  <copyField source="participating-org.role" dest="participating_org_role" />
-  <copyField source="participating-org.narrative" dest="participating_org_narrative_text" />
-  <copyField source="participating-org.narrative.lang" dest="participating_org_narrative_lang" />
-  <copyField source="other-identifier.ref" dest="other_identifier_ref" />
-  <copyField source="other-identifier.type" dest="other_identifier_type" />
-  <copyField source="other-identifier.owner-org.ref" dest="other_identifier_owner_org_ref" />
-  <copyField source="other-identifier.owner-org.narrative" dest="other_identifier_owner_org_narrative_text" />
-  <copyField source="other-identifier.owner-org.narrative.lang" dest="other_identifier_owner_org_narrative_lang" />
-  <copyField source="activity-status.code" dest="activity_status_code" />
-  <copyField source="activity-date.type" dest="activity_date_type" />
-  <copyField source="activity-date.iso-date" dest="activity_date_iso_date" />
-  <copyField source="activity-date.narrative" dest="activity_date_narrative_text" />
-  <copyField source="activity-date.narrative.lang" dest="activity_date_narrative_lang" />
-  <copyField source="contact-info.type" dest="contact_info_type" />
-  <copyField source="contact-info.organisation.narrative" dest="contact_info_organisation_narrative_text" />
-  <copyField source="contact-info.organisation.narrative.lang" dest="contact_info_organisation_narrative_lang" />
-  <copyField source="contact-info.department.narrative" dest="contact_info_department_narrative_text" />
-  <copyField source="contact-info.department.narrative.lang" dest="contact_info_department_narrative_lang" />
-  <copyField source="contact-info.person-name.narrative" dest="contact_info_person_name_narrative_text" />
-  <copyField source="contact-info.person-name.narrative.lang" dest="contact_info_person_name_narrative_lang" />
-  <copyField source="contact-info.job-title.narrative" dest="contact_info_job_title_narrative_lang" />
-  <copyField source="contact-info.job-title.narrative.lang" dest="contact_info_job_title_narrative_text" />
-  <copyField source="contact-info.telephone" dest="contact_info_telephone" />
-  <copyField source="contact-info.email" dest="contact_info_email" />
-  <copyField source="contact-info.website" dest="contact_info_website" />
-  <copyField source="contact-info.mailing-address.narrative" dest="contact_info_mailing_address_narrative_text" />
-  <copyField source="contact-info.mailing-address.narrative.lang" dest="contact_info_mailing_address_narrative_lang" />
-  <copyField source="activity-scope.code" dest="activity_scope_code" />
-  <copyField source="recipient-country.code" dest="recipient_country_code" />
-  <copyField source="recipient-country.percentage" dest="recipient_country_percentage" />
-  <copyField source="recipient-country.narrative" dest="recipient_country_narrative_text" />
-  <copyField source="recipient-country.narrative.lang" dest="recipient_country_narrative_lang" />
-  <copyField source="recipient-region.code" dest="recipient_region_code" />
-  <copyField source="recipient-region.vocabulary" dest="recipient_region_vocabulary" />
-  <copyField source="recipient-region.vocabulary-uri" dest="recipient_region_vocabulary_uri" />
-  <copyField source="recipient-region.percentage" dest="recipient_region_percentage" />
-  <copyField source="recipient-region.narrative" dest="recipient_region_narrative_text" />
-  <copyField source="recipient-region.narrative.lang" dest="recipient_region_narrative_lang" />
-  <copyField source="location.ref" dest="location_ref" />
-  <copyField source="location.location-reach.code" dest="location_reach_code" />
-  <copyField source="location.location-id.code" dest="location_id_code" />
-  <copyField source="location.location-id.vocabulary" dest="location_id_vocabulary" />
-  <copyField source="location.name.narrative" dest="location_name_narrative_text" />
-  <copyField source="location.name.narrative.lang" dest="location_name_narrative_lang" />
-  <copyField source="location.description.narrative" dest="location_description_narrative_text" />
-  <copyField source="location.description.narrative.lang" dest="location_description_narrative_lang" />
-  <copyField source="location.activity-description.narrative" dest="location_activity_description_narrative_text" />
-  <copyField source="location.activity-description.narrative.lang" dest="location_activity_description_narrative_lang" />
-  <copyField source="location.administrative.code" dest="location_administrative_code" />
-  <copyField source="location.administrative.vocabulary" dest="location_administrative_vocabulary" />
-  <copyField source="location.administrative.level" dest="location_administrative_level" />
-  <copyField source="location.point.pos" dest="location_point_pos" />
-  <copyField source="location.exactness.code" dest="location_exactness_code" />
-  <copyField source="location.location-class.code" dest="location_class_code" />
-  <copyField source="location.feature-designation.code" dest="location_feature_designation_code" />
-  <copyField source="sector.vocabulary" dest="sector_vocabulary" />
-  <copyField source="sector.vocabulary-uri" dest="sector_vocabulary_uri" />
-  <copyField source="sector.code" dest="sector_code" />
-  <copyField source="sector.percentage" dest="sector_percentage" />
-  <copyField source="sector.narrative" dest="sector_narrative_text" />
-  <copyField source="sector.narrative.lang" dest="sector_narrative_lang" />
-  <copyField source="tag.code" dest="tag_code" />
-  <copyField source="tag.vocabulary" dest="tag_vocabulary" />
-  <copyField source="tag.vocabulary-uri" dest="tag_vocabulary_uri" />
-  <copyField source="tag.narrative" dest="tag_narrative_text" />
-  <copyField source="tag.narrative.lang" dest="tag_narrative_lang" />
-  <copyField source="country-budget-items.vocabulary" dest="country_budget_items_vocabulary" />
-  <copyField source="country-budget-items.budget-item.code" dest="country_budget_items_budget_item_code" />
-  <copyField source="country-budget-items.budget-item.percentage" dest="country_budget_items_budget_item_percentage" />
-  <copyField source="country-budget-items.budget-item.description.narrative" dest="country_budget_items_budget_description_narrative_text" />
-  <copyField source="country-budget-items.budget-item.description.narrative.lang" dest="country_budget_items_budget_description_narrative_lang" />
-  <copyField source="humanitarian-scope.type" dest="humanitarian_scope_type" />
-  <copyField source="humanitarian-scope.vocabulary" dest="humanitarian_scope_vocabulary" />
-  <copyField source="humanitarian-scope.vocabulary-uri" dest="humanitarian_scope_vocabulary_uri" />
-  <copyField source="humanitarian-scope.code" dest="humanitarian_scope_code" />
-  <copyField source="humanitarian-scope.narrative" dest="humanitarian_scope_narrative_text" />
-  <copyField source="humanitarian-scope.narrative.lang" dest="humanitarian_scope_narrative_lang" />
-  <copyField source="policy-marker.vocabulary" dest="policy_marker_vocabulary" />
-  <copyField source="policy-marker.vocabulary-uri" dest="policy_marker_vocabulary_uri" />
-  <copyField source="policy-marker.code" dest="policy_marker_code" />
-  <copyField source="policy-marker.significance" dest="policy_marker_significance" />
-  <copyField source="policy-marker.narrative" dest="policy_marker_narrative_text" />
-  <copyField source="policy-marker.narrative.lang" dest="policy_marker_narrative_lang" />
-  <copyField source="collaboration-type.code" dest="collaboration_type_code" />
-  <copyField source="default-flow-type.code" dest="default_flow_type_code" />
-  <copyField source="default-finance-type.code" dest="default_finance_type_code" />
-  <copyField source="default-aid-type.code" dest="default_aid_type_code" />
-  <copyField source="default-aid-type.vocabulary" dest="default_aid_type_vocabulary" />
-  <copyField source="default-tied-status.code" dest="default_tied_status_code" />
-  <copyField source="planned-disbursement.type" dest="planned_disbursement_type" />
-  <copyField source="planned-disbursement.period-start.iso-date" dest="planned_disbursement_period_start_iso_date" />
-  <copyField source="planned-disbursement.period-end.iso-date" dest="planned_disbursement_period_end_iso_date" />
-  <copyField source="planned-disbursement.value" dest="planned_disbursement_value" />
-  <copyField source="planned-disbursement.value.currency" dest="planned_disbursement_value_currency" />
-  <copyField source="planned-disbursement.value.value-date" dest="planned_disbursement_value_date" />
-  <copyField source="planned-disbursement.provider-org.ref" dest="planned_disbursement_provider_org_ref" />
-  <copyField source="planned-disbursement.provider-org.provider-activity-id" dest="planned_disbursement_provider_org_provider_activity_id" />
-  <copyField source="planned-disbursement.provider-org.type" dest="planned_disbursement_provider_org_type" />
-  <copyField source="planned-disbursement.provider-org.narrative" dest="planned_disbursement_provider_org_narrative_text" />
-  <copyField source="planned-disbursement.provider-org.narrative.lang" dest="planned_disbursement_provider_org_narrative_lang" />
-  <copyField source="planned-disbursement.receiver-org.ref" dest="planned_disbursement_receiver_org_ref" />
-  <copyField source="planned-disbursement.receiver-org.receiver-activity-id" dest="planned_disbursement_receiver_org_provider_activity_id" />
-  <copyField source="planned-disbursement.receiver-org.type" dest="planned_disbursement_receiver_org_type" />
-  <copyField source="planned-disbursement.receiver-org.narrative" dest="planned_disbursement_receiver_org_narrative_text" />
-  <copyField source="planned-disbursement.receiver-org.narrative.lang" dest="planned_disbursement_receiver_org_narrative_lang" />
-  <copyField source="capital-spend.percentage" dest="capital_spend_percentage" />
-  <copyField source="document-link.url" dest="document_link_url" />
-  <copyField source="document-link.format" dest="document_link_format" />
-  <copyField source="document-link.title.narrative" dest="document_link_title_narrative_text" />
-  <copyField source="document-link.title.narrative.lang" dest="document_link_title_narrative_lang" />
-  <copyField source="document-link.description.narrative" dest="document_link_description_narrative_text" />
-  <copyField source="document-link.description.narrative.lang" dest="document_link_description_narrative_lang" />
-  <copyField source="document-link.category.code" dest="document_link_category_code" />
-  <copyField source="document-link.language.code" dest="document_link_language_code" />
-  <copyField source="document-link.document-date.iso-date" dest="document_link_document_date_iso_date" />
-  <copyField source="related-activity.ref" dest="related_activity_ref" />
-  <copyField source="related-activity.type" dest="related_activity_type" />
-  <copyField source="legacy-data.name" dest="legacy_data_name" />
-  <copyField source="legacy-data.value" dest="legacy_data_value" />
-  <copyField source="legacy-data.iati-equivalent" dest="legacy_data_iati_equivalent" />
-  <copyField source="conditions.attached" dest="conditions_attached" />
-  <copyField source="conditions.condition.type" dest="conditions_condition_type" />
-  <copyField source="conditions.condition.narrative" dest="conditions_condition_narrative_text" />
-  <copyField source="conditions.condition.narrative.lang" dest="conditions_condition_narrative_lang" />
-  <copyField source="result.type" dest="result_type" />
   <copyField source="result.type" dest="result_type_code" />
   <copyField source="result.type" dest="result_type_name" />
   <copyField source="result.aggregation-status" dest="result_aggregation_status" />
-  <copyField source="result.title.narrative" dest="result_title_narrative_text" />
   <copyField source="result.title.narrative" dest="result_title" />
-  <copyField source="result.title.narrative.lang" dest="result_title_narrative_lang" />
-  <copyField source="result.description.narrative" dest="result_description_narrative_text" />
-  <copyField source="result.description.narrative.lang" dest="result_description_narrative_lang" />
+  <copyField source="result.title.narrative" dest="result_title_narrative" />
+  <copyField source="result.description.narrative" dest="result_description" />
+  <copyField source="result.description.narrative" dest="result_description_narrative" />
+  <copyField source="result.document-link.url" dest="result_document_link" />
   <copyField source="result.document-link.url" dest="result_document_link_url" />
   <copyField source="result.document-link.format" dest="result_document_link_format" />
-  <copyField source="result.document-link.title.narrative" dest="result_document_link_title_narrative_text" />
-  <copyField source="result.document-link.title.narrative.lang" dest="result_document_link_title_narrative_lang" />
-  <copyField source="result.document-link.description.narrative" dest="result_document_link_description_narrative_text" />
-  <copyField source="result.document-link.description.narrative.lang" dest="result_document_link_description_narrative_lang" />
+  <copyField source="result.document-link.title.narrative" dest="result_document_link_title_narrative" />
+  <copyField source="result.document-link.description.narrative" dest="result_document_link_description_narrative" />
   <copyField source="result.document-link.category.code" dest="result_document_link_category_code" />
   <copyField source="result.document-link.language.code" dest="result_document_link_language_code" />
   <copyField source="result.document-link.document-date.iso-date" dest="result_document_link_document_date_iso_date" />
@@ -1981,302 +1202,57 @@
   <copyField source="result.indicator.measure" dest="result_indicator_measure" />
   <copyField source="result.indicator.ascending" dest="result_indicator_ascending" />
   <copyField source="result.indicator.aggregation-status" dest="result_indicator_aggregation_status" />
-  <copyField source="result.indicator.title.narrative" dest="result_indicator_title_narrative_text" />
-  <copyField source="result.indicator.title.narrative.lang" dest="result_indicator_title_narrative_lang" />
-  <copyField source="result.indicator.description.narrative" dest="result_indicator_description_narrative_text" />
-  <copyField source="result.indicator.description.narrative.lang" dest="result_indicator_description_narrative_lang" />
+  <copyField source="result.indicator.title.narrative" dest="result_indicator_title_narrative" />
+  <copyField source="result.indicator.description.narrative" dest="result_indicator_description_narrative" />
   <copyField source="result.indicator.document-link.url" dest="result_indicator_document_link_url" />
   <copyField source="result.indicator.document-link.format" dest="result_indicator_document_link_format" />
-  <copyField source="result.indicator.document-link.title.narrative" dest="result_indicator_document_link_title_narrative_text" />
-  <copyField source="result.indicator.document-link.title.narrative.lang" dest="result_indicator_document_link_title_narrative_lang" />
-  <copyField source="result.indicator.document-link.description.narrative" dest="result_indicator_document_link_description_narrative_text" />
-  <copyField source="result.indicator.document-link.description.narrative.lang" dest="result_indicator_document_link_description_narrative_lang" />
+  <copyField source="result.indicator.document-link.title.narrative" dest="result_indicator_document_link_title_narrative" />
+  <copyField source="result.indicator.document-link.description.narrative" dest="result_indicator_document_link_description_narrative" />
   <copyField source="result.indicator.document-link.category.code" dest="result_indicator_document_link_category_code" />
   <copyField source="result.indicator.document-link.language.code" dest="result_indicator_document_link_language_code" />
   <copyField source="result.indicator.document-link.document-date.iso-date" dest="result_indicator_document_link_document_date_iso_date" />
-  <copyField source="result.indicator.reference.vocabulary" dest="result_indicator_reference_vocabulary" />
   <copyField source="result.indicator.reference.code" dest="result_indicator_reference" />
   <copyField source="result.indicator.reference.code" dest="result_indicator_reference_code" />
+  <copyField source="result.indicator.reference.vocabulary" dest="result_indicator_reference_vocabulary" />
   <copyField source="result.indicator.reference.indicator-uri" dest="result_indicator_reference_indicator_uri" />
-  <copyField source="result.indicator.baseline.iso-date" dest="result_indicator_baseline_iso_date" />
   <copyField source="result.indicator.baseline.year" dest="result_indicator_baseline_year" />
+  <copyField source="result.indicator.baseline.iso-date" dest="result_indicator_baseline_iso_date" />
   <copyField source="result.indicator.baseline.value" dest="result_indicator_baseline_value" />
   <copyField source="result.indicator.baseline.location.ref" dest="result_indicator_baseline_location_ref" />
   <copyField source="result.indicator.baseline.dimension.name" dest="result_indicator_baseline_dimension_name" />
   <copyField source="result.indicator.baseline.dimension.value" dest="result_indicator_baseline_dimension_value" />
+  <copyField source="result.indicator.baseline.comment.narrative" dest="result_indicator_baseline_comment_narrative" />
   <copyField source="result.indicator.baseline.document-link.url" dest="result_indicator_baseline_document_link_url" />
   <copyField source="result.indicator.baseline.document-link.format" dest="result_indicator_baseline_document_link_format" />
-  <copyField source="result.indicator.baseline.document-link.title.narrative" dest="result_indicator_baseline_document_link_title_narrative_text" />
-  <copyField source="result.indicator.baseline.document-link.title.narrative.lang" dest="result_indicator_baseline_document_link_title_narrative_lang" />
-  <copyField source="result.indicator.baseline.document-link.description.narrative" dest="result_indicator_baseline_document_link_description_text" />
-  <copyField source="result.indicator.baseline.document-link.description.narrative.lang" dest="result_indicator_baseline_document_link_description_lang" />
+  <copyField source="result.indicator.baseline.document-link.title.narrative" dest="result_indicator_baseline_document_link_title" />
+  <copyField source="result.indicator.baseline.document-link.description.narrative" dest="result_indicator_baseline_document_link_description" />
   <copyField source="result.indicator.baseline.document-link.category.code" dest="result_indicator_baseline_document_link_category_code" />
   <copyField source="result.indicator.baseline.document-link.language.code" dest="result_indicator_baseline_document_link_language_code" />
   <copyField source="result.indicator.baseline.document-link.document-date.iso-date" dest="result_indicator_baseline_document_link_document_date_iso_date" />
-  <copyField source="result.indicator.baseline.comment.narrative" dest="result_indicator_baseline_comment_narrative_text" />
-  <copyField source="result.indicator.baseline.comment.narrative.lang" dest="result_indicator_baseline_comment_narrative_lang" />
   <copyField source="result.indicator.period.period-start.iso-date" dest="result_indicator_period_period_start_iso_date" />
   <copyField source="result.indicator.period.period-end.iso-date" dest="result_indicator_period_period_end_iso_date" />
   <copyField source="result.indicator.period.target.value" dest="result_indicator_period_target_value" />
   <copyField source="result.indicator.period.target.location.ref" dest="result_indicator_period_target_location_ref" />
-  <copyField source="result.indicator.period.target.dimension.name" dest="result_indicator_period_target_dimension_name" />
-  <copyField source="result.indicator.period.target.dimension.value" dest="result_indicator_period_target_dimension_value" />
-  <copyField source="result.indicator.period.target.comment.narrative" dest="result_indicator_period_target_comment_narrative_text" />
-  <copyField source="result.indicator.period.target.comment.narrative.lang" dest="result_indicator_period_target_comment_narrative_lang" />
+  <copyField source="result.indicator.period.target.dimension.name" dest="result_indicator_period_target_dimmension_name" />
+  <copyField source="result.indicator.period.target.dimension.value" dest="result_indicator_period_target_dimmension_value" />
+  <copyField source="result.indicator.period.target.comment.narrative" dest="result_indicator_period_target_comment_narrative" />
   <copyField source="result.indicator.period.target.document-link.url" dest="result_indicator_period_target_document_link_url" />
   <copyField source="result.indicator.period.target.document-link.format" dest="result_indicator_period_target_document_link_format" />
-  <copyField source="result.indicator.period.target.document-link.title.narrative" dest="result_indicator_period_target_document_link_title_narrative_text" />
-  <copyField source="result.indicator.period.target.document-link.title.narrative.lang" dest="result_indicator_period_target_document_link_title_narrative_lang" />
-  <copyField source="result.indicator.period.target.document-link.description.narrative" dest="result_indicator_period_target_document_link_description_narrative_text" />
-  <copyField source="result.indicator.period.target.document-link.description.narrative.lang" dest="result_indicator_period_target_document_link_description_narrative_lang" />
+  <copyField source="result.indicator.period.target.document-link.title.narrative" dest="result_indicator_period_target_document_link_title_narrative" />
+  <copyField source="result.indicator.period.target.document-link.description.narrative" dest="result_indicator_period_target_document_link_description_narrative" />
   <copyField source="result.indicator.period.target.document-link.category.code" dest="result_indicator_period_target_document_link_category_code" />
   <copyField source="result.indicator.period.target.document-link.language.code" dest="result_indicator_period_target_document_link_language_code" />
   <copyField source="result.indicator.period.target.document-link.document-date.iso-date" dest="result_indicator_period_target_document_link_document_date_iso_date" />
   <copyField source="result.indicator.period.actual.value" dest="result_indicator_period_actual_value" />
   <copyField source="result.indicator.period.actual.location.ref" dest="result_indicator_period_actual_location_ref" />
-  <copyField source="result.indicator.period.actual.dimension.name" dest="result_indicator_period_actual_dimension_name" />
-  <copyField source="result.indicator.period.actual.dimension.value" dest="result_indicator_period_actual_dimension_value" />
-  <copyField source="result.indicator.period.actual.comment.narrative" dest="result_indicator_period_actual_comment_narrative_text" />
-  <copyField source="result.indicator.period.actual.comment.narrative.lang" dest="result_indicator_period_actual_comment_narrative_lang" />
+  <copyField source="result.indicator.period.actual.dimension.name" dest="result_indicator_period_actual_dimmension_name" />
+  <copyField source="result.indicator.period.actual.dimension.value" dest="result_indicator_period_actual_dimmension_value" />
+  <copyField source="result.indicator.period.actual.comment.narrative" dest="result_indicator_period_actual_comment_narrative" />
   <copyField source="result.indicator.period.actual.document-link.url" dest="result_indicator_period_actual_document_link_url" />
   <copyField source="result.indicator.period.actual.document-link.format" dest="result_indicator_period_actual_document_link_format" />
-  <copyField source="result.indicator.period.actual.document-link.title.narrative" dest="result_indicator_period_actual_document_link_title_narrative_text" />
-  <copyField source="result.indicator.period.actual.document-link.title.narrative.lang" dest="result_indicator_period_actual_document_link_title_narrative_lang" />
-  <copyField source="result.indicator.period.actual.document-link.description.narrative" dest="result_indicator_period_actual_document_link_description_narrative_text" />
-  <copyField source="result.indicator.period.actual.document-link.description.narrative.lang" dest="result_indicator_period_actual_document_link_description_narrative_lang" />
+  <copyField source="result.indicator.period.actual.document-link.title.narrative" dest="result_indicator_period_actual_document_link_title_narrative" />
+  <copyField source="result.indicator.period.actual.document-link.description.narrative" dest="result_indicator_period_actual_document_link_description_narrative" />
   <copyField source="result.indicator.period.actual.document-link.category.code" dest="result_indicator_period_actual_document_link_category_code" />
   <copyField source="result.indicator.period.actual.document-link.language.code" dest="result_indicator_period_actual_document_link_language_code" />
   <copyField source="result.indicator.period.actual.document-link.document-date.iso-date" dest="result_indicator_period_actual_document_link_document_date_iso_date" />
-  <copyField source="crs-add.other-flags.code" dest="crs_add_other_flags_code" />
-  <copyField source="crs-add.other-flags.significance" dest="crs_add_other_flags_significance" />
-  <copyField source="crs-add.loan-terms.rate-1" dest="crs_add_loan_terms_rate_1" />
-  <copyField source="crs-add.loan-terms.rate-2" dest="crs_add_loan_terms_rate_2" />
-  <copyField source="crs-add.loan-terms.repayment-type.code" dest="crs_add_loan_terms_repayment_type_code" />
-  <copyField source="crs-add.loan-terms.repayment-plan.code" dest="crs_add_loan_terms_repayment_plan_code" />
-  <copyField source="crs-add.loan-terms.commitment-date.iso-date" dest="crs_add_loan_terms_commitment_date_iso_date" />
-  <copyField source="crs-add.loan-terms.repayment-first-date.iso-date" dest="crs_add_loan_terms_repayment_first_date_iso_date" />
-  <copyField source="crs-add.loan-terms.repayment-final-date.iso-date" dest="crs_add_loan_terms_repayment_final_date_iso_date" />
-  <copyField source="crs-add.loan-status.year" dest="crs_add_loan_status_year" />
-  <copyField source="crs-add.loan-status.currency" dest="crs_add_loan_status_currency" />
-  <copyField source="crs-add.loan-status.value-date" dest="crs_add_loan_status_value_date" />
-  <copyField source="crs-add.loan-status.interest-received" dest="crs_add_loan_status_interest_received" />
-  <copyField source="crs-add.loan-status.principal-outstanding" dest="crs_add_loan_status_principal_outstanding" />
-  <copyField source="crs-add.loan-status.principal-arrears" dest="crs_add_loan_status_principal_arrears" />
-  <copyField source="crs-add.loan-status.interest-arrears" dest="crs_add_loan_status_interest_arrears" />
-  <copyField source="crs-add.channel-code" dest="crs_add_channel_code" />
-  <copyField source="fss.extraction-date" dest="fss_extraction_date" />
-  <copyField source="fss.priority" dest="fss_priority" />
-  <copyField source="fss.phaseout-year" dest="fss_phaseout_year" />
-  <copyField source="fss.forecast" dest="fss_forecast_value" />
-  <copyField source="fss.forecast.year" dest="fss_forecast_year" />
-  <copyField source="fss.forecast.currency" dest="fss_forecast_currency" />
-  <copyField source="fss.forecast.value-date" dest="fss_forecast_value_date" />
-  <copyField source="reporting-org.type.name" dest="reporting_org_type_name" />
-  <copyField source="reporting-org.type.name" dest="reporting_org_type" />
-  <copyField source="recipient-country.name" dest="recipient_country_name" />
-  <copyField source="recipient-region.name" dest="recipient_region_name" />
-  <copyField source="title.narrative.first" dest="title_narrative_first" />
-  <copyField source="activity-date.start-planned" dest="activity_date_start_planned" />
-  <copyField source="activity-date.start-actual" dest="activity_date_start_actual" />
-  <copyField source="activity-date.end-planned" dest="activity_date_end_planned" />
-  <copyField source="activity-date.end-actual" dest="activity_date_end_actual" />
-  <copyField source="policy-marker.combined" dest="policy_marker_combined" />
-  <copyField source="planned-disbursement.value-usd" dest="planned_disbursement_value_usd" />
-  <copyField source="planned-disbursement.value-usd.sum" dest="planned_disbursement_value_usd_sum" />
-  <copyField source="planned-disbursement.value-usd.conversion-rate" dest="planned_disbursement_usd_conversion_rate" />
-  <copyField source="activity-aggregation.budget.value" dest="activity_aggregation_budget_value" />
-  <copyField source="activity-aggregation.budget.value-usd" dest="activity_aggregation_budget_value_usd" />
-  <copyField source="activity-aggregation.budget.currency" dest="activity_aggregation_budget_currency" />
-  <copyField source="activity-aggregation.incoming-funds.value" dest="activity_aggregation_incoming_funds_value" />
-  <copyField source="activity-aggregation.incoming-funds.value-usd" dest="activity_aggregation_incoming_funds_value_usd" />
-  <copyField source="activity-aggregation.incoming-funds.currency" dest="activity_aggregation_incoming_funds_currency" />
-  <copyField source="activity-aggregation.outgoing-commitment.value" dest="activity_aggregation_commitment_value" />
-  <copyField source="activity-aggregation.outgoing-commitment.value-usd" dest="activity_aggregation_commitment_value_usd" />
-  <copyField source="activity-aggregation.outgoing-commitment.currency" dest="activity_aggregation_commitment_currency" />
-  <copyField source="activity-aggregation.disbursement.value" dest="activity_aggregation_disbursement_value" />
-  <copyField source="activity-aggregation.disbursement.value-usd" dest="activity_aggregation_disbursement_value_usd" />
-  <copyField source="activity-aggregation.disbursement.currency" dest="activity_aggregation_disbursement_currency" />
-  <copyField source="activity-aggregation.expenditure.value" dest="activity_aggregation_expenditure_value" />
-  <copyField source="activity-aggregation.expenditure.value-usd" dest="activity_aggregation_expenditure_value_usd" />
-  <copyField source="activity-aggregation.expenditure.currency" dest="activity_aggregation_expenditure_currency" />
-  <copyField source="activity-aggregation.interest-payment.value" dest="activity_aggregation_interest_payment_value" />
-  <copyField source="activity-aggregation.interest-payment.value-usd" dest="activity_aggregation_interest_payment_value_usd" />
-  <copyField source="activity-aggregation.interest-payment.currency" dest="activity_aggregation_interest_payment_currency" />
-  <copyField source="activity-aggregation.loan-repayment.value" dest="activity_aggregation_loan_repayment_value" />
-  <copyField source="activity-aggregation.loan-repayment.value-usd" dest="activity_aggregation_loan_repayment_value_usd" />
-  <copyField source="activity-aggregation.loan-repayment.currency" dest="activity_aggregation_loan_repayment_currency" />
-  <copyField source="activity-aggregation.reimbursement.value" dest="activity_aggregation_reimbursement_value" />
-  <copyField source="activity-aggregation.reimbursement.value-usd" dest="activity_aggregation_reimbursement_value_usd" />
-  <copyField source="activity-aggregation.reimbursement.currency" dest="activity_aggregation_reimbursement_currency" />
-  <copyField source="activity-aggregation.purchase-of-equity.value" dest="activity_aggregation_purchase_of_equity_value" />
-  <copyField source="activity-aggregation.purchase-of-equity.value-usd" dest="activity_aggregation_purchase_of_equity_value_usd" />
-  <copyField source="activity-aggregation.purchase-of-equity.currency" dest="activity_aggregation_purchase_of_equity_currency" />
-  <copyField source="activity-aggregation.sale-of-equity.value" dest="activity_aggregation_sale_of_equity_value" />
-  <copyField source="activity-aggregation.sale-of-equity.value-usd" dest="activity_aggregation_sale_of_equity_value_usd" />
-  <copyField source="activity-aggregation.sale-of-equity.currency" dest="activity_aggregation_sale_of_equity_currency" />
-  <copyField source="activity-aggregation.credit-guarantee.value" dest="activity_aggregation_credit_guarantee_value" />
-  <copyField source="activity-aggregation.credit-guarantee.value-usd" dest="activity_aggregation_credit_guarantee_value_usd" />
-  <copyField source="activity-aggregation.credit-guarantee.currency" dest="activity_aggregation_credit_guarantee_currency" />
-  <copyField source="activity-aggregation.incoming-commitment.value" dest="activity_aggregation_incoming_commitment_value" />
-  <copyField source="activity-aggregation.incoming-commitment.value-usd" dest="activity_aggregation_incoming_commitment_value_usd" />
-  <copyField source="activity-aggregation.incoming-commitment.currency" dest="activity_aggregation_incoming_commitment_currency" />
-  <copyField source="activity-aggregation.outgoing-pledge.value" dest="activity_aggregation_outgoing_pledge_value" />
-  <copyField source="activity-aggregation.outgoing-pledge.value-usd" dest="activity_aggregation_outgoing_pledge_value_usd" />
-  <copyField source="activity-aggregation.outgoing-pledge.currency" dest="activity_aggregation_outgoing_pledge_currency" />
-  <copyField source="activity-aggregation.incoming-pledge.value" dest="activity_aggregation_incoming_pledge_value" />
-  <copyField source="activity-aggregation.incoming-pledge.value-usd" dest="activity_aggregation_incoming_pledge_value_usd" />
-  <copyField source="activity-aggregation.incoming-pledge.currency" dest="activity_aggregation_incoming_pledge_currency" />
-  <copyField source="child-aggregation.budget.value" dest="child_aggregation_budget_value" />
-  <copyField source="child-aggregation.budget.value-usd" dest="child_aggregation_budget_value_usd" />
-  <copyField source="child-aggregation.budget.currency" dest="child_aggregation_budget_currency" />
-  <copyField source="child-aggregation.incoming-funds.value" dest="child_aggregation_incoming_funds_value" />
-  <copyField source="child-aggregation.incoming-funds.value-usd" dest="child_aggregation_incoming_funds_value_usd" />
-  <copyField source="child-aggregation.incoming-funds.currency" dest="child_aggregation_incoming_funds_currency" />
-  <copyField source="child-aggregation.outgoing-commitment.value" dest="child_aggregation_commitment_value" />
-  <copyField source="child-aggregation.outgoing-commitment.value-usd" dest="child_aggregation_commitment_value_usd" />
-  <copyField source="child-aggregation.outgoing-commitment.currency" dest="child_aggregation_commitment_currency" />
-  <copyField source="child-aggregation.disbursement.value" dest="child_aggregation_disbursement_value" />
-  <copyField source="child-aggregation.disbursement.value-usd" dest="child_aggregation_disbursement_value_usd" />
-  <copyField source="child-aggregation.disbursement.currency" dest="child_aggregation_disbursement_currency" />
-  <copyField source="child-aggregation.expenditure.value" dest="child_aggregation_expenditure_value" />
-  <copyField source="child-aggregation.expenditure.value-usd" dest="child_aggregation_expenditure_value_usd" />
-  <copyField source="child-aggregation.expenditure.currency" dest="child_aggregation_expenditure_currency" />
-  <copyField source="child-aggregation.interest-payment.value" dest="child_aggregation_interest_payment_value" />
-  <copyField source="child-aggregation.interest-payment.value-usd" dest="child_aggregation_interest_payment_value_usd" />
-  <copyField source="child-aggregation.interest-payment.currency" dest="child_aggregation_interest_payment_currency" />
-  <copyField source="child-aggregation.loan-repayment.value" dest="child_aggregation_loan_repayment_value" />
-  <copyField source="child-aggregation.loan-repayment.value-usd" dest="child_aggregation_loan_repayment_value_usd" />
-  <copyField source="child-aggregation.loan-repayment.currency" dest="child_aggregation_loan_repayment_currency" />
-  <copyField source="child-aggregation.reimbursement.value" dest="child_aggregation_reimbursement_value" />
-  <copyField source="child-aggregation.reimbursement.value-usd" dest="child_aggregation_reimbursement_value_usd" />
-  <copyField source="child-aggregation.reimbursement.currency" dest="child_aggregation_reimbursement_currency" />
-  <copyField source="child-aggregation.purchase-of-equity.value" dest="child_aggregation_purchase_of_equity_value" />
-  <copyField source="child-aggregation.purchase-of-equity.value-usd" dest="child_aggregation_purchase_of_equity_value_usd" />
-  <copyField source="child-aggregation.purchase-of-equity.currency" dest="child_aggregation_purchase_of_equity_currency" />
-  <copyField source="child-aggregation.sale-of-equity.value" dest="child_aggregation_sale_of_equity_value" />
-  <copyField source="child-aggregation.sale-of-equity.value-usd" dest="child_aggregation_sale_of_equity_value_usd" />
-  <copyField source="child-aggregation.sale-of-equity.currency" dest="child_aggregation_sale_of_equity_currency" />
-  <copyField source="child-aggregation.credit-guarantee.value" dest="child_aggregation_credit_guarantee_value" />
-  <copyField source="child-aggregation.credit-guarantee.value-usd" dest="child_aggregation_credit_guarantee_value_usd" />
-  <copyField source="child-aggregation.credit-guarantee.currency" dest="child_aggregation_credit_guarantee_currency" />
-  <copyField source="child-aggregation.incoming-commitment.value" dest="child_aggregation_incoming_commitment_value" />
-  <copyField source="child-aggregation.incoming-commitment.value-usd" dest="child_aggregation_incoming_commitment_value_usd" />
-  <copyField source="child-aggregation.incoming-commitment.currency" dest="child_aggregation_incoming_commitment_currency" />
-  <copyField source="child-aggregation.outgoing-pledge.value" dest="child_aggregation_outgoing_pledge_value" />
-  <copyField source="child-aggregation.outgoing-pledge.value-usd" dest="child_aggregation_outgoing_pledge_value_usd" />
-  <copyField source="child-aggregation.outgoing-pledge.currency" dest="child_aggregation_outgoing_pledge_currency" />
-  <copyField source="child-aggregation.incoming-pledge.value" dest="child_aggregation_incoming_pledge_value" />
-  <copyField source="child-aggregation.incoming-pledge.value-usd" dest="child_aggregation_incoming_pledge_value_usd" />
-  <copyField source="child-aggregation.incoming-pledge.currency" dest="child_aggregation_incoming_pledge_currency" />
-  <copyField source="activity-plus-child-aggregation.budget.value" dest="activity_plus_child_aggregation_budget_value" />
-  <copyField source="activity-plus-child-aggregation.budget.value-usd" dest="activity_plus_child_aggregation_budget_value_usd" />
-  <copyField source="activity-plus-child-aggregation.budget.currency" dest="activity_plus_child_aggregation_budget_currency" />
-  <copyField source="activity-plus-child-aggregation.incoming-funds.value" dest="activity_plus_child_aggregation_incoming_funds_value" />
-  <copyField source="activity-plus-child-aggregation.incoming-funds.value-usd" dest="activity_plus_child_aggregation_incoming_funds_value_usd" />
-  <copyField source="activity-plus-child-aggregation.incoming-funds.currency" dest="activity_plus_child_aggregation_incoming_funds_currency" />
-  <copyField source="activity-plus-child-aggregation.outgoing-commitment.value" dest="activity_plus_child_aggregation_commitment_value" />
-  <copyField source="activity-plus-child-aggregation.outgoing-commitment.value-usd" dest="activity_plus_child_aggregation_commitment_value_usd" />
-  <copyField source="activity-plus-child-aggregation.outgoing-commitment.currency" dest="activity_plus_child_aggregation_commitment_currency" />
-  <copyField source="activity-plus-child-aggregation.disbursement.value" dest="activity_plus_child_aggregation_disbursement_value" />
-  <copyField source="activity-plus-child-aggregation.disbursement.value-usd" dest="activity_plus_child_aggregation_disbursement_value_usd" />
-  <copyField source="activity-plus-child-aggregation.disbursement.currency" dest="activity_plus_child_aggregation_disbursement_currency" />
-  <copyField source="activity-plus-child-aggregation.expenditure.value" dest="activity_plus_child_aggregation_expenditure_value" />
-  <copyField source="activity-plus-child-aggregation.expenditure.value-usd" dest="activity_plus_child_aggregation_expenditure_value_usd" />
-  <copyField source="activity-plus-child-aggregation.expenditure.currency" dest="activity_plus_child_aggregation_expenditure_currency" />
-  <copyField source="activity-plus-child-aggregation.interest-payment.value" dest="activity_plus_child_aggregation_interest_payment_value" />
-  <copyField source="activity-plus-child-aggregation.interest-payment.value-usd" dest="activity_plus_child_aggregation_interest_payment_value_usd" />
-  <copyField source="activity-plus-child-aggregation.interest-payment.currency" dest="activity_plus_child_aggregation_interest_payment_currency" />
-  <copyField source="activity-plus-child-aggregation.loan-repayment.value" dest="activity_plus_child_aggregation_loan_repayment_value" />
-  <copyField source="activity-plus-child-aggregation.loan-repayment.value-usd" dest="activity_plus_child_aggregation_loan_repayment_value_usd" />
-  <copyField source="activity-plus-child-aggregation.loan-repayment.currency" dest="activity_plus_child_aggregation_loan_repayment_currency" />
-  <copyField source="activity-plus-child-aggregation.reimbursement.value" dest="activity_plus_child_aggregation_reimbursement_value" />
-  <copyField source="activity-plus-child-aggregation.reimbursement.value-usd" dest="activity_plus_child_aggregation_reimbursement_value_usd" />
-  <copyField source="activity-plus-child-aggregation.reimbursement.currency" dest="activity_plus_child_aggregation_reimbursement_currency" />
-  <copyField source="activity-plus-child-aggregation.purchase-of-equity.value" dest="activity_plus_child_aggregation_purchase_of_equity_value" />
-  <copyField source="activity-plus-child-aggregation.purchase-of-equity.value-usd" dest="activity_plus_child_aggregation_purchase_of_equity_value_usd" />
-  <copyField source="activity-plus-child-aggregation.purchase-of-equity.currency" dest="activity_plus_child_aggregation_purchase_of_equity_currency" />
-  <copyField source="activity-plus-child-aggregation.sale-of-equity.value" dest="activity_plus_child_aggregation_sale_of_equity_value" />
-  <copyField source="activity-plus-child-aggregation.sale-of-equity.value-usd" dest="activity_plus_child_aggregation_sale_of_equity_value_usd" />
-  <copyField source="activity-plus-child-aggregation.sale-of-equity.currency" dest="activity_plus_child_aggregation_sale_of_equity_currency" />
-  <copyField source="activity-plus-child-aggregation.credit-guarantee.value" dest="activity_plus_child_aggregation_credit_guarantee_value" />
-  <copyField source="activity-plus-child-aggregation.credit-guarantee.value-usd" dest="activity_plus_child_aggregation_credit_guarantee_value_usd" />
-  <copyField source="activity-plus-child-aggregation.credit-guarantee.currency" dest="activity_plus_child_aggregation_credit_guarantee_currency" />
-  <copyField source="activity-plus-child-aggregation.incoming-commitment.value" dest="activity_plus_child_aggregation_incoming_commitment_value" />
-  <copyField source="activity-plus-child-aggregation.incoming-commitment.value-usd" dest="activity_plus_child_aggregation_incoming_commitment_value_usd" />
-  <copyField source="activity-plus-child-aggregation.incoming-commitment.currency" dest="activity_plus_child_aggregation_incoming_commitment_currency" />
-  <copyField source="activity-plus-child-aggregation.outgoing-pledge.value" dest="activity_plus_child_aggregation_outgoing_pledge_value" />
-  <copyField source="activity-plus-child-aggregation.outgoing-pledge.value-usd" dest="activity_plus_child_aggregation_outgoing_pledge_value_usd" />
-  <copyField source="activity-plus-child-aggregation.outgoing-pledge.currency" dest="activity_plus_child_aggregation_outgoing_pledge_currency" />
-  <copyField source="activity-plus-child-aggregation.incoming-pledge.value" dest="activity_plus_child_aggregation_incoming_pledge_value" />
-  <copyField source="activity-plus-child-aggregation.incoming-pledge.value-usd" dest="activity_plus_child_aggregation_incoming_pledge_value_usd" />
-  <copyField source="activity-plus-child-aggregation.incoming-pledge.currency" dest="activity_plus_child_aggregation_incoming_pledge_currency" />
-
-
-  <!-- missing fields -->
-  <copyField source="title.narrative" dest="title_narrative" />
-  <copyField source="description.narrative" dest="description_narrative" />
-  <copyField source="participating-org.narrative" dest="participating_org_narrative" />
-  <copyField source="other-identifier.owner-org.narrative" dest="other_identifier_owner_org_narrative" />
-  <copyField source="activity-date.narrative" dest="activity_date_narrative" />
-  <copyField source="contact-info.organisation.narrative" dest="contact_info_organisation_narrative" />
-  <copyField source="contact-info.department.narrative" dest="contact_info_department_narrative" />
-  <copyField source="contact-info.person-name.narrative" dest="contact_info_person_name_narrative" />
-  <copyField source="contact-info.job-title.narrative" dest="contact_info_job_title_narrative" />
-  <copyField source="contact-info.mailing-address.narrative" dest="contact_info_mailing_address_narrative" />
-  <copyField source="recipient-country.narrative" dest="recipient_country_narrative" />
-  <copyField source="recipient-region.narrative" dest="recipient_region_narrative" />
-  <copyField source="location.name.narrative" dest="location_name_narrative" />
-  <copyField source="location.description.narrative" dest="location_description_narrative" />
-  <copyField source="location.activity-description.narrative" dest="location_activity_description_narrative" />
-  <copyField source="sector.narrative" dest="sector_narrative" />
-  <copyField source="tag.narrative" dest="tag_narrative" />
-  <copyField source="country-budget-items.budget-item.description.narrative" dest="country_budget_items_budget_description_narrative" />
-  <copyField source="humanitarian-scope.narrative" dest="humanitarian_scope_narrative" />
-  <copyField source="policy-marker.narrative" dest="policy_marker_narrative" />
-  <copyField source="planned-disbursement.provider-org.narrative" dest="planned_disbursement_provider_org_narrative" />
-  <copyField source="planned-disbursement.receiver-org.narrative" dest="planned_disbursement_receiver_org_narrative" />
-  <copyField source="document-link.title.narrative" dest="document_link_title_narrative" />
-  <copyField source="document-link.description.narrative" dest="document_link_description_narrative" />
-  <copyField source="conditions.condition.narrative" dest="conditions_condition_narrative" />
-  <copyField source="result.title.narrative" dest="result_title_narrative" />
-  <copyField source="result.description.narrative" dest="result_description_narrative" />
-  <copyField source="result.description.narrative" dest="result_description" />
-  <copyField source="result.document-link.title.narrative" dest="result_document_link_title_narrative" />
-  <copyField source="result.document-link.description.narrative" dest="result_document_link_description_narrative" />
-  <copyField source="result.indicator.title.narrative" dest="result_indicator_title_narrative" />
-  <copyField source="result.indicator.description.narrative" dest="result_indicator_description_narrative" />
-  <copyField source="result.indicator.document-link.title.narrative" dest="result_indicator_document_link_title_narrative" />
-  <copyField source="result.indicator.document-link.description.narrative" dest="result_indicator_document_link_description_narrative" />
-  <copyField source="result.indicator.baseline.comment.narrative" dest="result_indicator_baseline_comment_narrative" />
-  <copyField source="result.indicator.period.target.comment.narrative" dest="result_indicator_period_target_comment_narrative" />
-  <copyField source="result.indicator.period.target.document-link.title.narrative" dest="result_indicator_period_target_document_link_title_narrative" />
-  <copyField source="result.indicator.period.target.document-link.description.narrative" dest="result_indicator_period_target_document_link_description_narrative" />
-  <copyField source="result.indicator.period.actual.comment.narrative" dest="result_indicator_period_actual_comment_narrative" />
-  <copyField source="result.indicator.period.actual.document-link.title.narrative" dest="result_indicator_period_actual_document_link_title_narrative" />
-  <copyField source="result.indicator.period.actual.document-link.description.narrative" dest="result_indicator_period_actual_document_link_description_narrative" />
-  <copyField source="default-aid-type.code" dest="default_aid_type" />
-  <copyField source="default-aid-type.vocabulary" dest="default_aid_type_category_code" />
-  <copyField source="default-aid-type.name" dest="default_aid_type_category_name" />
-  <copyField source="activity-date.start-planned" dest="activity_date_start_planned_f" />
-  <copyField source="activity-date.start-actual" dest="activity_date_start_actual_f" />
-  <copyField source="activity-date.end-planned" dest="activity_date_end_planned_f" />
-  <copyField source="activity-date.end-actual" dest="activity_date_end_actual_f" />
-  <copyField source="activity-date.common.end" dest="activity_date_end_common" />
-  <copyField source="activity-date.common.start" dest="activity_date_start_common" />
-  <copyField source="activity-date.common.end" dest="activity_date_end_common_f" />
-  <copyField source="activity-date.common.start" dest="activity_date_start_common_f" />
-  <copyField source="result.indicator.baseline.document-link.title.narrative" dest="result_indicator_baseline_document_link_title" />
-  <copyField source="result.indicator.baseline.document-link.description.narrative" dest="result_indicator_baseline_document_link_description" />
-  <copyField source="result.indicator.period.actual.dimension.name" dest="result_indicator_period_actual_dimmension_name" />
-  <copyField source="result.indicator.period.actual.dimension.value" dest="result_indicator_period_actual_dimmension_value" />
-  <copyField source="result.indicator.period.target.dimension.name" dest="result_indicator_period_target_dimmension_name" />
-  <copyField source="result.indicator.period.target.dimension.value" dest="result_indicator_period_target_dimmension_value" />
-  <copyField source="result.reference.vocabulary-uri" dest="result_indicator_reference_vocabulary_uri" />
-  <copyField source="last-updated-datetime" dest="last_updated_datetime_f" />
-  <copyField source="dataset.metadata_created" dest="dataset_date_created" />
-  <copyField source="dataset.id" dest="dataset_iati_id" />
-  <copyField source="dataset.name" dest="dataset_name" />
-  <copyField source="dataset.extras.publisher_iati_id" dest="dataset_publisher_iati_id" />
-  <copyField source="dataset.extras.publisher" dest="dataset_publisher_id" />
-  <copyField source="result.document-link.url" dest="result_document_link" />
 </schema>
