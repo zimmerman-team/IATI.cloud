@@ -514,7 +514,7 @@
   <field name="other-identifier.owner-org.narrative.lang" type="text_general"/>
 
   <!-- activity.activity-status 1..1 -->
-  <field name="activity-status.code" type="text_general"/>
+  <field name="activity-status.code" type="text_general_single"/>
 
   <!-- activity.activity-date 1..* -->
   <field name="activity-date.type" type="text_general"/>
@@ -871,9 +871,9 @@
   <field name="planned-disbursement.value-usd" type="pdoubles"/>
   <field name="transaction.value-usd" type="pdoubles"/>
 
-  <field name="budget.value-usd.sum" type="pdoubles"/>
-  <field name="planned-disbursement.value-usd.sum" type="pdoubles"/>
-  <field name="transaction.value-usd.sum" type="pdoubles"/>
+  <field name="budget.value-usd.sum" type="pdouble"/>
+  <field name="planned-disbursement.value-usd.sum" type="pdouble"/>
+  <field name="transaction.value-usd.sum" type="pdouble"/>
 
   <field name="budget.value-usd.conversion-rate" type="pdoubles"/>
   <field name="planned-disbursement.value-usd.conversion-rate" type="pdoubles"/>
@@ -2317,7 +2317,6 @@
   <copyField source="policy-marker.narrative" dest="policy_marker_narrative" />
   <copyField source="planned-disbursement.provider-org.narrative" dest="planned_disbursement_provider_org_narrative" />
   <copyField source="planned-disbursement.receiver-org.narrative" dest="planned_disbursement_receiver_org_narrative" />
-  <copyField source="transaction.description.narrative" dest="transaction_description_narrative" />
   <copyField source="transaction.provider-org.narrative" dest="transaction_provider_org_narrative" />
   <copyField source="transaction.receiver-org.narrative" dest="transaction_receiver_org_narrative" />
   <copyField source="document-link.title.narrative" dest="document_link_title_narrative" />
@@ -2349,7 +2348,6 @@
   <copyField source="activity-date.common.start" dest="activity_date_start_common" />
   <copyField source="activity-date.common.end" dest="activity_date_end_common_f" />
   <copyField source="activity-date.common.start" dest="activity_date_start_common_f" />
-  <copyField source="transaction.value-usd.conversion-rate" dest="transaction_usd_conversion_rate" />
   <copyField source="result.indicator.baseline.document-link.title.narrative" dest="result_indicator_baseline_document_link_title" />
   <copyField source="result.indicator.baseline.document-link.description.narrative" dest="result_indicator_baseline_document_link_description" />
   <copyField source="result.indicator.period.actual.dimension.name" dest="result_indicator_period_actual_dimmension_name" />
