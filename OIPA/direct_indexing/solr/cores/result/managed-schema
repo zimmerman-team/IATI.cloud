@@ -824,6 +824,12 @@
 
   <field name="planned-disbursement.value-usd.conversion-rate" type="pdoubles"/>
 
+  <!-- AIDA relational data for indicators -->
+  <field name="result.indicator.baseline-index" type="pdoubles"/>
+  <field name="result.indicator.period-index" type="pdoubles"/>
+  <field name="result.indicator.period.actual-index" type="pdoubles"/>
+  <field name="result.indicator.period.target-index" type="pdoubles"/>
+
   <!-- Activity aggregated currency data -->
   <field name="activity-aggregation.budget.value" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
   <field name="activity-aggregation.budget.value-usd" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>

@@ -1,5 +1,7 @@
 from django.conf import settings
 
+from direct_indexing.custom_fields.indexing_manytomany_relations import index_many_to_many_relations
+
 AVAILABLE_SUBTYPES = {
     'transaction': settings.SOLR_TRANSACTION_URL,
     'budget': settings.SOLR_BUDGET_URL,
@@ -21,6 +23,10 @@ def extract_subtype(activity, subtype):
     """
     if subtype not in AVAILABLE_SUBTYPES or subtype not in activity:
         return []  # Make sure we do not return any data when there is none.
+
+    # Add custom fields to result core
+    activity = index_many_to_many_relations(activity)
+
     # Create a list of the extracted subtypes
     subtype_list = []
     exclude_fields = []
