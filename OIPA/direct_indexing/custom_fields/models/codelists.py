@@ -8,9 +8,16 @@ from django.conf import settings
 CODELIST_URL = 'https://codelists.codeforiati.org/api/json/en/'
 USED_CODELISTS = [
     'AidType',
+    'BudgetStatus',
+    'BudgetType',
     'Country',
     'OrganisationType',
     'Region',
+    'TagVocabulary',
+    'SectorCategory',
+    'PolicyMarker',
+    'PolicySignificance',
+    'PolicyMarkerVocabulary',
 ]
 SOURCES = {}
 for s in USED_CODELISTS:

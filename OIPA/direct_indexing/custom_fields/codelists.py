@@ -22,6 +22,26 @@ def add_codelist_fields(data, codelists):
     # default-aid-type.name
     data = extract_list_field(data, 'default-aid-type', 'code', 'AidType', codelists)
 
+    # policy-marker.name
+    data = extract_list_field(data, 'policy-marker', 'code', 'PolicyMarker', codelists)
+
+    # policy-marker.significance.name
+    data = extract_list_field(data, 'policy-marker', 'significance', 'PolicySignificance', codelists,
+                              'policy-marker.significance')
+    # policy-marker.vocabulary.name
+    data = extract_list_field(data, 'policy-marker', 'vocabulary', 'PolicyMarkerVocabulary', codelists,
+                              'policy-marker.vocabulary')
+
+    # budget.type.name and budget.status.name
+    data = extract_list_field(data, 'budget', 'type', 'BudgetType', codelists, 'budget.type')
+    data = extract_list_field(data, 'budget', 'status', 'BudgetStatus', codelists, 'budget.status')
+
+    # sector.name
+    data = extract_list_field(data, 'sector', 'code', 'SectorCategory', codelists)
+
+    # tag.vocabulary.name
+    data = extract_list_field(data, 'tag', 'vocabulary', 'TagVocabulary', codelists, 'tag.vocabulary')
+
     # transaction.receiver-org.type.name
     data = extract_nested_list_field(data, 'transaction', 'receiver-org', 'type', 'OrganisationType', codelists)
     return data
@@ -40,8 +60,11 @@ def extract_single_field(data, field_name, field_type, codelist_name, codelists)
     return data
 
 
-def extract_list_field(data, field_name, field_type, codelist_name, codelists):
-    postfixed_field_name = f'{field_name}{CODELIST_POSTFIX}'
+def extract_list_field(data, field_name, field_type, codelist_name, codelists, custom_field_name=None):
+    if custom_field_name:
+        postfixed_field_name = f'{custom_field_name}{CODELIST_POSTFIX}'
+    else:
+        postfixed_field_name = f'{field_name}{CODELIST_POSTFIX}'
     data[postfixed_field_name] = []
     if field_name not in data:
         return data

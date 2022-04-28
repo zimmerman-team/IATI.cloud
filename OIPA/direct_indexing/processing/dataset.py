@@ -35,7 +35,7 @@ def fun(dataset):
     logging.info(f'Indexing dataset {dataset}')
 
     currencies = cu.Currencies()
-    codelist = codelists.Codelists()
+    codelist = codelists.Codelists(download=True)
     dataset = clean_dataset_metadata(dataset)
     dataset_filepath = get_dataset_filepath(dataset)
     valid_version = get_dataset_version_validity(dataset, dataset_filepath)

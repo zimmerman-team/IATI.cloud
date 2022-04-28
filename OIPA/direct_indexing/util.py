@@ -46,3 +46,4 @@ def index_to_core(url, json_path, remove=False):
         return result
     except subprocess.CalledProcessError as e:
         result = f'Failed to index: \n {e}'
+        return result
