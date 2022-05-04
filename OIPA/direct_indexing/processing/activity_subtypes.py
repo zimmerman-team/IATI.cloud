@@ -25,7 +25,7 @@ def extract_subtype(activity, subtype):
         return []  # Make sure we do not return any data when there is none.
 
     # Add custom fields to result core
-    activity = index_many_to_many_relations(activity)
+    index_many_to_many_relations(activity)
 
     # Create a list of the extracted subtypes
     subtype_list = []

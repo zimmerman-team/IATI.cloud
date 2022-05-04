@@ -1,31 +1,64 @@
 def index_many_to_many_relations(activity):
+    """
+    Index many-to-many relations is used to support the use of relational data,
+    Currently we use it for the result indicators, which have 0 to N periods and baselines.
+    By providing an index for each indicator in for these children, a frontend can access these files as relational
+    """
     # Index result indicator, starting with baseline:
     # An indicator has 0 to N baselines, if 0, represent with index -1, else represent with index n.
     if 'result' in activity:
-        add_result_child_indexes(activity['result'], 'indicator')
+        if type(activity['result']) != list:
+            activity['result'] = [activity['result']]
+        for result in activity['result']:
+            add_result_child_indexes(result, 'indicator')
 
 
 def add_result_child_indexes(field, child):
+    """
+    Go through the activity results and index the given child.
+    Because this is currently used for results, we directly pass the required children.
+
+    :param field: a dataset containing the initial child of the activity
+    :param child: the second level child of the aforementioned field
+    """
+    # Check if the child exists and make the child a list if it is a dict.
+    if child not in field:
+        return
     if type(field[child]) != list:
         field[child] = [field[child]]
+
     add_field_child_field_indexes(field, child, 'baseline')
     add_field_child_field_indexes(field, child, 'period')
     add_field_child_field_children_indexes(field, child, 'period', children=['actual', 'target'])
 
 
 def add_field_child_field_indexes(data, target_field, field):
+    """
+    Index and save the specified field and parent.
+
+    :param data: the data object
+    :param target_field: the first level child of data, like an indicator
+    :param field: the second level child of data, like indicator.period
+    """
     total_field = 0
     data[f'{target_field}.{field}-index'] = []
-    if target_field not in data:
-        return
+
     for target in data[target_field]:
-        field_index = -1
-        if field in target:
-            field_index = total_field
-            if type(target[field]) != list:
-                total_field += 1
-            else:
-                total_field += len(target[field])
+        # for each first-level child in the data:
+        # - if there is no field, set the index to -1
+        # - if there is a field, set the index to the number of occurrences
+
+        if field not in target:
+            # if there is no field, we notate it with -1
+            data[f'{target_field}.{field}-index'].append(-1)
+            continue
+
+        # make sure the baseline is a list of baselines.
+        if type(target[field]) != list:
+            target[field] = [target[field]]
+
+        field_index = total_field
+        total_field += len(target[field])
         data[f'{target_field}.{field}-index'].append(field_index)
 
 
@@ -44,9 +77,6 @@ def add_field_child_field_children_indexes(data, target_field, field, children):
     for child in children:
         total_field = 0
         data[f'{target_field}.{field}.{child}-index'] = []
-        # Only if the target field is available
-        if target_field not in data:
-            return
         # For every first level child we need to check for second level children.
         for target in data[target_field]:
             if field in target:
@@ -56,7 +86,7 @@ def add_field_child_field_children_indexes(data, target_field, field, children):
                 # target[field] is now a list of the second level children
                 # for every second level child, check if the third level children are found
                 # Use enumerate to only save the index of for the first occurrence.
-                for i, item in enumerate(target[field]):
+                for item in target[field]:
                     if child in item:
                         field_index = total_field
                         if type(item[child]) != list:
@@ -66,3 +96,4 @@ def add_field_child_field_children_indexes(data, target_field, field, children):
                     else:
                         field_index = -1
                     data[f'{target_field}.{field}.{child}-index'].append(field_index)
+    return data
