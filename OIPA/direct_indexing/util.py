@@ -29,6 +29,7 @@ def index_to_core(url, json_path, remove=False):
 
     :param url: The url of the core to index into
     :param json_path: The path to the json file to index
+    :param remove: bool to indicate if the created json file should be removed, defaults to False
     """
     try:
         solr_out = subprocess.check_output([settings.SOLR_POST_TOOL, '-url', url, json_path],
@@ -38,8 +39,9 @@ def index_to_core(url, json_path, remove=False):
             message_index = re.search(r'\b(msg)\b', solr_out).start()+5  # +5 to get past the 'msg:'
             solr_out = solr_out[message_index:]
             result = solr_out[:re.search(r'\n', solr_out).start()-1]  # stop at newline excluding the ,
-            # TODO: os.remove(json_path) for failure as well. Leaving it in for testing for now
             logging.info("ERROR DATASET PATH: " + json_path)
+            if remove:
+                os.remove(json_path)
         else:
             if remove:
                 os.remove(json_path)  # On success, remove the json file

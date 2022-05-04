@@ -83,17 +83,23 @@ def add_field_child_field_children_indexes(data, target_field, field, children):
                 # If the second level child is found, loop over this and check if the third level children are found.
                 if type(target[field]) != list:
                     target[field] = [target[field]]
-                # target[field] is now a list of the second level children
-                # for every second level child, check if the third level children are found
-                # Use enumerate to only save the index of for the first occurrence.
-                for item in target[field]:
-                    if child in item:
-                        field_index = total_field
-                        if type(item[child]) != list:
-                            total_field += 1
-                        else:
-                            total_field += len(item[child])
-                    else:
-                        field_index = -1
-                    data[f'{target_field}.{field}.{child}-index'].append(field_index)
+                iterate_third_level_children(child, data, field, target, target_field, total_field)
     return data
+
+
+def iterate_third_level_children(child, data, field, target, target_field, total_field):
+    """
+    target[field] is now a list of the second level children,
+    for every second level child, check if the third level children are found.
+    Use enumerate to only save the index of for the first occurrence.
+    """
+    for item in target[field]:
+        if child in item:
+            field_index = total_field
+            if type(item[child]) != list:
+                total_field += 1
+            else:
+                total_field += len(item[child])
+        else:
+            field_index = -1
+        data[f'{target_field}.{field}.{child}-index'].append(field_index)
