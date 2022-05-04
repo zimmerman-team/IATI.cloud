@@ -54,7 +54,7 @@ def extract_subtype(activity, subtype):
         subtype_in_data = [subtype_in_data]
     # traverse subtype list
     for i, subtype_element in enumerate(list(subtype_in_data)):
-        if not type(subtype_element) == dict:
+        if type(subtype_element) != dict:
             continue  # skip if the element is broken
         # Get the value of the subtype element into a new dict with the key being the subtype.
         subtype_dict = {subtype: dict(subtype_element)}
