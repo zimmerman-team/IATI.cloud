@@ -1,0 +1,27 @@
+services:
+  grafana:
+    build: grafana
+    restart: unless-stopped
+    ports:
+      - "127.0.3.1:3000:3000"
+
+  loki:
+    build: loki
+    hostname: loki
+    ports:
+      - "127.0.3.1:3100:3100"
+    restart: unless-stopped
+    volumes:
+      - "./loki/loki-config.yaml:/etc/loki/loki-config.yaml"
+      - "./loki/data:/data/loki:rw"
+      - "./loki/wal:/wal:rw"
+    command: -config.file=/etc/loki/loki-config.yaml
+
+  promtail:
+    build: promtail
+    hostname: promtail
+    restart: unless-stopped
+    volumes:
+      - "/var/lib/docker/containers:/var/lib/docker/containers:ro"
+      - "./promtail/promtail-config.yaml:/etc/promtail/promtail-config.yaml"
+    command: -config.file=/etc/promtail/promtail-config.yaml
