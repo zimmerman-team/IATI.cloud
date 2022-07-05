@@ -110,7 +110,7 @@ rq-scheduler==0.8.3
 tzlocal==1.5.1
 
 # JSON decoder and encoder
-ujson==1.35
+ujson==5.4.0
 
 # Manually install UWSGI, as installation through requirements does not work.
 #    add-apt-repository ppa:deadsnakes/ppa
