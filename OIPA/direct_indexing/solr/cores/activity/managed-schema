@@ -2345,7 +2345,7 @@
   <copyField source="result.indicator.period.actual.document-link.title.narrative" dest="result_indicator_period_actual_document_link_title_narrative" />
   <copyField source="result.indicator.period.actual.document-link.description.narrative" dest="result_indicator_period_actual_document_link_description_narrative" />
   <copyField source="default-aid-type.code" dest="default_aid_type" />
-  <copyField source="default-aid-type.vocabulary" dest="default_aid_type_category_code" />
+  <copyField source="default-aid-type.code" dest="default_aid_type_category_code" />
   <copyField source="default-aid-type.name" dest="default_aid_type_category_name" />
   <copyField source="activity-date.start-planned" dest="activity_date_start_planned_f" />
   <copyField source="activity-date.start-actual" dest="activity_date_start_actual_f" />
