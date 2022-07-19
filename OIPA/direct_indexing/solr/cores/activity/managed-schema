@@ -479,42 +479,44 @@
   <field name="budget-not-provided" type="text_general_single"/>
 
   <!-- activity.iati id 1..1 -->
-  <field name="iati-identifier" type="text_general_single"/>
+  <field name="iati-identifier" type="non_case_sensitive"/>
 
   <!-- activity.reporting_org 1..1 -->
-  <field name="reporting-org.ref" type="text_general_single"/>
+  <!-- non_case_sensitive because this uses the whitespace tokenisation. -->
+  <field name="reporting-org.ref" type="non_case_sensitive"/>
   <field name="reporting-org.type" type="text_general_single"/>
   <field name="reporting-org.secondary-reporter" type="boolean"/>
-  <field name="reporting-org.narrative" type="text_general"/>
+  <!-- all narratives using iati_narrative to allow 'contains' queries -->
+  <field name="reporting-org.narrative" type="iati_narrative"/>
   <field name="reporting-org.narrative.lang" type="text_general"/>
 
   <!-- activity.title 1..1 narratives are 1..* -->
-  <field name="title.narrative" type="text_general"/>
+  <field name="title.narrative" type="iati_narrative"/>
   <field name="title.narrative.lang" type="text_general"/>
 
   <!-- activity.description 1..* -->
   <field name="description.type" type="text_general"/>
-  <field name="description.narrative" type="text_general"/>
+  <field name="description.narrative" type="iati_narrative"/>
   <field name="description.narrative.lang" type="text_general"/>
 
   <!-- activity.participating-org 0..* -->
-  <field name="participating-org.ref" type="text_general"/>
+  <field name="participating-org.ref" type="non_case_sensitive"/>
   <field name="participating-org.type" type="text_general"/>
   <field name="participating-org.role" type="text_general"/>
   <field name="participating-org.activity-id" type="text_general"/>
   <field name="participating-org.crs-channel-code" type="text_general"/>
-  <field name="participating-org.narrative" type="text_general"/>
+  <field name="participating-org.narrative" type="iati_narrative"/>
   <field name="participating-org.narrative.lang" type="text_general"/>
 
   <!-- activity.other-identifier 0..* -->
-  <field name="other-identifier.ref" type="text_general"/>
+  <field name="other-identifier.ref" type="non_case_sensitive"/>
   <field name="other-identifier.type" type="text_general"/>
-  <field name="other-identifier.owner-org.ref" type="text_general"/>
-  <field name="other-identifier.owner-org.narrative" type="text_general"/>
+  <field name="other-identifier.owner-org.ref" type="non_case_sensitive"/>
+  <field name="other-identifier.owner-org.narrative" type="iati_narrative"/>
   <field name="other-identifier.owner-org.narrative.lang" type="text_general"/>
 
   <!-- activity.activity-status 1..1 -->
-  <field name="activity-status.code" type="text_general_single"/>
+  <field name="activity-status.code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
 
   <!-- activity.activity-date 1..* -->
   <field name="activity-date.type" type="text_general"/>
@@ -524,13 +526,13 @@
 
   <!-- activity.contact-info 0..* -->
   <field name="contact-info.type" type="text_general"/>
-  <field name="contact-info.organisation.narrative" type="text_general"/>
+  <field name="contact-info.organisation.narrative" type="iati_narrative"/>
   <field name="contact-info.organisation.narrative.lang" type="text_general"/>
-  <field name="contact-info.department.narrative" type="text_general"/>
+  <field name="contact-info.department.narrative" type="iati_narrative"/>
   <field name="contact-info.department.narrative.lang" type="text_general"/>
-  <field name="contact-info.person-name.narrative" type="text_general"/>
+  <field name="contact-info.person-name.narrative" type="iati_narrative"/>
   <field name="contact-info.person-name.narrative.lang" type="text_general"/>
-  <field name="contact-info.job-title.narrative" type="text_general"/>
+  <field name="contact-info.job-title.narrative" type="iati_narrative"/>
   <field name="contact-info.job-title.narrative.lang" type="text_general"/>
   <field name="contact-info.telephone" type="text_general"/>
   <field name="contact-info.email" type="text_general"/>
@@ -539,95 +541,95 @@
   <field name="contact-info.mailing-address.narrative.lang" type="text_general"/>
 
   <!-- activity.activity-scope 0..1 -->
-  <field name="activity-scope.code" type="text_general_single"/>
+  <field name="activity-scope.code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
 
   <!-- activity.recipient-country 0..* -->
-  <field name="recipient-country.code" type="text_general"/>
+  <field name="recipient-country.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="recipient-country.percentage" type="pdoubles"/>
-  <field name="recipient-country.narrative" type="text_general"/>
+  <field name="recipient-country.narrative" type="iati_narrative"/>
   <field name="recipient-country.narrative.lang" type="text_general"/>
 
   <!-- activity.recipient-region 0..* -->
-  <field name="recipient-region.code" type="text_general"/>
+  <field name="recipient-region.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="recipient-region.vocabulary" type="text_general"/>
   <field name="recipient-region.vocabulary-uri" type="text_general"/>
   <field name="recipient-region.percentage" type="pdoubles"/>
-  <field name="recipient-region.narrative" type="text_general"/>
+  <field name="recipient-region.narrative" type="iati_narrative"/>
   <field name="recipient-region.narrative.lang" type="text_general"/>
 
   <!-- activity.location 0..* -->
   <field name="location.ref" type="text_general"/>
-  <field name="location.location-reach.code" type="text_general"/>
-  <field name="location.location-id.code" type="text_general"/>
+  <field name="location.location-reach.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="location.location-id.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="location.location-id.vocabulary" type="text_general"/>
-  <field name="location.name.narrative" type="text_general"/>
+  <field name="location.name.narrative" type="iati_narrative"/>
   <field name="location.name.narrative.lang" type="text_general"/>
-  <field name="location.description.narrative" type="text_general"/>
+  <field name="location.description.narrative" type="iati_narrative"/>
   <field name="location.description.narrative.lang" type="text_general"/>
-  <field name="location.activity-description.narrative" type="text_general"/>
+  <field name="location.activity-description.narrative" type="iati_narrative"/>
   <field name="location.activity-description.narrative.lang" type="text_general"/>
-  <field name="location.administrative.code" type="text_general"/>
+  <field name="location.administrative.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="location.administrative.vocabulary" type="text_general"/>
   <field name="location.administrative.level" type="pdoubles"/>
   <field name="location.point.srsName" type="text_general"/>
   <field name="location.point.pos" type="text_general"/>
-  <field name="location.exactness.code" type="text_general"/>
-  <field name="location.location-class.code" type="text_general"/>
-  <field name="location.feature-designation.code" type="text_general"/>
+  <field name="location.exactness.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="location.location-class.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="location.feature-designation.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
 
   <!-- activity.sector 0..* -->
   <field name="sector.vocabulary" type="text_general"/>
   <field name="sector.vocabulary-uri" type="text_general"/>
-  <field name="sector.code" type="text_general"/>
+  <field name="sector.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="sector.percentage" type="pdoubles"/>
-  <field name="sector.narrative" type="text_general"/>
+  <field name="sector.narrative" type="iati_narrative"/>
   <field name="sector.narrative.lang" type="text_general"/>
 
   <!-- activity.tag 0..* -->
-  <field name="tag.code" type="text_general"/>
+  <field name="tag.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="tag.vocabulary" type="text_general"/>
   <field name="tag.vocabulary-uri" type="text_general"/>
-  <field name="tag.narrative" type="text_general"/>
+  <field name="tag.narrative" type="iati_narrative"/>
   <field name="tag.narrative.lang" type="text_general"/>
 
   <!-- activity.country-budget-items 0..1 budget item is 1..* -->
   <field name="country-budget-items.vocabulary" type="text_general_single"/>
-  <field name="country-budget-items.budget-item.code" type="text_general"/>
+  <field name="country-budget-items.budget-item.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="country-budget-items.budget-item.percentage" type="pdoubles"/>
-  <field name="country-budget-items.budget-item.description.narrative" type="text_general"/>
+  <field name="country-budget-items.budget-item.description.narrative" type="iati_narrative"/>
   <field name="country-budget-items.budget-item.description.narrative.lang" type="text_general"/>
 
   <!-- activity.humanitarian-scope 0..* -->
   <field name="humanitarian-scope.type" type="text_general"/>
   <field name="humanitarian-scope.vocabulary" type="text_general"/>
   <field name="humanitarian-scope.vocabulary-uri" type="text_general"/>
-  <field name="humanitarian-scope.code" type="text_general"/>
-  <field name="humanitarian-scope.narrative" type="text_general"/>
+  <field name="humanitarian-scope.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="humanitarian-scope.narrative" type="iati_narrative"/>
   <field name="humanitarian-scope.narrative.lang" type="text_general"/>
 
   <!-- activity.policy-marker 0..* -->
   <field name="policy-marker.vocabulary" type="text_general"/>
   <field name="policy-marker.vocabulary-uri" type="text_general"/>
-  <field name="policy-marker.code" type="text_general"/>
+  <field name="policy-marker.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="policy-marker.significance" type="text_general"/>
-  <field name="policy-marker.narrative" type="text_general"/>
+  <field name="policy-marker.narrative" type="iati_narrative"/>
   <field name="policy-marker.narrative.lang" type="text_general"/>
 
   <!-- activity.collaboration-type 0..1 -->
-  <field name="collaboration-type.code" type="text_general_single"/>
+  <field name="collaboration-type.code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
 
   <!-- activity.default-flow-type 0..1 -->
-  <field name="default-flow-type.code" type="text_general_single"/>
+  <field name="default-flow-type.code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
 
   <!-- activity.default-finance-type 0..1 -->
-  <field name="default-finance-type.code" type="text_general_single"/>
+  <field name="default-finance-type.code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
 
   <!-- activity.default-aid-type 0..* -->
-  <field name="default-aid-type.code" type="text_general"/>
+  <field name="default-aid-type.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="default-aid-type.vocabulary" type="text_general"/>
 
   <!-- activity.default-tied-status 0..1 -->
-  <field name="default-tied-status.code" type="text_general_single"/>
+  <field name="default-tied-status.code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
 
   <!-- activity.budget 0..* -->
   <field name="budget.type" type="text_general"/>
@@ -645,73 +647,73 @@
   <field name="planned-disbursement.value" type="pdoubles"/>
   <field name="planned-disbursement.value.currency" type="text_general"/>
   <field name="planned-disbursement.value.value-date" type="pdates"/>
-  <field name="planned-disbursement.provider-org.ref" type="text_general"/>
+  <field name="planned-disbursement.provider-org.ref" type="non_case_sensitive"/>
   <field name="planned-disbursement.provider-org.provider-activity-id" type="text_general"/>
   <field name="planned-disbursement.provider-org.type" type="text_general"/>
-  <field name="planned-disbursement.provider-org.narrative" type="text_general"/>
+  <field name="planned-disbursement.provider-org.narrative" type="iati_narrative"/>
   <field name="planned-disbursement.provider-org.narrative.lang" type="text_general"/>
-  <field name="planned-disbursement.receiver-org.ref" type="text_general"/>
+  <field name="planned-disbursement.receiver-org.ref" type="non_case_sensitive"/>
   <field name="planned-disbursement.receiver-org.receiver-activity-id" type="text_general"/>
   <field name="planned-disbursement.receiver-org.type" type="text_general"/>
-  <field name="planned-disbursement.receiver-org.narrative" type="text_general"/>
+  <field name="planned-disbursement.receiver-org.narrative" type="iati_narrative"/>
   <field name="planned-disbursement.receiver-org.narrative.lang" type="text_general"/>
 
   <!-- activity.capital-spend 0..1 -->
   <field name="capital-spend.percentage" type="pdouble"/>
 
   <!-- activity.transaction 0..* -->
-  <field name="transaction.ref" type="text_general"/>
+  <field name="transaction.ref" type="non_case_sensitive"/>
   <field name="transaction.humanitarian" type="booleans"/>
-  <field name="transaction.transaction-type.code" type="text_general"/>
+  <field name="transaction.transaction-type.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="transaction.transaction-date.iso-date" type="pdates"/>
   <field name="transaction.value" type="pdoubles"/>
   <field name="transaction.value.currency" type="text_general"/>
   <field name="transaction.value.value-date" type="pdates"/>
-  <field name="transaction.description.narrative" type="text_general"/>
+  <field name="transaction.description.narrative" type="iati_narrative"/>
   <field name="transaction.description.narrative.lang" type="text_general"/>
-  <field name="transaction.provider-org.ref" type="text_general"/>
+  <field name="transaction.provider-org.ref" type="non_case_sensitive"/>
   <field name="transaction.provider-org.provider-activity-id" type="text_general"/>
   <field name="transaction.provider-org.type" type="text_general"/>
-  <field name="transaction.provider-org.narrative" type="text_general"/>
+  <field name="transaction.provider-org.narrative" type="iati_narrative"/>
   <field name="transaction.provider-org.narrative.lang" type="text_general"/>
-  <field name="transaction.receiver-org.ref" type="text_general"/>
+  <field name="transaction.receiver-org.ref" type="non_case_sensitive"/>
   <field name="transaction.receiver-org.receiver-activity-id" type="text_general"/>
   <field name="transaction.receiver-org.type" type="text_general"/>
-  <field name="transaction.receiver-org.narrative" type="text_general"/>
+  <field name="transaction.receiver-org.narrative" type="iati_narrative"/>
   <field name="transaction.receiver-org.narrative.lang" type="text_general"/>
-  <field name="transaction.disbursement-channel.code" type="text_general"/>
+  <field name="transaction.disbursement-channel.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="transaction.sector.vocabulary" type="text_general"/>
   <field name="transaction.sector.vocabulary-uri" type="text_general"/>
-  <field name="transaction.sector.code" type="text_general"/>
-  <field name="transaction.sector.narrative" type="text_general"/>
+  <field name="transaction.sector.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="transaction.sector.narrative" type="iati_narrative"/>
   <field name="transaction.sector.narrative.lang" type="text_general"/>
-  <field name="transaction.recipient-country.code" type="text_general"/>
-  <field name="transaction.recipient-country.narrative" type="text_general"/>
+  <field name="transaction.recipient-country.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="transaction.recipient-country.narrative" type="iati_narrative"/>
   <field name="transaction.recipient-country.narrative.lang" type="text_general"/>
-  <field name="transaction.recipient-region.code" type="text_general"/>
+  <field name="transaction.recipient-region.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="transaction.recipient-region.vocabulary" type="text_general"/>
   <field name="transaction.recipient-region.vocabulary-uri" type="text_general"/>
-  <field name="transaction.recipient-region.narrative" type="text_general"/>
+  <field name="transaction.recipient-region.narrative" type="iati_narrative"/>
   <field name="transaction.recipient-region.narrative.lang" type="text_general"/>
-  <field name="transaction.flow-type.code" type="text_general"/>
-  <field name="transaction.finance-type.code" type="text_general"/>
-  <field name="transaction.aid-type.code" type="text_general"/>
+  <field name="transaction.flow-type.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="transaction.finance-type.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="transaction.aid-type.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="transaction.aid-type.vocabulary" type="text_general"/>
-  <field name="transaction.tied-status.code" type="text_general"/>
+  <field name="transaction.tied-status.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
 
   <!-- activity.document-link 0..* -->
   <field name="document-link.url" type="text_general"/>
   <field name="document-link.format" type="text_general"/>
-  <field name="document-link.title.narrative" type="text_general"/>
+  <field name="document-link.title.narrative" type="iati_narrative"/>
   <field name="document-link.title.narrative.lang" type="text_general"/>
-  <field name="document-link.description.narrative" type="text_general"/>
+  <field name="document-link.description.narrative" type="iati_narrative"/>
   <field name="document-link.description.narrative.lang" type="text_general"/>
-  <field name="document-link.category.code" type="text_general"/>
-  <field name="document-link.language.code" type="text_general"/>
+  <field name="document-link.category.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="document-link.language.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="document-link.document-date.iso-date" type="pdates"/>
 
   <!-- activity.related-activity 0..* -->
-  <field name="related-activity.ref" type="text_general"/>
+  <field name="related-activity.ref" type="non_case_sensitive"/>
   <field name="related-activity.type" type="text_general"/>
 
   <!-- activity.legacy-data 0..* -->
@@ -722,46 +724,46 @@
   <!-- activity.conditions 0..1 condition is 0..* -->
   <field name="conditions.attached" type="boolean"/>
   <field name="conditions.condition.type" type="text_general"/>
-  <field name="conditions.condition.narrative" type="text_general"/>
+  <field name="conditions.condition.narrative" type="iati_narrative"/>
   <field name="conditions.condition.narrative.lang" type="text_general"/>
 
   <!-- activity.result 0..* -->
   <field name="result.type" type="text_general"/>
   <field name="result.aggregation-status" type="booleans"/>
-  <field name="result.title.narrative" type="text_general"/>
+  <field name="result.title.narrative" type="iati_narrative"/>
   <field name="result.title.narrative.lang" type="text_general"/>
-  <field name="result.description.narrative" type="text_general"/>
+  <field name="result.description.narrative" type="iati_narrative"/>
   <field name="result.description.narrative.lang" type="text_general"/>
   <field name="result.document-link.url" type="text_general"/>
   <field name="result.document-link.format" type="text_general"/>
-  <field name="result.document-link.title.narrative" type="text_general"/>
+  <field name="result.document-link.title.narrative" type="iati_narrative"/>
   <field name="result.document-link.title.narrative.lang" type="text_general"/>
-  <field name="result.document-link.description.narrative" type="text_general"/>
+  <field name="result.document-link.description.narrative" type="iati_narrative"/>
   <field name="result.document-link.description.narrative.lang" type="text_general"/>
-  <field name="result.document-link.category.code" type="text_general"/>
-  <field name="result.document-link.language.code" type="text_general"/>
+  <field name="result.document-link.category.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="result.document-link.language.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="result.document-link.document-date.iso-date" type="pdates"/>
-  <field name="result.reference.code" type="text_general"/>
+  <field name="result.reference.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="result.reference.vocabulary" type="text_general"/>
   <field name="result.reference.vocabulary-uri" type="text_general"/>
   <field name="result.indicator.measure" type="text_general"/>
   <field name="result.indicator.ascending" type="booleans"/>
   <field name="result.indicator.aggregation-status" type="booleans"/>
-  <field name="result.indicator.title.narrative" type="text_general"/>
+  <field name="result.indicator.title.narrative" type="iati_narrative"/>
   <field name="result.indicator.title.narrative.lang" type="text_general"/>
-  <field name="result.indicator.description.narrative" type="text_general"/>
+  <field name="result.indicator.description.narrative" type="iati_narrative"/>
   <field name="result.indicator.description.narrative.lang" type="text_general"/>
   <field name="result.indicator.document-link.url" type="text_general"/>
   <field name="result.indicator.document-link.format" type="text_general"/>
-  <field name="result.indicator.document-link.title.narrative" type="text_general"/>
+  <field name="result.indicator.document-link.title.narrative" type="iati_narrative"/>
   <field name="result.indicator.document-link.title.narrative.lang" type="text_general"/>
-  <field name="result.indicator.document-link.description.narrative" type="text_general"/>
+  <field name="result.indicator.document-link.description.narrative" type="iati_narrative"/>
   <field name="result.indicator.document-link.description.narrative.lang" type="text_general"/>
-  <field name="result.indicator.document-link.category.code" type="text_general"/>
-  <field name="result.indicator.document-link.language.code" type="text_general"/>
+  <field name="result.indicator.document-link.category.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="result.indicator.document-link.language.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="result.indicator.document-link.document-date.iso-date" type="pdates"/>
   <field name="result.indicator.reference.vocabulary" type="text_general"/>
-  <field name="result.indicator.reference.code" type="text_general"/>
+  <field name="result.indicator.reference.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="result.indicator.reference.indicator-uri" type="text_general"/>
   <field name="result.indicator.baseline.iso-date" type="pdates"/>
   <field name="result.indicator.baseline.year" type="pdoubles"/>
@@ -771,14 +773,14 @@
   <field name="result.indicator.baseline.dimension.value" type="text_general"/>
   <field name="result.indicator.baseline.document-link.url" type="text_general"/>
   <field name="result.indicator.baseline.document-link.format" type="text_general"/>
-  <field name="result.indicator.baseline.document-link.title.narrative" type="text_general"/>
+  <field name="result.indicator.baseline.document-link.title.narrative" type="iati_narrative"/>
   <field name="result.indicator.baseline.document-link.title.narrative.lang" type="text_general"/>
-  <field name="result.indicator.baseline.document-link.description.narrative" type="text_general"/>
+  <field name="result.indicator.baseline.document-link.description.narrative" type="iati_narrative"/>
   <field name="result.indicator.baseline.document-link.description.narrative.lang" type="text_general"/>
-  <field name="result.indicator.baseline.document-link.category.code" type="text_general"/>
-  <field name="result.indicator.baseline.document-link.language.code" type="text_general"/>
+  <field name="result.indicator.baseline.document-link.category.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="result.indicator.baseline.document-link.language.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="result.indicator.baseline.document-link.document-date.iso-date" type="pdates"/>
-  <field name="result.indicator.baseline.comment.narrative" type="text_general"/>
+  <field name="result.indicator.baseline.comment.narrative" type="iati_narrative"/>
   <field name="result.indicator.baseline.comment.narrative.lang" type="text_general"/>
   <field name="result.indicator.period.period-start.iso-date" type="pdates"/>
   <field name="result.indicator.period.period-end.iso-date" type="pdates"/>
@@ -786,40 +788,40 @@
   <field name="result.indicator.period.target.location.ref" type="text_general"/>
   <field name="result.indicator.period.target.dimension.name" type="text_general"/>
   <field name="result.indicator.period.target.dimension.value" type="text_general"/>
-  <field name="result.indicator.period.target.comment.narrative" type="text_general"/>
+  <field name="result.indicator.period.target.comment.narrative" type="iati_narrative"/>
   <field name="result.indicator.period.target.comment.narrative.lang" type="text_general"/>
   <field name="result.indicator.period.target.document-link.url" type="text_general"/>
   <field name="result.indicator.period.target.document-link.format" type="text_general"/>
-  <field name="result.indicator.period.target.document-link.title.narrative" type="text_general"/>
+  <field name="result.indicator.period.target.document-link.title.narrative" type="iati_narrative"/>
   <field name="result.indicator.period.target.document-link.title.narrative.lang" type="text_general"/>
-  <field name="result.indicator.period.target.document-link.description.narrative" type="text_general"/>
+  <field name="result.indicator.period.target.document-link.description.narrative" type="iati_narrative"/>
   <field name="result.indicator.period.target.document-link.description.narrative.lang" type="text_general"/>
-  <field name="result.indicator.period.target.document-link.category.code" type="text_general"/>
-  <field name="result.indicator.period.target.document-link.language.code" type="text_general"/>
+  <field name="result.indicator.period.target.document-link.category.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="result.indicator.period.target.document-link.language.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="result.indicator.period.target.document-link.document-date.iso-date" type="pdates"/>
   <field name="result.indicator.period.actual.value" type="text_general"/>
   <field name="result.indicator.period.actual.location.ref" type="text_general"/>
   <field name="result.indicator.period.actual.dimension.name" type="text_general"/>
   <field name="result.indicator.period.actual.dimension.value" type="text_general"/>
-  <field name="result.indicator.period.actual.comment.narrative" type="text_general"/>
+  <field name="result.indicator.period.actual.comment.narrative" type="iati_narrative"/>
   <field name="result.indicator.period.actual.comment.narrative.lang" type="text_general"/>
   <field name="result.indicator.period.actual.document-link.url" type="text_general"/>
   <field name="result.indicator.period.actual.document-link.format" type="text_general"/>
-  <field name="result.indicator.period.actual.document-link.title.narrative" type="text_general"/>
+  <field name="result.indicator.period.actual.document-link.title.narrative" type="iati_narrative"/>
   <field name="result.indicator.period.actual.document-link.title.narrative.lang" type="text_general"/>
-  <field name="result.indicator.period.actual.document-link.description.narrative" type="text_general"/>
+  <field name="result.indicator.period.actual.document-link.description.narrative" type="iati_narrative"/>
   <field name="result.indicator.period.actual.document-link.description.narrative.lang" type="text_general"/>
-  <field name="result.indicator.period.actual.document-link.category.code" type="text_general"/>
-  <field name="result.indicator.period.actual.document-link.language.code" type="text_general"/>
+  <field name="result.indicator.period.actual.document-link.category.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="result.indicator.period.actual.document-link.language.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="result.indicator.period.actual.document-link.document-date.iso-date" type="pdates"/>
 
   <!-- activity.crs-add 0..1 -->
-  <field name="crs-add.other-flags.code" type="text_general"/>
+  <field name="crs-add.other-flags.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="crs-add.other-flags.significance" type="booleans"/>
   <field name="crs-add.loan-terms.rate-1" type="pdouble"/>
   <field name="crs-add.loan-terms.rate-2" type="pdouble"/>
-  <field name="crs-add.loan-terms.repayment-type.code" type="text_general_single"/>
-  <field name="crs-add.loan-terms.repayment-plan.code" type="text_general_single"/>
+  <field name="crs-add.loan-terms.repayment-type.code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="crs-add.loan-terms.repayment-plan.code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
   <field name="crs-add.loan-terms.commitment-date.iso-date" type="pdate"/>
   <field name="crs-add.loan-terms.repayment-first-date.iso-date" type="pdate"/>
   <field name="crs-add.loan-terms.repayment-final-date.iso-date" type="pdate"/>
