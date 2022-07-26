@@ -474,14 +474,14 @@
   <field name="default-currency" type="text_general_single" />
 
   <!-- iati id 1..1 -->
-  <field name="organisation-identifier" type="text_general_single" />
+  <field name="organisation-identifier" type="string" />
 
   <!-- name 1..1 -->
   <field name="name.narrative" type="text_general" />
   <field name="name.narrative.lang" type="text_general" />
 
   <!-- reporting org 1..1 -->
-  <field name="reporting-org.ref" type="text_general_single" />
+  <field name="reporting-org.ref" type="string" />
   <field name="reporting-org.type" type="text_general_single" />
   <field name="reporting-org.secondary-reporter" type="boolean" />
   <field name="reporting-org.narrative" type="text_general" />

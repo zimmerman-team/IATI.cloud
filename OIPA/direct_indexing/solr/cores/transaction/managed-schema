@@ -500,7 +500,7 @@
   <field name="description.narrative.lang" type="text_general"/>
 
   <!-- activity.participating-org 0..* -->
-  <field name="participating-org.ref" type="non_case_sensitive"/>
+  <field name="participating-org.ref" type="non_case_sensitive" multiValued="true"/>
   <field name="participating-org.type" type="text_general"/>
   <field name="participating-org.role" type="text_general"/>
   <field name="participating-org.activity-id" type="text_general"/>
@@ -509,9 +509,9 @@
   <field name="participating-org.narrative.lang" type="text_general"/>
 
   <!-- activity.other-identifier 0..* -->
-  <field name="other-identifier.ref" type="non_case_sensitive"/>
+  <field name="other-identifier.ref" type="non_case_sensitive" multiValued="true"/>
   <field name="other-identifier.type" type="text_general"/>
-  <field name="other-identifier.owner-org.ref" type="non_case_sensitive"/>
+  <field name="other-identifier.owner-org.ref" type="non_case_sensitive" multiValued="true"/>
   <field name="other-identifier.owner-org.narrative" type="iati_narrative"/>
   <field name="other-identifier.owner-org.narrative.lang" type="text_general"/>
 
@@ -638,12 +638,12 @@
   <field name="planned-disbursement.value" type="pdoubles"/>
   <field name="planned-disbursement.value.currency" type="text_general"/>
   <field name="planned-disbursement.value.value-date" type="pdates"/>
-  <field name="planned-disbursement.provider-org.ref" type="non_case_sensitive"/>
+  <field name="planned-disbursement.provider-org.ref" type="non_case_sensitive" multiValued="true"/>
   <field name="planned-disbursement.provider-org.provider-activity-id" type="text_general"/>
   <field name="planned-disbursement.provider-org.type" type="text_general"/>
   <field name="planned-disbursement.provider-org.narrative" type="iati_narrative"/>
   <field name="planned-disbursement.provider-org.narrative.lang" type="text_general"/>
-  <field name="planned-disbursement.receiver-org.ref" type="non_case_sensitive"/>
+  <field name="planned-disbursement.receiver-org.ref" type="non_case_sensitive" multiValued="true"/>
   <field name="planned-disbursement.receiver-org.receiver-activity-id" type="text_general"/>
   <field name="planned-disbursement.receiver-org.type" type="text_general"/>
   <field name="planned-disbursement.receiver-org.narrative" type="iati_narrative"/>
@@ -653,7 +653,7 @@
   <field name="capital-spend.percentage" type="pdouble"/>
 
   <!-- activity.transaction 0..* -->
-  <field name="transaction.ref" type="non_case_sensitive"/>
+  <field name="transaction.ref" type="non_case_sensitive" multiValued="true"/>
   <field name="transaction.humanitarian" type="booleans"/>
   <field name="transaction.transaction-type.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="transaction.transaction-date.iso-date" type="pdates"/>
@@ -662,12 +662,12 @@
   <field name="transaction.value.value-date" type="pdates"/>
   <field name="transaction.description.narrative" type="iati_narrative"/>
   <field name="transaction.description.narrative.lang" type="text_general"/>
-  <field name="transaction.provider-org.ref" type="non_case_sensitive"/>
+  <field name="transaction.provider-org.ref" type="non_case_sensitive" multiValued="true"/>
   <field name="transaction.provider-org.provider-activity-id" type="text_general"/>
   <field name="transaction.provider-org.type" type="text_general"/>
   <field name="transaction.provider-org.narrative" type="iati_narrative"/>
   <field name="transaction.provider-org.narrative.lang" type="text_general"/>
-  <field name="transaction.receiver-org.ref" type="non_case_sensitive"/>
+  <field name="transaction.receiver-org.ref" type="non_case_sensitive" multiValued="true"/>
   <field name="transaction.receiver-org.receiver-activity-id" type="text_general"/>
   <field name="transaction.receiver-org.type" type="text_general"/>
   <field name="transaction.receiver-org.narrative" type="iati_narrative"/>
@@ -704,7 +704,7 @@
   <field name="document-link.document-date.iso-date" type="pdates"/>
 
   <!-- activity.related-activity 0..* -->
-  <field name="related-activity.ref" type="non_case_sensitive"/>
+  <field name="related-activity.ref" type="non_case_sensitive" multiValued="true"/>
   <field name="related-activity.type" type="text_general"/>
 
   <!-- activity.legacy-data 0..* -->
