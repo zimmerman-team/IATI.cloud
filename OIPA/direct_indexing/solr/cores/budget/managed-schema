@@ -753,6 +753,15 @@
   <field name="budget.value-usd.conversion-currency" type="text_general_single"/>
   <field name="planned-disbursement.value-usd.conversion-currency" type="text_general"/>
 
+  <!-- MFA relational data for participating-org -->
+  <field name="participating-org.ref-index" type="pdoubles"/>
+  <field name="participating-org.type-index" type="pdoubles"/>
+  <field name="participating-org.role-index" type="pdoubles"/>
+  <field name="participating-org.activity-id-index" type="pdoubles"/>
+  <field name="participating-org.crs-channel-code-index" type="pdoubles"/>
+  <field name="participating-org.narrative-index" type="pdoubles"/>
+  <field name="participating-org.narrative.lang-index" type="pdoubles"/>
+
   <!-- Activity aggregated currency data -->
   <field name="activity-aggregation.budget.value" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
   <field name="activity-aggregation.budget.value-usd" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>

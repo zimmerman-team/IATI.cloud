@@ -11,6 +11,29 @@ def index_many_to_many_relations(activity):
             activity['result'] = [activity['result']]
         for result in activity['result']:
             add_result_child_indexes(result, 'indicator')
+    # Index participating organisations.
+    if 'participating-org' in activity:
+        if type(activity['participating-org']) != list:
+            activity['participating-org'] = [activity['participating-org']]
+        add_participating_org_child_indexes(activity, 'participating-org')
+
+
+def add_participating_org_child_indexes(field, child):
+    """
+    Go through the activity participating orgs and index the given child.
+    Because this is currently used for results, we directly pass the required children.
+
+    :param field: a dataset containing the initial child of the activity
+    :param child: the second level child of the aforementioned field
+    """
+    # Check if the child exists and make the child a list if it is a dict.
+    add_field_child_field_indexes(field, child, 'ref')
+    add_field_child_field_indexes(field, child, 'type')
+    add_field_child_field_indexes(field, child, 'role')
+    add_field_child_field_indexes(field, child, 'activity-id')
+    add_field_child_field_indexes(field, child, 'crs-channel-code')
+    add_field_child_field_indexes(field, child, 'narrative')
+    add_field_child_field_children_indexes(field, child, 'narrative', children=['lang'])
 
 
 def add_result_child_indexes(field, child):
