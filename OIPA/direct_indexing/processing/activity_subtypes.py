@@ -24,9 +24,6 @@ def extract_subtype(activity, subtype):
     if subtype not in AVAILABLE_SUBTYPES or subtype not in activity:
         return []  # Make sure we do not return any data when there is none.
 
-    # Add custom fields to result core
-    index_many_to_many_relations(activity)
-
     # Create a list of the extracted subtypes
     subtype_list = []
     exclude_fields = []
@@ -101,12 +98,10 @@ def extract_all_subtypes(subtypes, data):
     :param data: the activities to extract the subtypes from.
     :return: the extracted subtypes
     """
-    if type(data) is list:
-        for activity in data:
-            for key in subtypes:
-                subtypes[key] += extract_subtype(activity, key)
-    else:
+    if type(data) is not list:
+        data = [data]
+    for activity in data:
+        index_many_to_many_relations(activity)
         for key in subtypes:
-            subtypes[key] += extract_subtype(data, key)
-
+            subtypes[key] += extract_subtype(activity, key)
     return subtypes

@@ -9,6 +9,7 @@ from xmljson import badgerfish as bf
 from direct_indexing.cleaning.dataset import recursive_attribute_cleaning
 from direct_indexing.cleaning.metadata import clean_dataset_metadata
 from direct_indexing.custom_fields import custom_fields
+from direct_indexing.custom_fields import organisation_custom_fields
 from direct_indexing.custom_fields.models import codelists
 from direct_indexing.custom_fields.models import currencies as cu
 from direct_indexing.metadata.util import index
@@ -132,6 +133,8 @@ def convert_and_save_xml_to_processed_json(filepath, filetype, codelist, currenc
     # Add our additional custom fields
     if filetype == 'activity':
         data = custom_fields.add_all(data, codelist, currencies, dataset_metadata)
+    if filetype == 'organisation':
+        data = organisation_custom_fields.add_all(data)
 
     # Activity subtypes
     subtypes = dict()
