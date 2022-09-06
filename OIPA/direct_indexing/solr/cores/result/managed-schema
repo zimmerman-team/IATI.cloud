@@ -980,6 +980,7 @@
   <field name="activity-plus-child-aggregation.incoming-pledge.value-usd" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
   <field name="activity-plus-child-aggregation.incoming-pledge.currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
 
+  <!-- Additional dataset fields -->
   <field name="dataset.id" type="text_general_single" indexed="true" stored="true" />
   <field name="dataset.metadata_created" type="pdate" indexed="true" stored="true" />
   <field name="dataset.metadata_modified" type="pdate" indexed="true" stored="true" />
@@ -987,8 +988,9 @@
   <field name="dataset.extras.iati_version" type="text_general_single" indexed="true" stored="true" />
   <field name="dataset.extras.publisher_iati_id" type="text_general_single" indexed="true" stored="true" />
   <field name="dataset.extras.publisher" type="text_general_single" indexed="true" stored="true" />
+  <field name="dataset.extras.data_updated" type="pdate" indexed="true" stored="true" />
   <field name="dataset.resources.hash" type="text_general_single" indexed="true" stored="true" />
-  <field name="dataset.resources.last_modified" type="text_general_single" indexed="true" stored="true" />
+  <field name="dataset.resources.last_modified" type="pdate" indexed="true" stored="true" />
   <field name="dataset.resources.url" type="text_general_single" indexed="true" stored="true" />
 
   <dynamicField name="*_txt_en_split_tight" type="text_en_splitting_tight" indexed="true" stored="true"/>

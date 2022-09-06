@@ -12,19 +12,23 @@ def dataset_metadata(metadata):
         "extras.iati_version",
         "extras.publisher_iati_id",
         "extras.publisher",
+        "extras.data_updated",
     ]
     multivalued_fields = [
-        "recourses.hash",
-        "recourses.last_modified",
-        "resources.url",
+        "hash",
+        "last_modified",
+        "url",
     ]
     custom_metadata = {}
+    
     for field in fields:
         if field in metadata:
             custom_metadata[f'dataset.{field}'] = metadata[field]
     for field in multivalued_fields:
-        if field in metadata:
-            custom_metadata[f'dataset.{field}'] = metadata[field][0]
+        if 'resources' not in metadata:
+            continue
+        if field in metadata['resources'][0]:
+            custom_metadata[f'dataset.resources.{field}'] = metadata['resources'][0][field]
     return custom_metadata
 
 
