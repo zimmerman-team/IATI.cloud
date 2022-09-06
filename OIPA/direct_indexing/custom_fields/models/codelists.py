@@ -35,7 +35,7 @@ class Codelists(object):
         if download:
             self.download_codelists()
         else:
-            self.read_codelists()
+            self.codelists_dict = self.read_codelists()
 
     def read_codelists(self):
         """
