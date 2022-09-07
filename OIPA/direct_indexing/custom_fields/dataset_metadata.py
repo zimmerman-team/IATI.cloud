@@ -12,7 +12,6 @@ def dataset_metadata(metadata):
         "extras.iati_version",
         "extras.publisher_iati_id",
         "extras.publisher",
-        "extras.data_updated",
     ]
     multivalued_fields = [
         "hash",
