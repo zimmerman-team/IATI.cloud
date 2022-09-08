@@ -1,0 +1,215 @@
+ 
+ -------------- celery@zimmerman-NUC10i7FNK v4.4.0 (cliffs)
+--- ***** ----- 
+-- ******* ---- Linux-5.15.0-46-generic-x86_64-with-debian-bullseye-sid 2022-09-08 08:42:45
+- *** --- * --- 
+- ** ---------- [config]
+- ** ---------- .> app:         OIPA:0x7f40d91f3a20
+- ** ---------- .> transport:   amqp://guest:**@localhost:5672//
+- ** ---------- .> results:     
+- *** --- * --- .> concurrency: 16 (prefork)
+-- ******* ---- .> task events: OFF (enable -E to monitor tasks in this worker)
+--- ***** ----- 
+ -------------- [queues]
+                .> celery           exchange=celery(direct) key=celery
+                
+
+[tasks]
+  . direct_indexing.metadata.dataset.direct_indexing_subtask_process_dataset
+  . iati.PostmanJsonImport.tasks.get_postman_api
+  . task_queue.download.DatasetDownloadTask
+  . task_queue.tasks.add_activity_to_solr
+  . task_queue.tasks.automatic_incremental_parse
+  . task_queue.tasks.calculate_activity_aggregations_per_source
+  . task_queue.tasks.direct_indexing_clear_all_cores
+  . task_queue.tasks.direct_indexing_run_unthreaded
+  . task_queue.tasks.direct_indexing_start
+  . task_queue.tasks.direct_indexing_subtask_dataset_metadata
+  . task_queue.tasks.direct_indexing_subtask_publisher_metadata
+  . task_queue.tasks.drop_old_datasets
+  . task_queue.tasks.find_and_replace_dataset_url
+  . task_queue.tasks.get_new_sources_from_iati_api_task
+  . task_queue.tasks.get_update_iati_codelists_task
+  . task_queue.tasks.get_validation_results_task
+  . task_queue.tasks.parse_all_activity_aggregations
+  . task_queue.tasks.parse_all_existing_sources_task
+  . task_queue.tasks.parse_source_by_id_task
+  . task_queue.tasks.parse_source_by_organisation_identifier
+  . task_queue.tasks.revoke_all_tasks
+  . task_queue.tasks.soft_interrupt_incremental_parse
+  . task_queue.tasks.synchronize_solr_indexing
+  . task_queue.tasks.update_exchange_rates
+  . task_queue.validation.DatasetValidationTask
+
+ 
+ -------------- celery@zimmerman-NUC10i7FNK v4.4.0 (cliffs)
+--- ***** ----- 
+-- ******* ---- Linux-5.15.0-46-generic-x86_64-with-debian-bullseye-sid 2022-09-08 08:43:51
+- *** --- * --- 
+- ** ---------- [config]
+- ** ---------- .> app:         OIPA:0x7f7fb39fba90
+- ** ---------- .> transport:   amqp://guest:**@localhost:5672//
+- ** ---------- .> results:     
+- *** --- * --- .> concurrency: 16 (prefork)
+-- ******* ---- .> task events: OFF (enable -E to monitor tasks in this worker)
+--- ***** ----- 
+ -------------- [queues]
+                .> celery           exchange=celery(direct) key=celery
+                
+
+[tasks]
+  . direct_indexing.metadata.dataset.direct_indexing_subtask_process_dataset
+  . iati.PostmanJsonImport.tasks.get_postman_api
+  . task_queue.download.DatasetDownloadTask
+  . task_queue.tasks.add_activity_to_solr
+  . task_queue.tasks.automatic_incremental_parse
+  . task_queue.tasks.calculate_activity_aggregations_per_source
+  . task_queue.tasks.direct_indexing_clear_all_cores
+  . task_queue.tasks.direct_indexing_run_unthreaded
+  . task_queue.tasks.direct_indexing_start
+  . task_queue.tasks.direct_indexing_subtask_dataset_metadata
+  . task_queue.tasks.direct_indexing_subtask_publisher_metadata
+  . task_queue.tasks.drop_old_datasets
+  . task_queue.tasks.find_and_replace_dataset_url
+  . task_queue.tasks.get_new_sources_from_iati_api_task
+  . task_queue.tasks.get_update_iati_codelists_task
+  . task_queue.tasks.get_validation_results_task
+  . task_queue.tasks.parse_all_activity_aggregations
+  . task_queue.tasks.parse_all_existing_sources_task
+  . task_queue.tasks.parse_source_by_id_task
+  . task_queue.tasks.parse_source_by_organisation_identifier
+  . task_queue.tasks.revoke_all_tasks
+  . task_queue.tasks.soft_interrupt_incremental_parse
+  . task_queue.tasks.synchronize_solr_indexing
+  . task_queue.tasks.update_exchange_rates
+  . task_queue.validation.DatasetValidationTask
+
+ 
+ -------------- celery@zimmerman-NUC10i7FNK v4.4.0 (cliffs)
+--- ***** ----- 
+-- ******* ---- Linux-5.15.0-46-generic-x86_64-with-debian-bullseye-sid 2022-09-08 08:45:12
+- *** --- * --- 
+- ** ---------- [config]
+- ** ---------- .> app:         OIPA:0x7f4152213a90
+- ** ---------- .> transport:   amqp://guest:**@localhost:5672//
+- ** ---------- .> results:     
+- *** --- * --- .> concurrency: 16 (prefork)
+-- ******* ---- .> task events: OFF (enable -E to monitor tasks in this worker)
+--- ***** ----- 
+ -------------- [queues]
+                .> celery           exchange=celery(direct) key=celery
+                
+
+[tasks]
+  . direct_indexing.metadata.dataset.direct_indexing_subtask_process_dataset
+  . iati.PostmanJsonImport.tasks.get_postman_api
+  . task_queue.download.DatasetDownloadTask
+  . task_queue.tasks.add_activity_to_solr
+  . task_queue.tasks.automatic_incremental_parse
+  . task_queue.tasks.calculate_activity_aggregations_per_source
+  . task_queue.tasks.direct_indexing_clear_all_cores
+  . task_queue.tasks.direct_indexing_run_unthreaded
+  . task_queue.tasks.direct_indexing_start
+  . task_queue.tasks.direct_indexing_subtask_dataset_metadata
+  . task_queue.tasks.direct_indexing_subtask_publisher_metadata
+  . task_queue.tasks.drop_old_datasets
+  . task_queue.tasks.find_and_replace_dataset_url
+  . task_queue.tasks.get_new_sources_from_iati_api_task
+  . task_queue.tasks.get_update_iati_codelists_task
+  . task_queue.tasks.get_validation_results_task
+  . task_queue.tasks.parse_all_activity_aggregations
+  . task_queue.tasks.parse_all_existing_sources_task
+  . task_queue.tasks.parse_source_by_id_task
+  . task_queue.tasks.parse_source_by_organisation_identifier
+  . task_queue.tasks.revoke_all_tasks
+  . task_queue.tasks.soft_interrupt_incremental_parse
+  . task_queue.tasks.synchronize_solr_indexing
+  . task_queue.tasks.update_exchange_rates
+  . task_queue.validation.DatasetValidationTask
+
+ 
+ -------------- celery@zimmerman-NUC10i7FNK v4.4.0 (cliffs)
+--- ***** ----- 
+-- ******* ---- Linux-5.15.0-46-generic-x86_64-with-debian-bullseye-sid 2022-09-08 08:47:46
+- *** --- * --- 
+- ** ---------- [config]
+- ** ---------- .> app:         OIPA:0x7f8b1af83a90
+- ** ---------- .> transport:   amqp://guest:**@localhost:5672//
+- ** ---------- .> results:     
+- *** --- * --- .> concurrency: 16 (prefork)
+-- ******* ---- .> task events: OFF (enable -E to monitor tasks in this worker)
+--- ***** ----- 
+ -------------- [queues]
+                .> celery           exchange=celery(direct) key=celery
+                
+
+[tasks]
+  . direct_indexing.metadata.dataset.direct_indexing_subtask_process_dataset
+  . iati.PostmanJsonImport.tasks.get_postman_api
+  . task_queue.download.DatasetDownloadTask
+  . task_queue.tasks.add_activity_to_solr
+  . task_queue.tasks.automatic_incremental_parse
+  . task_queue.tasks.calculate_activity_aggregations_per_source
+  . task_queue.tasks.direct_indexing_clear_all_cores
+  . task_queue.tasks.direct_indexing_run_unthreaded
+  . task_queue.tasks.direct_indexing_start
+  . task_queue.tasks.direct_indexing_subtask_dataset_metadata
+  . task_queue.tasks.direct_indexing_subtask_publisher_metadata
+  . task_queue.tasks.drop_old_datasets
+  . task_queue.tasks.find_and_replace_dataset_url
+  . task_queue.tasks.get_new_sources_from_iati_api_task
+  . task_queue.tasks.get_update_iati_codelists_task
+  . task_queue.tasks.get_validation_results_task
+  . task_queue.tasks.parse_all_activity_aggregations
+  . task_queue.tasks.parse_all_existing_sources_task
+  . task_queue.tasks.parse_source_by_id_task
+  . task_queue.tasks.parse_source_by_organisation_identifier
+  . task_queue.tasks.revoke_all_tasks
+  . task_queue.tasks.soft_interrupt_incremental_parse
+  . task_queue.tasks.synchronize_solr_indexing
+  . task_queue.tasks.update_exchange_rates
+  . task_queue.validation.DatasetValidationTask
+
+ 
+ -------------- celery@zimmerman-NUC10i7FNK v4.4.0 (cliffs)
+--- ***** ----- 
+-- ******* ---- Linux-5.15.0-46-generic-x86_64-with-debian-bullseye-sid 2022-09-08 08:52:30
+- *** --- * --- 
+- ** ---------- [config]
+- ** ---------- .> app:         OIPA:0x7fb4d6a82a90
+- ** ---------- .> transport:   amqp://guest:**@localhost:5672//
+- ** ---------- .> results:     
+- *** --- * --- .> concurrency: 16 (prefork)
+-- ******* ---- .> task events: OFF (enable -E to monitor tasks in this worker)
+--- ***** ----- 
+ -------------- [queues]
+                .> celery           exchange=celery(direct) key=celery
+                
+
+[tasks]
+  . direct_indexing.metadata.dataset.direct_indexing_subtask_process_dataset
+  . iati.PostmanJsonImport.tasks.get_postman_api
+  . task_queue.download.DatasetDownloadTask
+  . task_queue.tasks.add_activity_to_solr
+  . task_queue.tasks.automatic_incremental_parse
+  . task_queue.tasks.calculate_activity_aggregations_per_source
+  . task_queue.tasks.direct_indexing_clear_all_cores
+  . task_queue.tasks.direct_indexing_run_unthreaded
+  . task_queue.tasks.direct_indexing_start
+  . task_queue.tasks.direct_indexing_subtask_dataset_metadata
+  . task_queue.tasks.direct_indexing_subtask_publisher_metadata
+  . task_queue.tasks.drop_old_datasets
+  . task_queue.tasks.find_and_replace_dataset_url
+  . task_queue.tasks.get_new_sources_from_iati_api_task
+  . task_queue.tasks.get_update_iati_codelists_task
+  . task_queue.tasks.get_validation_results_task
+  . task_queue.tasks.parse_all_activity_aggregations
+  . task_queue.tasks.parse_all_existing_sources_task
+  . task_queue.tasks.parse_source_by_id_task
+  . task_queue.tasks.parse_source_by_organisation_identifier
+  . task_queue.tasks.revoke_all_tasks
+  . task_queue.tasks.soft_interrupt_incremental_parse
+  . task_queue.tasks.synchronize_solr_indexing
+  . task_queue.tasks.update_exchange_rates
+  . task_queue.validation.DatasetValidationTask
+

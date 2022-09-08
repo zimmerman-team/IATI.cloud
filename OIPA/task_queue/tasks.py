@@ -43,7 +43,7 @@ from solr.transaction_sector.tasks import solr as solr_transaction_sector
 from task_queue.download import DatasetDownloadTask
 from task_queue.utils import (
     Tasks, automatic_incremental_validation, await_async_subtasks, check_incremental_parse_interrupt,
-    reset_automatic_incremental_parse_dbs
+    reset_automatic_incremental_parse_dbs, datadump_success
 )
 from task_queue.validation import DatasetValidationTask
 
@@ -65,6 +65,9 @@ def direct_indexing_run_unthreaded():
     """
     Simply trigger the direct indexing process.
     """
+    # Only if the most recent data dump was a success
+    if not datadump_success():
+        raise ValueError("The CodeForIATI Data Dump failed, aborting the process!")
     direct_indexing.run()
 
 
@@ -81,6 +84,9 @@ def direct_indexing_clear_all_cores():
 #
 @shared_task
 def direct_indexing_start():
+    # Only if the most recent data dump was a success
+    if not datadump_success():
+        raise ValueError("The CodeForIATI Data Dump failed, aborting the process!")
     # Clear the cores, do not use a task as this needs to finish before continuing
     try:
         direct_indexing.clear_indices()
