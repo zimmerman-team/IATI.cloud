@@ -17,7 +17,7 @@ def run():
     """
     clear_indices()
     index_publisher_metadata()
-    index_datasets_and_dataset_metadata()
+    index_datasets_and_dataset_metadata(False)
 
 
 def clear_indices():
@@ -41,6 +41,6 @@ def run_publisher_metadata():
     return result
 
 
-def run_dataset_metadata():
-    result = index_datasets_and_dataset_metadata()
+def run_dataset_metadata(update):
+    result = index_datasets_and_dataset_metadata(update)
     return result

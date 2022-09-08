@@ -64,6 +64,7 @@ DatasetDownloadTask = app.register_task(DatasetDownloadTask())
 def direct_indexing_run_unthreaded():
     """
     Simply trigger the direct indexing process.
+    Which also clears all cores beforehand.
     """
     # Only if the most recent data dump was a success
     if not datadump_success():
@@ -74,7 +75,7 @@ def direct_indexing_run_unthreaded():
 @shared_task
 def direct_indexing_clear_all_cores():
     """
-    Simply trigger the direct indexing process.
+    Simply trigger process clearing all solr cores.
     """
     direct_indexing.clear_indices()
 
@@ -83,20 +84,21 @@ def direct_indexing_clear_all_cores():
 # DIRECT INDEXING MANAGEMENT TASKS
 #
 @shared_task
-def direct_indexing_start():
+def direct_indexing_start(update=False):
     # Only if the most recent data dump was a success
     if not datadump_success():
         raise ValueError("The CodeForIATI Data Dump failed, aborting the process!")
     # Clear the cores, do not use a task as this needs to finish before continuing
     try:
-        direct_indexing.clear_indices()
+        if not update:
+            direct_indexing.clear_indices()
     except pysolr.SolrError:
         # Stop the process and send a message to Celery Flower
         return "Error clearing the direct indexing cores, check your Solr instance."
     # Run the publisher metadata indexing subtask
     direct_indexing_subtask_publisher_metadata.delay()
     # Run the dataset metadata indexing subtask
-    direct_indexing_subtask_dataset_metadata.delay()
+    direct_indexing_subtask_dataset_metadata.delay(update)
     # Send clear message to Celery Flower
     return "Both the publisher and dataset metadata indexing have begun."
 
@@ -108,8 +110,8 @@ def direct_indexing_subtask_publisher_metadata():
 
 
 @shared_task
-def direct_indexing_subtask_dataset_metadata():
-    result = direct_indexing.run_dataset_metadata()
+def direct_indexing_subtask_dataset_metadata(update=False):
+    result = direct_indexing.run_dataset_metadata(update)
     return result
 #
 # END DIRECT INDEXING MANAGEMENT TASKS

@@ -4,6 +4,7 @@ import os
 import xml.etree.ElementTree as ET
 
 from django.conf import settings
+from pysolr import Solr
 from xmljson import badgerfish as bf
 
 from direct_indexing.cleaning.dataset import recursive_attribute_cleaning
@@ -18,7 +19,7 @@ from direct_indexing.processing.util import get_dataset_filepath, get_dataset_fi
 from direct_indexing.util import index_to_core
 
 
-def fun(dataset):
+def fun(dataset, update=False):
     """
     Running the dataset means to take the steps.
     . Clean the dataset metadata.
@@ -54,6 +55,12 @@ def fun(dataset):
     dataset['dataset_valid'] = validation_status
     indexed = False
     dataset_indexing_result = "Dataset invalid"
+    # drop the old data from solr
+    if update:
+        for url in [settings.SOLR_ACTIVITY, settings.SOLR_BUDGET, settings.SOLR_RESULT, settings.SOLR_TRANSACTION]:
+            conn = Solr(url)
+            conn.delete(q='%s:"%s"' % ('dataset.id', dataset['id']), commit=True)
+
     # Index the relevant datasets,
     # these are activity files of a valid version and that have been successfully validated (not critical)
     if validation_status == 'Valid':
