@@ -170,7 +170,7 @@ pysolr==3.8.1
 #####
 # FLOWER FOR CELERY WORKER STATUS
 ######
-flower==0.9.7
+flower==1.2.0
 
 
 #####
