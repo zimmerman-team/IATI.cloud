@@ -303,11 +303,14 @@ def parse_source_by_organisation_identifier(organisation_identifier,
                                             force=False,
                                             check_validation=True):
     try:
-        for dataset in Dataset.objects.filter(
-                publisher_id__publisher_iati_id=organisation_identifier):
-            parse_source_by_id_task.delay(dataset_id=dataset.id,
-                                          force=force,
-                                          check_validation=check_validation)
+        for organisation_id in organisation_identifier:
+            for dataset in Dataset.objects.filter(
+                    publisher_id__publisher_iati_id=organisation_id):
+                parse_source_by_id_task.delay(
+                    dataset_id=dataset.id,
+                    force=force,
+                    check_validation=check_validation
+                )
     except Dataset.DoesNotExist:
         pass
 
