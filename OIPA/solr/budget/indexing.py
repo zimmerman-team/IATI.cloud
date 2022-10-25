@@ -1,6 +1,6 @@
 from solr.indexing import BaseIndexing
 from solr.utils import (
-    add_reporting_org, bool_string, date_string, decimal_string,
+    add_reporting_org, bool_string, date_quarter, date_string, decimal_string,
     get_child_attr, value_string
 )
 
@@ -52,33 +52,33 @@ def add_activity_date(serializer, activity):
             if activity_date.type_id == '1':
                 serializer.add_field(
                     'activity_date_start_planned_f',
-                    activity_date.iso_date
+                    date_string(activity_date.iso_date)
                 )
                 if not common_start:
                     common_start = activity_date.iso_date
             elif activity_date.type_id == '2':
                 serializer.add_field(
                     'activity_date_start_actual_f',
-                    activity_date.iso_date
+                    date_string(activity_date.iso_date)
                 )
                 common_start = activity_date.iso_date
             elif activity_date.type_id == '3':
                 serializer.add_field(
                     'activity_date_end_planned_f',
-                    activity_date.iso_date
+                    date_string(activity_date.iso_date)
                 )
                 if not common_end:
                     common_end = activity_date.iso_date
             elif activity_date.type_id == '4':
                 serializer.add_field(
                     'activity_date_end_actual_f',
-                    activity_date.iso_date
+                    date_string(activity_date.iso_date)
                 )
                 common_end = activity_date.iso_date
     if common_start:
-        serializer.add_field('activity_date_start_common_f', common_start)
+        serializer.add_field('activity_date_start_common_f', date_string(common_start))
     if common_end:
-        serializer.add_field('activity_date_end_common_f', common_end)
+        serializer.add_field('activity_date_end_common_f', date_string(common_end))
 
 
 def add_participating_org(serializer, activity):
@@ -280,12 +280,20 @@ class BudgetIndexing(BaseIndexing):
             date_string(budget.period_start)
         )
         self.add_field(
+            'budget_period_start_quarter',
+            date_quarter(budget.period_start)
+        )
+        self.add_field(
             'budget_period_end_iso_date',
             str(budget.period_end)
         )
         self.add_field(
             'budget_period_end_iso_date_f',
             date_string(budget.period_end)
+        )
+        self.add_field(
+            'budget_period_end_quarter',
+            date_quarter(budget.period_end)
         )
 
         self.add_field('budget_value_currency', budget.currency_id)

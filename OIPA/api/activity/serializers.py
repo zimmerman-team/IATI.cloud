@@ -612,10 +612,10 @@ def aggregation_value_field():
     """
     Aggregation value fields are always 15 max digits, 2 decimal places.
     """
-    return serializers.DecimalField(
+    return str(serializers.DecimalField(
         max_digits=15,
         decimal_places=2,
-        coerce_to_string=False)
+        coerce_to_string=False))
 
 
 class ActivityAggregationSerializer(DynamicFieldsSerializer):

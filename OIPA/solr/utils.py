@@ -48,6 +48,12 @@ def date_string(value):
     return None
 
 
+def date_quarter(value):
+    if hasattr(value, "strftime") and hasattr(value, "month"):
+        return ((value.month - 1) // 3) + 1
+    return None
+
+
 def decimal_string(value):
     if isinstance(value, numbers.Number):
         return str(value)

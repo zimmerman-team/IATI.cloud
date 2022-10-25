@@ -3,7 +3,7 @@ from solr.budget.indexing import (
 )
 from solr.indexing import BaseIndexing
 from solr.utils import (
-    add_reporting_org, bool_string, date_string, decimal_string,
+    add_reporting_org, bool_string, date_quarter, date_string, decimal_string,
     get_child_attr, get_narrative_lang_list
 )
 
@@ -23,7 +23,7 @@ def add_activity_date_fields(serializer, activity):
             )
             serializer.add_field(
                 'activity_date_start_planned_f',
-                activity_date.iso_date
+                date_string(activity_date.iso_date)
             )
             if not common_start:
                 common_start = activity_date.iso_date
@@ -34,7 +34,7 @@ def add_activity_date_fields(serializer, activity):
             )
             serializer.add_field(
                 'activity_date_start_actual_f',
-                activity_date.iso_date
+                date_string(activity_date.iso_date)
             )
             common_start = activity_date.iso_date
         elif activity_date.type_id == '3':
@@ -44,7 +44,7 @@ def add_activity_date_fields(serializer, activity):
             )
             serializer.add_field(
                 'activity_date_end_planned_f',
-                activity_date.iso_date
+                date_string(activity_date.iso_date)
             )
             if not common_end:
                 common_end = activity_date.iso_date
@@ -55,15 +55,15 @@ def add_activity_date_fields(serializer, activity):
             )
             serializer.add_field(
                 'activity_date_end_actual_f',
-                activity_date.iso_date
+                date_string(activity_date.iso_date)
             )
             common_end = activity_date.iso_date
     if common_start:
         serializer.add_field('activity_date_start_common', str(common_start))
-        serializer.add_field('activity_date_start_common_f', common_start)
+        serializer.add_field('activity_date_start_common_f', date_string(common_start))
     if common_end:
         serializer.add_field('activity_date_end_common', str(common_end))
-        serializer.add_field('activity_date_end_common_f', common_end)
+        serializer.add_field('activity_date_end_common_f', date_string(common_end))
 
 
 class TransactionIndexing(BaseIndexing):
@@ -145,6 +145,10 @@ class TransactionIndexing(BaseIndexing):
         self.add_field(
             'transaction_date_iso_date_f',
             date_string(transaction.transaction_date)
+        )
+        self.add_field(
+            'transaction_date_quarter',
+            date_quarter(transaction.transaction_date)
         )
         self.add_field('transaction_value_currency', transaction.currency_id)
         self.add_field(

@@ -24,8 +24,10 @@ class BaseTaskIndexing(object):
     def run(self):
         if settings.SOLR.get('indexing'):
             # pylint: disable=not-callable
-            self.solr.add([self.indexing(self.instance).data])
-
+            try:
+                self.solr.add([self.indexing(self.instance).data])
+            except:
+                raise ValueError("Problem indexing data:\n\n", self.indexing(self.instance).data)
             if self.related:
                 self.run_related()
 

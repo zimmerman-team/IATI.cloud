@@ -252,8 +252,7 @@ class IatiParser(object):
 
             DatasetNote.objects.filter(dataset=self.dataset).delete()
             DatasetNote.objects.bulk_create(self.errors)
-
-            DatasetNoteTaskIndexing().run_from_dataset(dataset=self.dataset)
+            # skip for now: DatasetNoteTaskIndexing().run_from_dataset(dataset=self.dataset)
 
     def post_save_models(self):
         print("override in children")

@@ -37,7 +37,7 @@ from solr.result.serializers import ResultSerializer
 from solr.transaction.references import TransactionReference
 from solr.transaction.serializers import TransactionSerializer
 from solr.utils import (
-    bool_string, date_string, decimal_string, get_child_attr,
+    bool_string, date_quarter, date_string, decimal_string, get_child_attr,
     get_narrative_lang_list, make_normalized_usd_namespace_element,
     value_string
 )
@@ -313,7 +313,7 @@ class ActivityIndexing(BaseIndexing):
                 if activity_date.iso_date:
                     self.add_value_list(
                         'activity_date_iso_date',
-                        activity_date.iso_date
+                        date_string(activity_date.iso_date)
                     )
 
                 if activity_date.type_id == '1':
@@ -323,7 +323,7 @@ class ActivityIndexing(BaseIndexing):
                     )
                     self.add_field(
                         'activity_date_start_planned_f',
-                        activity_date.iso_date
+                        date_string(activity_date.iso_date)
                     )
                     if not common_start:
                         common_start = activity_date.iso_date
@@ -334,7 +334,7 @@ class ActivityIndexing(BaseIndexing):
                     )
                     self.add_field(
                         'activity_date_start_actual_f',
-                        activity_date.iso_date
+                        date_string(activity_date.iso_date)
                     )
                     common_start = activity_date.iso_date
                 elif activity_date.type_id == '3':
@@ -344,7 +344,7 @@ class ActivityIndexing(BaseIndexing):
                     )
                     self.add_field(
                         'activity_date_end_planned_f',
-                        activity_date.iso_date
+                        date_string(activity_date.iso_date)
                     )
                     if not common_end:
                         common_end = activity_date.iso_date
@@ -355,7 +355,7 @@ class ActivityIndexing(BaseIndexing):
                     )
                     self.add_field(
                         'activity_date_end_actual_f',
-                        activity_date.iso_date
+                        date_string(activity_date.iso_date)
                     )
                     common_end = activity_date.iso_date
 
@@ -372,7 +372,7 @@ class ActivityIndexing(BaseIndexing):
                 )
                 self.add_field(
                     'activity_date_start_common_f',
-                    common_start
+                    date_string(common_start)
                 )
             if common_end:
                 self.add_field(
@@ -381,7 +381,7 @@ class ActivityIndexing(BaseIndexing):
                 )
                 self.add_field(
                     'activity_date_end_common_f',
-                    common_end
+                    date_string(common_end)
                 )
 
     def contact_info(self):
@@ -1044,7 +1044,9 @@ class ActivityIndexing(BaseIndexing):
             self.add_field('budget_type', [])
             self.add_field('budget_status', [])
             self.add_field('budget_period_start_iso_date', [])
+            self.add_field('budget_period_start_quarter', [])
             self.add_field('budget_period_end_iso_date', [])
+            self.add_field('budget_period_end_quarter', [])
             self.add_field('budget_value_currency', [])
             self.add_field('budget_value_date', [])
             self.add_field('budget_value', [])
@@ -1100,8 +1102,16 @@ class ActivityIndexing(BaseIndexing):
                     date_string(budget.period_start)
                 )
                 self.add_value_list(
+                    'budget_period_start_quarter',
+                    date_quarter(budget.period_start)
+                )
+                self.add_value_list(
                     'budget_period_end_iso_date',
                     date_string(budget.period_end)
+                )
+                self.add_value_list(
+                    'budget_period_end_quarter',
+                    date_quarter(budget.period_end)
                 )
                 self.add_value_list(
                     'budget_value_currency',
@@ -1310,6 +1320,7 @@ class ActivityIndexing(BaseIndexing):
             self.add_field('transaction_humanitarian', [])
             self.add_field('transaction_type', [])
             self.add_field('transaction_date_iso_date', [])
+            self.add_field('transaction_date_quarter', [])
             self.add_field('transaction_value_currency', [])
             self.add_field('transaction_value_date', [])
             self.add_field('transaction_value', [])
@@ -1428,6 +1439,11 @@ class ActivityIndexing(BaseIndexing):
                     'transaction_date_iso_date',
                     date_string(transaction.transaction_date)
                 )
+                self.add_value_list(
+                    'transaction_date_quarter',
+                    date_quarter(transaction.transaction_date)
+                )
+
                 self.add_value_list(
                     'transaction_value_currency',
                     transaction.currency_id
@@ -2745,62 +2761,62 @@ class ActivityIndexing(BaseIndexing):
             data = ChildAggregation.objects.filter(
                 activity__iati_identifier=activity.iati_identifier)[0]
 
-        self.agg_field(prefix, "budget_value", "value", data)
-        self.agg_field(prefix, "budget_value_usd", "value", data)
-        self.agg_field(prefix, "budget_value_gbp", "value", data)
-        self.agg_field(prefix, "budget_currency", "value", data)
-        self.agg_field(prefix, "disbursement_value", "value", data)
-        self.agg_field(prefix, "disbursement_value_usd", "value", data)
-        self.agg_field(prefix, "disbursement_value_gbp", "value", data)
-        self.agg_field(prefix, "disbursement_currency", "value", data)
-        self.agg_field(prefix, "incoming_funds_value", "value", data)
-        self.agg_field(prefix, "incoming_funds_value_usd", "value", data)
-        self.agg_field(prefix, "incoming_funds_value_gbp", "value", data)
-        self.agg_field(prefix, "incoming_funds_currency", "value", data)
-        self.agg_field(prefix, "commitment_value", "value", data)
-        self.agg_field(prefix, "commitment_value_usd", "value", data)
-        self.agg_field(prefix, "commitment_value_gbp", "value", data)
-        self.agg_field(prefix, "commitment_currency", "value", data)
-        self.agg_field(prefix, "expenditure_value", "value", data)
-        self.agg_field(prefix, "expenditure_value_usd", "value", data)
-        self.agg_field(prefix, "expenditure_value_gbp", "value", data)
-        self.agg_field(prefix, "expenditure_currency", "value", data)
-        self.agg_field(prefix, "interest_payment_value", "value", data)
-        self.agg_field(prefix, "interest_payment_value_usd", "value", data)
-        self.agg_field(prefix, "interest_payment_value_gbp", "value", data)
-        self.agg_field(prefix, "interest_payment_currency", "value", data)
-        self.agg_field(prefix, "loan_repayment_value", "value", data)
-        self.agg_field(prefix, "loan_repayment_value_usd", "value", data)
-        self.agg_field(prefix, "loan_repayment_value_gbp", "value", data)
-        self.agg_field(prefix, "loan_repayment_currency", "value", data)
-        self.agg_field(prefix, "reimbursement_value", "value", data)
-        self.agg_field(prefix, "reimbursement_value_usd", "value", data)
-        self.agg_field(prefix, "reimbursement_value_gbp", "value", data)
-        self.agg_field(prefix, "reimbursement_currency", "value", data)
-        self.agg_field(prefix, "purchase_of_equity_value", "value", data)
-        self.agg_field(prefix, "purchase_of_equity_value_usd", "value", data)
-        self.agg_field(prefix, "purchase_of_equity_value_gbp", "value", data)
-        self.agg_field(prefix, "purchase_of_equity_currency", "value", data)
-        self.agg_field(prefix, "sale_of_equity_value", "value", data)
-        self.agg_field(prefix, "sale_of_equity_value_usd", "value", data)
-        self.agg_field(prefix, "sale_of_equity_value_gbp", "value", data)
-        self.agg_field(prefix, "sale_of_equity_currency", "value", data)
-        self.agg_field(prefix, "credit_guarantee_value", "value", data)
-        self.agg_field(prefix, "credit_guarantee_value_usd", "value", data)
-        self.agg_field(prefix, "credit_guarantee_value_gbp", "value", data)
-        self.agg_field(prefix, "credit_guarantee_currency", "value", data)
-        self.agg_field(prefix, "incoming_commitment_value", "value", data)
-        self.agg_field(prefix, "incoming_commitment_value_usd", "value", data)
-        self.agg_field(prefix, "incoming_commitment_value_gbp", "value", data)
-        self.agg_field(prefix, "incoming_commitment_currency", "value", data)
-        self.agg_field(prefix, "outgoing_pledge_value", "value", data)
-        self.agg_field(prefix, "outgoing_pledge_value_usd", "value", data)
-        self.agg_field(prefix, "outgoing_pledge_value_gbp", "value", data)
-        self.agg_field(prefix, "outgoing_pledge_currency", "value", data)
-        self.agg_field(prefix, "incoming_pledge_value", "value", data)
-        self.agg_field(prefix, "incoming_pledge_value_usd", "value", data)
-        self.agg_field(prefix, "incoming_pledge_value_gbp", "value", data)
-        self.agg_field(prefix, "incoming_pledge_currency", "value", data)
+        self.agg_field(prefix, "budget_value", "value", str(data))
+        self.agg_field(prefix, "budget_value_usd", "value", str(data))
+        self.agg_field(prefix, "budget_value_gbp", "value", str(data))
+        self.agg_field(prefix, "budget_currency", "value", str(data))
+        self.agg_field(prefix, "disbursement_value", "value", str(data))
+        self.agg_field(prefix, "disbursement_value_usd", "value", str(data))
+        self.agg_field(prefix, "disbursement_value_gbp", "value", str(data))
+        self.agg_field(prefix, "disbursement_currency", "value", str(data))
+        self.agg_field(prefix, "incoming_funds_value", "value", str(data))
+        self.agg_field(prefix, "incoming_funds_value_usd", "value", str(data))
+        self.agg_field(prefix, "incoming_funds_value_gbp", "value", str(data))
+        self.agg_field(prefix, "incoming_funds_currency", "value", str(data))
+        self.agg_field(prefix, "commitment_value", "value", str(data))
+        self.agg_field(prefix, "commitment_value_usd", "value", str(data))
+        self.agg_field(prefix, "commitment_value_gbp", "value", str(data))
+        self.agg_field(prefix, "commitment_currency", "value", str(data))
+        self.agg_field(prefix, "expenditure_value", "value", str(data))
+        self.agg_field(prefix, "expenditure_value_usd", "value", str(data))
+        self.agg_field(prefix, "expenditure_value_gbp", "value", str(data))
+        self.agg_field(prefix, "expenditure_currency", "value", str(data))
+        self.agg_field(prefix, "interest_payment_value", "value", str(data))
+        self.agg_field(prefix, "interest_payment_value_usd", "value", str(data))
+        self.agg_field(prefix, "interest_payment_value_gbp", "value", str(data))
+        self.agg_field(prefix, "interest_payment_currency", "value", str(data))
+        self.agg_field(prefix, "loan_repayment_value", "value", str(data))
+        self.agg_field(prefix, "loan_repayment_value_usd", "value", str(data))
+        self.agg_field(prefix, "loan_repayment_value_gbp", "value", str(data))
+        self.agg_field(prefix, "loan_repayment_currency", "value", str(data))
+        self.agg_field(prefix, "reimbursement_value", "value", str(data))
+        self.agg_field(prefix, "reimbursement_value_usd", "value", str(data))
+        self.agg_field(prefix, "reimbursement_value_gbp", "value", str(data))
+        self.agg_field(prefix, "reimbursement_currency", "value", str(data))
+        self.agg_field(prefix, "purchase_of_equity_value", "value", str(data))
+        self.agg_field(prefix, "purchase_of_equity_value_usd", "value", str(data))
+        self.agg_field(prefix, "purchase_of_equity_value_gbp", "value", str(data))
+        self.agg_field(prefix, "purchase_of_equity_currency", "value", str(data))
+        self.agg_field(prefix, "sale_of_equity_value", "value", str(data))
+        self.agg_field(prefix, "sale_of_equity_value_usd", "value", str(data))
+        self.agg_field(prefix, "sale_of_equity_value_gbp", "value", str(data))
+        self.agg_field(prefix, "sale_of_equity_currency", "value", str(data))
+        self.agg_field(prefix, "credit_guarantee_value", "value", str(data))
+        self.agg_field(prefix, "credit_guarantee_value_usd", "value", str(data))
+        self.agg_field(prefix, "credit_guarantee_value_gbp", "value", str(data))
+        self.agg_field(prefix, "credit_guarantee_currency", "value", str(data))
+        self.agg_field(prefix, "incoming_commitment_value", "value", str(data))
+        self.agg_field(prefix, "incoming_commitment_value_usd", "value", str(data))
+        self.agg_field(prefix, "incoming_commitment_value_gbp", "value", str(data))
+        self.agg_field(prefix, "incoming_commitment_currency", "value", str(data))
+        self.agg_field(prefix, "outgoing_pledge_value", "value", str(data))
+        self.agg_field(prefix, "outgoing_pledge_value_usd", "value", str(data))
+        self.agg_field(prefix, "outgoing_pledge_value_gbp", "value", str(data))
+        self.agg_field(prefix, "outgoing_pledge_currency", "value", str(data))
+        self.agg_field(prefix, "incoming_pledge_value", "value", str(data))
+        self.agg_field(prefix, "incoming_pledge_value_usd", "value", str(data))
+        self.agg_field(prefix, "incoming_pledge_value_gbp", "value", str(data))
+        self.agg_field(prefix, "incoming_pledge_currency", "value", str(data))
 
     def activity_plus_child_aggregation(self):
         self.aggregation_indexing("activity_aggregation_")
@@ -2812,10 +2828,10 @@ class ActivityIndexing(BaseIndexing):
 
         self.add_field('id', value_string(activity.id))
         self.add_field('iati_identifier', activity.iati_identifier)
-        self.add_field('last_updated_datetime', activity.last_updated_datetime)
+        self.add_field('last_updated_datetime', date_string(activity.last_updated_datetime))
         self.add_field(
             'last_updated_datetime_f',
-            activity.last_updated_datetime
+            date_string(activity.last_updated_datetime)
         )
         self.add_field('default_lang', activity.default_lang_id)
         self.add_field('default_currency', activity.default_currency_id)

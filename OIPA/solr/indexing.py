@@ -17,7 +17,9 @@ class BaseIndexing(serializers.Serializer):
         self.indexing[field] = value
 
     def add_sum(self, field, value):
-        self.indexing[field] = self.indexing[field] + value
+        from decimal import Decimal
+        self.indexing[field] = str(Decimal(self.indexing[field]) + value)
+        # self.indexing[field] = self.indexing[field] + value
 
     def add_value_list(self, field, value):
         add_value_list(self.indexing[field], value)
