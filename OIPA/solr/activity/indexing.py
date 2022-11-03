@@ -942,6 +942,7 @@ class ActivityIndexing(BaseIndexing):
             self.add_field('policy_marker_vocabulary', [])
             self.add_field('policy_marker_vocabulary_uri', [])
             self.add_field('policy_marker_code', [])
+            self.add_field('policy_marker_combined', [])
             self.add_field('policy_marker_significance', [])
 
             self.add_field('policy_marker_narrative', [])
@@ -984,6 +985,10 @@ class ActivityIndexing(BaseIndexing):
                     'policy_marker_significance',
                     policy_marker.significance_id
                 )
+                # Policy Marker Combined
+                if policy_marker.code_id and policy_marker.significance_id:
+                    pmc_str = f'{policy_marker.code_id}__{policy_marker.significance_id}'  # NOQA: E501
+                    self.add_value_list('policy_marker_combined', pmc_str)
 
                 self.related_narrative(
                     policy_marker,

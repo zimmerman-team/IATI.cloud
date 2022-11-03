@@ -1,1 +1,0 @@
-OIPA is licensed under AGPLv3 (see included <a href="https://github.com/zimmerman-zimmerman/OIPA/blob/master/LICENSE.MD" target="_blank">LICENSE file</a> for full license)
