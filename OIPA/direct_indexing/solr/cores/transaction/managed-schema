@@ -1281,7 +1281,7 @@
   <copyField source="transaction.sector.code" dest="transaction_sector_code" />
   <copyField source="sector.percentage" dest="transaction_sector_percentage" />
   <copyField source="transaction.recipient-country.code" dest="transaction_recipient_country_code" />
-  <copyField source="recipient-country.narrative" dest="transaction_recipient_country_narrative" />
+  <!-- <copyField source="recipient-country.narrative" dest="transaction_recipient_country_narrative" /> -->
   <copyField source="transaction.recipient-region.code" dest="transaction_recipient_region_code" />
   <copyField source="transaction.recipient-region.vocabulary" dest="transaction_recipient_region_vocabulary" />
   <copyField source="recipient-region.vocabulary-uri" dest="transaction_recipient_region_vocabulary_uri" />
