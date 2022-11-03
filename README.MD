@@ -11,6 +11,8 @@ IATI.cloud extracts all published IATI XML files from the [IATI Registry](http:/
 
 IATI is a global aid transparency standard and it makes information about aid spending easier to access, re-use and understand the underlying data using a unified open standard. You can find more about the IATI data standard at: [www.iatistandard.org](www.iatistandard.org)
 
+We have recently moved towards a Solr Only version of the IATI.cloud. If you are looking for the hybrid IATI.cloud with Django API and Solr API, you can find this under the branch `archive/iati-cloud-hybrid-django-solr`
+
 ## Requirements
 | Name                   | Required version                                                                                                   | Installation instructions |
 | ---------------------- | ------------------------------------------------------------------------------------------------------------------ |---------------------------|
