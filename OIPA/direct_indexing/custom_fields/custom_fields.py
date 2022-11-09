@@ -4,6 +4,7 @@ from direct_indexing.custom_fields.currency_aggregation import currency_aggregat
 from direct_indexing.custom_fields.currency_conversion import currency_conversion
 from direct_indexing.custom_fields.dataset_metadata import add_meta_to_activity, dataset_metadata
 from direct_indexing.custom_fields.date_quarters import add_date_quarter_fields
+from direct_indexing.custom_fields.json_dumps import add_json_dumps
 from direct_indexing.custom_fields.policy_marker_combined import policy_marker_combined
 from direct_indexing.custom_fields.title_narrative import title_narrative_first
 
@@ -36,6 +37,7 @@ def process_activity(activity, codelists, currencies, metadata):
     :param currencies: an initialized currencies object.
     :return: the updated dataset.
     """
+    add_json_dumps(activity)
     add_codelist_fields(activity, codelists)
     title_narrative_first(activity)
     activity_dates(activity)
