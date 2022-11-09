@@ -1056,24 +1056,24 @@
   <field name="dataset.resources.url" type="text_general_single" indexed="true" stored="true" />
 
   <!-- Date quarter fields -->
-  <field nane="activity-date.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
-  <field nane="budget.period-start.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
-  <field nane="budget.period-end.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
-  <field nane="planned-disbursement.period-start.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
-  <field nane="planned-disbursement.period-end.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
-  <field nane="transaction.transaction-date.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
-  <field nane="document-link.document-date.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
-  <field nane="result.document-link.document-date.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
-  <field nane="result.indicator.document-link.document-date.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
-  <field nane="result.indicator.baseline.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
-  <field nane="result.indicator.baseline.document-link.document-date.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
-  <field nane="result.indicator.period.period-start.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
-  <field nane="result.indicator.period.period-end.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
-  <field nane="result.indicator.period.target.document-link.document-date.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
-  <field nane="result.indicator.period.actual.document-link.document-date.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
-  <field nane="crs-add.loan-terms.commitment-date.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
-  <field nane="crs-add.loan-terms.repayment-first-date.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
-  <field nane="crs-add.loan-terms.repayment-final-date.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
+  <field name="activity-date.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
+  <field name="budget.period-start.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
+  <field name="budget.period-end.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
+  <field name="planned-disbursement.period-start.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
+  <field name="planned-disbursement.period-end.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
+  <field name="transaction.transaction-date.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
+  <field name="document-link.document-date.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
+  <field name="result.document-link.document-date.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
+  <field name="result.indicator.document-link.document-date.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
+  <field name="result.indicator.baseline.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
+  <field name="result.indicator.baseline.document-link.document-date.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
+  <field name="result.indicator.period.period-start.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
+  <field name="result.indicator.period.period-end.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
+  <field name="result.indicator.period.target.document-link.document-date.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
+  <field name="result.indicator.period.actual.document-link.document-date.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
+  <field name="crs-add.loan-terms.commitment-date.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
+  <field name="crs-add.loan-terms.repayment-first-date.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
+  <field name="crs-add.loan-terms.repayment-final-date.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
 
   <!-- GBP Converted fields -->
   <field name="budget.value-gbp" type="pdoubles"/>
