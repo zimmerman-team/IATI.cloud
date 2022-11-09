@@ -3,6 +3,7 @@ from direct_indexing.custom_fields.codelists import add_codelist_fields
 from direct_indexing.custom_fields.currency_aggregation import currency_aggregation
 from direct_indexing.custom_fields.currency_conversion import currency_conversion
 from direct_indexing.custom_fields.dataset_metadata import add_meta_to_activity, dataset_metadata
+from direct_indexing.custom_fields.date_quarters import add_date_quarter_fields
 from direct_indexing.custom_fields.policy_marker_combined import policy_marker_combined
 from direct_indexing.custom_fields.title_narrative import title_narrative_first
 
@@ -41,6 +42,8 @@ def process_activity(activity, codelists, currencies, metadata):
     policy_marker_combined(activity)
     currency_conversion(activity, currencies)
     add_meta_to_activity(activity, metadata)
+    # FCDO Custom feature
+    add_date_quarter_fields(activity)
 
 
 def get_custom_metadata(metadata):
