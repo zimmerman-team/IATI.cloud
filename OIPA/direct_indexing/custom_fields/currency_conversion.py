@@ -15,29 +15,33 @@ def currency_conversion(data, currencies):
         default_currency = data['default-currency']
 
     for field in ['budget', 'planned-disbursement', 'transaction']:
-        if field not in data:
-            continue
+        for curr_convert in ['USD', 'GBP']:
+            if field not in data:
+                continue
 
-        value = []
-        rate = []
-        t_type = []
-        first_currency = ""
-        if type(data[field]) is list:
-            value, rate, first_currency, t_type = \
-                convert_currencies_from_list(data, field, currencies, default_currency,
-                                             value, rate, first_currency, t_type)
-        else:  # data is a reference thus not assigned
-            value, rate, first_currency, t_type = \
-                convert_currencies_from_dict(data, field, currencies, default_currency, value, rate, t_type)
+            value = []
+            rate = []
+            t_type = []
+            first_currency = ""
+            if type(data[field]) is list:
+                value, rate, first_currency, t_type = \
+                    convert_currencies_from_list(data, field, currencies, default_currency,
+                                                 value, rate, first_currency, t_type, curr_convert)
+            else:  # data is a reference thus not assigned
+                value, rate, first_currency, t_type = \
+                    convert_currencies_from_dict(data, field, currencies, default_currency,
+                                                 value, rate, t_type, curr_convert)
 
-        data = save_converted_value_to_data(data, value, field, rate, first_currency, t_type)
+            data = save_converted_value_to_data(data, value, field, rate, first_currency, t_type, curr_convert.lower())
     return data
 
 
-def convert_currencies_from_list(data, field, currencies, default_currency, value, rate, first_currency, t_type):
+def convert_currencies_from_list(data, field, currencies, default_currency, value,
+                                 rate, first_currency, t_type, curr_convert):
     for item in data[field]:
         c_value, c_rate, currency = convert(item, currencies,
-                                            default_currency=default_currency)
+                                            default_currency=default_currency,
+                                            target_currency=curr_convert)
         value.append(c_value)
         rate.append(c_rate)
         if field == 'transaction':
@@ -51,9 +55,10 @@ def convert_currencies_from_list(data, field, currencies, default_currency, valu
     return value, rate, first_currency, t_type
 
 
-def convert_currencies_from_dict(data, field, currencies, default_currency, value, rate, t_type):
+def convert_currencies_from_dict(data, field, currencies, default_currency, value, rate, t_type, curr_convert):
     c_value, c_rate, first_currency = convert(data[field], currencies,
-                                              default_currency=default_currency)
+                                              default_currency=default_currency,
+                                              target_currency=curr_convert)
     value.append(c_value)
     rate.append(c_rate)
     if field == 'transaction':
@@ -125,13 +130,13 @@ def get_ym(data):
     return year, month
 
 
-def save_converted_value_to_data(data, value, field, rate, first_currency, t_type):
+def save_converted_value_to_data(data, value, field, rate, first_currency, t_type, curr_convert):
     if len(value) > 0:
         summed_value = sum([0 if v is None else v for v in value])
-        data[f'{field}.value-usd'] = value
-        data[f'{field}.value-usd.sum'] = summed_value
-        data[f'{field}.value-usd.conversion-rate'] = rate
-        data[f'{field}.value-usd.conversion-currency'] = first_currency
+        data[f'{field}.value-{curr_convert}'] = value
+        data[f'{field}.value-{curr_convert}.sum'] = summed_value
+        data[f'{field}.value-{curr_convert}.conversion-rate'] = rate
+        data[f'{field}.value-{curr_convert}.conversion-currency'] = first_currency
         if field == 'transaction':
-            data[f'{field}.value-usd-type'] = t_type
+            data[f'{field}.value-{curr_convert}-type'] = t_type
     return data

@@ -12,10 +12,17 @@ TVU_DASHES = 'transaction-value-usd'
 TVU_CLEAN = 'transaction.value-usd'
 TVU_DASHES_TYPE = 'transaction-value-usd-type'
 TVU_CLEAN_TYPE = 'transaction.value-usd-type'
+TVU_DASHES_GBP = 'transaction-value-gbp'
+TVU_CLEAN_GBP = 'transaction.value-gbp'
+TVU_DASHES_TYPE_GBP = 'transaction-value-gbp-type'
+TVU_CLEAN_TYPE_GBP = 'transaction.value-gbp-type'
 
 BV_USD_CURR = 'budget.value-usd.conversion-currency'
+BV_GBP_CURR = 'budget.value-gbp.conversion-currency'
 PDV_USD_CURR = 'planned-disbursement.value-usd.conversion-currency'
+PDV_GBP_CURR = 'planned-disbursement.value-gbp.conversion-currency'
 TV_USD_CURR = 'transaction.value-usd.conversion-currency'
+TV_GBP_CURR = 'transaction.value-gbp.conversion-currency'
 
 
 def currency_aggregation(data):
@@ -74,6 +81,10 @@ def prepare_data(data):
             activity[TVU_DASHES] = activity.pop(TVU_CLEAN)
         if TVU_CLEAN_TYPE in activity:
             activity[TVU_DASHES_TYPE] = activity.pop(TVU_CLEAN_TYPE)
+        if TVU_CLEAN_GBP in activity:
+            activity[TVU_DASHES_GBP] = activity.pop(TVU_CLEAN_GBP)
+        if TVU_CLEAN_TYPE_GBP in activity:
+            activity[TVU_DASHES_TYPE_GBP] = activity.pop(TVU_CLEAN_TYPE_GBP)
     return data
 
 
@@ -143,6 +154,15 @@ def get_aggregations(dba, data):
     #     }}
     # ]))
 
+    transaction_gbp_agg = list(dba.aggregate([
+        {MONGO_UNWIND: "$transaction-value-gbp-type"},
+        {MONGO_UNWIND: "$transaction-value-gbp"},
+        {MONGO_GROUP: {
+            "_id": [MONGO_IID, "$transaction-value-gbp-type"],
+            "transaction-value-gbp-sum": {"$sum": "$transaction-value-gbp"},
+        }}
+    ]))
+
     # Planned disbursement
     planned_disbursement_agg = list(dba.aggregate([
         {MONGO_UNWIND: "$planned-disbursement"},
@@ -156,6 +176,7 @@ def get_aggregations(dba, data):
         'budget': budget_agg,
         'transaction': transaction_agg,
         'transaction-usd': transaction_usd_agg,
+        'transaction-gbp': transaction_gbp_agg,
         'planned-disbursement': planned_disbursement_agg,
     }
 
@@ -192,48 +213,63 @@ def get_aggregation_fields():
     aggregation_fields = {
         "budget": "activity-aggregation-budget-value",
         "budget_usd": "activity-aggregation-budget-value-usd",
+        "budget_gbp": "activity-aggregation-budget-value-gbp",
         "budget_currency": "activity-aggregation-budget-currency",
         "planned_disbursement": "activity-aggregation-planned-disbursement-value",
         "planned_disbursement_usd": "activity-aggregation-planned-disbursement-value-usd",
+        "planned_disbursement_gbp": "activity-aggregation-planned-disbursement-value-gbp",
         "planned_disbursement_currency": "activity-aggregation-planned-disbursement-currency",
         "incoming_funds": "activity-aggregation-incoming-funds-value",
         "incoming_funds_usd": "activity-aggregation-incoming-funds-value-usd",
+        "incoming_funds_gbp": "activity-aggregation-incoming-funds-value-gbp",
         "incoming_funds_currency": "activity-aggregation-incoming-funds-currency",
         "outgoing_commitment": "activity-aggregation-outgoing-commitment-value",
         "outgoing_commitment_usd": "activity-aggregation-outgoing-commitment-value-usd",
+        "outgoing_commitment_gbp": "activity-aggregation-outgoing-commitment-value-gbp",
         "outgoing_commitment_currency": "activity-aggregation-outgoing-commitment-currency",
         "disbursement": "activity-aggregation-disbursement-value",
         "disbursement_usd": "activity-aggregation-disbursement-value-usd",
+        "disbursement_gbp": "activity-aggregation-disbursement-value-gbp",
         "disbursement_currency": "activity-aggregation-disbursement-currency",
         "expenditure": "activity-aggregation-expenditure-value",
         "expenditure_usd": "activity-aggregation-expenditure-value-usd",
+        "expenditure_gbp": "activity-aggregation-expenditure-value-gbp",
         "expenditure_currency": "activity-aggregation-expenditure-currency",
         "interest_payment": "activity-aggregation-interest-payment-value",
         "interest_payment_usd": "activity-aggregation-interest-payment-value-usd",
+        "interest_payment_gbp": "activity-aggregation-interest-payment-value-gbp",
         "interest_payment_currency": "activity-aggregation-interest-payment-currency",
         "loan_repayment": "activity-aggregation-loan-repayment-value",
         "loan_repayment_usd": "activity-aggregation-loan-repayment-value-usd",
+        "loan_repayment_gbp": "activity-aggregation-loan-repayment-value-gbp",
         "loan_repayment_currency": "activity-aggregation-loan-repayment-currency",
         "reimbursement": "activity-aggregation-reimbursement-value",
         "reimbursement_usd": "activity-aggregation-reimbursement-value-usd",
+        "reimbursement_gbp": "activity-aggregation-reimbursement-value-gbp",
         "reimbursement_currency": "activity-aggregation-reimbursement-currency",
         "purchase_of_equity": "activity-aggregation-purchase-of-equity-value",
         "purchase_of_equity_usd": "activity-aggregation-purchase-of-equity-value-usd",
+        "purchase_of_equity_gbp": "activity-aggregation-purchase-of-equity-value-gbp",
         "purchase_of_equity_currency": "activity-aggregation-purchase-of-equity-currency",
         "sale_of_equity": "activity-aggregation-sale-of-equity-value",
         "sale_of_equity_usd": "activity-aggregation-sale-of-equity-value-usd",
+        "sale_of_equity_gbp": "activity-aggregation-sale-of-equity-value-gbp",
         "sale_of_equity_currency": "activity-aggregation-sale-of-equity-currency",
         "credit_guarantee": "activity-aggregation-credit-guarantee-value",
         "credit_guarantee_usd": "activity-aggregation-credit-guarantee-value-usd",
+        "credit_guarantee_gbp": "activity-aggregation-credit-guarantee-value-gbp",
         "credit_guarantee_currency": "activity-aggregation-credit-guarantee-currency",
         "incoming_commitment": "activity-aggregation-incoming-commitment-value",
         "incoming_commitment_usd": "activity-aggregation-incoming-commitment-value-usd",
+        "incoming_commitment_gbp": "activity-aggregation-incoming-commitment-value-gbp",
         "incoming_commitment_currency": "activity-aggregation-incoming-commitment-currency",
         "outgoing_pledge": "activity-aggregation-outgoing-pledge-value",
         "outgoing_pledge_usd": "activity-aggregation-outgoing-pledge-value-usd",
+        "outgoing_pledge_gbp": "activity-aggregation-outgoing-pledge-value-gbp",
         "outgoing_pledge_currency": "activity-aggregation-outgoing-pledge-currency",
         "incoming_pledge": "activity-aggregation-incoming-pledge-value",
         "incoming_pledge_usd": "activity-aggregation-incoming-pledge-value-usd",
+        "incoming_pledge_gbp": "activity-aggregation-incoming-pledge-value-gbp",
         "incoming_pledge_currency": "activity-aggregation-incoming-pledge-currency",
     }
 
@@ -284,6 +320,7 @@ def process_activity_aggregations(data, activity_aggregations, activity_indexes,
     budget_agg = activity_aggregations['budget']
     transaction_agg = activity_aggregations['transaction']
     transaction_usd_agg = activity_aggregations['transaction-usd']
+    transaction_gbp_agg = activity_aggregations['transaction-gbp']
     planned_disbursement_agg = activity_aggregations['planned-disbursement']
     # Process the aggregated data
     process_budget_agg(budget_agg, activity_indexes, aggregation_fields, data)
@@ -297,6 +334,7 @@ def process_activity_aggregations(data, activity_aggregations, activity_indexes,
     tt_u = [t.replace("-", "_") if t else None for t in transaction_types]
     process_transaction_agg(transaction_agg, activity_indexes, aggregation_fields, data, tt_u)
     process_transaction_currency_agg(transaction_usd_agg, activity_indexes, aggregation_fields, data, tt_u, 'usd')
+    process_transaction_currency_agg(transaction_gbp_agg, activity_indexes, aggregation_fields, data, tt_u, 'gbp')
     return data
 
 
@@ -391,12 +429,18 @@ def get_currency(key, data, index_of_activity):
     if key == 'budget':
         if BV_USD_CURR in data[index_of_activity]:
             currency = data[index_of_activity][BV_USD_CURR]
+        if BV_GBP_CURR in data[index_of_activity]:
+            currency = data[index_of_activity][BV_GBP_CURR]
     if key == 'planned-disbursement':
         if PDV_USD_CURR in data[index_of_activity]:
             currency = data[index_of_activity][PDV_USD_CURR]
+        if PDV_GBP_CURR in data[index_of_activity]:
+            currency = data[index_of_activity][PDV_GBP_CURR]
     if key == 'transaction':
         if TV_USD_CURR in data[index_of_activity]:
             currency = data[index_of_activity][TV_USD_CURR]
+        if TV_GBP_CURR in data[index_of_activity]:
+            currency = data[index_of_activity][TV_GBP_CURR]
     return currency
 
 
@@ -427,6 +471,10 @@ def revert_activity_tvu(activity):
         activity[TVU_CLEAN] = activity.pop(TVU_DASHES)
     if TVU_DASHES_TYPE in activity:
         activity[TVU_CLEAN_TYPE] = activity.pop(TVU_DASHES_TYPE)
+    if TVU_DASHES_GBP in activity:
+        activity[TVU_CLEAN_GBP] = activity.pop(TVU_DASHES_GBP)
+    if TVU_DASHES_TYPE_GBP in activity:
+        activity[TVU_CLEAN_TYPE_GBP] = activity.pop(TVU_DASHES_TYPE_GBP)
     return activity
 
 
@@ -439,6 +487,8 @@ def process_budget_agg(budget_agg, activity_indexes, aggregation_fields, data):
         data[index_of_activity][aggregation_fields['budget']] = agg['budget-value-sum']
         if 'budget.value-usd.sum' in data[index_of_activity]:
             data[index_of_activity][aggregation_fields['budget_usd']] = data[index_of_activity]['budget.value-usd.sum']
+        if 'budget.value-gbp.sum' in data[index_of_activity]:
+            data[index_of_activity][aggregation_fields['budget_gbp']] = data[index_of_activity]['budget.value-gbp.sum']
         if BV_USD_CURR in data[index_of_activity]:
             data[index_of_activity][aggregation_fields['budget_currency']] = data[index_of_activity][
                 BV_USD_CURR]
@@ -454,9 +504,15 @@ def process_planned_disbursement_agg(planned_disbursement_agg, activity_indexes,
         if 'planned-disbursement.value-usd.sum' in data[index_of_activity]:
             data[index_of_activity][aggregation_fields['planned_disbursement_usd']] = data[index_of_activity][
                 'planned-disbursement.value-usd.sum']
+        if 'planned-disbursement.value-gbp.sum' in data[index_of_activity]:
+            data[index_of_activity][aggregation_fields['planned_disbursement_gbp']] = data[index_of_activity][
+                'planned-disbursement.value-gbp.sum']
         if PDV_USD_CURR in data[index_of_activity]:
             data[index_of_activity][aggregation_fields['planned_disbursement_currency']] = data[index_of_activity][
                 PDV_USD_CURR]
+        if PDV_GBP_CURR in data[index_of_activity]:
+            data[index_of_activity][aggregation_fields['planned_disbursement_currency']] = data[index_of_activity][
+                PDV_GBP_CURR]
 
 
 def process_transaction_agg(transaction_agg, activity_indexes, aggregation_fields, data, types):
@@ -484,6 +540,9 @@ def process_transaction_currency_agg(transaction_curr_agg, activity_indexes, agg
             data[index_of_activity][f'{aggregation_fields[types[transaction_type]]}-{currency}'] = agg[
                 f'transaction-value-{currency}-sum']
             if f'transaction-value-{currency}-conversion-currency' in data[index_of_activity]:
-                selector = TV_USD_CURR
+                if currency == 'gbp':
+                    selector = TV_GBP_CURR
+                else:
+                    selector = TV_USD_CURR
                 data[index_of_activity][f'{aggregation_fields[types[transaction_type]]}-currency'] = \
                     data[index_of_activity][selector]
