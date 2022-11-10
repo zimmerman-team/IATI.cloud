@@ -41,6 +41,6 @@ def run_publisher_metadata():
     return result
 
 
-def run_dataset_metadata(update):
-    result = index_datasets_and_dataset_metadata(update)
+def run_dataset_metadata(update, force_update=False):
+    result = index_datasets_and_dataset_metadata(update, force_update)
     return result

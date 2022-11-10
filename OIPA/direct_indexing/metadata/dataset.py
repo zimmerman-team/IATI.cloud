@@ -20,7 +20,7 @@ def direct_indexing_subtask_process_dataset(dataset, update):
         raise DatasetException(message=f'Error indexing dataset {dataset["id"]}\nDataset metadata:\n{result}\nDataset indexing:\n{str(dataset_indexing_result)}')  # NOQA
 
 
-def index_datasets_and_dataset_metadata(update):
+def index_datasets_and_dataset_metadata(update, force_update):
     """
     Steps:
     . Download all the datasets
@@ -36,7 +36,7 @@ def index_datasets_and_dataset_metadata(update):
     download_dataset()
 
     logging.info('-- Retrieve metadata')
-    dataset_metadata = retrieve(settings.METADATA_DATASET_URL, 'dataset_metadata')
+    dataset_metadata = retrieve(settings.METADATA_DATASET_URL, 'dataset_metadata', force_update)
 
     # If we are updating instead of refreshing, retrieve dataset ids
     if update:
