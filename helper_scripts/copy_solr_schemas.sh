@@ -3,11 +3,11 @@ cores=("activity" "budget" "dataset"  "organisation" "publisher" "result" "trans
 basedir=""
 
 # request the users input for the directory
-select yn in "/var/data/solr" "/opt/solr/server/solr" "/home/zimmerman/Installs/solr-8.10.1/server/solr" "Other... which is:"; do
+select yn in "/var/solr/data" "/opt/solr/server/solr" "/home/zimmerman/Installs/solr-8.11.2/server/solr" "Other... which is:"; do
     case $yn in
-        "/home/zimmerman/Installs/solr-8.10.1/server/solr" ) basedir=/home/zimmerman/Installs/solr-8.10.1/server/solr; break;;
+        "/home/zimmerman/Installs/solr-8.11.2/server/solr" ) basedir=/home/zimmerman/Installs/solr-8.11.2/server/solr; break;;
         "/opt/solr/server/solr" ) basedir=/opt/solr/server/solr; break;;
-        "/var/data/solr" ) basedir=/var/data/solr; break;;
+        "/var/solr/data" ) basedir=/var/solr/data; break;;
         "Other... which is:" ) read basedir; break;;
     esac
 done

@@ -11,10 +11,10 @@ cd /opt
 
 # Download solr
 cd /opt
-wget https://dlcdn.apache.org/lucene/solr/8.11.1/solr-8.11.1.tgz
+wget https://dlcdn.apache.org/lucene/solr/8.11.2/solr-8.11.2.tgz
 # OLD VERSION: wget https://archive.apache.org/dist/lucene/solr/8.2.0/solr-8.2.0.tgz
-tar xzf solr-8.11.1.tgz solr-8.11.1/bin/install_solr_service.sh --strip-components=2
-sudo bash ./install_solr_service.sh solr-8.11.1.tgz 
+tar xzf solr-8.11.2.tgz solr-8.11.2/bin/install_solr_service.sh --strip-components=2
+sudo bash ./install_solr_service.sh solr-8.11.2.tgz 
 service solr status
 
 # Install solr
