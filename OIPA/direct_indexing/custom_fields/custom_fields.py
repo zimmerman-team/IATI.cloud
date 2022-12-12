@@ -6,6 +6,7 @@ from direct_indexing.custom_fields.dataset_metadata import add_meta_to_activity,
 from direct_indexing.custom_fields.date_quarters import add_date_quarter_fields
 from direct_indexing.custom_fields.json_dumps import add_json_dumps
 from direct_indexing.custom_fields.policy_marker_combined import policy_marker_combined
+from direct_indexing.custom_fields.document_link_category_combined import document_link_category_combined
 from direct_indexing.custom_fields.title_narrative import title_narrative_first
 
 
@@ -46,6 +47,7 @@ def process_activity(activity, codelists, currencies, metadata):
     add_meta_to_activity(activity, metadata)
     # FCDO Custom feature
     add_date_quarter_fields(activity)
+    document_link_category_combined(activity)
 
 
 def get_custom_metadata(metadata):
