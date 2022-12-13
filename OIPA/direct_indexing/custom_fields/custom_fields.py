@@ -1,3 +1,5 @@
+from django.conf import settings
+
 from direct_indexing.custom_fields.activity_dates import activity_dates
 from direct_indexing.custom_fields.codelists import add_codelist_fields
 from direct_indexing.custom_fields.currency_aggregation import currency_aggregation
@@ -38,7 +40,6 @@ def process_activity(activity, codelists, currencies, metadata):
     :param currencies: an initialized currencies object.
     :return: the updated dataset.
     """
-    add_json_dumps(activity)
     add_codelist_fields(activity, codelists)
     title_narrative_first(activity)
     activity_dates(activity)
@@ -46,8 +47,10 @@ def process_activity(activity, codelists, currencies, metadata):
     currency_conversion(activity, currencies)
     add_meta_to_activity(activity, metadata)
     # FCDO Custom feature
-    add_date_quarter_fields(activity)
-    document_link_category_combined(activity)
+    if settings.FCDO_INSTANCE:
+        add_json_dumps(activity)
+        add_date_quarter_fields(activity)
+        document_link_category_combined(activity)
 
 
 def get_custom_metadata(metadata):
