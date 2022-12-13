@@ -483,6 +483,7 @@ HERE_PATH = os.path.join(BASE_DIR, 'direct_indexing/data_sources/datasets')
 DATA_EXTRACTED_PATH = os.path.join(HERE_PATH, 'iati-data-main/data')
 
 FCDO_INSTANCE = False
+THROTTLE_DATASET = False
 
 try:
     from .local_settings import *  # noqa: F401, F403
