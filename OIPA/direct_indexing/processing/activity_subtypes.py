@@ -43,7 +43,8 @@ def extract_subtype(activity, subtype):
     include_fields = [
         f'{subtype}.value-usd',
         f'{subtype}.value-usd.conversion-rate',
-        f'{subtype}.value-usd.conversion-currency'
+        f'{subtype}.value-usd.conversion-currency',
+        f'json.{subtype}'
     ]
 
     # get subtype
