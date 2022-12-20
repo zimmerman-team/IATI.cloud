@@ -10,6 +10,7 @@ from direct_indexing.custom_fields.json_dumps import add_json_dumps
 from direct_indexing.custom_fields.policy_marker_combined import policy_marker_combined
 from direct_indexing.custom_fields.document_link_category_combined import document_link_category_combined
 from direct_indexing.custom_fields.title_narrative import title_narrative_first
+from direct_indexing.custom_fields.add_default_hierarchy import add_default_hierarchy
 
 
 def add_all(data, codelists, currencies, metadata):
@@ -46,6 +47,7 @@ def process_activity(activity, codelists, currencies, metadata):
     policy_marker_combined(activity)
     currency_conversion(activity, currencies)
     add_meta_to_activity(activity, metadata)
+    add_default_hierarchy(activity)
     # FCDO Custom feature
     if settings.FCDO_INSTANCE:
         add_json_dumps(activity)
