@@ -141,6 +141,7 @@ def get_aggregations(dba, data):
     #   {'_id': [data[iati-identifier], type_n], 'transaction-value-usd-sum': sum(type_values[type_n])},
     # ]
     transaction_usd_agg = aggregate_converted_types(data, 'usd')
+    transaction_gbp_agg = aggregate_converted_types(data, 'gbp')
 
     # We previously used the following aggregation in mongo,
     # which led to incorrectly aggregated typed data
@@ -153,15 +154,15 @@ def get_aggregations(dba, data):
     #         "transaction-value-usd-sum": {"$sum": "$transaction-value-usd"},
     #     }}
     # ]))
+    # transaction_gbp_agg = list(dba.aggregate([
+    #     {MONGO_UNWIND: "$transaction-value-gbp-type"},
+    #     {MONGO_UNWIND: "$transaction-value-gbp"},
+    #     {MONGO_GROUP: {
+    #         "_id": [MONGO_IID, "$transaction-value-gbp-type"],
+    #         "transaction-value-gbp-sum": {"$sum": "$transaction-value-gbp"},
+    #     }}
+    # ]))
 
-    transaction_gbp_agg = list(dba.aggregate([
-        {MONGO_UNWIND: "$transaction-value-gbp-type"},
-        {MONGO_UNWIND: "$transaction-value-gbp"},
-        {MONGO_GROUP: {
-            "_id": [MONGO_IID, "$transaction-value-gbp-type"],
-            "transaction-value-gbp-sum": {"$sum": "$transaction-value-gbp"},
-        }}
-    ]))
 
     # Planned disbursement
     planned_disbursement_agg = list(dba.aggregate([
