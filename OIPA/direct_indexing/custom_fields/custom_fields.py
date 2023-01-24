@@ -11,6 +11,7 @@ from direct_indexing.custom_fields.policy_marker_combined import policy_marker_c
 from direct_indexing.custom_fields.document_link_category_combined import document_link_category_combined
 from direct_indexing.custom_fields.title_narrative import title_narrative_first
 from direct_indexing.custom_fields.add_default_hierarchy import add_default_hierarchy
+from direct_indexing.custom_fields.raise_h2_budget_data_to_h1 import raise_h2_budget_data_to_h1
 
 
 def add_all(data, codelists, currencies, metadata):
@@ -29,6 +30,9 @@ def add_all(data, codelists, currencies, metadata):
         process_activity(data, codelists, currencies, metadata)
     # Currency aggregation is done on the whole dataset, rather than on the activity level
     data = currency_aggregation(data)
+    if settings.FCDO_INSTANCE:
+        # this must be done last as it relies on budgets and date quarters being processed
+        data = raise_h2_budget_data_to_h1(data)
     return data
 
 
