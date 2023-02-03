@@ -117,7 +117,9 @@ def iterate_third_level_children(child, data, field, target, target_field, total
     Use enumerate to only save the index of for the first occurrence.
     """
     for item in target[field]:
-        if child in item:
+        if type(item) != dict:
+            field_index = -1
+        elif child in item:
             field_index = total_field
             if type(item[child]) != list:
                 total_field += 1
