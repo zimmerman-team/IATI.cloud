@@ -171,6 +171,8 @@ def aggregate_converted_types(data, curr):
                 type_values[t] = []
 
             for index, value in enumerate(types):
+                if values[index] is None:
+                    continue
                 type_values[value].append(values[index])
         for key in type_values:
             transaction_agg.append({
