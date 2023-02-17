@@ -94,6 +94,12 @@ FRESH = <replace with True or false, always true for first run>
 
 # Mongo connection string
 MONGO_CONNECTION_STRING = <replace with pymongo conn string, default localhost would be 'localhost:27017'>
+
+# FCDO Instance
+FCDO_INSTANCE = <replace with True or False, True if you wish to enable FCDO Custom features>
+
+# Dataset throttling
+THROTTLE_DATASET = <replace with True or False, True if you wish to only process a subset of the IATI data. In the current case 1/10th of the dataset>
 ```
 11. Go back to the folder root/OIPA and run database migrations with the command `python manage.py migrate`
 12. Start the development server with the command `python manage.py runserver`

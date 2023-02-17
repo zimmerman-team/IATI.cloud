@@ -8,3 +8,4 @@ static/datasets
 logs
 celerybeat.pid
 celerybeat-schedule
+_local_test.py

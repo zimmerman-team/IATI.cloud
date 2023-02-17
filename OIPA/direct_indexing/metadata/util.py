@@ -11,7 +11,7 @@ from django.conf import settings
 from direct_indexing.util import index_to_core
 
 
-def retrieve(url, name=None):
+def retrieve(url, name=None, force_update=False):
     """
     Retrieve the given url and return the result as a list of dictionaries.
 
@@ -21,7 +21,7 @@ def retrieve(url, name=None):
     """
     try:
         path = f'{settings.HERE_PATH}/{name}.json'
-        if not settings.FRESH:
+        if (not settings.FRESH) or force_update:
             with open(path) as file:
                 return json.load(file)
         metadata_res = requests.get(url).json()

@@ -993,6 +993,175 @@
   <field name="dataset.resources.last_modified" type="pdate" indexed="true" stored="true" />
   <field name="dataset.resources.url" type="text_general_single" indexed="true" stored="true" />
 
+  <!-- Date quarter fields -->
+  <field name="activity-date.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
+  <field name="budget.period-start.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
+  <field name="budget.period-end.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
+  <field name="planned-disbursement.period-start.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
+  <field name="planned-disbursement.period-end.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
+  <field name="transaction.transaction-date.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
+  <field name="document-link.document-date.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
+  <field name="result.document-link.document-date.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
+  <field name="result.indicator.document-link.document-date.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
+  <field name="result.indicator.baseline.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
+  <field name="result.indicator.baseline.document-link.document-date.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
+  <field name="result.indicator.period.period-start.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
+  <field name="result.indicator.period.period-end.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
+  <field name="result.indicator.period.target.document-link.document-date.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
+  <field name="result.indicator.period.actual.document-link.document-date.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
+  <field name="crs-add.loan-terms.commitment-date.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
+  <field name="crs-add.loan-terms.repayment-first-date.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
+  <field name="crs-add.loan-terms.repayment-final-date.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
+
+  <!-- GBP Converted fields -->
+  <field name="budget.value-gbp" type="pdoubles"/>
+  <field name="planned-disbursement.value-gbp" type="pdoubles"/>
+  <field name="transaction.value-gbp" type="pdoubles"/>
+  <field name="budget.value-gbp.sum" type="pdouble"/>
+  <field name="planned-disbursement.value-gbp.sum" type="pdouble"/>
+  <field name="transaction.value-gbp.sum" type="pdouble"/>
+  <field name="budget.value-gbp.conversion-rate" type="pdoubles"/>
+  <field name="planned-disbursement.value-gbp.conversion-rate" type="pdoubles"/>
+  <field name="transaction.value-gbp.conversion-rate" type="pdoubles"/>
+  <field name="activity-aggregation.budget.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.planned-disbursement.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.incoming-funds.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.outgoing-commitment.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.disbursement.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.expenditure.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.interest-payment.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.loan-repayment.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.reimbursement.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.purchase-of-equity.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.sale-of-equity.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.credit-guarantee.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.incoming-commitment.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.outgoing-pledge.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.incoming-pledge.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.budget.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.planned-disbursement.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.incoming-funds.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.outgoing-commitment.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.disbursement.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.expenditure.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.interest-payment.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.loan-repayment.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.reimbursement.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.purchase-of-equity.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.sale-of-equity.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.credit-guarantee.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.incoming-commitment.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.outgoing-pledge.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.incoming-pledge.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.budget.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.planned-disbursement.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.incoming-funds.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.outgoing-commitment.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.disbursement.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.expenditure.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.interest-payment.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.loan-repayment.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.reimbursement.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.purchase-of-equity.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.sale-of-equity.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.credit-guarantee.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.incoming-commitment.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.outgoing-pledge.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.incoming-pledge.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="budget_value_gbp" type="pdoubles" multiValued="true" indexed="false" required="false" stored="true"/>
+  <field name="budget_value_gbp_sum" type="pdoubles" multiValued="false" indexed="false" required="false" stored="true"/>
+  <field name="budget_gbp_conversion_rate" type="pdoubles" multiValued="true" indexed="false" required="false" stored="true"/>
+  <field name="planned_disbursement_value_gbp" type="pdoubles" multiValued="true" indexed="false" required="false" stored="true"/>
+  <field name="planned_disbursement_value_gbp_sum" type="pdoubles" multiValued="false" indexed="false" required="false" stored="true"/>
+  <field name="planned_disbursement_gbp_conversion_rate" type="pdoubles" multiValued="true" indexed="false" required="false" stored="true"/>
+  <field name="transaction_value_gbp" type="pdoubles" multiValued="true" indexed="false" required="false" stored="true"/>
+  <field name="transaction_value_gbp_sum" type="pdoubles" multiValued="false" indexed="false" required="false" stored="true"/>
+  <field name="transaction_gbp_conversion_rate" type="pdoubles" multiValued="true" indexed="false" required="false" stored="true"/>
+  <field name="activity_aggregation_budget_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_aggregation_planned_disbursement_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_aggregation_incoming_funds_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_aggregation_outgoing_commitment_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_aggregation_disbursement_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_aggregation_expenditure_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_aggregation_interest_payment_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_aggregation_loan_repayment_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_aggregation_reimbursement_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_aggregation_purchase_of_equity.value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_aggregation_sale_of_equity.value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_aggregation_credit_guarantee_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_aggregation_incoming_commitment_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_aggregation_outgoing_pledge_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_aggregation_incoming_pledge_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child_aggregation_budget_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child_aggregation_planned_disbursement_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child_aggregation_incoming_funds_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child_aggregation_outgoing_commitment_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child_aggregation_disbursement_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child_aggregation_expenditure_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child_aggregation_interest_payment_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child_aggregation_loan_repayment_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child_aggregation_reimbursement_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child_aggregation_purchase_of_equity.value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child_aggregation_sale_of_equity.value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child_aggregation_credit_guarantee_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child_aggregation_incoming_commitment_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child_aggregation_outgoing_pledge_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child_aggregation_incoming_pledge_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_plus_child_aggregation_budget_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_plus_child_aggregation_planned_disbursement_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_plus_child_aggregation_incoming_funds_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_plus_child_aggregation_outgoing_commitment_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_plus_child_aggregation_disbursement_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_plus_child_aggregation_expenditure_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_plus_child_aggregation_interest_payment_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_plus_child_aggregation_loan_repayment_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_plus_child_aggregation_reimbursement_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_plus_child_aggregation_purchase_of_equity.value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_plus_child_aggregation_sale_of_equity.value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_plus_child_aggregation_credit_guarantee_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_plus_child_aggregation_incoming_commitment_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_plus_child_aggregation_outgoing_pledge_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_plus_child_aggregation_incoming_pledge_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_aggregation_commitment_value_gbp" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_aggregation_purchase_of_equity_value_gbp" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_aggregation_sale_of_equity_value_gbp" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child_aggregation_commitment_value_gbp" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_plus_child_aggregation_commitment_value_gbp" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child_aggregation_purchase_of_equity_value_gbp" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_plus_child_aggregation_purchase_of_equity_value_gbp" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child_aggregation_sale_of_equity_value_gbp" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_plus_child_aggregation_sale_of_equity_value_gbp" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+
+  <!-- JSON Dump fields, non-indexed -->
+  <field name="json.reporting-org" type="text_general" multiValued="false" indexed="false" required="false" stored="true"/>
+  <field name="json.title" type="text_general" multiValued="false" indexed="false" required="false" stored="true"/>
+  <field name="json.description" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
+  <field name="json.participating-org" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
+  <field name="json.other-identifier" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
+  <field name="json.activity-date" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
+  <field name="json.contact-info" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
+  <field name="json.recipient-country" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
+  <field name="json.recipient-region" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
+  <field name="json.location" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
+  <field name="json.sector" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
+  <field name="json.tag" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
+  <field name="json.country-budget-items" type="text_general" multiValued="false" indexed="false" required="false" stored="true"/>
+  <field name="json.humanitarian-scope" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
+  <field name="json.policy-marker" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
+  <field name="json.default-aid-type" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
+  <field name="json.planned-disbursement" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
+  <field name="json.document-link" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
+  <field name="json.related-activity" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
+  <field name="json.legacy-data" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
+  <field name="json.conditions" type="text_general" multiValued="false" indexed="false" required="false" stored="true"/>
+  <field name="json.result" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
+  <field name="json.crs-add" type="text_general" multiValued="false" indexed="false" required="false" stored="true"/>
+  <field name="json.fss" type="text_general" multiValued="false" indexed="false" required="false" stored="true"/>
+
+  <!-- FCDO Document link combined categories -->
+  <field name="document-link.category-codes-combined" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
+
+  <!-- Dynamic fields -->
   <dynamicField name="*_txt_en_split_tight" type="text_en_splitting_tight" indexed="true" stored="true"/>
   <dynamicField name="*_descendent_path" type="descendent_path" indexed="true" stored="true"/>
   <dynamicField name="*_ancestor_path" type="ancestor_path" indexed="true" stored="true"/>
@@ -1274,4 +1443,56 @@
   <copyField source="result.indicator.period.actual.document-link.category.code" dest="result_indicator_period_actual_document_link_category_code" />
   <copyField source="result.indicator.period.actual.document-link.language.code" dest="result_indicator_period_actual_document_link_language_code" />
   <copyField source="result.indicator.period.actual.document-link.document-date.iso-date" dest="result_indicator_period_actual_document_link_document_date_iso_date" />
+  <!-- gbp converted values-->
+  <copyField source="budget.value-gbp" dest="budget_value_gbp" />
+  <copyField source="planned-disbursement.value-gbp" dest="planned_disbursement_value_gbp" />
+  <copyField source="transaction.value-gbp" dest="transaction_value_gbp" />
+  <copyField source="budget.value-gbp.sum" dest="budget_value_gbp_sum" />
+  <copyField source="planned-disbursement.value-gbp.sum" dest="planned_disbursement_value_gbp_sum" />
+  <copyField source="transaction.value-gbp.sum" dest="transaction_value_gbp_sum" />
+  <copyField source="budget.value-gbp.conversion-rate" dest="budget_gbp_conversion_rate" />
+  <copyField source="planned-disbursement.value-gbp.conversion-rate" dest="planned_disbursement_gbp_conversion_rate" />
+  <copyField source="transaction.value-gbp.conversion-rate" dest="transaction_gbp_conversion_rate" />
+  <copyField source="activity-aggregation.budget.value-gbp" dest="activity_aggregation_budget_value_gbp" />
+  <copyField source="activity-aggregation.incoming-funds.value-gbp" dest="activity_aggregation_incoming_funds_value_gbp" />
+  <copyField source="activity-aggregation.outgoing-commitment.value-gbp" dest="activity_aggregation_commitment_value_gbp" />
+  <copyField source="activity-aggregation.disbursement.value-gbp" dest="activity_aggregation_disbursement_value_gbp" />
+  <copyField source="activity-aggregation.expenditure.value-gbp" dest="activity_aggregation_expenditure_value_gbp" />
+  <copyField source="activity-aggregation.interest-payment.value-gbp" dest="activity_aggregation_interest_payment_value_gbp" />
+  <copyField source="activity-aggregation.loan-repayment.value-gbp" dest="activity_aggregation_loan_repayment_value_gbp" />
+  <copyField source="activity-aggregation.reimbursement.value-gbp" dest="activity_aggregation_reimbursement_value_gbp" />
+  <copyField source="activity-aggregation.purchase-of-equity.value-gbp" dest="activity_aggregation_purchase_of_equity_value_gbp" />
+  <copyField source="activity-aggregation.sale-of-equity.value-gbp" dest="activity_aggregation_sale_of_equity_value_gbp" />
+  <copyField source="activity-aggregation.credit-guarantee.value-gbp" dest="activity_aggregation_credit_guarantee_value_gbp" />
+  <copyField source="activity-aggregation.incoming-commitment.value-gbp" dest="activity_aggregation_incoming_commitment_value_gbp" />
+  <copyField source="activity-aggregation.outgoing-pledge.value-gbp" dest="activity_aggregation_outgoing_pledge_value_gbp" />
+  <copyField source="activity-aggregation.incoming-pledge.value-gbp" dest="activity_aggregation_incoming_pledge_value_gbp" />
+  <copyField source="child-aggregation.budget.value-gbp" dest="child_aggregation_budget_value_gbp" />
+  <copyField source="child-aggregation.incoming-funds.value-gbp" dest="child_aggregation_incoming_funds_value_gbp" />
+  <copyField source="child-aggregation.outgoing-commitment.value-gbp" dest="child_aggregation_commitment_value_gbp" />
+  <copyField source="child-aggregation.disbursement.value-gbp" dest="child_aggregation_disbursement_value_gbp" />
+  <copyField source="child-aggregation.expenditure.value-gbp" dest="child_aggregation_expenditure_value_gbp" />
+  <copyField source="child-aggregation.interest-payment.value-gbp" dest="child_aggregation_interest_payment_value_gbp" />
+  <copyField source="child-aggregation.loan-repayment.value-gbp" dest="child_aggregation_loan_repayment_value_gbp" />
+  <copyField source="child-aggregation.reimbursement.value-gbp" dest="child_aggregation_reimbursement_value_gbp" />
+  <copyField source="child-aggregation.purchase-of-equity.value-gbp" dest="child_aggregation_purchase_of_equity_value_gbp" />
+  <copyField source="child-aggregation.sale-of-equity.value-gbp" dest="child_aggregation_sale_of_equity_value_gbp" />
+  <copyField source="child-aggregation.credit-guarantee.value-gbp" dest="child_aggregation_credit_guarantee_value_gbp" />
+  <copyField source="child-aggregation.incoming-commitment.value-gbp" dest="child_aggregation_incoming_commitment_value_gbp" />
+  <copyField source="child-aggregation.outgoing-pledge.value-gbp" dest="child_aggregation_outgoing_pledge_value_gbp" />
+  <copyField source="child-aggregation.incoming-pledge.value-gbp" dest="child_aggregation_incoming_pledge_value_gbp" />
+  <copyField source="activity-plus-child-aggregation.budget.value-gbp" dest="activity_plus_child_aggregation_budget_value_gbp" />
+  <copyField source="activity-plus-child-aggregation.incoming-funds.value-gbp" dest="activity_plus_child_aggregation_incoming_funds_value_gbp" />
+  <copyField source="activity-plus-child-aggregation.outgoing-commitment.value-gbp" dest="activity_plus_child_aggregation_commitment_value_gbp" />
+  <copyField source="activity-plus-child-aggregation.disbursement.value-gbp" dest="activity_plus_child_aggregation_disbursement_value_gbp" />
+  <copyField source="activity-plus-child-aggregation.expenditure.value-gbp" dest="activity_plus_child_aggregation_expenditure_value_gbp" />
+  <copyField source="activity-plus-child-aggregation.interest-payment.value-gbp" dest="activity_plus_child_aggregation_interest_payment_value_gbp" />
+  <copyField source="activity-plus-child-aggregation.loan-repayment.value-gbp" dest="activity_plus_child_aggregation_loan_repayment_value_gbp" />
+  <copyField source="activity-plus-child-aggregation.reimbursement.value-gbp" dest="activity_plus_child_aggregation_reimbursement_value_gbp" />
+  <copyField source="activity-plus-child-aggregation.purchase-of-equity.value-gbp" dest="activity_plus_child_aggregation_purchase_of_equity_value_gbp" />
+  <copyField source="activity-plus-child-aggregation.sale-of-equity.value-gbp" dest="activity_plus_child_aggregation_sale_of_equity_value_gbp" />
+  <copyField source="activity-plus-child-aggregation.credit-guarantee.value-gbp" dest="activity_plus_child_aggregation_credit_guarantee_value_gbp" />
+  <copyField source="activity-plus-child-aggregation.incoming-commitment.value-gbp" dest="activity_plus_child_aggregation_incoming_commitment_value_gbp" />
+  <copyField source="activity-plus-child-aggregation.outgoing-pledge.value-gbp" dest="activity_plus_child_aggregation_outgoing_pledge_value_gbp" />
+  <copyField source="activity-plus-child-aggregation.incoming-pledge.value-gbp" dest="activity_plus_child_aggregation_incoming_pledge_value_gbp" />
 </schema>

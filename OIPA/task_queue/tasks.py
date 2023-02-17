@@ -1,8 +1,10 @@
 import datetime
 import hashlib
+import json
 import logging
 import os
 import time
+import urllib
 
 import celery
 import django_rq
@@ -23,6 +25,7 @@ from api.export.serializers import ActivityXMLSerializer
 from api.renderers import XMLRenderer
 from common.download_file import DownloadFile, hash_file
 from direct_indexing import direct_indexing
+from direct_indexing.metadata.util import retrieve
 from iati.activity_aggregation_calculation import ActivityAggregationCalculation
 from iati.models import Activity, Budget, Document, DocumentLink, Result
 from iati.transaction.models import Transaction
@@ -113,6 +116,61 @@ def direct_indexing_subtask_publisher_metadata():
 def direct_indexing_subtask_dataset_metadata(update=False):
     result = direct_indexing.run_dataset_metadata(update)
     return result
+
+
+#
+# FCDO  TASKS
+#
+@shared_task
+def fcdo_replace_partial_url(find_url, replace_url):
+    """
+    This function is used to update a dataset based on the provided URL.
+    For example, if an existing dataset has the url 'example.com/a.xml',
+    and a staging dataset is prepared at 'staging-example.com/a.xml',
+    the file is downloaded and the iati datastore is refreshed with the new content for this file.
+
+    Note: if the setting "FRESH" is active, and the datastore is incrementally updating,
+    the custom dataset will be overwritten by the incremental update. If this feature is used,
+    either disable the incremental updates (admin panel), or set the Fresh setting to false (source code).
+    """
+    dataset_metadata = retrieve(settings.METADATA_DATASET_URL, 'dataset_metadata')
+    num_updated_datasets = 0
+    for dataset in dataset_metadata:
+        # find datasets that need to be replaced
+        if 'resources' not in dataset or 'name' not in dataset or 'organization' not in dataset:
+            continue
+        if 'url' not in dataset['resources'][0]:
+            continue
+        url = dataset['resources'][0]['url']  # always 1 url
+        if find_url not in url:
+            continue
+
+        # replace the url
+        new_url = url.replace(find_url, replace_url)
+        dataset['resources'][0]['url'] = new_url
+
+        # download the new file and overwrite the old file.
+        ds_name = dataset['name']
+        ds_org = dataset['organization']['name']
+        ds_file = f'{settings.HERE_PATH}/iati-data-main/data/{ds_org}/{ds_name}.xml'
+        if os.path.exists(ds_file):
+            os.remove(ds_file)
+        else: return f"this file does not exist {ds_file}"
+        downloader = urllib.request.URLopener()
+        downloader.retrieve(new_url, ds_file)
+
+        # Update the dataset hash to force an update, using current epoch as a timestamp ensure difference.
+        dataset['resources'][0]['hash'] = f'updateme-{time.time()}'
+        num_updated_datasets += 1
+    # update the local dataset metadata file.
+    path = f'{settings.HERE_PATH}/dataset_metadata.json'
+    with open(path, 'w') as file:
+        json.dump(dataset_metadata, file)
+
+    # run the dataset metadata with update = True and force_update = True
+    # this will automatically all the files that have a new URL and a new HASH
+    direct_indexing.run_dataset_metadata(True, force_update=True)
+    return f"We've updated {num_updated_datasets} dataset(s) for the provided URLs."
 #
 # END DIRECT INDEXING MANAGEMENT TASKS
 #
