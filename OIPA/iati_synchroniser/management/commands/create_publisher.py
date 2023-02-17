@@ -1,8 +1,6 @@
 from django.core.management.base import BaseCommand
 
-from iati_synchroniser.create_publisher_organisation import (
-    create_publisher_organisation
-)
+from iati_synchroniser.create_publisher_organisation import create_publisher_organisation
 from iati_synchroniser.models import Publisher
 
 

@@ -441,6 +441,50 @@ VALIDATION = {
 # To be overwritten by local_settings.py in any case for security purposes.
 POSTMAN_API_KEY = 'OverwriteFromLocalSettings'
 
+# DIRECT INDEXING
+METADATA_PUBLISHER_URL = 'https://registry.codeforiati.org/publisher_list.json'
+METADATA_DATASET_URL = 'https://registry.codeforiati.org/dataset_list.json'
+DATASET_URL = 'https://gitlab.com/codeforIATI/iati-data/-/archive/main/iati-data-main.zip'
+
+# Can be overwritten from local settings. We provided one, as described in direct_indexing/solr/POST.MD
+SOLR_POST_TOOL = os.path.join(BASE_DIR, 'direct_indexing/solr/bin/post')
+
+# Validator, needs to be overwritten from local settings
+VALIDATOR_API_KEY = '<replace with IATI Validator api key>'  # This key will fail
+
+# Specify if we want to download new metadata and datasets.
+FRESH = True
+
+# Where the currencies are stored. Can be changed in local_settings
+CURRENCIES_JSON = os.path.join(BASE_DIR, 'direct_indexing/data_sources/currency_monthlyaverage.json')
+CODELISTS_JSON = os.path.join(BASE_DIR, 'direct_indexing/data_sources/codelists_dict.json')
+
+# Mongo connection string, overwrite from local_settings.
+MONGO_CONNECTION_STRING = 'localhost:27017'
+
+# default direct-indexing solr connections - can be overwritten from local_settings
+SOLR_URL = 'http://localhost:8983/solr'  # If you set the solr url, make sure to exclude the hashtag, but include /solr
+SOLR_PUBLISHER = f'{SOLR_URL}/publisher'
+SOLR_PUBLISHER_URL = f'{SOLR_PUBLISHER}/update'
+SOLR_DATASET = f'{SOLR_URL}/dataset'
+SOLR_DATASET_URL = f'{SOLR_DATASET}/update'
+SOLR_ACTIVITY = f'{SOLR_URL}/activity'
+SOLR_ACTIVITY_URL = f'{SOLR_ACTIVITY}/update'
+SOLR_TRANSACTION = f'{SOLR_URL}/transaction'
+SOLR_TRANSACTION_URL = f'{SOLR_TRANSACTION}/update'
+SOLR_BUDGET = f'{SOLR_URL}/budget'
+SOLR_BUDGET_URL = f'{SOLR_BUDGET}/update'
+SOLR_RESULT = f'{SOLR_URL}/result'
+SOLR_RESULT_URL = f'{SOLR_RESULT}/update'
+SOLR_ORGANISATION = f'{SOLR_URL}/organisation'
+SOLR_ORGANISATION_URL = f'{SOLR_ORGANISATION}/update'
+
+HERE_PATH = os.path.join(BASE_DIR, 'direct_indexing/data_sources/datasets')
+DATA_EXTRACTED_PATH = os.path.join(HERE_PATH, 'iati-data-main/data')
+
+FCDO_INSTANCE = False
+THROTTLE_DATASET = False
+
 try:
     from .local_settings import *  # noqa: F401, F403
 except ImportError:

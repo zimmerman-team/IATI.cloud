@@ -1,8 +1,8 @@
 from rest_framework import serializers
 
 from api.activity.serializers import (
-    ActivityRecipientRegionSerializer, ActivitySectorSerializer,
-    CodelistSerializer, RecipientCountrySerializer, ValueSerializer
+    ActivityRecipientRegionSerializer, ActivitySectorSerializer, CodelistSerializer, RecipientCountrySerializer,
+    ValueSerializer
 )
 from api.generics.serializers import ModelSerializerNoValidation
 from iati.models import Budget

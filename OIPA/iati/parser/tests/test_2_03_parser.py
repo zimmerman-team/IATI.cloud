@@ -12,10 +12,7 @@ from django.test import TestCase
 from lxml.builder import E
 
 from iati.factory import iati_factory
-from iati.parser.exceptions import (
-    FieldValidationError, IgnoredVocabularyError, ParserError,
-    RequiredFieldError
-)
+from iati.parser.exceptions import FieldValidationError, IgnoredVocabularyError, ParserError, RequiredFieldError
 from iati.parser.IATI_2_03 import Parse as Parser_203
 from iati.parser.parse_manager import ParseManager
 from iati.transaction.factories import TransactionFactory
@@ -23,8 +20,8 @@ from iati_codelists.factory import codelist_factory
 from iati_codelists.factory.codelist_factory import VersionFactory
 from iati_synchroniser.factory import synchroniser_factory
 from iati_vocabulary.factory.vocabulary_factory import (
-    AidTypeVocabularyFactory, RegionVocabularyFactory, ResultVocabularyFactory,
-    SectorVocabularyFactory, TagVocabularyFactory
+    AidTypeVocabularyFactory, RegionVocabularyFactory, ResultVocabularyFactory, SectorVocabularyFactory,
+    TagVocabularyFactory
 )
 
 

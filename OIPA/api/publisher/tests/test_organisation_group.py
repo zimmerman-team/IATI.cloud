@@ -3,10 +3,7 @@ from collections import OrderedDict
 from django.test import RequestFactory
 from rest_framework.test import APIClient, APITestCase
 
-from iati.permissions.factories import (
-    OrganisationAdminGroupFactory, OrganisationGroupFactory,
-    OrganisationUserFactory
-)
+from iati.permissions.factories import OrganisationAdminGroupFactory, OrganisationGroupFactory, OrganisationUserFactory
 from iati.permissions.models import OrganisationGroup
 
 

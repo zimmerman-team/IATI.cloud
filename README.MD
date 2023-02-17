@@ -11,6 +11,8 @@ IATI.cloud extracts all published IATI XML files from the [IATI Registry](http:/
 
 IATI is a global aid transparency standard and it makes information about aid spending easier to access, re-use and understand the underlying data using a unified open standard. You can find more about the IATI data standard at: [www.iatistandard.org](www.iatistandard.org)
 
+We have recently moved towards a Solr Only version of the IATI.cloud. If you are looking for the hybrid IATI.cloud with Django API and Solr API, you can find this under the branch `archive/iati-cloud-hybrid-django-solr`
+
 ## Requirements
 | Name                   | Required version                                                                                                   | Installation instructions |
 | ---------------------- | ------------------------------------------------------------------------------------------------------------------ |---------------------------|
@@ -66,6 +68,38 @@ SOLR = {
   }
 }
 DOWNLOAD_DATASETS = False
+
+# Update the local solr connections:
+SOLR_URL = <replace with desired solr url>
+SOLR_PUBLISHER = f'{SOLR_URL}/publisher'
+SOLR_PUBLISHER_URL = f'{SOLR_PUBLISHER}/update'
+SOLR_DATASET = f'{SOLR_URL}/dataset'
+SOLR_DATASET_URL = f'{SOLR_DATASET}/update'
+SOLR_ACTIVITY = f'{SOLR_URL}/activity'
+SOLR_ACTIVITY_URL = f'{SOLR_ACTIVITY}/update'
+SOLR_TRANSACTION = f'{SOLR_URL}/transaction'
+SOLR_TRANSACTION_URL = f'{SOLR_TRANSACTION}/update'
+SOLR_BUDGET = f'{SOLR_URL}/budget'
+SOLR_BUDGET_URL = f'{SOLR_BUDGET}/update'
+SOLR_RESULT = f'{SOLR_URL}/result'
+SOLR_RESULT_URL = f'{SOLR_RESULT}/update'
+SOLR_ORGANISATION = f'{SOLR_URL}/organisation'
+SOLR_ORGANISATION_URL = f'{SOLR_ORGANISATION}/update'
+
+# Validator
+VALIDATOR_API_KEY = <replace with IATI Validator api key>
+
+# Specify if we want to download new metadata and datasets. only use for local development
+FRESH = <replace with True or false, always true for first run>
+
+# Mongo connection string
+MONGO_CONNECTION_STRING = <replace with pymongo conn string, default localhost would be 'localhost:27017'>
+
+# FCDO Instance
+FCDO_INSTANCE = <replace with True or False, True if you wish to enable FCDO Custom features>
+
+# Dataset throttling
+THROTTLE_DATASET = <replace with True or False, True if you wish to only process a subset of the IATI data. In the current case 1/10th of the dataset>
 ```
 11. Go back to the folder root/OIPA and run database migrations with the command `python manage.py migrate`
 12. Start the development server with the command `python manage.py runserver`

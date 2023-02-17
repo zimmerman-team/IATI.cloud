@@ -1,68 +1,42 @@
 from api.activity.serializers import (
-    ActivityDateSerializer, ActivityDefaultAidTypeSerializer,
-    ActivityPolicyMarkerSerializer, ActivityTagSerializer, CodelistSerializer,
-    ConditionsSerializer, ContactInfoSerializer, CountryBudgetItemsSerializer,
-    CrsAddSerializer, DescriptionSerializer, DocumentLinkSerializer,
-    FssSerializer, HumanitarianScopeSerializer, LegacyDataSerializer,
-    OtherIdentifierSerializer, ParticipatingOrganisationSerializer,
-    PlannedDisbursementSerializer, RelatedActivitySerializer,
-    ReportingOrganisationSerializer, TitleSerializer
+    ActivityDateSerializer, ActivityDefaultAidTypeSerializer, ActivityPolicyMarkerSerializer, ActivityTagSerializer,
+    CodelistSerializer, ConditionsSerializer, ContactInfoSerializer, CountryBudgetItemsSerializer, CrsAddSerializer,
+    DescriptionSerializer, DocumentLinkSerializer, FssSerializer, HumanitarianScopeSerializer, LegacyDataSerializer,
+    OtherIdentifierSerializer, ParticipatingOrganisationSerializer, PlannedDisbursementSerializer,
+    RelatedActivitySerializer, ReportingOrganisationSerializer, TitleSerializer
 )
-from api.iati.references import \
-    ActivityDateReference as BaseActivityDateReference
-from api.iati.references import \
-    ActivityScopeReference as BaseActivityScopeReference
-from api.iati.references import \
-    ActivityStatusReference as BaseActivityStatusReference
-from api.iati.references import \
-    CapitalSpendReference as BaseCapitalSpendReference
-from api.iati.references import \
-    CollaborationTypeReference as BaseCollaborationTypeReference
+from api.iati.references import ActivityDateReference as BaseActivityDateReference
+from api.iati.references import ActivityScopeReference as BaseActivityScopeReference
+from api.iati.references import ActivityStatusReference as BaseActivityStatusReference
+from api.iati.references import CapitalSpendReference as BaseCapitalSpendReference
+from api.iati.references import CollaborationTypeReference as BaseCollaborationTypeReference
 from api.iati.references import ConditionsReference as BaseConditionsReference
-from api.iati.references import \
-    ContactInfoReference as BaseContactInfoReference
-from api.iati.references import \
-    CountryBudgetItemsReference as BaseCountryBudgetItemsReference
+from api.iati.references import ContactInfoReference as BaseContactInfoReference
+from api.iati.references import CountryBudgetItemsReference as BaseCountryBudgetItemsReference
 from api.iati.references import CrsAddReference as BaseCrsAddReference
-from api.iati.references import \
-    DefaultAidTypeReference as BaseDefaultAidTypeReference
-from api.iati.references import \
-    DefaultFinanceTypeReference as BaseDefaultFinanceTypeReference
-from api.iati.references import \
-    DefaultFlowTypeReference as BaseDefaultFlowTypeReference
-from api.iati.references import \
-    DefaultTiedStatusReference as BaseDefaultTiedStatusReference
-from api.iati.references import \
-    DescriptionReference as BaseDescriptionReference
-from api.iati.references import \
-    DocumentLinkReference as BaseDocumentLinkReference
+from api.iati.references import DefaultAidTypeReference as BaseDefaultAidTypeReference
+from api.iati.references import DefaultFinanceTypeReference as BaseDefaultFinanceTypeReference
+from api.iati.references import DefaultFlowTypeReference as BaseDefaultFlowTypeReference
+from api.iati.references import DefaultTiedStatusReference as BaseDefaultTiedStatusReference
+from api.iati.references import DescriptionReference as BaseDescriptionReference
+from api.iati.references import DocumentLinkReference as BaseDocumentLinkReference
 from api.iati.references import FssReference as BaseFssReference
-from api.iati.references import \
-    HumanitarianScopeReference as BaseHumanitarianScopeReference
+from api.iati.references import HumanitarianScopeReference as BaseHumanitarianScopeReference
 from api.iati.references import LegacyDataReference as BaseLegacyDataReference
 from api.iati.references import LocationReference as BaseLocationReference
-from api.iati.references import \
-    OtherIdentifierReference as BaseOtherIdentifierReference
-from api.iati.references import \
-    ParticipatingOrgReference as BaseParticipatingOrgReference
-from api.iati.references import \
-    PlannedDisbursementReference as BasePlannedDisbursementReference
-from api.iati.references import \
-    PolicyMarkerReference as BasePolicyMarkerReference
-from api.iati.references import \
-    RecipientCountryReference as BaseRecipientCountryReference
-from api.iati.references import \
-    RecipientRegionReference as BaseRecipientRegionReference
-from api.iati.references import \
-    RelatedActivityReference as BaseRelatedActivityReference
-from api.iati.references import \
-    ReportingOrgOrgReference as BaseReportingOrgElementReference
+from api.iati.references import OtherIdentifierReference as BaseOtherIdentifierReference
+from api.iati.references import ParticipatingOrgReference as BaseParticipatingOrgReference
+from api.iati.references import PlannedDisbursementReference as BasePlannedDisbursementReference
+from api.iati.references import PolicyMarkerReference as BasePolicyMarkerReference
+from api.iati.references import RecipientCountryReference as BaseRecipientCountryReference
+from api.iati.references import RecipientRegionReference as BaseRecipientRegionReference
+from api.iati.references import RelatedActivityReference as BaseRelatedActivityReference
+from api.iati.references import ReportingOrgOrgReference as BaseReportingOrgElementReference
 from api.iati.references import SectorReference as BaseSectorReference
 from api.iati.references import TagReference as BaseTagReference
 from api.iati.references import TitleReference as BaseTitleReference
 from solr.activity.serializers import (
-    ActivityRecipientRegionSerializer, ActivitySectorSerializer,
-    LocationSerializer, RecipientCountrySerializer
+    ActivityRecipientRegionSerializer, ActivitySectorSerializer, LocationSerializer, RecipientCountrySerializer
 )
 from solr.references import ConvertElementReference
 

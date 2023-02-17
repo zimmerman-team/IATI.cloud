@@ -3,10 +3,7 @@ from rest_framework import serializers
 import api.activity.serializers as activity_serializers
 import api.transaction.serializers as transaction_serializers
 from api.generics.fields import BoolToNumField, PointIATIField
-from api.generics.serializers import (
-    DynamicFieldsSerializer, SerializerNoValidation, SkipNullMixin,
-    XMLMetaMixin
-)
+from api.generics.serializers import DynamicFieldsSerializer, SerializerNoValidation, SkipNullMixin, XMLMetaMixin
 from iati import models as iati_models
 
 

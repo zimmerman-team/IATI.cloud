@@ -7,15 +7,11 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from common.util import print_progress, setInterval
 from iati.models import (
-    Activity, ActivitySearch, BudgetItemDescription, Conditions,
-    ContactInfoDepartment, ContactInfoJobTitle, ContactInfoMailingAddress,
-    ContactInfoOrganisation, ContactInfoPersonName, CountryBudgetItem,
-    DocumentLinkTitle, ResultDescription, ResultIndicatorDescription,
-    ResultIndicatorTitle, ResultTitle
+    Activity, ActivitySearch, BudgetItemDescription, Conditions, ContactInfoDepartment, ContactInfoJobTitle,
+    ContactInfoMailingAddress, ContactInfoOrganisation, ContactInfoPersonName, CountryBudgetItem, DocumentLinkTitle,
+    ResultDescription, ResultIndicatorDescription, ResultIndicatorTitle, ResultTitle
 )
-from iati.transaction.models import (
-    TransactionDescription, TransactionProvider, TransactionReceiver
-)
+from iati.transaction.models import TransactionDescription, TransactionProvider, TransactionReceiver
 from iati_organisation.models import Organisation, OrganisationName
 from iati_synchroniser.models import Publisher
 

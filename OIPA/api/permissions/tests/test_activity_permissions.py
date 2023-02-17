@@ -4,9 +4,7 @@ from django.test import RequestFactory
 from rest_framework.test import APIClient, APITestCase
 
 from iati.factory import iati_factory
-from iati.permissions.factories import (
-    OrganisationAdminGroupFactory, OrganisationUserFactory
-)
+from iati.permissions.factories import OrganisationAdminGroupFactory, OrganisationUserFactory
 from iati_codelists.factory import codelist_factory
 from iati_synchroniser.factory.synchroniser_factory import PublisherFactory
 

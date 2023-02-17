@@ -1,8 +1,6 @@
 from django.core.management.base import BaseCommand
 
-from iati.activity_search_indexes import (
-    reindex_activity, reindex_activity_by_source, reindex_all_activities
-)
+from iati.activity_search_indexes import reindex_activity, reindex_activity_by_source, reindex_all_activities
 from iati.models import Activity
 
 

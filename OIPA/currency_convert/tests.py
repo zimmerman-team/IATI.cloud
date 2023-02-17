@@ -8,9 +8,7 @@ from lxml.builder import E
 from mock import MagicMock, Mock
 
 from currency_convert import convert
-from currency_convert.factory.currency_convert_factory import (
-    MonthlyAverageFactory
-)
+from currency_convert.factory.currency_convert_factory import MonthlyAverageFactory
 from currency_convert.imf_rate_parser import RateBrowser, RateParser
 from currency_convert.models import MonthlyAverage
 from iati_codelists.models import Currency

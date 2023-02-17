@@ -3,14 +3,10 @@ from django.db.models.fields.related import ForeignObjectRel, OneToOneRel
 from django_filters import BooleanFilter, DateFilter, NumberFilter
 from rest_framework import filters
 
-from api.generics.filters import (
-    CommaSeparatedCharFilter, IsNullBooleanFilter, TogetherFilterSet,
-    ToManyFilter
-)
+from api.generics.filters import CommaSeparatedCharFilter, IsNullBooleanFilter, TogetherFilterSet, ToManyFilter
 from iati.models import (
-    ActivityParticipatingOrganisation, ActivityRecipientCountry,
-    ActivityRecipientRegion, ActivityReportingOrganisation, ActivitySector,
-    Budget, RelatedActivity, ResultIndicatorTitle
+    ActivityParticipatingOrganisation, ActivityRecipientCountry, ActivityRecipientRegion, ActivityReportingOrganisation,
+    ActivitySector, Budget, RelatedActivity, ResultIndicatorTitle
 )
 from iati.transaction.models import Transaction
 

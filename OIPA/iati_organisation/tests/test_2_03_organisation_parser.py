@@ -6,9 +6,7 @@ from lxml.builder import E
 from geodata import models as codelist_model
 from geodata.factory.geodata_factory import RegionFactory
 from iati.factory import iati_factory
-from iati.parser.exceptions import (
-    FieldValidationError, ParserError, RequiredFieldError
-)
+from iati.parser.exceptions import FieldValidationError, ParserError, RequiredFieldError
 from iati.parser.parse_manager import ParseManager
 from iati_codelists.factory import codelist_factory
 from iati_codelists.factory.codelist_factory import VersionFactory

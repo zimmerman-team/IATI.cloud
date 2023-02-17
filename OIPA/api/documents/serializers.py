@@ -1,8 +1,6 @@
 from rest_framework import serializers
 
-from api.codelist.serializers import (
-    CodelistSerializer, NarrativeContainerSerializer
-)
+from api.codelist.serializers import CodelistSerializer, NarrativeContainerSerializer
 from api.generics.serializers import DynamicFieldsModelSerializer
 from iati import models as iati_models
 

@@ -3,9 +3,7 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from rest_framework_extensions.cache.decorators import cache_response
 from rest_framework_extensions.key_constructor.bits import QueryParamsKeyBit
-from rest_framework_extensions.key_constructor.constructors import (
-    DefaultKeyConstructor
-)
+from rest_framework_extensions.key_constructor.constructors import DefaultKeyConstructor
 
 from api.aggregation.aggregation import aggregate
 

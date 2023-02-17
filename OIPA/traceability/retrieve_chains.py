@@ -4,9 +4,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Count, Q
 
 from iati.models import Activity
-from traceability.models import (
-    Chain, ChainLink, ChainLinkRelation, ChainNode, ChainNodeError
-)
+from traceability.models import Chain, ChainLink, ChainLinkRelation, ChainNode, ChainNodeError
 
 
 def find(list, filter):

@@ -1,12 +1,10 @@
 import time
 
 import requests
+import urllib
 from celery.task.control import inspect
 
-from iati_synchroniser.models import (
-    AsyncTasksFinished, Dataset, DatasetDownloadsStarted,
-    InterruptIncrementalParse
-)
+from iati_synchroniser.models import AsyncTasksFinished, Dataset, DatasetDownloadsStarted, InterruptIncrementalParse
 from task_queue.validation import DatasetValidationTask
 
 
@@ -207,3 +205,16 @@ def automatic_incremental_validation(start_at, check_validation):
         started = len(Dataset.objects.all())
         await_async_subtasks(started)
     # STEP THREE -- End #
+
+
+def datadump_success():
+    """
+    Check if the most recent IATI Data dump by CodeForIATI was a success.
+    Returns true or false based on the above.
+    """
+    svg_url = 'https://github.com/codeforIATI/iati-data-dump/actions/workflows/refresh_data.yml/badge.svg'
+    file = urllib.request.urlopen(svg_url)
+    data = file.read()
+    file.close()
+    # data is a bytestring containing the svg, passing is not in the svg if the action failed
+    return b"passing" in data

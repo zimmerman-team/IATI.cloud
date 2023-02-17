@@ -1,8 +1,6 @@
 from django.test import TestCase
 
-from iati.factory.iati_factory import (
-    ActivityFactory, OrganisationFactory, ReportingOrganisationFactory
-)
+from iati.factory.iati_factory import ActivityFactory, OrganisationFactory, ReportingOrganisationFactory
 from iati.models import ActivityReportingOrganisation
 from iati_codelists.factory.codelist_factory import VersionFactory
 from iati_organisation.parser import post_save

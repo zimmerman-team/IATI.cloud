@@ -7,8 +7,7 @@ from geodata.models import Country, Region
 from iati.models import Activity, Narrative
 from iati.transaction.transaction_manager import TransactionQuerySet
 from iati_codelists.models import (
-    AidType, Currency, DisbursementChannel, FinanceType, FlowType, Sector,
-    TiedStatus, TransactionType
+    AidType, Currency, DisbursementChannel, FinanceType, FlowType, Sector, TiedStatus, TransactionType
 )
 from iati_organisation.models import Organisation, OrganisationType
 from iati_vocabulary.models import RegionVocabulary, SectorVocabulary

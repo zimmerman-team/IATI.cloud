@@ -185,3 +185,12 @@ pre-commit==2.10.1
 
 # Update to be able to use Django Shell
 jedi==0.17.2
+
+
+###################
+# direct indexing #
+###################
+# pysolr==3.9.0
+# requests==2.20.0
+xmljson==0.2.1
+pymongo==4.0.1
