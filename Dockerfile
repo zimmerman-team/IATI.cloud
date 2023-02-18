@@ -1,7 +1,17 @@
 # Start with python 3.11
 FROM python:3.11
 
-COPY . /app
+# Copy all relevant files to avoid security hotspot with `COPY . /app`
+COPY ./direct_indexing /app
+COPY ./iaticloud /app
+COPY ./legacy_currency_convert /app
+COPY ./services /app
+COPY ./.env /app
+COPY ./.pre-commit-config.yaml /app
+COPY ./commitlint.config.js /app
+COPY ./manage.py /app
+COPY ./requirements.txt /app
+COPY ./setup.cfg /app
 WORKDIR /app
 
 # Pre-install python dependencies
