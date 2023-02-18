@@ -1,8 +1,8 @@
-    server {
-        server_name flower.IC_DOMAIN;
-        listen 80;
+server {
+    server_name flower.IC_DOMAIN;
+    listen 80;
 
-        location / {
-            proxy_pass http://celeryflower:5555;
-        }
+    location / {
+        proxy_pass http://celeryflower:5555;
     }
+}

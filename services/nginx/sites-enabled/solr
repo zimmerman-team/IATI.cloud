@@ -1,0 +1,8 @@
+server {
+    server_name solr.IC_DOMAIN;
+    listen 80;
+
+    location / {
+        proxy_pass http://solr:8983;
+    }
+}
