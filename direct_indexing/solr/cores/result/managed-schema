@@ -1232,7 +1232,7 @@
   <dynamicField name="*_d" type="pdouble" indexed="true" stored="true"/>
   <dynamicField name="*_p" type="location" indexed="true" stored="true"/>
 
-  <!-- TEMPORARY (TODO:) OLD FIELDS, DEPRECATED -->
+  <!-- OLD FIELDS, DEPRECATED -->
   <!-- IATI Narrative -->
   <fieldType name="iati_narrative" class="solr.SortableTextField" positionIncrementGap="100" multiValued="true">
     <analyzer type="index">
@@ -1359,7 +1359,7 @@
   <field name="result_indicator_period_actual_document_link_language_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="result_indicator_period_actual_document_link_document_date_iso_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
 
-  <!-- TODO: REMOVE DEPRECATED copyfields -->
+  <!-- DEPRECATED copyfields -->
   <copyField source="iati-identifier" dest="iati_identifier" />
   <copyField source="reporting-org.ref" dest="reporting_org_ref" />
   <copyField source="reporting-org.type.name" dest="reporting_org_type" />

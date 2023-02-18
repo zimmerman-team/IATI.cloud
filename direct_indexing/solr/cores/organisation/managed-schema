@@ -670,7 +670,7 @@
   <dynamicField name="*_d" type="pdouble" indexed="true" stored="true"/>
   <dynamicField name="*_p" type="location" indexed="true" stored="true"/>
 
-  <!-- Deprecated field copy TODO: Remove-->
+  <!-- Deprecated field copy -->
   <fieldType name="iati_narrative" class="solr.SortableTextField" positionIncrementGap="100" multiValued="true">
     <analyzer type="index">
       <tokenizer class="solr.StandardTokenizerFactory"/>
@@ -748,7 +748,7 @@
   <field name="organisation_document_link_document_date" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="organisation_document_link_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
 
-  <!-- Deprecated field copy TODO: Remove-->
+  <!-- Deprecated field copy -->
   <copyField source="last-updated-datetime" dest="organisation_last_updated_datetime" />
   <copyField source="lang" dest="organisation_default_lang_code" />
   <copyField source="default-currency" dest="organisation_default_currency_code" />

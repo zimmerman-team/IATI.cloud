@@ -1242,7 +1242,7 @@
   <dynamicField name="*_d" type="pdouble" indexed="true" stored="true"/>
   <dynamicField name="*_p" type="location" indexed="true" stored="true"/>
 
-  <!-- TEMPORARY (TODO:) OLD FIELDS, DEPRECATED -->
+  <!-- OLD FIELDS, DEPRECATED -->
   <!-- IATI Narrative -->
   <fieldType name="iati_narrative" class="solr.SortableTextField" positionIncrementGap="100" multiValued="true">
     <analyzer type="index">
@@ -1997,7 +1997,7 @@
   <field name="activity_plus_child_aggregation_incoming_pledge_value_gbp" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
   <field name="activity_plus_child_aggregation_incoming_pledge_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
 
-  <!-- TODO: REMOVE DEPRECATED copyfields -->
+  <!-- REMOVE DEPRECATED copyfields -->
 
   <copyField source="last-updated-datetime" dest="last_updated_datetime" />
   <copyField source="lang" dest="default_lang" />

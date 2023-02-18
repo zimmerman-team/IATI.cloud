@@ -1187,7 +1187,7 @@
   <dynamicField name="*_d" type="pdouble" indexed="true" stored="true"/>
   <dynamicField name="*_p" type="location" indexed="true" stored="true"/>
 
-  <!-- TEMPORARY (TODO:) OLD FIELDS, DEPRECATED -->
+  <!-- OLD FIELDS, DEPRECATED -->
   <!-- IATI Narrative -->
   <fieldType name="iati_narrative" class="solr.SortableTextField" positionIncrementGap="100" multiValued="true">
     <analyzer type="index">
@@ -1358,7 +1358,7 @@
 
 
 
-  <!-- TODO: REMOVE DEPRECATED copyfields -->
+  <!-- DEPRECATED copyfields -->
   <copyField source="iati-identifier" dest="iati_identifier" />
   <copyField source="title.narrative.lang" dest="title_lang" />
   <copyField source="title.narrative" dest="title_narrative" />

@@ -370,7 +370,6 @@ def process_child_aggregations(data, children_agg, activity_indexes, aggregation
     for agg in children_agg:
         if agg['_id'] not in activity_indexes:
             # skip activities that are not in the parent dataset
-            # TODO: Add "post indexing" function that adds these remaining aggregations to the data
             continue
             # Find the index of the relevant activity
         index_of_activity = activity_indexes[agg.pop('_id')]

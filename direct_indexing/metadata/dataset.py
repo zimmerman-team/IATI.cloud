@@ -43,7 +43,6 @@ def index_datasets_and_dataset_metadata(update, force_update):
     logging.info('index_datasets_and_dataset_metadata:: -- Retrieve metadata')
     dataset_metadata = retrieve(settings.METADATA_DATASET_URL, 'dataset_metadata', force_update)
 
-    logging.info("THIS IS WHERE WE SHOULD END TODO:: TEMP")
     # If we are updating instead of refreshing, retrieve dataset ids
     if update:
         dataset_metadata, update_bools = prepare_update(dataset_metadata)

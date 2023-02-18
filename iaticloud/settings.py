@@ -27,9 +27,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-f7*witax@a(&7p!zg_b_ougjt&3zsq&zjh@)c6)0%54naxd*6t')
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
 ALLOWED_HOSTS = []
 
 
@@ -207,6 +204,7 @@ CODELISTS_JSON = os.path.join(BASE_DIR, 'direct_indexing/data_sources/codelists_
 MONGO_CONNECTION_STRING = os.getenv('MONGO_CONNECTION_STRING', 'localhost:27017')
 
 # # Debugging
+# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env_bool('DEBUG', 'True')
 THROTTLE_DATASET = env_bool('THROTTLE_DATASET', 'False')
 
