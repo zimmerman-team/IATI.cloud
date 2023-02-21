@@ -25,6 +25,7 @@ echo "The ID is: $solr_container_id"
 docker cp ./direct_indexing/solr/cores/activity/managed-schema $solr_container_id:/bitnami/solr/server/solr/activity/conf/managed-schema.xml
 docker cp ./direct_indexing/solr/cores/budget/managed-schema $solr_container_id:/bitnami/solr/server/solr/budget/conf/managed-schema.xml
 docker cp ./direct_indexing/solr/cores/dataset/managed-schema $solr_container_id:/bitnami/solr/server/solr/dataset/conf/managed-schema.xml
+docker cp ./direct_indexing/solr/cores/document/managed-schema $solr_container_id:/bitnami/solr/server/solr/document/conf/managed-schema.xml
 docker cp ./direct_indexing/solr/cores/organisation/managed-schema $solr_container_id:/bitnami/solr/server/solr/organisation/conf/managed-schema.xml
 docker cp ./direct_indexing/solr/cores/publisher/managed-schema $solr_container_id:/bitnami/solr/server/solr/publisher/conf/managed-schema.xml
 docker cp ./direct_indexing/solr/cores/result/managed-schema $solr_container_id:/bitnami/solr/server/solr/result/conf/managed-schema.xml

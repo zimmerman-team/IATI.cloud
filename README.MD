@@ -27,11 +27,12 @@ IATI is a global aid transparency standard and it makes information about aid sp
 We have recently moved towards a Solr Only version of the IATI.cloud. If you are looking for the hybrid IATI.cloud with Django API and Solr API, you can find this under the branch `archive/iati-cloud-hybrid-django-solr`
 
 ## Setting up, running and using IATI cloud
-Running and setting up is split into two parts: docker and manual. Because of the extensiveness of these sections they are contained in their own files. We've also included a usage guide, as well as a guide to how the IATI.cloud processes data. Find them here:
+Running and setting up is split into two parts: docker and manual. Because of the extensiveness of these sections they are contained in their own files. We've also included a usage guide, as well as a guide to how the IATI.cloud processes data, and a guide to our document summarisation feature. Find them here:
 - [Docker guide](./docs/DOCKER.md)
 - [Local guide](./docs/LOCAL.md)
 - [Usage guide](./docs/USAGE.md)
 - [Data processing guide](./docs/PROCESSING.md)
+- [Document summarisation](docs/DOCUMENT_SUMMARISATION.md)
 
 ## Requirements
 ### Software

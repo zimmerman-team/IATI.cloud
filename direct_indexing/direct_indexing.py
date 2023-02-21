@@ -5,6 +5,7 @@ import pysolr
 import requests
 from django.conf import settings
 
+from direct_indexing.document_summarisation.document_summarisation import document_summarisation
 from direct_indexing.metadata.dataset import index_datasets_and_dataset_metadata
 from direct_indexing.metadata.publisher import index_publisher_metadata
 
@@ -28,7 +29,7 @@ def clear_indices():
     Clear all indices as indicated by the 'cores' variable.
     """
     try:
-        cores = ['dataset', 'publisher', 'activity', 'transaction', 'budget', 'result', 'organisation']
+        cores = ['dataset', 'publisher', 'activity', 'transaction', 'budget', 'result', 'document', 'organisation']
         for core in cores:
             logging.info(f'clear_indices:: Clearing {core} core')
             solr = pysolr.Solr(f'{settings.SOLR_URL}/{core}', always_commit=True)
@@ -52,6 +53,12 @@ def run_publisher_metadata():
 def run_dataset_metadata(update, force_update=False):
     result = index_datasets_and_dataset_metadata(update, force_update)
     logging.info(f"run_dataset_metadata:: result: {result}")
+    return result
+
+
+def run_document_summarisation():
+    result = document_summarisation()
+    logging.info(f"run_document_summarisation:: result: {result}")
     return result
 
 

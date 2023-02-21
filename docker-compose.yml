@@ -56,7 +56,7 @@ services:
       - 8983:8983
     environment:
       # core setup
-      - SOLR_CORES=activity,budget,dataset,organisation,publisher,result,transaction
+      - SOLR_CORES=activity,budget,dataset,document,organisation,publisher,result,transaction
       # There is a SOLR_CORE_CONF_DIR available but currently only allows 1 config, we need 1 per core.
       - SOLR_OPTS=-Xms${MEM_SOLR_MIN}g -Xmx${MEM_SOLR_MAX}g
       # Authentication
