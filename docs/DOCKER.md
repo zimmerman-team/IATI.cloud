@@ -9,13 +9,14 @@
 - [Running](#running)
 - [Docker usage](#docker-usage)
 - [Usage](#usage)
+- [Docker installation guide](#docker-installation-guide)
 
 ---
 ## Introduction
 We want to have a full stack IATI.cloud application with the above specifications running.
 This includes Django, RabbitMQ and Celery, along with a postgres database, mongodb for aggregation, Apache Solr for document indexing, and lastly NGINX as a web server.
 
-To accomplish this, we have created a docker-compose file, which starts all of the services. Each "cog in the system" is it's own runnable docker container.
+To accomplish this, we have created a [docker-compose](../docker-compose.yml) file, which starts all of the services. Each "cog in the system" is it's own runnable docker container.
 
 The services use the default docker compose network. Each service registers itself to the network through the service name. This allows the docker containers to connect to eachother. Where locally you would use `localhost:5432`, a docker container connecting to a PostgreSQL container would refer to `database:5432`. By providing a port like `ports: 8000:8000`, you allow the localhost port 8000 to connect through to the docker container's port 8000.
 
@@ -53,9 +54,9 @@ Setting up persisted solr data:
 ```
 sudo mkdir ./direct_indexing/solr_mount_dir
 sudo chown 1001 ./direct_indexing/solr_mount_dir
-sudo docker-compose --env-file .env up solr
+sudo docker compose --env-file .env up solr
 # AFTER STARTUP
-sudo docker-compose --env-file .env down
+sudo docker compose down
 sudo bash ./direct_indexing/solr/update_solr_cores.sh
 ```
 
@@ -65,22 +66,29 @@ This is required for now, to be able to use our custom core configuration. We ar
 ### First build
 Running the docker containers (--build is optional because the local docker image needs to be built). This will allow the iaticloud/main docker image to be built and the django migrations etc. to be executed:
 ```
-sudo docker-compose --env-file .env up --build iaticloud
+sudo docker compose --env-file .env up --build iaticloud
+sudo docker compose down
 ```
+
+once this image is built, build the nginx container (we can not do these together, as nginx depends on celery flower, which in turn depends on the iaticloud image being built.)
+```
+sudo docker compose --env-file .env up
+```
+
 
 Stopping the docker containers:
 ```
-sudo docker-compose --env-file .env down
+sudo docker compose --env-file .env down
 ```
 
 ### (Re)-starting 
 ```
-sudo docker-compose -d --env-file .env up
+sudo docker compose -d --env-file .env up
 ```
 
 ### After you've made changes to the iati.cloud codebase
 ```
-sudo docker-compose --env-file -d .env up --build
+sudo docker compose --env-file -d .env up --build
 ```
 
 ### After you've made changes to the Solr managed-schema file(s) in ./direct_indexing/solr/cores/_CORE_/
@@ -114,3 +122,35 @@ sudo docker logs _<CONTAINER ID>_
 ---
 ## Usage
 <b>Check out the [Usage guide](./USAGE.md) for your next steps.</b>
+
+## Docker installation guide
+### Linux
+Install the prerequisites:
+```
+sudo apt-get install curl
+sudo apt-get install gnupg
+sudo apt-get install ca-certificates
+sudo apt-get install lsb-release
+```
+
+Set up the docker gpg files
+```
+sudo mkdir -m 0755 -p /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+```
+
+Install docker and docker compose:
+```
+sudo apt-get update
+
+### Install docker and docker compose on Ubuntu
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+```
+
+(optional:) Verify installation. You should see "This message shows that your installation appears to be working correctly."
+```
+sudo docker run hello-world
+```
