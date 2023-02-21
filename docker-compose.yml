@@ -58,7 +58,7 @@ services:
       # core setup
       - SOLR_CORES=activity,budget,dataset,organisation,publisher,result,transaction
       # There is a SOLR_CORE_CONF_DIR available but currently only allows 1 config, we need 1 per core.
-      - SOLR_OPTS=-Xms20g -Xmx40g
+      - SOLR_OPTS=-Xms${MEM_SOLR_MIN}g -Xmx${MEM_SOLR_MAX}g
       # Authentication
       - SOLR_ENABLE_AUTHENTICATION=yes
       - SOLR_ADMIN_USERNAME=${SOLR_ADMIN_USERNAME}

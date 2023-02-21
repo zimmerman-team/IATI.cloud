@@ -12,6 +12,7 @@ COPY ./commitlint.config.js /app
 COPY ./manage.py /app
 COPY ./requirements.txt /app
 COPY ./setup.cfg /app
+COPY ./static /app
 WORKDIR /app
 
 # Pre-install python dependencies

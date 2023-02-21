@@ -1,6 +1,4 @@
 # # Project specific
-# Django static
-static
 # Solr mounted docker directory
 solr_mount_dir
 

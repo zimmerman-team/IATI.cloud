@@ -38,6 +38,12 @@ Please check out the [reference of .env under the local docs](./LOCAL.md#env). T
 | nginx | nginx | 80 | ./services/nginx | Runs NGINX and enables the flower and datastore subdomains for a provided domain. For local development it also allows subdomains. Customize `SOLR_AUTH_ENCODED` and `IC_DOMAIN`. iati.cloud-redirect is available but not enabled by default. The docker image is more described [here](../services/nginx/NGINX.md). |
 
 ## Running
+We use a git submodule to ensure the Django static is set up correctly. Run the following to prepare to use that submodule:
+```
+git submodule init
+git submodule update
+```
+
 Ensure your .env is set up correctly, reference the .env.example.<br />
 
 You can optionally run the following commands to gather the external images.

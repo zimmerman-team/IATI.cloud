@@ -14,10 +14,6 @@ if [[ "$RES" == *"No migrations to apply"* ]]; then
   exec "$@"
 fi
 
-# # First time setup
-echo "Collecting static files..."
-python manage.py collectstatic --noinput
-
 # # Preload the initial data
 python manage.py loaddata services/iaticloud/data_preload/legacy_currency_convert_dump.json
 # # Set up an initial superuser with the password provided in $DJANGO_SUPERUSER_PASSWORD in .env
