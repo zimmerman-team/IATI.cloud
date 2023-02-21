@@ -45,6 +45,7 @@ git submodule update
 ```
 
 Ensure your .env is set up correctly, reference the .env.example.<br />
+`cp .env.example.docker .env` then `nano .env` and change the variables to your liking.
 
 You can optionally run the following commands to gather the external images.
 ```
