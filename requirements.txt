@@ -71,11 +71,3 @@ xmljson==0.2.1
 pymongo==4.3.3
 ## Dependencies
 dnspython==2.3.0
-
-# Deployment
-gunicorn==20.1.0
-gevent==22.10.2
-## Dependencies
-greenlet==2.0.2
-zope.event==4.6
-zope.interface==5.5.2

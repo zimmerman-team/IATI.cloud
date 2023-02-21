@@ -72,7 +72,7 @@ services:
     restart: always
     build: .
     image: iaticloud/main
-    command: gunicorn -b 0.0.0.0:8000 --worker-class=gevent --worker-connections=1000 --workers=1 iaticloud.wsgi
+    command: python manage.py runserver 0.0.0.0:8000
     volumes:
       # Mount the local project directory to the container's /app directory
       - ./:/app

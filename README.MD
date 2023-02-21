@@ -68,8 +68,6 @@ For local development, Docker and NGINX are not required, but docker is recommen
 
 *pysolr*, *xmljson* and *pymongo* are used to support the direct indexing to Solr process.
 
-*gunicorn* for deployment
-
 ## Code Management
 *flake8* is used to maintain code quality in pep8 style
 
