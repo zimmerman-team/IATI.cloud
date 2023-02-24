@@ -67,6 +67,7 @@ sudo bash ./install_solr_service.sh solr-9.1.1.tgz
 sudo su - solr -c "/opt/solr/bin/solr create -c activity -n data_driven_schema_configs"
 sudo su - solr -c "/opt/solr/bin/solr create -c budget -n data_driven_schema_configs"
 sudo su - solr -c "/opt/solr/bin/solr create -c dataset -n data_driven_schema_configs"
+sudo su - solr -c "/opt/solr/bin/solr create -c document -n data_driven_schema_configs"
 sudo su - solr -c "/opt/solr/bin/solr create -c organisation -n data_driven_schema_configs"
 sudo su - solr -c "/opt/solr/bin/solr create -c publisher -n data_driven_schema_configs"
 sudo su - solr -c "/opt/solr/bin/solr create -c result -n data_driven_schema_configs"
@@ -75,6 +76,7 @@ sudo su - solr -c "/opt/solr/bin/solr create -c transaction -n data_driven_schem
 sudo cp ./direct_indexing/solr/cores/activity/managed-schema /var/solr/data/activity/conf/managed-schema.xml
 sudo cp ./direct_indexing/solr/cores/budget/managed-schema /var/solr/data/budget/conf/managed-schema.xml
 sudo cp ./direct_indexing/solr/cores/dataset/managed-schema /var/solr/data/dataset/conf/managed-schema.xml
+sudo cp ./direct_indexing/solr/cores/document/managed-schema /var/solr/data/document/conf/managed-schema.xml
 sudo cp ./direct_indexing/solr/cores/organisation/managed-schema /var/solr/data/organisation/conf/managed-schema.xml
 sudo cp ./direct_indexing/solr/cores/publisher/managed-schema /var/solr/data/publisher/conf/managed-schema.xml
 sudo cp ./direct_indexing/solr/cores/result/managed-schema /var/solr/data/result/conf/managed-schema.xml

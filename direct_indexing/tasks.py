@@ -119,6 +119,17 @@ def fcdo_replace_partial_url(find_url, replace_url):
 
 
 @shared_task
+def document_summarisation():
+    """
+    This function is used to update the document summarisation.
+    """
+    logging.info("document_summarisation:: Starting document summarisation indexing.")
+    result = direct_indexing.run_document_summarisation()
+    logging.info(f"document_summarisation:: result: {result}")
+    return result
+
+
+@shared_task
 def revoke_all_tasks():
     from iaticloud.celery import app
     app.control.purge()
