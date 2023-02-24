@@ -65,7 +65,7 @@ services:
       - SOLR_ADMIN_PASSWORD=${SOLR_ADMIN_PASSWORD}
     volumes:
       # Mount the image's solr_mount_dir to the local solr_mount_dir
-      - './direct_indexing/solr_mount_dir/:/bitnami'
+      - solr_data:/bitnami
 
   iaticloud:
     container_name: iaticloud
@@ -157,3 +157,4 @@ volumes:
   db_data:
   rabbitmq_data:
   mongo_data:
+  solr_data:

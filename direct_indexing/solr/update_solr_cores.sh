@@ -14,14 +14,21 @@ then
 fi
 echo "Continuing..."
 
-cp ./direct_indexing/solr/cores/activity/managed-schema ./direct_indexing/solr_mount_dir/solr/server/solr/activity/conf/managed-schema.xml
-cp ./direct_indexing/solr/cores/budget/managed-schema ./direct_indexing/solr_mount_dir/solr/server/solr/budget/conf/managed-schema.xml
-cp ./direct_indexing/solr/cores/dataset/managed-schema ./direct_indexing/solr_mount_dir/solr/server/solr/dataset/conf/managed-schema.xml
-cp ./direct_indexing/solr/cores/organisation/managed-schema ./direct_indexing/solr_mount_dir/solr/server/solr/organisation/conf/managed-schema.xml
-cp ./direct_indexing/solr/cores/publisher/managed-schema ./direct_indexing/solr_mount_dir/solr/server/solr/publisher/conf/managed-schema.xml
-cp ./direct_indexing/solr/cores/result/managed-schema ./direct_indexing/solr_mount_dir/solr/server/solr/result/conf/managed-schema.xml
-cp ./direct_indexing/solr/cores/transaction/managed-schema ./direct_indexing/solr_mount_dir/solr/server/solr/transaction/conf/managed-schema.xml
-cp -r ./direct_indexing/solr/cores/activity/xslt ./direct_indexing/solr_mount_dir/solr/server/solr/activity/conf/
-chown 1001 ./direct_indexing/solr_mount_dir/*
+echo "Active docker containers"
+docker ps
+
+echo "Please enter your docker 'CONTAINER ID' for the active Solr container with the image bitnami/solr:"
+read solr_container_id
+
+echo "The ID is: $solr_container_id"
+
+docker cp ./direct_indexing/solr/cores/activity/managed-schema $solr_container_id:/bitnami/solr/server/solr/activity/conf/managed-schema.xml
+docker cp ./direct_indexing/solr/cores/budget/managed-schema $solr_container_id:/bitnami/solr/server/solr/budget/conf/managed-schema.xml
+docker cp ./direct_indexing/solr/cores/dataset/managed-schema $solr_container_id:/bitnami/solr/server/solr/dataset/conf/managed-schema.xml
+docker cp ./direct_indexing/solr/cores/organisation/managed-schema $solr_container_id:/bitnami/solr/server/solr/organisation/conf/managed-schema.xml
+docker cp ./direct_indexing/solr/cores/publisher/managed-schema $solr_container_id:/bitnami/solr/server/solr/publisher/conf/managed-schema.xml
+docker cp ./direct_indexing/solr/cores/result/managed-schema $solr_container_id:/bitnami/solr/server/solr/result/conf/managed-schema.xml
+docker cp ./direct_indexing/solr/cores/transaction/managed-schema $solr_container_id:/bitnami/solr/server/solr/transaction/conf/managed-schema.xml
+docker cp ./direct_indexing/solr/cores/activity/xslt $solr_container_id:/bitnami/solr/server/solr/activity/conf/
 
 echo "Done!"

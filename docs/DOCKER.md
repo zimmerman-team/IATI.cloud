@@ -59,12 +59,12 @@ sudo docker pull python:3.11
 *Run the following once!*
 Setting up persisted solr data:
 ```
-sudo mkdir ./direct_indexing/solr_mount_dir
-sudo chown 1001 ./direct_indexing/solr_mount_dir
 sudo docker compose --env-file .env up solr
 # AFTER STARTUP
-sudo docker compose down
 sudo bash ./direct_indexing/solr/update_solr_cores.sh
+# Needs to be re-started to read the new configurations
+sudo docker compose down
+
 ```
 
 This is required for now, to be able to use our custom core configuration. We are waiting for a resolution for [this config issue](https://github.com/bitnami/containers/issues/24146) to move away from this.
@@ -103,6 +103,7 @@ sudo docker compose --env-file -d .env up --build
 sudo direct_indexing/solr/update_solr_cores.sh
 ```
 and restart the solr container, the changes should automatically be picked up.
+_note: this should only be done on empty cores. otherwise, your core might be unable to start the updated core._
 
 ### Removing built docker images
 ```
