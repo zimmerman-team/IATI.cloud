@@ -5,6 +5,8 @@ solr_mount_dir
 # # General gitignore
 # Environments
 .env
+.env.local
+.env.docker
 .venv
 env/
 venv/
