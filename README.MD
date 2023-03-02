@@ -55,6 +55,15 @@ For local development, only a limited amount of disk space is required. The comp
 
 For local development, Docker and NGINX are not required, but docker is recommended to avoid system sided setup issues.
 
+## Submodules
+We make use of a single submodule, which contains a dump of the Django static files for the administration panel, as well as the IATI.cloud frontend and streamsaver (used to stream large files to a user).
+To update the IATI.cloud frontend, create a fresh build from the [frontend repository](https://github.com/zimmerman-team/iati.cloud.frontend), and replace the files in the submodule.
+Specifically, we include the `./build` folder, and copy the `./build/static/css`, `./build/static/js` and `./build/static/media` directories to the `static` submodule.
+
+To update the Django administrator static files, [collect the django static](https://docs.djangoproject.com/en/4.1/ref/contrib/staticfiles/), and update the files.
+
+Lastly, [StreamSaver](https://github.com/jimmywarting/StreamSaver.js) is used to stream large files to the user.
+
 ## Central python packages
 *Django* is used to host a management interface for the Celery tasks, this was formerly used to host an API.
 
