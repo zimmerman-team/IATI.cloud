@@ -8,22 +8,22 @@ server {
         large_client_header_buffers 4 64k;
 
         # Lib files for saving file streams on client
-        # location /streamsaver {
-        #        alias /static/streamsaver;
-        # }
+        location /streamsaver {
+               alias /static/streamsaver;
+        }
 
 	# React App
-#        # location / {
-#                root /root/IATI.cloud.frontend/build;
-#                root /static/build;
-#                try_files $uri /index.html;
-#        }
-    location / {
-        proxy_pass http://iaticloud:8000;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header Host $host;
-        proxy_redirect off;
-    }
+        location / {
+                root /static/build;
+                try_files $uri /index.html;
+        }
+
+        location /admin {
+                proxy_pass http://iaticloud:8000/admin;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header Host $host;
+                proxy_redirect off;
+        }
 
 
 	# Django Media
