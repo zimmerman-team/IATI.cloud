@@ -7,9 +7,11 @@
 [![CircleCI](https://circleci.com/gh/zimmerman-team/IATI.cloud/tree/main.svg?style=shield&circle-token=2d538c42938a47f11826fe0da0fbd1d8a897aa1b)](https://circleci.com/gh/zimmerman-team/IATI.cloud/tree/main)
 
 ---
-IATI.cloud extracts all published IATI XML files from the [IATI Registry](http://www.iatiregistry.org/publisher) and makes them available in a normalised PostgreSQL database, that you can access using a RESTful API. The project also stores all the parsed data in Apache Solr cores, allowing for faster querying. Two APIs are currently encompassed by the IATI.cloud project.
+IATI.cloud extracts all published IATI XML files from the [IATI Registry](http://www.iatiregistry.org/publisher) and stores all data in Apache Solr cores, allowing for fast access. 
 
 IATI is a global aid transparency standard and it makes information about aid spending easier to access, re-use and understand the underlying data using a unified open standard. You can find more about the IATI data standard at: [www.iatistandard.org](www.iatistandard.org)
+
+You can install this codebase using Docker. Follow the Docker Guide for more information.
 
 ## Requirements
 | Name                   | Required version                                                                                                   | Installation instructions |
@@ -157,7 +159,7 @@ Tip: to be able to use debuggers (f. ex. ipdb) with pytest, run it with `-s` opt
 
 Testing / code quality settings can be found in the `setup.cfg` file. Test coverage settings (for pytest-cov plugin) can be found at `.coveragerc` file.
 
-## Who currently makes use of IATI.cloud?
+## Who makes or made use of IATI.cloud?
 - Dutch Ministry of Foreign Affairs: [www.openaid.nl](https://www.openaid.nl)
 - FCDO Devtracker: [devtracker.dfid.gov.uk](https://devtracker.dfid.gov.uk/)
 - UNESCO Transparency Portal: [opendata.unesco.org](https://opendata.unesco.org)
@@ -167,6 +169,5 @@ Testing / code quality settings can be found in the `setup.cfg` file. Test cover
 - Overseas Development Institute: [ODI.org](https://transparency.odi.org/)
 - UN Migration: [IOM.int](https://www.iom.int/)
 - AIDA [AIDA.tools](https://www.aida.tools/)
-
 
 & many others
