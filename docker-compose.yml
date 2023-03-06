@@ -1,0 +1,160 @@
+version: "3.5"
+services:
+  database:
+    container_name: db_postgres
+    restart: always
+    image: postgres:latest
+    ports:
+      - 5432:5432
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  rabbitmq:
+    container_name: rabbitmq
+    restart: always
+    image: rabbitmq:latest
+    ports:
+      - 5672:5672
+      - 15672:15672
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  mongo:
+    container_name: mongo
+    restart: always
+    image: mongo:latest
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+      - MONGO_INITDB_DATABASE=${MONGO_INITDB_DATABASE}
+    ports:
+      - 27017:27017
+    volumes:
+      - mongo_data:/data/db
+
+  solr:
+    container_name: solr
+    restart: always
+    image: bitnami/solr:9.1.1
+    ports:
+      - 8983:8983
+    environment:
+      # core setup
+      - SOLR_CORES=activity,budget,dataset,organisation,publisher,result,transaction
+      # There is a SOLR_CORE_CONF_DIR available but currently only allows 1 config, we need 1 per core.
+      - SOLR_OPTS=-Xms${MEM_SOLR_MIN}g -Xmx${MEM_SOLR_MAX}g
+      # Authentication
+      - SOLR_ENABLE_AUTHENTICATION=yes
+      - SOLR_ADMIN_USERNAME=${SOLR_ADMIN_USERNAME}
+      - SOLR_ADMIN_PASSWORD=${SOLR_ADMIN_PASSWORD}
+    volumes:
+      # Mount the image's solr_mount_dir to the local solr_mount_dir
+      - solr_data:/bitnami
+
+  iaticloud:
+    container_name: iaticloud
+    restart: always
+    build: .
+    image: iaticloud/main
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      # Mount the local project directory to the container's /app directory
+      - ./:/app
+      - ./static:/static
+    depends_on:
+      - database
+      - rabbitmq
+      - mongo
+      - solr
+    ports:
+      - 8000:8000
+
+  celeryworker:
+    container_name: celeryworker
+    image: iaticloud/main
+    volumes:
+      - ./:/app
+    command: celery -A iaticloud worker -l INFO
+    depends_on:
+      - rabbitmq
+      - database
+      - iaticloud
+
+  celeryrevokeworker:
+    container_name: celeryrevokeworker
+    image: iaticloud/main
+    volumes:
+      - ./:/app
+    command: celery -A iaticloud worker -l INFO -n revoke@%%h -Q revoke_queue
+    depends_on:
+      - rabbitmq
+      - database
+      - iaticloud
+
+  celeryscheduler:
+    container_name: celeryscheduler
+    image: iaticloud/main
+    volumes:
+      - ./:/app
+    command: celery -A iaticloud beat -l INFO
+    depends_on:
+      - celeryworker
+      - database
+      - rabbitmq
+      - iaticloud
+
+  celeryflower:
+    container_name: celeryflower
+    image: iaticloud/main
+    volumes:
+      - ./:/app
+    command: celery -A iaticloud flower -l INFO --port=5555 --basic_auth=${CELERYFLOWER_USER}:${CELERYFLOWER_PASSWORD}
+    depends_on:
+      - celeryworker
+      - celeryrevokeworker
+      - celeryscheduler
+      - database
+      - rabbitmq
+      - iaticloud
+    ports:
+      - 5555:5555
+
+  nginx:
+    container_name: nginx
+    image: iaticloud/nginx
+    build: 
+      context: ./services/nginx
+      args:
+        - IC_DOMAIN=${IC_DOMAIN}
+        - SOLR_AUTH_ENCODED=${SOLR_AUTH_ENCODED}
+    volumes:
+      - ./:/app
+      - ./static:/static
+    ports:
+      - 80:80
+    depends_on:
+      - celeryflower
+      - iaticloud
+      - solr
+
+volumes:
+  db_data:
+  rabbitmq_data:
+  mongo_data:
+  solr_data:
