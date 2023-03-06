@@ -20,11 +20,13 @@
 ---
 
 ## Introduction
-IATI.cloud extracts all published IATI XML files from the [IATI Registry](http://www.iatiregistry.org/publisher) and makes them available in a normalised PostgreSQL database, that you can access using a RESTful API. The project also stores all the parsed data in Apache Solr cores, allowing for faster querying. Two APIs are currently encompassed by the IATI.cloud project.
+IATI.cloud extracts all published IATI XML files from the [IATI Registry](http://www.iatiregistry.org/publisher) and stores all data in Apache Solr cores, allowing for fast access.
 
 IATI is a global aid transparency standard and it makes information about aid spending easier to access, re-use and understand the underlying data using a unified open standard. You can find more about the IATI data standard at: [www.iatistandard.org](www.iatistandard.org)
 
 We have recently moved towards a Solr Only version of the IATI.cloud. If you are looking for the hybrid IATI.cloud with Django API and Solr API, you can find this under the branch `archive/iati-cloud-hybrid-django-solr`
+
+You can install this codebase using Docker. Follow the Docker Guide for more information.
 
 ## Setting up, running and using IATI cloud
 Running and setting up is split into two parts: docker and manual. Because of the extensiveness of these sections they are contained in their own files. We've also included a usage guide, as well as a guide to how the IATI.cloud processes data. Find them here:
@@ -109,7 +111,7 @@ Python already has clear PEP 8 code style guidelines, so it's difficult to add s
 - When using external dependencies that are not in PyPI (from Github for example), stick to a particular commit (i. e. `git+https://github.com/Supervisor/supervisor@ec495be4e28c694af1e41514e08c03cf6f1496c8#egg=supervisor`), so if the library is updated, it doesn't break everything
 - Automatic code quality / testing checks (continuous integration tools) are implemented to check all these things automatically when pushing / merging new branches. Quality is the key!
 
-## Who currently makes use of IATI.cloud?
+## Who makes or made use of IATI.cloud?
 - Dutch Ministry of Foreign Affairs: [www.openaid.nl](https://www.openaid.nl)
 - Finnish Ministry of Foreign Affairs: [www.openaid.fi](https://www.openaid.fi)
 - FCDO Devtracker: [devtracker.dfid.gov.uk](https://devtracker.dfid.gov.uk/)
