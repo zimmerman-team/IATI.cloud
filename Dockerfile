@@ -19,7 +19,7 @@ WORKDIR /app
 RUN pip install -r requirements.txt
 
 # Install java 11 and set JAVA_HOME and JRE_HOME to be able to use solr post tool
-RUN apt-get update && apt-get install -y openjdk-11-jdk
+RUN apt-get update && apt-get install -y --no-install-recommends openjdk-11-jdk
 
 # Change the user and ownership to user 'iaticloud'
 RUN useradd -ms /bin/bash iaticloud
