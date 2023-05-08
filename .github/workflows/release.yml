@@ -1,0 +1,41 @@
+name: Semantic versioning
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+  push:
+    branches: ["main", "develop"]
+  pull_request:
+    branches: ["main", "develop"]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  versioning:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          # Need these two configurations because this job runs on protected branches
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Semantic Release
+        uses: cycjimmy/semantic-release-action@v3
+        with:
+          semantic_version: 18
+          branches: |
+            [
+              "main",
+              {
+                "name": "develop",
+                "prerelease": true
+              }
+            ]
+          extra_plugins: |
+            "@semantic-release/commit-analyzer"
+            "@semantic-release/release-notes-generator"
+            "@semantic-release/github"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
