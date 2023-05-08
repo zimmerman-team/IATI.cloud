@@ -40,5 +40,6 @@ jobs:
             "@semantic-release/commit-analyzer"
             "@semantic-release/release-notes-generator"
             "@semantic-release/github"
+          npm_publish: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
