@@ -18,7 +18,6 @@
 - [Branches](#branches)
 
 ---
-
 ## Introduction
 IATI.cloud extracts all published IATI XML files from the [IATI Registry](http://www.iatiregistry.org/publisher) and stores all data in Apache Solr cores, allowing for fast access.
 
