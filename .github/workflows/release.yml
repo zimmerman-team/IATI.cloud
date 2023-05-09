@@ -22,7 +22,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Semantic Release
-        uses: semantic-release/semantic-release@v17
+        uses: semantic-release/semantic-release@main
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           branches: "main,develop"
