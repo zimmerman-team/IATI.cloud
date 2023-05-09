@@ -25,6 +25,4 @@ jobs:
         uses: semantic-release/semantic-release@v17
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          branches:
-            - main
-            - develop
+          branches: "main,develop"
