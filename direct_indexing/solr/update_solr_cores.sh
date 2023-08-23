@@ -31,4 +31,8 @@ docker cp ./direct_indexing/solr/cores/result/managed-schema $solr_container_id:
 docker cp ./direct_indexing/solr/cores/transaction/managed-schema $solr_container_id:/bitnami/solr/server/solr/transaction/conf/managed-schema.xml
 docker cp ./direct_indexing/solr/cores/activity/xslt $solr_container_id:/bitnami/solr/server/solr/activity/conf/
 
+# Ask the user if this is mounted locally, default to no. If it is, chown the files to 1001:root
+read -p "Is this mounted locally? (y/N) " -n 1 -r
+
+
 echo "Done!"
