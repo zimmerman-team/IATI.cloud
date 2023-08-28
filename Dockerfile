@@ -1,5 +1,5 @@
 # Start with python 3.11
-FROM python:3.11
+FROM python:3.11-bullseye
 
 # Copy all relevant files to avoid security hotspot with `COPY . /app`
 COPY ./direct_indexing /app
