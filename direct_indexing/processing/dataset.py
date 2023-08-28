@@ -148,7 +148,8 @@ def convert_and_save_xml_to_processed_json(filepath, filetype, codelist, currenc
     with open(json_path, 'w') as json_file:
         json.dump(data, json_file)
 
-    dataset_subtypes(filetype, data, json_path)
+    if not settings.FCDO_INSTANCE:
+        dataset_subtypes(filetype, data, json_path)
 
     return json_path
 
