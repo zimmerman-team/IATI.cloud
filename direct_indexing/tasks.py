@@ -23,6 +23,15 @@ def clear_all_cores():
 
 
 @shared_task
+def clear_cores_with_name(core="publisher"):
+    """
+    Simply trigger process clearing all solr cores.
+    """
+    logging.info("clear_all_cores:: Starting direct indexing clear all cores.")
+    return direct_indexing.clear_indices_for_core(core)
+
+
+@shared_task
 def start(update=False):
     # Only if the most recent data dump was a success
     if not datadump_success():

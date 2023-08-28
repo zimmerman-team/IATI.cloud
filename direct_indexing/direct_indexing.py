@@ -40,6 +40,21 @@ def clear_indices():
         raise pysolr.SolrError
 
 
+def clear_indices_for_core(core):
+    """
+    Clear all indices as indicated by the 'cores' variable.
+    """
+    try:
+        logging.info(f'clear_indices:: Clearing {core} core')
+        solr = pysolr.Solr(f'{settings.SOLR_URL}/{core}', always_commit=True)
+        solr.delete(q='*:*')
+        logging.info(f'clear_indices:: Finished clearing {core} core')
+        return 'Success'
+    except pysolr.SolrError:
+        logging.error('clear_indices:: Could not clear indices')
+        raise pysolr.SolrError
+
+
 # Subsets of the indexing process
 def run_publisher_metadata():
     result = index_publisher_metadata()
