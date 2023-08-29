@@ -117,7 +117,7 @@ def fcdo_replace_partial_url(find_url, replace_url):
     logging.info("fcdo_replace_partial_url:: update dataset_metadata file")
     path = f'{settings.DATASET_PARENT_PATH}/dataset_metadata.json'
     with open(path, 'w') as file:
-        json.dump(dataset_metadata, file)
+        json.dump(dataset_metadata, file, indent=4)
 
     # run the dataset metadata with update = True and force_update = True
     # this will automatically all the files that have a new URL and a new HASH

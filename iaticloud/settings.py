@@ -210,3 +210,6 @@ THROTTLE_DATASET = env_bool('THROTTLE_DATASET', 'False')
 
 # # Fresh dataset
 FRESH = env_bool('FRESH', 'True')
+
+# Origins for production
+CSRF_TRUSTED_ORIGINS = [os.getenv('CSRF_TRUSTED_ORIGINS'), 'http://localhost/']
