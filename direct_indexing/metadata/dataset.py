@@ -91,7 +91,6 @@ def prepare_update(dataset_metadata):
     old_datasets = [d for d in dataset_metadata if d['id'] in existing_datasets]
     changed_datasets = [
         d for d in old_datasets if d['resources'][0]['hash'] != existing_datasets[d['id']]['hash']
-        and existing_datasets[d['id']]['filetype'] == 'activity'
     ]  # Skip organisation files for incremental updates
     updated_datasets = new_datasets + changed_datasets
     updated_datasets_bools = [False for _ in new_datasets] + [True for _ in changed_datasets]

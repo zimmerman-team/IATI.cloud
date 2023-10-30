@@ -3,6 +3,7 @@ import logging
 import os
 import xml.etree.ElementTree as ET
 
+from datetime import datetime
 from django.conf import settings
 from pysolr import Solr
 from xmljson import badgerfish as bf
@@ -64,6 +65,7 @@ def fun(dataset, update=False):
                                                          dataset_metadata)
     # Add an indexing status to the dataset metadata.
     dataset['iati_cloud_indexed'] = indexed
+    dataset['iati_cloud_indexed_datetime'] = str(datetime.now())
 
     # Index the dataset metadata
     logging.info('-- Save the dataset metadata')

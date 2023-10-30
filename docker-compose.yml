@@ -6,6 +6,8 @@ services:
     image: postgres:latest
     ports:
       - 5432:5432
+    env_file:
+      - .env
     volumes:
       - db_data:/var/lib/postgresql/data
     environment:
@@ -26,6 +28,8 @@ services:
     ports:
       - 5672:5672
       - 15672:15672
+    env_file:
+      - .env
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
     healthcheck:
@@ -39,6 +43,8 @@ services:
     container_name: mongo
     restart: always
     image: mongo:latest
+    env_file:
+      - .env
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
@@ -54,6 +60,8 @@ services:
     image: bitnami/solr:9.1.1
     ports:
       - 8983:8983
+    env_file:
+      - .env
     environment:
       # core setup
       - SOLR_CORES=activity,budget,dataset,organisation,publisher,result,transaction
@@ -72,6 +80,8 @@ services:
     restart: always
     build: .
     image: iaticloud/main
+    env_file:
+      - .env
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
       # Mount the local project directory to the container's /app directory
@@ -90,6 +100,8 @@ services:
     image: iaticloud/main
     volumes:
       - ./:/app
+    env_file:
+      - .env
     command: celery -A iaticloud worker -l INFO
     depends_on:
       - rabbitmq
@@ -101,6 +113,8 @@ services:
     image: iaticloud/main
     volumes:
       - ./:/app
+    env_file:
+      - .env
     command: celery -A iaticloud worker -l INFO -n revoke@%%h -Q revoke_queue
     depends_on:
       - rabbitmq
@@ -112,6 +126,8 @@ services:
     image: iaticloud/main
     volumes:
       - ./:/app
+    env_file:
+      - .env
     command: celery -A iaticloud beat -l INFO
     depends_on:
       - celeryworker
@@ -124,6 +140,8 @@ services:
     image: iaticloud/main
     volumes:
       - ./:/app
+    env_file:
+      - .env
     command: celery -A iaticloud flower -l INFO --port=5555 --basic_auth=${CELERYFLOWER_USER}:${CELERYFLOWER_PASSWORD}
     depends_on:
       - celeryworker
@@ -138,6 +156,8 @@ services:
   nginx:
     container_name: nginx
     image: iaticloud/nginx
+    env_file:
+      - .env
     build: 
       context: ./services/nginx
       args:
