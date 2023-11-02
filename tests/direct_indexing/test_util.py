@@ -1,5 +1,7 @@
 import os
 import subprocess
+import pysolr
+import pytest
 import urllib.request
 from direct_indexing import util
 from iaticloud import settings
@@ -26,6 +28,11 @@ def test_clear_core(mocker):
     # Assert that the delete method was called with '*:*'
     mock_delete.assert_called_with(q='*:*')
 
+    # Assert that clear_core raises its error when encountering a pysolr.SolrError
+    mock_delete.side_effect = pysolr.SolrError
+    with pytest.raises(pysolr.SolrError):
+        util.clear_core(core_url)
+
 
 # Test index_to_core function
 def test_index_to_core(tmp_path, mocker):
@@ -50,7 +57,7 @@ def test_index_to_core(tmp_path, mocker):
     # Mock subprocess.check_output to simulate success
     mocker.patch(OP, return_value=b"Successfully indexed")
     # Test a successful indexing
-    result = util.index_to_core(url, str(json_path), remove=False)
+    result = util.index_to_core(url, str(json_path), remove=True)
     # Assert that subprocess.check_output was called with the correct arguments
     subprocess.check_output.assert_called_with([
         settings.SOLR_POST_TOOL,
@@ -61,9 +68,13 @@ def test_index_to_core(tmp_path, mocker):
     # Assert that the function returns 'Successfully indexed' for a successful operation
     assert result == "Successfully indexed"
     # Assert that the file at json_path was not removed, as the remove argument was False
-    assert os.path.exists(json_path) is True
+    assert os.path.exists(json_path) is False
 
     # FAILED INDEX:
+    # re-add the file
+    with open(json_path, 'w') as file:
+        file.write('{"key": "value"}')
+
     # Mock subprocess.check_output to simulate failure
     mocker.patch(OP, return_value=b"msg: Failed to index\nERROR...")
     # Test a successful indexing
