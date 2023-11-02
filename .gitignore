@@ -32,3 +32,5 @@ session.vim
 
 # Python cache
 __pycache__
+
+.coverage
