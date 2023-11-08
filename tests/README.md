@@ -8,7 +8,7 @@ pytest tests
 
 or we can generate a coverage report with:
 ```
-pytest --cov=direct_indexing --cov-report html:coverage_report tests
+pytest --cov=direct_indexing --cov-report html:./coverage_report tests
 ```
 This coverage report can be opened in the browser, from [the coverage_report directory in the root folder](../coverage_report/index.html). (Tip: With the VSCode extension "Live Preview", you can view the report from VSCode, and the report will update automatically when re-running tests.)
 
@@ -18,3 +18,4 @@ This coverage report can be opened in the browser, from [the coverage_report dir
 - pytest-mock
 - pytest-django 
 - pytest-celery
+- requests-mock
