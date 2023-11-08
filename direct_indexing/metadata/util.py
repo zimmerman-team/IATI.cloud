@@ -86,6 +86,3 @@ def download_dataset():
     except urllib.error.URLError as e:
         logging.error(f'download_dataset:: Error downloading dataset, due to {e}')
         raise
-    except urllib.error.HTTPError as e:
-        logging.error(f'download_dataset:: Error downloading dataset, due to {e}')
-        raise
