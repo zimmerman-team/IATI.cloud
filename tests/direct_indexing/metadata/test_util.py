@@ -1,11 +1,9 @@
-# TODO
 import json
 
 import pytest
 import requests
 import urllib
 import zipfile
-import tempfile
 
 from direct_indexing.metadata.util import download_dataset, index, retrieve
 
@@ -14,6 +12,7 @@ SETTINGS_FRESH = 'direct_indexing.metadata.util.settings.FRESH'
 SETTINGS_DATASET_PARENT_PATH = 'direct_indexing.metadata.util.settings.DATASET_PARENT_PATH'
 TEST_URL = 'http://test.com'
 
+
 def test_retrieve(mocker, tmp_path, sample_data, requests_mock):
     # Create test file
     test_dir = tmp_path / 'test'
@@ -21,7 +20,7 @@ def test_retrieve(mocker, tmp_path, sample_data, requests_mock):
     with open(test_dir / 'test.json', 'w') as file:
         json.dump(sample_data, file)
     mocker.patch(SETTINGS_DATASET_PARENT_PATH, test_dir)
-    
+
     # Test succesfully loading data when force_update = False, settings.FRESH = False
     mocker.patch(SETTINGS_FRESH, False)
     data = retrieve(TEST_URL, 'test', False)
@@ -75,7 +74,7 @@ def test_download_dataset(mocker, tmp_path):
     mocker.patch("urllib.request.URLopener")
     mocker.patch(SETTINGS_FRESH, False)
     ret_val = download_dataset()
-    assert ret_val == None
+    assert ret_val == None  # NOQA: E711
     assert urllib.request.URLopener.call_count == 0
 
     # mocks and instances

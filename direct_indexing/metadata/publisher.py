@@ -40,9 +40,11 @@ def _preprocess_publisher_metadata(publishers_metadata):
     """
     for publisher in publishers_metadata:
         if 'publisher_first_publish_date' in publisher:
-
             # regex to detect dates in the format dd.mm.yyyy
             if re.match(r'\d{2}\.\d{2}\.\d{4}', publisher['publisher_first_publish_date']):
+                # get the substring of the date that matches the regex
+                substr = re.search(r'\d{2}\.\d{2}\.\d{4}', publisher['publisher_first_publish_date']).group()
+                publisher['publisher_first_publish_date'] = substr
                 # convert the dd.mm.yyyy to yyyy-mm-ddT00:00:00.000000
                 publisher['publisher_first_publish_date'] = datetime.datetime.strptime(
                     publisher['publisher_first_publish_date'], '%d.%m.%Y').strftime('%Y-%m-%dT%H:%M:%S.%f')
