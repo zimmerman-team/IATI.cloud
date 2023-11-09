@@ -16,7 +16,8 @@ def test_clean_dataset_metadata(mocker, fixture_dataset_metadata):
 def test_clean_resources(fixture_dataset_metadata):
     clean_resources(fixture_dataset_metadata)
     presumed_removed_resources = [
-        "mimetype", "cache_url", "description", "cache_last_updated", "mimetype_inner", "last_modified", "url_type", "resource_type", "name"
+        "mimetype", "cache_url", "description", "cache_last_updated", "mimetype_inner",
+        "last_modified", "url_type", "resource_type", "name"
     ]
     presumed_kept_resources = [
         "hash", "metadata_modified", "url", "format", "state", "created", "package_id", "position", "size", "id"

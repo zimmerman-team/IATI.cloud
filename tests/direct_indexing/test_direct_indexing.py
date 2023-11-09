@@ -2,7 +2,7 @@
 from direct_indexing.direct_indexing import clear_indices, clear_indices_for_core
 import pytest
 import pysolr
-from django.conf import settings
+
 
 # Test group: test_run
 def test_run_clear_indices_success(mocker):
