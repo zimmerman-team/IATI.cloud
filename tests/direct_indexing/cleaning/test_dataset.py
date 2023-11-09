@@ -1,6 +1,6 @@
 from direct_indexing.cleaning.dataset import (
-    extract_key_value_fields, extract_list_values, extract_literal_values, extract_single_values, list_values,
-    recursive_attribute_cleaning, XML_LANG_STR
+    XML_LANG_STR, extract_key_value_fields, extract_list_values, extract_literal_values, extract_single_values,
+    list_values, recursive_attribute_cleaning
 )
 
 

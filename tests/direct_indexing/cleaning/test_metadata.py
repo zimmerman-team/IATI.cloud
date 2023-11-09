@@ -1,6 +1,6 @@
 import pytest
 
-from direct_indexing.cleaning.metadata import clean_resources, clean_extras, clean_dataset_metadata
+from direct_indexing.cleaning.metadata import clean_dataset_metadata, clean_extras, clean_resources
 
 
 def test_clean_dataset_metadata(mocker, fixture_dataset_metadata):

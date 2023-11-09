@@ -1,8 +1,10 @@
 import os
 import subprocess
+import urllib.request
+
 import pysolr
 import pytest
-import urllib.request
+
 from direct_indexing import util
 from iaticloud import settings
 

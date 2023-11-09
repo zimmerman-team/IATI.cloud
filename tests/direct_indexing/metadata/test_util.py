@@ -1,9 +1,9 @@
 import json
+import urllib
+import zipfile
 
 import pytest
 import requests
-import urllib
-import zipfile
 
 from direct_indexing.metadata.util import download_dataset, index, retrieve
 

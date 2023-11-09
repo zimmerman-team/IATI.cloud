@@ -1,7 +1,8 @@
 # TODO
-from direct_indexing.direct_indexing import clear_indices, clear_indices_for_core
-import pytest
 import pysolr
+import pytest
+
+from direct_indexing.direct_indexing import clear_indices, clear_indices_for_core
 
 
 # Test group: test_run
