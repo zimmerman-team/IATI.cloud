@@ -55,9 +55,8 @@ def extract_key_value_fields(data, add_fields, key, value):
             add_fields = extract_single_values(add_fields, value, key, data)
     # If the fields are not yet at the lowest level of key-value pair,
     # process the underlying field.
-    elif type(value) in [OrderedDict, list]:
+    elif type(value) in [OrderedDict, dict]:  # was list instead of dict
         data[key] = recursive_attribute_cleaning(value)
-
     return add_fields
 
 
@@ -130,7 +129,7 @@ def list_values(element, data, key, add_fields):
         data[key].append(' ')
     for string in ['@currency', '@value-date', '@year']:
         if string in element:
-            add_fields[f'{element}.{string[1:]}'].append(element[string])
+            add_fields[f'{key}.{string[1:]}'].append(element[string])
     if XML_LANG_STR in element:
         add_fields[f'{key}.{LANG_STR}'].append(
             element[XML_LANG_STR])
@@ -165,7 +164,7 @@ def extract_single_values(add_fields, value, key, data):
         data[key] = value
         return add_fields
     if type(value) is bool:
-        data[key] = 0
+        data[key] = 1 if value else 0
         return add_fields
     if '$' in value:
         data[key] = value['$']
@@ -179,6 +178,7 @@ def extract_single_values(add_fields, value, key, data):
     if XML_LANG_STR in value:
         add_fields[f'{key}.{LANG_STR}'] = value[
             XML_LANG_STR]
+    # assume the language is not provided
     else:
         if key != 'value':
             add_fields[f'{key}.{LANG_STR}'] = ' '
