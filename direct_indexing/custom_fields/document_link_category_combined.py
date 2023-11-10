@@ -21,11 +21,11 @@ def document_link_category_combined(data):
     data[final_field] = []
     for doc in data[dl]:
         codes = ''
+        if 'category' not in doc:
+            continue
         if type(doc['category']) is dict:
             doc['category'] = [doc['category']]
-        for category in doc['category']:
-            if codes != '':
-                codes += ','
-            codes += category["code"]
-        data[final_field].append(codes)
+        codes = ",".join(category["code"] for category in doc.get("category", []) if "code" in category)
+        if codes != '':
+            data[final_field].append(codes)
     return data
