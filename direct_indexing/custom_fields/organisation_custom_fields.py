@@ -25,7 +25,7 @@ def index_many_to_many_relations(organisation):
     # if 0, represent with index -1, else represent with index n.
     TE = 'total-expenditure'
     if TE in organisation:
-        if type(organisation[TE]) != list:
+        if not isinstance(organisation[TE], list):
             organisation[TE] = [organisation[TE]]
         index_total_expenditure(organisation, TE)
 
@@ -35,12 +35,7 @@ def index_total_expenditure(organisation, field):
     Go through the activity participating orgs and index the given child.
     Because this is currently used for results, we directly pass the required children.
 
-    :param field: a dataset containing the initial child of the activity
-    :param child: the second level child of the aforementioned field
-    """
-    # Check if the child exists and make the child a list if it is a dict.
-    # total-expenditure.value.currency
-    """
+    Total Expenditure
     0..*    total-expenditure
     1..1        period-start
     1..1        period-end
@@ -69,7 +64,11 @@ def index_total_expenditure(organisation, field):
         for every expense line, how many children value and ref are there
 
     -1 indicates there is no ref
+
+    :param field: a dataset containing the initial child of the activity
+    :param child: the second level child of the aforementioned field
     """
+    # Check if the child exists and make the child a list if it is a dict.
     EL_STR = 'expense-line'
     organisation['total-expenditure.expense-line-index'] = []
     organisation['total-expenditure.expense-line.ref-index'] = []
