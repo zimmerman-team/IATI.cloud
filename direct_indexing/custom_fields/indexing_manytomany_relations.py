@@ -7,13 +7,13 @@ def index_many_to_many_relations(activity):
     # Index result indicator, starting with baseline:
     # An indicator has 0 to N baselines, if 0, represent with index -1, else represent with index n.
     if 'result' in activity:
-        if type(activity['result']) != list:
+        if not isinstance(activity['result'], list):
             activity['result'] = [activity['result']]
         for result in activity['result']:
             add_result_child_indexes(result, 'indicator')
     # Index participating organisations.
     if 'participating-org' in activity:
-        if type(activity['participating-org']) != list:
+        if not isinstance(activity['participating-org'], list):
             activity['participating-org'] = [activity['participating-org']]
         add_participating_org_child_indexes(activity, 'participating-org')
 
@@ -47,7 +47,7 @@ def add_result_child_indexes(field, child):
     # Check if the child exists and make the child a list if it is a dict.
     if child not in field:
         return
-    if type(field[child]) != list:
+    if not isinstance(field[child], list):
         field[child] = [field[child]]
 
     add_field_child_field_indexes(field, child, 'baseline')
@@ -77,7 +77,7 @@ def add_field_child_field_indexes(data, target_field, field):
             continue
 
         # make sure the baseline is a list of baselines.
-        if type(target[field]) != list:
+        if not isinstance(target[field], list):
             target[field] = [target[field]]
 
         field_index = total_field
@@ -104,7 +104,7 @@ def add_field_child_field_children_indexes(data, target_field, field, children):
         for target in data[target_field]:
             if field in target:
                 # If the second level child is found, loop over this and check if the third level children are found.
-                if type(target[field]) != list:
+                if not isinstance(target[field], list):
                     target[field] = [target[field]]
                 iterate_third_level_children(child, data, field, target, target_field, total_field)
     return data
@@ -117,11 +117,12 @@ def iterate_third_level_children(child, data, field, target, target_field, total
     Use enumerate to only save the index of for the first occurrence.
     """
     for item in target[field]:
-        if type(item) != dict:
+        if not isinstance(item, dict):
             field_index = -1
         elif child in item:
             field_index = total_field
-            if type(item[child]) != list:
+            print(item[child])
+            if not isinstance(item[child], list):
                 total_field += 1
             else:
                 total_field += len(item[child])
