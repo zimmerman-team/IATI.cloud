@@ -2,8 +2,8 @@ import json
 import logging
 import os
 import xml.etree.ElementTree as ET
-
 from datetime import datetime
+
 from django.conf import settings
 from pysolr import Solr
 from xmljson import badgerfish as bf
@@ -147,6 +147,8 @@ def convert_and_save_xml_to_processed_json(filepath, filetype, codelist, currenc
         data = organisation_custom_fields.add_all(data)
 
     json_path = json_filepath(filepath)
+    if not json_path:
+        return False
     with open(json_path, 'w') as json_file:
         json.dump(data, json_file)
 
@@ -164,8 +166,11 @@ def json_filepath(filepath):
     :param filepath: The filepath of the dataset.
     :return: the filepath of the json file.
     """
-    converted_path = ''.join((os.path.splitext(filepath)[0], '.json'))
-    return converted_path
+    try:
+        converted_path = ''.join((os.path.splitext(filepath)[0], '.json'))
+        return converted_path
+    except Exception:
+        return False
 
 
 def dataset_subtypes(filetype, data, json_path):
@@ -183,7 +188,6 @@ def dataset_subtypes(filetype, data, json_path):
             subtypes[key] = []
 
         subtypes = activity_subtypes.extract_all_subtypes(subtypes, data)
-    if filetype == 'activity':
         index_subtypes(json_path, subtypes)
 
 
