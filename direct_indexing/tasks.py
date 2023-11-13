@@ -11,6 +11,7 @@ from django.conf import settings
 from direct_indexing import direct_indexing
 from direct_indexing.metadata.util import retrieve
 from direct_indexing.util import datadump_success
+from iaticloud.celery import app
 
 
 @shared_task
@@ -89,7 +90,7 @@ def fcdo_replace_partial_url(find_url, replace_url):
         # find datasets that need to be replaced
         if 'resources' not in dataset or 'name' not in dataset or 'organization' not in dataset:
             continue
-        if 'url' not in dataset['resources'][0]:
+        if 'url' not in dataset['resources'][0] or 'hash' not in dataset['resources'][0]:
             continue
         url = dataset['resources'][0]['url']  # always 1 url
         if find_url not in url:
@@ -129,5 +130,4 @@ def fcdo_replace_partial_url(find_url, replace_url):
 
 @shared_task
 def revoke_all_tasks():
-    from iaticloud.celery import app
     app.control.purge()

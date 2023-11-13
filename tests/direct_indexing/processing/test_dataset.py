@@ -7,6 +7,7 @@ from direct_indexing.processing.dataset import (
 )
 
 TEST_PATH = '/test/path/test.json'
+TEST_JSON = 'test.json'
 INDEX_SUCCESS = 'Successfully indexed'
 
 
@@ -83,7 +84,7 @@ def test_convert_and_save_xml_to_processed_json(mocker, tmp_path, fixture_xml_ac
     mock_clean = mocker.patch('direct_indexing.processing.dataset.recursive_attribute_cleaning', return_value={})
     mock_add_all = mocker.patch('direct_indexing.processing.dataset.custom_fields.add_all', return_value={})
     mock_add_all_org = mocker.patch('direct_indexing.processing.dataset.organisation_custom_fields.add_all', return_value={})  # NOQA: 501
-    mock_json_filepath = mocker.patch('direct_indexing.processing.dataset.json_filepath', return_value=str(tmp_path / 'test.json'))  # NOQA: 501
+    mock_json_filepath = mocker.patch('direct_indexing.processing.dataset.json_filepath', return_value=str(tmp_path / TEST_JSON))  # NOQA: 501
     mock_json = mocker.patch('direct_indexing.processing.dataset.json.dump')
     mock_subtypes = mocker.patch('direct_indexing.processing.dataset.dataset_subtypes')
     xml_path = tmp_path / 'test.xml'
@@ -159,12 +160,12 @@ def test_dataset_subtypes(mocker):
     mock_index = mocker.patch('direct_indexing.processing.dataset.index_subtypes')
 
     # Test that if filetype is not activity, we do not call extract_all_subtypes or index_subtypes
-    dataset_subtypes('organisation', {}, 'test.json')
+    dataset_subtypes('organisation', {}, TEST_JSON)
     mock_extract.assert_not_called()
     mock_index.assert_not_called()
 
     # Test that we call extract_all_subtypes and index_subtypes if filetype is activity
-    dataset_subtypes('activity', {}, 'test.json')
+    dataset_subtypes('activity', {}, TEST_JSON)
     mock_extract.assert_called_once()
     mock_extract.assert_called_with({'transaction': [], 'budget': [], 'result': []}, {})
     mock_index.assert_called_once()
