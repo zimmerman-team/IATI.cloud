@@ -86,6 +86,7 @@ def get_dataset_filetype(dataset):
     except Exception:
         return 'None'
 
+
 def valid_version_from_file(filepath):
     """
     Extract the value of the iati version from the dataset
