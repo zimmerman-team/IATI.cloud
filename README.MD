@@ -95,6 +95,10 @@ test: Adding missing or correcting existing tests
 chore: Changes to the build process or auxiliary tools and libraries such as documentation generation
 ```
 
+## Testing
+We test with `pytest`,and use `coverage` to generage coverage reports.
+You can use `. scripts/cov.sh` to quickly run all tests and generate a coverage report. This also conveniently prints the location of the coverage HTML report, which can be viewed from your browser.
+
 ## Contributing
 ### Can I contribute?
 Yes! We are mainly looking for coders to help on the project. If you are a coder feel free to _Fork_ the repository and send us your amazing Pull Requests!
