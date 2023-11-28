@@ -23,25 +23,26 @@ def test_extract_subtype(mocker):
     assert mock_process.call_count == len(data.keys())  # once for each key in data
 
 
-def test_process_subtype_dict():
+def test_process_subtype_dict(mocker):
     tvu = 'transaction.value-usd'
     bvu = 'budget.value-usd'
     # Test if key is in AVAILABLE_SUBTYPES, it is nothing changes in subtype_dict
     subtype_dict = {'transaction': {'value': 1}}
     expected_res = subtype_dict.copy()
     key = 'transaction'
-    res = process_subtype_dict(subtype_dict, key, None, None, None, None)
+    mock = mocker.MagicMock()
+    res = process_subtype_dict(subtype_dict, key, mock, None, None, None)
     assert res == expected_res
 
     # Test if key is in exclude fields we do not include it in the subtype dict
-    res = process_subtype_dict(subtype_dict, bvu, None, None, [bvu], None)
+    res = process_subtype_dict(subtype_dict, bvu, mock, None, [bvu], None)
     assert res == expected_res
 
     # Test that a specific value which is a dict can be retrieved
     data = {'title': 'title', 'budget': {'value': 1}, tvu: 1.1}
     expected_res = subtype_dict.copy()
     expected_res[tvu] = 1.1
-    res = process_subtype_dict(subtype_dict, tvu, None, data, [], [tvu])
+    res = process_subtype_dict(subtype_dict, tvu, mock, data, [], [tvu])
     assert res == expected_res
 
     # Test that the value of a specific element is extracted from the list
@@ -53,7 +54,7 @@ def test_process_subtype_dict():
 
     # Test that additional fields are kept without modification
     expected_res['title'] = 'title'
-    res = process_subtype_dict(subtype_dict, 'title', None, data, [], [])
+    res = process_subtype_dict(subtype_dict, 'title', mock, data, [], [])
     assert res == expected_res
 
 
