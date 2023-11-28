@@ -1,5 +1,5 @@
 # Django installation
-Django==4.2.3
+Django==4.2.7
 ## Dependencies
 asgiref==3.6.0
 sqlparse==0.4.4
@@ -53,6 +53,15 @@ nodeenv==1.7.0
 platformdirs==3.0.0
 PyYAML==6.0
 virtualenv==20.19.0
+
+# Testing
+pytest==7.4.3
+pytest-celery==0.0.0
+pytest-django==4.6.0
+pytest-mock==3.12.0
+pytest-cov==4.1.0
+coverage==7.3.2
+requests-mock==1.11.0
 
 # Working with XML Documents (legacy currency convert)
 lxml==4.9.3

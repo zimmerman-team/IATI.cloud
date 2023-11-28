@@ -5,7 +5,7 @@ def raise_h2_budget_data_to_h1(data):
     Check if data is h1, if so, check if it has related-activities
     """
     for activity in data:
-        if activity['hierarchy'] == 1 and 'related-activity' in activity:
+        if 'hierarchy' in activity and activity['hierarchy'] == 1 and 'related-activity' in activity:
             if type(activity['related-activity']) is dict:
                 activity['related-activity'] = [activity['related-activity']]
             data_present, related_data = pull_related_data_to_h1(data, activity)
@@ -34,12 +34,9 @@ def pull_related_data_to_h1(data, activity):
     related_budget_period_start_iso_date = []
     related_budget_period_end_iso_date = []
 
-    related_activity_refs = []
-    for rel in activity['related-activity']:
-        related_activity_refs.append(rel['ref'])
-
+    related_activity_refs = [rel['ref'] for rel in activity.get('related-activity', []) if 'ref' in rel]
     for _activity in data:
-        if _activity['iati-identifier'] in related_activity_refs:
+        if 'iati-identifier' in _activity and _activity['iati-identifier'] in related_activity_refs:
             if 'budget' in _activity:
                 related_data = True
                 if type(_activity['budget']) is dict:
@@ -51,8 +48,8 @@ def pull_related_data_to_h1(data, activity):
                     related_budget_period_start_iso_date.append(budget['period-start'][0]['iso-date'])
                     related_budget_period_end_iso_date.append(budget['period-end'][0]['iso-date'])
 
-                related_budget_period_start_quarter.extend(_activity['budget.period-start.quarter'])
-                related_budget_period_end_quarter.extend(_activity['budget.period-end.quarter'])
+                related_budget_period_start_quarter.extend(_activity.get('budget.period-start.quarter', []))
+                related_budget_period_end_quarter.extend(_activity.get('budget.period-end.quarter', []))
 
     return related_data, {
         'related_budget_value': related_budget_value,

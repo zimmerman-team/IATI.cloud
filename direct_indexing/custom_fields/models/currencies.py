@@ -66,23 +66,26 @@ class Currencies(object):
         :param year: int: the year
         :return: the converted value and the exchange rate from source to target
         """
-        if None in (source, target, value, month, year):
+        try:
+            if None in (source, target, value, month, year):
+                return None, None
+
+            if source == target:
+                return value, 1  # 1 on 1 relation
+
+            source_conversion = self.get_currency(month, year, source)
+            target_conversion = self.get_currency(month, year, target)
+            if not source_conversion or not target_conversion:
+                return None, None
+            source_to_xdr_rate = source_conversion['value']
+            xdr_to_target_rate = target_conversion['value']
+
+            converted_value = value * source_to_xdr_rate
+            if target == 'XDR':
+                return converted_value, source_to_xdr_rate
+
+            exchange_rate = xdr_to_target_rate / source_to_xdr_rate
+
+            return converted_value / xdr_to_target_rate, exchange_rate
+        except TypeError:
             return None, None
-
-        if source == target:
-            return value, 1  # 1 on 1 relation
-
-        source_conversion = self.get_currency(month, year, source)
-        target_conversion = self.get_currency(month, year, target)
-        if not source_conversion or not target_conversion:
-            return None, None
-        source_to_xdr_rate = source_conversion['value']
-        xdr_to_target_rate = target_conversion['value']
-
-        converted_value = value * source_to_xdr_rate
-        if target == 'XDR':
-            return converted_value, source_to_xdr_rate
-
-        exchange_rate = xdr_to_target_rate / source_to_xdr_rate
-
-        return converted_value / xdr_to_target_rate, exchange_rate

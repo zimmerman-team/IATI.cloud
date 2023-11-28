@@ -15,17 +15,20 @@ def get_dataset_filepath(dataset):
     :param dataset: the dataset for which to build a filepath.
     :return: the filepath of the dataset, None if not found.
     """
-    org_name = None
-    path_string = None
-    if 'organization' in dataset:
-        if dataset['organization'] is None:
-            return None
-        if 'name' in dataset['organization']:
-            org_name = dataset['organization']['name']
-    if org_name:
-        dataset_name = dataset['name']  # Name is a required field
-        path_string = settings.DATA_EXTRACTED_PATH + '/' + org_name + '/' + dataset_name + '.xml'
-    return path_string
+    try:
+        org_name = None
+        path_string = None
+        if 'organization' in dataset:
+            if dataset['organization'] is None:
+                return None
+            if 'name' in dataset['organization']:
+                org_name = dataset['organization']['name']
+        if org_name:
+            dataset_name = dataset['name']  # Name is a required field
+            path_string = settings.DATA_EXTRACTED_PATH + '/' + org_name + '/' + dataset_name + '.xml'
+        return path_string
+    except Exception:
+        return None
 
 
 def get_dataset_version_validity(dataset, dataset_filepath):
@@ -48,21 +51,24 @@ def get_dataset_version_validity(dataset, dataset_filepath):
     :param dataset_filepath: The path to the dataset
     :return: A boolean indicating the Validation of the dataset
     """
-    if not dataset_filepath or not os.path.isfile(dataset_filepath):
-        # If we cannot find a file, we cannot index it and it is not valid.
-        return False
-
-    version = 'extras.iati_version'
-    if version in dataset:
-        if dataset[version] in VALID_VERSIONS:
-            return True
-        elif dataset[version] in INVALID_VERSIONS:
+    try:
+        if not dataset_filepath or not os.path.isfile(dataset_filepath):
+            # If we cannot find a file, we cannot index it and it is not valid.
             return False
-        else:  # Retrieve version from dataset file as the version is not reported in metadata
-            return valid_version_from_file(dataset_filepath)
 
-    else:
-        return valid_version_from_file(dataset_filepath)
+        version = 'extras.iati_version'
+        if version in dataset:
+            if dataset[version] in VALID_VERSIONS:
+                return True
+            elif dataset[version] in INVALID_VERSIONS:
+                return False
+            else:  # Retrieve version from dataset file as the version is not reported in metadata
+                return valid_version_from_file(dataset_filepath)
+
+        else:
+            return valid_version_from_file(dataset_filepath)
+    except Exception:
+        return False
 
 
 def get_dataset_filetype(dataset):
@@ -72,10 +78,13 @@ def get_dataset_filetype(dataset):
     :param dataset: The dataset to check.
     :return: Nonoe or the filetype, activity or organisation.
     """
-    if 'extras.filetype' not in dataset:
+    try:
+        if 'extras.filetype' not in dataset:
+            return 'None'
+        else:
+            return dataset['extras.filetype']
+    except Exception:
         return 'None'
-    else:
-        return dataset['extras.filetype']
 
 
 def valid_version_from_file(filepath):

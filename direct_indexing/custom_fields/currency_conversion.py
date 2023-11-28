@@ -38,6 +38,9 @@ def currency_conversion(data, currencies):
 
 def convert_currencies_from_list(data, field, currencies, default_currency, value,
                                  rate, first_currency, t_type, curr_convert):
+    if field not in data:
+        return value, rate, first_currency, t_type
+
     for item in data[field]:
         c_value, c_rate, currency = convert(item, currencies,
                                             default_currency=default_currency,
@@ -56,6 +59,9 @@ def convert_currencies_from_list(data, field, currencies, default_currency, valu
 
 
 def convert_currencies_from_dict(data, field, currencies, default_currency, value, rate, t_type, curr_convert):
+    if field not in data:
+        return value, rate, "", t_type
+
     c_value, c_rate, first_currency = convert(data[field], currencies,
                                               default_currency=default_currency,
                                               target_currency=curr_convert)
@@ -123,6 +129,7 @@ def get_ym(data):
     now = datetime.datetime.now()
     if year > now.year:
         year = now.year
+        month = now.month
 
     if year == now.year and month > now.month:
         month = now.month

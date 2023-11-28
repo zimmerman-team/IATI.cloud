@@ -96,8 +96,11 @@ def retrieve_date_quarter(date):
     The date object will always be a string object in the shape of an ISO date object,
     meaning YYYY-MM-DD
     """
-    if isinstance(date, str):
-        return ((int(date[5:7]) - 1) // 3) + 1
-    if hasattr(date, "strftime") and hasattr(date, "month"):
-        return ((date.month - 1) // 3) + 1
-    return None
+    try:
+        if isinstance(date, str):
+            return ((int(date[5:7]) - 1) // 3) + 1
+        if hasattr(date, "strftime") and hasattr(date, "month"):
+            return ((date.month - 1) // 3) + 1
+        return None
+    except Exception:
+        return None

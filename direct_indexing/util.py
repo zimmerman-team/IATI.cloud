@@ -33,7 +33,8 @@ def index_to_core(url, json_path, remove=False):
     :param remove: bool to indicate if the created json file should be removed, defaults to False
     """
     try:
-        solr_out = subprocess.check_output([settings.SOLR_POST_TOOL, '-url', url, json_path], stderr=subprocess.STDOUT).decode('utf-8')
+        solr_out = subprocess.check_output([settings.SOLR_POST_TOOL, '-url', url, json_path],
+                                           stderr=subprocess.STDOUT).decode('utf-8')
         result = 'Successfully indexed'
         if 'SolrException' in solr_out or 'Failed to index' in solr_out:
             message_index = re.search(r'\b(msg)\b', solr_out).start()+5  # +5 to get past the 'msg:'
