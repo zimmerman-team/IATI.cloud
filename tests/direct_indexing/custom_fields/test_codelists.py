@@ -1856,14 +1856,14 @@ def fixture_cl(monkeypatch):
                 "code": "2",
                 "name": "UN Sustainable Development Goals (SDG)",
                 "description": "A value from the top-level list of UN sustainable development goals (SDGs) (e.g. \u20181\u2019)",  # NOQA: E501
-                "url": "http://reference.iatistandard.org/codelists/UNSDG-Goals/",
+                "url": "https://reference.iatistandard.org/codelists/UNSDG-Goals/",
                 "status": "active"
             },
             {
                 "code": "3",
                 "name": "UN Sustainable Development Goals (SDG) Targets",
                 "description": "A value from the second-level list of UN sustainable development goals (SDGs) (e.g. \u20181.1\u2019)",  # NOQA: E501
-                "url": "http://reference.iatistandard.org/codelists/UNSDG-Targets/",
+                "url": "https://reference.iatistandard.org/codelists/UNSDG-Targets/",
                 "status": "active"
             },
             {
@@ -2246,7 +2246,7 @@ def fixture_cl(monkeypatch):
                 "code": "1",
                 "name": "OECD DAC CRS",
                 "description": "The policy marker is an OECD DAC CRS policy marker, Reported in columns 20-23, 28-31 and 54 of CRS++ reporting format.",  # NOQA: E501
-                "url": "http://reference.iatistandard.org/codelists/PolicyMarker/",
+                "url": "https://reference.iatistandard.org/codelists/PolicyMarker/",
                 "status": "active"
             },
             {

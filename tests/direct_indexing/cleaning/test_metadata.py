@@ -70,7 +70,7 @@ def fixture_dataset_metadata():
                 "description": "",
                 "metadata_modified": "2022-05-05T23:56:00.301819",
                 "cache_last_updated": "",
-                "url": "http://formin.finland.fi/opendata/IATI/Finland_total_2012.xml",
+                "url": "https://formin.finland.fi/opendata/IATI/Finland_total_2012.xml",
                 "format": "iati-xml",
                 "state": "active",
                 "created": "2022-04-20T07:16:11.709336",

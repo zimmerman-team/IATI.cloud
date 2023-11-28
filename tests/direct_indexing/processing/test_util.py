@@ -107,7 +107,7 @@ def fixture_dataset_activity():
                 "description": None,
                 "metadata_modified": "2023-10-29T05:49:15.354998",
                 "cache_last_updated": None,
-                "url": "http://iati.fcdo.gov.uk/iati_files/solr/FCDO-set-1.xml",
+                "url": "https://iati.fcdo.gov.uk/iati_files/solr/FCDO-set-1.xml",
                 "format": "IATI-XML",
                 "state": "active",
                 "created": "2023-10-29T05:49:12.216564",
@@ -170,7 +170,7 @@ def fixture_dataset_activity():
                 "value": "Not Found"
             }
         ],
-        "license_url": "http://reference.data.gov.uk/id/open-government-licence",
+        "license_url": "https://reference.data.gov.uk/id/open-government-licence",
         "organization": {
             "description": "",
             "title": "UK - Foreign, Commonwealth and Development Office",
@@ -178,7 +178,7 @@ def fixture_dataset_activity():
             "approval_status": "approved",
             "is_organization": True,
             "state": "active",
-            "image_url": "http://iati.fcdo.gov.uk/iati_files/FCDO_logo.png",
+            "image_url": "https://iati.fcdo.gov.uk/iati_files/FCDO_logo.png",
             "type": "organization",
             "id": "4da32e41-a060-4d75-86c1-4b627eb22647",
             "name": "fcdo"
@@ -213,7 +213,7 @@ def fixture_dataset_organisation():
                 "description": "",
                 "metadata_modified": "2023-11-03T04:58:51.148529",
                 "cache_last_updated": None,
-                "url": "http://iati.fcdo.gov.uk/iati_files/organisation.xml",
+                "url": "https://iati.fcdo.gov.uk/iati_files/organisation.xml",
                 "format": "IATI-XML",
                 "state": "active",
                 "created": "2020-09-01T11:35:05.318259",
@@ -273,7 +273,7 @@ def fixture_dataset_organisation():
                 "value": "Success"
             }
         ],
-        "license_url": "http://reference.data.gov.uk/id/open-government-licence",
+        "license_url": "https://reference.data.gov.uk/id/open-government-licence",
         "organization": {
             "description": "",
             "title": "UK - Foreign, Commonwealth and Development Office",
@@ -281,7 +281,7 @@ def fixture_dataset_organisation():
             "approval_status": "approved",
             "is_organization": True,
             "state": "active",
-            "image_url": "http://iati.fcdo.gov.uk/iati_files/FCDO_logo.png",
+            "image_url": "https://iati.fcdo.gov.uk/iati_files/FCDO_logo.png",
             "type": "organization",
             "id": "4da32e41-a060-4d75-86c1-4b627eb22647",
             "name": "fcdo"

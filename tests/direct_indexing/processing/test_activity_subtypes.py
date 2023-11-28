@@ -31,11 +31,11 @@ def test_process_subtype_dict(mocker):
     expected_res = subtype_dict.copy()
     key = 'transaction'
     mock = mocker.MagicMock()
-    res = process_subtype_dict(subtype_dict, key, mock, None, None, None)
+    res = process_subtype_dict(subtype_dict, key, mock, mock, None, None)
     assert res == expected_res
 
     # Test if key is in exclude fields we do not include it in the subtype dict
-    res = process_subtype_dict(subtype_dict, bvu, mock, None, [bvu], None)
+    res = process_subtype_dict(subtype_dict, bvu, mock, mock, [bvu], None)
     assert res == expected_res
 
     # Test that a specific value which is a dict can be retrieved

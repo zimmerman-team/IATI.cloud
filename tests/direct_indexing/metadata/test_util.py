@@ -10,7 +10,7 @@ from direct_indexing.metadata.util import download_dataset, index, retrieve
 # consts
 SETTINGS_FRESH = 'direct_indexing.metadata.util.settings.FRESH'
 SETTINGS_DATASET_PARENT_PATH = 'direct_indexing.metadata.util.settings.DATASET_PARENT_PATH'
-TEST_URL = 'http://test.com'
+TEST_URL = 'https://test.com'
 
 
 def test_retrieve(mocker, tmp_path, sample_data, requests_mock):

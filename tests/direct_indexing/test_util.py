@@ -12,7 +12,7 @@ from iaticloud import settings
 # Test clear_core function
 def test_clear_core(mocker):
     # Define the core URL
-    core_url = "http://example.com/solr/core"
+    core_url = "https://example.com/solr/core"
 
     # Mock the pysolr.Solr instance
     mock_solr = mocker.patch('pysolr.Solr')
@@ -53,7 +53,7 @@ def test_index_to_core(tmp_path, mocker):
     with open(json_path, 'w') as file:
         file.write('{"key": "value"}')
 
-    url = "http://example.com/solr/core"
+    url = "https://example.com/solr/core"
     OP = "subprocess.check_output"
     # SUCCESSFUL INDEX:
     # Mock subprocess.check_output to simulate success

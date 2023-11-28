@@ -92,8 +92,8 @@ def test_load_codelists(mocker):
 
 
 def test__get_existing_datasets(mocker, requests_mock, fixture_solr_dataset, fixture_existing_datasets):
-    mocker.patch('direct_indexing.metadata.dataset.settings.SOLR_DATASET', "http://test.com")
-    requests_mock.get("http://test.com" + (
+    mocker.patch('direct_indexing.metadata.dataset.settings.SOLR_DATASET', "https://test.com")
+    requests_mock.get("https://test.com" + (
         '/select?q=resources.hash:* AND extras.filetype:*'
         ' AND id:*&rows=100000&wt=json&fl=resources.hash,id,extras.filetype'
     ), json=fixture_solr_dataset)
