@@ -35,9 +35,9 @@ def clear_cores_with_name(core="publisher"):
 @shared_task
 def start(update=False):
     # Only if the most recent data dump was a success
-    if not datadump_success():
-        logging.info("start:: The CodeForIATI Data Dump failed, aborting the process!")
-        raise ValueError("The CodeForIATI Data Dump failed, aborting the process!")
+    # if not datadump_success():
+    #     logging.info("start:: The CodeForIATI Data Dump failed, aborting the process!")
+    #     raise ValueError("The CodeForIATI Data Dump failed, aborting the process!")
     # Clear the cores, do not use a task as this needs to finish before continuing
     try:
         if not update:
