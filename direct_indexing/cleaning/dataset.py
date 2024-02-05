@@ -55,7 +55,7 @@ def extract_key_value_fields(data, add_fields, key, value):
             add_fields = extract_single_values(add_fields, value, key, data)
     # If the fields are not yet at the lowest level of key-value pair,
     # process the underlying field.
-    elif type(value) in [OrderedDict, dict]:  # was list instead of dict
+    elif type(value) in [OrderedDict, dict, list]:  # was list instead of dict
         data[key] = recursive_attribute_cleaning(value)
     return add_fields
 
