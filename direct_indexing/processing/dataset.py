@@ -61,11 +61,12 @@ def fun(dataset, update=False):
     # Index the relevant datasets,
     # these are activity files of a valid version and that have been successfully validated (not critical)
     if validation_status == 'Valid':
-        indexed, dataset_indexing_result = index_dataset(dataset_filepath, dataset_filetype, codelist, currencies,
-                                                         dataset_metadata)
+        indexed, dataset_indexing_result, should_be_indexed = index_dataset(dataset_filepath, dataset_filetype,
+                                                                            codelist, currencies, dataset_metadata)
     # Add an indexing status to the dataset metadata.
     dataset['iati_cloud_indexed'] = indexed
     dataset['iati_cloud_indexed_datetime'] = str(datetime.now())
+    dataset['iati_cloud_should_be_indexed'] = should_be_indexed
 
     # Index the dataset metadata
     logging.info('-- Save the dataset metadata')
@@ -75,7 +76,9 @@ def fun(dataset, update=False):
         settings.SOLR_DATASET_URL
     )
 
-    return dataset_indexing_result, result
+    should_retry = should_be_indexed and not indexed
+
+    return dataset_indexing_result, result, should_retry
 
 
 def index_dataset(internal_url, dataset_filetype, codelist, currencies, dataset_metadata):
@@ -90,18 +93,20 @@ def index_dataset(internal_url, dataset_filetype, codelist, currencies, dataset_
     """
     try:
         core_url = settings.SOLR_ACTIVITY_URL if dataset_filetype == 'activity' else settings.SOLR_ORGANISATION_URL
-        json_path = convert_and_save_xml_to_processed_json(internal_url, dataset_filetype, codelist, currencies,
-                                                           dataset_metadata)
+        logging.info("--TMP:: Get JSON path")
+        json_path, should_be_indexed = convert_and_save_xml_to_processed_json(internal_url, dataset_filetype,
+                                                                              codelist, currencies, dataset_metadata)
         if json_path:
+            logging.info("--TMP:: INDEXING JSON PATH")
             result = index_to_core(core_url, json_path, remove=True)
-            logging.debug(f'result of indexing {result}')
+            logging.info(f'result of indexing {result}')
             if result == 'Successfully indexed':
-                return True, result
-            return False, result
-        return False, "No JSON Path found"
+                return True, result, should_be_indexed
+            return False, result, should_be_indexed
+        return False, "No JSON Path found", should_be_indexed
     except Exception as e:  # NOQA
         logging.warning(f'Exception occurred while indexing {dataset_filetype} dataset:\n{internal_url}\n{e}\nTherefore the dataset will not be indexed.')  # NOQA
-        return False, str(e)
+        return False, str(e), should_be_indexed
 
 
 def convert_and_save_xml_to_processed_json(filepath, filetype, codelist, currencies, dataset_metadata):
@@ -116,27 +121,22 @@ def convert_and_save_xml_to_processed_json(filepath, filetype, codelist, currenc
     :param dataset_metadata: The metadata of the dataset.
     :return: The filepath of the json file.
     """
+    should_be_indexed = False
     parser = ET.XMLParser(encoding='utf-8')
     try:
         etree = ET.parse(filepath, parser=parser)
         tree = ET.tostring(etree.getroot())
     except ET.ParseError:
-        return None
+        logging.info(f'--TMP:: Error parsing {filepath}')
+        return None, should_be_indexed
     # Convert the tree to json using BadgerFish method.
     data = bf.data(ET.fromstring(tree))
     # Retrieve activities
-    data_found = False
-    if filetype == 'activity' and 'iati-activities' in data:
-        if 'iati-activity' in data['iati-activities']:
-            data = data['iati-activities']['iati-activity']
-            data_found = True
-    elif filetype == 'organisation' and 'iati-organisations' in data:
-        if 'iati-organisation' in data['iati-organisations']:
-            data = data['iati-organisations']['iati-organisation']
-            data_found = True
+    data, data_found = extract_activity_or_organisation_data(filetype, data)
 
     if not data_found:
-        return data_found
+        logging.info(f'--TMP:: No data found in {filepath}')
+        return data_found, should_be_indexed
     # Clean the dataset
     data = recursive_attribute_cleaning(data)
 
@@ -148,14 +148,39 @@ def convert_and_save_xml_to_processed_json(filepath, filetype, codelist, currenc
 
     json_path = json_filepath(filepath)
     if not json_path:
-        return False
-    with open(json_path, 'w') as json_file:
-        json.dump(data, json_file)
+        logging.info(f'--TMP:: Error creating json path for {filepath}')
+        return False, should_be_indexed
+    should_be_indexed = True
+    logging.info(f'--TMP:: Saving to {json_path}')
+    try:
+        with open(json_path, 'w') as json_file:
+            json.dump(data, json_file)
+    except Exception:
+        logging.info(f'--TMP:: Error saving to {json_path}, retrying')
+        try:
+            with open(json_path, 'w') as json_file:
+                json.dump(data, json_file)
+        except Exception:
+            logging.info(f'--TMP:: Error saving to {json_path}, failed')
+            return False, should_be_indexed
 
     if not settings.FCDO_INSTANCE:
         dataset_subtypes(filetype, data, json_path)
 
-    return json_path
+    return json_path, should_be_indexed
+
+
+def extract_activity_or_organisation_data(filetype, data):
+    data_found = False
+    if filetype == 'activity' and 'iati-activities' in data:
+        if 'iati-activity' in data['iati-activities']:
+            data = data['iati-activities']['iati-activity']
+            data_found = True
+    elif filetype == 'organisation' and 'iati-organisations' in data:
+        if 'iati-organisation' in data['iati-organisations']:
+            data = data['iati-organisations']['iati-organisation']
+            data_found = True
+    return data, data_found
 
 
 def json_filepath(filepath):
@@ -204,8 +229,19 @@ def index_subtypes(json_path, subtypes):
     """
     for subtype in subtypes:
         subtype_json_path = f'{os.path.splitext(json_path)[0]}_{subtype}.json'
-        with open(subtype_json_path, 'w') as json_file:
-            json.dump(subtypes[subtype], json_file)
+        try:
+            with open(subtype_json_path, 'w') as json_file:
+                json.dump(subtypes[subtype], json_file)
 
-        solr_url = activity_subtypes.AVAILABLE_SUBTYPES[subtype]
-        index_to_core(solr_url, subtype_json_path, remove=True)
+            solr_url = activity_subtypes.AVAILABLE_SUBTYPES[subtype]
+            index_to_core(solr_url, subtype_json_path, remove=True)
+        except Exception as e:
+            logging.error(f'Error indexing subtype {subtype} of {json_path}:\n{e}Retrying')
+            try:
+                with open(subtype_json_path, 'w') as json_file:
+                    json.dump(subtypes[subtype], json_file)
+
+                solr_url = activity_subtypes.AVAILABLE_SUBTYPES[subtype]
+                index_to_core(solr_url, subtype_json_path, remove=True)
+            except Exception as e:
+                logging.error(f'Error indexing subtype {subtype} of {json_path}:\n{e}Failed')

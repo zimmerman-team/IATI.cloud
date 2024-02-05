@@ -16,11 +16,13 @@ class DatasetException(Exception):
 
 @shared_task
 def subtask_process_dataset(dataset, update):
-    dataset_indexing_result, result = dataset_processing.fun(dataset, update)
+    dataset_indexing_result, result, should_retry = dataset_processing.fun(dataset, update)
     if result == 'Successfully indexed' and dataset_indexing_result == 'Successfully indexed':
         return result
     elif dataset_indexing_result == 'Dataset invalid':
         return dataset_indexing_result
+    elif should_retry:
+        raise subtask_process_dataset.retry(countdown=60, max_retries=2, exc=DatasetException(message=f'Error indexing dataset {dataset["id"]}\nDataset metadata:\n{result}\nDataset indexing:\n{str(dataset_indexing_result)}'))  # NOQA
     else:
         raise DatasetException(message=f'Error indexing dataset {dataset["id"]}\nDataset metadata:\n{result}\nDataset indexing:\n{str(dataset_indexing_result)}')  # NOQA
 
