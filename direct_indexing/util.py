@@ -38,6 +38,7 @@ def index_to_core(url, json_path, remove=False):
                                            stderr=subprocess.STDOUT).decode('utf-8')
         result = 'Successfully indexed'
         if 'SolrException' in solr_out or 'Failed to index' in solr_out:
+            logging.info("--index to core:: solr_out: " + solr_out)
             message_index = re.search(r'\b(msg)\b', solr_out).start()+5  # +5 to get past the 'msg:'
             solr_out = solr_out[message_index:]
             result = solr_out[:re.search(r'\n', solr_out).start()-1]  # stop at newline excluding the ,
