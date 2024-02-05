@@ -10,7 +10,8 @@ from django.conf import settings
 
 from direct_indexing import direct_indexing
 from direct_indexing.metadata.util import retrieve
-from direct_indexing.util import datadump_success
+# Currently disabled import for datadump check
+# from direct_indexing.util import datadump_success
 from iaticloud.celery import app
 
 
@@ -33,7 +34,7 @@ def clear_cores_with_name(core="publisher"):
 
 
 @shared_task
-def start(update=False):
+def start(update=False, drop=False):
     # Only if the most recent data dump was a success
     # if not datadump_success():
     #     logging.info("start:: The CodeForIATI Data Dump failed, aborting the process!")
@@ -46,6 +47,8 @@ def start(update=False):
         # Stop the process and send a message to Celery Flower
         logging.info("start:: Error clearing the direct indexing cores, check your Solr instance.")
         return "Error clearing the direct indexing cores, check your Solr instance."
+    if drop:
+        direct_indexing.drop_removed_data()
     # Run the publisher metadata indexing subtask
     subtask_publisher_metadata.delay()
     # Run the dataset metadata indexing subtask
