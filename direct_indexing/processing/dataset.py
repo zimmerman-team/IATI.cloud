@@ -93,11 +93,11 @@ def index_dataset(internal_url, dataset_filetype, codelist, currencies, dataset_
     """
     try:
         core_url = settings.SOLR_ACTIVITY_URL if dataset_filetype == 'activity' else settings.SOLR_ORGANISATION_URL
-        logging.info("--TMP:: Get JSON path")
+        logging.info("-- Get JSON path")
         json_path, should_be_indexed = convert_and_save_xml_to_processed_json(internal_url, dataset_filetype,
                                                                               codelist, currencies, dataset_metadata)
         if json_path:
-            logging.info("--TMP:: INDEXING JSON PATH")
+            logging.info("-- INDEXING JSON PATH")
             result = index_to_core(core_url, json_path, remove=True)
             logging.info(f'result of indexing {result}')
             if result == 'Successfully indexed':
@@ -127,7 +127,7 @@ def convert_and_save_xml_to_processed_json(filepath, filetype, codelist, currenc
         etree = ET.parse(filepath, parser=parser)
         tree = ET.tostring(etree.getroot())
     except ET.ParseError:
-        logging.info(f'--TMP:: Error parsing {filepath}')
+        logging.info(f'-- Error parsing {filepath}')
         return None, should_be_indexed
     # Convert the tree to json using BadgerFish method.
     data = bf.data(ET.fromstring(tree))
@@ -135,7 +135,7 @@ def convert_and_save_xml_to_processed_json(filepath, filetype, codelist, currenc
     data, data_found = extract_activity_or_organisation_data(filetype, data)
 
     if not data_found:
-        logging.info(f'--TMP:: No data found in {filepath}')
+        logging.info(f'-- No data found in {filepath}')
         return data_found, should_be_indexed
     # Clean the dataset
     data = recursive_attribute_cleaning(data)
@@ -148,20 +148,20 @@ def convert_and_save_xml_to_processed_json(filepath, filetype, codelist, currenc
 
     json_path = json_filepath(filepath)
     if not json_path:
-        logging.info(f'--TMP:: Error creating json path for {filepath}')
+        logging.info(f'-- Error creating json path for {filepath}')
         return False, should_be_indexed
     should_be_indexed = True
-    logging.info(f'--TMP:: Saving to {json_path}')
+    logging.info(f'-- Saving to {json_path}')
     try:
         with open(json_path, 'w') as json_file:
             json.dump(data, json_file)
     except Exception:
-        logging.info(f'--TMP:: Error saving to {json_path}, retrying')
+        logging.info(f'-- Error saving to {json_path}, retrying')
         try:
             with open(json_path, 'w') as json_file:
                 json.dump(data, json_file)
         except Exception:
-            logging.info(f'--TMP:: Error saving to {json_path}, failed')
+            logging.info(f'-- Error saving to {json_path}, failed')
             return False, should_be_indexed
 
     if not settings.FCDO_INSTANCE:
