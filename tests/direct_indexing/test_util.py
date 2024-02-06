@@ -100,6 +100,11 @@ def test_index_to_core(tmp_path, mocker):
     # Assert that the function returns an error message for a failed operation
     assert "Failed to index due to:" in result
 
+    # Assert that the function raises an exception when other uncaught exceptions are raised
+    mocker.patch(OP, side_effect=Exception)
+    with pytest.raises(Exception):
+        util.index_to_core(url, str(json_path), remove=True)
+
 
 # Test datadump_success function
 def test_datadump_success(mocker):

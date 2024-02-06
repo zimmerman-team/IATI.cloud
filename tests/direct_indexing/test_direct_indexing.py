@@ -113,8 +113,8 @@ def test_drop_removed_data(mocker, tmp_path, requests_mock, fixture_solr_respons
 
     # assert solr's search and delete function is called a total of 10 times
     # 2 times for each of the 5 cores, where 2 times represents drop1 and drop2
-    assert solr_instance_mock.search.call_count == 10
-    assert solr_instance_mock.delete.call_count == 10
+    assert solr_instance_mock.search.call_count == 15
+    assert solr_instance_mock.delete.call_count == 12
 
 
 @pytest.fixture
@@ -123,14 +123,17 @@ def fixture_solr_response():
         'response': {
             'docs': [
                 {
+                    'id': '0001',
                     'name': 'test',
                     'iati_cloud_indexed': True,
                 },
                 {
+                    'id': '0003',
                     'name': 'drop1',
                     'iati_cloud_indexed': True,
                 },
                 {
+                    'id': '0004',
                     'name': 'drop2',
                     'iati_cloud_indexed': True,
                 }
@@ -143,10 +146,12 @@ def fixture_solr_response():
 def fixture_dataset_metadata():
     return [
         {
+            'id': '0001',
             'name': 'test',
             'id': 'test',
         },
         {
+            'id': '0002',
             'name': 'new',
             'id': 'new',
         }

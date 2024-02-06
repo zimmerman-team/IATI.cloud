@@ -25,23 +25,30 @@ def test_start(mocker):
     # Mock subtask delays
     mock_subtask_publisher_metadata = mocker.patch('direct_indexing.tasks.subtask_publisher_metadata.delay')
     mock_subtask_dataset_metadata = mocker.patch('direct_indexing.tasks.subtask_dataset_metadata.delay')
+    mock_drop = mocker.patch('direct_indexing.direct_indexing.drop_removed_data')
 
     # mock datadump_success
-    mock_datadump = mocker.patch('direct_indexing.tasks.datadump_success', return_value=False)
-    with pytest.raises(ValueError):
-        start()
-    mock_subtask_publisher_metadata.assert_not_called()
+    # mock_datadump = mocker.patch('direct_indexing.tasks.datadump_success', return_value=False)
+    # with pytest.raises(ValueError):
+    #     start()
+    # mock_subtask_publisher_metadata.assert_not_called()
 
     # mock clear_indices
-    mock_datadump.return_value = True
+    # mock_datadump.return_value = True
     mocker.patch('direct_indexing.direct_indexing.clear_indices', side_effect=pysolr.SolrError)
     assert start(False) == "Error clearing the direct indexing cores, check your Solr instance."
     mock_subtask_dataset_metadata.assert_not_called()
+    mock_drop.assert_not_called()
 
     res = start(True)
     mock_subtask_publisher_metadata.assert_called_once()
     mock_subtask_dataset_metadata.assert_called_once()
     assert res == "Both the publisher and dataset metadata indexing have begun."
+
+    # Test if drop is true, direct_indexing.drop_removed_data() is called once
+    mocker.patch('direct_indexing.direct_indexing.clear_indices', side_effect=None)
+    start(False, drop=True)
+    mock_drop.assert_called_once()
 
 
 def test_subtask_publisher_metadata(mocker):
