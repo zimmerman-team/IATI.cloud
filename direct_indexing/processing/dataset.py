@@ -45,6 +45,7 @@ def fun(dataset, update=False):
     dataset_metadata = custom_fields.get_custom_metadata(dataset)
     # Validate the relevant files, mark others as invalid
     validation_status = 'Valid'
+    should_be_indexed = False
     if valid_version and 'dataset.extras.validation_status' in dataset_metadata:
         validation_status = 'Invalid' if dataset_metadata['dataset.extras.validation_status'] == 'Critical' else 'Valid'
 
@@ -91,6 +92,7 @@ def index_dataset(internal_url, dataset_filetype, codelist, currencies, dataset_
     :param currencies: An initialized currencies object
     :return: true if indexing successful, false if failed.
     """
+    should_be_indexed = False
     try:
         core_url = settings.SOLR_ACTIVITY_URL if dataset_filetype == 'activity' else settings.SOLR_ORGANISATION_URL
         logging.info("-- Get JSON path")
@@ -156,13 +158,8 @@ def convert_and_save_xml_to_processed_json(filepath, filetype, codelist, currenc
         with open(json_path, 'w') as json_file:
             json.dump(data, json_file)
     except Exception:
-        logging.info(f'-- Error saving to {json_path}, retrying')
-        try:
-            with open(json_path, 'w') as json_file:
-                json.dump(data, json_file)
-        except Exception:
-            logging.info(f'-- Error saving to {json_path}, failed')
-            return False, should_be_indexed
+        logging.info(f'-- Error saving to {json_path}, failed')
+        return False, should_be_indexed
 
     if not settings.FCDO_INSTANCE:
         dataset_subtypes(filetype, data, json_path)
@@ -236,12 +233,4 @@ def index_subtypes(json_path, subtypes):
             solr_url = activity_subtypes.AVAILABLE_SUBTYPES[subtype]
             index_to_core(solr_url, subtype_json_path, remove=True)
         except Exception as e:
-            logging.error(f'Error indexing subtype {subtype} of {json_path}:\n{e}Retrying')
-            try:
-                with open(subtype_json_path, 'w') as json_file:
-                    json.dump(subtypes[subtype], json_file)
-
-                solr_url = activity_subtypes.AVAILABLE_SUBTYPES[subtype]
-                index_to_core(solr_url, subtype_json_path, remove=True)
-            except Exception as e:
-                logging.error(f'Error indexing subtype {subtype} of {json_path}:\n{e}Failed')
+            logging.error(f'Error indexing subtype {subtype} of {json_path}:\n{e}')
