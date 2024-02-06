@@ -22,7 +22,7 @@ def test_fun(mocker):
     # mock get_dataset_filepath
     mock_filepath = mocker.patch('direct_indexing.processing.dataset.get_dataset_filepath')
     # mock get_dataset_version_validity
-    mock_validity = mocker.patch('direct_indexing.processing.dataset.get_dataset_version_validity', return_value='Valid')
+    mock_validity = mocker.patch('direct_indexing.processing.dataset.get_dataset_version_validity', return_value='Valid')  # NOQA: 501
     # mock get_dataset_filetype
     mock_filetype = mocker.patch('direct_indexing.processing.dataset.get_dataset_filetype')
     # mock custom_fields.get_custom_metadata
@@ -145,7 +145,6 @@ def test_convert_and_save_xml_to_processed_json(mocker, tmp_path, fixture_xml_ac
     # Assert if ET raises a ParseError, the return value is None
     mocker.patch('xml.etree.ElementTree.parse', side_effect=ET.ParseError)
     assert convert_and_save_xml_to_processed_json(None, None, None, None, None) == (None, False)
-
 
 
 def test_json_filepath(mocker):

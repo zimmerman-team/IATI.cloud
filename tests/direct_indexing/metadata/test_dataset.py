@@ -39,12 +39,7 @@ def test_subtask_process_dataset(mocker, fixture_dataset):
 
     # Test retry
     mocker.patch(fun_path, return_value=(res_str_err, res_str, True))
-    # with pytest.raises(subtask_process_dataset.retry) as excinfo:
-    #     subtask_process_dataset(fixture_dataset, False)
-    # assert excinfo.value.countdown == 60
-    # if subtask_process_dataset(fixture_dataset, False) is called, count how often subtask_process_dataset.retry is called
-    # and assert it is 1
-    retry_mock = mocker.patch("direct_indexing.metadata.dataset.subtask_process_dataset.retry", side_effect=DatasetException("Test"))
+    retry_mock = mocker.patch("direct_indexing.metadata.dataset.subtask_process_dataset.retry", side_effect=DatasetException("Test"))  # NOQA: E501
     with pytest.raises(DatasetException):
         subtask_process_dataset(fixture_dataset, False)
     retry_mock.assert_called_once()
