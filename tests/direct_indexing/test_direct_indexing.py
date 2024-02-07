@@ -89,7 +89,10 @@ def test_drop_removed_data(mocker, tmp_path, requests_mock, fixture_solr_respons
     # Mock settings.SOLR_DATASET to https://test.com
     mocker.patch('direct_indexing.direct_indexing.settings.SOLR_DATASET', 'https://test.com')
     test_url = 'https://test.com/select?fl=name%2Cid%2Ciati_cloud_indexed&indent=true&q.op=OR&q=*%3A*&rows=10000000'
-    requests_mock.get(test_url, json=fixture_solr_response)
+
+    
+
+    
 
     # mock settings.BASE_DIR to be tmp_path
     mocker.patch('direct_indexing.direct_indexing.settings.BASE_DIR', tmp_path)
@@ -105,7 +108,12 @@ def test_drop_removed_data(mocker, tmp_path, requests_mock, fixture_solr_respons
     mock_solr = mocker.patch(SOLR, return_value=solr_instance_mock)
     # mock solr.search to return a list with 2 elements
     solr_instance_mock.search.return_value = [{}]
+
+    requests_mock.get(test_url, json={'response': {'docs': []}})
+    drop_removed_data()
+    assert solr_instance_mock.delete.call_count == 0
     # Run drop_removed_data
+    requests_mock.get(test_url, json=fixture_solr_response)
     drop_removed_data()
 
     # assert mock_solr was called 5 times, once for each core including datasets

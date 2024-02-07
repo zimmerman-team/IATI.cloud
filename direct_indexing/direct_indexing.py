@@ -80,6 +80,9 @@ def drop_removed_data():
     url = f'{settings.SOLR_DATASET}/select?fl=name%2Cid%2Ciati_cloud_indexed&indent=true&q.op=OR&q=*%3A*&rows=10000000'
     data = requests.get(url)
     data = data.json()['response']['docs']
+    if len(data) == 0:
+        logging.info('drop_removed_data:: No data found in the dataset index, skipping drop')
+        return
 
     # Get a list of dataset names from the dataset metadata file
     with open(f'{settings.BASE_DIR}/direct_indexing/data_sources/datasets/dataset_metadata.json') as f:
