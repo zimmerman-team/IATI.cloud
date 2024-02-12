@@ -8,7 +8,8 @@ import pysolr
 from celery import shared_task
 from django.conf import settings
 
-from direct_indexing import direct_indexing
+from direct_indexing import direct_indexing, util
+from direct_indexing.metadata.dataset import subtask_process_dataset
 from direct_indexing.metadata.util import retrieve
 # Currently disabled import for datadump check
 # from direct_indexing.util import datadump_success
@@ -134,3 +135,29 @@ def fcdo_replace_partial_url(find_url, replace_url):
 @shared_task
 def revoke_all_tasks():
     app.control.purge()
+
+
+"""
+CUSTOM DATASETS
+"""
+
+
+@shared_task
+def index_custom_dataset(url, title, name, org):
+    logging.info("index_custom_dataset:: create the dataset metadata")
+    metadata = util.create_dataset_metadata(url, title, name, org)
+    if type(metadata) is str:
+        raise ValueError(metadata)
+
+    cp_res = util.copy_custom()
+    if type(cp_res) is str:
+        raise ValueError(cp_res)
+
+    subtask_process_dataset.delay(dataset=metadata, update=False)
+    return "Success"
+
+
+@shared_task
+def remove_custom_dataset(name, org, dataset_id):
+    logging.info("remove_custom_dataset:: remove the custom dataset")
+    return util.remove_custom(name, org, dataset_id)

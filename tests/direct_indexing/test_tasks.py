@@ -2,8 +2,8 @@ import pysolr
 import pytest
 
 from direct_indexing.tasks import (
-    clear_all_cores, clear_cores_with_name, fcdo_replace_partial_url, revoke_all_tasks, start, subtask_dataset_metadata,
-    subtask_publisher_metadata
+    clear_all_cores, clear_cores_with_name, fcdo_replace_partial_url, index_custom_dataset, remove_custom_dataset,
+    revoke_all_tasks, start, subtask_dataset_metadata, subtask_publisher_metadata
 )
 
 CLEAR_INDICES = 'direct_indexing.direct_indexing.clear_indices'
@@ -102,6 +102,34 @@ def test_revoke_all_tasks(mocker):
     mock_purge = mocker.patch('direct_indexing.tasks.app.control.purge')
     revoke_all_tasks()
     mock_purge.assert_called_once()
+
+
+def test_index_custom_dataset(mocker):
+    mock_meta = mocker.patch('direct_indexing.tasks.util.create_dataset_metadata')
+    mock_copy = mocker.patch('direct_indexing.tasks.util.copy_custom')
+    mock_subtask = mocker.patch('direct_indexing.tasks.subtask_process_dataset.delay')
+
+    mock_meta.return_value = {}
+    mock_copy.return_value = None
+    res = index_custom_dataset('url', 'title', 'name', 'org')
+    assert res == 'Success'
+    mock_subtask.assert_called_once()
+    mock_meta.assert_called_once()
+
+    mock_copy.return_value = 'Error'
+    with pytest.raises(ValueError):
+        index_custom_dataset('url', 'title', 'name', 'org')
+
+    mock_meta.return_value = 'Error'
+    with pytest.raises(ValueError):
+        index_custom_dataset('url', 'title', 'name', 'org')
+
+
+def test_remove_custom_dataset(mocker):
+    mock_remove = mocker.patch('direct_indexing.tasks.util.remove_custom')
+    mock_remove.return_value = 'Success'
+    assert remove_custom_dataset("a", "b", "c") == 'Success'
+    mock_remove.assert_called_once()
 
 
 @pytest.fixture
