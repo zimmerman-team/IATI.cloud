@@ -110,6 +110,7 @@ def create_dataset_metadata(url, title, name, org):
     meta["organization"]["created"] = now
     meta["organization"]["id"] = f"zimmerman-custom-{org}"
     meta["organization"]["name"] = org
+    meta["iati_cloud_custom"] = True
 
     # Json dump meta to meta_dir
     try:

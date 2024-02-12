@@ -77,7 +77,7 @@ def drop_removed_data():
     existing = []
 
     # Get the datasets that have been indexed
-    url = f'{settings.SOLR_DATASET}/select?fl=name%2Cid%2Ciati_cloud_indexed&indent=true&q.op=OR&q=*%3A*&rows=10000000'
+    url = f'{settings.SOLR_DATASET}/select?fl=name%2Cid%2Ciati_cloud_indexed%2Ciati_cloud_custom&indent=true&q.op=OR&q=*%3A*&rows=10000000'  # NOQA: E501
     data = requests.get(url)
     data = data.json()['response']['docs']
     if len(data) == 0:
@@ -91,7 +91,7 @@ def drop_removed_data():
             existing.append(dataset['id'])
 
     for d in data:
-        if d['id'] not in existing:
+        if 'iati_cloud_custom' not in d and d['id'] not in existing:
             dropped_list.append(d['id'])
 
     # For every core with dataset data, delete the data for the dropped datasets identified with the dataset.id field

@@ -88,7 +88,7 @@ def test_run_dataset_metadata(mocker):
 def test_drop_removed_data(mocker, tmp_path, requests_mock, fixture_solr_response, fixture_dataset_metadata):
     # Mock settings.SOLR_DATASET to https://test.com
     mocker.patch('direct_indexing.direct_indexing.settings.SOLR_DATASET', 'https://test.com')
-    test_url = 'https://test.com/select?fl=name%2Cid%2Ciati_cloud_indexed&indent=true&q.op=OR&q=*%3A*&rows=10000000'
+    test_url = 'https://test.com/select?fl=name%2Cid%2Ciati_cloud_indexed%2Ciati_cloud_custom&indent=true&q.op=OR&q=*%3A*&rows=10000000'  # NOQA: E501
 
     # mock settings.BASE_DIR to be tmp_path
     mocker.patch('direct_indexing.direct_indexing.settings.BASE_DIR', tmp_path)
