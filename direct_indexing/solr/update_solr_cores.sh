@@ -31,8 +31,20 @@ docker cp ./direct_indexing/solr/cores/result/managed-schema $solr_container_id:
 docker cp ./direct_indexing/solr/cores/transaction/managed-schema $solr_container_id:/bitnami/solr/server/solr/transaction/conf/managed-schema.xml
 docker cp ./direct_indexing/solr/cores/activity/xslt $solr_container_id:/bitnami/solr/server/solr/activity/conf/
 
-# Ask the user if this is mounted locally, default to no. If it is, chown the files to 1001:root
+# Ask the user if this is mounted locally, default to no
 read -p "Is this mounted locally? (y/N) " -n 1 -r
+echo    # Move to a new line
 
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+    # If it is mounted locally, ask for the path to the mounted directory
+    read -p "Please provide the path to the mounted directory: " mounted_path
+
+    # Change ownership of the files to 1001:root
+    sudo chown -R 1001:root "$mounted_path"
+
+    echo "Ownership changed to 1001:root for files in $mounted_path"
+else
+    echo "No changes made. Exiting."
+fi
 
 echo "Done!"
