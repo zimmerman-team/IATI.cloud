@@ -90,10 +90,6 @@ def test_drop_removed_data(mocker, tmp_path, requests_mock, fixture_solr_respons
     mocker.patch('direct_indexing.direct_indexing.settings.SOLR_DATASET', 'https://test.com')
     test_url = 'https://test.com/select?fl=name%2Cid%2Ciati_cloud_indexed&indent=true&q.op=OR&q=*%3A*&rows=10000000'
 
-    
-
-    
-
     # mock settings.BASE_DIR to be tmp_path
     mocker.patch('direct_indexing.direct_indexing.settings.BASE_DIR', tmp_path)
     paths = ['direct_indexing', 'data_sources', 'datasets']
