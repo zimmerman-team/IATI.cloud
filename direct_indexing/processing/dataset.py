@@ -8,7 +8,7 @@ from django.conf import settings
 from pysolr import Solr
 from xmljson import badgerfish as bf
 
-from direct_indexing.cleaning.dataset import recursive_attribute_cleaning
+from direct_indexing.cleaning.dataset import recursive_attribute_cleaning#, broken_dataset
 from direct_indexing.cleaning.metadata import clean_dataset_metadata
 from direct_indexing.custom_fields import custom_fields, organisation_custom_fields
 from direct_indexing.custom_fields.models import codelists
@@ -46,7 +46,7 @@ def fun(dataset, update=False):
     # Validate the relevant files, mark others as invalid
     validation_status = 'Valid'
     should_be_indexed = False
-    if valid_version and 'dataset.extras.validation_status' in dataset_metadata:
+    if 'dataset.extras.validation_status' in dataset_metadata:
         validation_status = 'Invalid' if dataset_metadata['dataset.extras.validation_status'] == 'Critical' else 'Valid'
 
     # Add the validation status to the dataset
@@ -61,14 +61,15 @@ def fun(dataset, update=False):
 
     # Index the relevant datasets,
     # these are activity files of a valid version and that have been successfully validated (not critical)
-    if validation_status == 'Valid':
+    if validation_status == 'Valid' and valid_version:
         indexed, dataset_indexing_result, should_be_indexed = index_dataset(dataset_filepath, dataset_filetype,
                                                                             codelist, currencies, dataset_metadata)
     # Add an indexing status to the dataset metadata.
     dataset['iati_cloud_indexed'] = indexed
     dataset['iati_cloud_indexed_datetime'] = str(datetime.now())
     dataset['iati_cloud_should_be_indexed'] = should_be_indexed
-
+    if not indexed:
+        dataset['iati_cloud_removed_reason'] = dataset_indexing_result
     # Index the dataset metadata
     logging.info('-- Save the dataset metadata')
     result = index(
@@ -96,16 +97,16 @@ def index_dataset(internal_url, dataset_filetype, codelist, currencies, dataset_
     try:
         core_url = settings.SOLR_ACTIVITY_URL if dataset_filetype == 'activity' else settings.SOLR_ORGANISATION_URL
         logging.info("-- Get JSON path")
-        json_path, should_be_indexed = convert_and_save_xml_to_processed_json(internal_url, dataset_filetype,
-                                                                              codelist, currencies, dataset_metadata)
+        json_path, should_be_indexed, p_res = convert_and_save_xml_to_processed_json(internal_url, dataset_filetype,
+                                                                                     codelist, currencies, dataset_metadata)
         if json_path:
             logging.info("-- INDEXING JSON PATH")
             result = index_to_core(core_url, json_path, remove=True)
             logging.info(f'result of indexing {result}')
             if result == 'Successfully indexed':
                 return True, result, should_be_indexed
-            return False, result, should_be_indexed
-        return False, "No JSON Path found", should_be_indexed
+            return False, "Unable to index the processed dataset.", False
+        return False, p_res, should_be_indexed
     except Exception as e:  # NOQA
         logging.warning(f'Exception occurred while indexing {dataset_filetype} dataset:\n{internal_url}\n{e}\nTherefore the dataset will not be indexed.')  # NOQA
         return False, str(e), should_be_indexed
@@ -130,7 +131,7 @@ def convert_and_save_xml_to_processed_json(filepath, filetype, codelist, currenc
         tree = ET.tostring(etree.getroot())
     except ET.ParseError:
         logging.info(f'-- Error parsing {filepath}')
-        return None, should_be_indexed
+        return None, should_be_indexed, "Unable to read XML file."
     # Convert the tree to json using BadgerFish method.
     data = bf.data(ET.fromstring(tree))
     # Retrieve activities
@@ -138,7 +139,7 @@ def convert_and_save_xml_to_processed_json(filepath, filetype, codelist, currenc
 
     if not data_found:
         logging.info(f'-- No data found in {filepath}')
-        return data_found, should_be_indexed
+        return data_found, should_be_indexed, "Data was not present in the data dump."
     # Clean the dataset
     data = recursive_attribute_cleaning(data)
 
@@ -147,11 +148,11 @@ def convert_and_save_xml_to_processed_json(filepath, filetype, codelist, currenc
         data = custom_fields.add_all(data, codelist, currencies, dataset_metadata)
     if filetype == 'organisation':
         data = organisation_custom_fields.add_all(data)
-
+    
     json_path = json_filepath(filepath)
     if not json_path:
         logging.info(f'-- Error creating json path for {filepath}')
-        return False, should_be_indexed
+        return False, should_be_indexed, "A JSON path could not be created for the dataset."
     should_be_indexed = True
     logging.info(f'-- Saving to {json_path}')
     try:
@@ -159,12 +160,12 @@ def convert_and_save_xml_to_processed_json(filepath, filetype, codelist, currenc
             json.dump(data, json_file)
     except Exception:
         logging.info(f'-- Error saving to {json_path}, failed')
-        return False, should_be_indexed
+        return False, should_be_indexed, "Processed data could not be saved as JSON."
 
     if not settings.FCDO_INSTANCE:
         dataset_subtypes(filetype, data, json_path)
 
-    return json_path, should_be_indexed
+    return json_path, should_be_indexed, "Success"
 
 
 def extract_activity_or_organisation_data(filetype, data):

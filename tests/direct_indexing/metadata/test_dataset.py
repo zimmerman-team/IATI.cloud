@@ -33,9 +33,10 @@ def test_subtask_process_dataset(mocker, fixture_dataset):
     # Test DatasetException
     res_str_err = 'Error processing dataset'
     mocker.patch(fun_path, return_value=(res_str_err, res_str, False))
-    with pytest.raises(DatasetException) as excinfo:
-        subtask_process_dataset(fixture_dataset, False)
-    assert str(excinfo.value) == f'Error indexing dataset {fixture_dataset["id"]}\nDataset metadata:\n{res_str}\nDataset indexing:\n{str(res_str_err)}'  # NOQA
+    assert subtask_process_dataset(fixture_dataset, False) == "Dataset was not indexed"
+    # with pytest.raises(DatasetException) as excinfo:
+        # subtask_process_dataset(fixture_dataset, False)
+    # assert str(excinfo.value) == f'Error indexing dataset {fixture_dataset["id"]}\nDataset metadata:\n{res_str}\nDataset indexing:\n{str(res_str_err)}'  # NOQA
 
     # Test retry
     mocker.patch(fun_path, return_value=(res_str_err, res_str, True))

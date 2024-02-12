@@ -17,6 +17,9 @@ def recursive_attribute_cleaning(data):
         data = {key.replace('@', ''): item for key, item in data.items()}
         # Remove the lang xml tag
         data = {key.replace(XML_LANG_STR_STRIPPED, LANG_STR): item for key, item in data.items()}
+        data = {key: item for key, item in data.items() if '._' not in key}
+        data = {key: item for key, item in data.items() if 'http' not in key}
+
         # A list of fields that need to be appended to the dataset
         add_fields = {}
         for key, value in data.items():

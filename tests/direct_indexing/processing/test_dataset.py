@@ -61,18 +61,18 @@ def test_fun(mocker):
 def test_index_dataset(mocker):
     convert_save = 'direct_indexing.processing.dataset.convert_and_save_xml_to_processed_json'
     # mock convert_and_save_xml_to_processed_json, index_to_core
-    mock_convert = mocker.patch(convert_save, return_value=(False, False))  # NOQA: 501
+    mock_convert = mocker.patch(convert_save, return_value=(False, False, "No JSON Path found"))  # NOQA: 501
     mock_index = mocker.patch('direct_indexing.processing.dataset.index_to_core', return_value=INDEX_SUCCESS)
     assert index_dataset(None, None, None, None, None) == (False, 'No JSON Path found', False)
     mock_convert.assert_called_once()
     mock_index.assert_not_called()
 
-    mock_convert.return_value = (TEST_PATH, True)
+    mock_convert.return_value = (TEST_PATH, True, "Successfully Indexed")
     assert index_dataset(None, None, None, None, None) == (True, INDEX_SUCCESS, True)
     mock_index.assert_called_once()
 
-    mock_index.return_value = 'Failed to index'
-    assert index_dataset(None, None, None, None, None) == (False, 'Failed to index', True)
+    mock_index.return_value = 'Unable to index the processed dataset.'
+    assert index_dataset(None, None, None, None, None) == (False, 'Unable to index the processed dataset.', False)
 
     # Test that if index_dataset raises an exception with error message 'test', it returns a tuple False, 'test'
     mocker.patch(convert_save, side_effect=Exception('test'))  # NOQA: 501
@@ -140,11 +140,11 @@ def test_convert_and_save_xml_to_processed_json(mocker, tmp_path, fixture_xml_ac
     # Assert if json.dump raises an exception, the return value is None
     mocker.patch('json.dump', side_effect=Exception)
     mock_json_filepath.return_value = str(tmp_path / TEST_JSON)
-    assert convert_and_save_xml_to_processed_json(xml_path, 'organisation', None, None, None) == (False, True)
+    assert convert_and_save_xml_to_processed_json(xml_path, 'organisation', None, None, None) == (False, True, "Processed data could not be saved as JSON.")
 
     # Assert if ET raises a ParseError, the return value is None
     mocker.patch('xml.etree.ElementTree.parse', side_effect=ET.ParseError)
-    assert convert_and_save_xml_to_processed_json(None, None, None, None, None) == (None, False)
+    assert convert_and_save_xml_to_processed_json(None, None, None, None, None) == (None, False, "Unable to read XML file.")
 
 
 def test_json_filepath(mocker):
