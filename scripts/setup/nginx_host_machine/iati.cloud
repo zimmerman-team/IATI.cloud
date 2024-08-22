@@ -1,6 +1,5 @@
 server {
-        server_name datastore.IC_DOMAIN;
-        listen 80;
+        server_name REPL_SERVER_NAME;
 
         charset utf-8;
         client_max_body_size 75M;
@@ -9,7 +8,7 @@ server {
 
         # Lib files for saving file streams on client
         location /streamsaver {
-               alias /static/streamsaver;
+                alias /static/streamsaver;
         }
 
 	# React App
@@ -18,19 +17,10 @@ server {
                 try_files $uri /index.html;
         }
 
-        location /admin {
-                proxy_pass http://iaticloud:8000/admin;
-                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-                proxy_set_header Host $host;
-                proxy_redirect off;
-        }
-
-
 	# Django Media
-#        location /media  {
-#                alias /root/IATI.cloud/OIPA/OIPA/media;  # amend as required
-#                alias /static/build;  # amend as required
-#        }
+        location /media  {
+                alias /static/build;  # amend as required
+        }
 
 	# Django Static
         location /static {
@@ -40,11 +30,19 @@ server {
 		alias /static;
         }
 
+        # Django API
+        location /api {
+                include proxy_params;
+                proxy_pass http://unix:/tmp/oipa.sock;
+        }
+
 	# Django Admin
-#	location /admin {
-#               include proxy_params;
-#               proxy_pass http://unix:/tmp/oipa.sock;
-#        }
+        location /admin {
+                proxy_pass http://localhost:8000/admin;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header Host $host;
+                proxy_redirect off;
+        }
 
         # Old endpoint redirect
         location ~ ^/search/(.*) {
@@ -68,11 +66,11 @@ server {
                         add_header 'Access-Control-Expose-Headers' 'Content-Length,Content-Range';
                 }
                 include proxy_params;
-                proxy_pass http://solr:8983/solr/activity/select;
-		proxy_set_header Authorization "Basic SOLR_AUTH_ENCODED";
+                proxy_pass http://localhost:8983/solr/activity/select;
+		proxy_set_header Authorization "Basic REPL_AUTH";
         }
-        
-        # SOLR Transaction
+
+	# SOLR Transaction
         location /api/v2/transaction {
                 if ($args !~* fl=) {
                         set $args $1$args&fl=iati_identifier,reporting_org_ref,title_narrative,activity_description_narrative,activity_recipient_country_code,activity_recipient_region_code,activity_sector_code,transaction_ref,transaction_humanitarian,transaction_type,transaction_date_iso_date,transaction_value_currency,transaction_value_date,transaction_value,transaction_usd_conversion_rate,transaction_value_usd,transaction_provider_org_ref,transaction_provider_org_provider_activity_id,transaction_provider_org_type,transaction_provider_org_narrative_text,transaction_receiver_org_ref,transaction_receiver_org_receiver_activity_id,transaction_receiver_org_type,transaction_receiver_org_narrative,transaction_disburstment_channel_code,transaction_sector_vocabulary,transaction_sector_code,transaction_recipient_country_code,transaction_recipient_region_code,transaction_flow_type_code,transaction_finance_type_code,transaction_aid_type_code,transaction_aid_type_vocabulary,transaction_tied_status_code,transaction_description_narrative,default_currency,default_lang,default_flow_type_code,default_aid_type_code,default_tied_status_code,default_humanitarian;
@@ -84,21 +82,8 @@ server {
                         add_header 'Access-Control-Expose-Headers' 'Content-Length,Content-Range';
                 }
                 include proxy_params;
-                proxy_pass http://solr:8983/solr/transaction/select;
-		proxy_set_header Authorization "Basic SOLR_AUTH_ENCODED";
-        }
-
-        # SOLR Transaction POST
-        location /api/v2/transaction-post {
-                if ($http_origin !~ '^http?://(localhost)') {
-                        add_header 'Access-Control-Allow-Origin' '*';
-                        add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';
-                        add_header 'Access-Control-Allow-Headers' 'DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range';
-                        add_header 'Access-Control-Expose-Headers' 'Content-Length,Content-Range';
-                }
-                include proxy_params;
-                proxy_pass http://solr:8983/solr/transaction/select;
-		proxy_set_header Authorization "Basic SOLR_AUTH_ENCODED";
+                proxy_pass http://localhost:8983/solr/transaction/select;
+		proxy_set_header Authorization "Basic REPL_AUTH";
         }
 
 	# SOLR Publisher
@@ -110,8 +95,8 @@ server {
                         add_header 'Access-Control-Expose-Headers' 'Content-Length,Content-Range';
                 }
                 include proxy_params;
-                proxy_pass http://solr:8983/solr/publisher/select;
-		proxy_set_header Authorization "Basic SOLR_AUTH_ENCODED";
+                proxy_pass http://localhost:8983/solr/publisher/select;
+		proxy_set_header Authorization "Basic REPL_AUTH";
         }
 
 	# SOLR Organisation
@@ -123,8 +108,8 @@ server {
                         add_header 'Access-Control-Expose-Headers' 'Content-Length,Content-Range';
                 }
                 include proxy_params;
-                proxy_pass http://solr:8983/solr/organisation/select;
-		proxy_set_header Authorization "Basic SOLR_AUTH_ENCODED";
+                proxy_pass http://localhost:8983/solr/organisation/select;
+		proxy_set_header Authorization "Basic REPL_AUTH";
         }
 
 	# SOLR Dataset
@@ -136,8 +121,8 @@ server {
                         add_header 'Access-Control-Expose-Headers' 'Content-Length,Content-Range';
                 }
                 include proxy_params;
-                proxy_pass http://solr:8983/solr/dataset/select;
-		proxy_set_header Authorization "Basic SOLR_AUTH_ENCODED";
+                proxy_pass http://localhost:8983/solr/dataset/select;
+		proxy_set_header Authorization "Basic REPL_AUTH";
         }
 
 	# SOLR Result
@@ -149,8 +134,8 @@ server {
                         add_header 'Access-Control-Expose-Headers' 'Content-Length,Content-Range';
                 }
                 include proxy_params;
-                proxy_pass http://solr:8983/solr/result/select;
-		proxy_set_header Authorization "Basic SOLR_AUTH_ENCODED";
+                proxy_pass http://localhost:8983/solr/result/select;
+		proxy_set_header Authorization "Basic REPL_AUTH";
         }
 
 	# SOLR Budget
@@ -166,42 +151,10 @@ server {
                         add_header 'Access-Control-Expose-Headers' 'Content-Length,Content-Range';
                 }
                 include proxy_params;
-                proxy_pass http://solr:8983/solr/budget/select;
-		proxy_set_header Authorization "Basic SOLR_AUTH_ENCODED";
+                proxy_pass http://localhost:8983/solr/budget/select;
+		proxy_set_header Authorization "Basic REPL_AUTH";
         }
 
-	# SOLR Activity-Sector
-        location /api/v2/activity-sector {
-                if ($request_uri !~ .*wt=xslt*)
-                {
-                        return 404;
-                }
+    listen 80;
 
-                if ($http_origin !~ '^http?://(localhost)') {
-                        add_header 'Access-Control-Allow-Origin' '*';
-                        add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';
-                        add_header 'Access-Control-Allow-Headers' 'DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range';
-                        add_header 'Access-Control-Expose-Headers' 'Content-Length,Content-Range';
-                }
-                include proxy_params;
-                proxy_pass http://solr:8983/solr/activity/select;
-		proxy_set_header Authorization "Basic SOLR_AUTH_ENCODED";
-        }
-
-	# SOLR Activity-Recipient-Country
-        location /api/v2/activity-country {
-                if ($request_uri !~ .*wt=xslt*)
-                {
-                        return 404;
-                }
-                if ($http_origin !~ '^http?://(localhost)') {
-                        add_header 'Access-Control-Allow-Origin' '*';
-                        add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';
-                        add_header 'Access-Control-Allow-Headers' 'DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range';
-                        add_header 'Access-Control-Expose-Headers' 'Content-Length,Content-Range';
-                }
-                include proxy_params;
-                proxy_pass http://solr:8983/solr/activity/select;
-		proxy_set_header Authorization "Basic SOLR_AUTH_ENCODED";
-        }
 }

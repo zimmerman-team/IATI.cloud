@@ -153,26 +153,6 @@ services:
     ports:
       - 5555:5555
 
-  nginx:
-    container_name: nginx
-    image: iaticloud/nginx
-    env_file:
-      - .env
-    build: 
-      context: ./services/nginx
-      args:
-        - IC_DOMAIN=${IC_DOMAIN}
-        - SOLR_AUTH_ENCODED=${SOLR_AUTH_ENCODED}
-    volumes:
-      - ./:/app
-      - ./static:/static
-    ports:
-      - 80:80
-    depends_on:
-      - celeryflower
-      - iaticloud
-      - solr
-
 volumes:
   db_data:
   rabbitmq_data:

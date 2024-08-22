@@ -4,6 +4,22 @@ if [ "$EUID" -ne 0 ]
   exit
 fi
 
+# Function to prompt user for Y/n choice
+ask_for_confirmation() {
+  read -rp "$1 (Y/n): " choice
+  case "$choice" in
+    ""|y|Y )
+      return 0  # Default to Y if user presses Enter without typing anything
+      ;;
+    n|N )
+      return 1
+      ;;
+    * )
+      ask_for_confirmation "$1"  # Ask again if input is not recognized
+      ;;
+  esac
+}
+
 # Ask the user if they are sure they want to copy these schemas, if not exit
 read -p "Are you sure you want to copy the schemas? (y/N) " -n 1 -r
 echo    # (optional) move to a new line
@@ -32,7 +48,12 @@ docker cp ./direct_indexing/solr/cores/transaction/managed-schema $solr_containe
 docker cp ./direct_indexing/solr/cores/activity/xslt $solr_container_id:/bitnami/solr/server/solr/activity/conf/
 
 # Ask the user if this is mounted locally, default to no. If it is, chown the files to 1001:root
-read -p "Is this mounted locally? (y/N) " -n 1 -r
-
+if ask_for_confirmation "Are the files locally mounted (f.ex. on extra mounted volume)?"; then
+  df -h
+  read -p "Enter your mounted directory: " mounted_dir
+  sudo chown -R 1001:root $mounted_dir/solr_data/
+else
+  echo "Skipping mounted solr directory."
+fi
 
 echo "Done!"
