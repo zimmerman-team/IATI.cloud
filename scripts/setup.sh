@@ -37,14 +37,6 @@ fi
 
 echo ""
 echo ""
-if ask_for_confirmation "Do you want to install NodeJS v16, npm and yarn?"; then
-  . ./scripts/setup/install_node.sh
-else
-  echo "Skipping NodeJS, npm and yarn installation."
-fi
-
-echo ""
-echo ""
 if ask_for_confirmation "Do you want to initialise the submodules?"; then
   . ./scripts/setup/install_submodules.sh
 else
