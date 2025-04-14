@@ -72,7 +72,7 @@ echo ""
 if ask_for_confirmation "Do you want to set up Solr (must be done before stack can be activated)?"; then
   . ./scripts/setup/setup_solr.sh
 else
-  echo "Skipping NGINX."
+  echo "Skipping Solr."
 fi
 
 echo ""

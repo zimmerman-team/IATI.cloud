@@ -55,7 +55,7 @@ You can optionally run the following commands to gather the external images.
 sudo docker pull rabbitmq
 sudo docker pull postgres
 sudo docker pull mongo
-sudo docker pull bitnami/solr:9.1.1
+sudo docker pull bitnami/solr:9.8.1
 sudo docker pull python:3.11
 ```
 

@@ -57,7 +57,7 @@ services:
   solr:
     container_name: solr
     restart: always
-    image: bitnami/solr:9.1.1
+    image: bitnami/solr:9.8.1
     ports:
       - 8983:8983
     env_file:
@@ -72,8 +72,9 @@ services:
       - SOLR_ADMIN_USERNAME=${SOLR_ADMIN_USERNAME}
       - SOLR_ADMIN_PASSWORD=${SOLR_ADMIN_PASSWORD}
     volumes:
-      # Mount the image's solr_mount_dir to the local solr_mount_dir
-      - solr_data:/bitnami
+      # Mount the image's solr_mount_dir to a volume. Alternatively, change the line to /PATH/TO/DIR:/bitnami
+      - /home/zimmerman/Projects/iaticloud/iati.cloud/direct_indexing/solr_mount_dir:/bitnami
+      #- /PATH/TO/DIR:/bitnami
 
   iaticloud:
     container_name: iaticloud

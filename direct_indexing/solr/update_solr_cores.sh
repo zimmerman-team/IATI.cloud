@@ -51,7 +51,7 @@ docker cp ./direct_indexing/solr/cores/activity/xslt $solr_container_id:/bitnami
 if ask_for_confirmation "Are the files locally mounted (f.ex. on extra mounted volume)?"; then
   df -h
   read -p "Enter your mounted directory: " mounted_dir
-  sudo chown -R 1001:root $mounted_dir/solr_data/
+  sudo chown -R 1001:root $mounted_dir/solr
 else
   echo "Skipping mounted solr directory."
 fi
