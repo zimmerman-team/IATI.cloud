@@ -8,7 +8,7 @@ from django.conf import settings
 from pysolr import Solr
 from xmljson import badgerfish as bf
 
-from direct_indexing.cleaning.dataset import recursive_attribute_cleaning#, broken_dataset
+from direct_indexing.cleaning.dataset import recursive_attribute_cleaning
 from direct_indexing.cleaning.metadata import clean_dataset_metadata
 from direct_indexing.custom_fields import custom_fields, organisation_custom_fields
 from direct_indexing.custom_fields.models import codelists
@@ -96,11 +96,14 @@ def index_dataset(internal_url, dataset_filetype, codelist, currencies, dataset_
     should_be_indexed = False
     try:
         core_url = settings.SOLR_ACTIVITY_URL if dataset_filetype == 'activity' else settings.SOLR_ORGANISATION_URL
-        logging.info("-- Get JSON path")
-        json_path, should_be_indexed, p_res = convert_and_save_xml_to_processed_json(internal_url, dataset_filetype,
-                                                                                     codelist, currencies, dataset_metadata)
+        json_path, should_be_indexed, p_res = convert_and_save_xml_to_processed_json(
+            internal_url,
+            dataset_filetype,
+            codelist,
+            currencies,
+            dataset_metadata
+        )
         if json_path:
-            logging.info("-- INDEXING JSON PATH")
             result = index_to_core(core_url, json_path, remove=True)
             logging.info(f'result of indexing {result}')
             if result == 'Successfully indexed':
@@ -131,7 +134,7 @@ def convert_and_save_xml_to_processed_json(filepath, filetype, codelist, currenc
         tree = ET.tostring(etree.getroot())
     except ET.ParseError:
         logging.info(f'-- Error parsing {filepath}')
-        return None, should_be_indexed, "Unable to read XML file."
+        return None, should_be_indexed, "Unable to read XML file. It may have been accessible. Check the file source."
     # Convert the tree to json using BadgerFish method.
     data = bf.data(ET.fromstring(tree))
     # Retrieve activities
@@ -148,7 +151,7 @@ def convert_and_save_xml_to_processed_json(filepath, filetype, codelist, currenc
         data = custom_fields.add_all(data, codelist, currencies, dataset_metadata)
     if filetype == 'organisation':
         data = organisation_custom_fields.add_all(data)
-    
+
     json_path = json_filepath(filepath)
     if not json_path:
         logging.info(f'-- Error creating json path for {filepath}')

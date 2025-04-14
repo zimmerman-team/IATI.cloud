@@ -38,21 +38,18 @@ def index_to_core(url, json_path, remove=False):
     :param remove: bool to indicate if the created json file should be removed, defaults to False
     """
     try:
-        logging.info("--index to core:: check output")
         solr_out = subprocess.check_output([settings.SOLR_POST_TOOL, '-url', url, json_path],
                                            stderr=subprocess.STDOUT).decode('utf-8')
         result = 'Successfully indexed'
         if 'SolrException' in solr_out or 'Failed to index' in solr_out:
-            logging.info("--index to core:: solr_out: " + solr_out)
+            logging.info(f"index_to_core:: solr_out: {solr_out}")
             message_index = re.search(r'\b(msg)\b', solr_out).start()+5  # +5 to get past the 'msg:'
             solr_out = solr_out[message_index:]
             result = solr_out[:re.search(r'\n', solr_out).start()-1]  # stop at newline excluding the ,
             if remove:
-                logging.info("--index to core:: issues in solr parse, remove json dump")
                 os.remove(json_path)
         else:
             if remove:
-                logging.info("--index to core:: no issues, remove json dump")
                 os.remove(json_path)  # On success, remove the json file
         return result
     except subprocess.CalledProcessError as e:
@@ -60,7 +57,7 @@ def index_to_core(url, json_path, remove=False):
         logging.error(f'index_to_core:: error: {result}')
         return result
     except Exception as e:
-        logging.info("--index to core:: Uncaught other exception!!" + str(e))
+        logging.info(f'index_to_core:: Uncaught other exception!! {str(e)}')
         raise
 
 
