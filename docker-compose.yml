@@ -71,7 +71,7 @@ services:
       - SOLR_ADMIN_PASSWORD=${SOLR_ADMIN_PASSWORD}
     volumes:
       # Mount the image's solr_mount_dir to a volume. Alternatively, change the line to /PATH/TO/DIR:/bitnami
-      - /home/zimmerman/Projects/iaticloud/iati.cloud/direct_indexing/solr_mount_dir:/bitnami
+      - solr_data:/bitnami
       #- /PATH/TO/DIR:/bitnami
 
   iaticloud:

@@ -86,7 +86,7 @@ echo ""
 if ask_for_confirmation "Do you want to set up a mounted solr directory?"; then
   df -h
   read -p "Enter your mounted directory: " mounted_dir
-  sudo mkdir $mounted_dir/solr_data
+  sudo mkdir -p $mounted_dir/solr_data
   sudo chown -R 1001:root $mounted_dir/solr_data/
   # replace the string "solr_data:/bitnami" in docker-compose.yml
   sed -i "s|solr_data:/bitnami|$mounted_dir/solr_data:/bitnami|g" docker-compose.yml
