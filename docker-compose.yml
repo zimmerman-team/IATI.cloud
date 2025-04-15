@@ -70,9 +70,9 @@ services:
       - SOLR_ADMIN_USERNAME=${SOLR_ADMIN_USERNAME}
       - SOLR_ADMIN_PASSWORD=${SOLR_ADMIN_PASSWORD}
     volumes:
-      # Mount the image's solr_mount_dir to a volume. Alternatively, change the line to /PATH/TO/DIR:/bitnami
+      # Mount the image's solr_mount_dir to a volume. Alternatively, change the line to /PATH/TO/DIR/solr_data:/bitnami
       - solr_data:/bitnami
-      #- /PATH/TO/DIR:/bitnami
+      #- /PATH/TO/DIR/solr_data:/bitnami
 
   iaticloud:
     container_name: iaticloud
@@ -101,7 +101,8 @@ services:
       - ./:/app
     env_file:
       - .env
-    command: celery -A iaticloud worker -l INFO
+    command: celery -A iaticloud worker -l INFO --concurrency=32 -n worker@%%h
+    restart: unless-stopped
     depends_on:
       - rabbitmq
       - database
