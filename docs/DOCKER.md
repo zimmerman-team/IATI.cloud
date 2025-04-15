@@ -62,7 +62,7 @@ sudo docker pull python:3.11
 *Run the following once!*
 Setting up persisted solr data:
 ```
-sudo docker compose --env-file .env up solr
+sudo docker compose up solr -d
 # AFTER STARTUP
 sudo bash ./direct_indexing/solr/update_solr_cores.sh
 # Needs to be re-started to read the new configurations
@@ -76,29 +76,30 @@ This is required for now, to be able to use our custom core configuration. We ar
 ### First build
 Running the docker containers (--build is optional because the local docker image needs to be built). This will allow the iaticloud/main docker image to be built and the django migrations etc. to be executed:
 ```
-sudo docker compose --env-file .env up --build iaticloud
+sudo docker compose up --build iaticloud
 sudo docker compose down
 ```
 
-once this image is built, build the nginx container (we can not do these together, as nginx depends on celery flower, which in turn depends on the iaticloud image being built.)
+once this image is built, start the entire stack with:
 ```
-sudo docker compose --env-file .env up
+sudo docker compose up
 ```
 
 
 Stopping the docker containers:
 ```
-sudo docker compose --env-file .env down
+sudo docker compose down
 ```
 
-### (Re)-starting 
+### (Re)-starting
 ```
-sudo docker compose -d --env-file .env up
+sudo docker compose down
+sudo docker compose -d up
 ```
 
 ### After you've made changes to the iati.cloud codebase
 ```
-sudo docker compose --env-file -d .env up --build
+sudo docker compose -d up --build
 ```
 
 ### After you've made changes to the Solr managed-schema file(s) in ./direct_indexing/solr/cores/_CORE_/
