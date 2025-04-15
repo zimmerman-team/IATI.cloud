@@ -72,13 +72,17 @@ def fun(dataset, update=False):
         dataset['iati_cloud_removed_reason'] = dataset_indexing_result
     # Index the dataset metadata
     logging.info('-- Save the dataset metadata')
-    result = index(
-        f'iati-data-main/metadata/{dataset["organization"]["name"]}/{dataset["name"]}',
-        dataset,
-        settings.SOLR_DATASET_URL
-    )
 
-    should_retry = should_be_indexed and not indexed
+    if 'organization' in dataset and 'name' in dataset['organization']:
+        result = index(
+            f'iati-data-main/metadata/{dataset["organization"]["name"]}/{dataset["name"]}',
+            dataset,
+            settings.SOLR_DATASET_URL
+        )
+        should_retry = should_be_indexed and not indexed
+    else:
+        result = "The dataset does not contain proper organization metadata, therefore we cannot determine the organization name and source the datasets."  # NOQA: E501
+        should_retry = False
 
     return dataset_indexing_result, result, should_retry
 
