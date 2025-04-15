@@ -29,6 +29,18 @@ ask_for_confirmation() {
 
 echo ""
 echo ""
+if ask_for_confirmation "Do you want to setup additional swap memory (recommended, requires 64GB free space)?"; then
+  sudo fallocate -l 64G /swapfile
+  sudo chmod 600 /swapfile
+  sudo mkswap /swapfile
+  sudo swapon /swapfile
+  sudo echo '/swapfile swap swap defaults 0 0' | sudo tee -a /etc/fstab
+else
+  echo "Skipping Docker installation."
+fi
+
+echo ""
+echo ""
 if ask_for_confirmation "Do you want to install Docker?"; then
   . ./scripts/setup/install_docker.sh
 else
@@ -69,4 +81,10 @@ fi
 
 echo ""
 echo ""
-echo "Setup script is done, please set up your env, and run 'bash ./scripts/build.sh <MODE>' to build the project."
+if ask_for_confirmation "Do you want to set up the IATI.cloud docker image? If you choose the Y option, there will be a manual step: hit control+c when the image is fully built and running."; then
+  sudo docker compose up iaticloud
+else
+  echo "Setup script is done, please set up your env, and run 'bash ./scripts/build.sh <MODE>' to build the project."
+fi
+
+echo "Setup script is done. Start iati.cloud using the './scripts/start.sh <MODE>' script, or simply with: 'sudo docker compose up -d'."
