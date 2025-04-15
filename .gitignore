@@ -7,6 +7,10 @@ solr_mount_dir
 .env
 .env.local
 .env.docker
+.env.dev
+.env.test
+.env.staging
+.env.prod
 .venv
 env/
 venv/
