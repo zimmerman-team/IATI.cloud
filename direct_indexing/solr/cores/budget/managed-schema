@@ -466,7 +466,7 @@
   <field name="_version_" type="plong" indexed="false" stored="false"/>
 
   <!-- default field -->
-  <field name="id" type="string" multiValued="false" indexed="true" required="true" stored="true"/>
+  <field name="id" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
 
   <!-- Note: narratives are always multi valued -->
   <!-- activity 1..1 -->
@@ -1230,7 +1230,7 @@
   <field name="humanitarian_scope_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="humanitarian_scope_vocabulary" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
 
-  <field name="dataset_iati_version" type="string" multiValued="false" indexed="true" required="true" stored="true"/>
+  <field name="dataset_iati_version" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
 
   <field name="other_identifier_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
 

@@ -1216,7 +1216,7 @@
 
   <!-- COPYFIELDS!! -->
   <!--Transaction Core - Start-->
-  <field name="iati_identifier" type="string" multiValued="false" indexed="true" required="true" stored="true"/>
+  <field name="iati_identifier" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
 
   <field name="title_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="title_narrative" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
@@ -1263,7 +1263,7 @@
   <field name="humanitarian_scope_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="humanitarian_scope_vocabulary" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
 
-  <field name="dataset_iati_version" type="string" multiValued="false" indexed="true" required="true" stored="true"/>
+  <field name="dataset_iati_version" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
 
   <field name="other_identifier_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
 
