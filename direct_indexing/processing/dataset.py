@@ -73,6 +73,9 @@ def fun(dataset, update=False):
     # Index the dataset metadata
     logging.info('-- Save the dataset metadata')
 
+    # Remove any key/value pair if the key ends with ._
+    dataset = {key: value for key, value in dataset.items() if not key.endswith('._')}
+
     if 'organization' in dataset and 'name' in dataset['organization']:
         result = index(
             f'iati-data-main/metadata/{dataset["organization"]["name"]}/{dataset["name"]}',
