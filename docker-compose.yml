@@ -23,9 +23,6 @@ services:
     container_name: rabbitmq
     restart: always
     image: rabbitmq:latest
-    ports:
-      - 5672:5672
-      - 15672:15672
     env_file:
       - .env
     volumes:
@@ -47,8 +44,6 @@ services:
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
       - MONGO_INITDB_DATABASE=${MONGO_INITDB_DATABASE}
-    ports:
-      - 27017:27017
     volumes:
       - mongo_data:/data/db
 
