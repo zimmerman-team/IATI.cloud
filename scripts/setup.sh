@@ -82,7 +82,7 @@ fi
 echo ""
 echo ""
 if ask_for_confirmation "Do you want to set up the IATI.cloud docker image? If you choose the Y option, there will be a manual step: hit control+c when the image is fully built and running."; then
-  sudo docker compose up iaticloud
+  sudo docker compose up iaticloud --build
 else
   echo "Setup script is done, please set up your env, and run 'bash ./scripts/build.sh <MODE>' to build the project."
 fi
