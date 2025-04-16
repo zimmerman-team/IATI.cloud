@@ -91,6 +91,7 @@ def fcdo_replace_partial_url(find_url, replace_url):
     dataset_metadata = retrieve(settings.METADATA_DATASET_URL, 'dataset_metadata')
     num_updated_datasets = 0
     for dataset in dataset_metadata:
+        logging.info(f"fcdo_replace_partial_url:: dataset:\n{dataset}")
         # find datasets that need to be replaced
         if 'resources' not in dataset or 'name' not in dataset or 'organization' not in dataset:
             continue
@@ -108,10 +109,7 @@ def fcdo_replace_partial_url(find_url, replace_url):
         ds_name = dataset['name']
         ds_org = dataset['organization']['name']
         ds_file = f'{settings.DATASET_PARENT_PATH}/iati-data-main/data/{ds_org}/{ds_name}.xml'
-        if os.path.exists(ds_file):
-            os.remove(ds_file)
-        else:
-            return f"this file does not exist {ds_file}"
+
         downloader = urllib.request.URLopener()
         downloader.retrieve(new_url, ds_file)
 
