@@ -27,6 +27,7 @@ $1
 "
 }
 
+# Install NGINX and Certbot
 if ask_for_confirmation "Do NGINX and Certbot need to be installed before setup?"; then
   echo "Installing NGINX and Certbot..."
   print_status "Installing NGINX..."
@@ -40,6 +41,15 @@ if ask_for_confirmation "Do NGINX and Certbot need to be installed before setup?
   sudo apt-get install certbot python3-certbot-nginx -y
 else
   echo "Skipping NGINX and Certbot installation."
+fi
+
+# Install Cockpit
+if ask_for_confirmation "Do you want to install Cockpit?"; then
+  print_status "Installing Cockpit..."
+  sudo apt install cockpit -y
+  sudo systemctl enable --now cockpit.socket
+else
+  echo "Skipping Cockpit installation."
 fi
 
 # Configure nginx
@@ -63,6 +73,16 @@ sudo cp ./scripts/setup/nginx_host_machine/flower "/etc/nginx/sites-available/fl
 sudo sed -i "s/REPL_SERVER_NAME/$server_name/g" "/etc/nginx/sites-available/flower"
 sudo ln -s "/etc/nginx/sites-available/flower" /etc/nginx/sites-enabled/
 
+# cockpit
+if systemctl is-active --quiet cockpit.socket; then
+  sudo cp ./scripts/setup/nginx_host_machine/cockpit "/etc/nginx/sites-available/cockpit"
+  sudo sed -i "s/REPL_SERVER_NAME/$server_name/g" "/etc/nginx/sites-available/cockpit"
+  sudo ln -s "/etc/nginx/sites-available/cockpit" /etc/nginx/sites-enabled/
+else
+  echo "Cockpit is not installed or not active."
+fi
+
+# Redirect for old iati.cloud url
 if ask_for_confirmation "Do you want to set up the redirect for iati.cloud -> datastore.iati.cloud?: "; then
   sudo cp ./scripts/setup/nginx_host_machine/iati.cloud-redirect "/etc/nginx/sites-available/iati-cloud-redirect"
   sudo ln -s "/etc/nginx/sites-available/iati-cloud-redirect" /etc/nginx/sites-enabled/
@@ -72,6 +92,7 @@ fi
 print_status "Restarting NGINX..."
 sudo service nginx restart
 
+# SSL Certificates
 print_status "Setting up SSL certificates..."
 if ask_for_confirmation "Do you want to set up SSL certificates for your domains?"; then
   # Set up the ssl certificate, this will require some user input.
