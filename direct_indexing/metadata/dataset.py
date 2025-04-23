@@ -11,6 +11,8 @@ from direct_indexing.custom_fields.models import codelists
 from direct_indexing.metadata.util import download_dataset, retrieve
 from direct_indexing.processing import dataset as dataset_processing
 
+INDEX_SUCCESS = 'Successfully indexed'
+
 
 class DatasetException(Exception):
     def __init__(self, message):
@@ -20,7 +22,7 @@ class DatasetException(Exception):
 @shared_task
 def subtask_process_dataset(dataset, update):
     dataset_indexing_result, result, should_retry = dataset_processing.fun(dataset, update)
-    if result == 'Successfully indexed' and dataset_indexing_result == 'Successfully indexed':
+    if result == INDEX_SUCCESS and dataset_indexing_result == INDEX_SUCCESS:
         return result
     elif dataset_indexing_result == 'Dataset invalid':
         return dataset_indexing_result
@@ -41,7 +43,7 @@ def aida_index_dataset(dataset, publisher, dataset_name, dataset_url):
 
     load_codelists()
     dataset_indexing_result, result, _ = dataset_processing.fun(dataset, update=True)
-    if result == 'Successfully indexed' and dataset_indexing_result == 'Successfully indexed':
+    if result == INDEX_SUCCESS and dataset_indexing_result == INDEX_SUCCESS:
         return result, 200
     elif dataset_indexing_result == 'Dataset invalid':
         return dataset_indexing_result, 200

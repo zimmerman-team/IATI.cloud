@@ -72,8 +72,6 @@ def run_dataset_metadata(update, force_update=False):
 
 
 def aida_index(dataset, publisher, ds_name, ds_url):
-    result = "Indexing aida data"
-    # download dataset metadata
     result, code = aida_index_dataset(dataset, publisher, ds_name, ds_url)
     logging.info(f"aida_index:: result: {result}")
     return result, code

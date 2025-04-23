@@ -1,5 +1,6 @@
 import datetime
 import json
+import logging
 
 from django.conf import settings
 from django.http import JsonResponse
@@ -209,4 +210,5 @@ def _make_dataset(dataset, publisher, ds_name, ds_url):
             "relationships_as_object": dataset.get("relationships_as_object", [])
         }
     except KeyError as e:
+        logging.error(f"KeyError in _make_dataset: {e}")
         raise e
