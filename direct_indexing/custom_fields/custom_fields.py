@@ -1,6 +1,7 @@
 from django.conf import settings
 
 from direct_indexing.custom_fields.activity_dates import activity_dates
+from direct_indexing.custom_fields.activity_status import activity_status
 from direct_indexing.custom_fields.add_default_hierarchy import add_default_hierarchy
 from direct_indexing.custom_fields.codelists import add_codelist_fields
 from direct_indexing.custom_fields.currency_aggregation import currency_aggregation
@@ -48,6 +49,7 @@ def process_activity(activity, codelists, currencies, metadata):
     add_codelist_fields(activity, codelists)
     title_narrative_first(activity)
     activity_dates(activity)
+    activity_status(activity)
     policy_marker_combined(activity)
     currency_conversion(activity, currencies)
     add_meta_to_activity(activity, metadata)

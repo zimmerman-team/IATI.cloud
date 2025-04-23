@@ -517,6 +517,7 @@
 
   <!-- activity.activity-status 1..1 -->
   <field name="activity-status.code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-status.text" type="text_general_single"/>
 
   <!-- activity.activity-date 1..* -->
   <field name="activity-date.type" type="text_general"/>
@@ -1327,6 +1328,7 @@
 
   <field name="activity_status_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
   <field name="activity_status_code" type="string" indexed="true" required="false" stored="true"/>
+  <field name="activity_status_text" type="text_general_single"/>
 
   <field name="activity_date" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
   <field name="activity_date_xml" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
@@ -2024,6 +2026,7 @@
   <copyField source="other-identifier.owner-org.narrative" dest="other_identifier_owner_org_narrative_text" />
   <copyField source="other-identifier.owner-org.narrative.lang" dest="other_identifier_owner_org_narrative_lang" />
   <copyField source="activity-status.code" dest="activity_status_code" />
+  <copyField source="activity-status.text" dest="activity_status_text" />
   <copyField source="activity-date.type" dest="activity_date_type" />
   <copyField source="activity-date.iso-date" dest="activity_date_iso_date" />
   <copyField source="activity-date.narrative" dest="activity_date_narrative_text" />

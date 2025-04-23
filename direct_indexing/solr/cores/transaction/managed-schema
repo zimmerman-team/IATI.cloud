@@ -517,6 +517,7 @@
 
   <!-- activity.activity-status 1..1 -->
   <field name="activity-status.code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-status.text" type="text_general_single"/>
 
   <!-- activity.activity-date 1..* -->
   <field name="activity-date.type" type="text_general"/>
@@ -1244,6 +1245,8 @@
 
   <field name="activity_scope_code" type="string" indexed="true" required="false" stored="true"/>
   <field name="activity_status_code" type="string" indexed="true" required="false" stored="true"/>
+  <field name="activity_status_text" type="text_general_single"/>
+
   <field name="collaboration_type_code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
 
   <field name="default_aid_type_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
@@ -1378,6 +1381,7 @@
   <copyField source="participating-org.narrative" dest="participating_org_narrative_text" />
   <copyField source="activity-scope.code" dest="activity_scope_code" />
   <copyField source="activity-status.code" dest="activity_status_code" />
+  <copyField source="activity-status.text" dest="activity_status_text" />
   <copyField source="collaboration-type.code" dest="collaboration_type_code" />
   <copyField source="default-aid-type.code" dest="default_aid_type_code" />
   <copyField source="default-aid-type.vocabulary" dest="default_aid_type_vocabulary" />

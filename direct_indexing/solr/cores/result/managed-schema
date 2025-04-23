@@ -517,6 +517,7 @@
 
   <!-- activity.activity-status 1..1 -->
   <field name="activity-status.code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-status.text" type="text_general_single"/>
 
   <!-- activity.activity-date 1..* -->
   <field name="activity-date.type" type="text_general"/>
