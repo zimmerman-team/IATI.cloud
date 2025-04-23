@@ -1,6 +1,5 @@
 import json
 import logging
-import os
 import time
 import urllib.request
 
@@ -57,6 +56,36 @@ def start(update=False, drop=False):
     # Send clear message to Celery Flower
     logging.info("start:: Both the publisher and dataset metadata indexing have begun.")
     return "Both the publisher and dataset metadata indexing have begun."
+
+
+@shared_task(queue="aida_queue")
+def aida_async_index(dataset, publisher, ds_name, ds_url):
+    """
+    This function is used to index AIDA data.
+    Expects a dict with the following fields:
+        - publisher: The publisher name
+        - dataset.name: The name of the dataset
+        - url: The url to the dataset
+    """
+    logging.info("aida_async_index:: Starting task in aida_queue.")
+    logging.info(f"aida_async_index:: Dataset: {dataset}")
+    result = direct_indexing.aida_index(dataset, publisher, ds_name, ds_url)
+    logging.info(f"aida_async_index:: result: {result}")
+    return result
+
+
+@shared_task(queue="aida_queue")
+def aida_async_drop(ds_name):
+    """
+    This function is used to drop AIDA data.
+    Expects a dict with the following field:
+        - name: The name of the dataset
+    """
+    logging.info("aida_async_drop:: Starting task in aida_queue.")
+    logging.info(f"aida_async_index:: Dataset: {ds_name}")
+    result = direct_indexing.aida_drop(ds_name)
+    logging.info(f"aida_async_drop:: result: {result}")
+    return result
 
 
 @shared_task

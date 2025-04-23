@@ -44,6 +44,14 @@ server {
                 proxy_redirect off;
         }
 
+        # Django AIDA
+        location /aida {
+                proxy_pass http://localhost:8000/aida;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header Host $host;
+                proxy_redirect off;
+        }
+
         # Old endpoint redirect
         location ~ ^/search/(.*) {
 		add_header 'Access-Control-Allow-Origin' '*';

@@ -43,7 +43,7 @@ ln -s ./.env.prod ./.env
 print_status "Updating .env files with correct values. Please provide these required values:"
 # Ask the user for their username and password
 read -p "Enter your username: " username
-read -sp "Enter your password: " password
+read -sp "Enter your password. For Solr, Mongo and their connections, please omit any symbols such as @, # etcetera: " password
 read -p "Enter your django superuser email: " email
 read -p "Enter your IATI.cloud domain (ex.: localhost, datastore.iati.cloud):  " domain
 read -p "Enter your trusted origin (ex.: https://datastore.iati.cloud): " trusted_origin
@@ -55,6 +55,8 @@ encoded_base64=$(echo -n "$username:$password" | base64)
 env_files=(.env.dev .env.test .env.staging .env.prod)
 # Loop through each file and perform the replacement
 for env_file in "${env_files[@]}"; do
+  # Django secret key
+  sed -i "s/SECRET_KEY=iati_cloud/SECRET_KEY=$password/g" "$env_file"
   # Postgres
   sed -i "s/POSTGRES_USER=iati_cloud/POSTGRES_USER=$username/g" "$env_file"
   sed -i "s/POSTGRES_PASSWORD=oipa/POSTGRES_PASSWORD=$password/g" "$env_file"

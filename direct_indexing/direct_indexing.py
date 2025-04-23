@@ -6,7 +6,7 @@ import pysolr
 import requests
 from django.conf import settings
 
-from direct_indexing.metadata.dataset import index_datasets_and_dataset_metadata
+from direct_indexing.metadata.dataset import aida_drop_dataset, aida_index_dataset, index_datasets_and_dataset_metadata
 from direct_indexing.metadata.publisher import index_publisher_metadata
 
 
@@ -69,6 +69,20 @@ def run_dataset_metadata(update, force_update=False):
     result = index_datasets_and_dataset_metadata(update, force_update)
     logging.info(f"run_dataset_metadata:: result: {result}")
     return result
+
+
+def aida_index(dataset, publisher, ds_name, ds_url):
+    result = "Indexing aida data"
+    # download dataset metadata
+    result, code = aida_index_dataset(dataset, publisher, ds_name, ds_url)
+    logging.info(f"aida_index:: result: {result}")
+    return result, code
+
+
+def aida_drop(ds_name):
+    result, code = aida_drop_dataset(ds_name)
+    logging.info(f"aida_drop:: result: {result}")
+    return result, code
 
 
 def drop_removed_data():

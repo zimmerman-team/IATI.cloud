@@ -116,6 +116,19 @@ services:
       - database
       - iaticloud
 
+  celeryaidaworker:
+    container_name: celeryaidaworker
+    image: iaticloud/main
+    volumes:
+      - ./:/app
+    env_file:
+      - .env
+    command: celery -A iaticloud worker -l INFO --concurrency=4 -n aida@%%h -Q aida_queue
+    depends_on:
+      - rabbitmq
+      - database
+      - iaticloud
+
   celeryscheduler:
     container_name: celeryscheduler
     image: iaticloud/main
