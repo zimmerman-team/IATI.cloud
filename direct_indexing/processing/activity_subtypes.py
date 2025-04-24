@@ -8,6 +8,12 @@ AVAILABLE_SUBTYPES = {
     'result': settings.SOLR_RESULT_URL
 }
 
+AVAILABLE_DRAFT_SUBTYPES = {
+    'transaction': settings.SOLR_DRAFT_TRANSACTION_URL,
+    'budget': settings.SOLR_DRAFT_BUDGET_URL,
+    'result': settings.SOLR_DRAFT_RESULT_URL
+}
+
 
 def extract_subtype(activity, subtype):
     """

@@ -33,7 +33,7 @@ def subtask_process_dataset(dataset, update):
         # commented to prevent false positive exceptions. raise DatasetException(message=f'Error indexing dataset {dataset["id"]}\nDataset metadata:\n{result}\nDataset indexing:\n{str(dataset_indexing_result)}')  # NOQA
 
 
-def aida_index_dataset(dataset, publisher, dataset_name, dataset_url):
+def aida_index_dataset(dataset, publisher, dataset_name, dataset_url, draft=False):
     """AIDA specific indexing function."""
     try:
         _aida_download(publisher, dataset_name, dataset_url, dataset)
@@ -42,7 +42,7 @@ def aida_index_dataset(dataset, publisher, dataset_name, dataset_url):
         return "Error downloading dataset", 500
 
     load_codelists()
-    dataset_indexing_result, result, _ = dataset_processing.fun(dataset, update=True)
+    dataset_indexing_result, result, _ = dataset_processing.fun(dataset, update=True, draft=draft)
     if result == INDEX_SUCCESS and dataset_indexing_result == INDEX_SUCCESS:
         return result, 200
     elif dataset_indexing_result == 'Dataset invalid':
@@ -89,7 +89,7 @@ def _aida_download(publisher, dataset_name, dataset_url, dataset):
         json.dump(dataset, json_file)
 
 
-def aida_drop_dataset(dataset_name):
+def aida_drop_dataset(dataset_name, draft=False):
     """
     Function to remove any data from IATI.cloud related to a publisher's dataset.
 
@@ -98,7 +98,8 @@ def aida_drop_dataset(dataset_name):
     :return: A message indicating the result of the operation, a HTTP status code.
     """
     try:
-        solr = pysolr.Solr(settings.SOLR_DATASET, always_commit=True)
+        solr_ds = settings.SOLR_DRAFT_DATASET if draft else settings.SOLR_DATASET
+        solr = pysolr.Solr(solr_ds, always_commit=True)
         find_data = solr.search(f'name:"{dataset_name}"')
         logging.info(f"aida_drop_dataset:: dataset found: {len(find_data)}")
         if len(find_data) > 0:
@@ -109,7 +110,10 @@ def aida_drop_dataset(dataset_name):
         return "Apologies, but the dataset could not be fully deleted, please contact support", 500
 
     try:
-        for core in ['activity', 'transaction', 'result', 'budget']:
+        core_list = ['activity', 'transaction', 'result', 'budget']
+        if draft:
+            core_list = [f'draft_{core}' for core in core_list]
+        for core in core_list:
             solr = pysolr.Solr(f'{settings.SOLR_URL}/{core}', always_commit=True)
             find_data = solr.search(f'dataset.name:"{dataset_name}"')
             logging.info(f"aida_drop_dataset:: {core} found: {len(find_data)}")

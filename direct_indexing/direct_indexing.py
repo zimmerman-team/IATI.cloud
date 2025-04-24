@@ -24,12 +24,14 @@ def run():
     index_datasets_and_dataset_metadata(False, False)
 
 
-def clear_indices():
+def clear_indices(draft=False):
     """
     Clear all indices as indicated by the 'cores' variable.
     """
     try:
         cores = ['dataset', 'publisher', 'activity', 'transaction', 'budget', 'result', 'organisation']
+        if draft:
+            cores = [f'draft_{core}' for core in cores]
         for core in cores:
             logging.info(f'clear_indices:: Clearing {core} core')
             solr = pysolr.Solr(f'{settings.SOLR_URL}/{core}', always_commit=True)
@@ -71,14 +73,14 @@ def run_dataset_metadata(update, force_update=False):
     return result
 
 
-def aida_index(dataset, publisher, ds_name, ds_url):
-    result, code = aida_index_dataset(dataset, publisher, ds_name, ds_url)
+def aida_index(dataset, publisher, ds_name, ds_url, draft=False):
+    result, code = aida_index_dataset(dataset, publisher, ds_name, ds_url, draft)
     logging.info(f"aida_index:: result: {result}")
     return result, code
 
 
-def aida_drop(ds_name):
-    result, code = aida_drop_dataset(ds_name)
+def aida_drop(ds_name, draft):
+    result, code = aida_drop_dataset(ds_name, draft)
     logging.info(f"aida_drop:: result: {result}")
     return result, code
 

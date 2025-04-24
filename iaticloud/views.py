@@ -19,6 +19,7 @@ def aida_index(request):
     Expects a JSON body with the following fields:
     - direct: "yes" or "no" ("no" if not provided) used to determine if processed immediately, or as a celery task
     - token (required): The secret token to authenticate the request, as set in IATI.cloud
+    - draft (optional): Boolean to indicate if the dataset is a draft
     - publisher: The publisher name
     - name: The name of the dataset
     - url: The URL to the dataset
@@ -32,6 +33,8 @@ def aida_index(request):
     # Get the data from the request body
     data = json.loads(request.body)
     direct = data.get("direct", "no")
+    draft = data.get("draft", False)
+
     try:
         token = data["token"]
         if token != settings.SECRET_KEY:
@@ -56,10 +59,10 @@ def aida_index(request):
 
     # Add a celery task to index the provided dataset.
     if direct == "no":
-        aida_async_index.delay(dataset, publisher, ds_name, ds_url)
+        aida_async_index.delay(dataset, publisher, ds_name, ds_url, draft)
         return JsonResponse({"status": "Indexing started"}, status=202)
     else:
-        status, code = aida_direct_index(dataset, publisher, ds_name, ds_url)
+        status, code = aida_direct_index(dataset, publisher, ds_name, ds_url, draft)
         return JsonResponse({"status": status}, status=code)
 
 
@@ -71,6 +74,7 @@ def aida_drop(request):
     Expects a JSON body with the following fields:
     - direct: "yes" or "no" ("no" if not provided) used to determine if processed immediately, or as a celery task
     - token (required): The secret token to authenticate the request
+    - draft (optional): Boolean to indicate if the dataset is a draft
     - name: The name of the dataset
     return: a JSON response with the status of the dropping process
     """
@@ -80,6 +84,7 @@ def aida_drop(request):
     # Get the data from the request body
     data = json.loads(request.body)
     direct = data.get("direct", "no")
+    draft = data.get("draft", False)
     try:
         token = data["token"]
         if token != settings.SECRET_KEY:
@@ -91,10 +96,10 @@ def aida_drop(request):
 
     # Add a celery task to index the provided dataset.
     if direct == "no":
-        aida_async_drop.delay(ds_name)
+        aida_async_drop.delay(ds_name, draft)
         return JsonResponse({"status": "Indexing started"}, status=202)
     else:
-        status, code = aida_direct_drop(ds_name)
+        status, code = aida_direct_drop(ds_name, draft)
         return JsonResponse({"status": status}, status=code)
 
 

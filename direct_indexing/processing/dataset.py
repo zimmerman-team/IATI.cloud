@@ -19,7 +19,7 @@ from direct_indexing.processing.util import get_dataset_filepath, get_dataset_fi
 from direct_indexing.util import index_to_core
 
 
-def fun(dataset, update=False):
+def fun(dataset, update=False, draft=False):
     """
     Running the dataset means to take the steps.
     . Clean the dataset metadata.
@@ -55,7 +55,11 @@ def fun(dataset, update=False):
     dataset_indexing_result = "Dataset invalid"
     # drop the old data from solr
     if update:
-        for url in [settings.SOLR_ACTIVITY, settings.SOLR_BUDGET, settings.SOLR_RESULT, settings.SOLR_TRANSACTION]:
+        solr_cores = [settings.SOLR_ACTIVITY, settings.SOLR_BUDGET, settings.SOLR_RESULT, settings.SOLR_TRANSACTION]
+        if draft:
+            solr_cores += [settings.SOLR_DRAFT_ACTIVITY, settings.SOLR_DRAFT_BUDGET, settings.SOLR_DRAFT_RESULT,
+                           settings.SOLR_DRAFT_TRANSACTION]
+        for url in solr_cores:
             conn = Solr(url)
             conn.delete(q='%s:"%s"' % ('dataset.id', dataset['id']), commit=True)
 
@@ -63,7 +67,8 @@ def fun(dataset, update=False):
     # these are activity files of a valid version and that have been successfully validated (not critical)
     if validation_status == 'Valid' and valid_version:
         indexed, dataset_indexing_result, should_be_indexed = index_dataset(dataset_filepath, dataset_filetype,
-                                                                            codelist, currencies, dataset_metadata)
+                                                                            codelist, currencies,
+                                                                            dataset_metadata, draft)
     # Add an indexing status to the dataset metadata.
     dataset['iati_cloud_indexed'] = indexed
     dataset['iati_cloud_indexed_datetime'] = str(datetime.now())
@@ -81,10 +86,11 @@ def fun(dataset, update=False):
     dataset = {key: value for key, value in dataset.items() if not key.endswith('._')}
 
     if 'organization' in dataset and 'name' in dataset['organization']:
+        solr_ds_url = settings.SOLR_DRAFT_DATASET_URL if draft else settings.SOLR_DATASET_URL
         result = index(
             f'iati-data-main/metadata/{dataset["organization"]["name"]}/{dataset["name"]}',
             dataset,
-            settings.SOLR_DATASET_URL
+            solr_ds_url
         )
         should_retry = should_be_indexed and not indexed
     else:
@@ -94,7 +100,7 @@ def fun(dataset, update=False):
     return dataset_indexing_result, result, should_retry
 
 
-def index_dataset(internal_url, dataset_filetype, codelist, currencies, dataset_metadata):
+def index_dataset(internal_url, dataset_filetype, codelist, currencies, dataset_metadata, draft=False):
     """
     Index the dataset to the correct core.
 
@@ -106,13 +112,17 @@ def index_dataset(internal_url, dataset_filetype, codelist, currencies, dataset_
     """
     should_be_indexed = False
     try:
-        core_url = settings.SOLR_ACTIVITY_URL if dataset_filetype == 'activity' else settings.SOLR_ORGANISATION_URL
+        if dataset_filetype == 'activity':
+            core_url = settings.SOLR_ACTIVITY_URL if not draft else settings.SOLR_DRAFT_ACTIVITY_URL
+        else:
+            core_url = settings.SOLR_ORGANISATION_URL if not draft else settings.SOLR_DRAFT_ORGANISATION_URL
         json_path, should_be_indexed, p_res = convert_and_save_xml_to_processed_json(
             internal_url,
             dataset_filetype,
             codelist,
             currencies,
-            dataset_metadata
+            dataset_metadata,
+            draft
         )
         if json_path:
             result = index_to_core(core_url, json_path, remove=True)
@@ -126,7 +136,7 @@ def index_dataset(internal_url, dataset_filetype, codelist, currencies, dataset_
         return False, str(e), should_be_indexed
 
 
-def convert_and_save_xml_to_processed_json(filepath, filetype, codelist, currencies, dataset_metadata):
+def convert_and_save_xml_to_processed_json(filepath, filetype, codelist, currencies, dataset_metadata, draft=False):
     """
     Read the XML into a convertible format and save it to a json file,
     after extracting the activity or organisations from it and cleaning the dataset.
@@ -177,7 +187,7 @@ def convert_and_save_xml_to_processed_json(filepath, filetype, codelist, currenc
         return False, should_be_indexed, "Processed data could not be saved as JSON."
 
     if not settings.FCDO_INSTANCE:
-        dataset_subtypes(filetype, data, json_path)
+        dataset_subtypes(filetype, data, json_path, draft)
 
     return json_path, should_be_indexed, "Success"
 
@@ -210,7 +220,7 @@ def json_filepath(filepath):
         return False
 
 
-def dataset_subtypes(filetype, data, json_path):
+def dataset_subtypes(filetype, data, json_path, draft=False):
     """
     extract and index the subtypes of the dataset if it is an activity dataset.
 
@@ -225,10 +235,10 @@ def dataset_subtypes(filetype, data, json_path):
             subtypes[key] = []
 
         subtypes = activity_subtypes.extract_all_subtypes(subtypes, data)
-        index_subtypes(json_path, subtypes)
+        index_subtypes(json_path, subtypes, draft)
 
 
-def index_subtypes(json_path, subtypes):
+def index_subtypes(json_path, subtypes, draft=False):
     """
     Index the subtypes of the activity.
     Subtypes being the transactions, budgets and results stored in the dict.
@@ -245,7 +255,10 @@ def index_subtypes(json_path, subtypes):
             with open(subtype_json_path, 'w') as json_file:
                 json.dump(subtypes[subtype], json_file)
 
-            solr_url = activity_subtypes.AVAILABLE_SUBTYPES[subtype]
+            if draft:
+                solr_url = activity_subtypes.AVAILABLE_DRAFT_SUBTYPES[subtype]
+            else:
+                solr_url = activity_subtypes.AVAILABLE_SUBTYPES[subtype]
             index_to_core(solr_url, subtype_json_path, remove=True)
         except Exception as e:
             logging.error(f'Error indexing subtype {subtype} of {json_path}:\n{e}')

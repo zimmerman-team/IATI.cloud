@@ -34,7 +34,7 @@ def clear_cores_with_name(core="publisher"):
 
 
 @shared_task
-def start(update=False, drop=False):
+def start(update=False, drop=False, draft=False):
     # Only if the most recent data dump was a success
     # if not datadump_success():
     #     logging.info("start:: The CodeForIATI Data Dump failed, aborting the process!")
@@ -42,7 +42,7 @@ def start(update=False, drop=False):
     # Clear the cores, do not use a task as this needs to finish before continuing
     try:
         if not update:
-            direct_indexing.clear_indices()
+            direct_indexing.clear_indices(draft)
     except pysolr.SolrError:
         # Stop the process and send a message to Celery Flower
         logging.info("start:: Error clearing the direct indexing cores, check your Solr instance.")
@@ -59,7 +59,7 @@ def start(update=False, drop=False):
 
 
 @shared_task(queue="aida_queue")
-def aida_async_index(dataset, publisher, ds_name, ds_url):
+def aida_async_index(dataset, publisher, ds_name, ds_url, draft=False):
     """
     This function is used to index AIDA data.
     Expects a dict with the following fields:
@@ -69,13 +69,13 @@ def aida_async_index(dataset, publisher, ds_name, ds_url):
     """
     logging.info("aida_async_index:: Starting task in aida_queue.")
     logging.info(f"aida_async_index:: Dataset: {dataset}")
-    result = direct_indexing.aida_index(dataset, publisher, ds_name, ds_url)
+    result = direct_indexing.aida_index(dataset, publisher, ds_name, ds_url, draft)
     logging.info(f"aida_async_index:: result: {result}")
     return result
 
 
 @shared_task(queue="aida_queue")
-def aida_async_drop(ds_name):
+def aida_async_drop(ds_name, draft=False):
     """
     This function is used to drop AIDA data.
     Expects a dict with the following field:
@@ -83,7 +83,7 @@ def aida_async_drop(ds_name):
     """
     logging.info("aida_async_drop:: Starting task in aida_queue.")
     logging.info(f"aida_async_index:: Dataset: {ds_name}")
-    result = direct_indexing.aida_drop(ds_name)
+    result = direct_indexing.aida_drop(ds_name, draft)
     logging.info(f"aida_async_drop:: result: {result}")
     return result
 

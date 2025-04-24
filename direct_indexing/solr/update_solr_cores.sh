@@ -38,6 +38,7 @@ read solr_container_id
 
 echo "The ID is: $solr_container_id"
 
+# main cores
 docker cp ./direct_indexing/solr/cores/activity/managed-schema $solr_container_id:/bitnami/solr/server/solr/activity/conf/managed-schema.xml
 docker cp ./direct_indexing/solr/cores/budget/managed-schema $solr_container_id:/bitnami/solr/server/solr/budget/conf/managed-schema.xml
 docker cp ./direct_indexing/solr/cores/dataset/managed-schema $solr_container_id:/bitnami/solr/server/solr/dataset/conf/managed-schema.xml
@@ -46,11 +47,25 @@ docker cp ./direct_indexing/solr/cores/publisher/managed-schema $solr_container_
 docker cp ./direct_indexing/solr/cores/result/managed-schema $solr_container_id:/bitnami/solr/server/solr/result/conf/managed-schema.xml
 docker cp ./direct_indexing/solr/cores/transaction/managed-schema $solr_container_id:/bitnami/solr/server/solr/transaction/conf/managed-schema.xml
 docker cp ./direct_indexing/solr/cores/activity/xslt $solr_container_id:/bitnami/solr/server/solr/activity/conf/
+# draft cores
+docker cp ./direct_indexing/solr/cores/activity/managed-schema $solr_container_id:/bitnami/solr/server/solr/draft_activity/conf/managed-schema.xml
+docker cp ./direct_indexing/solr/cores/budget/managed-schema $solr_container_id:/bitnami/solr/server/solr/draft_budget/conf/managed-schema.xml
+docker cp ./direct_indexing/solr/cores/dataset/managed-schema $solr_container_id:/bitnami/solr/server/solr/draft_dataset/conf/managed-schema.xml
+docker cp ./direct_indexing/solr/cores/organisation/managed-schema $solr_container_id:/bitnami/solr/server/solr/draft_organisation/conf/managed-schema.xml
+docker cp ./direct_indexing/solr/cores/result/managed-schema $solr_container_id:/bitnami/solr/server/solr/draft_result/conf/managed-schema.xml
+docker cp ./direct_indexing/solr/cores/transaction/managed-schema $solr_container_id:/bitnami/solr/server/solr/draft_transaction/conf/managed-schema.xml
+docker cp ./direct_indexing/solr/cores/activity/xslt $solr_container_id:/bitnami/solr/server/solr/draft_activity/conf/
 
+# main cores
 sudo sed -i 's/<int name="maxFields">1000<\/int>/<int name="maxFields">2000<\/int>/' $solr_container_id/solr_data/solr/server/solr/activity/conf/solrconfig.xml
 sudo sed -i 's/<int name="maxFields">1000<\/int>/<int name="maxFields">2000<\/int>/' $solr_container_id/solr_data/solr/server/solr/transaction/conf/solrconfig.xml
 sudo sed -i 's/<int name="maxFields">1000<\/int>/<int name="maxFields">2000<\/int>/' $solr_container_id/solr_data/solr/server/solr/budget/conf/solrconfig.xml
 sudo sed -i 's/<int name="maxFields">1000<\/int>/<int name="maxFields">2000<\/int>/' $solr_container_id/solr_data/solr/server/solr/result/conf/solrconfig.xml
+# draft cores
+sudo sed -i 's/<int name="maxFields">1000<\/int>/<int name="maxFields">2000<\/int>/' $solr_container_id/solr_data/solr/server/solr/draft_activity/conf/solrconfig.xml
+sudo sed -i 's/<int name="maxFields">1000<\/int>/<int name="maxFields">2000<\/int>/' $solr_container_id/solr_data/solr/server/solr/draft_transaction/conf/solrconfig.xml
+sudo sed -i 's/<int name="maxFields">1000<\/int>/<int name="maxFields">2000<\/int>/' $solr_container_id/solr_data/solr/server/solr/draft_budget/conf/solrconfig.xml
+sudo sed -i 's/<int name="maxFields">1000<\/int>/<int name="maxFields">2000<\/int>/' $solr_container_id/solr_data/solr/server/solr/draft_result/conf/solrconfig.xml
 
 # Ask the user if this is mounted locally, default to no. If it is, chown the files to 1001:root
 if ask_for_confirmation "Are the files locally mounted (f.ex. on extra mounted volume)?"; then
