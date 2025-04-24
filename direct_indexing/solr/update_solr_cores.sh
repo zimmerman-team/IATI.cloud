@@ -57,15 +57,15 @@ docker cp ./direct_indexing/solr/cores/transaction/managed-schema $solr_containe
 docker cp ./direct_indexing/solr/cores/activity/xslt $solr_container_id:/bitnami/solr/server/solr/draft_activity/conf/
 
 # main cores
-sudo sed -i 's/<int name="maxFields">1000<\/int>/<int name="maxFields">2000<\/int>/' $solr_container_id/solr_data/solr/server/solr/activity/conf/solrconfig.xml
-sudo sed -i 's/<int name="maxFields">1000<\/int>/<int name="maxFields">2000<\/int>/' $solr_container_id/solr_data/solr/server/solr/transaction/conf/solrconfig.xml
-sudo sed -i 's/<int name="maxFields">1000<\/int>/<int name="maxFields">2000<\/int>/' $solr_container_id/solr_data/solr/server/solr/budget/conf/solrconfig.xml
-sudo sed -i 's/<int name="maxFields">1000<\/int>/<int name="maxFields">2000<\/int>/' $solr_container_id/solr_data/solr/server/solr/result/conf/solrconfig.xml
+sudo docker exec $solr_container_id sed -i 's/<int name="maxFields">1000<\/int>/<int name="maxFields">2000<\/int>/' /bitnami/solr/server/solr/activity/conf/solrconfig.xml
+sudo docker exec $solr_container_id sed -i 's/<int name="maxFields">1000<\/int>/<int name="maxFields">2000<\/int>/' /bitnami/solr/server/solr/budget/conf/solrconfig.xml
+sudo docker exec $solr_container_id sed -i 's/<int name="maxFields">1000<\/int>/<int name="maxFields">2000<\/int>/' /bitnami/solr/server/solr/result/conf/solrconfig.xml
+sudo docker exec $solr_container_id sed -i 's/<int name="maxFields">1000<\/int>/<int name="maxFields">2000<\/int>/' /bitnami/solr/server/solr/transaction/conf/solrconfig.xml
 # draft cores
-sudo sed -i 's/<int name="maxFields">1000<\/int>/<int name="maxFields">2000<\/int>/' $solr_container_id/solr_data/solr/server/solr/draft_activity/conf/solrconfig.xml
-sudo sed -i 's/<int name="maxFields">1000<\/int>/<int name="maxFields">2000<\/int>/' $solr_container_id/solr_data/solr/server/solr/draft_transaction/conf/solrconfig.xml
-sudo sed -i 's/<int name="maxFields">1000<\/int>/<int name="maxFields">2000<\/int>/' $solr_container_id/solr_data/solr/server/solr/draft_budget/conf/solrconfig.xml
-sudo sed -i 's/<int name="maxFields">1000<\/int>/<int name="maxFields">2000<\/int>/' $solr_container_id/solr_data/solr/server/solr/draft_result/conf/solrconfig.xml
+sudo docker exec $solr_container_id sed -i 's/<int name="maxFields">1000<\/int>/<int name="maxFields">2000<\/int>/' /bitnami/solr/server/solr/draft_activity/conf/solrconfig.xml
+sudo docker exec $solr_container_id sed -i 's/<int name="maxFields">1000<\/int>/<int name="maxFields">2000<\/int>/' /bitnami/solr/server/solr/draft_budget/conf/solrconfig.xml
+sudo docker exec $solr_container_id sed -i 's/<int name="maxFields">1000<\/int>/<int name="maxFields">2000<\/int>/' /bitnami/solr/server/solr/draft_result/conf/solrconfig.xml
+sudo docker exec $solr_container_id sed -i 's/<int name="maxFields">1000<\/int>/<int name="maxFields">2000<\/int>/' /bitnami/solr/server/solr/draft_transaction/conf/solrconfig.xml
 
 # Ask the user if this is mounted locally, default to no. If it is, chown the files to 1001:root
 if ask_for_confirmation "Are the files locally mounted (f.ex. on extra mounted volume)?"; then
