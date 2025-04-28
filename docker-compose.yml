@@ -65,9 +65,10 @@ services:
       - SOLR_ADMIN_USERNAME=${SOLR_ADMIN_USERNAME}
       - SOLR_ADMIN_PASSWORD=${SOLR_ADMIN_PASSWORD}
     volumes:
-      # Mount the image's solr_mount_dir to a volume. Alternatively, change the line to /PATH/TO/DIR/solr_data:/bitnami
-      - solr_data:/bitnami
-      #- /PATH/TO/DIR/solr_data:/bitnami
+      # Mount the image's /bitnami directory to the provided SOLR_VOLUME in .env,
+      # default value is solr_data, a docker volume. Alternatively change it to a directory on the local drive,
+      # such as a mounted directory, for example /opt/solr_data or /mnt/HC_Volume_N/solr_data
+      - ${SOLR_VOLUME}:/bitnami
 
   iaticloud:
     container_name: iaticloud

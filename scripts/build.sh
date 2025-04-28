@@ -1,12 +1,34 @@
 #!/bin/bash
 
-# Help
-if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
-  echo "Used to (re)build services running through docker. Optionally specify service names."
-  echo ""
-  echo "Usage: bash $0 [service name (optional) (up to 10 service names)]"
-  exit 0
-fi
+# Import utility functions
+source ./scripts/util.sh
+
+helper $0 $1 \
+  "$0
+Used to (re)build services running through docker.
+Optionally specify service names.
+
+Always run from the root directory of the IATI.cloud project.
+Uses with sudo access.
+
+Usage:
+    $0 [--help] [...service names...]
+
+General options:
+  -h [--help]         show this help message
+
+Docker service options:
+  database            docker service: IATI.cloud postgres database
+  rabbitmq            docker service: rabbitmq
+  mongo               docker service: IATI.cloud mongo database
+  solr                docker service: IATI.cloud solr database
+  iaticloud           docker service: IATI.cloud main service
+  celeryworker        docker service: IATI.cloud general celery workers
+  celeryaidaworker    docker service: IATI.cloud AIDA specific celery workers
+  celeryrevokeworker  docker service: IATI.cloud revoke specific celery workers
+  celeryscheduler     docker service: IATI.cloud scheduler celery beat
+  celeryflower        docker service: IATI.cloud celery flower
+"
 
 # Start
 # Get additional arguments (service names)
