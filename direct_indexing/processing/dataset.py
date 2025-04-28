@@ -53,15 +53,8 @@ def fun(dataset, update=False, draft=False):
     dataset['dataset_valid'] = validation_status
     indexed = False
     dataset_indexing_result = "Dataset invalid"
-    # drop the old data from solr
-    if update:
-        solr_cores = [settings.SOLR_ACTIVITY, settings.SOLR_BUDGET, settings.SOLR_RESULT, settings.SOLR_TRANSACTION]
-        if draft:
-            solr_cores += [settings.SOLR_DRAFT_ACTIVITY, settings.SOLR_DRAFT_BUDGET, settings.SOLR_DRAFT_RESULT,
-                           settings.SOLR_DRAFT_TRANSACTION]
-        for url in solr_cores:
-            conn = Solr(url)
-            conn.delete(q='%s:"%s"' % ('dataset.id', dataset['id']), commit=True)
+
+    _update_drop(update, draft, dataset)
 
     # Index the relevant datasets,
     # these are activity files of a valid version and that have been successfully validated (not critical)
@@ -98,6 +91,18 @@ def fun(dataset, update=False, draft=False):
         should_retry = False
 
     return dataset_indexing_result, result, should_retry
+
+
+def _update_drop(update, draft, dataset):
+    # drop the old data from solr
+    if update:
+        solr_cores = [settings.SOLR_ACTIVITY, settings.SOLR_BUDGET, settings.SOLR_RESULT, settings.SOLR_TRANSACTION]
+        if draft:
+            solr_cores += [settings.SOLR_DRAFT_ACTIVITY, settings.SOLR_DRAFT_BUDGET, settings.SOLR_DRAFT_RESULT,
+                           settings.SOLR_DRAFT_TRANSACTION]
+        for url in solr_cores:
+            conn = Solr(url)
+            conn.delete(q='%s:"%s"' % ('dataset.id', dataset['id']), commit=True)
 
 
 def index_dataset(internal_url, dataset_filetype, codelist, currencies, dataset_metadata, draft=False):
