@@ -51,10 +51,11 @@ for core in "${cores[@]}"; do
   docker cp $src "$solr_container_id:$bitnami_solr/draft_$core/conf/managed-schema.xml"
 
   # Update the activity data cores with a higher maxFields value
-  if core in ("activity" "budget" "result" "transaction"); then
+  content_cores=(activity budget result transaction)
+  if [[ " ${content_cores[@]} " =~ " $core " ]]; then
     sed_val='s/<int name="maxFields">1000<\/int>/<int name="maxFields">2000<\/int>/'
-    sudo docker exec "$solr_container_id" sed -i $sed_val "$bitnami_solr/$core/conf/solrconfig.xml"
-    sudo docker exec "$solr_container_id" sed -i $sed_val "$bitnami_solr/draft_$core/conf/solrconfig.xml"
+    sudo docker exec "$solr_container_id" sed -i "$sed_val" "$bitnami_solr/$core/conf/solrconfig.xml"
+    sudo docker exec "$solr_container_id" sed -i "$sed_val" "$bitnami_solr/draft_$core/conf/solrconfig.xml"
   fi
 done
 
