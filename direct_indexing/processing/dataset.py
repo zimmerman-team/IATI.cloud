@@ -66,8 +66,7 @@ def fun(dataset, update=False, draft=False):
     dataset['iati_cloud_indexed'] = indexed
     dataset['iati_cloud_indexed_datetime'] = str(datetime.now())
     dataset['iati_cloud_should_be_indexed'] = should_be_indexed
-    if not indexed:
-        dataset['iati_cloud_removed_reason'] = dataset_indexing_result
+    dataset['iati_cloud_removed_reason'] = dataset_indexing_result if not indexed else ""
     # If this is not an update but the file belongs to AIDA, mark it as managed from AIDA,
     # so in future updates the dataset will not be re-indexed, as it will automatically be updated from AIDA.
     if not update and "https://files.aida.tools" in dataset['resources'][0]['url']:
