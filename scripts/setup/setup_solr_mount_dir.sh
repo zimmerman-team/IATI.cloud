@@ -22,7 +22,7 @@ if ask_for_confirmation "Do you want to set up a mounted solr directory?"; then
   read -p "Enter your mounted directory root, where a 'solr_data' directory will be created: " mounted_dir
   sudo mkdir -p $mounted_dir/solr_data
   sudo chown -R 1001:root $mounted_dir/solr_data/
-  sed -i 's|SOLR_VOLUME=solr_data|SOLR_VOLUME="$mounted_dir/solr_data"|g' .env
+  sed -i "s|SOLR_VOLUME=solr_data|SOLR_VOLUME=$mounted_dir/solr_data|g" .env
 else
   echo "Skipping mounted solr directory."
 fi
