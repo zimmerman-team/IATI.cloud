@@ -1,4 +1,5 @@
 import json
+import logging
 from functools import lru_cache
 
 import requests
@@ -83,4 +84,7 @@ class Codelists(object):
             data = r.json()['data']
             self.codelists_dict[key] = data
         with open(settings.CODELISTS_JSON, 'w') as file:
-            json.dump(self.codelists_dict, file)
+            try:
+                json.dump(self.codelists_dict, file)
+            except Exception as e:
+                logging.error(f"Error writing codelists to {settings.CODELISTS_JSON} - type: {type(e)} stack: {e}")

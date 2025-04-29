@@ -148,8 +148,11 @@ def fcdo_replace_partial_url(find_url, replace_url):
     # update the local dataset metadata file.
     logging.info("fcdo_replace_partial_url:: update dataset_metadata file")
     path = f'{settings.DATASET_PARENT_PATH}/dataset_metadata.json'
-    with open(path, 'w') as file:
-        json.dump(dataset_metadata, file, indent=4)
+    try:
+        with open(path, 'w') as file:
+            json.dump(dataset_metadata, file, indent=4)
+    except Exception as e:
+        logging.error(f"fcdo_replace_partial_url:: Error writing to dataset_metadata.json: type: {type(e)} -- stack: {e}")
 
     # run the dataset metadata with update = True and force_update = True
     # this will automatically all the files that have a new URL and a new HASH

@@ -113,7 +113,8 @@ def create_dataset_metadata(url, title, name, org):
     try:
         with open(meta_dir + f"/{name}.json", "w") as file:
             json.dump(meta, file, indent=4)
-    except Exception:
+    except Exception as e:
+        logging.error(f"create_dataset_metadata:: Error writing to metadata file: type: {type(e)} -- stack: {e}")
         return "Something went wrong in storing the metadata of the file."
 
     return meta

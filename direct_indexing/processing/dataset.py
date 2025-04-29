@@ -187,8 +187,9 @@ def convert_and_save_xml_to_processed_json(filepath, filetype, codelist, currenc
     try:
         with open(json_path, 'w') as json_file:
             json.dump(data, json_file)
-    except Exception:
+    except Exception as e:
         logging.info(f'-- Error saving to {json_path}, failed')
+        logging.error(f'Error writing to {json_path}: type: {type(e)} -- stack: {e}')
         return False, should_be_indexed, "Processed data could not be saved as JSON."
 
     if not settings.FCDO_INSTANCE:
@@ -257,9 +258,12 @@ def index_subtypes(json_path, subtypes, draft=False):
     for subtype in subtypes:
         subtype_json_path = f'{os.path.splitext(json_path)[0]}_{subtype}.json'
         try:
-            with open(subtype_json_path, 'w') as json_file:
-                json.dump(subtypes[subtype], json_file)
-
+            try:
+                with open(subtype_json_path, 'w') as json_file:
+                    json.dump(subtypes[subtype], json_file)
+            except Exception as e:
+                logging.error(f'Error writing to {subtype_json_path}: type: {type(e)} -- stack: {e}')
+                continue
             if draft:
                 solr_url = activity_subtypes.AVAILABLE_DRAFT_SUBTYPES[subtype]
             else:

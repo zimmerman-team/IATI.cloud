@@ -85,8 +85,12 @@ def _aida_download(publisher, dataset_name, dataset_url, dataset):
     os.makedirs(metadata_publisher_path, exist_ok=True)
     metadata_path = os.path.join(metadata_publisher_path, f"{dataset_name}.json")
     # save dataset as json to metadata_path
-    with open(metadata_path, 'w') as json_file:
-        json.dump(dataset, json_file)
+    try:
+        with open(metadata_path, 'w') as json_file:
+            json.dump(dataset, json_file)
+    except Exception as e:
+        logging.error(f"Failed to save metadata for dataset {dataset_name}: type: {type(e)} stack: {e}")
+        raise DatasetException(f"Failed to save metadata for dataset {dataset_name}")
 
 
 def aida_drop_dataset(dataset_name, draft=False):
