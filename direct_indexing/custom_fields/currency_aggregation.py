@@ -1,5 +1,7 @@
 import logging
+import math
 
+import bson
 from django.conf import settings
 from pymongo import MongoClient
 from pymongo.errors import PyMongoError
@@ -107,12 +109,34 @@ def connect_to_mongo(data):
         db = client.activities
         dba = db.activity
         dba.drop()  # Drop previous dataset
-        dba.insert_many(data)  # This introduces '_id' key to each data point
+        _mongo_insert_many(dba, data)  # Insert the data
 
         return dba, client
     except PyMongoError as e:  # NOQA
         logging.error(f"connect_to_mongo:: Error in connecting to mongo: {e}")
         raise
+
+
+def _mongo_insert_many(dba, data):
+    """
+    Insert all data into the mongo database.
+    However, we are sometimes hitting the 16MB limit of BSON.
+    `BSONObj size: N ... is invalid. Size must be between 0 and 16793600`
+
+    To prevent this, insert the data in chunks of size/max.
+    In the example of 19MB, this would be two chunks, if it is 15MB, one chunk, and if it is 40MB, three chunks.
+    """
+    max_size = 15 * 1024 * 1024  # 15MB, the limit is 16, so we keep some margins
+    data_length_bytes = len(bson.BSON.encode({"iati-activity": data}))
+    if data_length_bytes > max_size:
+        # Split the data into smaller chunks
+        chunks = math.ceil(data_length_bytes / max_size)
+        keys_per_chunk = math.ceil(len(data) / chunks)
+        for i in range(chunks):
+            start_index = i * keys_per_chunk
+            end_index = start_index + keys_per_chunk
+            chunk = data[start_index:end_index]
+            dba.insert_many(chunk)
 
 
 def get_aggregations(dba, data):
@@ -328,7 +352,7 @@ def refresh_mongo_data(dba, data):
     :return: the refreshed data
     """
     dba.drop()  # Drop previous dataset
-    dba.insert_many(data)  # Re-submit updated dataset
+    _mongo_insert_many(dba, data)  # Re-submit updated dataset
     return dba
 
 
