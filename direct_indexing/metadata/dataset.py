@@ -103,7 +103,7 @@ def aida_drop_dataset(dataset_name, draft=False):
     """
     try:
         solr_ds = settings.SOLR_DRAFT_DATASET if draft else settings.SOLR_DATASET
-        solr = pysolr.Solr(solr_ds, always_commit=True)
+        solr = pysolr.Solr(solr_ds, always_commit=True, timeout=300)
         find_data = solr.search(f'name:"{dataset_name}"')
         logging.info(f"aida_drop_dataset:: dataset found: {len(find_data)}")
         if len(find_data) > 0:
@@ -118,7 +118,7 @@ def aida_drop_dataset(dataset_name, draft=False):
         if draft:
             core_list = [f'draft_{core}' for core in core_list]
         for core in core_list:
-            solr = pysolr.Solr(f'{settings.SOLR_URL}/{core}', always_commit=True)
+            solr = pysolr.Solr(f'{settings.SOLR_URL}/{core}', always_commit=True, timeout=300)
             find_data = solr.search(f'dataset.name:"{dataset_name}"')
             logging.info(f"aida_drop_dataset:: {core} found: {len(find_data)}")
             if len(find_data) > 0:

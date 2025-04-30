@@ -21,7 +21,7 @@ def clear_core(core_url):
     :return: None
     """
     try:
-        core = pysolr.Solr(core_url, always_commit=True)
+        core = pysolr.Solr(core_url, always_commit=True, timeout=300)
         _solr_out = core.delete(q='*:*')
         logging.info(f'clear_core:: solr_out delete: {_solr_out}')
     except pysolr.SolrError:
@@ -186,10 +186,10 @@ def remove_custom(name, org, dataset_id):
 
         d_id = dataset_id
         for core in ['activity', 'transaction', 'result', 'budget']:
-            solr = pysolr.Solr(f'{settings.SOLR_URL}/{core}', always_commit=True)
+            solr = pysolr.Solr(f'{settings.SOLR_URL}/{core}', always_commit=True, timeout=300)
             if len(solr.search(f'dataset.id:"{d_id}"')) > 0:
                 solr.delete(q=f'dataset.id:"{d_id}"')
-        solr = pysolr.Solr(settings.SOLR_DATASET, always_commit=True)
+        solr = pysolr.Solr(settings.SOLR_DATASET, always_commit=True, timeout=300)
         if len(solr.search(f'id:"{d_id}"')) > 0:
             solr.delete(q=f'id:"{d_id}"')
     except Exception:

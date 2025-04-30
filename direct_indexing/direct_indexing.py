@@ -34,7 +34,7 @@ def clear_indices(draft=False):
             cores = [f'draft_{core}' for core in cores]
         for core in cores:
             logging.info(f'clear_indices:: Clearing {core} core')
-            solr = pysolr.Solr(f'{settings.SOLR_URL}/{core}', always_commit=True)
+            solr = pysolr.Solr(f'{settings.SOLR_URL}/{core}', always_commit=True, timeout=300)
             solr.delete(q='*:*')
             logging.info(f'clear_indices:: Finished clearing {core} core')
         return 'Success'
@@ -49,7 +49,7 @@ def clear_indices_for_core(core):
     """
     try:
         logging.info(f'clear_indices:: Clearing {core} core')
-        solr = pysolr.Solr(f'{settings.SOLR_URL}/{core}', always_commit=True)
+        solr = pysolr.Solr(f'{settings.SOLR_URL}/{core}', always_commit=True, timeout=300)
         solr.delete(q='*:*')
         logging.info(f'clear_indices:: Finished clearing {core} core')
         return 'Success'
@@ -110,11 +110,11 @@ def drop_removed_data():
 
     # For every core with dataset data, delete the data for the dropped datasets identified with the dataset.id field
     for core in ['activity', 'transaction', 'result', 'budget']:
-        solr = pysolr.Solr(f'{settings.SOLR_URL}/{core}', always_commit=True)
+        solr = pysolr.Solr(f'{settings.SOLR_URL}/{core}', always_commit=True, timeout=300)
         for d_id in dropped_list:
             if len(solr.search(f'dataset.id:"{d_id}"')) > 0:
                 solr.delete(q=f'dataset.id:"{d_id}"')
-    solr = pysolr.Solr(settings.SOLR_DATASET, always_commit=True)
+    solr = pysolr.Solr(settings.SOLR_DATASET, always_commit=True, timeout=300)
     for d_id in dropped_list:
         if len(solr.search(f'id:"{d_id}"')) > 0:
             # solr.delete(q=f'id:{d_id}')
