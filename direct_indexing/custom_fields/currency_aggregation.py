@@ -99,7 +99,7 @@ def prepare_data(data):
     return data
 
 
-def connect_to_mongo(data, insert_one):
+def connect_to_mongo(data, insert_one=False):
     """
     Create a connection to the mongo database.
 
@@ -370,7 +370,7 @@ def process_activity_aggregations(data, activity_aggregations, activity_indexes,
     return data
 
 
-def refresh_mongo_data(dba, data, insert_one):
+def refresh_mongo_data(dba, data, insert_one=False):
     """
     Refresh mongo data so we can access the new activity aggregation,
     as the child aggregations are the sums of their children
