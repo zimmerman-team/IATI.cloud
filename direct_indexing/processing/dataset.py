@@ -84,7 +84,7 @@ def _index_dataset_metadata_to_dataset_core(dataset, draft, should_be_indexed, i
     # Remove any key/value pair if the key ends with ._
     dataset = {key: value for key, value in dataset.items() if not key.endswith('._')}
 
-    if 'organization' in dataset and 'name' in dataset['organization']:
+    if 'organization' in dataset and dataset['organization'] and 'name' in dataset['organization']:
         solr_ds_url = settings.SOLR_DRAFT_DATASET_URL if draft else settings.SOLR_DATASET_URL
         result = index(
             f'iati-data-main/metadata/{dataset["organization"]["name"]}/{dataset["name"]}',
