@@ -8,7 +8,7 @@ from celery import shared_task
 from django.conf import settings
 
 from direct_indexing import direct_indexing, util
-from direct_indexing.metadata.dataset import subtask_process_dataset
+from direct_indexing.metadata.dataset import subtask_process_dataset, retry_unindexed_valid_datasets as _retry
 from direct_indexing.metadata.util import retrieve
 # Currently disabled import for datadump check
 # from direct_indexing.util import datadump_success
@@ -105,6 +105,14 @@ def subtask_dataset_metadata(update=False):
 
 
 @shared_task
+def retry_unindexed_valid_datasets():
+    logging.info("retry_unindexed_valid_datasets:: Starting retry unindexed valid datasets.")
+    result = _retry()
+    logging.info(f"retry_unindexed_valid_datasets:: result: {result}")
+    return result
+
+
+@shared_task
 def fcdo_replace_partial_url(find_url, replace_url):
     """
     This function is used to update a dataset based on the provided URL.
@@ -152,7 +160,7 @@ def fcdo_replace_partial_url(find_url, replace_url):
         with open(path, 'w') as file:
             json.dump(dataset_metadata, file, indent=4)
     except Exception as e:
-        logging.error(f"fcdo_replace_partial_url:: Error writing to dataset_metadata.json: type: {type(e)} -- stack: {e}")
+        logging.error(f"fcdo_replace_partial_url:: Error writing dataset_metadata.json: type: {type(e)} -- stack: {e}")
 
     # run the dataset metadata with update = True and force_update = True
     # this will automatically all the files that have a new URL and a new HASH

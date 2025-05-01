@@ -129,7 +129,7 @@ def aida_drop_dataset(dataset_name, draft=False):
     return "Dataset deleted successfully", 200
 
 
-def index_datasets_and_dataset_metadata(update, force_update):
+def index_datasets_and_dataset_metadata(update, force_update, fresh=True):
     """
     Steps:
     . Download all the datasets
@@ -139,13 +139,19 @@ def index_datasets_and_dataset_metadata(update, force_update):
         Index that dataset
     . Index all dataset metadata
 
+    :param update: If True, only index datasets that have changed. Determined by a change in the hash
+    :param force_update: If True, delete and re-index all datasets.
+    :param fresh: If True, download the datasets and metadata again.
     :return: None
     """
     logging.info('index_datasets_and_dataset_metadata:: - Dataset metadata and indexing')
-    download_dataset()
-
-    logging.info('index_datasets_and_dataset_metadata:: -- Retrieve metadata')
-    dataset_metadata = retrieve(settings.METADATA_DATASET_URL, 'dataset_metadata', force_update)
+    if fresh:
+        # This is a double implementation of a fresh check. In the function itself, we use the ENV value
+        # In this implementation, we provide the fresh boolean from the retry function call
+        logging.info('index_datasets_and_dataset_metadata:: -- Download datasets')
+        download_dataset()
+        logging.info('index_datasets_and_dataset_metadata:: -- Retrieve metadata')
+        dataset_metadata = retrieve(settings.METADATA_DATASET_URL, 'dataset_metadata', force_update)
 
     # If we are updating instead of refreshing, retrieve dataset ids
     if update:
@@ -162,6 +168,21 @@ def index_datasets_and_dataset_metadata(update, force_update):
     res = '- All Indexing substasks started'
     logging.info(f'index_datasets_and_dataset_metadata:: result: {res}')
     return res
+
+
+def retry_unindexed_valid_datasets():
+    """
+    Retry unindexed valid datasets.
+
+    :return: str describing the result of the operation.
+    """
+    logging.info('retry_unindexed_valid_datasets:: - Retry unindexed valid datasets')
+    # Index all datasets, with update but not fresh, to prevent re-downloading.
+    # This will make it so only the datasets with a changed hash will be re-indexed.
+    # The only way a hash can be changed in this case, is if we changed the hash in the indexing process.
+    # This only happens if `indexed` is set to false, and `should_be_indexed` is set to true.
+    index_datasets_and_dataset_metadata(update=True, force_update=False, fresh=False)
+    return '- All unindexed valid datasets restarted'
 
 
 def load_codelists():

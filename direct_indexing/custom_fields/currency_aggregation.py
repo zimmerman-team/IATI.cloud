@@ -33,7 +33,7 @@ T_TYPES = [None, "incoming-funds", "outgoing-commitment", "disbursement",
 TT_U = [t.replace("-", "_") if t else None for t in T_TYPES]
 
 
-def currency_aggregation(data):
+def currency_aggregation(data, insert_one=False):
     """
     Aggregate currency data.
     We use a mongodb approach where the data is temporarily stored in a mongo database,
@@ -46,6 +46,7 @@ def currency_aggregation(data):
     to aggregate on the child data as well.
 
     :param data: List of activities.
+    :insert_one: Whether to insert one by one or not. Defaults to false.
     :return: the dataset updated with aggregations.
     """
 
@@ -54,7 +55,7 @@ def currency_aggregation(data):
         if type(data) is dict:
             data = [data]  # Needs to be list for aggregation
         data = prepare_data(data)
-        dba, client = connect_to_mongo(data)
+        dba, client = connect_to_mongo(data, insert_one)
         # Aggregate currencies on activity level.
         activity_aggregations = get_aggregations(dba, data)
         aggregation_fields, formatted_aggregation_fields, child_aggregation_fields, \
@@ -62,7 +63,7 @@ def currency_aggregation(data):
         activity_indexes = index_activity_data(data)
         data = process_activity_aggregations(data, activity_aggregations, activity_indexes, aggregation_fields)
         # Aggregate child currencies
-        dba = refresh_mongo_data(dba, data)
+        dba = refresh_mongo_data(dba, data, insert_one)
         child_aggregations = get_child_aggregations(dba, aggregation_fields)
         data = process_child_aggregations(data, child_aggregations, activity_indexes, aggregation_fields,
                                           child_aggregation_fields, parent_plus_child_aggregation_fields)
@@ -71,9 +72,11 @@ def currency_aggregation(data):
 
         # Clean up data names
         data = clean_aggregation_result(data, aggregation_fields, formatted_aggregation_fields)
-    except PyMongoError:
+    except PyMongoError as e:
+        logging.error(f"currency_aggregation:: PyMongo Error:: {e}")
         pass  # Return the data as is, if there is an error.
-    return data
+    data, id_found = _final_clean(data)
+    return data, id_found
 
 
 def prepare_data(data):
@@ -96,11 +99,12 @@ def prepare_data(data):
     return data
 
 
-def connect_to_mongo(data):
+def connect_to_mongo(data, insert_one):
     """
     Create a connection to the mongo database.
 
     :param data: List of activities.
+    :insert_one: Whether to insert one by one or not.
     :return: Mongo database and connection.
     """
     try:
@@ -109,7 +113,10 @@ def connect_to_mongo(data):
         db = client.activities
         dba = db.activity
         dba.drop()  # Drop previous dataset
-        _mongo_insert_many(dba, data)  # Insert the data
+        if insert_one:
+            _mongo_insert_one(dba, data)  # Insert the data one by one, last resort.
+        else:
+            _mongo_insert_many(dba, data)  # Insert the data
 
         return dba, client
     except PyMongoError as e:  # NOQA
@@ -136,7 +143,28 @@ def _mongo_insert_many(dba, data):
             start_index = i * keys_per_chunk
             end_index = start_index + keys_per_chunk
             chunk = data[start_index:end_index]
-            dba.insert_many(chunk)
+            try:
+                dba.insert_many(chunk)
+            except PyMongoError as e:
+                logging.error(f"_mongo_insert_many:: Error in inserting data: {e}")
+                raise
+
+
+def _mongo_insert_one(dba, data):
+    """
+    Loop over the activities and insert them one by one to prevent any issues with the BSON size,
+    or repeated data insertion
+
+    :param dba: Mongo database with the activities.
+    :param data: List of activities.
+    :return: None
+    """
+    for activity in data:
+        try:
+            dba.insert_one(activity)
+        except PyMongoError as e:
+            logging.error(f"_mongo_insert_one:: Error in inserting data: {e}")
+            raise
 
 
 def get_aggregations(dba, data):
@@ -342,17 +370,25 @@ def process_activity_aggregations(data, activity_aggregations, activity_indexes,
     return data
 
 
-def refresh_mongo_data(dba, data):
+def refresh_mongo_data(dba, data, insert_one):
     """
     Refresh mongo data so we can access the new activity aggregation,
     as the child aggregations are the sums of their children
 
     :param dba: the mongo activities database.
     :param data: the data to refresh
+    :param insert_one: whether to insert one by one or not
     :return: the refreshed data
     """
     dba.drop()  # Drop previous dataset
-    _mongo_insert_many(dba, data)  # Re-submit updated dataset
+    try:
+        if insert_one:
+            _mongo_insert_one(dba, data)  # Re-submit updated dataset one by one
+        else:
+            _mongo_insert_many(dba, data)  # Re-submit updated dataset
+    except PyMongoError as e:
+        logging.error(f"refresh_mongo_data:: Error in inserting data: {e}")
+        raise
     return dba
 
 
@@ -556,3 +592,20 @@ def process_transaction_currency_agg(transaction_curr_agg, activity_indexes, agg
                 selector = TV_USD_CURR
             data[index_of_activity][f'{aggregation_fields[TT_U[transaction_type]]}-currency'] = \
                 data[index_of_activity][selector]
+
+
+def _final_clean(data):
+    """
+    Remove any mongo introduced fields that have not been filtered out due to mongo errors
+    These should not be in the data, but are sometimes present due to mongo errors.
+    We track these, to ensure we can retry their processing.
+
+    :param data: the activities dataset
+    :return: the cleaned data, a boolean indicating whether an id was found
+    """
+    id_found = False
+    for activity in data:
+        if '_id' in activity:
+            activity.pop('_id')  # Remove mongo introduced '_id'.
+            id_found = True
+    return data, id_found

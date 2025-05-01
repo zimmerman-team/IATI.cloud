@@ -30,11 +30,22 @@ def add_all(data, codelists, currencies, metadata):
     else:
         process_activity(data, codelists, currencies, metadata)
     # Currency aggregation is done on the whole dataset, rather than on the activity level
-    data = currency_aggregation(data)
+    data, id_found = currency_aggregation(data)
+    if id_found:
+        # if an id was found, there was an issue with the submission of the data to mongoDB.
+        # This is a known issue which appears to be unstable. The issue should be prevented by
+        # Batch uploading the data to MongoDB in small enough chunks, however,
+        # in practice, this does not always resolve the issue.
+        # To add one final attempt to resolve the issue, we will run the currency aggregation again.
+        # This time with the flag insert_one=True, to attempt to insert each activity separately.
+        # Note: This will be slow, but is a last resort only applied to, as seen by the latest test,
+        # around 5 datasets at most. In these cases, it is worth the attempt to get around
+        # the unstable nature of the issue.
+        data, id_found = currency_aggregation(data, insert_one=True)
     if settings.FCDO_INSTANCE:
         # this must be done last as it relies on budgets and date quarters being processed
         data = raise_h2_budget_data_to_h1(data)
-    return data
+    return data, not id_found  # not id_found means that the data was processed correctly
 
 
 def process_activity(activity, codelists, currencies, metadata):

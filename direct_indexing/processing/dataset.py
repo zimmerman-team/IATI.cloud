@@ -66,6 +66,9 @@ def fun(dataset, update=False, draft=False):
     dataset['iati_cloud_indexed'] = indexed
     dataset['iati_cloud_indexed_datetime'] = str(datetime.now())
     dataset['iati_cloud_should_be_indexed'] = should_be_indexed
+    if not indexed and should_be_indexed:
+        # Set the resources.hash to 'retry', so that the dataset will be re-processed within the next 10 minutes.
+        dataset['resources.hash'] = ['retry']
     dataset['iati_cloud_removed_reason'] = dataset_indexing_result if not indexed else ""
     # If this is not an update but the file belongs to AIDA, mark it as managed from AIDA,
     # so in future updates the dataset will not be re-indexed, as it will automatically be updated from AIDA.
@@ -112,7 +115,7 @@ def index_dataset(internal_url, dataset_filetype, codelist, currencies, dataset_
     :param dataset_filetype: The filetype of the dataset.
     :param codelist: An initialized codelist object
     :param currencies: An initialized currencies object
-    :return: true if indexing successful, false if failed.
+    :return: true if indexing successful, false if failed. A message indicating the result
     """
     should_be_indexed = False
     try:
@@ -137,7 +140,7 @@ def index_dataset(internal_url, dataset_filetype, codelist, currencies, dataset_
         return False, p_res, should_be_indexed
     except Exception as e:  # NOQA
         logging.warning(f'Exception occurred while indexing {dataset_filetype} dataset:\n{internal_url}\n{e}\nTherefore the dataset will not be indexed.')  # NOQA
-        return False, str(e), should_be_indexed
+        return False, f"An exception occurred while indexing, the dataset {"will be reindexed within 10 minutes." if should_be_indexed else "will not be indexed."}", should_be_indexed
 
 
 def convert_and_save_xml_to_processed_json(filepath, filetype, codelist, currencies, dataset_metadata, draft=False):
@@ -173,9 +176,12 @@ def convert_and_save_xml_to_processed_json(filepath, filetype, codelist, currenc
 
     # Add our additional custom fields
     if filetype == 'activity':
-        data = custom_fields.add_all(data, codelist, currencies, dataset_metadata)
+        data, add_all_ok = custom_fields.add_all(data, codelist, currencies, dataset_metadata)
     if filetype == 'organisation':
         data = organisation_custom_fields.add_all(data)
+    # if unable to add custom fields, do not save the dataset
+    if not add_all_ok:
+        return False, should_be_indexed, "Unable to add custom fields to the dataset, will be retried within the next 10 minutes."  # NOQA: E501
 
     json_path = json_filepath(filepath)
     if not json_path:
