@@ -143,8 +143,8 @@ def index_dataset(internal_url, dataset_filetype, codelist, currencies, dataset_
             return False, "Unable to index the processed dataset.", False
         return False, p_res, should_be_indexed
     except Exception as e:  # NOQA
-        logging.warning(f'Exception occurred while indexing {dataset_filetype} dataset:\n{internal_url}\n{e}\nTherefore the dataset will not be indexed.')  # NOQA
-        return False, f"An exception occurred while indexing, the dataset {'will be reindexed within 10 minutes.' if should_be_indexed else 'will not be indexed.'}", should_be_indexed
+        logging.warning(f'Exception occurred while indexing {dataset_filetype} dataset:\n{internal_url}\n{e}\nTherefore the dataset will not be indexed.')  # NOQA: E501
+        return False, f"An exception occurred while indexing, the dataset {'will be reindexed within 10 minutes.' if should_be_indexed else 'will not be indexed.'}", should_be_indexed  # NOQA: E501
 
 
 def convert_and_save_xml_to_processed_json(filepath, filetype, codelist, currencies, dataset_metadata, draft=False):
@@ -178,20 +178,18 @@ def convert_and_save_xml_to_processed_json(filepath, filetype, codelist, currenc
     # Clean the dataset
     data = recursive_attribute_cleaning(data)
 
-    # Add our additional custom fields
-    if filetype == 'activity':
-        data, add_all_ok = custom_fields.add_all(data, codelist, currencies, dataset_metadata)
-    if filetype == 'organisation':
-        data = organisation_custom_fields.add_all(data)
-    # if unable to add custom fields, do not save the dataset
-    if not add_all_ok:
-        return False, should_be_indexed, "Unable to add custom fields to the dataset, will be retried within the next 10 minutes."  # NOQA: E501
-
+    # Prepare the json path
     json_path = json_filepath(filepath)
     if not json_path:
         logging.info(f'-- Error creating json path for {filepath}')
         return False, should_be_indexed, "A JSON path could not be created for the dataset."
     should_be_indexed = True
+
+    # Process custom fields
+    success, message, = _custom_fields(filetype, data, codelist, currencies, dataset_metadata, filepath)  # NOQA: E501
+    if not success:
+        return success, should_be_indexed, message
+
     logging.info(f'-- Saving to {json_path}')
     try:
         with open(json_path, 'w') as json_file:
@@ -205,6 +203,34 @@ def convert_and_save_xml_to_processed_json(filepath, filetype, codelist, currenc
         dataset_subtypes(filetype, data, json_path, draft)
 
     return json_path, should_be_indexed, "Success"
+
+
+def _custom_fields(filetype, data, codelist, currencies, dataset_metadata, filepath):
+    """
+    Add custom fields.
+
+    :param filetype: The filetype of the dataset.
+    :param data: The activities dataset.
+    :param codelist: An initialized codelist object.
+    :param currencies: An initialized currencies object.
+    :param dataset_metadata: The metadata of the dataset.
+    :param filepath: The filepath of the dataset.
+    :return: True if custom fields were added successfully, False otherwise. If False, include a descriptive message
+    """
+    try:
+        if filetype == 'activity':
+            data, add_all_ok = custom_fields.add_all(data, codelist, currencies, dataset_metadata)
+        if filetype == 'organisation':
+            data = organisation_custom_fields.add_all(data)
+            return True, None
+        # if unable to add custom fields, do not save the dataset
+        if not add_all_ok:
+            logging.info(f'-- Unable to add custom fields to {filepath}')
+            return False, "Unable to add aggregation custom fields to the dataset, will be retried within the next 10 minutes."  # NOQA: E501
+    except Exception as e:
+        logging.info(f'-- Error adding custom fields to {filepath}')
+        logging.error(f'Error adding custom fields: type: {type(e)} -- stack: {e}')
+        return False, "Unable to add custom fields to the dataset, will be retried within the next 10 minutes."  # NOQA: E501
 
 
 def extract_activity_or_organisation_data(filetype, data):

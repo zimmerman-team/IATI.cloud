@@ -181,7 +181,8 @@ def retry_unindexed_valid_datasets():
     # This will make it so only the datasets with a changed hash will be re-indexed.
     # The only way a hash can be changed in this case, is if we changed the hash in the indexing process.
     # This only happens if `indexed` is set to false, and `should_be_indexed` is set to true.
-    index_datasets_and_dataset_metadata(update=True, force_update=False, fresh=False)
+    res = index_datasets_and_dataset_metadata(update=True, force_update=False, fresh=False)
+    logging.info(f'retry_unindexed_valid_datasets:: result: {res}')
     return '- All unindexed valid datasets restarted'
 
 
