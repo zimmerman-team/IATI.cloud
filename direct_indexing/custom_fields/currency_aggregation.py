@@ -4,7 +4,7 @@ import math
 import bson
 from django.conf import settings
 from pymongo import MongoClient
-from pymongo.errors import PyMongoError
+from pymongo.errors import DocumentTooLarge, PyMongoError
 
 MONGO_UNWIND = '$unwind'
 MONGO_GROUP = '$group'
@@ -49,7 +49,7 @@ def currency_aggregation(data, insert_one=False):
     :insert_one: Whether to insert one by one or not. Defaults to false.
     :return: the dataset updated with aggregations.
     """
-
+    logging.info(f"currency_aggregation:: Starting currency aggregation. (insert_one: {insert_one})")
     try:
         # Prepare data and connection
         if type(data) is dict:
@@ -72,6 +72,9 @@ def currency_aggregation(data, insert_one=False):
 
         # Clean up data names
         data = clean_aggregation_result(data, aggregation_fields, formatted_aggregation_fields)
+    except DocumentTooLarge as e:
+        logging.error(f"currency_aggregation:: Document too large error: {e}")
+        pass
     except PyMongoError as e:
         logging.error(f"currency_aggregation:: PyMongo Error:: {e}")
         pass  # Return the data as is, if there is an error.
@@ -119,6 +122,9 @@ def connect_to_mongo(data, insert_one=False):
             _mongo_insert_many(dba, data)  # Insert the data
 
         return dba, client
+    except DocumentTooLarge as e:
+        logging.error(f"connect_to_mongo:: Document too large error: {e}")
+        raise
     except PyMongoError as e:  # NOQA
         logging.error(f"connect_to_mongo:: Error in connecting to mongo: {e}")
         raise
@@ -139,15 +145,32 @@ def _mongo_insert_many(dba, data):
         # Split the data into smaller chunks
         chunks = math.ceil(data_length_bytes / max_size)
         keys_per_chunk = math.ceil(len(data) / chunks)
+        excepted = False
         for i in range(chunks):
             start_index = i * keys_per_chunk
             end_index = start_index + keys_per_chunk
             chunk = data[start_index:end_index]
             try:
                 dba.insert_many(chunk)
+            except DocumentTooLarge as e:
+                logging.error(f"_mongo_insert_many:: Document too large error: {e}")
+                excepted = True
+                break
+            except PyMongoError as e:
+                logging.error(f"_mongo_insert_many:: Error in inserting data: {e}")
+                excepted = True
+                break
+        if excepted:
+            try:
+                _mongo_insert_one(dba, chunk)  # Attempt to insert one by one
+            except DocumentTooLarge as e:
+                logging.error(f"_mongo_insert_many:: Document too large error: {e}")
+                raise
             except PyMongoError as e:
                 logging.error(f"_mongo_insert_many:: Error in inserting data: {e}")
                 raise
+    else:
+        dba.insert_many(data)  # Insert the data in one go
 
 
 def _mongo_insert_one(dba, data):
@@ -162,6 +185,9 @@ def _mongo_insert_one(dba, data):
     for activity in data:
         try:
             dba.insert_one(activity)
+        except DocumentTooLarge as e:
+            logging.error(f"_mongo_insert_one:: Document too large error: {e}")
+            raise
         except PyMongoError as e:
             logging.error(f"_mongo_insert_one:: Error in inserting data: {e}")
             raise
@@ -386,6 +412,9 @@ def refresh_mongo_data(dba, data, insert_one=False):
             _mongo_insert_one(dba, data)  # Re-submit updated dataset one by one
         else:
             _mongo_insert_many(dba, data)  # Re-submit updated dataset
+    except DocumentTooLarge as e:
+        logging.error(f"refresh_mongo_data:: Document too large error: {e}")
+        raise
     except PyMongoError as e:
         logging.error(f"refresh_mongo_data:: Error in inserting data: {e}")
         raise
