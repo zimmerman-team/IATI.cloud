@@ -76,7 +76,11 @@ def fun(dataset, update=False, draft=False):
         dataset['iati_cloud_aida_sourced'] = True
     # Index the dataset metadata
     logging.info('-- Save the dataset metadata')
+    result, should_retry = _index_dataset_metadata_to_dataset_core(dataset, draft, should_be_indexed, indexed)
+    return dataset_indexing_result, result, should_retry
 
+
+def _index_dataset_metadata_to_dataset_core(dataset, draft, should_be_indexed, indexed):
     # Remove any key/value pair if the key ends with ._
     dataset = {key: value for key, value in dataset.items() if not key.endswith('._')}
 
@@ -92,7 +96,7 @@ def fun(dataset, update=False, draft=False):
         result = "The dataset does not contain proper organization metadata, therefore we cannot determine the organization name and source the datasets."  # NOQA: E501
         should_retry = False
 
-    return dataset_indexing_result, result, should_retry
+    return result, should_retry
 
 
 def _update_drop(update, draft, dataset):
@@ -140,7 +144,7 @@ def index_dataset(internal_url, dataset_filetype, codelist, currencies, dataset_
         return False, p_res, should_be_indexed
     except Exception as e:  # NOQA
         logging.warning(f'Exception occurred while indexing {dataset_filetype} dataset:\n{internal_url}\n{e}\nTherefore the dataset will not be indexed.')  # NOQA
-        return False, f"An exception occurred while indexing, the dataset {"will be reindexed within 10 minutes." if should_be_indexed else "will not be indexed."}", should_be_indexed
+        return False, f"An exception occurred while indexing, the dataset {'will be reindexed within 10 minutes.' if should_be_indexed else 'will not be indexed.'}", should_be_indexed
 
 
 def convert_and_save_xml_to_processed_json(filepath, filetype, codelist, currencies, dataset_metadata, draft=False):
