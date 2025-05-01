@@ -74,10 +74,8 @@ def currency_aggregation(data, insert_one=False):
         data = clean_aggregation_result(data, aggregation_fields, formatted_aggregation_fields)
     except DocumentTooLarge as e:
         logging.error(f"currency_aggregation:: Document too large error: {e}")
-        pass
     except PyMongoError as e:
         logging.error(f"currency_aggregation:: PyMongo Error:: {e}")
-        pass  # Return the data as is, if there is an error.
     data, id_found = _final_clean(data)
     return data, id_found
 
@@ -145,32 +143,36 @@ def _mongo_insert_many(dba, data):
         # Split the data into smaller chunks
         chunks = math.ceil(data_length_bytes / max_size)
         keys_per_chunk = math.ceil(len(data) / chunks)
-        excepted = False
-        for i in range(chunks):
-            start_index = i * keys_per_chunk
-            end_index = start_index + keys_per_chunk
-            chunk = data[start_index:end_index]
-            try:
-                dba.insert_many(chunk)
-            except DocumentTooLarge as e:
-                logging.error(f"_mongo_insert_many:: Document too large error: {e}")
-                excepted = True
-                break
-            except PyMongoError as e:
-                logging.error(f"_mongo_insert_many:: Error in inserting data: {e}")
-                excepted = True
-                break
-        if excepted:
-            try:
-                _mongo_insert_one(dba, chunk)  # Attempt to insert one by one
-            except DocumentTooLarge as e:
-                logging.error(f"_mongo_insert_many:: Document too large error: {e}")
-                raise
-            except PyMongoError as e:
-                logging.error(f"_mongo_insert_many:: Error in inserting data: {e}")
-                raise
+        _mongo_insert_chunks(chunks, keys_per_chunk, dba, data)
     else:
         dba.insert_many(data)  # Insert the data in one go
+
+
+def _mongo_insert_chunks(chunks, keys_per_chunk, dba, data):
+    excepted = False
+    for i in range(chunks):
+        start_index = i * keys_per_chunk
+        end_index = start_index + keys_per_chunk
+        chunk = data[start_index:end_index]
+        try:
+            dba.insert_many(chunk)
+        except DocumentTooLarge as e:
+            logging.error(f"_mongo_insert_many:: Document too large error: {e}")
+            excepted = True
+            break
+        except PyMongoError as e:
+            logging.error(f"_mongo_insert_many:: Error in inserting data: {e}")
+            excepted = True
+            break
+    if excepted:
+        try:
+            _mongo_insert_one(dba, chunk)  # Attempt to insert one by one
+        except DocumentTooLarge as e:
+            logging.error(f"_mongo_insert_many:: Document too large error: {e}")
+            raise
+        except PyMongoError as e:
+            logging.error(f"_mongo_insert_many:: Error in inserting data: {e}")
+            raise
 
 
 def _mongo_insert_one(dba, data):
