@@ -43,6 +43,8 @@ def add_all(data, codelists, currencies, metadata):
         # the unstable nature of the issue.
         data, id_found = currency_aggregation(data, insert_one=True)
     if settings.FCDO_INSTANCE:
+        # this must be done after the currency aggregation as it increases the size of the data
+        add_json_dumps(data)
         # this must be done last as it relies on budgets and date quarters being processed
         data = raise_h2_budget_data_to_h1(data)
     return data, not id_found  # not id_found means that the data was processed correctly
@@ -67,7 +69,6 @@ def process_activity(activity, codelists, currencies, metadata):
     add_default_hierarchy(activity)
     # FCDO Custom feature
     if settings.FCDO_INSTANCE:
-        add_json_dumps(activity)
         add_date_quarter_fields(activity)
         document_link_category_combined(activity)
 

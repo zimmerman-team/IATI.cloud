@@ -227,6 +227,7 @@ def _custom_fields(filetype, data, codelist, currencies, dataset_metadata, filep
         if not add_all_ok:
             logging.info(f'-- Unable to add custom fields to {filepath}')
             return False, "Unable to add aggregation custom fields to the dataset, will be retried within the next 10 minutes."  # NOQA: E501
+        return True, None
     except Exception as e:
         logging.info(f'-- Error adding custom fields to {filepath}')
         logging.error(f'Error adding custom fields: type: {type(e)} -- stack: {e}')
