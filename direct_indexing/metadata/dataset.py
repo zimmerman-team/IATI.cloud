@@ -129,7 +129,7 @@ def aida_drop_dataset(dataset_name, draft=False):
     return "Dataset deleted successfully", 200
 
 
-def index_datasets_and_dataset_metadata(update, force_update, fresh=True):
+def index_datasets_and_dataset_metadata(update, force_update, fresh=settings.FRESH):
     """
     Steps:
     . Download all the datasets
@@ -150,8 +150,8 @@ def index_datasets_and_dataset_metadata(update, force_update, fresh=True):
         # In this implementation, we provide the fresh boolean from the retry function call
         logging.info('index_datasets_and_dataset_metadata:: -- Download datasets')
         download_dataset()
-        logging.info('index_datasets_and_dataset_metadata:: -- Retrieve metadata')
-        dataset_metadata = retrieve(settings.METADATA_DATASET_URL, 'dataset_metadata', force_update)
+    logging.info('index_datasets_and_dataset_metadata:: -- Retrieve metadata')
+    dataset_metadata = retrieve(settings.METADATA_DATASET_URL, 'dataset_metadata', force_update, fresh)
 
     # If we are updating instead of refreshing, retrieve dataset ids
     if update:
