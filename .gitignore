@@ -1,25 +1,38 @@
-__pycache__
-.cache
-.data
-.DS_Store
-.idea
-.vagrant
+# # Project specific
+# Solr mounted docker directory
+solr_mount_dir
+
+# # General gitignore
+# Environments
+.env
+.env.local
+.env.docker
+.env.dev
+.env.test
+.env.staging
+.env.prod
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# Editors
 .vscode
-*.pyc
-*.swp
-local_settings.py
-OIPA/docstore/*
-OIPA/indicators/data_backup/wdi_data/*
-OIPA/media/*
-OIPA/media/csv_files/*
-OIPA/static_served/*
-OIPA/supervisord.log*
-OIPA/supervisord.pid
-OIPA/.coverage
-parse.log
+*.sublime-workspace
+.idea
 session.vim
-tags
-.pytest_cache/*
-setup.cfg
-public
-.coverage
+
+# MacOS
+.DS_Store
+
+# Logs
+*.log
+
+# Python cache
+__pycache__

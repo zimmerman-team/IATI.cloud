@@ -1,0 +1,1519 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Solr managed schema - automatically generated - DO NOT EDIT -->
+<schema name="default-config" version="1.6">
+  <uniqueKey>id</uniqueKey>
+  <fieldType name="_nest_path_" class="solr.NestPathField" maxCharsForDocValues="-1" omitNorms="true" omitTermFreqAndPositions="true" stored="false" multiValued="false"/>
+  <fieldType name="ancestor_path" class="solr.TextField">
+    <analyzer type="index">
+      <tokenizer class="solr.KeywordTokenizerFactory"/>
+    </analyzer>
+    <analyzer type="query">
+      <tokenizer class="solr.PathHierarchyTokenizerFactory" delimiter="/"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="binary" class="solr.BinaryField"/>
+  <fieldType name="boolean" class="solr.BoolField" sortMissingLast="true"/>
+  <fieldType name="booleans" class="solr.BoolField" sortMissingLast="true" multiValued="true"/>
+  <fieldType name="delimited_payloads_float" class="solr.TextField" indexed="true" stored="false">
+    <analyzer>
+      <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+      <filter class="solr.DelimitedPayloadTokenFilterFactory" encoder="float"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="delimited_payloads_int" class="solr.TextField" indexed="true" stored="false">
+    <analyzer>
+      <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+      <filter class="solr.DelimitedPayloadTokenFilterFactory" encoder="integer"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="delimited_payloads_string" class="solr.TextField" indexed="true" stored="false">
+    <analyzer>
+      <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+      <filter class="solr.DelimitedPayloadTokenFilterFactory" encoder="identity"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="descendent_path" class="solr.TextField">
+    <analyzer type="index">
+      <tokenizer class="solr.PathHierarchyTokenizerFactory" delimiter="/"/>
+    </analyzer>
+    <analyzer type="query">
+      <tokenizer class="solr.KeywordTokenizerFactory"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="ignored" class="solr.StrField" indexed="false" stored="false" multiValued="true"/>
+  <fieldType name="location" class="solr.LatLonPointSpatialField" docValues="true"/>
+  <fieldType name="location_rpt" class="solr.SpatialRecursivePrefixTreeFieldType" geo="true" omitNorms="true" omitTermFreqAndPositions="true" maxDistErr="0.001" termOffsets="false" distErrPct="0.025" distanceUnits="kilometers" termPositions="false" omitPositions="true"/>
+  <fieldType name="lowercase" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.KeywordTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="pdate" class="solr.DatePointField" docValues="true"/>
+  <fieldType name="pdates" class="solr.DatePointField" docValues="true" multiValued="true"/>
+  <fieldType name="pdouble" class="solr.DoublePointField" docValues="true"/>
+  <fieldType name="pdoubles" class="solr.DoublePointField" docValues="true" multiValued="true"/>
+  <fieldType name="pfloat" class="solr.FloatPointField" docValues="true"/>
+  <fieldType name="pfloats" class="solr.FloatPointField" docValues="true" multiValued="true"/>
+  <fieldType name="phonetic_en" class="solr.TextField" indexed="true" stored="false">
+    <analyzer>
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.DoubleMetaphoneFilterFactory" inject="false"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="pint" class="solr.IntPointField" docValues="true"/>
+  <fieldType name="pints" class="solr.IntPointField" docValues="true" multiValued="true"/>
+  <fieldType name="plong" class="solr.LongPointField" docValues="true"/>
+  <fieldType name="plongs" class="solr.LongPointField" docValues="true" multiValued="true"/>
+  <fieldType name="point" class="solr.PointType" subFieldSuffix="_d" dimension="2"/>
+  <fieldType name="random" class="solr.RandomSortField" indexed="true"/>
+  <fieldType name="rank" class="solr.RankField"/>
+  <fieldType name="string" class="solr.StrField" sortMissingLast="true" docValues="true"/>
+  <fieldType name="strings" class="solr.StrField" sortMissingLast="true" docValues="true" multiValued="true"/>
+  <fieldType name="text_ar" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.StopFilterFactory" words="lang/stopwords_ar.txt" ignoreCase="true"/>
+      <filter class="solr.ArabicNormalizationFilterFactory"/>
+      <filter class="solr.ArabicStemFilterFactory"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_bg" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.StopFilterFactory" words="lang/stopwords_bg.txt" ignoreCase="true"/>
+      <filter class="solr.BulgarianStemFilterFactory"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_ca" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.ElisionFilterFactory" articles="lang/contractions_ca.txt" ignoreCase="true"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.StopFilterFactory" words="lang/stopwords_ca.txt" ignoreCase="true"/>
+      <filter class="solr.SnowballPorterFilterFactory" language="Catalan"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_cjk" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.CJKWidthFilterFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.CJKBigramFilterFactory"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_cz" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.StopFilterFactory" words="lang/stopwords_cz.txt" ignoreCase="true"/>
+      <filter class="solr.CzechStemFilterFactory"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_da" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.StopFilterFactory" format="snowball" words="lang/stopwords_da.txt" ignoreCase="true"/>
+      <filter class="solr.SnowballPorterFilterFactory" language="Danish"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_de" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.StopFilterFactory" format="snowball" words="lang/stopwords_de.txt" ignoreCase="true"/>
+      <filter class="solr.GermanNormalizationFilterFactory"/>
+      <filter class="solr.GermanLightStemFilterFactory"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_el" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.GreekLowerCaseFilterFactory"/>
+      <filter class="solr.StopFilterFactory" words="lang/stopwords_el.txt" ignoreCase="false"/>
+      <filter class="solr.GreekStemFilterFactory"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_en" class="solr.TextField" positionIncrementGap="100">
+    <analyzer type="index">
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.StopFilterFactory" words="lang/stopwords_en.txt" ignoreCase="true"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.EnglishPossessiveFilterFactory"/>
+      <filter class="solr.KeywordMarkerFilterFactory" protected="protwords.txt"/>
+      <filter class="solr.PorterStemFilterFactory"/>
+    </analyzer>
+    <analyzer type="query">
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.SynonymGraphFilterFactory" expand="true" ignoreCase="true" synonyms="synonyms.txt"/>
+      <filter class="solr.StopFilterFactory" words="lang/stopwords_en.txt" ignoreCase="true"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.EnglishPossessiveFilterFactory"/>
+      <filter class="solr.KeywordMarkerFilterFactory" protected="protwords.txt"/>
+      <filter class="solr.PorterStemFilterFactory"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_en_splitting" class="solr.TextField" autoGeneratePhraseQueries="true" positionIncrementGap="100">
+    <analyzer type="index">
+      <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+      <filter class="solr.StopFilterFactory" words="lang/stopwords_en.txt" ignoreCase="true"/>
+      <filter class="solr.WordDelimiterGraphFilterFactory" catenateNumbers="1" generateNumberParts="1" splitOnCaseChange="1" generateWordParts="1" catenateAll="0" catenateWords="1"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.KeywordMarkerFilterFactory" protected="protwords.txt"/>
+      <filter class="solr.PorterStemFilterFactory"/>
+      <filter class="solr.FlattenGraphFilterFactory"/>
+    </analyzer>
+    <analyzer type="query">
+      <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+      <filter class="solr.SynonymGraphFilterFactory" expand="true" ignoreCase="true" synonyms="synonyms.txt"/>
+      <filter class="solr.StopFilterFactory" words="lang/stopwords_en.txt" ignoreCase="true"/>
+      <filter class="solr.WordDelimiterGraphFilterFactory" catenateNumbers="0" generateNumberParts="1" splitOnCaseChange="1" generateWordParts="1" catenateAll="0" catenateWords="0"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.KeywordMarkerFilterFactory" protected="protwords.txt"/>
+      <filter class="solr.PorterStemFilterFactory"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_en_splitting_tight" class="solr.TextField" autoGeneratePhraseQueries="true" positionIncrementGap="100">
+    <analyzer type="index">
+      <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+      <filter class="solr.SynonymGraphFilterFactory" expand="false" ignoreCase="true" synonyms="synonyms.txt"/>
+      <filter class="solr.StopFilterFactory" words="lang/stopwords_en.txt" ignoreCase="true"/>
+      <filter class="solr.WordDelimiterGraphFilterFactory" catenateNumbers="1" generateNumberParts="0" generateWordParts="0" catenateAll="0" catenateWords="1"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.KeywordMarkerFilterFactory" protected="protwords.txt"/>
+      <filter class="solr.EnglishMinimalStemFilterFactory"/>
+      <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
+      <filter class="solr.FlattenGraphFilterFactory"/>
+    </analyzer>
+    <analyzer type="query">
+      <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+      <filter class="solr.SynonymGraphFilterFactory" expand="false" ignoreCase="true" synonyms="synonyms.txt"/>
+      <filter class="solr.StopFilterFactory" words="lang/stopwords_en.txt" ignoreCase="true"/>
+      <filter class="solr.WordDelimiterGraphFilterFactory" catenateNumbers="1" generateNumberParts="0" generateWordParts="0" catenateAll="0" catenateWords="1"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.KeywordMarkerFilterFactory" protected="protwords.txt"/>
+      <filter class="solr.EnglishMinimalStemFilterFactory"/>
+      <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_es" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.StopFilterFactory" format="snowball" words="lang/stopwords_es.txt" ignoreCase="true"/>
+      <filter class="solr.SpanishLightStemFilterFactory"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_et" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.StopFilterFactory" words="lang/stopwords_et.txt" ignoreCase="true"/>
+      <filter class="solr.SnowballPorterFilterFactory" language="Estonian"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_eu" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.StopFilterFactory" words="lang/stopwords_eu.txt" ignoreCase="true"/>
+      <filter class="solr.SnowballPorterFilterFactory" language="Basque"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_fa" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <charFilter class="solr.PersianCharFilterFactory"/>
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.ArabicNormalizationFilterFactory"/>
+      <filter class="solr.PersianNormalizationFilterFactory"/>
+      <filter class="solr.StopFilterFactory" words="lang/stopwords_fa.txt" ignoreCase="true"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_fi" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.StopFilterFactory" format="snowball" words="lang/stopwords_fi.txt" ignoreCase="true"/>
+      <filter class="solr.SnowballPorterFilterFactory" language="Finnish"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_fr" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.ElisionFilterFactory" articles="lang/contractions_fr.txt" ignoreCase="true"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.StopFilterFactory" format="snowball" words="lang/stopwords_fr.txt" ignoreCase="true"/>
+      <filter class="solr.FrenchLightStemFilterFactory"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_ga" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.ElisionFilterFactory" articles="lang/contractions_ga.txt" ignoreCase="true"/>
+      <filter class="solr.StopFilterFactory" words="lang/hyphenations_ga.txt" ignoreCase="true"/>
+      <filter class="solr.IrishLowerCaseFilterFactory"/>
+      <filter class="solr.StopFilterFactory" words="lang/stopwords_ga.txt" ignoreCase="true"/>
+      <filter class="solr.SnowballPorterFilterFactory" language="Irish"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_gen_sort" class="solr.SortableTextField" positionIncrementGap="100" multiValued="true">
+    <analyzer type="index">
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.StopFilterFactory" words="stopwords.txt" ignoreCase="true"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+    </analyzer>
+    <analyzer type="query">
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.StopFilterFactory" words="stopwords.txt" ignoreCase="true"/>
+      <filter class="solr.SynonymGraphFilterFactory" expand="true" ignoreCase="true" synonyms="synonyms.txt"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_general" class="solr.TextField" positionIncrementGap="100" multiValued="true">
+    <analyzer type="index">
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.StopFilterFactory" words="stopwords.txt" ignoreCase="true"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+    </analyzer>
+    <analyzer type="query">
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.StopFilterFactory" words="stopwords.txt" ignoreCase="true"/>
+      <filter class="solr.SynonymGraphFilterFactory" expand="true" ignoreCase="true" synonyms="synonyms.txt"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_general_single" class="solr.TextField" positionIncrementGap="100" multiValued="false">
+    <analyzer type="index">
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.StopFilterFactory" words="stopwords.txt" ignoreCase="true"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+    </analyzer>
+    <analyzer type="query">
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.StopFilterFactory" words="stopwords.txt" ignoreCase="true"/>
+      <filter class="solr.SynonymGraphFilterFactory" expand="true" ignoreCase="true" synonyms="synonyms.txt"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_general_rev" class="solr.TextField" positionIncrementGap="100">
+    <analyzer type="index">
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.StopFilterFactory" words="stopwords.txt" ignoreCase="true"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.ReversedWildcardFilterFactory" maxPosQuestion="2" maxFractionAsterisk="0.33" maxPosAsterisk="3" withOriginal="true"/>
+    </analyzer>
+    <analyzer type="query">
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.SynonymGraphFilterFactory" expand="true" ignoreCase="true" synonyms="synonyms.txt"/>
+      <filter class="solr.StopFilterFactory" words="stopwords.txt" ignoreCase="true"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_gl" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.StopFilterFactory" words="lang/stopwords_gl.txt" ignoreCase="true"/>
+      <filter class="solr.GalicianStemFilterFactory"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_hi" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.IndicNormalizationFilterFactory"/>
+      <filter class="solr.HindiNormalizationFilterFactory"/>
+      <filter class="solr.StopFilterFactory" words="lang/stopwords_hi.txt" ignoreCase="true"/>
+      <filter class="solr.HindiStemFilterFactory"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_hu" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.StopFilterFactory" format="snowball" words="lang/stopwords_hu.txt" ignoreCase="true"/>
+      <filter class="solr.SnowballPorterFilterFactory" language="Hungarian"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_hy" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.StopFilterFactory" words="lang/stopwords_hy.txt" ignoreCase="true"/>
+      <filter class="solr.SnowballPorterFilterFactory" language="Armenian"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_id" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.StopFilterFactory" words="lang/stopwords_id.txt" ignoreCase="true"/>
+      <filter class="solr.IndonesianStemFilterFactory" stemDerivational="true"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_it" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.ElisionFilterFactory" articles="lang/contractions_it.txt" ignoreCase="true"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.StopFilterFactory" format="snowball" words="lang/stopwords_it.txt" ignoreCase="true"/>
+      <filter class="solr.ItalianLightStemFilterFactory"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_ja" class="solr.TextField" autoGeneratePhraseQueries="false" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.JapaneseTokenizerFactory" mode="search"/>
+      <filter class="solr.JapaneseBaseFormFilterFactory"/>
+      <filter class="solr.JapanesePartOfSpeechStopFilterFactory" tags="lang/stoptags_ja.txt"/>
+      <filter class="solr.CJKWidthFilterFactory"/>
+      <filter class="solr.StopFilterFactory" words="lang/stopwords_ja.txt" ignoreCase="true"/>
+      <filter class="solr.JapaneseKatakanaStemFilterFactory" minimumLength="4"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_ko" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.KoreanTokenizerFactory" outputUnknownUnigrams="false" decompoundMode="discard"/>
+      <filter class="solr.KoreanPartOfSpeechStopFilterFactory"/>
+      <filter class="solr.KoreanReadingFormFilterFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_lv" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.StopFilterFactory" words="lang/stopwords_lv.txt" ignoreCase="true"/>
+      <filter class="solr.LatvianStemFilterFactory"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_nl" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.StopFilterFactory" format="snowball" words="lang/stopwords_nl.txt" ignoreCase="true"/>
+      <filter class="solr.StemmerOverrideFilterFactory" dictionary="lang/stemdict_nl.txt" ignoreCase="false"/>
+      <filter class="solr.SnowballPorterFilterFactory" language="Dutch"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_no" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.StopFilterFactory" format="snowball" words="lang/stopwords_no.txt" ignoreCase="true"/>
+      <filter class="solr.SnowballPorterFilterFactory" language="Norwegian"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_pt" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.StopFilterFactory" format="snowball" words="lang/stopwords_pt.txt" ignoreCase="true"/>
+      <filter class="solr.PortugueseLightStemFilterFactory"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_ro" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.StopFilterFactory" words="lang/stopwords_ro.txt" ignoreCase="true"/>
+      <filter class="solr.SnowballPorterFilterFactory" language="Romanian"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_ru" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.StopFilterFactory" format="snowball" words="lang/stopwords_ru.txt" ignoreCase="true"/>
+      <filter class="solr.SnowballPorterFilterFactory" language="Russian"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_sv" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.StopFilterFactory" format="snowball" words="lang/stopwords_sv.txt" ignoreCase="true"/>
+      <filter class="solr.SnowballPorterFilterFactory" language="Swedish"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_th" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.ThaiTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.StopFilterFactory" words="lang/stopwords_th.txt" ignoreCase="true"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_tr" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.TurkishLowerCaseFilterFactory"/>
+      <filter class="solr.StopFilterFactory" words="lang/stopwords_tr.txt" ignoreCase="false"/>
+      <filter class="solr.SnowballPorterFilterFactory" language="Turkish"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_ws" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+    </analyzer>
+  </fieldType>
+  <field name="_nest_path_" type="_nest_path_"/>
+  <field name="_root_" type="string" docValues="false" indexed="true" stored="false"/>
+  <field name="_text_" type="text_general" multiValued="true" indexed="true" stored="false"/>
+  <field name="_version_" type="plong" indexed="false" stored="false"/>
+
+  <!-- default field -->
+  <field name="id" type="string" multiValued="false" indexed="true" required="true" stored="true"/>
+
+  <!-- Note: narratives are always multi valued -->
+  <!-- activity 1..1 -->
+  <field name="last-updated-datetime" type="pdate"/>
+  <field name="lang" type="text_general_single"/>
+  <field name="default-currency" type="text_general_single"/>
+  <field name="humanitarian" type="boolean"/>
+  <field name="hierarchy" type="plong"/>
+  <field name="linked-data-uri" type="text_general_single"/>
+  <field name="budget-not-provided" type="text_general_single"/>
+
+    <!-- activity.iati id 1..1 -->
+  <field name="iati-identifier" type="non_case_sensitive"/>
+
+  <!-- activity.reporting_org 1..1 -->
+  <!-- non_case_sensitive because this uses the whitespace tokenisation. -->
+  <field name="reporting-org.ref" type="non_case_sensitive"/>
+  <field name="reporting-org.type" type="text_general_single"/>
+  <field name="reporting-org.secondary-reporter" type="boolean"/>
+  <!-- all narratives using iati_narrative to allow 'contains' queries -->
+  <field name="reporting-org.narrative" type="iati_narrative"/>
+  <field name="reporting-org.narrative.lang" type="text_general"/>
+
+  <!-- activity.title 1..1 narratives are 1..* -->
+  <field name="title.narrative" type="iati_narrative"/>
+  <field name="title.narrative.lang" type="text_general"/>
+
+  <!-- activity.description 1..* -->
+  <field name="description.type" type="text_general"/>
+  <field name="description.narrative" type="iati_narrative"/>
+  <field name="description.narrative.lang" type="text_general"/>
+
+  <!-- activity.participating-org 0..* -->
+  <field name="participating-org.ref" type="non_case_sensitive" multiValued="true"/>
+  <field name="participating-org.type" type="text_general"/>
+  <field name="participating-org.role" type="text_general"/>
+  <field name="participating-org.activity-id" type="text_general"/>
+  <field name="participating-org.crs-channel-code" type="text_general"/>
+  <field name="participating-org.narrative" type="iati_narrative"/>
+  <field name="participating-org.narrative.lang" type="text_general"/>
+
+  <!-- activity.other-identifier 0..* -->
+  <field name="other-identifier.ref" type="non_case_sensitive" multiValued="true"/>
+  <field name="other-identifier.type" type="text_general"/>
+  <field name="other-identifier.owner-org.ref" type="non_case_sensitive" multiValued="true"/>
+  <field name="other-identifier.owner-org.narrative" type="iati_narrative"/>
+  <field name="other-identifier.owner-org.narrative.lang" type="text_general"/>
+
+  <!-- activity.activity-status 1..1 -->
+  <field name="activity-status.code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-status.text" type="text_general_single"/>
+
+  <!-- activity.activity-date 1..* -->
+  <field name="activity-date.type" type="text_general"/>
+  <field name="activity-date.iso-date" type="pdates"/>
+  <field name="activity-date.narrative" type="text_general"/>
+  <field name="activity-date.narrative.lang" type="text_general"/>
+
+  <!-- activity.contact-info 0..* -->
+  <field name="contact-info.type" type="text_general"/>
+  <field name="contact-info.organisation.narrative" type="iati_narrative"/>
+  <field name="contact-info.organisation.narrative.lang" type="text_general"/>
+  <field name="contact-info.department.narrative" type="iati_narrative"/>
+  <field name="contact-info.department.narrative.lang" type="text_general"/>
+  <field name="contact-info.person-name.narrative" type="iati_narrative"/>
+  <field name="contact-info.person-name.narrative.lang" type="text_general"/>
+  <field name="contact-info.job-title.narrative" type="iati_narrative"/>
+  <field name="contact-info.job-title.narrative.lang" type="text_general"/>
+  <field name="contact-info.telephone" type="text_general"/>
+  <field name="contact-info.email" type="text_general"/>
+  <field name="contact-info.website" type="text_general"/>
+  <field name="contact-info.mailing-address.narrative" type="text_general"/>
+  <field name="contact-info.mailing-address.narrative.lang" type="text_general"/>
+
+  <!-- activity.activity-scope 0..1 -->
+  <field name="activity-scope.code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+
+  <!-- activity.recipient-country 0..* -->
+  <field name="recipient-country.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="recipient-country.percentage" type="pdoubles"/>
+  <field name="recipient-country.narrative" type="iati_narrative"/>
+  <field name="recipient-country.narrative.lang" type="text_general"/>
+
+  <!-- activity.recipient-region 0..* -->
+  <field name="recipient-region.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="recipient-region.vocabulary" type="text_general"/>
+  <field name="recipient-region.vocabulary-uri" type="text_general"/>
+  <field name="recipient-region.percentage" type="pdoubles"/>
+  <field name="recipient-region.narrative" type="iati_narrative"/>
+  <field name="recipient-region.narrative.lang" type="text_general"/>
+
+  <!-- activity.location 0..* -->
+  <field name="location.ref" type="text_general"/>
+  <field name="location.location-reach.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="location.location-id.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="location.location-id.vocabulary" type="text_general"/>
+  <field name="location.name.narrative" type="iati_narrative"/>
+  <field name="location.name.narrative.lang" type="text_general"/>
+  <field name="location.description.narrative" type="iati_narrative"/>
+  <field name="location.description.narrative.lang" type="text_general"/>
+  <field name="location.activity-description.narrative" type="iati_narrative"/>
+  <field name="location.activity-description.narrative.lang" type="text_general"/>
+  <field name="location.administrative.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="location.administrative.vocabulary" type="text_general"/>
+  <field name="location.administrative.level" type="pdoubles"/>
+  <field name="location.point.srsName" type="text_general"/>
+  <field name="location.point.pos" type="text_general"/>
+  <field name="location.exactness.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="location.location-class.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="location.feature-designation.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+
+  <!-- activity.sector 0..* -->
+  <field name="sector.vocabulary" type="text_general"/>
+  <field name="sector.vocabulary-uri" type="text_general"/>
+  <field name="sector.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="sector.percentage" type="pdoubles"/>
+  <field name="sector.narrative" type="iati_narrative"/>
+  <field name="sector.narrative.lang" type="text_general"/>
+
+  <!-- activity.tag 0..* -->
+  <field name="tag.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="tag.vocabulary" type="text_general"/>
+  <field name="tag.vocabulary-uri" type="text_general"/>
+  <field name="tag.narrative" type="iati_narrative"/>
+  <field name="tag.narrative.lang" type="text_general"/>
+
+  <!-- activity.country-budget-items 0..1 budget item is 1..* -->
+  <field name="country-budget-items.vocabulary" type="text_general_single"/>
+  <field name="country-budget-items.budget-item.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="country-budget-items.budget-item.percentage" type="pdoubles"/>
+  <field name="country-budget-items.budget-item.description.narrative" type="iati_narrative"/>
+  <field name="country-budget-items.budget-item.description.narrative.lang" type="text_general"/>
+
+  <!-- activity.humanitarian-scope 0..* -->
+  <field name="humanitarian-scope.type" type="text_general"/>
+  <field name="humanitarian-scope.vocabulary" type="text_general"/>
+  <field name="humanitarian-scope.vocabulary-uri" type="text_general"/>
+  <field name="humanitarian-scope.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="humanitarian-scope.narrative" type="iati_narrative"/>
+  <field name="humanitarian-scope.narrative.lang" type="text_general"/>
+
+  <!-- activity.policy-marker 0..* -->
+  <field name="policy-marker.vocabulary" type="text_general"/>
+  <field name="policy-marker.vocabulary-uri" type="text_general"/>
+  <field name="policy-marker.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="policy-marker.significance" type="text_general"/>
+  <field name="policy-marker.narrative" type="iati_narrative"/>
+  <field name="policy-marker.narrative.lang" type="text_general"/>
+
+  <!-- activity.collaboration-type 0..1 -->
+  <field name="collaboration-type.code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+
+  <!-- activity.default-flow-type 0..1 -->
+  <field name="default-flow-type.code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+
+  <!-- activity.default-finance-type 0..1 -->
+  <field name="default-finance-type.code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+
+  <!-- activity.default-aid-type 0..* -->
+  <field name="default-aid-type.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="default-aid-type.vocabulary" type="text_general"/>
+
+  <!-- activity.default-tied-status 0..1 -->
+  <field name="default-tied-status.code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+
+   <!-- activity.planned-disbursement 0..* -->
+  <field name="planned-disbursement.type" type="text_general"/>
+  <field name="planned-disbursement.period-start.iso-date" type="pdates"/>
+  <field name="planned-disbursement.period-end.iso-date" type="pdates"/>
+  <field name="planned-disbursement.value" type="pdoubles"/>
+  <field name="planned-disbursement.value.currency" type="text_general"/>
+  <field name="planned-disbursement.value.value-date" type="pdates"/>
+  <field name="planned-disbursement.provider-org.ref" type="non_case_sensitive" multiValued="true"/>
+  <field name="planned-disbursement.provider-org.provider-activity-id" type="text_general"/>
+  <field name="planned-disbursement.provider-org.type" type="text_general"/>
+  <field name="planned-disbursement.provider-org.narrative" type="iati_narrative"/>
+  <field name="planned-disbursement.provider-org.narrative.lang" type="text_general"/>
+  <field name="planned-disbursement.receiver-org.ref" type="non_case_sensitive" multiValued="true"/>
+  <field name="planned-disbursement.receiver-org.receiver-activity-id" type="text_general"/>
+  <field name="planned-disbursement.receiver-org.type" type="text_general"/>
+  <field name="planned-disbursement.receiver-org.narrative" type="iati_narrative"/>
+  <field name="planned-disbursement.receiver-org.narrative.lang" type="text_general"/>
+
+  <!-- activity.capital-spend 0..1 -->
+  <field name="capital-spend.percentage" type="pdouble"/>
+
+  <!-- activity.transaction 0..* -->
+  <field name="transaction.ref" type="non_case_sensitive" multiValued="true"/>
+  <field name="transaction.humanitarian" type="booleans"/>
+  <field name="transaction.transaction-type.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="transaction.transaction-date.iso-date" type="pdates"/>
+  <field name="transaction.value" type="pdoubles"/>
+  <field name="transaction.value.currency" type="text_general"/>
+  <field name="transaction.value.value-date" type="pdates"/>
+  <field name="transaction.description.narrative" type="iati_narrative"/>
+  <field name="transaction.description.narrative.lang" type="text_general"/>
+  <field name="transaction.provider-org.ref" type="non_case_sensitive" multiValued="true"/>
+  <field name="transaction.provider-org.provider-activity-id" type="text_general"/>
+  <field name="transaction.provider-org.type" type="text_general"/>
+  <field name="transaction.provider-org.narrative" type="iati_narrative"/>
+  <field name="transaction.provider-org.narrative.lang" type="text_general"/>
+  <field name="transaction.receiver-org.ref" type="non_case_sensitive" multiValued="true"/>
+  <field name="transaction.receiver-org.receiver-activity-id" type="text_general"/>
+  <field name="transaction.receiver-org.type" type="text_general"/>
+  <field name="transaction.receiver-org.narrative" type="iati_narrative"/>
+  <field name="transaction.receiver-org.narrative.lang" type="text_general"/>
+  <field name="transaction.disbursement-channel.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="transaction.sector.vocabulary" type="text_general"/>
+  <field name="transaction.sector.vocabulary-uri" type="text_general"/>
+  <field name="transaction.sector.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="transaction.sector.narrative" type="iati_narrative"/>
+  <field name="transaction.sector.narrative.lang" type="text_general"/>
+  <field name="transaction.recipient-country.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="transaction.recipient-country.narrative" type="iati_narrative"/>
+  <field name="transaction.recipient-country.narrative.lang" type="text_general"/>
+  <field name="transaction.recipient-region.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="transaction.recipient-region.vocabulary" type="text_general"/>
+  <field name="transaction.recipient-region.vocabulary-uri" type="text_general"/>
+  <field name="transaction.recipient-region.narrative" type="iati_narrative"/>
+  <field name="transaction.recipient-region.narrative.lang" type="text_general"/>
+  <field name="transaction.flow-type.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="transaction.finance-type.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="transaction.aid-type.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="transaction.aid-type.vocabulary" type="text_general"/>
+  <field name="transaction.tied-status.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+
+  <!-- activity.document-link 0..* -->
+  <field name="document-link.url" type="text_general"/>
+  <field name="document-link.format" type="text_general"/>
+  <field name="document-link.title.narrative" type="iati_narrative"/>
+  <field name="document-link.title.narrative.lang" type="text_general"/>
+  <field name="document-link.description.narrative" type="iati_narrative"/>
+  <field name="document-link.description.narrative.lang" type="text_general"/>
+  <field name="document-link.category.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="document-link.language.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="document-link.document-date.iso-date" type="pdates"/>
+
+  <!-- activity.related-activity 0..* -->
+  <field name="related-activity.ref" type="non_case_sensitive" multiValued="true"/>
+  <field name="related-activity.type" type="text_general"/>
+
+  <!-- activity.legacy-data 0..* -->
+  <field name="legacy-data.name" type="text_general"/>
+  <field name="legacy-data.value" type="text_general"/>
+  <field name="legacy-data.iati-equivalent" type="text_general"/>
+
+  <!-- activity.conditions 0..1 condition is 0..* -->
+  <field name="conditions.attached" type="boolean"/>
+  <field name="conditions.condition.type" type="text_general"/>
+  <field name="conditions.condition.narrative" type="iati_narrative"/>
+  <field name="conditions.condition.narrative.lang" type="text_general"/>
+
+  <!-- activity.crs-add 0..1 -->
+  <field name="crs-add.other-flags.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="crs-add.other-flags.significance" type="booleans"/>
+  <field name="crs-add.loan-terms.rate-1" type="pdouble"/>
+  <field name="crs-add.loan-terms.rate-2" type="pdouble"/>
+  <field name="crs-add.loan-terms.repayment-type.code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="crs-add.loan-terms.repayment-plan.code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="crs-add.loan-terms.commitment-date.iso-date" type="pdate"/>
+  <field name="crs-add.loan-terms.repayment-first-date.iso-date" type="pdate"/>
+  <field name="crs-add.loan-terms.repayment-final-date.iso-date" type="pdate"/>
+  <field name="crs-add.loan-status.year" type="pdouble"/>
+  <field name="crs-add.loan-status.currency" type="text_general_single"/>
+  <field name="crs-add.loan-status.value-date" type="pdate"/>
+  <field name="crs-add.loan-status.interest-received" type="pdouble"/>
+  <field name="crs-add.loan-status.principal-outstanding" type="pdouble"/>
+  <field name="crs-add.loan-status.principal-arrears" type="pdouble"/>
+  <field name="crs-add.loan-status.interest-arrears" type="pdouble"/>
+  <field name="crs-add.channel-code" type="text_general_single"/>
+
+  <!-- activity.fss 0..1 forecast 0..* -->
+  <field name="fss.extraction-date" type="pdate"/>
+  <field name="fss.priority" type="boolean"/>
+  <field name="fss.phaseout-year" type="pdouble"/>
+  <field name="fss.forecast" type="pdoubles"/>
+  <field name="fss.forecast.year" type="pdoubles"/>
+  <field name="fss.forecast.currency" type="text_general"/>
+  <field name="fss.forecast.value-date" type="pdates"/>
+
+  <!-- Additional fields -->
+  <field name="document-link.title.lang" type="text_general"/>
+
+  <!-- Custom fields -->
+  <!-- Codelist -->
+  <field name="reporting-org.type.name" type="text_general_single"/>
+  <field name="recipient-country.name" type="text_general"/>
+  <field name="recipient-region.name" type="text_general"/>
+  <field name="default-aid-type.name" type="text_general"/>
+  <field name="transaction.receiver-org.type.name" type="text_general"/>
+
+  <!-- Searchable title -->
+  <field name="title.narrative.first" type="text_general_single"/>
+
+  <!-- Expanded activity dates -->
+  <field name="activity-date.start-planned" type="pdate"/>
+  <field name="activity-date.start-actual" type="pdate"/>
+  <field name="activity-date.end-planned" type="pdate"/>
+  <field name="activity-date.end-actual" type="pdate"/>
+  <field name="activity-date.common.start" type="pdate"/>
+  <field name="activity-date.common.end" type="pdate"/>
+
+  <!-- Combined policy marker info -->
+  <field name="policy-marker.combined" type="text_general"/>
+
+  <!-- Summed and converted currency values -->
+  <field name="planned-disbursement.value-usd" type="pdoubles"/>
+  <field name="transaction.value-usd" type="pdouble"/>
+
+  <field name="planned-disbursement.value-usd.sum" type="pdoubles"/>
+  <field name="transaction.value-usd.sum" type="pdouble"/>
+
+  <field name="planned-disbursement.value-usd.conversion-rate" type="pdoubles"/>
+  <field name="transaction.value-usd.conversion-rate" type="pdouble"/>
+
+  <field name="planned-disbursement.value-usd.conversion-currency" type="text_general"/>
+  <field name="transaction.value-usd.conversion-currency" type="text_general_single"/>
+
+  <!-- MFA relational data for participating-org -->
+  <field name="participating-org.ref-index" type="pdoubles"/>
+  <field name="participating-org.type-index" type="pdoubles"/>
+  <field name="participating-org.role-index" type="pdoubles"/>
+  <field name="participating-org.activity-id-index" type="pdoubles"/>
+  <field name="participating-org.crs-channel-code-index" type="pdoubles"/>
+  <field name="participating-org.narrative-index" type="pdoubles"/>
+  <field name="participating-org.narrative.lang-index" type="pdoubles"/>
+
+  <!-- Activity aggregated currency data -->
+  <field name="activity-aggregation.budget.value" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.budget.value-usd" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.budget.currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.planned-disbursement.value" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.planned-disbursement.value-usd" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.planned-disbursement.currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.incoming-funds.value" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.incoming-funds.value-usd" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.incoming-funds.currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.outgoing-commitment.value" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.outgoing-commitment.value-usd" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.outgoing-commitment.currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.disbursement.value" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.disbursement.value-usd" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.disbursement.currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.expenditure.value" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.expenditure.value-usd" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.expenditure.currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.interest-payment.value" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.interest-payment.value-usd" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.interest-payment.currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.loan-repayment.value" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.loan-repayment.value-usd" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.loan-repayment.currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.reimbursement.value" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.reimbursement.value-usd" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.reimbursement.currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.purchase-of-equity.value" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.purchase-of-equity.value-usd" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.purchase-of-equity.currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.sale-of-equity.value" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.sale-of-equity.value-usd" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.sale-of-equity.currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.credit-guarantee.value" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.credit-guarantee.value-usd" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.credit-guarantee.currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.incoming-commitment.value" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.incoming-commitment.value-usd" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.incoming-commitment.currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.outgoing-pledge.value" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.outgoing-pledge.value-usd" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.outgoing-pledge.currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.incoming-pledge.value" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.incoming-pledge.value-usd" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.incoming-pledge.currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+
+  <field name="child-aggregation.budget.value" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.budget.value-usd" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.budget.currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.planned-disbursement.value" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.planned-disbursement.value-usd" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.planned-disbursement.currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.incoming-funds.value" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.incoming-funds.value-usd" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.incoming-funds.currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.outgoing-commitment.value" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.outgoing-commitment.value-usd" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.outgoing-commitment.currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.disbursement.value" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.disbursement.value-usd" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.disbursement.currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.expenditure.value" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.expenditure.value-usd" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.expenditure.currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.interest-payment.value" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.interest-payment.value-usd" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.interest-payment.currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.loan-repayment.value" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.loan-repayment.value-usd" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.loan-repayment.currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.reimbursement.value" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.reimbursement.value-usd" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.reimbursement.currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.purchase-of-equity.value" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.purchase-of-equity.value-usd" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.purchase-of-equity.currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.sale-of-equity.value" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.sale-of-equity.value-usd" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.sale-of-equity.currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.credit-guarantee.value" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.credit-guarantee.value-usd" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.credit-guarantee.currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.incoming-commitment.value" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.incoming-commitment.value-usd" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.incoming-commitment.currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.outgoing-pledge.value" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.outgoing-pledge.value-usd" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.outgoing-pledge.currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.incoming-pledge.value" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.incoming-pledge.value-usd" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.incoming-pledge.currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+
+  <field name="activity-plus-child-aggregation.budget.value" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.budget.value-usd" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.budget.currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.planned-disbursement.value" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.planned-disbursement.value-usd" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.planned-disbursement.currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.incoming-funds.value" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.incoming-funds.value-usd" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.incoming-funds.currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.outgoing-commitment.value" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.outgoing-commitment.value-usd" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.outgoing-commitment.currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.disbursement.value" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.disbursement.value-usd" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.disbursement.currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.expenditure.value" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.expenditure.value-usd" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.expenditure.currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.interest-payment.value" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.interest-payment.value-usd" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.interest-payment.currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.loan-repayment.value" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.loan-repayment.value-usd" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.loan-repayment.currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.reimbursement.value" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.reimbursement.value-usd" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.reimbursement.currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.purchase-of-equity.value" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.purchase-of-equity.value-usd" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.purchase-of-equity.currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.sale-of-equity.value" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.sale-of-equity.value-usd" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.sale-of-equity.currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.credit-guarantee.value" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.credit-guarantee.value-usd" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.credit-guarantee.currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.incoming-commitment.value" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.incoming-commitment.value-usd" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.incoming-commitment.currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.outgoing-pledge.value" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.outgoing-pledge.value-usd" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.outgoing-pledge.currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.incoming-pledge.value" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.incoming-pledge.value-usd" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.incoming-pledge.currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+
+  <!-- Additional dataset fields -->
+  <field name="dataset.id" type="text_general_single" indexed="true" stored="true" />
+  <field name="dataset.metadata_created" type="pdate" indexed="true" stored="true" />
+  <field name="dataset.metadata_modified" type="pdate" indexed="true" stored="true" />
+  <field name="dataset.name" type="text_general_single" indexed="true" stored="true" />
+  <field name="dataset.extras.iati_version" type="text_general_single" indexed="true" stored="true" />
+  <field name="dataset.extras.publisher_iati_id" type="text_general_single" indexed="true" stored="true" />
+  <field name="dataset.extras.publisher" type="text_general_single" indexed="true" stored="true" />
+  <field name="dataset.extras.data_updated" type="pdate" indexed="true" stored="true" />
+  <field name="dataset.resources.hash" type="text_general_single" indexed="true" stored="true" />
+  <field name="dataset.resources.last_modified" type="pdate" indexed="true" stored="true" />
+  <field name="dataset.resources.url" type="text_general_single" indexed="true" stored="true" />
+
+  <!-- Date quarter fields -->
+  <field name="activity-date.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
+  <field name="budget.period-start.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
+  <field name="budget.period-end.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
+  <field name="planned-disbursement.period-start.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
+  <field name="planned-disbursement.period-end.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
+  <field name="transaction.transaction-date.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
+  <field name="document-link.document-date.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
+  <field name="result.document-link.document-date.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
+  <field name="result.indicator.document-link.document-date.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
+  <field name="result.indicator.baseline.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
+  <field name="result.indicator.baseline.document-link.document-date.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
+  <field name="result.indicator.period.period-start.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
+  <field name="result.indicator.period.period-end.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
+  <field name="result.indicator.period.target.document-link.document-date.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
+  <field name="result.indicator.period.actual.document-link.document-date.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
+  <field name="crs-add.loan-terms.commitment-date.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
+  <field name="crs-add.loan-terms.repayment-first-date.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
+  <field name="crs-add.loan-terms.repayment-final-date.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
+
+  <!-- GBP Converted fields -->
+  <field name="budget.value-gbp" type="pdoubles"/>
+  <field name="planned-disbursement.value-gbp" type="pdoubles"/>
+  <field name="transaction.value-gbp" type="pdoubles"/>
+  <field name="budget.value-gbp.sum" type="pdouble"/>
+  <field name="planned-disbursement.value-gbp.sum" type="pdouble"/>
+  <field name="transaction.value-gbp.sum" type="pdouble"/>
+  <field name="budget.value-gbp.conversion-rate" type="pdoubles"/>
+  <field name="planned-disbursement.value-gbp.conversion-rate" type="pdoubles"/>
+  <field name="transaction.value-gbp.conversion-rate" type="pdoubles"/>
+  <field name="activity-aggregation.budget.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.planned-disbursement.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.incoming-funds.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.outgoing-commitment.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.disbursement.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.expenditure.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.interest-payment.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.loan-repayment.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.reimbursement.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.purchase-of-equity.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.sale-of-equity.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.credit-guarantee.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.incoming-commitment.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.outgoing-pledge.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-aggregation.incoming-pledge.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.budget.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.planned-disbursement.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.incoming-funds.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.outgoing-commitment.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.disbursement.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.expenditure.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.interest-payment.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.loan-repayment.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.reimbursement.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.purchase-of-equity.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.sale-of-equity.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.credit-guarantee.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.incoming-commitment.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.outgoing-pledge.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child-aggregation.incoming-pledge.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.budget.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.planned-disbursement.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.incoming-funds.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.outgoing-commitment.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.disbursement.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.expenditure.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.interest-payment.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.loan-repayment.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.reimbursement.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.purchase-of-equity.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.sale-of-equity.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.credit-guarantee.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.incoming-commitment.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.outgoing-pledge.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-plus-child-aggregation.incoming-pledge.value-gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="budget_value_gbp" type="pdoubles" multiValued="true" indexed="false" required="false" stored="true"/>
+  <field name="budget_value_gbp_sum" type="pdoubles" multiValued="false" indexed="false" required="false" stored="true"/>
+  <field name="budget_gbp_conversion_rate" type="pdoubles" multiValued="true" indexed="false" required="false" stored="true"/>
+  <field name="planned_disbursement_value_gbp" type="pdoubles" multiValued="true" indexed="false" required="false" stored="true"/>
+  <field name="planned_disbursement_value_gbp_sum" type="pdoubles" multiValued="false" indexed="false" required="false" stored="true"/>
+  <field name="planned_disbursement_gbp_conversion_rate" type="pdoubles" multiValued="true" indexed="false" required="false" stored="true"/>
+  <field name="transaction_value_gbp" type="pdoubles" multiValued="true" indexed="false" required="false" stored="true"/>
+  <field name="transaction_value_gbp_sum" type="pdoubles" multiValued="false" indexed="false" required="false" stored="true"/>
+  <field name="transaction_gbp_conversion_rate" type="pdoubles" multiValued="true" indexed="false" required="false" stored="true"/>
+  <field name="activity_aggregation_budget_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_aggregation_planned_disbursement_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_aggregation_incoming_funds_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_aggregation_outgoing_commitment_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_aggregation_disbursement_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_aggregation_expenditure_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_aggregation_interest_payment_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_aggregation_loan_repayment_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_aggregation_reimbursement_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_aggregation_purchase_of_equity.value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_aggregation_sale_of_equity.value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_aggregation_credit_guarantee_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_aggregation_commitment_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_aggregation_incoming_commitment_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_aggregation_outgoing_pledge_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_aggregation_incoming_pledge_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child_aggregation_budget_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child_aggregation_planned_disbursement_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child_aggregation_incoming_funds_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child_aggregation_outgoing_commitment_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child_aggregation_disbursement_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child_aggregation_expenditure_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child_aggregation_interest_payment_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child_aggregation_loan_repayment_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child_aggregation_reimbursement_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child_aggregation_purchase_of_equity.value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child_aggregation_sale_of_equity.value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child_aggregation_credit_guarantee_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child_aggregation_commitment_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child_aggregation_incoming_commitment_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child_aggregation_outgoing_pledge_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child_aggregation_incoming_pledge_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_plus_child_aggregation_budget_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_plus_child_aggregation_planned_disbursement_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_plus_child_aggregation_incoming_funds_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_plus_child_aggregation_outgoing_commitment_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_plus_child_aggregation_disbursement_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_plus_child_aggregation_expenditure_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_plus_child_aggregation_interest_payment_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_plus_child_aggregation_loan_repayment_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_plus_child_aggregation_reimbursement_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_plus_child_aggregation_purchase_of_equity.value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_plus_child_aggregation_sale_of_equity.value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_plus_child_aggregation_credit_guarantee_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_plus_child_aggregation_commitment_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_plus_child_aggregation_incoming_commitment_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_plus_child_aggregation_outgoing_pledge_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_plus_child_aggregation_incoming_pledge_value_gbp" type="pdouble" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_aggregation_commitment_value_gbp" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_aggregation_purchase_of_equity_value_gbp" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_aggregation_sale_of_equity_value_gbp" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child_aggregation_commitment_value_gbp" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_plus_child_aggregation_commitment_value_gbp" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child_aggregation_purchase_of_equity_value_gbp" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_plus_child_aggregation_purchase_of_equity_value_gbp" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="child_aggregation_sale_of_equity_value_gbp" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_plus_child_aggregation_sale_of_equity_value_gbp" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+
+  <!-- JSON Dump fields, non-indexed -->
+  <field name="json.reporting-org" type="text_general" multiValued="false" indexed="false" required="false" stored="true"/>
+  <field name="json.title" type="text_general" multiValued="false" indexed="false" required="false" stored="true"/>
+  <field name="json.description" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
+  <field name="json.participating-org" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
+  <field name="json.other-identifier" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
+  <field name="json.activity-date" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
+  <field name="json.contact-info" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
+  <field name="json.recipient-country" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
+  <field name="json.recipient-region" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
+  <field name="json.location" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
+  <field name="json.sector" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
+  <field name="json.tag" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
+  <field name="json.country-budget-items" type="text_general" multiValued="false" indexed="false" required="false" stored="true"/>
+  <field name="json.humanitarian-scope" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
+  <field name="json.policy-marker" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
+  <field name="json.default-aid-type" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
+  <field name="json.planned-disbursement" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
+  <field name="json.transaction" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
+  <field name="json.document-link" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
+  <field name="json.related-activity" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
+  <field name="json.legacy-data" type="text_general" multiValued="true" indexed="false" required="false" stored="true"/>
+  <field name="json.conditions" type="text_general" multiValued="false" indexed="false" required="false" stored="true"/>
+  <field name="json.crs-add" type="text_general" multiValued="false" indexed="false" required="false" stored="true"/>
+  <field name="json.fss" type="text_general" multiValued="false" indexed="false" required="false" stored="true"/>
+
+  <!-- FCDO Document link combined categories -->
+  <field name="document-link.category-codes-combined" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
+
+  <!-- Dynamic fields -->
+  <dynamicField name="*_txt_en_split_tight" type="text_en_splitting_tight" indexed="true" stored="true"/>
+  <dynamicField name="*_descendent_path" type="descendent_path" indexed="true" stored="true"/>
+  <dynamicField name="*_ancestor_path" type="ancestor_path" indexed="true" stored="true"/>
+  <dynamicField name="*_txt_en_split" type="text_en_splitting" indexed="true" stored="true"/>
+  <dynamicField name="*_txt_sort" type="text_gen_sort" indexed="true" stored="true"/>
+  <dynamicField name="ignored_*" type="ignored"/>
+  <dynamicField name="*_txt_rev" type="text_general_rev" indexed="true" stored="true"/>
+  <dynamicField name="*_phon_en" type="phonetic_en" indexed="true" stored="true"/>
+  <dynamicField name="*_s_lower" type="lowercase" indexed="true" stored="true"/>
+  <dynamicField name="*_txt_cjk" type="text_cjk" indexed="true" stored="true"/>
+  <dynamicField name="random_*" type="random"/>
+  <dynamicField name="*_t_sort" type="text_gen_sort" multiValued="false" indexed="true" stored="true"/>
+  <dynamicField name="*_txt_en" type="text_en" indexed="true" stored="true"/>
+  <dynamicField name="*_txt_ar" type="text_ar" indexed="true" stored="true"/>
+  <dynamicField name="*_txt_bg" type="text_bg" indexed="true" stored="true"/>
+  <dynamicField name="*_txt_ca" type="text_ca" indexed="true" stored="true"/>
+  <dynamicField name="*_txt_cz" type="text_cz" indexed="true" stored="true"/>
+  <dynamicField name="*_txt_da" type="text_da" indexed="true" stored="true"/>
+  <dynamicField name="*_txt_de" type="text_de" indexed="true" stored="true"/>
+  <dynamicField name="*_txt_el" type="text_el" indexed="true" stored="true"/>
+  <dynamicField name="*_txt_es" type="text_es" indexed="true" stored="true"/>
+  <dynamicField name="*_txt_et" type="text_et" indexed="true" stored="true"/>
+  <dynamicField name="*_txt_eu" type="text_eu" indexed="true" stored="true"/>
+  <dynamicField name="*_txt_fa" type="text_fa" indexed="true" stored="true"/>
+  <dynamicField name="*_txt_fi" type="text_fi" indexed="true" stored="true"/>
+  <dynamicField name="*_txt_fr" type="text_fr" indexed="true" stored="true"/>
+  <dynamicField name="*_txt_ga" type="text_ga" indexed="true" stored="true"/>
+  <dynamicField name="*_txt_gl" type="text_gl" indexed="true" stored="true"/>
+  <dynamicField name="*_txt_hi" type="text_hi" indexed="true" stored="true"/>
+  <dynamicField name="*_txt_hu" type="text_hu" indexed="true" stored="true"/>
+  <dynamicField name="*_txt_hy" type="text_hy" indexed="true" stored="true"/>
+  <dynamicField name="*_txt_id" type="text_id" indexed="true" stored="true"/>
+  <dynamicField name="*_txt_it" type="text_it" indexed="true" stored="true"/>
+  <dynamicField name="*_txt_ja" type="text_ja" indexed="true" stored="true"/>
+  <dynamicField name="*_txt_ko" type="text_ko" indexed="true" stored="true"/>
+  <dynamicField name="*_txt_lv" type="text_lv" indexed="true" stored="true"/>
+  <dynamicField name="*_txt_nl" type="text_nl" indexed="true" stored="true"/>
+  <dynamicField name="*_txt_no" type="text_no" indexed="true" stored="true"/>
+  <dynamicField name="*_txt_pt" type="text_pt" indexed="true" stored="true"/>
+  <dynamicField name="*_txt_ro" type="text_ro" indexed="true" stored="true"/>
+  <dynamicField name="*_txt_ru" type="text_ru" indexed="true" stored="true"/>
+  <dynamicField name="*_txt_sv" type="text_sv" indexed="true" stored="true"/>
+  <dynamicField name="*_txt_th" type="text_th" indexed="true" stored="true"/>
+  <dynamicField name="*_txt_tr" type="text_tr" indexed="true" stored="true"/>
+  <dynamicField name="*_point" type="point" indexed="true" stored="true"/>
+  <dynamicField name="*_srpt" type="location_rpt" indexed="true" stored="true"/>
+  <dynamicField name="attr_*" type="text_general" multiValued="true" indexed="true" stored="true"/>
+  <dynamicField name="*_txt" type="text_general" indexed="true" stored="true"/>
+  <dynamicField name="*_str" type="strings" docValues="true" indexed="false" stored="false" useDocValuesAsStored="false"/>
+  <dynamicField name="*_dts" type="pdate" multiValued="true" indexed="true" stored="true"/>
+  <dynamicField name="*_dpf" type="delimited_payloads_float" indexed="true" stored="true"/>
+  <dynamicField name="*_dpi" type="delimited_payloads_int" indexed="true" stored="true"/>
+  <dynamicField name="*_dps" type="delimited_payloads_string" indexed="true" stored="true"/>
+  <dynamicField name="*_is" type="pints" indexed="true" stored="true"/>
+  <dynamicField name="*_ss" type="strings" indexed="true" stored="true"/>
+  <dynamicField name="*_ls" type="plongs" indexed="true" stored="true"/>
+  <dynamicField name="*_bs" type="booleans" indexed="true" stored="true"/>
+  <dynamicField name="*_fs" type="pfloats" indexed="true" stored="true"/>
+  <dynamicField name="*_ds" type="pdoubles" indexed="true" stored="true"/>
+  <dynamicField name="*_dt" type="pdate" indexed="true" stored="true"/>
+  <dynamicField name="*_ws" type="text_ws" indexed="true" stored="true"/>
+  <dynamicField name="*_i" type="pint" indexed="true" stored="true"/>
+  <dynamicField name="*_s" type="string" indexed="true" stored="true"/>
+  <dynamicField name="*_l" type="plong" indexed="true" stored="true"/>
+  <dynamicField name="*_t" type="text_general" multiValued="false" indexed="true" stored="true"/>
+  <dynamicField name="*_b" type="boolean" indexed="true" stored="true"/>
+  <dynamicField name="*_f" type="pfloat" indexed="true" stored="true"/>
+  <dynamicField name="*_d" type="pdouble" indexed="true" stored="true"/>
+  <dynamicField name="*_p" type="location" indexed="true" stored="true"/>
+
+  <!-- OLD FIELDS, DEPRECATED -->
+  <!-- IATI Narrative -->
+  <fieldType name="iati_narrative" class="solr.SortableTextField" positionIncrementGap="100" multiValued="true">
+    <analyzer type="index">
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.NGramFilterFactory" minGramSize="2" maxGramSize="100"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+    </analyzer>
+    <analyzer type="query">
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt" />
+      <filter class="solr.SynonymGraphFilterFactory" synonyms="synonyms.txt" ignoreCase="true" expand="true"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+    </analyzer>
+  </fieldType>
+
+  <fieldType name="non_case_sensitive" class="solr.TextField">
+    <analyzer type="index">
+        <tokenizer class="solr.KeywordTokenizerFactory"/>
+        <filter class="solr.LowerCaseFilterFactory"/>
+    </analyzer>
+    <analyzer type="query">
+        <tokenizer class="solr.KeywordTokenizerFactory"/>
+        <filter class="solr.LowerCaseFilterFactory"/>
+    </analyzer>
+  </fieldType>
+
+  <!-- COPYFIELDS!! -->
+  <!--Transaction Core - Start-->
+  <field name="iati_identifier" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+
+  <field name="title_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="title_narrative" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
+
+  <field name="activity_description_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="activity_description_narrative" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
+
+  <field name="activity_recipient_country_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="activity_recipient_country_name" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+
+  <field name="activity_recipient_region_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="activity_recipient_region_name" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+
+  <field name="activity_sector_vocabulary" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="activity_sector_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="activity_sector_percentage" type="pdoubles" multiValued="true" indexed="true" required="false" stored="true"/>
+
+  <field name="participating_org_ref" type="non_case_sensitive" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="participating_org_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="participating_org_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
+  <field name="participating_org_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="participating_org_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
+
+   <!-- fields for activity additional filters -->
+
+  <field name="activity_scope_code" type="string" indexed="true" required="false" stored="true"/>
+  <field name="activity_status_code" type="string" indexed="true" required="false" stored="true"/>
+  <field name="activity_status_text" type="text_general_single"/>
+
+  <field name="collaboration_type_code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+
+  <field name="default_aid_type_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="default_aid_type_vocabulary" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="default_aid_type_category_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+
+  <field name="default_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="default_finance_type_code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="default_lang" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="default_flow_type_code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="default_tied_status_code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+
+  <field name="document_link_category_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="default_humanitarian" type="string" multiValued="false"
+  indexed="true" required="false" stored="true"/>
+
+  <field name="humanitarian_scope_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="humanitarian_scope_vocabulary" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+
+  <field name="dataset_iati_version" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+
+  <field name="other_identifier_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+
+  <field name="policy_marker_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="policy_marker_combined" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="policy_marker_significance" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+
+  <field name="tag_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="tag_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
+  <field name="tag_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="tag_narrative_text" type="iati_narrative" indexed="true" required="false" stored="true"/>
+
+
+  <!-- end fields for activity additional filters -->
+
+  <field name="activity_date_start_planned" type="string" multiValued="false" indexed="false" required="false" stored="true"/>
+  <field name="activity_date_start_actual" type="string" multiValued="false" indexed="false" required="false" stored="true"/>
+  <field name="activity_date_end_planned" type="string" multiValued="false" indexed="false" required="false" stored="true"/>
+  <field name="activity_date_end_actual" type="string" multiValued="false" indexed="false" required="false" stored="true"/>
+  <field name="activity_date_start_common" type="string" multiValued="false" indexed="false" required="false" stored="true"/>
+  <field name="activity_date_end_common" type="string" multiValued="false" indexed="false" required="false" stored="true"/>
+  <field name="activity_date_start_planned_f" type="pdate" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_date_start_actual_f" type="pdate" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_date_end_planned_f" type="pdate" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_date_end_actual_f" type="pdate" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_date_start_common_f" type="pdate" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity_date_end_common_f" type="pdate" multiValued="false" indexed="true" required="false" stored="true"/>
+
+  <field name="activity_date_type" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="activity_date_iso_date" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="activity_date_iso_date_f" type="pdate" multiValued="true" indexed="true" required="false" stored="true"/>
+
+  <field name="reporting_org_ref" type="non_case_sensitive" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="reporting_org_type" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="reporting_org_type_name" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="reporting_org_secondary_reporter" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="reporting_org_narrative" type="iati_narrative" indexed="true" required="false" stored="true"/>
+
+  <field name="transaction_description_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="transaction_description_narrative" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
+
+  <field name="transaction_ref" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="transaction_humanitarian" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="transaction_type" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="transaction_date_iso_date" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="transaction_date_iso_date_f" type="pdate" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="transaction_value_currency" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="transaction_value_date" type="pdate" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="transaction_value" type="pdoubles" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="transaction_value_usd" type="pdoubles" multiValued="false"  indexed="false" required="false" stored="true"/>
+  <field name="transaction_imf_link" type="text_general" multiValued="false"  indexed="false" required="false" stored="true"/>
+  <field name="transaction_usd_conversion_rate" type="pdoubles" multiValued="false" indexed="false" required="false" stored="true"/>
+
+
+  <field name="transaction_provider_org_ref" type="non_case_sensitive" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="transaction_provider_org_provider_activity_id" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="transaction_provider_org_type" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+
+  <field name="transaction_provider_org_narrative" type="iati_narrative" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="transaction_provider_org_narrative_text" type="iati_narrative" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="transaction_provider_org_narrative_lang" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+
+  <field name="transaction_receiver_org_ref" type="non_case_sensitive" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="transaction_receiver_org_receiver_activity_id" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="transaction_receiver_org_type" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+
+  <field name="transaction_receiver_org_narrative" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="transaction_receiver_org_narrative_text" type="iati_narrative" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="transaction_receiver_org_narrative_lang" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+
+  <field name="transaction_disbursement_channel_code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+
+  <field name="transaction_sector_vocabulary" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="transaction_sector_vocabulary_uri" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="transaction_sector_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="transaction_sector_percentage" type="pdoubles" multiValued="true" indexed="true" required="false" stored="true"/>
+
+  <field name="transaction_recipient_country_code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="transaction_recipient_country_narrative" type="iati_narrative" multiValued="false" indexed="true" required="false" stored="true"/>
+
+  <field name="transaction_recipient_region_code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="transaction_recipient_region_vocabulary" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="transaction_recipient_region_vocabulary_uri" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+
+  <field name="transaction_flow_type_code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="transaction_finance_type_code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+
+  <field name="transaction_aid_type_code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="transaction_aid_type_vocabulary" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+
+  <field name="transaction_tied_status_code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+
+
+
+  <!-- DEPRECATED copyfields -->
+  <copyField source="iati-identifier" dest="iati_identifier" />
+  <copyField source="title.narrative.lang" dest="title_lang" />
+  <copyField source="title.narrative" dest="title_narrative" />
+  <copyField source="description.type" dest="activity_description_type" />
+  <copyField source="description.narrative" dest="activity_description_narrative" />
+  <copyField source="recipient-country.code" dest="activity_recipient_country_code" />
+  <copyField source="recipient-country.name" dest="activity_recipient_country_name" />
+  <copyField source="recipient-region.code" dest="activity_recipient_region_code" />
+  <copyField source="recipient-region.narrative" dest="activity_recipient_region_name" />
+  <copyField source="sector.vocabulary" dest="activity_sector_vocabulary" />
+  <copyField source="sector.code" dest="activity_sector_code" />
+  <copyField source="sector.percentage" dest="activity_sector_percentage" />
+  <copyField source="participating-org.ref" dest="participating_org_ref" />
+  <copyField source="participating-org.type" dest="participating_org_type" />
+  <copyField source="participating-org.narrative" dest="participating_org_narrative_text" />
+  <copyField source="participating-org.narrative.lang" dest="participating_org_narrative_lang" />
+  <copyField source="participating-org.narrative" dest="participating_org_narrative_text" />
+  <copyField source="activity-scope.code" dest="activity_scope_code" />
+  <copyField source="activity-status.code" dest="activity_status_code" />
+  <copyField source="activity-status.text" dest="activity_status_text" />
+  <copyField source="collaboration-type.code" dest="collaboration_type_code" />
+  <copyField source="default-aid-type.code" dest="default_aid_type_code" />
+  <copyField source="default-aid-type.vocabulary" dest="default_aid_type_vocabulary" />
+  <copyField source="default-aid-type.code" dest="default_aid_type_category_code" />
+  <copyField source="default-currency" dest="default_currency" />
+  <copyField source="default-finance-type.code" dest="default_finance_type_code" />
+  <copyField source="lang" dest="default_lang" />
+  <copyField source="default-flow-type.code" dest="default_flow_type_code" />
+  <copyField source="default-tied-status.code" dest="default_tied_status_code" />
+  <copyField source="document-link.category.code" dest="document_link_category_code" />
+  <!-- not necessary hierarchy -->
+  <copyField source="humanitarian" dest="default_humanitarian" />
+  <copyField source="humanitarian-scope.type" dest="humanitarian_scope_type" />
+  <copyField source="humanitarian-scope.vocabulary" dest="humanitarian_scope_vocabulary" />
+  <copyField source="dataset.extras.iati_version" dest="dataset_iati_version" />
+  <copyField source="other-identifier.type" dest="other_identifier_type" />
+  <copyField source="policy-marker.code" dest="policy_marker_code" />
+  <copyField source="policy-marker.combined" dest="policy_marker_combined" />
+  <copyField source="policy-marker.significance" dest="policy_marker_significance" />
+  <copyField source="tag.code" dest="tag_code" />
+  <copyField source="tag.narrative" dest="tag_narrative" />
+  <copyField source="tag.narrative.lang" dest="tag_narrative_lang" />
+  <copyField source="tag.narrative" dest="tag_narrative_text" />
+  <copyField source="activity-date.start-planned" dest="activity_date_start_planned" />
+  <copyField source="activity-date.start-actual" dest="activity_date_start_actual" />
+  <copyField source="activity-date.end-planned" dest="activity_date_end_planned" />
+  <copyField source="activity-date.end-actual" dest="activity_date_end_actual" />
+  <copyField source="activity-date.common.end" dest="activity_date_end_common" />
+  <copyField source="activity-date.common.start" dest="activity_date_start_common" />
+  <copyField source="activity-date.start-planned" dest="activity_date_start_planned_f" />
+  <copyField source="activity-date.start-actual" dest="activity_date_start_actual_f" />
+  <copyField source="activity-date.end-planned" dest="activity_date_end_planned_f" />
+  <copyField source="activity-date.end-actual" dest="activity_date_end_actual_f" />
+  <copyField source="activity-date.common.end" dest="activity_date_end_common_f" />
+  <copyField source="activity-date.common.start" dest="activity_date_start_common_f" />
+  <copyField source="activity-date.type" dest="activity_date_type" />
+  <copyField source="activity-date.iso-date" dest="activity_date_iso_date" />
+  <copyField source="activity-date.iso-date" dest="activity_date_iso_date_f" />
+  <copyField source="reporting-org.ref" dest="reporting_org_ref" />
+  <copyField source="reporting-org.type" dest="reporting_org_type" />
+  <copyField source="reporting-org.type.name" dest="reporting_org_type_name" />
+  <copyField source="reporting-org.secondary-reporter" dest="reporting_org_secondary_reporter" />
+  <copyField source="reporting-org.narrative" dest="reporting_org_narrative" />
+  <copyField source="transaction.description.narrative.lang" dest="transaction_description_lang" />
+  <copyField source="transaction.description.narrative" dest="transaction_description_narrative" />
+  <copyField source="transaction.ref" dest="transaction_ref" />
+  <copyField source="transaction.humanitarian" dest="transaction_humanitarian" />
+  <copyField source="transaction.transaction-type.code" dest="transaction_type" />
+  <copyField source="transaction.transaction-date.iso-date" dest="transaction_date_iso_date" />
+  <copyField source="transaction.transaction-date.iso-date" dest="transaction_date_iso_date_f" />
+  <copyField source="transaction.value.currency" dest="transaction_value_currency" />
+  <copyField source="transaction.value.value-date" dest="transaction_value_date" />
+  <copyField source="transaction.value" dest="transaction_value" />
+  <copyField source="transaction.value-usd" dest="transaction_value_usd" />
+  <copyField source="dataset.resources.url" dest="transaction_imf_link" />
+  <copyField source="transaction.value-usd.conversion-rate" dest="transaction_usd_conversion_rate" />
+  <copyField source="transaction.provider-org.ref" dest="transaction_provider_org_ref" />
+  <copyField source="transaction.provider-org.provider-activity-id" dest="transaction_provider_org_provider_activity_id" />
+  <copyField source="transaction.provider-org.type" dest="transaction_provider_org_type" />
+  <copyField source="transaction.provider-org.narrative" dest="transaction_provider_org_narrative" />
+  <copyField source="transaction.provider-org.narrative" dest="transaction_provider_org_narrative_text" />
+  <copyField source="transaction.provider-org.narrative.lang" dest="transaction_provider_org_narrative_lang" />
+  <copyField source="transaction.receiver-org.ref" dest="transaction_receiver_org_ref" />
+  <copyField source="transaction.receiver-org.receiver-activity-id" dest="transaction_receiver_org_receiver_activity_id" />
+  <copyField source="transaction.receiver-org.type" dest="transaction_receiver_org_type" />
+  <copyField source="transaction.receiver-org.narrative" dest="transaction_receiver_org_narrative" />
+  <copyField source="transaction.receiver-org.narrative" dest="transaction_receiver_org_narrative_text" />
+  <copyField source="transaction.receiver-org.narrative.lang" dest="transaction_receiver_org_narrative_lang" />
+  <copyField source="transaction.disbursement-channel.code" dest="transaction_disbursement_channel_code" />
+  <copyField source="transaction.sector.vocabulary" dest="transaction_sector_vocabulary" />
+  <copyField source="transaction.sector.vocabulary-uri" dest="transaction_sector_vocabulary_uri" />
+  <copyField source="transaction.sector.code" dest="transaction_sector_code" />
+  <copyField source="sector.percentage" dest="transaction_sector_percentage" />
+  <copyField source="transaction.recipient-country.code" dest="transaction_recipient_country_code" />
+  <copyField source="transaction.recipient-region.code" dest="transaction_recipient_region_code" />
+  <copyField source="transaction.recipient-region.vocabulary" dest="transaction_recipient_region_vocabulary" />
+  <copyField source="recipient-region.vocabulary-uri" dest="transaction_recipient_region_vocabulary_uri" />
+  <copyField source="transaction.flow-type.code" dest="transaction_flow_type_code" />
+  <copyField source="transaction.finance-type.code" dest="transaction_finance_type_code" />
+  <copyField source="transaction.aid-type.code" dest="transaction_aid_type_code" />
+  <copyField source="transaction.aid-type.vocabulary" dest="transaction_aid_type_vocabulary" />
+  <copyField source="transaction.tied-status.code" dest="transaction_tied_status_code" />
+  <!-- gbp converted values-->
+  <copyField source="budget.value-gbp" dest="budget_value_gbp" />
+  <copyField source="planned-disbursement.value-gbp" dest="planned_disbursement_value_gbp" />
+  <copyField source="transaction.value-gbp" dest="transaction_value_gbp" />
+  <copyField source="budget.value-gbp.sum" dest="budget_value_gbp_sum" />
+  <copyField source="planned-disbursement.value-gbp.sum" dest="planned_disbursement_value_gbp_sum" />
+  <copyField source="transaction.value-gbp.sum" dest="transaction_value_gbp_sum" />
+  <copyField source="budget.value-gbp.conversion-rate" dest="budget_gbp_conversion_rate" />
+  <copyField source="planned-disbursement.value-gbp.conversion-rate" dest="planned_disbursement_gbp_conversion_rate" />
+  <copyField source="transaction.value-gbp.conversion-rate" dest="transaction_gbp_conversion_rate" />
+  <copyField source="activity-aggregation.budget.value-gbp" dest="activity_aggregation_budget_value_gbp" />
+  <copyField source="activity-aggregation.incoming-funds.value-gbp" dest="activity_aggregation_incoming_funds_value_gbp" />
+  <copyField source="activity-aggregation.outgoing-commitment.value-gbp" dest="activity_aggregation_commitment_value_gbp" />
+  <copyField source="activity-aggregation.disbursement.value-gbp" dest="activity_aggregation_disbursement_value_gbp" />
+  <copyField source="activity-aggregation.expenditure.value-gbp" dest="activity_aggregation_expenditure_value_gbp" />
+  <copyField source="activity-aggregation.interest-payment.value-gbp" dest="activity_aggregation_interest_payment_value_gbp" />
+  <copyField source="activity-aggregation.loan-repayment.value-gbp" dest="activity_aggregation_loan_repayment_value_gbp" />
+  <copyField source="activity-aggregation.reimbursement.value-gbp" dest="activity_aggregation_reimbursement_value_gbp" />
+  <copyField source="activity-aggregation.purchase-of-equity.value-gbp" dest="activity_aggregation_purchase_of_equity_value_gbp" />
+  <copyField source="activity-aggregation.sale-of-equity.value-gbp" dest="activity_aggregation_sale_of_equity_value_gbp" />
+  <copyField source="activity-aggregation.credit-guarantee.value-gbp" dest="activity_aggregation_credit_guarantee_value_gbp" />
+  <copyField source="activity-aggregation.incoming-commitment.value-gbp" dest="activity_aggregation_incoming_commitment_value_gbp" />
+  <copyField source="activity-aggregation.outgoing-pledge.value-gbp" dest="activity_aggregation_outgoing_pledge_value_gbp" />
+  <copyField source="activity-aggregation.incoming-pledge.value-gbp" dest="activity_aggregation_incoming_pledge_value_gbp" />
+  <copyField source="child-aggregation.budget.value-gbp" dest="child_aggregation_budget_value_gbp" />
+  <copyField source="child-aggregation.incoming-funds.value-gbp" dest="child_aggregation_incoming_funds_value_gbp" />
+  <copyField source="child-aggregation.outgoing-commitment.value-gbp" dest="child_aggregation_commitment_value_gbp" />
+  <copyField source="child-aggregation.disbursement.value-gbp" dest="child_aggregation_disbursement_value_gbp" />
+  <copyField source="child-aggregation.expenditure.value-gbp" dest="child_aggregation_expenditure_value_gbp" />
+  <copyField source="child-aggregation.interest-payment.value-gbp" dest="child_aggregation_interest_payment_value_gbp" />
+  <copyField source="child-aggregation.loan-repayment.value-gbp" dest="child_aggregation_loan_repayment_value_gbp" />
+  <copyField source="child-aggregation.reimbursement.value-gbp" dest="child_aggregation_reimbursement_value_gbp" />
+  <copyField source="child-aggregation.purchase-of-equity.value-gbp" dest="child_aggregation_purchase_of_equity_value_gbp" />
+  <copyField source="child-aggregation.sale-of-equity.value-gbp" dest="child_aggregation_sale_of_equity_value_gbp" />
+  <copyField source="child-aggregation.credit-guarantee.value-gbp" dest="child_aggregation_credit_guarantee_value_gbp" />
+  <copyField source="child-aggregation.incoming-commitment.value-gbp" dest="child_aggregation_incoming_commitment_value_gbp" />
+  <copyField source="child-aggregation.outgoing-pledge.value-gbp" dest="child_aggregation_outgoing_pledge_value_gbp" />
+  <copyField source="child-aggregation.incoming-pledge.value-gbp" dest="child_aggregation_incoming_pledge_value_gbp" />
+  <copyField source="activity-plus-child-aggregation.budget.value-gbp" dest="activity_plus_child_aggregation_budget_value_gbp" />
+  <copyField source="activity-plus-child-aggregation.incoming-funds.value-gbp" dest="activity_plus_child_aggregation_incoming_funds_value_gbp" />
+  <copyField source="activity-plus-child-aggregation.outgoing-commitment.value-gbp" dest="activity_plus_child_aggregation_commitment_value_gbp" />
+  <copyField source="activity-plus-child-aggregation.disbursement.value-gbp" dest="activity_plus_child_aggregation_disbursement_value_gbp" />
+  <copyField source="activity-plus-child-aggregation.expenditure.value-gbp" dest="activity_plus_child_aggregation_expenditure_value_gbp" />
+  <copyField source="activity-plus-child-aggregation.interest-payment.value-gbp" dest="activity_plus_child_aggregation_interest_payment_value_gbp" />
+  <copyField source="activity-plus-child-aggregation.loan-repayment.value-gbp" dest="activity_plus_child_aggregation_loan_repayment_value_gbp" />
+  <copyField source="activity-plus-child-aggregation.reimbursement.value-gbp" dest="activity_plus_child_aggregation_reimbursement_value_gbp" />
+  <copyField source="activity-plus-child-aggregation.purchase-of-equity.value-gbp" dest="activity_plus_child_aggregation_purchase_of_equity_value_gbp" />
+  <copyField source="activity-plus-child-aggregation.sale-of-equity.value-gbp" dest="activity_plus_child_aggregation_sale_of_equity_value_gbp" />
+  <copyField source="activity-plus-child-aggregation.credit-guarantee.value-gbp" dest="activity_plus_child_aggregation_credit_guarantee_value_gbp" />
+  <copyField source="activity-plus-child-aggregation.incoming-commitment.value-gbp" dest="activity_plus_child_aggregation_incoming_commitment_value_gbp" />
+  <copyField source="activity-plus-child-aggregation.outgoing-pledge.value-gbp" dest="activity_plus_child_aggregation_outgoing_pledge_value_gbp" />
+  <copyField source="activity-plus-child-aggregation.incoming-pledge.value-gbp" dest="activity_plus_child_aggregation_incoming_pledge_value_gbp" />
+</schema>

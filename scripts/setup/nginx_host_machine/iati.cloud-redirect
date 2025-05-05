@@ -1,0 +1,8 @@
+server {
+	server_name iati.cloud www.iati.cloud;
+
+	add_header 'Access-Control-Allow-Origin' '*';
+	add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';
+
+	return 301 https://datastore.iati.cloud$request_uri;
+}

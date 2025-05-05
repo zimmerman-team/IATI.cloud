@@ -1,0 +1,7 @@
+server {
+    server_name flower.REPL_SERVER_NAME;
+
+    location / {
+        proxy_pass http://localhost:5555;
+    }
+}

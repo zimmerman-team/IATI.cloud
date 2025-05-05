@@ -1,0 +1,7 @@
+server {
+    server_name cockpit.REPL_SERVER_NAME;
+
+    location / {
+        proxy_pass http://localhost:9090;
+    }
+}
