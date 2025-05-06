@@ -17,8 +17,12 @@ from django.contrib import admin
 from django.urls import path
 from django_celery_beat.models import ClockedSchedule, SolarSchedule
 
+from .views import aida_drop, aida_index
+
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('aida/index', aida_index),  # Requires a POST request with JSON body
+    path('aida/drop', aida_drop)  # Requires a POST request with JSON body
 ]
 
 admin.site.unregister([

@@ -1,6 +1,8 @@
 # Start with python 3.11
 FROM python:3.11-bullseye
 
+RUN pip install --upgrade pip setuptools wheel
+
 # Copy all relevant files to avoid security hotspot with `COPY . /app`
 COPY ./direct_indexing /app
 COPY ./iaticloud /app

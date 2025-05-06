@@ -1,6 +1,5 @@
 import json
 import logging
-import os
 import time
 import urllib.request
 
@@ -8,9 +7,11 @@ import pysolr
 from celery import shared_task
 from django.conf import settings
 
-from direct_indexing import direct_indexing
+from direct_indexing import direct_indexing, util
+from direct_indexing.metadata.dataset import subtask_process_dataset, retry_unindexed_valid_datasets as _retry
 from direct_indexing.metadata.util import retrieve
-from direct_indexing.util import datadump_success
+# Currently disabled import for datadump check
+# from direct_indexing.util import datadump_success
 from iaticloud.celery import app
 
 
@@ -33,19 +34,21 @@ def clear_cores_with_name(core="publisher"):
 
 
 @shared_task
-def start(update=False):
+def start(update=False, drop=False, draft=False):
     # Only if the most recent data dump was a success
-    if not datadump_success():
-        logging.info("start:: The CodeForIATI Data Dump failed, aborting the process!")
-        raise ValueError("The CodeForIATI Data Dump failed, aborting the process!")
+    # if not datadump_success():
+    #     logging.info("start:: The CodeForIATI Data Dump failed, aborting the process!")
+    #     raise ValueError("The CodeForIATI Data Dump failed, aborting the process!")
     # Clear the cores, do not use a task as this needs to finish before continuing
     try:
         if not update:
-            direct_indexing.clear_indices()
+            direct_indexing.clear_indices(draft)
     except pysolr.SolrError:
         # Stop the process and send a message to Celery Flower
         logging.info("start:: Error clearing the direct indexing cores, check your Solr instance.")
         return "Error clearing the direct indexing cores, check your Solr instance."
+    if drop:
+        direct_indexing.drop_removed_data()
     # Run the publisher metadata indexing subtask
     subtask_publisher_metadata.delay()
     # Run the dataset metadata indexing subtask
@@ -53,6 +56,36 @@ def start(update=False):
     # Send clear message to Celery Flower
     logging.info("start:: Both the publisher and dataset metadata indexing have begun.")
     return "Both the publisher and dataset metadata indexing have begun."
+
+
+@shared_task(queue="aida_queue")
+def aida_async_index(dataset, publisher, ds_name, ds_url, draft=False):
+    """
+    This function is used to index AIDA data.
+    Expects a dict with the following fields:
+        - publisher: The publisher name
+        - dataset.name: The name of the dataset
+        - url: The url to the dataset
+    """
+    logging.info("aida_async_index:: Starting task in aida_queue.")
+    logging.info(f"aida_async_index:: Dataset: {dataset}")
+    result = direct_indexing.aida_index(dataset, publisher, ds_name, ds_url, draft)
+    logging.info(f"aida_async_index:: result: {result}")
+    return result
+
+
+@shared_task(queue="aida_queue")
+def aida_async_drop(ds_name, draft=False):
+    """
+    This function is used to drop AIDA data.
+    Expects a dict with the following field:
+        - name: The name of the dataset
+    """
+    logging.info("aida_async_drop:: Starting task in aida_queue.")
+    logging.info(f"aida_async_index:: Dataset: {ds_name}")
+    result = direct_indexing.aida_drop(ds_name, draft)
+    logging.info(f"aida_async_drop:: result: {result}")
+    return result
 
 
 @shared_task
@@ -72,6 +105,14 @@ def subtask_dataset_metadata(update=False):
 
 
 @shared_task
+def retry_unindexed_valid_datasets():
+    logging.info("retry_unindexed_valid_datasets:: Starting retry unindexed valid datasets.")
+    result = _retry()
+    logging.info(f"retry_unindexed_valid_datasets:: result: {result}")
+    return result
+
+
+@shared_task
 def fcdo_replace_partial_url(find_url, replace_url):
     """
     This function is used to update a dataset based on the provided URL.
@@ -87,6 +128,7 @@ def fcdo_replace_partial_url(find_url, replace_url):
     dataset_metadata = retrieve(settings.METADATA_DATASET_URL, 'dataset_metadata')
     num_updated_datasets = 0
     for dataset in dataset_metadata:
+        logging.info(f"fcdo_replace_partial_url:: dataset:\n{dataset}")
         # find datasets that need to be replaced
         if 'resources' not in dataset or 'name' not in dataset or 'organization' not in dataset:
             continue
@@ -104,10 +146,7 @@ def fcdo_replace_partial_url(find_url, replace_url):
         ds_name = dataset['name']
         ds_org = dataset['organization']['name']
         ds_file = f'{settings.DATASET_PARENT_PATH}/iati-data-main/data/{ds_org}/{ds_name}.xml'
-        if os.path.exists(ds_file):
-            os.remove(ds_file)
-        else:
-            return f"this file does not exist {ds_file}"
+
         downloader = urllib.request.URLopener()
         downloader.retrieve(new_url, ds_file)
 
@@ -117,8 +156,11 @@ def fcdo_replace_partial_url(find_url, replace_url):
     # update the local dataset metadata file.
     logging.info("fcdo_replace_partial_url:: update dataset_metadata file")
     path = f'{settings.DATASET_PARENT_PATH}/dataset_metadata.json'
-    with open(path, 'w') as file:
-        json.dump(dataset_metadata, file, indent=4)
+    try:
+        with open(path, 'w') as file:
+            json.dump(dataset_metadata, file, indent=4)
+    except Exception as e:
+        logging.error(f"fcdo_replace_partial_url:: Error writing dataset_metadata.json: type: {type(e)} -- stack: {e}")
 
     # run the dataset metadata with update = True and force_update = True
     # this will automatically all the files that have a new URL and a new HASH
@@ -131,3 +173,29 @@ def fcdo_replace_partial_url(find_url, replace_url):
 @shared_task
 def revoke_all_tasks():
     app.control.purge()
+
+
+"""
+CUSTOM DATASETS
+"""
+
+
+@shared_task
+def index_custom_dataset(url, title, name, org):
+    logging.info("index_custom_dataset:: create the dataset metadata")
+    metadata = util.create_dataset_metadata(url, title, name, org)
+    if type(metadata) is str:
+        raise ValueError(metadata)
+
+    cp_res = util.copy_custom()
+    if type(cp_res) is str:
+        raise ValueError(cp_res)
+
+    subtask_process_dataset.delay(dataset=metadata, update=False)
+    return "Success"
+
+
+@shared_task
+def remove_custom_dataset(name, org, dataset_id):
+    logging.info("remove_custom_dataset:: remove the custom dataset")
+    return util.remove_custom(name, org, dataset_id)

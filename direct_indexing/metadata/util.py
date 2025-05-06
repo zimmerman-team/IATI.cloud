@@ -11,7 +11,7 @@ from django.conf import settings
 from direct_indexing.util import index_to_core
 
 
-def retrieve(url, name=None, force_update=False):
+def retrieve(url, name=None, force_update=False, fresh=settings.FRESH):
     """
     Retrieve the given url and return the result as a list of dictionaries.
 
@@ -22,7 +22,7 @@ def retrieve(url, name=None, force_update=False):
     try:
         logging.info(f'util.retrieve:: Retrieving {url}')
         path = f'{settings.DATASET_PARENT_PATH}/{name}.json'
-        if (not settings.FRESH) or force_update:
+        if (not fresh) or force_update:
             logging.info('util.retrieve:: Using pre-downloaded dataset')
             with open(path) as file:
                 return json.load(file)

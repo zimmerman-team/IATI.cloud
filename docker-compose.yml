@@ -4,8 +4,6 @@ services:
     container_name: db_postgres
     restart: always
     image: postgres:latest
-    ports:
-      - 5432:5432
     env_file:
       - .env
     volumes:
@@ -25,9 +23,6 @@ services:
     container_name: rabbitmq
     restart: always
     image: rabbitmq:latest
-    ports:
-      - 5672:5672
-      - 15672:15672
     env_file:
       - .env
     volumes:
@@ -49,22 +44,20 @@ services:
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
       - MONGO_INITDB_DATABASE=${MONGO_INITDB_DATABASE}
-    ports:
-      - 27017:27017
     volumes:
       - mongo_data:/data/db
 
   solr:
     container_name: solr
     restart: always
-    image: bitnami/solr:9.1.1
+    image: bitnami/solr:9.8.1
     ports:
       - 8983:8983
     env_file:
       - .env
     environment:
       # core setup
-      - SOLR_CORES=activity,budget,dataset,organisation,publisher,result,transaction
+      - SOLR_CORES=activity,budget,dataset,organisation,publisher,result,transaction,draft_activity,draft_budget,draft_dataset,draft_organisation,draft_result,draft_transaction
       # There is a SOLR_CORE_CONF_DIR available but currently only allows 1 config, we need 1 per core.
       - SOLR_OPTS=-Xms${MEM_SOLR_MIN}g -Xmx${MEM_SOLR_MAX}g
       # Authentication
@@ -72,8 +65,10 @@ services:
       - SOLR_ADMIN_USERNAME=${SOLR_ADMIN_USERNAME}
       - SOLR_ADMIN_PASSWORD=${SOLR_ADMIN_PASSWORD}
     volumes:
-      # Mount the image's solr_mount_dir to the local solr_mount_dir
-      - solr_data:/bitnami
+      # Mount the image's /bitnami directory to the provided SOLR_VOLUME in .env,
+      # default value is solr_data, a docker volume. Alternatively change it to a directory on the local drive,
+      # such as a mounted directory, for example /opt/solr_data or /mnt/HC_Volume_N/solr_data
+      - ${SOLR_VOLUME}:/bitnami
 
   iaticloud:
     container_name: iaticloud
@@ -102,7 +97,8 @@ services:
       - ./:/app
     env_file:
       - .env
-    command: celery -A iaticloud worker -l INFO
+    command: celery -A iaticloud worker -l INFO --concurrency=32 -n worker@%%h
+    restart: unless-stopped
     depends_on:
       - rabbitmq
       - database
@@ -116,6 +112,19 @@ services:
     env_file:
       - .env
     command: celery -A iaticloud worker -l INFO -n revoke@%%h -Q revoke_queue
+    depends_on:
+      - rabbitmq
+      - database
+      - iaticloud
+
+  celeryaidaworker:
+    container_name: celeryaidaworker
+    image: iaticloud/main
+    volumes:
+      - ./:/app
+    env_file:
+      - .env
+    command: celery -A iaticloud worker -l INFO --concurrency=4 -n aida@%%h -Q aida_queue
     depends_on:
       - rabbitmq
       - database

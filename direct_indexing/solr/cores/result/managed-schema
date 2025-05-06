@@ -517,6 +517,7 @@
 
   <!-- activity.activity-status 1..1 -->
   <field name="activity-status.code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="activity-status.text" type="text_general_single"/>
 
   <!-- activity.activity-date 1..* -->
   <field name="activity-date.type" type="text_general"/>
@@ -1250,15 +1251,15 @@
 
   <fieldType name="non_case_sensitive" class="solr.TextField">
     <analyzer type="index">
-        <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+        <tokenizer class="solr.KeywordTokenizerFactory"/>
         <filter class="solr.LowerCaseFilterFactory"/>
     </analyzer>
     <analyzer type="query">
-        <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+        <tokenizer class="solr.KeywordTokenizerFactory"/>
         <filter class="solr.LowerCaseFilterFactory"/>
     </analyzer>
   </fieldType>
-  <field name="iati_identifier" type="string" multiValued="false" indexed="true" required="true" stored="true"/>
+  <field name="iati_identifier" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
 
   <field name="reporting_org_ref" type="non_case_sensitive" multiValued="false" indexed="true" required="false" stored="true"/>
   <field name="reporting_org_type" type="string" multiValued="false" indexed="true" required="false" stored="true"/>

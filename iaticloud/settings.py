@@ -187,11 +187,24 @@ SOLR_RESULT = f'{SOLR_URL}/result'
 SOLR_RESULT_URL = f'{SOLR_RESULT}/update'
 SOLR_ORGANISATION = f'{SOLR_URL}/organisation'
 SOLR_ORGANISATION_URL = f'{SOLR_ORGANISATION}/update'
+# DRAFT CORES
+SOLR_DRAFT_DATASET = f'{SOLR_URL}/draft_dataset'
+SOLR_DRAFT_DATASET_URL = f'{SOLR_DRAFT_DATASET}/update'
+SOLR_DRAFT_ACTIVITY = f'{SOLR_URL}/draft_activity'
+SOLR_DRAFT_ACTIVITY_URL = f'{SOLR_DRAFT_ACTIVITY}/update'
+SOLR_DRAFT_TRANSACTION = f'{SOLR_URL}/draft_transaction'
+SOLR_DRAFT_TRANSACTION_URL = f'{SOLR_DRAFT_TRANSACTION}/update'
+SOLR_DRAFT_BUDGET = f'{SOLR_URL}/draft_budget'
+SOLR_DRAFT_BUDGET_URL = f'{SOLR_DRAFT_BUDGET}/update'
+SOLR_DRAFT_RESULT = f'{SOLR_URL}/draft_result'
+SOLR_DRAFT_RESULT_URL = f'{SOLR_DRAFT_RESULT}/update'
+SOLR_DRAFT_ORGANISATION = f'{SOLR_URL}/draft_organisation'
+SOLR_DRAFT_ORGANISATION_URL = f'{SOLR_DRAFT_ORGANISATION}/update'
 
 # # IATI Data
 METADATA_PUBLISHER_URL = 'https://registry.codeforiati.org/publisher_list.json'
 METADATA_DATASET_URL = 'https://registry.codeforiati.org/dataset_list.json'
-DATASET_URL = 'https://gitlab.com/codeforIATI/iati-data/-/archive/main/iati-data-main.zip'
+DATASET_URL = 'https://data.iati-data-dump.opendataservices.coop/data.zip'
 
 # # PATHS
 SOLR_POST_TOOL = os.path.join(BASE_DIR, 'direct_indexing/solr/bin/post')

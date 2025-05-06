@@ -3,22 +3,30 @@
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=zimmerman-zimmerman_iati.cloud&metric=alert_status)](https://sonarcloud.io/dashboard?id=zimmerman-zimmerman_iati.cloud)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Open issues](https://img.shields.io/github/issues/zimmerman-zimmerman/OIPA.svg?style=flat)](https://github.com/zimmerman-team/iati.cloud/issues)
+
 ---
 
-- [Introduction](#introduction)
-- [Running and using IATI.cloud](#setting-up-running-and-using-iati-cloud)
-- [Requirements](#requirements)
+- [IATI.cloud](#iaticloud)
+  - [Introduction](#introduction)
+  - [Setting up, running and using IATI cloud](#setting-up-running-and-using-iati-cloud)
+  - [Requirements](#requirements)
     - [Software](#software)
     - [Hardware](#hardware)
-- [Central python packages](#central-python-packages)
-- [Code management](#code-management)
-- [Contributing](#contributing)
-    - [How to contribute](#how-should-i-contribute)
-- [Who uses IATI.cloud](#who-currently-makes-use-of-iaticloud)
-- [Branches](#branches)
+      - [Local development](#local-development)
+  - [Submodules](#submodules)
+  - [Central python packages](#central-python-packages)
+  - [Code Management](#code-management)
+  - [Testing](#testing)
+  - [Contributing](#contributing)
+    - [Can I contribute?](#can-i-contribute)
+    - [How should I contribute?](#how-should-i-contribute)
+  - [Who makes or made use of IATI.cloud?](#who-makes-or-made-use-of-iaticloud)
+  - [Branches](#branches)
 
 ---
+
 ## Introduction
+
 IATI.cloud extracts all published IATI XML files from the [IATI Registry](http://www.iatiregistry.org/publisher) and stores all data in Apache Solr cores, allowing for fast access.
 
 IATI is a global aid transparency standard and it makes information about aid spending easier to access, re-use and understand the underlying data using a unified open standard. You can find more about the IATI data standard at: [www.iatistandard.org](www.iatistandard.org)
@@ -28,35 +36,43 @@ We have recently moved towards a Solr Only version of the IATI.cloud. If you are
 You can install this codebase using Docker. Follow the Docker Guide for more information.
 
 ## Setting up, running and using IATI cloud
+
 Running and setting up is split into two parts: docker and manual. Because of the extensiveness of these sections they are contained in their own files. We've also included a usage guide, as well as a guide to how the IATI.cloud processes data. Find them here:
+
 - [Docker guide](./docs/DOCKER.md)
 - [Local guide](./docs/LOCAL.md)
 - [Usage guide](./docs/USAGE.md)
 - [Data processing guide](./docs/PROCESSING.md)
+- [Scripts](./docs/SCRIPTS.md)
 
 ## Requirements
+
 ### Software
+
 |Software|Version (tested and working)|What is it for|
 |---|---|---|
 |Python|3.11|General runtime|
 |PostgreSQL|LTS|Django and celery support|
 |RabbitMQ|LTS|Messaging system for Celery|
 |MongoDB|LTS|Aggregation support for Direct Indexing|
-|Solr|8.11 or 9.1.1|Used for indexing IATI Data|
+|Solr|9.8.1|Used for indexing IATI Data|
 |(optional) Docker|LTS|Running full stack IATI.cloud|
 |(optional) NGINX|LTS|Connection|
 
 ### Hardware
-*Disk space*: Generally, around 500gb of disk space should be available for indexing the entire IATI dataset, especially if the json dump fields are active (with .env FCDO_INSTANCE=True). If not, you can get away with around 300GB.
+
+*Disk space*: Generally, around 600GB of disk space should be available for indexing the entire IATI dataset, especially if the json dump fields are active (with .env FCDO_INSTANCE=True). If not, you can get away with around 300GB.
 
 *RAM*: Around 20GB of RAM has historically proven to be an issue, which led to us setting a RAM requirement of 40GB. [Here is a handy guide to setting up RAM Swap](https://linuxize.com/post/create-a-linux-swap-file/)
 
 #### Local development
+
 For local development, only a limited amount of disk space is required. The complete iati dataset unindexed is around 10GB, and you can limit the dataset indexing quite extensively, you can easily trim the size requirement down to less than 20GB, especially by limiting the datasets.
 
 For local development, Docker and NGINX are not required, but docker is recommended to avoid system sided setup issues.
 
 ## Submodules
+
 We make use of a single submodule, which contains a dump of the Django static files for the administration panel, as well as the IATI.cloud frontend and streamsaver (used to stream large files to a user).
 To update the IATI.cloud frontend, create a fresh build from the [frontend repository](https://github.com/zimmerman-team/iati.cloud.frontend), and replace the files in the submodule.
 Specifically, we include the `./build` folder, and copy the `./build/static/css`, `./build/static/js` and `./build/static/media` directories to the `static` submodule.
@@ -66,6 +82,7 @@ To update the Django administrator static files, [collect the django static](htt
 Lastly, [StreamSaver](https://github.com/jimmywarting/StreamSaver.js) is used to stream large files to the user.
 
 ## Central python packages
+
 *Django* is used to host a management interface for the Celery tasks, this was formerly used to host an API.
 
 *celery*, combined with *flower*, *django-celery-beat*, and *django-celery-results* is used to manage multitask processing.
@@ -79,12 +96,14 @@ Lastly, [StreamSaver](https://github.com/jimmywarting/StreamSaver.js) is used to
 *pysolr*, *xmljson* and *pymongo* are used to support the direct indexing to Solr process.
 
 ## Code Management
+
 *flake8* is used to maintain code quality in pep8 style
 
 *isort* is used to maintain the imports
 
 *pre-commit* is used to enforce commit styles in the form
-```
+
+```bash
 feat: A new feature
 fix: A bug fix
 docs: Documentation only changes
@@ -96,15 +115,20 @@ chore: Changes to the build process or auxiliary tools and libraries such as doc
 ```
 
 ## Testing
+
 We test with `pytest`,and use `coverage` to generage coverage reports.
 You can use `. scripts/cov.sh` to quickly run all tests and generate a coverage report. This also conveniently prints the location of the coverage HTML report, which can be viewed from your browser.
 
 ## Contributing
+
 ### Can I contribute?
-Yes! We are mainly looking for coders to help on the project. If you are a coder feel free to _Fork_ the repository and send us your amazing Pull Requests!
+
+Yes! We are mainly looking for coders to help on the project. If you are a coder feel free to *Fork* the repository and send us your amazing Pull Requests!
 
 ### How should I contribute?
+
 Python already has clear PEP 8 code style guidelines, so it's difficult to add something to it, but there are certain key points to follow when contributing:
+
 - PEP 8 code style guidelines should always be followed. Tested with `flake8 OIPA`.
 - [Commitlint](https://github.com/conventional-changelog/commitlint#what-is-commitlint) is used to check your commit messages.
 - Always try to reference issues in commit messages or pull requests ("related to #614", "closes #619" and etc.).
@@ -115,6 +139,7 @@ Python already has clear PEP 8 code style guidelines, so it's difficult to add s
 - Automatic code quality / testing checks (continuous integration tools) are implemented to check all these things automatically when pushing / merging new branches. Quality is the key!
 
 ## Who makes or made use of IATI.cloud?
+
 - Dutch Ministry of Foreign Affairs: [www.openaid.nl](https://www.openaid.nl)
 - Finnish Ministry of Foreign Affairs: [www.openaid.fi](https://www.openaid.fi)
 - FCDO Devtracker: [devtracker.dfid.gov.uk](https://devtracker.dfid.gov.uk/)
@@ -129,7 +154,9 @@ Python already has clear PEP 8 code style guidelines, so it's difficult to add s
 & many others
 
 ---
+
 ## Branches
+
 - `main` - production ready codebase
 - `develop` - completed but not yet released changes
 - `archive/iati-cloud-hybrid-django-solr` - django based "OIPA" version of IATI.cloud. Decommissioned around halfway through 2022.

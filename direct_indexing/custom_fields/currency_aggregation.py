@@ -1,8 +1,10 @@
 import logging
+import math
 
+import bson
 from django.conf import settings
 from pymongo import MongoClient
-from pymongo.errors import PyMongoError
+from pymongo.errors import DocumentTooLarge, PyMongoError
 
 MONGO_UNWIND = '$unwind'
 MONGO_GROUP = '$group'
@@ -31,7 +33,7 @@ T_TYPES = [None, "incoming-funds", "outgoing-commitment", "disbursement",
 TT_U = [t.replace("-", "_") if t else None for t in T_TYPES]
 
 
-def currency_aggregation(data):
+def currency_aggregation(data, insert_one=False):
     """
     Aggregate currency data.
     We use a mongodb approach where the data is temporarily stored in a mongo database,
@@ -44,15 +46,16 @@ def currency_aggregation(data):
     to aggregate on the child data as well.
 
     :param data: List of activities.
+    :insert_one: Whether to insert one by one or not. Defaults to false.
     :return: the dataset updated with aggregations.
     """
-
+    logging.info(f"currency_aggregation:: Starting currency aggregation. (insert_one: {insert_one})")
     try:
         # Prepare data and connection
         if type(data) is dict:
             data = [data]  # Needs to be list for aggregation
         data = prepare_data(data)
-        dba, client = connect_to_mongo(data)
+        dba, client = connect_to_mongo(data, insert_one)
         # Aggregate currencies on activity level.
         activity_aggregations = get_aggregations(dba, data)
         aggregation_fields, formatted_aggregation_fields, child_aggregation_fields, \
@@ -60,7 +63,7 @@ def currency_aggregation(data):
         activity_indexes = index_activity_data(data)
         data = process_activity_aggregations(data, activity_aggregations, activity_indexes, aggregation_fields)
         # Aggregate child currencies
-        dba = refresh_mongo_data(dba, data)
+        dba = refresh_mongo_data(dba, data, insert_one)
         child_aggregations = get_child_aggregations(dba, aggregation_fields)
         data = process_child_aggregations(data, child_aggregations, activity_indexes, aggregation_fields,
                                           child_aggregation_fields, parent_plus_child_aggregation_fields)
@@ -69,9 +72,12 @@ def currency_aggregation(data):
 
         # Clean up data names
         data = clean_aggregation_result(data, aggregation_fields, formatted_aggregation_fields)
-    except PyMongoError:
-        pass  # Return the data as is, if there is an error.
-    return data
+    except DocumentTooLarge as e:
+        logging.error(f"currency_aggregation:: Document too large error: {e}")
+    except PyMongoError as e:
+        logging.error(f"currency_aggregation:: PyMongo Error:: {e}")
+    data, id_found = _final_clean(data)
+    return data, id_found
 
 
 def prepare_data(data):
@@ -94,11 +100,12 @@ def prepare_data(data):
     return data
 
 
-def connect_to_mongo(data):
+def connect_to_mongo(data, insert_one=False):
     """
     Create a connection to the mongo database.
 
     :param data: List of activities.
+    :insert_one: Whether to insert one by one or not.
     :return: Mongo database and connection.
     """
     try:
@@ -107,12 +114,85 @@ def connect_to_mongo(data):
         db = client.activities
         dba = db.activity
         dba.drop()  # Drop previous dataset
-        dba.insert_many(data)  # This introduces '_id' key to each data point
+        if insert_one:
+            _mongo_insert_one(dba, data)  # Insert the data one by one, last resort.
+        else:
+            _mongo_insert_many(dba, data)  # Insert the data
 
         return dba, client
+    except DocumentTooLarge as e:
+        logging.error(f"connect_to_mongo:: Document too large error: {e}")
+        raise
     except PyMongoError as e:  # NOQA
         logging.error(f"connect_to_mongo:: Error in connecting to mongo: {e}")
         raise
+
+
+def _mongo_insert_many(dba, data):
+    """
+    Insert all data into the mongo database.
+    However, we are sometimes hitting the 16MB limit of BSON.
+    `BSONObj size: N ... is invalid. Size must be between 0 and 16793600`
+
+    To prevent this, insert the data in chunks of size/max.
+    In the example of 19MB, this would be two chunks, if it is 15MB, one chunk, and if it is 40MB, three chunks.
+    """
+    max_size = 15 * 1024 * 1024  # 15MB, the limit is 16, so we keep some margins
+    data_length_bytes = len(bson.BSON.encode({"iati-activity": data}))
+    if data_length_bytes > max_size:
+        # Split the data into smaller chunks
+        chunks = math.ceil(data_length_bytes / max_size)
+        keys_per_chunk = math.ceil(len(data) / chunks)
+        _mongo_insert_chunks(chunks, keys_per_chunk, dba, data)
+    else:
+        dba.insert_many(data)  # Insert the data in one go
+
+
+def _mongo_insert_chunks(chunks, keys_per_chunk, dba, data):
+    excepted = False
+    for i in range(chunks):
+        start_index = i * keys_per_chunk
+        end_index = start_index + keys_per_chunk
+        chunk = data[start_index:end_index]
+        try:
+            dba.insert_many(chunk)
+        except DocumentTooLarge as e:
+            logging.error(f"_mongo_insert_many:: Document too large error: {e}")
+            excepted = True
+            break
+        except PyMongoError as e:
+            logging.error(f"_mongo_insert_many:: Error in inserting data: {e}")
+            excepted = True
+            break
+    if excepted:
+        try:
+            _mongo_insert_one(dba, chunk)  # Attempt to insert one by one
+        except DocumentTooLarge as e:
+            logging.error(f"_mongo_insert_many:: Document too large error: {e}")
+            raise
+        except PyMongoError as e:
+            logging.error(f"_mongo_insert_many:: Error in inserting data: {e}")
+            raise
+
+
+def _mongo_insert_one(dba, data):
+    """
+    Loop over the activities and insert them one by one to prevent any issues with the BSON size,
+    or repeated data insertion
+
+    :param dba: Mongo database with the activities.
+    :param data: List of activities.
+    :return: None
+    """
+    for activity in data:
+        try:
+            dba.insert_one(activity)
+        except DocumentTooLarge as e:
+            logging.error(f"_mongo_insert_one:: Document too large error: {e}")
+            raise
+        except PyMongoError as e:
+            logging.error(f"_mongo_insert_one:: Error in inserting data: {e}")
+            raise
 
 
 def get_aggregations(dba, data):
@@ -318,17 +398,28 @@ def process_activity_aggregations(data, activity_aggregations, activity_indexes,
     return data
 
 
-def refresh_mongo_data(dba, data):
+def refresh_mongo_data(dba, data, insert_one=False):
     """
     Refresh mongo data so we can access the new activity aggregation,
     as the child aggregations are the sums of their children
 
     :param dba: the mongo activities database.
     :param data: the data to refresh
+    :param insert_one: whether to insert one by one or not
     :return: the refreshed data
     """
     dba.drop()  # Drop previous dataset
-    dba.insert_many(data)  # Re-submit updated dataset
+    try:
+        if insert_one:
+            _mongo_insert_one(dba, data)  # Re-submit updated dataset one by one
+        else:
+            _mongo_insert_many(dba, data)  # Re-submit updated dataset
+    except DocumentTooLarge as e:
+        logging.error(f"refresh_mongo_data:: Document too large error: {e}")
+        raise
+    except PyMongoError as e:
+        logging.error(f"refresh_mongo_data:: Error in inserting data: {e}")
+        raise
     return dba
 
 
@@ -350,6 +441,13 @@ def get_child_aggregations(dba, aggregation_fields):
         # {MONGO_UNWIND: "$related-activity"},
         {"$unwind": "$related-activity"},
         {"$match": {"related-activity.type": 1}},
+        {'$group': {
+            '_id': '$_id',
+            'uniqueActivity': {
+                '$first': '$$ROOT'
+            }
+        }},
+        {'$replaceRoot': {'newRoot': '$uniqueActivity'}},
         {"$group": group_object}
         # {MONGO_GROUP: group_object}
     ]))
@@ -525,3 +623,20 @@ def process_transaction_currency_agg(transaction_curr_agg, activity_indexes, agg
                 selector = TV_USD_CURR
             data[index_of_activity][f'{aggregation_fields[TT_U[transaction_type]]}-currency'] = \
                 data[index_of_activity][selector]
+
+
+def _final_clean(data):
+    """
+    Remove any mongo introduced fields that have not been filtered out due to mongo errors
+    These should not be in the data, but are sometimes present due to mongo errors.
+    We track these, to ensure we can retry their processing.
+
+    :param data: the activities dataset
+    :return: the cleaned data, a boolean indicating whether an id was found
+    """
+    id_found = False
+    for activity in data:
+        if '_id' in activity:
+            activity.pop('_id')  # Remove mongo introduced '_id'.
+            id_found = True
+    return data, id_found

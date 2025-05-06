@@ -1,4 +1,5 @@
 import json
+import logging
 
 JSON_FIELDS = [
     "reporting-org",
@@ -30,12 +31,24 @@ JSON_FIELDS = [
 ]
 
 
-def add_json_dumps(activity):
-    for field in JSON_FIELDS:
-        if field in activity:
+def add_json_dumps(data):
+    for activity in data:
+        for field in JSON_FIELDS:
+            if field not in activity:
+                continue
             if isinstance(activity[field], list):
-                activity[f'json.{field}'] = []
-                for item in activity[field]:
-                    activity[f'json.{field}'].append(json.dumps(item))
+                _json_dump_list(activity, field)
             else:
-                activity[f'json.{field}'] = json.dumps(activity[field])
+                try:
+                    activity[f'json.{field}'] = json.dumps(activity[field])
+                except Exception as e:
+                    logging.error(f"Error serializing {field}: type: {type(e)} stack: {e}")
+
+
+def _json_dump_list(activity, field):
+    activity[f'json.{field}'] = []
+    for item in activity[field]:
+        try:
+            activity[f'json.{field}'].append(json.dumps(item))
+        except Exception as e:
+            logging.error(f"Error serializing {field}: type: {type(e)} stack: {e}")
