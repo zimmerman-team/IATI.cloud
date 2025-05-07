@@ -114,7 +114,7 @@ def aida_drop_dataset(dataset_name, draft=False):
         return "Apologies, but the dataset could not be fully deleted, please contact support", 500
 
     try:
-        core_list = ['activity', 'transaction', 'result', 'budget']
+        core_list = ['activity', 'transaction', 'result', 'budget', 'fcdo_budget']
         if draft:
             core_list = [f'draft_{core}' for core in core_list]
         for core in core_list:
