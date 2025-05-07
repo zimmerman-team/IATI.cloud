@@ -17,6 +17,7 @@ from direct_indexing.custom_fields.models import codelists
 from direct_indexing.custom_fields.models import currencies as cu
 from direct_indexing.metadata.util import index
 from direct_indexing.processing import activity_subtypes
+from direct_indexing.processing.fcdo_budget import fcdo_budget
 from direct_indexing.processing.util import get_dataset_filepath, get_dataset_filetype, get_dataset_version_validity
 from direct_indexing.util import index_to_core
 
@@ -102,11 +103,18 @@ def _index_dataset_metadata_to_dataset_core(dataset, draft, should_be_indexed, i
 
 
 def _update_drop(update, draft, dataset):
+    """Drops datasets where dataset id is found in the solr core.
+
+    Args:
+        update (boolean): whether to update the dataset or not.
+        draft (boolean): whether or not this dataset relates to the draft cores.
+        dataset (dict): the dataset id to be dropped.
+    """
     # drop the old data from solr
     if update:
         solr_cores = [settings.SOLR_ACTIVITY, settings.SOLR_BUDGET, settings.SOLR_RESULT,
                       settings.SOLR_TRANSACTION, settings.SOLR_TRANSACTION_TRIMMED, settings.SOLR_TRANSACTION_SDGS,
-                      settings.SOLR_BUDGET_SPLIT_BY_SECTOR]
+                      settings.SOLR_BUDGET_SPLIT_BY_SECTOR, settings.SOLR_FCDO_BUDGET]
         if draft:
             solr_cores += [settings.SOLR_DRAFT_ACTIVITY, settings.SOLR_DRAFT_BUDGET, settings.SOLR_DRAFT_RESULT,
                            settings.SOLR_DRAFT_TRANSACTION]
@@ -206,7 +214,30 @@ def convert_and_save_xml_to_processed_json(filepath, filetype, codelist, currenc
     if not settings.FCDO_INSTANCE:
         dataset_subtypes(filetype, data, json_path, draft)
 
-    return json_path, should_be_indexed, "Success"
+    json_path, success_state = _fcdo_budget(filetype, data, json_path, currencies)
+
+    return json_path, should_be_indexed, success_state
+
+
+def _fcdo_budget(filetype, data, json_path, currencies):
+    """Subfunction to trigger the fcdo_budget data processing if the instance is FCDO.
+
+    Args:
+        filetype (string): "activity" or "organisation"
+        data (dict): The processed IATI Activity dataset
+        json_path (string): The path to where the original XML file was saved
+        currencies (Currencies): instance of the Currencies class to be used for currency conversion
+
+    Returns:
+        string | boolean, string: the original json path if success else False, result message
+    """
+    if settings.FCDO_INSTANCE:
+        try:
+            fcdo_budget(filetype, data, json_path, currencies)
+        except Exception as e:
+            logging.error(f'Error processing fcdo budget: type: {type(e)} -- stack: {e}')
+            return False, "Unable to process fcdo budget."
+    return json_path, "Success"
 
 
 def _custom_fields(filetype, data, codelist, currencies, dataset_metadata, filepath):

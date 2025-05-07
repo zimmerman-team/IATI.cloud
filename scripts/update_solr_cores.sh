@@ -39,13 +39,13 @@ read solr_container_id
 
 # Update the managed-schema and xslt files for all cores
 bitnami_solr=/bitnami/solr/server/solr
-cores=(activity budget dataset organisation publisher result transaction transaction_trimmed transaction_sdgs budget_split_by_sector)
+cores=(activity budget dataset organisation publisher result transaction transaction_trimmed transaction_sdgs budget_split_by_sector fcdo_budget)
 
 for core in "${cores[@]}"; do
   src="./direct_indexing/solr/cores/$core/managed-schema"
   docker cp $src "$solr_container_id:$bitnami_solr/$core/conf/managed-schema.xml"
   # if core is 'publisher' continue
-  if [ "$core" == "publisher" ]; then
+  if [[ "$core" == "publisher" || "$core" == "fcdo_budget" ]]; then
     continue
   fi
   docker cp $src "$solr_container_id:$bitnami_solr/draft_$core/conf/managed-schema.xml"

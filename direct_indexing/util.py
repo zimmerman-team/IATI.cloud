@@ -186,7 +186,7 @@ def remove_custom(name, org, dataset_id):
 
         d_id = dataset_id
         for core in ['activity', 'transaction', 'result', 'budget',
-                     'transaction_trimmed', 'transaction_sdgs', 'budget_split_by_sector']:
+                     'transaction_trimmed', 'transaction_sdgs', 'budget_split_by_sector', 'fcdo_budget']:
             solr = pysolr.Solr(f'{settings.SOLR_URL}/{core}', always_commit=True, timeout=300)
             if len(solr.search(f'dataset.id:"{d_id}"')) > 0:
                 solr.delete(q=f'dataset.id:"{d_id}"')

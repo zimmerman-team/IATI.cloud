@@ -57,7 +57,7 @@ services:
       - .env
     environment:
       # core setup
-      - SOLR_CORES=activity,budget,budget_split_by_sector,dataset,organisation,publisher,result,transaction,transaction_trimmed,transaction_sdgs,draft_activity,draft_budget,draft_budget_split_by_sector,draft_dataset,draft_organisation,draft_result,draft_transaction,draft_transaction_trimmed,draft_transaction_sdgs
+      - SOLR_CORES=activity,budget,budget_split_by_sector,dataset,organisation,publisher,result,transaction,transaction_trimmed,transaction_sdgs,draft_activity,draft_budget,draft_budget_split_by_sector,draft_dataset,draft_organisation,draft_result,draft_transaction,draft_transaction_trimmed,draft_transaction_sdgs,fcdo_budget
       # There is a SOLR_CORE_CONF_DIR available but currently only allows 1 config, we need 1 per core.
       - SOLR_OPTS=-Xms${MEM_SOLR_MIN}g -Xmx${MEM_SOLR_MAX}g
       # Authentication
