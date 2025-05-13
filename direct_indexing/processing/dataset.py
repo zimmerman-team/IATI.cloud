@@ -102,7 +102,8 @@ def _index_dataset_metadata_to_dataset_core(dataset, draft, should_be_indexed, i
 def _update_drop(update, draft, dataset):
     # drop the old data from solr
     if update:
-        solr_cores = [settings.SOLR_ACTIVITY, settings.SOLR_BUDGET, settings.SOLR_RESULT, settings.SOLR_TRANSACTION]
+        solr_cores = [settings.SOLR_ACTIVITY, settings.SOLR_BUDGET, settings.SOLR_RESULT,
+                      settings.SOLR_TRANSACTION, settings.SOLR_TRANSACTION_TRIMMED]
         if draft:
             solr_cores += [settings.SOLR_DRAFT_ACTIVITY, settings.SOLR_DRAFT_BUDGET, settings.SOLR_DRAFT_RESULT,
                            settings.SOLR_DRAFT_TRANSACTION]

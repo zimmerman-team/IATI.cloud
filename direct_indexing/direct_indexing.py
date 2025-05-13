@@ -29,7 +29,8 @@ def clear_indices(draft=False):
     Clear all indices as indicated by the 'cores' variable.
     """
     try:
-        cores = ['dataset', 'publisher', 'activity', 'transaction', 'budget', 'result', 'organisation']
+        cores = ['dataset', 'publisher', 'activity', 'transaction', 'budget', 'result',
+                 'organisation', 'transaction_trimmed']
         if draft:
             cores = [f'draft_{core}' for core in cores]
         for core in cores:
@@ -109,7 +110,7 @@ def drop_removed_data():
             dropped_list.append(d['id'])
 
     # For every core with dataset data, delete the data for the dropped datasets identified with the dataset.id field
-    for core in ['activity', 'transaction', 'result', 'budget']:
+    for core in ['activity', 'transaction', 'result', 'budget', 'transaction_trimmed']:
         solr = pysolr.Solr(f'{settings.SOLR_URL}/{core}', always_commit=True, timeout=300)
         for d_id in dropped_list:
             if len(solr.search(f'dataset.id:"{d_id}"')) > 0:

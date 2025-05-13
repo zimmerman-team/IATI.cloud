@@ -185,7 +185,7 @@ def remove_custom(name, org, dataset_id):
         _rm(base_metadata, name, '.json')
 
         d_id = dataset_id
-        for core in ['activity', 'transaction', 'result', 'budget']:
+        for core in ['activity', 'transaction', 'result', 'budget', 'transaction_trimmed']:
             solr = pysolr.Solr(f'{settings.SOLR_URL}/{core}', always_commit=True, timeout=300)
             if len(solr.search(f'dataset.id:"{d_id}"')) > 0:
                 solr.delete(q=f'dataset.id:"{d_id}"')

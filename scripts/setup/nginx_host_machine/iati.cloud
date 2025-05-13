@@ -163,6 +163,22 @@ server {
 		proxy_set_header Authorization "Basic REPL_AUTH";
         }
 
+	# SOLR Transaction Trimmed
+        location /api/v2/transaction-trimmed {
+                if ($args !~* fl=) {
+                        set $args $1$args&fl=*;
+		}
+                if ($http_origin !~ '^http?://(localhost)') {
+                        add_header 'Access-Control-Allow-Origin' '*';
+                        add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';
+                        add_header 'Access-Control-Allow-Headers' 'DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range';
+                        add_header 'Access-Control-Expose-Headers' 'Content-Length,Content-Range';
+                }
+                include proxy_params;
+                proxy_pass http://localhost:8983/solr/transaction_trimmed/select;
+		proxy_set_header Authorization "Basic REPL_AUTH";
+        }
+
         # DRAFT CORES
         # These cores are only accessible by the client providing the header: Authorization "Basic REPL_AUTH";
         # Replacing REPL_AUTH with the base64 encoded user:pass
@@ -197,6 +213,21 @@ server {
                 }
                 include proxy_params;
                 proxy_pass http://localhost:8983/solr/draft_transaction/select;
+        }
+
+        # SOLR DRAFT Transaction Trimmed
+        location /api/v2/draft_transaction_trimmed {
+                if ($args !~* fl=) {
+                        set $args $1$args&fl=*;
+		}
+        if ($http_origin !~ '^http?://(localhost)') {
+                        add_header 'Access-Control-Allow-Origin' '*';
+                        add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';
+                        add_header 'Access-Control-Allow-Headers' 'DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range';
+                        add_header 'Access-Control-Expose-Headers' 'Content-Length,Content-Range';
+                }
+                include proxy_params;
+                proxy_pass http://localhost:8983/solr/draft_transaction_trimmed/select;
         }
 
 	# SOLR DRAFT Organisation
