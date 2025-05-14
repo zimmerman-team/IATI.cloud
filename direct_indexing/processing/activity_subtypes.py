@@ -53,8 +53,14 @@ def extract_subtype(activity, subtype):
     # Define the list of custom fields which relate to a specific subtype
     include_fields = [
         f'{subtype}.value-usd',
+        f'{subtype}.value-usd-type',
         f'{subtype}.value-usd.conversion-rate',
         f'{subtype}.value-usd.conversion-currency',
+        f'{subtype}.value-gbp',
+        f'{subtype}.value-gbp-type',
+        f'{subtype}.value-gbp.conversion-rate',
+        f'{subtype}.value-gbp.conversion-currency',
+        f'{subtype}.receiver-org.type.name',
         f'json.{subtype}'
     ]
 
@@ -86,17 +92,24 @@ def process_subtype_dict(subtype_dict, key, i, activity, exclude_fields, include
     :param exclude_fields: the fields to exclude
     :param include_fields: the fields to include
     """
+    if key not in activity:
+        return subtype_dict
     if key in AVAILABLE_SUBTYPES:
         pass  # Drop the other subtypes, in case of transaction we drop result and budget.
     elif key in exclude_fields:
         pass  # drop the customized other fields
     elif key in include_fields:
         # extract the single value for the current index of the subtype from the multivalued content field
-        if type(activity[key]) is list:
-            if i <= len(activity[key]):  # ensure we are not out of bounds
-                subtype_dict[key] = activity[key][i]
-        else:
-            subtype_dict[key] = activity[key]
+        try:
+            if type(activity[key]) is list:
+                if i <= len(activity[key]) and len(activity[key]) > 0:  # ensure we are not out of bounds
+                    subtype_dict[key] = activity[key][i]
+                else:
+                    subtype_dict[key] = []
+            else:
+                subtype_dict[key] = activity[key]
+        except Exception as e:
+            logging.error(f"process_subtype_dict::error {e} key: {key} i: {i}, activity[key]: {activity[key]}")
     else:
         subtype_dict[key] = activity[key]  # keep additional activity fields for querying and filtering
 
