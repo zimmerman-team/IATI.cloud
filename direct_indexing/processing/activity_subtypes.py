@@ -130,9 +130,9 @@ def _trim_transaction(transaction):
     :param transaction: the transaction to trim
     :return: the trimmed transaction
     """
-    try:
-        trimmed_transaction = []
-        for t in transaction:
+    trimmed_transaction = []
+    for t in transaction:
+        try:
             lud = t.get('last-updated-datetime', None)
             dc = t.get('default-currency', None)
             hier = t.get('hierarchy', None)
@@ -203,10 +203,11 @@ def _trim_transaction(transaction):
             # remove the empty fields from trimmed
             trimmed = {k: v for k, v in _trimmed.items() if v is not None}
             trimmed_transaction.append(trimmed)
-        return trimmed_transaction
-    except Exception as e:
-        logging.error(f"_trim_transaction::error: {e}")
-        raise e
+            t['trimmed_transaction'] = True
+        except Exception as e:
+            logging.error(f"_trim_transaction::error: {e}")
+            t['trimmed_transaction'] = False
+    return trimmed_transaction
 
 
 def _trim_transaction_obj(transaction):

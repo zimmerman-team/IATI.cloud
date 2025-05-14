@@ -945,6 +945,7 @@
   <field name="dataset.resources.hash" type="text_general_single" indexed="true" stored="true" />
   <field name="dataset.resources.last_modified" type="pdate" indexed="true" stored="true" />
   <field name="dataset.resources.url" type="text_general_single" indexed="true" stored="true" />
+  <field name="trimmed_transaction" type="boolean" indexed="true" stored="true" />
 
   <!-- Date quarter fields -->
   <field name="activity-date.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
