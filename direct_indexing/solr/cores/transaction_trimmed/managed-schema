@@ -515,6 +515,7 @@
   <field name="activity-date.common.end" type="pdate"/>
   <field name="tag.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="tag.vocabulary" type="text_general"/>
+  <field name="tag.narrative" type="iati_narrative"/>
   <field name="activity-scope.code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
   <field name="document-link.category.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="humanitarian-scope.vocabulary" type="text_general"/>

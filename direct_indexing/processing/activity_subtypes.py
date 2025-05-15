@@ -162,7 +162,7 @@ def _trim_transaction(transaction):
             activity_date_end_actual = t.get('activity-date.end-actual', None)
             activity_date_common_start = t.get('activity-date.common.start', None)
             activity_date_common_end = t.get('activity-date.common.end', None)
-            tag = _trim_field(t.get('tag', None), ['code', 'vocabulary'])
+            tag = _trim_field(t.get('tag', None), ['code', 'vocabulary', 'narrative'])
             activity_scope = t.get('activity-scope', None)
             document_link = _trim_field(t.get('document-link', None), ['category'])
             humanitarian_scope = _trim_field(t.get('humanitarian-scope', None), ['type', 'vocabulary'])
