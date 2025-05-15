@@ -10,21 +10,23 @@ from direct_indexing.util import index_to_core
 
 BASE_FCDO_BUDGET = {
     "iati-identifier": '',  # non_case_sensitive
-    "H1-Activity": '',  # text_general_single
-    "H2-Activity": '',  # text_general_single
-    "recipient-country-code": '',  # text_general_single
-    "recipient-country-name": '',  # text_general_single
-    "recipient-region-code": '',  # text_general_single
-    "recipient-region-name": '',  # text_general_single
-    "reporting-organisation-code": '',  # text_general_single
-    "DAC5-Sector-code": '',  # pint
-    "DAC5-Sector-Name": '',  # text_general_single
-    "DAC3-Sector-Code": '',  # pint
-    "DAC3-Sector-Name": '',  # text_general_single
-    "Budget-in-GBP": '',  # pdouble
-    "Budget-Type": '',  # pint
-    "budget_period_start_iso_date": '',  # pdate
-    "budget_period_end_iso_date": '',  # pdate
+    "h1-activity": '',  # text_general_single
+    "h2-activity": '',  # text_general_single
+    "recipient-country.code": '',  # text_general_single
+    "recipient-country.name": '',  # text_general_single
+    "recipient-region.code": '',  # text_general_single
+    "recipient-region.name": '',  # text_general_single
+    "reporting-org.ref": '',  # text_general_single
+    "dac5-sector.code": '',  # pint
+    "dac5-sector.name": '',  # text_general_single
+    "dac3-sector.code": '',  # pint
+    "dac3-sector.name": '',  # text_general_single
+    "sector.code": '',  # pint, alternative to DAC5/DAC3 option to remain true to simple `sector` fields
+    "sector.narrative": '',  # text_general_single, same as sector.code
+    "budget.value-gbp": '',  # pdouble
+    "budget.type": '',  # pint
+    "budget.period-start.iso-date": '',  # pdate
+    "budget.period-end.iso-date": '',  # pdate
     "dataset.id": '',  # text_general_single
     "dataset.name": '',  # text_general_single
     "dataset.resources.hash": '',  # text_general_single
@@ -711,11 +713,13 @@ def _fcdo_budget_process_activity(activity, budgets, all_fcdo_budgets, currencie
     recipient_region = activity.get('recipient-region', [])  # Can be empty
     recipient_region = recipient_region if isinstance(recipient_region, list) else [recipient_region]
     recipient = _set_default_percentage(recipient_country + recipient_region)
+    reporting_org_ref = activity.get('reporting-org.ref', '')  # Should never be empty
     # Can be empty, if empty, sector is reported at transaction level,
     # but in that case, is not relevant to the budget
     sector = activity.get('sector', [])
     sector = sector if isinstance(sector, list) else [sector]
     sector = _set_default_percentage(sector)
+    related_parent = _get_parent_activity(activity.get('related-activity', []))
     dataset_id = activity.get('dataset.id', "ID_NOT_FOUND")
     dataset_name = activity.get('dataset.name', "NAME_NOT_FOUND")
     dataset_resources_hash = activity.get('dataset.resources.hash', "HASH_NOT_FOUND")
@@ -733,7 +737,8 @@ def _fcdo_budget_process_activity(activity, budgets, all_fcdo_budgets, currencie
         distributed_budget = _distribute_budget(budget_gbp, recipient, sector)
         for db in distributed_budget:
             _create_fcdo_budget_item(iati_id, hierarchy, db, budget_type, budget_start, budget_end, dataset_id,
-                                     dataset_name, dataset_resources_hash, all_fcdo_budgets)
+                                     dataset_name, dataset_resources_hash, all_fcdo_budgets, related_parent,
+                                     reporting_org_ref)
 
 
 def _get_budget_value(budget, default_currency, currencies):
@@ -811,6 +816,26 @@ def _set_default_percentage(targets):
     return targets
 
 
+def _get_parent_activity(related_activities):
+    """Return the first parent activity found in the list of related activities.
+
+    Args:
+        related_activities (list | dict): the list of dicts (or dict) of related activities
+
+    Returns:
+        string | None: the ref of the first parent activity found, or None if not found
+    """
+    if not related_activities:
+        return None
+    if isinstance(related_activities, dict):
+        related_activities = [related_activities]
+    for related_activity in related_activities:
+        # Requested was single valued ref for the parent activity if exists, so return the first encountered instance.
+        if related_activity.get('type', '0') == '1' or related_activity.get('type', 0) == 1:
+            return related_activity.get('ref', None)
+    return None
+
+
 def _distribute_budget(total_budget, recipients, sectors):
     """Distribute budget to recipients and sectors based on their percentage.
 
@@ -866,7 +891,8 @@ def _distribute_budget_append(budgets, total_budget, rec_code, rec_pct, sec_code
     })
 
 
-def _create_fcdo_budget_item(iati_id, hierarchy, db, budget_type, budget_start, budget_end, dataset_id, dataset_name, dataset_resources_hash, all_fcdo_budgets):  # NOQA: E501
+def _create_fcdo_budget_item(iati_id, hierarchy, db, budget_type, budget_start, budget_end, dataset_id, dataset_name,
+                             dataset_resources_hash, all_fcdo_budgets, related_parent, reporting_org_ref):
     """Extracted from the main function to create a fcdo budget item.
     Takes the input data and inserts it into a copy of the base fcdo budget item.
 
@@ -881,33 +907,40 @@ def _create_fcdo_budget_item(iati_id, hierarchy, db, budget_type, budget_start, 
         dataset_name (string): IATI Dataset name
         dataset_resources_hash (string): IATI Dataset hash
         all_fcdo_budgets (list): reference to the list of fcdo budget items created.
+        related_parent (string): the ref of the parent activity if exists
+        reporting_org_ref (string): the ref of the reporting organisation
     """
     item = deepcopy(BASE_FCDO_BUDGET)
     item['iati-identifier'] = iati_id
     if hierarchy == 1:
-        item['H1-Activity'] = iati_id
-        item['H2-Activity'] = ''
+        item['h1-activity'] = iati_id
+        item['h2-activity'] = ''
     elif hierarchy == 2:
-        item['H1-Activity'] = ''
-        item['H2-Activity'] = iati_id
+        item['h1-activity'] = related_parent if related_parent else ''
+        item['h2-activity'] = iati_id
     recip_code = db.get('recipient_code', '')
     if recip_code in COUNTRIES:
-        item['recipient-country-code'] = recip_code
-        item['recipient-country-name'] = COUNTRIES.get(recip_code, '')
+        item['recipient-country.code'] = recip_code
+        item['recipient-country.name'] = COUNTRIES.get(recip_code, '')
     if recip_code in REGIONS:
-        item['recipient-region-code'] = recip_code
-        item['recipient-region-name'] = REGIONS.get(recip_code, '')
+        item['recipient-region.code'] = recip_code
+        item['recipient-region.name'] = REGIONS.get(recip_code, '')
+    item["reporting-org.ref"] = reporting_org_ref
     sector_code = db.get('sector_code', '')
+    dac3_name = DAC3.get(sector_code, '')
+    dac5_name = DAC5.get(sector_code, '')
     if sector_code in DAC5:
-        item['DAC5-Sector-code'] = sector_code
-        item['DAC5-Sector-Name'] = DAC5.get(sector_code, '')
+        item['dac5-sector.code'] = sector_code
+        item['dac5-sector.name'] = dac5_name
     if sector_code in DAC3:
-        item['DAC3-Sector-Code'] = sector_code
-        item['DAC3-Sector-Name'] = DAC3.get(sector_code, '')
-    item["Budget-in-GBP"] = round(db.get('amount', 0), 2)
-    item["Budget-Type"] = budget_type
-    item["budget_period_start_iso_date"] = budget_start
-    item["budget_period_end_iso_date"] = budget_end
+        item['dac3-sector.code'] = sector_code
+        item['dac3-sector.name'] = dac3_name
+    item['sector.code'] = sector_code
+    item['sector.narrative'] = dac3_name if dac3_name else dac5_name  # if both are empty, defaulkts to empty
+    item["budget.value-gbp"] = round(db.get('amount', 0), 2)
+    item["budget.type"] = budget_type
+    item["budget.period-start.iso-date"] = budget_start
+    item["budget.period-end.iso-date"] = budget_end
     item["dataset.id"] = dataset_id
     item["dataset.name"] = dataset_name
     item["dataset.resources.hash"] = dataset_resources_hash
