@@ -19,7 +19,13 @@ print_status "Setting up mounted Solr directory..."
 
 if ask_for_confirmation "Do you want to set up a mounted solr directory?"; then
   df -h
-  read -p "Enter your mounted directory root, where a 'solr_data' directory will be created: " mounted_dir
+  if [ -f .env ]; then
+    mounted_dir=$(grep -E '^SOLR_VOLUME=' .env | cut -d '=' -f2 | tr -d '"' | sed 's|/solr_data$||')
+    echo "Using the value of SOLR_VOLUME in the .env file is: $mounted_dir"
+  else
+    echo ".env file not found, unable to show SOLR_VOLUME value in .env."
+    read -p "Enter your mounted directory root, where a 'solr_data' directory will be created: " mounted_dir
+  fi
   sudo mkdir -p $mounted_dir/solr_data
   sudo chown -R 1001:root $mounted_dir/solr_data/
   sed -i "s|SOLR_VOLUME=solr_data|SOLR_VOLUME=$mounted_dir/solr_data|g" .env

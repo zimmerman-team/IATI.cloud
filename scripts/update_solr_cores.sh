@@ -69,12 +69,12 @@ if ask_for_confirmation "Are the files locally mounted (f.ex. on extra mounted v
   df -h
   # Read the .env file and extract the value of SOLR_VOLUME
   if [ -f .env ]; then
-    SOLR_VOLUME=$(grep -E '^SOLR_VOLUME=' .env | cut -d '=' -f2)
-    echo "The value of SOLR_VOLUME in the .env file is: $SOLR_VOLUME"
+    mounted_dir=$(grep -E '^SOLR_VOLUME=' .env | cut -d '=' -f2 | tr -d '"' | sed 's|/solr_data$||')
+    echo "Using the value of SOLR_VOLUME in the .env file is: $SOLR_VOLUME"
   else
     echo ".env file not found, unable to show SOLR_VOLUME value in .env."
+    read -p "Enter your mounted directory: " mounted_dir
   fi
-  read -p "Enter your mounted directory: " mounted_dir
   sudo chown -R 1001:root $mounted_dir/solr_data
 else
   print_status "Skipping updating the ownership value of the mounted solr directory."
