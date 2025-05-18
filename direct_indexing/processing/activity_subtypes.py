@@ -48,6 +48,9 @@ def extract_subtype(activity, subtype):
             f'{each_subtype}.value-usd.conversion-rate',
             f'{each_subtype}.value-usd.conversion-currency',
             f'{each_subtype}.value-usd-type',
+            f'{each_subtype}.type.name',
+            f'{each_subtype}.status.name',
+            f'{each_subtype}.receiver-org.type.name',
             f'json.{each_subtype}'
         ]
     # Define the list of custom fields which relate to a specific subtype
@@ -102,7 +105,7 @@ def process_subtype_dict(subtype_dict, key, i, activity, exclude_fields, include
         # extract the single value for the current index of the subtype from the multivalued content field
         try:
             if type(activity[key]) is list:
-                if i <= len(activity[key]) and len(activity[key]) > 0:  # ensure we are not out of bounds
+                if i <= len(activity[key])-1 and len(activity[key]) > 0:  # ensure we are not out of bounds
                     subtype_dict[key] = activity[key][i]
                 else:
                     subtype_dict[key] = []
