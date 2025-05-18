@@ -105,7 +105,8 @@ def _update_drop(update, draft, dataset):
     # drop the old data from solr
     if update:
         solr_cores = [settings.SOLR_ACTIVITY, settings.SOLR_BUDGET, settings.SOLR_RESULT,
-                      settings.SOLR_TRANSACTION, settings.SOLR_TRANSACTION_TRIMMED]
+                      settings.SOLR_TRANSACTION, settings.SOLR_TRANSACTION_TRIMMED, settings.SOLR_TRANSACTION_SDGS,
+                      settings.SOLR_BUDGET_SDGS]
         if draft:
             solr_cores += [settings.SOLR_DRAFT_ACTIVITY, settings.SOLR_DRAFT_BUDGET, settings.SOLR_DRAFT_RESULT,
                            settings.SOLR_DRAFT_TRANSACTION]
@@ -314,7 +315,7 @@ async def _index_subtype_async(chunk, subtype_json_path, solr_url, i, total, sub
     loop = asyncio.get_running_loop()
     start = datetime.now()
     await loop.run_in_executor(executor, _index_subtype, chunk, subtype_json_path, solr_url)
-    logging.info(f"index_subtypes:: Indexed {subtype} - {i}:{i+len(chunk)} of {total} in {datetime.now() - start}")
+    logging.debug(f"index_subtypes:: Indexed {subtype} - {i}:{i+len(chunk)} of {total} in {datetime.now() - start}")
 
 
 async def index_all_chunks(subtypes, subtype, json_path, solr_url):

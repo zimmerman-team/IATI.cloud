@@ -470,7 +470,6 @@
 
   <!-- Note: narratives are always multi valued -->
   <!-- activity 1..1 -->
-  <field name="last-updated-datetime" type="pdate"/>
   <field name="default-currency" type="text_general_single"/>
   <field name="hierarchy" type="plong"/>
 
@@ -488,35 +487,24 @@
   <field name="transaction.value-usd" type="pdouble"/>
   <field name="transaction_value_usd" type="pdoubles" multiValued="false"  indexed="false" required="false" stored="true"/>
   <copyField source="transaction.value-usd" dest="transaction_value_usd" />
-  <field name="transaction.description.narrative" type="iati_narrative"/>
-  <field name="transaction.provider-org.narrative" type="iati_narrative"/>
-  <field name="transaction.receiver-org.narrative" type="iati_narrative"/>
   <field name="transaction.receiver-org.ref" type="non_case_sensitive" multiValued="true"/>
-  <field name="transaction.provider-org.ref" type="non_case_sensitive" multiValued="true"/>
   <field name="transaction.flow-type.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="transaction.tied-status.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="transaction.recipient-country.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="transaction.sector.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="transaction.sector.vocabulary" type="text_general"/>
   <field name="transaction.humanitarian" type="booleans"/>
 
   <field name="recipient-country.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="recipient-region.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="reporting-org.ref" type="non_case_sensitive"/>
   <field name="reporting-org.type" type="text_general_single"/>
-  <field name="reporting-org.narrative" type="iati_narrative"/>
   <field name="reporting-org.secondary-reporter" type="boolean"/>
-  <field name="reporting-org.type.name" type="text_general_single"/>
   <field name="activity-status.code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
   <field name="activity-date.start-planned" type="pdate"/>
   <field name="activity-date.start-actual" type="pdate"/>
   <field name="activity-date.end-planned" type="pdate"/>
   <field name="activity-date.end-actual" type="pdate"/>
-  <field name="activity-date.common.start" type="pdate"/>
-  <field name="activity-date.common.end" type="pdate"/>
   <field name="tag.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="tag.vocabulary" type="text_general"/>
-  <field name="tag.narrative" type="iati_narrative"/>
   <field name="activity-scope.code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
   <field name="document-link.category.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="humanitarian-scope.vocabulary" type="text_general"/>
@@ -532,10 +520,16 @@
   <field name="default-tied-status.code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
   <field name="collaboration-type.code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
   <field name="sector.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="sector.narrative" type="iati_narrative"/>
   <field name="sector.vocabulary" type="text_general"/>
   <field name="policy-marker.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="participating-org.ref" type="non_case_sensitive" multiValued="true"/>
+
+  <!-- List of ints indicating which SDG the transaction belongs to. -->
+  <field name="is-sdg" type="pints" multiValued="true" indexed="true" required="false" stored="true" />
+  <field name="is_sdg" type="pints" multiValued="true" indexed="true" required="false" stored="true" />
+  <copyField source="is-sdg" dest="is_sdg" />
+  <field name="is-sdg.source" type="text_general" multiValued="true" indexed="true" required="false" stored="true" />
+  <field name="is_sdg_source" type="text_general" multiValued="true" indexed="true" required="false" stored="true" />
+  <copyField source="is-sdg.source" dest="is_sdg_source" />
 
   <!-- Additional dataset fields -->
   <field name="dataset.id" type="text_general_single" indexed="true" stored="true" />

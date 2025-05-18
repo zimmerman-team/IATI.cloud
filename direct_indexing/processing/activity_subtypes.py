@@ -4,12 +4,15 @@ from copy import deepcopy
 from django.conf import settings
 
 from direct_indexing.custom_fields.indexing_manytomany_relations import index_many_to_many_relations
+from direct_indexing.processing.subtypes_util import COUNTRIES, REGIONS, set_default_percentage
 
 AVAILABLE_SUBTYPES = {
     'transaction': settings.SOLR_TRANSACTION_URL,
     'budget': settings.SOLR_BUDGET_URL,
     'result': settings.SOLR_RESULT_URL,
     'transaction_trimmed': settings.SOLR_TRANSACTION_TRIMMED_URL,
+    'transaction_sdgs': settings.SOLR_TRANSACTION_SDGS_URL,
+    'budget_sdgs': settings.SOLR_BUDGET_SDGS_URL,
 }
 
 AVAILABLE_DRAFT_SUBTYPES = {
@@ -17,6 +20,8 @@ AVAILABLE_DRAFT_SUBTYPES = {
     'budget': settings.SOLR_DRAFT_BUDGET_URL,
     'result': settings.SOLR_DRAFT_RESULT_URL,
     'transaction_trimmed': settings.SOLR_DRAFT_TRANSACTION_TRIMMED_URL,
+    'transaction_sdgs': settings.SOLR_DRAFT_TRANSACTION_SDGS_URL,
+    'budget_sdgs': settings.SOLR_DRAFT_BUDGET_SDGS_URL,
 }
 
 
@@ -135,19 +140,23 @@ def extract_all_subtypes(subtypes, data):
             if key != 'transaction_trimmed':
                 subtypes[key] += extract_subtype(activity, key)
     if len(subtypes['transaction']) != 0:
-        subtypes['transaction_trimmed'] = _trim_transaction(deepcopy(subtypes['transaction']))
+        subtypes['transaction_trimmed'] = _trim_transactions(deepcopy(subtypes['transaction']))
+    if len(subtypes['transaction_trimmed']) != 0:
+        subtypes['transaction_sdgs'] = _split_transactions(deepcopy(subtypes['transaction_trimmed']))
+    if len(subtypes['budget']) != 0:
+        subtypes['budget_sdgs'] = _trim_split_budgets(deepcopy(subtypes['budget']))
     return subtypes
 
 
-def _trim_transaction(transaction):
+def _trim_transactions(transactions):
     """
     Trim the transaction to only include the fields that are needed for the transaction_trimmed core.
 
     :param transaction: the transaction to trim
     :return: the trimmed transaction
     """
-    trimmed_transaction = []
-    for t in transaction:
+    trimmed_transactions = []
+    for t in transactions:
         try:
             lud = t.get('last-updated-datetime', None)
             dc = t.get('default-currency', None)
@@ -157,7 +166,8 @@ def _trim_transaction(transaction):
             transaction_value_usd = t.get('transaction.value-usd', None)
             recipient_country = _trim_field(t.get('recipient-country', None), ['code'])
             reporting_org = _trim_field(t.get('reporting-org', None),
-                                        ['ref', 'type', 'narrative', 'secondary-reporter', 'type.name'])
+                                        ['ref', 'type', 'narrative', 'secondary-reporter'])
+            reporting_org_type_name = t.get('reporting-org.type.name', None)
             activity_status = _trim_field(t.get('activity-status', None), ['code'])
             activity_date_start_planned = t.get('activity-date.start-planned', None)
             activity_date_start_actual = t.get('activity-date.start-actual', None)
@@ -191,6 +201,7 @@ def _trim_transaction(transaction):
                 'transaction.value-usd': transaction_value_usd,
                 'recipient-country': recipient_country,
                 'reporting-org': reporting_org,
+                'reporting-org.type.name': reporting_org_type_name,
                 'activity-status': activity_status,
                 'activity-date.start-planned': activity_date_start_planned,
                 'activity-date.start-actual': activity_date_start_actual,
@@ -218,12 +229,10 @@ def _trim_transaction(transaction):
             }
             # remove the empty fields from trimmed
             trimmed = {k: v for k, v in _trimmed.items() if v is not None}
-            trimmed_transaction.append(trimmed)
-            t['trimmed_transaction'] = True
+            trimmed_transactions.append(trimmed)
         except Exception as e:
             logging.error(f"_trim_transaction::error: {e}")
-            t['trimmed_transaction'] = False
-    return trimmed_transaction
+    return trimmed_transactions
 
 
 def _trim_transaction_obj(transaction):
@@ -238,17 +247,19 @@ def _trim_transaction_obj(transaction):
             return None
         _transaction = deepcopy(transaction)
         for key in transaction:
-            if key in ['ref', 'disbursement-channel', 'recipient-region', 'finance-type', 'aid-type']:
+            if key in ['ref', 'disbursement-channel', 'finance-type', 'aid-type']:
                 del _transaction[key]
                 continue
-            if key not in ['description', 'provider-org', 'receiver-org', 'sector', 'recipient-country']:
+            if key not in ['description', 'provider-org', 'receiver-org',
+                           'sector', 'recipient-country', 'recipient-region']:
                 continue
             to_keep = {
                 "description": ['narrative'],
                 "provider-org": ['narrative', 'ref'],
                 "receiver-org": ['narrative', 'ref'],
-                "sector": ['code', 'vocabulary'],
-                "recipient-country": ['code'],
+                "sector": ['code', 'vocabulary', 'percentage', 'narrative'],
+                "recipient-country": ['code', 'percentage'],
+                "recipient-region": ['code', 'percentage']
             }
             _transaction[key] = _trim_field(_transaction[key], to_keep[key])
         return _transaction
@@ -257,7 +268,181 @@ def _trim_transaction_obj(transaction):
         raise e
 
 
+def _trim_split_budgets(budgets):
+    """Parent function for trimming and splitting budgets that are SDGs.
+
+    Args:
+        budgets (list | None): a list of the budgets to be trimmed and split
+
+    Returns:
+        list: list of budgets split by SDG, if they are not related to SDGs they are not included.
+    """
+    trimmed_budgets = _trim_budgets(budgets)
+    split_budgets = _split_budgets(trimmed_budgets)
+    return split_budgets
+
+
+def _trim_budgets(budgets):
+    """Trim the budget to only include the fields that are needed for the budget SDGs core.
+
+    Args:
+        budgets (list): list of complete budgets
+
+    Returns:
+        list: list of trimmed budgets
+    """
+    _budgets = []
+    for b in budgets:
+        iati_id = b.get('iati-identifier', None)
+        sector = _trim_field(b.get('sector', None), ['code', 'vocabulary'])
+        recipient_country = _trim_field(b.get('recipient-country', None), ['code'])
+        budget = b.get('budget', None)
+        budget_value_usd = b.get('budget.value-usd', None)
+        reporting_org = _trim_field(b.get('reporting-org', None), ['ref', 'type', 'secondary-reporter'])
+        activity_status = _trim_field(b.get('activity-status', None), ['code'])
+        activity_scope = b.get('activity-scope', None)
+        document_link = _trim_field(b.get('document-link', None), ['category'])
+        hier = b.get('hierarchy', None)
+        humanitarian_scope = _trim_field(b.get('humanitarian-scope', None), ['type', 'vocabulary'])
+        hum = b.get('humanitarian', None)
+        dataset_id = b.get('dataset.id', None)
+        dataset_name = b.get('dataset.name', None)
+        dataset_resources_hash = b.get('dataset.resources.hash', None)
+        dataset_extras_iati_version = b.get('dataset.extras.iati_version', None)
+        other_identifier = _trim_field(b.get('other-identifier', None), ['type'])
+        tag = _trim_field(b.get('tag', None), ['code', 'vocabulary'])
+        default_aid_type = b.get('default-aid-type', None)
+        default_currency = b.get('default-currency', None)
+        default_finance_type = b.get('default-finance-type', None)
+        default_flow_type = b.get('default-flow-type', None)
+        lang = b.get('lang', None)
+        default_tied_status = b.get('default-tied-status', None)
+        collaboration_type = b.get('collaboration-type', None)
+        policy_marker = _trim_field(b.get('policy-marker', None), ['code'])
+        _trimmed = {
+            'iati-identifier': iati_id,
+            'sector': sector,
+            'recipient-country': recipient_country,
+            'budget': budget,
+            'budget.value-usd': budget_value_usd,
+            'reporting-org': reporting_org,
+            'activity-status': activity_status,
+            'activity-scope': activity_scope,
+            'document-link': document_link,
+            'hierarchy': hier,
+            'humanitarian-scope': humanitarian_scope,
+            'humanitarian': hum,
+            'dataset.id': dataset_id,
+            'dataset.name': dataset_name,
+            'dataset.resources.hash': dataset_resources_hash,
+            'dataset.extras.iati_version': dataset_extras_iati_version,
+            'other-identifier': other_identifier,
+            'tag': tag,
+            'default-aid-type': default_aid_type,
+            'default-currency': default_currency,
+            'default-finance-type': default_finance_type,
+            'default-flow-type': default_flow_type,
+            'lang': lang,
+            'default-tied-status': default_tied_status,
+            'collaboration-type': collaboration_type,
+            'policy-marker': policy_marker,
+        }
+        trimmed = {k: v for k, v in _trimmed.items() if v is not None}
+        _budgets.append(trimmed)
+    return _budgets
+
+
+def _split_budgets(budgets):
+    """Split budgets on sector, and only keep the budget if the sector or tag is SDG.
+
+    Args:
+        budgets (list): list of trimmed budgets
+
+    Returns:
+        list: the split budgets list
+    """
+    if not budgets:
+        return None
+    _budgets = []
+    for budget in budgets:
+        sector = budget.get('sector', [])
+        sector = sector if isinstance(sector, list) else [sector]
+        sector = set_default_percentage(sector)
+        tag = budget.get('tag', [])
+        distributed_budgets = _distribute_budget(budget, sector, tag)
+        if not distributed_budgets:
+            continue
+        for distributed_budget in distributed_budgets:
+            is_sdg = distributed_budget['is_sdg']
+            if not is_sdg:
+                continue
+            # create a copy of the budget and add the distributed budget to it
+            _budget = deepcopy(budget)
+            _budget['is-sdg'] = is_sdg
+            _budget['is-sdg.source'] = distributed_budget['is_sdg_source']
+            _budget['budget']['value'] = distributed_budget['amount']
+            _budget['budget.value-usd'] = distributed_budget['amount_usd']
+            _budget['sector'] = distributed_budget['sector']
+            # drop any empty fields, for example budget.value-usd: None in some cases
+            _budget = {k: v for k, v in _budget.items() if v is not None}
+            _budgets.append(_budget)
+    return _budgets
+
+
+def _distribute_budget(budget, sector, tag):
+    """Split the budget by sector, and determine the SDG and SDG source.
+
+    Args:
+        budget (dict): a budget object
+        sector (dict | None): a sector object
+        tag (dict | None): a tag object
+
+    Returns:
+        list: a list of distributed budgets
+    """
+    budget_value = budget.get('budget', {}).get('value', 0)
+    budget_value_usd = budget.get('budget.value-usd', None)
+    if not sector:
+        is_sdg, is_sdg_source = _get_is_sdg(None, tag)
+        return [{
+            'is_sdg': is_sdg,
+            'is_sdg_source': is_sdg_source,
+            'sector': sector,
+            'amount': budget_value,
+            'amount_usd': budget_value_usd,
+        }]
+    sector_list = sector or [{'code': '', 'percentage': 100}]
+
+    distributed_budgets = []
+    for sec in sector_list:
+        sec_pct = sec.get('percentage', 100 / len(sector_list)) / 100
+        amount = round(budget_value * sec_pct, 2)
+        amount_usd = None if not budget_value_usd else round(budget_value_usd * sec_pct, 2)
+        is_sdg, is_sdg_source = _get_is_sdg(sec, tag)
+        distributed_budgets.append({
+            'is_sdg': is_sdg,
+            'is_sdg_source': is_sdg_source,
+            'sector': sector,
+            'amount': amount,
+            'amount_usd': amount_usd
+        })
+
+    return distributed_budgets
+
+
 def _trim_field(item, keep_list):
+    """Trim a field to only include the fields in keep_list
+
+    Args:
+        item (dict | None): a dict containing child items
+        keep_list (list): a list of keys possibly included in `item`, to be kept in the trimmed item
+
+    Raises:
+        e: any issue with trimming the field
+
+    Returns:
+        dict | None: a trimmed item
+    """
     try:
         # Skip empty items
         if item is None:
@@ -277,3 +462,210 @@ def _trim_field(item, keep_list):
     except Exception as e:
         logging.error(f"_trim_field::error {e}")
         raise e
+
+
+def _split_transactions(transactions):
+    """
+    Split the transaction into multiple transactions.
+
+    :param transaction: the transaction to split
+    :return: the split transaction
+    """
+    if not transactions:
+        return None
+    _transactions = []
+    for transaction in transactions:
+        try:
+            # check if there is a a sector, if it is a list, check if len > 1
+            recipient_country = transaction.get('recipient-country', [])  # Can be empty
+            recipient_country = recipient_country if isinstance(recipient_country, list) else [recipient_country]
+            recipient_region = transaction.get('recipient-region', [])  # Can be empty
+            recipient_region = recipient_region if isinstance(recipient_region, list) else [recipient_region]
+            recipient = set_default_percentage(recipient_country + recipient_region)
+            # Can be empty, if empty, sector is reported at transaction level,
+            # but in that case, is not relevant to the budget
+            sector = transaction.get('sector', [])
+            sector = sector if isinstance(sector, list) else [sector]
+            sector = set_default_percentage(sector)
+            tag = transaction.get('tag', [])
+            distributed_transactions = _distribute_transaction(transaction, recipient, sector, tag)
+            if not distributed_transactions:
+                continue
+            for distributed_transaction in distributed_transactions:
+                is_sdg = distributed_transaction['is_sdg']
+                if not is_sdg:
+                    continue
+                # create a copy of the transaction and add the distributed transaction to it
+                recip_code = distributed_transaction['recipient_code']
+                sector = distributed_transaction['sector']
+                _transaction = deepcopy(transaction)
+                _transaction['is-sdg'] = is_sdg
+                _transaction['is-sdg.source'] = distributed_transaction['is_sdg_source']
+                _transaction['transaction']['value'] = distributed_transaction['amount']
+                _transaction['transaction.value-usd'] = distributed_transaction['amount_usd']
+                if recip_code in COUNTRIES:
+                    _transaction['recipient-country'] = {'code': recip_code}
+                if recip_code in REGIONS:
+                    _transaction['recipient-region'] = {'code': recip_code}
+                if sector:
+                    _transaction['sector'] = sector
+                # drop any empty fields, for example transaction.value-usd: None in some cases
+                _transaction = {k: v for k, v in _transaction.items() if v is not None}
+                _transaction = _trim_sdg_item(_transaction)
+                _transactions.append(_transaction)
+        except Exception as e:
+            logging.error(f"_split_transactions::unable to split transaction {transaction.get('iati-identifier', 'no-id')} due to error: {e}")  # NOQA: E501
+    return _transactions
+
+
+def _distribute_transaction(transaction, recipient, sector, tag):
+    """Distribute the transaction amount to each recipient and sector.
+    Note: the transaction.sector is not addressed, as it does not contain `percentage` data,
+    the same is true for the transaction.recipient-region and transaction.recipient-country.
+
+    Args:
+        transaction (dict): a trimmed transaction dictionary
+        recipient (_type_): a list of recipient countries or regions
+        sector (_type_): a list of sectors
+    """
+    try:
+        transaction_value = transaction.get('transaction', {}).get('value', 0)
+        transaction_value_usd = transaction.get('transaction.value-usd', None)
+        distributed_transactions = []
+        if not recipient and not sector:
+            # drop the percentage as we do not store it
+            is_sdg, is_sdg_source = _get_is_sdg(None, tag)
+            return [{
+                'is_sdg': is_sdg,
+                'is_sdg_source': is_sdg_source,
+                'recipient_code': '',
+                'sector': sector,
+                'amount': transaction_value,
+                'amount_usd': transaction_value_usd,
+            }]
+        recipient_list = recipient or [{'code': '', 'percentage': 100}]
+        sector_list = sector or [{'code': '', 'percentage': 100}]
+
+        # For every recipient and sector, calculate the transaction value
+        for rec in recipient_list:
+            rec_code = rec.get('code')
+            # get the provided percentage, or split equally over the length of the recipient list.
+            rec_pct = rec.get('percentage', 100 / len(recipient_list)) / 100
+            for sec in sector_list:
+                # get the provided percentage, or split equally over the length of the recipient list.
+                sec_pct = sec.get('percentage', 100 / len(sector_list)) / 100
+                _distributed_transactions_append(distributed_transactions, transaction_value, transaction_value_usd,
+                                                 rec_code, rec_pct, sec, sec_pct, tag)
+        return distributed_transactions
+    except Exception as e:
+        logging.error(f"_distribute_transaction::error {e}")
+        raise e
+
+
+def _distributed_transactions_append(distributed_transactions, transaction_value, transaction_value_usd,
+                                     rec_code, rec_pct, sector, sec_pct, tag):
+    """Function that takes the transaction value, recipient and sector data,
+    and creates a distributed transaction object.
+
+    Args:
+        distributed_transactions (list): reference to the list of transactions created
+        transaction_value (float): transaction value
+        transaction_value_usd (float): transaction value in USD
+        rec_code (string): recipient code, can be country or region
+        rec_pct (float): the percentage of the budget that goes to this recipient
+        sec (string): sector dict
+        sec_pct (float): the percentage of the budget that goes to this sector
+    """
+    try:
+        amount = round(transaction_value * rec_pct * sec_pct, 2)
+        amount_usd = None if not transaction_value_usd else round(transaction_value_usd * rec_pct * sec_pct, 2)
+        # drop the percentage as we do not store it
+        if sector.get('percentage', None) is not None:
+            del sector['percentage']
+        is_sdg, is_sdg_source = _get_is_sdg(sector, tag)
+        distributed_transactions.append({
+            'is_sdg': is_sdg,
+            'is_sdg_source': is_sdg_source,
+            'recipient_code': rec_code or '',
+            'sector': sector,
+            'amount': amount,
+            'amount_usd': amount_usd
+        })
+    except Exception as e:
+        logging.error(f"_distributed_transactions_append::error {e}")
+        raise e
+
+
+def _trim_sdg_item(item):
+    """Trim the SDG item to only include the fields that are needed for the Transaction SDG core.
+
+    Args:
+        item (dict): the sdg item to be trimmed
+
+    Returns:
+        dict: the item trimmed, or the original item if unable to be trimmed.
+    """
+    try:
+        _item = deepcopy(item)
+        for key in item:
+            if key in ["last-updated-datetime", 'activity-date.common.start', 'activity-date.common.end',
+                       "reporting-org.type.name"]:
+                del _item[key]
+        _trim_sdg_item_transaction(_item['transaction'])
+        _item['tag'] = _trim_field(_item.get('tag', None), ['code', 'vocabulary'])
+        _item['reporting-org'] = _trim_field(_item.get('reporting-org', None), ['ref', 'type', 'secondary-reporter'])
+        _item['sector'] = _trim_field(_item.get('sector', None), ['code', 'vocabulary'])
+        return _item
+    except Exception as e:
+        logging.error(f"_trim_sdg_item::error {e}")
+        return item
+
+
+def _trim_sdg_item_transaction(_item):
+    """Trim the transaction sub-item in the transaction object.
+
+    Args:
+        _item (dict): the item to be trimmed
+
+    Raises:
+        e: any error with trimming the provided item
+
+    Returns:
+        dict: the trimmed item
+    """
+    try:
+        if _item is None:
+            return None
+        if 'description' in _item:
+            del _item['description']
+        if 'provider_org' in _item:
+            del _item['provider-org']
+        _item['receiver-org'] = _trim_field(_item.get('receiver-org', None), ['ref'])
+        _item['sector'] = _trim_field(_item.get('sector', None), ['vocabulary'])
+    except Exception as e:
+        logging.error(f"_trim_sdg_item_transaction::error {e}")
+        raise e
+
+
+def _get_is_sdg(sector, tag):
+    """
+    Check if the sector or tag is an SDG.
+
+    :param sector: the sector to check
+    :param tag: the tag to check
+    :return: True if the sector or tag is an SDG, False otherwise
+    """
+    N_SDG = 17 + 1  # 18 as there are 17 SDGs, plus one for the usage in range
+    is_sdg = []
+    sdg_source = None
+    if sector:
+        if sector.get('vocabulary', 0) == 7 and sector.get('code', 0) in range(1, N_SDG):
+            is_sdg.append(sector.get('code', 0))
+            sdg_source = "sector"
+    if tag and is_sdg == []:
+        tag = tag if isinstance(tag, list) else [tag]
+        for t in tag:
+            if t.get('vocabulary', 0) == 2 and t.get('code') in range(1, N_SDG):
+                is_sdg.append(t.get('code'))
+                sdg_source = 'tag'
+    return is_sdg, sdg_source
