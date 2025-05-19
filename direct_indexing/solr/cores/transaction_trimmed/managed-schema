@@ -536,7 +536,8 @@
   <field name="sector.vocabulary" type="text_general"/>
   <field name="policy-marker.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="participating-org.ref" type="non_case_sensitive" multiValued="true"/>
-
+  <field name="title.narrative" type="iati_narrative"/>
+  <field name="recipient-country.name" type="text_general"/>
   <!-- Additional dataset fields -->
   <field name="dataset.id" type="text_general_single" indexed="true" stored="true" />
   <field name="dataset.name" type="text_general_single" indexed="true" stored="true" />
