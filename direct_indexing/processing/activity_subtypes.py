@@ -462,46 +462,59 @@ def _split_transactions(transactions):
     _transactions = []
     for transaction in transactions:
         try:
-            # check if there is a a sector, if it is a list, check if len > 1
-            recipient_country = transaction.get('recipient-country', [])  # Can be empty
-            recipient_country = recipient_country if isinstance(recipient_country, list) else [recipient_country]
-            recipient_region = transaction.get('recipient-region', [])  # Can be empty
-            recipient_region = recipient_region if isinstance(recipient_region, list) else [recipient_region]
-            recipient = set_default_percentage(recipient_country + recipient_region)
-            # Can be empty, if empty, sector is reported at transaction level,
-            # but in that case, is not relevant to the budget
-            sector = transaction.get('sector', [])
-            sector = sector if isinstance(sector, list) else [sector]
-            sector = set_default_percentage(sector)
-            tag = transaction.get('tag', [])
-            distributed_transactions = _distribute_transaction(transaction, recipient, sector, tag)
-            if not distributed_transactions:
-                continue
-            for distributed_transaction in distributed_transactions:
-                is_sdg = distributed_transaction['is_sdg']
-                if not is_sdg:
-                    continue
-                # create a copy of the transaction and add the distributed transaction to it
-                recip_code = distributed_transaction['recipient_code']
-                sector = distributed_transaction['sector']
-                _transaction = deepcopy(transaction)
-                _transaction['is-sdg'] = is_sdg
-                _transaction['is-sdg.source'] = distributed_transaction['is_sdg_source']
-                _transaction['transaction']['value'] = distributed_transaction['amount']
-                _transaction['transaction.value-usd'] = distributed_transaction['amount_usd']
-                if recip_code in COUNTRIES:
-                    _transaction['recipient-country'] = {'code': recip_code}
-                if recip_code in REGIONS:
-                    _transaction['recipient-region'] = {'code': recip_code}
-                if sector:
-                    _transaction['sector'] = sector
-                # drop any empty fields, for example transaction.value-usd: None in some cases
-                _transaction = {k: v for k, v in _transaction.items() if v is not None}
-                _transaction = _trim_sdg_item(_transaction)
-                _transactions.append(_transaction)
+            _split_transaction(transaction, _transactions)
         except Exception as e:
             logging.error(f"_split_transactions::unable to split transaction {transaction.get('iati-identifier', 'no-id')} due to error: {e}")  # NOQA: E501
     return _transactions
+
+
+def _split_transaction(transaction, _transactions):
+    """Split a single transaction into multiple transactions based on the sdgs.
+
+    Args:
+        transaction (dict): a transaction object
+        _transactions (list): reference to the list of split transactions created
+
+    Returns:
+        None: No return value, the transactions are appended to the list
+    """
+    # check if there is a a sector, if it is a list, check if len > 1
+    recipient_country = transaction.get('recipient-country', [])  # Can be empty
+    recipient_country = recipient_country if isinstance(recipient_country, list) else [recipient_country]
+    recipient_region = transaction.get('recipient-region', [])  # Can be empty
+    recipient_region = recipient_region if isinstance(recipient_region, list) else [recipient_region]
+    recipient = set_default_percentage(recipient_country + recipient_region)
+    # Can be empty, if empty, sector is reported at transaction level,
+    # but in that case, is not relevant to the budget
+    sector = transaction.get('sector', [])
+    sector = sector if isinstance(sector, list) else [sector]
+    sector = set_default_percentage(sector)
+    tag = transaction.get('tag', [])
+    distributed_transactions = _distribute_transaction(transaction, recipient, sector, tag)
+    if not distributed_transactions:
+        return None
+    for distributed_transaction in distributed_transactions:
+        is_sdg = distributed_transaction['is_sdg']
+        if not is_sdg:
+            continue
+        # create a copy of the transaction and add the distributed transaction to it
+        recip_code = distributed_transaction['recipient_code']
+        sector = distributed_transaction['sector']
+        _transaction = deepcopy(transaction)
+        _transaction['is-sdg'] = is_sdg
+        _transaction['is-sdg.source'] = distributed_transaction['is_sdg_source']
+        _transaction['transaction']['value'] = distributed_transaction['amount']
+        _transaction['transaction.value-usd'] = distributed_transaction['amount_usd']
+        if recip_code in COUNTRIES:
+            _transaction['recipient-country'] = {'code': recip_code}
+        if recip_code in REGIONS:
+            _transaction['recipient-region'] = {'code': recip_code}
+        if sector:
+            _transaction['sector'] = sector
+        # drop any empty fields, for example transaction.value-usd: None in some cases
+        _transaction = {k: v for k, v in _transaction.items() if v is not None}
+        _transaction = _trim_sdg_item(_transaction)
+        _transactions.append(_transaction)
 
 
 def _distribute_transaction(transaction, recipient, sector, tag):
