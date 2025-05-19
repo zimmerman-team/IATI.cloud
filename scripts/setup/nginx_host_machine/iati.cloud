@@ -179,8 +179,8 @@ server {
 		proxy_set_header Authorization "Basic REPL_AUTH";
         }
 
-	# SOLR Budget SDGS
-        location /api/v2/budget-sdgs {
+	# SOLR Budget split by sector
+        location /api/v2/budget-split-by-sector {
                 if ($args !~* fl=) {
                         set $args $1$args&fl=*;
 		}
@@ -191,7 +191,7 @@ server {
                         add_header 'Access-Control-Expose-Headers' 'Content-Length,Content-Range';
                 }
                 include proxy_params;
-                proxy_pass http://localhost:8983/solr/budget_sdgs/select;
+                proxy_pass http://localhost:8983/solr/budget_split_by_sector/select;
 		proxy_set_header Authorization "Basic REPL_AUTH";
         }
 
@@ -262,8 +262,8 @@ server {
                 proxy_pass http://localhost:8983/solr/draft_transaction_trimmed/select;
         }
 
-        # SOLR DRAFT Budget SDGS
-        location /api/v2/draft_budget_sdgs {
+        # SOLR DRAFT Budget split by sector
+        location /api/v2/draft-budget-split-by-sector {
                 if ($args !~* fl=) {
                         set $args $1$args&fl=*;
 		}
@@ -274,7 +274,7 @@ server {
                         add_header 'Access-Control-Expose-Headers' 'Content-Length,Content-Range';
                 }
                 include proxy_params;
-                proxy_pass http://localhost:8983/solr/draft_budget_sdgs/select;
+                proxy_pass http://localhost:8983/solr/draft_budget_split_by_sector/select;
         }
 
         # SOLR DRAFT Transaction SDGs

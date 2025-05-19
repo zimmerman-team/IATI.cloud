@@ -471,9 +471,10 @@
   <!-- activity.iati id 1..1 -->
   <field name="iati-identifier" type="non_case_sensitive"/>
 
-  <!-- Budget SDGs split content-->
-  <field name="sector.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>  <!-- multivalued in case the tag is the reason the budget is reported as SDG -->
-  <field name="sector.percentage" type="pdoubles"/>
+  <!-- Budget split by sector content-->
+  <field name="sector.code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>  <!-- multivalued in case the tag is the reason the budget is reported as SDG -->
+  <field name="sector.percentage" type="pdouble"/>
+  <field name="sector.vocabulary" type="text_general" multiValued="false"/>
   <field name="recipient-country.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
 
   <field name="budget.value" type="pdouble"/>
@@ -507,24 +508,15 @@
   <field name="reporting-org.type" type="text_general_single"/>
   <field name="collaboration-type.code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
   <field name="reporting-org.secondary-reporter" type="boolean"/>
-  <field name="sector.vocabulary" type="text_general"/>
   <field name="policy-marker.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="tag.vocabulary" type="text_general"/>
-
-  <!-- List of ints indicating which SDG the transaction belongs to. -->
-  <field name="is-sdg" type="pints" multiValued="true" indexed="true" required="false" stored="true" />
-  <field name="is_sdg" type="pints" multiValued="true" indexed="true" required="false" stored="true" />
-  <copyField source="is-sdg" dest="is_sdg" />
-  <field name="is-sdg.source" type="text_general" multiValued="true" indexed="true" required="false" stored="true" />
-  <field name="is_sdg_source" type="text_general" multiValued="true" indexed="true" required="false" stored="true" />
-  <copyField source="is-sdg.source" dest="is_sdg_source" />
 
   <!-- Additional dataset information fields -->
   <field name="dataset.id" type="text_general_single" indexed="true" stored="true" />
   <field name="dataset.name" type="text_general_single" indexed="true" stored="true" />
   <field name="dataset.resources.hash" type="text_general_single" indexed="true" stored="true" />
 
-  <!-- budget_sdgs specific fields -->
+  <!-- budget_split_by_sector specific fields -->
 
   <!-- Dynamic fields -->
   <dynamicField name="*_txt_en_split_tight" type="text_en_splitting_tight" indexed="true" stored="true"/>

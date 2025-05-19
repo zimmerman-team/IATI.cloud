@@ -39,7 +39,7 @@ read solr_container_id
 
 # Update the managed-schema and xslt files for all cores
 bitnami_solr=/bitnami/solr/server/solr
-cores=(activity budget dataset organisation publisher result transaction transaction_trimmed transaction_sdgs budget_sdgs)
+cores=(activity budget dataset organisation publisher result transaction transaction_trimmed transaction_sdgs budget_split_by_sector)
 
 for core in "${cores[@]}"; do
   src="./direct_indexing/solr/cores/$core/managed-schema"

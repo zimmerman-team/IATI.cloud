@@ -12,7 +12,7 @@ AVAILABLE_SUBTYPES = {
     'result': settings.SOLR_RESULT_URL,
     'transaction_trimmed': settings.SOLR_TRANSACTION_TRIMMED_URL,
     'transaction_sdgs': settings.SOLR_TRANSACTION_SDGS_URL,
-    'budget_sdgs': settings.SOLR_BUDGET_SDGS_URL,
+    'budget_split_by_sector': settings.SOLR_BUDGET_SPLIT_BY_SECTOR_URL,
 }
 
 AVAILABLE_DRAFT_SUBTYPES = {
@@ -21,7 +21,7 @@ AVAILABLE_DRAFT_SUBTYPES = {
     'result': settings.SOLR_DRAFT_RESULT_URL,
     'transaction_trimmed': settings.SOLR_DRAFT_TRANSACTION_TRIMMED_URL,
     'transaction_sdgs': settings.SOLR_DRAFT_TRANSACTION_SDGS_URL,
-    'budget_sdgs': settings.SOLR_DRAFT_BUDGET_SDGS_URL,
+    'budget_split_by_sector': settings.SOLR_DRAFT_BUDGET_SPLIT_BY_SECTOR_URL,
 }
 
 
@@ -144,7 +144,7 @@ def extract_all_subtypes(subtypes, data):
     if len(subtypes['transaction_trimmed']) != 0:
         subtypes['transaction_sdgs'] = _split_transactions(deepcopy(subtypes['transaction_trimmed']))
     if len(subtypes['budget']) != 0:
-        subtypes['budget_sdgs'] = _trim_split_budgets(deepcopy(subtypes['budget']))
+        subtypes['budget_split_by_sector'] = _trim_split_budgets(deepcopy(subtypes['budget']))
     return subtypes
 
 
@@ -283,7 +283,7 @@ def _trim_split_budgets(budgets):
 
 
 def _trim_budgets(budgets):
-    """Trim the budget to only include the fields that are needed for the budget SDGs core.
+    """Trim the budget to only include the fields that are needed for the budget split by sector core.
 
     Args:
         budgets (list): list of complete budgets
@@ -366,20 +366,17 @@ def _split_budgets(budgets):
     _budgets = []
     for budget in budgets:
         sector = budget.get('sector', [])
+        if not sector:
+            continue
         sector = sector if isinstance(sector, list) else [sector]
         sector = set_default_percentage(sector)
-        tag = budget.get('tag', [])
-        distributed_budgets = _distribute_budget(budget, sector, tag)
+        distributed_budgets = _distribute_budget(budget, sector)
+        # Safety catch for empty distributed budgets
         if not distributed_budgets:
             continue
         for distributed_budget in distributed_budgets:
-            is_sdg = distributed_budget['is_sdg']
-            if not is_sdg:
-                continue
             # create a copy of the budget and add the distributed budget to it
             _budget = deepcopy(budget)
-            _budget['is-sdg'] = is_sdg
-            _budget['is-sdg.source'] = distributed_budget['is_sdg_source']
             _budget['budget']['value'] = distributed_budget['amount']
             _budget['budget.value-usd'] = distributed_budget['amount_usd']
             _budget['sector'] = distributed_budget['sector']
@@ -389,13 +386,12 @@ def _split_budgets(budgets):
     return _budgets
 
 
-def _distribute_budget(budget, sector, tag):
-    """Split the budget by sector, and determine the SDG and SDG source.
+def _distribute_budget(budget, sector):
+    """Split the budget by sector.
 
     Args:
         budget (dict): a budget object
         sector (dict | None): a sector object
-        tag (dict | None): a tag object
 
     Returns:
         list: a list of distributed budgets
@@ -403,26 +399,16 @@ def _distribute_budget(budget, sector, tag):
     budget_value = budget.get('budget', {}).get('value', 0)
     budget_value_usd = budget.get('budget.value-usd', None)
     if not sector:
-        is_sdg, is_sdg_source = _get_is_sdg(None, tag)
-        return [{
-            'is_sdg': is_sdg,
-            'is_sdg_source': is_sdg_source,
-            'sector': sector,
-            'amount': budget_value,
-            'amount_usd': budget_value_usd,
-        }]
+        return None
     sector_list = sector or [{'code': '', 'percentage': 100}]
 
     distributed_budgets = []
     for sec in sector_list:
-        sec_pct = sec.get('percentage', 100 / len(sector_list)) / 100
+        sec_pct = sec.get('percentage', 100) / 100
         amount = round(budget_value * sec_pct, 2)
         amount_usd = None if not budget_value_usd else round(budget_value_usd * sec_pct, 2)
-        is_sdg, is_sdg_source = _get_is_sdg(sec, tag)
         distributed_budgets.append({
-            'is_sdg': is_sdg,
-            'is_sdg_source': is_sdg_source,
-            'sector': sector,
+            'sector': sec,
             'amount': amount,
             'amount_usd': amount_usd
         })
