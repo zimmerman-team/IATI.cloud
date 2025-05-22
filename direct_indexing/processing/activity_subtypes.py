@@ -1,4 +1,6 @@
+import datetime
 import logging
+import re
 from copy import deepcopy
 
 from django.conf import settings
@@ -302,6 +304,7 @@ def _trim_budgets(budgets):
         recipient_country = _trim_field(b.get('recipient-country', None), ['code'])
         budget = b.get('budget', None)
         budget_value_usd = b.get('budget.value-usd', None)
+        budget_year = _get_budget_year(budget)
         reporting_org = _trim_field(b.get('reporting-org', None), ['ref', 'type', 'secondary-reporter'])
         activity_status = _trim_field(b.get('activity-status', None), ['code'])
         activity_scope = b.get('activity-scope', None)
@@ -329,6 +332,7 @@ def _trim_budgets(budgets):
             'recipient-country': recipient_country,
             'budget': budget,
             'budget.value-usd': budget_value_usd,
+            'budget.year': budget_year,
             'reporting-org': reporting_org,
             'activity-status': activity_status,
             'activity-scope': activity_scope,
@@ -672,3 +676,24 @@ def _get_is_sdg(sector, tag):
                 is_sdg.append(t.get('code'))
                 sdg_source = 'tag'
     return is_sdg, sdg_source
+
+
+def _get_budget_year(budget):
+    if not budget:
+        return None
+    date = budget.get('value.value-date', "")
+    try:
+        budget_year = datetime.datetime.fromisoformat(date).year
+    except (ValueError, TypeError):
+        try:
+            if '-' in date:
+                match = re.search(r'\d{4}-|-\d{4}', date)
+                budget_year = match.group().strip('-') if match else None
+            if '/' in date:
+                match = re.search(r'\d{4}/|/\d{4}', date)
+                budget_year = match.group().strip('/') if match else None
+            if not budget_year:
+                budget_year = None
+        except (AttributeError, TypeError):
+            budget_year = None
+    return budget_year

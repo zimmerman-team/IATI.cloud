@@ -486,7 +486,8 @@
   <field name="budget.value.value-date" type="pdate"/>
   <field name="budget_value_date_f" type="pdate" multiValued="false" indexed="true" required="false" stored="true"/>
   <copyField source="budget.value.value-date" dest="budget_value_date_f" />
-  
+  <field name="budget.year" type="pint" multiValued="false" indexed="true" required="false" stored="true" docValues="true"/>
+
   <field name="reporting-org.ref" type="non_case_sensitive"/>
   <field name="activity-status.code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
   <field name="activity-scope.code" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
