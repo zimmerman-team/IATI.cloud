@@ -198,8 +198,8 @@ def remove_custom(name, org, dataset_id):
     return "The dataset has been removed."
 
 
-def _rm(dir, name, ext=""):
-    file_to_remove = os.path.join(dir, f"{name}{ext}")
+def _rm(_dir, name, ext=""):
+    file_to_remove = os.path.join(_dir, f"{name}{ext}")
     if os.path.exists(file_to_remove):
         os.remove(file_to_remove)
 
