@@ -725,7 +725,13 @@
   <field name="recipient-country.name" type="text_general"/>
   <field name="recipient-region.name" type="text_general"/>
   <field name="default-aid-type.name" type="text_general"/>
-  <field name="transaction.receiver-org.type.name" type="text_general"/>
+  <field name="budget.type.name" type="text_general"/>
+  <field name="budget.status.name" type="text_general"/>
+  <field name="tag.vocabulary.name" type="text_general"/>
+  <field name="sector.name" type="text_general"/>
+  <field name="policy-marker.name" type="text_general"/>
+  <field name="policy-marker.significance.name" type="text_general"/>
+  <field name="policy-marker.vocabulary.name" type="text_general"/>
 
   <!-- Searchable title -->
   <field name="title.narrative.first" type="text_general_single"/>

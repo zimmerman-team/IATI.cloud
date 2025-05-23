@@ -757,7 +757,11 @@
   <field name="recipient-region.name" type="text_general"/>
   <field name="default-aid-type.name" type="text_general"/>
   <field name="transaction.receiver-org.type.name" type="text_general"/>
-
+  <field name="tag.vocabulary.name" type="text_general"/>
+  <field name="sector.name" type="text_general"/>
+  <field name="policy-marker.name" type="text_general"/>
+  <field name="policy-marker.significance.name" type="text_general"/>
+  <field name="policy-marker.vocabulary.name" type="text_general"/>
   <!-- Searchable title -->
   <field name="title.narrative.first" type="text_general_single"/>
 
@@ -945,6 +949,7 @@
   <field name="dataset.resources.hash" type="text_general_single" indexed="true" stored="true" />
   <field name="dataset.resources.last_modified" type="pdate" indexed="true" stored="true" />
   <field name="dataset.resources.url" type="text_general_single" indexed="true" stored="true" />
+  <field name="trimmed_transaction" type="boolean" indexed="true" stored="true" />
 
   <!-- Date quarter fields -->
   <field name="activity-date.quarter" type="plongs" multiValued="true" indexed="true" required="false" stored="true" />
@@ -1458,7 +1463,7 @@
   <copyField source="transaction.recipient-country.code" dest="transaction_recipient_country_code" />
   <copyField source="transaction.recipient-region.code" dest="transaction_recipient_region_code" />
   <copyField source="transaction.recipient-region.vocabulary" dest="transaction_recipient_region_vocabulary" />
-  <copyField source="recipient-region.vocabulary-uri" dest="transaction_recipient_region_vocabulary_uri" />
+  <copyField source="transaction.recipient-region.vocabulary-uri" dest="transaction_recipient_region_vocabulary_uri" />
   <copyField source="transaction.flow-type.code" dest="transaction_flow_type_code" />
   <copyField source="transaction.finance-type.code" dest="transaction_finance_type_code" />
   <copyField source="transaction.aid-type.code" dest="transaction_aid_type_code" />
