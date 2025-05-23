@@ -275,7 +275,7 @@ def dataset_subtypes(filetype, data, json_path, draft=False):
     :param json_path: The filepath of the json file.
     """
     # Activity subtypes
-    subtypes = dict()
+    subtypes = {}
     if filetype == 'activity':
         for key in activity_subtypes.AVAILABLE_SUBTYPES:
             subtypes[key] = []
