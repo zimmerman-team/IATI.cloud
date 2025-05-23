@@ -114,7 +114,7 @@ def aida_drop_dataset(dataset_name, draft=False):
         return "Apologies, but the dataset could not be fully deleted, please contact support", 500
 
     try:
-        core_list = ['activity', 'transaction', 'result', 'budget']
+        core_list = ['activity', 'transaction', 'result', 'budget', 'fcdo_budget']
         if draft:
             core_list = [f'draft_{core}' for core in core_list]
         for core in core_list:
@@ -160,7 +160,7 @@ def index_datasets_and_dataset_metadata(update, force_update, fresh=settings.FRE
     logging.info('index_datasets_and_dataset_metadata:: -- Walk the metadata')
     number_of_datasets = len(dataset_metadata)
     for i, dataset in enumerate(dataset_metadata):
-        if settings.THROTTLE_DATASET and i % 100 != 0:
+        if settings.THROTTLE_DATASET and i % 500 != 0:
             continue
         logging.info(f'index_datasets_and_dataset_metadata:: --- Submitting dataset {i+1} of {number_of_datasets}')
         update_flag = update_bools[i] if update else False

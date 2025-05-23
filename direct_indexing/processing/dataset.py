@@ -1,7 +1,9 @@
+import asyncio
 import json
 import logging
 import os
 import xml.etree.ElementTree as ET
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 
 from django.conf import settings
@@ -15,6 +17,7 @@ from direct_indexing.custom_fields.models import codelists
 from direct_indexing.custom_fields.models import currencies as cu
 from direct_indexing.metadata.util import index
 from direct_indexing.processing import activity_subtypes
+from direct_indexing.processing.fcdo_budget import fcdo_budget
 from direct_indexing.processing.util import get_dataset_filepath, get_dataset_filetype, get_dataset_version_validity
 from direct_indexing.util import index_to_core
 
@@ -100,9 +103,18 @@ def _index_dataset_metadata_to_dataset_core(dataset, draft, should_be_indexed, i
 
 
 def _update_drop(update, draft, dataset):
+    """Drops datasets where dataset id is found in the solr core.
+
+    Args:
+        update (boolean): whether to update the dataset or not.
+        draft (boolean): whether or not this dataset relates to the draft cores.
+        dataset (dict): the dataset id to be dropped.
+    """
     # drop the old data from solr
     if update:
-        solr_cores = [settings.SOLR_ACTIVITY, settings.SOLR_BUDGET, settings.SOLR_RESULT, settings.SOLR_TRANSACTION]
+        solr_cores = [settings.SOLR_ACTIVITY, settings.SOLR_BUDGET, settings.SOLR_RESULT,
+                      settings.SOLR_TRANSACTION, settings.SOLR_TRANSACTION_TRIMMED, settings.SOLR_TRANSACTION_SDGS,
+                      settings.SOLR_BUDGET_SPLIT_BY_SECTOR, settings.SOLR_FCDO_BUDGET]
         if draft:
             solr_cores += [settings.SOLR_DRAFT_ACTIVITY, settings.SOLR_DRAFT_BUDGET, settings.SOLR_DRAFT_RESULT,
                            settings.SOLR_DRAFT_TRANSACTION]
@@ -202,7 +214,30 @@ def convert_and_save_xml_to_processed_json(filepath, filetype, codelist, currenc
     if not settings.FCDO_INSTANCE:
         dataset_subtypes(filetype, data, json_path, draft)
 
-    return json_path, should_be_indexed, "Success"
+    json_path, success_state = _fcdo_budget(filetype, data, json_path, currencies)
+
+    return json_path, should_be_indexed, success_state
+
+
+def _fcdo_budget(filetype, data, json_path, currencies):
+    """Subfunction to trigger the fcdo_budget data processing if the instance is FCDO.
+
+    Args:
+        filetype (string): "activity" or "organisation"
+        data (dict): The processed IATI Activity dataset
+        json_path (string): The path to where the original XML file was saved
+        currencies (Currencies): instance of the Currencies class to be used for currency conversion
+
+    Returns:
+        string | boolean, string: the original json path if success else False, result message
+    """
+    if settings.FCDO_INSTANCE:
+        try:
+            fcdo_budget(filetype, data, json_path, currencies)
+        except Exception as e:
+            logging.error(f'Error processing fcdo budget: type: {type(e)} -- stack: {e}')
+            return False, "Unable to process fcdo budget."
+    return json_path, "Success"
 
 
 def _custom_fields(filetype, data, codelist, currencies, dataset_metadata, filepath):
@@ -271,13 +306,17 @@ def dataset_subtypes(filetype, data, json_path, draft=False):
     :param json_path: The filepath of the json file.
     """
     # Activity subtypes
-    subtypes = dict()
+    subtypes = {}
     if filetype == 'activity':
         for key in activity_subtypes.AVAILABLE_SUBTYPES:
             subtypes[key] = []
 
-        subtypes = activity_subtypes.extract_all_subtypes(subtypes, data)
-        index_subtypes(json_path, subtypes, draft)
+        try:
+            subtypes = activity_subtypes.extract_all_subtypes(subtypes, data)
+            index_subtypes(json_path, subtypes, draft)
+        except Exception as e:
+            logging.error(f'dataset_subtypes:: Error extracting subtypes from {json_path}:\n{e}')
+            raise e
 
 
 def index_subtypes(json_path, subtypes, draft=False):
@@ -292,18 +331,41 @@ def index_subtypes(json_path, subtypes, draft=False):
     :return: None
     """
     for subtype in subtypes:
-        subtype_json_path = f'{os.path.splitext(json_path)[0]}_{subtype}.json'
+        if draft:
+            solr_url = activity_subtypes.AVAILABLE_DRAFT_SUBTYPES[subtype]
+        else:
+            solr_url = activity_subtypes.AVAILABLE_SUBTYPES[subtype]
         try:
-            try:
-                with open(subtype_json_path, 'w') as json_file:
-                    json.dump(subtypes[subtype], json_file)
-            except Exception as e:
-                logging.error(f'Error writing to {subtype_json_path}: type: {type(e)} -- stack: {e}')
-                continue
-            if draft:
-                solr_url = activity_subtypes.AVAILABLE_DRAFT_SUBTYPES[subtype]
-            else:
-                solr_url = activity_subtypes.AVAILABLE_SUBTYPES[subtype]
-            index_to_core(solr_url, subtype_json_path, remove=True)
+            asyncio.run(index_all_chunks(subtypes, subtype, json_path, solr_url))
         except Exception as e:
             logging.error(f'Error indexing subtype {subtype} of {json_path}:\n{e}')
+            raise e
+
+
+async def _index_subtype_async(chunk, subtype_json_path, solr_url, i, total, subtype, executor):
+    loop = asyncio.get_running_loop()
+    start = datetime.now()
+    await loop.run_in_executor(executor, _index_subtype, chunk, subtype_json_path, solr_url)
+    logging.debug(f"index_subtypes:: Indexed {subtype} - {i}:{i+len(chunk)} of {total} in {datetime.now() - start}")
+
+
+async def index_all_chunks(subtypes, subtype, json_path, solr_url):
+    index_chunk_size = 1000
+    tasks = []
+    total = len(subtypes[subtype])
+    executor = ThreadPoolExecutor()
+    for i in range(0, total, index_chunk_size):
+        subtype_json_path = f'{os.path.splitext(json_path)[0]}_chunk{i}_{subtype}.json'
+        chunk = subtypes[subtype][i:i+index_chunk_size]
+        tasks.append(_index_subtype_async(chunk, subtype_json_path, solr_url, i, total, subtype, executor))
+    await asyncio.gather(*tasks)
+
+
+def _index_subtype(subtype_data, subtype_json_path, solr_url):
+    try:
+        with open(subtype_json_path, 'w') as json_file:
+            json.dump(subtype_data, json_file)
+    except Exception as e:
+        logging.error(f'Error writing to {subtype_json_path}: type: {type(e)} -- stack: {e}')
+        raise e
+    index_to_core(solr_url, subtype_json_path, remove=True)

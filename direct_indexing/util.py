@@ -185,7 +185,8 @@ def remove_custom(name, org, dataset_id):
         _rm(base_metadata, name, '.json')
 
         d_id = dataset_id
-        for core in ['activity', 'transaction', 'result', 'budget']:
+        for core in ['activity', 'transaction', 'result', 'budget',
+                     'transaction_trimmed', 'transaction_sdgs', 'budget_split_by_sector', 'fcdo_budget']:
             solr = pysolr.Solr(f'{settings.SOLR_URL}/{core}', always_commit=True, timeout=300)
             if len(solr.search(f'dataset.id:"{d_id}"')) > 0:
                 solr.delete(q=f'dataset.id:"{d_id}"')
@@ -197,8 +198,8 @@ def remove_custom(name, org, dataset_id):
     return "The dataset has been removed."
 
 
-def _rm(dir, name, ext=""):
-    file_to_remove = os.path.join(dir, f"{name}{ext}")
+def _rm(_dir, name, ext=""):
+    file_to_remove = os.path.join(_dir, f"{name}{ext}")
     if os.path.exists(file_to_remove):
         os.remove(file_to_remove)
 

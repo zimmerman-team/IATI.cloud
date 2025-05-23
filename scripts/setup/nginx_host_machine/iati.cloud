@@ -163,11 +163,108 @@ server {
 		proxy_set_header Authorization "Basic REPL_AUTH";
         }
 
+	# SOLR Transaction Trimmed
+        location /api/v2/transaction-trimmed {
+                if ($args !~* fl=) {
+                        set $args $1$args&fl=*;
+		}
+                if ($http_origin !~ '^http?://(localhost)') {
+                        add_header 'Access-Control-Allow-Origin' '*';
+                        add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';
+                        add_header 'Access-Control-Allow-Headers' 'DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range';
+                        add_header 'Access-Control-Expose-Headers' 'Content-Length,Content-Range';
+                }
+                include proxy_params;
+                proxy_pass http://localhost:8983/solr/transaction_trimmed/select;
+		proxy_set_header Authorization "Basic REPL_AUTH";
+        }
+
+        # SOLR FCDO Budget
+        location /api/v2/fcdo-budget {
+                # budget
+                if ($args !~* fl=) {
+                        set $args $1$args&fl=*;
+		}
+		if ($http_origin !~ '^http?://(localhost)') {
+                        add_header 'Access-Control-Allow-Origin' '*';
+                        add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';
+                        add_header 'Access-Control-Allow-Headers' 'DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range';
+                        add_header 'Access-Control-Expose-Headers' 'Content-Length,Content-Range';
+                }
+                include proxy_params;
+                proxy_pass http://localhost:8983/solr/fcdo_budget/select;
+		proxy_set_header Authorization "Basic REPL_AUTH";
+        }
+
+	# SOLR Budget split by sector
+        location /api/v2/budget-split-by-sector {
+                if ($args !~* fl=) {
+                        set $args $1$args&fl=*;
+		}
+                if ($http_origin !~ '^http?://(localhost)') {
+                        add_header 'Access-Control-Allow-Origin' '*';
+                        add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';
+                        add_header 'Access-Control-Allow-Headers' 'DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range';
+                        add_header 'Access-Control-Expose-Headers' 'Content-Length,Content-Range';
+                }
+                include proxy_params;
+                proxy_pass http://localhost:8983/solr/budget_split_by_sector/select;
+		proxy_set_header Authorization "Basic REPL_AUTH";
+        }
+
+	# SOLR Transaction SDGs
+        location /api/v2/transaction-sdgs {
+                if ($args !~* fl=) {
+                        set $args $1$args&fl=*;
+		}
+                if ($http_origin !~ '^http?://(localhost)') {
+                        add_header 'Access-Control-Allow-Origin' '*';
+                        add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';
+                        add_header 'Access-Control-Allow-Headers' 'DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range';
+                        add_header 'Access-Control-Expose-Headers' 'Content-Length,Content-Range';
+                }
+                include proxy_params;
+                proxy_pass http://localhost:8983/solr/transaction_sdgs/select;
+		proxy_set_header Authorization "Basic REPL_AUTH";
+        }
+
+	# SOLR Budget split by sector
+        location /api/v2/budget-split-by-sector {
+                if ($args !~* fl=) {
+                        set $args $1$args&fl=*;
+		}
+                if ($http_origin !~ '^http?://(localhost)') {
+                        add_header 'Access-Control-Allow-Origin' '*';
+                        add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';
+                        add_header 'Access-Control-Allow-Headers' 'DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range';
+                        add_header 'Access-Control-Expose-Headers' 'Content-Length,Content-Range';
+                }
+                include proxy_params;
+                proxy_pass http://localhost:8983/solr/budget_split_by_sector/select;
+		proxy_set_header Authorization "Basic REPL_AUTH";
+        }
+
+	# SOLR Transaction SDGs
+        location /api/v2/transaction-sdgs {
+                if ($args !~* fl=) {
+                        set $args $1$args&fl=*;
+		}
+                if ($http_origin !~ '^http?://(localhost)') {
+                        add_header 'Access-Control-Allow-Origin' '*';
+                        add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';
+                        add_header 'Access-Control-Allow-Headers' 'DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range';
+                        add_header 'Access-Control-Expose-Headers' 'Content-Length,Content-Range';
+                }
+                include proxy_params;
+                proxy_pass http://localhost:8983/solr/transaction_sdgs/select;
+		proxy_set_header Authorization "Basic REPL_AUTH";
+        }
+
         # DRAFT CORES
         # These cores are only accessible by the client providing the header: Authorization "Basic REPL_AUTH";
         # Replacing REPL_AUTH with the base64 encoded user:pass
         # SOLR DRAFT Activity
-        location /api/v2/draft_activity {
+        location /api/v2/draft-activity {
                 if ($request_uri ~ .*tr=activity-xml.xsl*) {
                         set $args $1$args&fl=last_updated_datetime,default_lang,default_currency,humanitarian,hierarchy,linked_data_uri,iati_identifier,reporting_org_xml,title_xml,description_xml,participating_org_xml,other_identifier_xml,activity_status_xml,activity_date_xml,contact_info_xml,activity_scope_xml,recipient_country_xml,recipient_region_xml,location_xml,sector_xml,tag_xml,country_budget_items_xml,policy_marker_xml,humanitarian_scope_xml,collaboration_type_xml,default_flow_type_xml,default_finance_type_xml,default_aid_type_xml,default_tied_status_xml,budget_xml,planned_disbursement_xml,capital_spend_xml,transaction_xml,document_link_xml,related_activity_xml,legacy_data_xml,conditions_xml,result_xml,crs_add_xml,fss_xml;
                 }
@@ -185,7 +282,7 @@ server {
         }
 
 	# SOLR DRAFT Transaction
-        location /api/v2/draft_transaction {
+        location /api/v2/draft-transaction {
                 if ($args !~* fl=) {
                         set $args $1$args&fl=iati_identifier,reporting_org_ref,title_narrative,activity_description_narrative,activity_recipient_country_code,activity_recipient_region_code,activity_sector_code,transaction_ref,transaction_humanitarian,transaction_type,transaction_date_iso_date,transaction_value_currency,transaction_value_date,transaction_value,transaction_usd_conversion_rate,transaction_value_usd,transaction_provider_org_ref,transaction_provider_org_provider_activity_id,transaction_provider_org_type,transaction_provider_org_narrative_text,transaction_receiver_org_ref,transaction_receiver_org_receiver_activity_id,transaction_receiver_org_type,transaction_receiver_org_narrative,transaction_disburstment_channel_code,transaction_sector_vocabulary,transaction_sector_code,transaction_recipient_country_code,transaction_recipient_region_code,transaction_flow_type_code,transaction_finance_type_code,transaction_aid_type_code,transaction_aid_type_vocabulary,transaction_tied_status_code,transaction_description_narrative,default_currency,default_lang,default_flow_type_code,default_aid_type_code,default_tied_status_code,default_humanitarian;
 		}
@@ -199,8 +296,53 @@ server {
                 proxy_pass http://localhost:8983/solr/draft_transaction/select;
         }
 
+        # SOLR DRAFT Transaction Trimmed
+        location /api/v2/draft-transaction-trimmed {
+                if ($args !~* fl=) {
+                        set $args $1$args&fl=*;
+		}
+        if ($http_origin !~ '^http?://(localhost)') {
+                        add_header 'Access-Control-Allow-Origin' '*';
+                        add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';
+                        add_header 'Access-Control-Allow-Headers' 'DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range';
+                        add_header 'Access-Control-Expose-Headers' 'Content-Length,Content-Range';
+                }
+                include proxy_params;
+                proxy_pass http://localhost:8983/solr/draft_transaction_trimmed/select;
+        }
+
+        # SOLR DRAFT Budget split by sector
+        location /api/v2/draft-budget-split-by-sector {
+                if ($args !~* fl=) {
+                        set $args $1$args&fl=*;
+		}
+        if ($http_origin !~ '^http?://(localhost)') {
+                        add_header 'Access-Control-Allow-Origin' '*';
+                        add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';
+                        add_header 'Access-Control-Allow-Headers' 'DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range';
+                        add_header 'Access-Control-Expose-Headers' 'Content-Length,Content-Range';
+                }
+                include proxy_params;
+                proxy_pass http://localhost:8983/solr/draft_budget_split_by_sector/select;
+        }
+
+        # SOLR DRAFT Transaction SDGs
+        location /api/v2/draft-transaction-sdgs {
+                if ($args !~* fl=) {
+                        set $args $1$args&fl=*;
+		}
+        if ($http_origin !~ '^http?://(localhost)') {
+                        add_header 'Access-Control-Allow-Origin' '*';
+                        add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';
+                        add_header 'Access-Control-Allow-Headers' 'DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range';
+                        add_header 'Access-Control-Expose-Headers' 'Content-Length,Content-Range';
+                }
+                include proxy_params;
+                proxy_pass http://localhost:8983/solr/draft_transaction_sdgs/select;
+        }
+
 	# SOLR DRAFT Organisation
-        location /api/v2/draft_organisation {
+        location /api/v2/draft-organisation {
                 if ($http_origin !~ '^http?://(localhost)') {
                         add_header 'Access-Control-Allow-Origin' '*';
                         add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';
@@ -212,7 +354,7 @@ server {
         }
 
 	# SOLR DRAFT Dataset
-        location /api/v2/draft_dataset {
+        location /api/v2/draft-dataset {
                 if ($http_origin !~ '^http?://(localhost)') {
                         add_header 'Access-Control-Allow-Origin' '*';
                         add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';
@@ -224,7 +366,7 @@ server {
         }
 
 	# SOLR DRAFT Result
-        location /api/v2/draft_result {
+        location /api/v2/draft-result {
                 if ($http_origin !~ '^http?://(localhost)') {
                         add_header 'Access-Control-Allow-Origin' '*';
                         add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';
@@ -236,7 +378,7 @@ server {
         }
 
 	# SOLR DRAFT Budget
-        location /api/v2/draft_budget {
+        location /api/v2/draft-budget {
                 # budget
                 if ($args !~* fl=) {
                         set $args $1$args&fl=iati_identifier,reporting_org_ref,reporting_org_type,recipient_country_code,recipient_country_name,budget_type,budget_status,budget_period_start_iso_date,budget_period_end_iso_date,budget_value_currency,budget_value_date,budget_value,budget_usd_conversion_rate,budget_value_usd,default_currency,default_lang,default_flow_type_code,default_tied_status_code,default_aid_type_code,default_humanitarian;
