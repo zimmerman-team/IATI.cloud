@@ -679,21 +679,27 @@ def _get_is_sdg(sector, tag):
 
 
 def _get_budget_year(budget):
+    """Retrieve the year from the budget value date.
+    Requested for AIDA for simple year filtering.
+    Includes a fallback to regex for non-standard formats,
+    which are not critical errors in the IATI validator.
+
+    Args:
+        budget (dict): budget item from etree
+
+    Returns:
+        int | None: the budget's value-date's year
+    """
     if not budget:
         return None
     date = budget.get('value.value-date', "")
+    if not date:
+        return None
+    # Try parsing ISO format
     try:
-        budget_year = datetime.datetime.fromisoformat(date).year
+        return datetime.datetime.fromisoformat(date).year
     except (ValueError, TypeError):
-        try:
-            if '-' in date:
-                match = re.search(r'\d{4}-|-\d{4}', date)
-                budget_year = match.group().strip('-') if match else None
-            if '/' in date:
-                match = re.search(r'\d{4}/|/\d{4}', date)
-                budget_year = match.group().strip('/') if match else None
-            if not budget_year:
-                budget_year = None
-        except (AttributeError, TypeError):
-            budget_year = None
-    return budget_year
+        pass
+    # Fallback: Extract the first 4-digit series using regex.
+    match = re.search(r'\b\d{4}\b', date)
+    return int(match.group()) if match else None
