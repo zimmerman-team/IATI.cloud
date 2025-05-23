@@ -8,7 +8,8 @@ from celery import shared_task
 from django.conf import settings
 
 from direct_indexing import direct_indexing, util
-from direct_indexing.metadata.dataset import subtask_process_dataset, retry_unindexed_valid_datasets as _retry
+from direct_indexing.metadata.dataset import retry_unindexed_valid_datasets as _retry
+from direct_indexing.metadata.dataset import subtask_process_dataset
 from direct_indexing.metadata.util import retrieve
 # Currently disabled import for datadump check
 # from direct_indexing.util import datadump_success
