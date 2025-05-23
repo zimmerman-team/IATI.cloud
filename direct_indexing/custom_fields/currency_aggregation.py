@@ -122,10 +122,7 @@ def connect_to_mongo(data, insert_one=False):
         client = MongoClient(settings.MONGO_CONNECTION_STRING)
         db = client.activities
         pid = os.getpid()
-        logging.info(f"connect_to_mongo:: Mongo connection PID: {pid}")
         dba = db[f"activity_{pid}"]
-        logging.info(f"connect_to_mongo:: Mongo connection established to activity_{pid}.")
-        # dba = db.activity
         dba.drop()  # Drop previous dataset
         if insert_one:
             _mongo_insert_one(dba, data)  # Insert the data one by one, last resort.
