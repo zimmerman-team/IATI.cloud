@@ -113,6 +113,11 @@ def _update_drop(update, draft, dataset):
         for url in solr_cores:
             conn = Solr(url)
             conn.delete(q='%s:"%s"' % ('dataset.id', dataset['id']), commit=True)
+            # Safety drop for AIDA published files originally directly published, now picked up by main process
+            if "aida.tools" in dataset['resources'][0]['url']:
+                ds_id = f"{dataset.get('organization', '').get('name', '')}-{dataset.get('name', '')}"
+                if ds_id != "-":
+                    conn.delete(q='%s:"%s"' % ('dataset.id', ds_id), commit=True)
 
 
 def index_dataset(internal_url, dataset_filetype, codelist, currencies, dataset_metadata, draft=False):

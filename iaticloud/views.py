@@ -166,7 +166,7 @@ def _make_dataset_resources(ds_name, ds_url):
             "created": datetime.datetime.now(),
             "description": "",
             "format": "IATI-XML",
-            "hash": "AIDATMPHASH",
+            "hash": "",  # By leaving the hash empty, the main process updater can recognise this dataset as updated.
             "id": None,
             "last_modified": None,
             "metadata_modified": datetime.datetime.now(),
