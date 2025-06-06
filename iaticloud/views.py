@@ -103,6 +103,99 @@ def aida_drop(request):
         return JsonResponse({"status": status}, status=code)
 
 
+def _make_dataset_organization(dso, publisher):
+    """
+    Process the organization from a dataset, applying default values for missing fields.
+
+    Args:
+        dso: Organization from the dataset
+        publisher: The publisher name
+
+    Returns:
+        Organization with default values applied for missing fields
+    """
+    return {
+        "id": dso.get("id", None),
+        "name": publisher,
+        "title": dso.get("title", publisher),
+        "type": dso.get("type", "organization"),
+        "description": dso.get("description", ""),
+        "image_url": dso.get("image_url", None),
+        "created": dso.get("created", datetime.datetime.now()),
+        "is_organization": dso.get("is_organization", True),
+        "approval_status": dso.get("approval_status", "approved"),
+        "state": dso.get("active", "active"),
+    }
+
+
+def _make_dataset_extras(dse):
+    """
+    Process the extras list from a dataset, applying default values for missing fields.
+
+    Args:
+        dse: List of extras from the dataset
+
+    Returns:
+        List of extras with default values applied for missing fields
+    """
+    # Define default extras
+    default_extras = {
+        "activity_count": "0",
+        "country": "",
+        "data_updated": datetime.datetime.now(),
+        "filetype": "activity",
+        "iati_version": "2.03",
+        "language": "",
+        "secondary_publisher": "",
+        "validation_status": "Unknown"
+    }
+
+    # Update defaults with any provided values
+    for extra in dse:
+        if "key" in extra and "value" in extra:
+            default_extras[extra["key"]] = extra["value"]
+
+    # Convert back to list format
+    return [{"key": k, "value": v} for k, v in default_extras.items()]
+
+
+def _make_dataset_resources(dsr, ds_name, ds_url):
+    """
+    Process the resources list from a dataset, applying default values for missing fields.
+
+    Args:
+        dsr: List of resources from the dataset
+        ds_name: The name of the dataset
+        ds_url: The URL to the dataset
+
+    Returns:
+        List of resources with default values applied for missing fields
+    """
+    return [
+        {
+            "cache_last_updated": dsr.get("cache_last_updated", None),
+            "cache_url": dsr.get("cache_url", None),
+            "created": dsr.get("created", datetime.datetime.now()),
+            "description": dsr.get("description", ""),
+            "format": dsr.get("format", "IATI-XML"),
+            "hash": dsr.get("hash", "updateme"),
+            "id": dsr.get("id", None),
+            "last_modified": dsr.get("last_modified", None),
+            "metadata_modified": dsr.get("metadata_modified", datetime.datetime.now()),
+            "mimetype": dsr.get("mimetype", ""),
+            "mimetype_inner": dsr.get("mimetype_inner", None),
+            "name": dsr.get("name", ds_name),
+            "package_id": dsr.get("package_id", ""),
+            "position": dsr.get("position", 0),
+            "resource_type": dsr.get("resource_type", None),
+            "size": dsr.get("size", 0),
+            "state": dsr.get("state", "active"),
+            "url": ds_url,
+            "url_type": dsr.get("url_type", None)
+        }
+    ]
+
+
 def _make_dataset(dataset, publisher, ds_name, ds_url):
     """
     Used this dataset to define the base requirements:
@@ -110,11 +203,20 @@ def _make_dataset(dataset, publisher, ds_name, ds_url):
 
     Reconstruct a complete iati registry dataset object from the provided dataset,
     in case of any missing fields.
+
+    Args:
+        dataset: The dataset to process
+        publisher: The publisher name
+        ds_name: The name of the dataset
+        ds_url: The URL to the dataset
+
+    Returns:
+        A complete iati registry dataset object with default values applied for missing fields
     """
     try:
-        dso = dataset.get("organization")
-        dse = dataset.get("extras")
-        dsr = dataset.get("resources")[0]
+        dso = _make_dataset_organization(dataset.get("organization", {}), publisher)
+        dse = _make_dataset_extras(dataset.get("extras", []))
+        dsr = _make_dataset_resources(dataset.get("resources", [{}])[0], ds_name, ds_url)
 
         return {
             "author": dataset.get("author", None),
@@ -133,18 +235,7 @@ def _make_dataset(dataset, publisher, ds_name, ds_url):
             "notes": dataset.get("notes", ""),
             "num_resources": dataset.get("num_resources", 1),
             "num_tags": dataset.get("num_tags", 0),
-            "organization": {
-                "id": dso.get("id", None),
-                "name": publisher,
-                "title": dso.get("title", publisher),
-                "type": dso.get("type", "organization"),
-                "description": dso.get("description", ""),
-                "image_url": dso.get("image_url", None),
-                "created": dso.get("created", datetime.datetime.now()),
-                "is_organization": dso.get("is_organization", True),
-                "approval_status": dso.get("approval_status", "approved"),
-                "state": dso.get("active", "active"),
-            },
+            "organization": dso,
             "owner_org": dataset.get("owner_org", None),
             "private": dataset.get("private", False),
             "state": dataset.get("state", "active"),
@@ -152,63 +243,8 @@ def _make_dataset(dataset, publisher, ds_name, ds_url):
             "type": dataset.get("type", "dataset"),
             "url": dataset.get("url", None),
             "version": dataset.get("version", None),
-            "extras": [
-                {
-                    "key": dse[0].get("key", "activity_count"),
-                    "value": dse[0].get("value", "0")
-                },
-                {
-                    "key": dse[1].get("key", "country"),
-                    "value": dse[1].get("value", "")
-                },
-                {
-                    "key": dse[2].get("key", "data_updated"),
-                    "value": dse[2].get("value", datetime.datetime.now())
-                },
-                {
-                    "key": dse[3].get("key", "filetype"),
-                    "value": dse[3].get("value", "activity")
-                },
-                {
-                    "key": dse[4].get("key", "iati_version"),
-                    "value": dse[4].get("value", "2.03")
-                },
-                {
-                    "key": dse[5].get("key", "language"),
-                    "value": dse[5].get("value", "")
-                },
-                {
-                    "key": dse[6].get("key", "secondary_publisher"),
-                    "value": dse[6].get("value", "")
-                },
-                {
-                    "key": dse[7].get("key", "validation_status"),
-                    "value": dse[7].get("value", "Unknown")
-                }
-            ],
-            "resources": [
-                {
-                    "cache_last_updated": dsr.get("cache_last_updated", None),
-                    "cache_url": dsr.get("cache_url", None),
-                    "created": dsr.get("created", datetime.datetime.now()),
-                    "description": dsr.get("description", ""),
-                    "format": dsr.get("format", "IATI-XML"),
-                    "hash": dsr.get("hash", "updateme"),
-                    "id": dsr.get("id", None),
-                    "last_modified": dsr.get("last_modified", None),
-                    "metadata_modified": dsr.get("metadata_modified", datetime.datetime.now()),
-                    "mimetype": dsr.get("mimetype", ""),
-                    "mimetype_inner": dsr.get("mimetype_inner", None),
-                    "name": dsr.get("name", ds_name),
-                    "package_id": dsr.get("package_id", ""),
-                    "position": dsr.get("position", 0),
-                    "resource_type": dsr.get("resource_type", None),
-                    "size": dsr.get("size", 0),
-                    "state": dsr.get("state", "active"),
-                    "url": ds_url,
-                    "url_type": dsr.get("url_type", None)
-                }
-            ],
+            "extras": dse,
+            "resources": dsr,
             "tags": dataset.get("tags", []),
             "groups": dataset.get("groups", []),
             "relationships_as_subject": dataset.get("relationships_as_subject", []),
