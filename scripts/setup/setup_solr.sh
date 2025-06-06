@@ -21,6 +21,6 @@ sudo docker compose up solr -d
 print_status "Starting Solr for the first time, generating all relevant files..."
 sleep 60
 sudo bash ./scripts/update_solr_cores.sh
-sudo docker stop solr
+sudo docker compose down
 
 print_status "Done setting up Solr."

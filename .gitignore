@@ -1,6 +1,7 @@
 # # Project specific
 # Solr mounted docker directory
 solr_mount_dir
+solr_data
 
 # # General gitignore
 # Environments
