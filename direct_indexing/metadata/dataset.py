@@ -224,17 +224,15 @@ def prepare_update(dataset_metadata):
     # create a list of new and updated datasets.
     existing_datasets = _get_existing_datasets()
     new_datasets = [d for d in dataset_metadata if d['id'] not in existing_datasets]
-    old_datasets = [d for d in dataset_metadata if d['id'] in existing_datasets]
+    old_datasets = [
+        d for d in dataset_metadata if
+        d['id'] in existing_datasets
+        or f"{d.get('organization', {}).get('name', '')}-{d.get('name', '')}" in existing_datasets
+    ]
     changed_datasets = [
         d for d in old_datasets if
         ('' if 'hash' not in d['resources'][0] else d['resources'][0]['hash']) != existing_datasets[d['id']]['hash']
     ]
     updated_datasets = new_datasets + changed_datasets
-    # This filters out datasets that are indexed by AIDA already, and will not need to be re-indexed.
-    # Optionally, we could disable this feature to just re-index the dataset when it pops into the regular processing.
-    updated_datasets = [
-        d for d in updated_datasets
-        if not d.get('iati_cloud_aida_sourced', False)
-    ]
     updated_datasets_bools = [False for _ in new_datasets] + [True for _ in changed_datasets]
     return updated_datasets, updated_datasets_bools

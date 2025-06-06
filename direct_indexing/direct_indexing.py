@@ -80,8 +80,8 @@ def aida_index(dataset, publisher, ds_name, ds_url, draft=False):
     return result, code
 
 
-def aida_drop(ds_name, draft):
-    result, code = aida_drop_dataset(ds_name, draft)
+def aida_drop(ds_id, draft):
+    result, code = aida_drop_dataset(ds_id, draft)
     logging.info(f"aida_drop:: result: {result}")
     return result, code
 
