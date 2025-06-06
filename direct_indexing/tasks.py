@@ -48,12 +48,10 @@ def start(update=False, drop=False, draft=False):
         # Stop the process and send a message to Celery Flower
         logging.info("start:: Error clearing the direct indexing cores, check your Solr instance.")
         return "Error clearing the direct indexing cores, check your Solr instance."
-    if drop:
-        direct_indexing.drop_removed_data()
     # Run the publisher metadata indexing subtask
     subtask_publisher_metadata.delay()
     # Run the dataset metadata indexing subtask
-    subtask_dataset_metadata.delay(update)
+    subtask_dataset_metadata.delay(update, drop)
     # Send clear message to Celery Flower
     logging.info("start:: Both the publisher and dataset metadata indexing have begun.")
     return "Both the publisher and dataset metadata indexing have begun."
@@ -98,9 +96,9 @@ def subtask_publisher_metadata():
 
 
 @shared_task
-def subtask_dataset_metadata(update=False):
+def subtask_dataset_metadata(update=False, drop=False):
     logging.info("subtask_dataset_metadata:: Starting dataset metadata indexing.")
-    result = direct_indexing.run_dataset_metadata(update)
+    result = direct_indexing.run_dataset_metadata(update, drop)
     logging.info(f"subtask_dataset_metadata:: result: {result}")
     return result
 

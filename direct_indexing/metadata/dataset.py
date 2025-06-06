@@ -8,6 +8,7 @@ from celery import shared_task
 from django.conf import settings
 
 from direct_indexing.custom_fields.models import codelists
+from direct_indexing.direct_indexing import drop_removed_data
 from direct_indexing.metadata.util import download_dataset, retrieve
 from direct_indexing.processing import dataset as dataset_processing
 
@@ -129,7 +130,7 @@ def aida_drop_dataset(dataset_name, draft=False):
     return "Dataset deleted successfully", 200
 
 
-def index_datasets_and_dataset_metadata(update, force_update, fresh=settings.FRESH):
+def index_datasets_and_dataset_metadata(update, force_update, fresh=settings.FRESH, drop=False):
     """
     Steps:
     . Download all the datasets
@@ -152,6 +153,9 @@ def index_datasets_and_dataset_metadata(update, force_update, fresh=settings.FRE
         download_dataset()
     logging.info('index_datasets_and_dataset_metadata:: -- Retrieve metadata')
     dataset_metadata = retrieve(settings.METADATA_DATASET_URL, 'dataset_metadata', force_update, fresh)
+
+    if drop:
+        drop_removed_data()
 
     # If we are updating instead of refreshing, retrieve dataset ids
     if update:

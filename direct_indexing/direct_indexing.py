@@ -68,8 +68,8 @@ def run_publisher_metadata():
     return result
 
 
-def run_dataset_metadata(update, force_update=False):
-    result = index_datasets_and_dataset_metadata(update, force_update)
+def run_dataset_metadata(update, force_update=False, drop=False):
+    result = index_datasets_and_dataset_metadata(update, force_update, drop)
     logging.info(f"run_dataset_metadata:: result: {result}")
     return result
 
