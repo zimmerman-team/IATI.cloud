@@ -163,6 +163,7 @@ The following is a table of fields in the .env file, their function and whether 
 | `MEM_SOLR_MIN` | Solr | The minimum available Solr memory | Optional |
 | `MEM_SOLR_MAX` | Solr | The maximum available Solr memory | Optional |
 | `SOLR_VOLUME` | Solr | Either the 'docker volume' solr_data, or a local mount directory like "SOLR_VOLUME="/my/storage/iati.cloud/direct_indexing/solr_mount_dir" | Optional |
+| `SOLR_FOLLOWER_VOLUME` | Solr | Either the 'docker volume' solr_follower_data, or a local mount directory like "SOLR_follower_VOLUME="/my/storage/iati.cloud/direct_indexing/solr_follower_mount_dir" | Optional |
 | `CELERYFLOWER_USER` | Celery | Flower access | Must |
 | `CELERYFLOWER_PASSWORD` | Celery | Flower access | Must |
 | `DJANGO_SUPERUSER_USERNAME` | Django | Initial superuser account | Must |

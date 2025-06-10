@@ -70,6 +70,29 @@ services:
       # such as a mounted directory, for example /opt/solr_data or /mnt/HC_Volume_N/solr_data
       - ${SOLR_VOLUME}:/bitnami
 
+  solr-replication:
+    container_name: solr-replication
+    restart: always
+    image: bitnami/solr:9.8.1
+    ports:
+      - 8983:8983
+    env_file:
+      - .env
+    environment:
+      # core setup
+      - SOLR_CORES=activity,budget,budget_split_by_sector,dataset,organisation,publisher,result,transaction,transaction_trimmed,transaction_sdgs,draft_activity,draft_budget,draft_budget_split_by_sector,draft_dataset,draft_organisation,draft_result,draft_transaction,draft_transaction_trimmed,draft_transaction_sdgs
+      # There is a SOLR_CORE_CONF_DIR available but currently only allows 1 config, we need 1 per core.
+      - SOLR_OPTS=-Xms${MEM_SOLR_MIN}g -Xmx${MEM_SOLR_MAX}g
+      # Authentication
+      - SOLR_ENABLE_AUTHENTICATION=yes
+      - SOLR_ADMIN_USERNAME=${SOLR_ADMIN_USERNAME}
+      - SOLR_ADMIN_PASSWORD=${SOLR_ADMIN_PASSWORD}
+    volumes:
+      # Mount the image's /bitnami directory to the provided SOLR_FOLLOWER_VOLUME in .env,
+      # default value is solr_follower_data, a docker volume. Alternatively change it to a directory on the local drive,
+      # such as a mounted directory, for example /opt/solr_follower_data or /mnt/HC_Volume_N/solr_data
+      - ${SOLR_FOLLOWER_VOLUME}:/bitnami
+
   iaticloud:
     container_name: iaticloud
     restart: always
@@ -167,3 +190,4 @@ volumes:
   rabbitmq_data:
   mongo_data:
   solr_data:
+  solr_follower_data:
