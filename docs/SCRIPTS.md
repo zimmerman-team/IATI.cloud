@@ -18,6 +18,7 @@ There are many scripts available. The following is a table displaying their func
 | [setup/setup_environment](../scripts/setup/setup_environment.sh) | Setup | Creates .env files, symlinks the selected one, requests information such as usernames and passwords and updates the .env files | No |
 | [setup/setup_nginx](../scripts/setup/setup_nginx.sh) | Setup | Updates the machine's Nginx configuration with the required information | Yes |
 | [setup/setup_solr_mount_dir](../scripts/setup/setup_solr_mount_dir.sh) | Setup | Creates the solr_data directory where the user wants to mount their solr data. | Yes |
+| [setup/setup_solr_replication](../scripts/setup/setup_solr_replication.sh) | Setup | Creates the solr_replication_data directory where the user wants to mount their solr data. | Yes |
 | [setup/setup_solr](../scripts/setup/setup_solr.sh) | Setup | Creates and triggers the configuration of the Solr docker image | Yes |
 | [setup/setup_ssl](../scripts/setup/setup_ssl.sh) | Setup | Sets up SSL certificates for the Nginx configuration | Yes |
 | [setup/setup_swap](../scripts/setup/setup_swap.sh) | Setup | Sets up swap space | Yes |
