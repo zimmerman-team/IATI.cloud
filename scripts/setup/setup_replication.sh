@@ -16,7 +16,7 @@ Options:
 
 if ask_for_confirmation "Do you want to set up a mounted solr directory?"; then
   if [ -f .env ]; then
-    mounted_dir=$(grep -E '^SOLR_FOLLOWER_VOLUME=' .env | cut -d '=' -f2 | tr -d '"' | sed 's|/solr_data$||')
+    mounted_dir=$(grep -E '^SOLR_FOLLOWER_VOLUME=' .env | cut -d '=' -f2 | tr -d '"' | sed 's|/solr_follower_data$||')
     echo "Using the value of SOLR_FOLLOWER_VOLUME in the .env file is: $mounted_dir"
   else
     echo ".env file not found, unable to show SOLR_FOLLOWER_VOLUME value in .env."

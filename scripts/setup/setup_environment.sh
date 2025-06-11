@@ -31,6 +31,8 @@ read -sp "Enter your password. For Solr, Mongo and their connections, please omi
 read -p "Enter your django superuser email: " email
 read -p "Enter your IATI.cloud domain (ex.: localhost, datastore.iati.cloud):  " domain
 read -p "Enter your trusted origin (ex.: https://datastore.iati.cloud): " trusted_origin
+read -p "Enter your Solr Volume (ex.: solr_data or /mnt/HC_Volume_N/solr_data): " solr_volume
+read -p "Enter your Solr Follower Volume (ex.: solr_follower_data or /mnt/HC_Volume_N/solr_follower_data): " solr_follower_volume
 echo "Thank you for your input. The script will now proceed to update the .env files."
 # Base64 encode the username and password for Solr
 encoded_base64=$(echo -n "$username:$password" | base64)
@@ -49,6 +51,8 @@ for env_file in "${env_files[@]}"; do
   sed -i "s|SOLR_ADMIN_PASSWORD=exampl3_123!|SOLR_ADMIN_PASSWORD=$password|g" "$env_file"
   sed -i "s|SOLR_BASE_URL=http://admin_example:exampl3_123!@solr:8983/solr|SOLR_BASE_URL=http://$username:$password@solr:8983/solr|g" "$env_file"  # NOQA
   sed -i "s|SOLR_AUTH_ENCODED=YWRtaW5fZXhhbXBsZTpleGFtcGwzXzEyMyE=|SOLR_AUTH_ENCODED=$encoded_base64|g" "$env_file"
+  sed -i "s|SOLR_VOLUME=solr_data|SOLR_VOLUME=$solr_volume|g" "$env_file"
+  sed -i "s|SOLR_FOLLOWER_VOLUME=solr_follower_data|SOLR_FOLLOWER_VOLUME=$solr_follower_volume|g" "$env_file"
   # Flower
   sed -i "s/CELERYFLOWER_USER=zz/CELERYFLOWER_USER=$username/g" "$env_file"
   sed -i "s/CELERYFLOWER_PASSWORD=zz/CELERYFLOWER_PASSWORD=$password/g" "$env_file"
