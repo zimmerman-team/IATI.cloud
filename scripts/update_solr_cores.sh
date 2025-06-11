@@ -45,7 +45,7 @@ cores=(activity budget dataset organisation publisher result transaction transac
 if ask_for_confirmation "Do you want to set up Solr Replication?"; then
   # Ask the user for their solr host, in format such as 10.0.0.1:8983/solr
   read -p "Enter your Solr allowedUrls host(s, multiple separated by a comma) (e.g., 10.0.0.1:8983/solr,10.0.0.2:8984/solr): " solr_hosts
-  sudo docker exec "$solr_container_id" sed -i "s#<str name="allowUrls">\${solr.allowUrls:}</str>#<str name="allowUrls">\${solr.allowUrls:$solr_hosts}</str>#g" "$bitnami_solr/solr.xml"
+  sudo docker exec "$solr_container_id" sed -i "s#<str name=\"allowUrls\">\${solr.allowUrls:}</str>#<str name=\"allowUrls\">\${solr.allowUrls:$solr_hosts}</str>#g" "$bitnami_solr/solr.xml"
   read -p "Enter your Solr replication target host (replication leader IP, e.g., '10.0.0.1' or 'solr' if both leader and follower run on the same machine): " solr_replication_target
   no_replication=false
 else
@@ -77,7 +77,7 @@ setup_replication() {
   source='  <requestHandler name="/query" class="solr.SearchHandler">'
 
   # Use shell escaping for newlines in the replacement strings
-  follower='  <requestHandler name="/replication" class="solr.ReplicationHandler">\n    <lst name="slave">\n      <str name="masterUrl">http://REPL_HOST:8983/solr/REPL_CORE</str>\n      <str name="pollInterval">00:00:30</str>\n      <str name="httpBasicAuthUser">REPL_USER</str>\n      <str name="httpBasicAuthPassword">REPL_PASS</str>\n    </lst>\n  </requestHandler>\n\n  <requestHandler name="/query" class="solr.SearchHandler">'
+  follower='  <requestHandler name="/replication" class="solr.ReplicationHandler">\n    <lst name="slave">\n      <str name="masterUrl">http://REPL_HOST:8983/solr/REPL_CORE</str>\n      <str name="pollInterval">00:05:00</str>\n      <str name="httpBasicAuthUser">REPL_USER</str>\n      <str name="httpBasicAuthPassword">REPL_PASS</str>\n      <str name="compression">internal</str>\n    </lst>\n  </requestHandler>\n\n  <requestHandler name="/query" class="solr.SearchHandler">'
   leader='  <requestHandler name="/replication" class="solr.ReplicationHandler">\n    <lst name="master">\n      <str name="replicateAfter">commit</str>\n      <str name="replicateAfter">optimize</str>\n    </lst>\n  </requestHandler>\n\n  <requestHandler name="/query" class="solr.SearchHandler">'
 
   if [ "$solr_role" == "follower" ]; then
