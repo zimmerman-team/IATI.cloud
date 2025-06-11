@@ -20,3 +20,8 @@ echo "Fixing permissions..."
 sudo chown -R 1001:root "$CORE_PATH/data/index"
 
 echo "Done syncing core '$CORE_NAME'."
+
+cd /home/zim/IATI.cloud
+sudo docker compose down
+sudo docker compose up -d solr-replication
+echo "Restarted Solr Replication service."
