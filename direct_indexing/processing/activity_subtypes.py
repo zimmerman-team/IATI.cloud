@@ -187,9 +187,10 @@ def _trim_transactions(transactions):
             lang = t.get('lang', None)
             default_tied_status = t.get('default-tied-status', None)
             collaboration_type = t.get('collaboration-type', None)
-            sector = _trim_field(t.get('sector', None), ['code', 'vocabulary', 'narrative'])
+            sector = _trim_field(t.get('sector', None), ['code', 'percentage', 'vocabulary', 'narrative'])
             policy_marker = _trim_field(t.get('policy-marker', None), ['code'])
-            participating_org = _trim_field(t.get('participating-org', None), ['ref'])
+            policy_marker_combined = t.get('policy-marker.combined', None)
+            participating_org = _trim_field(t.get('participating-org', None), ['ref', 'narrative'])
             title = _trim_field(t.get('title', None), ['narrative'])
             recipient_country_name = t.get('recipient-country.name', None)
             dataset_id = t.get('dataset.id', None)
@@ -225,6 +226,7 @@ def _trim_transactions(transactions):
                 'collaboration-type': collaboration_type,
                 'sector': sector,
                 'policy-marker': policy_marker,
+                'policy-marker.combined': policy_marker_combined,
                 'participating-org': participating_org,
                 'title': title,
                 'recipient-country.name': recipient_country_name,

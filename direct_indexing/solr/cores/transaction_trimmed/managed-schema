@@ -538,6 +538,13 @@
   <field name="participating-org.ref" type="non_case_sensitive" multiValued="true"/>
   <field name="title.narrative" type="iati_narrative"/>
   <field name="recipient-country.name" type="text_general"/>
+
+  <!-- Stefanos provided MFA-used fields -->
+  <field name="participating-org.narrative" type="iati_narrative"/>
+  <field name="policy-marker.combined" type="text_general"/>
+  <field name="sector.percentage" type="pdoubles"/>
+  <field name="transaction.recipient-region.code" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+
   <!-- Additional dataset fields -->
   <field name="dataset.id" type="text_general_single" indexed="true" stored="true" />
   <field name="dataset.name" type="text_general_single" indexed="true" stored="true" />
