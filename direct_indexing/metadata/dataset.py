@@ -129,7 +129,7 @@ def aida_drop_dataset(dataset_name, draft=False):
     return "Dataset deleted successfully", 200
 
 
-def index_datasets_and_dataset_metadata(update, force_update, fresh=settings.FRESH):
+def index_datasets_and_dataset_metadata(update, force_update, fresh=settings.FRESH, drop=False):
     """
     Steps:
     . Download all the datasets
@@ -153,6 +153,11 @@ def index_datasets_and_dataset_metadata(update, force_update, fresh=settings.FRE
     logging.info('index_datasets_and_dataset_metadata:: -- Retrieve metadata')
     dataset_metadata = retrieve(settings.METADATA_DATASET_URL, 'dataset_metadata', force_update, fresh)
 
+    if drop:
+        # Local import here, to prevent recursive import loops from direct_indexing.direct_indexing
+        from direct_indexing.direct_indexing import drop_removed_data
+        drop_removed_data()
+
     # If we are updating instead of refreshing, retrieve dataset ids
     if update:
         dataset_metadata, update_bools = prepare_update(dataset_metadata)
@@ -160,7 +165,7 @@ def index_datasets_and_dataset_metadata(update, force_update, fresh=settings.FRE
     logging.info('index_datasets_and_dataset_metadata:: -- Walk the metadata')
     number_of_datasets = len(dataset_metadata)
     for i, dataset in enumerate(dataset_metadata):
-        if settings.THROTTLE_DATASET and i % 100 != 0:
+        if settings.THROTTLE_DATASET and i % 500 != 0:
             continue
         logging.info(f'index_datasets_and_dataset_metadata:: --- Submitting dataset {i+1} of {number_of_datasets}')
         update_flag = update_bools[i] if update else False
@@ -220,17 +225,15 @@ def prepare_update(dataset_metadata):
     # create a list of new and updated datasets.
     existing_datasets = _get_existing_datasets()
     new_datasets = [d for d in dataset_metadata if d['id'] not in existing_datasets]
-    old_datasets = [d for d in dataset_metadata if d['id'] in existing_datasets]
+    old_datasets = [
+        d for d in dataset_metadata if
+        d['id'] in existing_datasets
+        or f"{d.get('organization', {}).get('name', '')}-{d.get('name', '')}" in existing_datasets
+    ]
     changed_datasets = [
         d for d in old_datasets if
         ('' if 'hash' not in d['resources'][0] else d['resources'][0]['hash']) != existing_datasets[d['id']]['hash']
     ]
     updated_datasets = new_datasets + changed_datasets
-    # This filters out datasets that are indexed by AIDA already, and will not need to be re-indexed.
-    # Optionally, we could disable this feature to just re-index the dataset when it pops into the regular processing.
-    updated_datasets = [
-        d for d in updated_datasets
-        if not d.get('iati_cloud_aida_sourced', False)
-    ]
     updated_datasets_bools = [False for _ in new_datasets] + [True for _ in changed_datasets]
     return updated_datasets, updated_datasets_bools

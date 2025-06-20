@@ -1,4 +1,4 @@
-from direct_indexing.processing.activity_subtypes import extract_all_subtypes, extract_subtype, process_subtype_dict
+from direct_indexing.processing.activity_subtypes import extract_all_subtypes, extract_subtype, process_subtype_dict, _get_budget_year
 
 
 def test_extract_subtype(mocker):
@@ -87,3 +87,39 @@ def test_extract_all_subtypes(mocker):
     # assert mock_index called 3 times
     assert mock_index.call_count == len(data) + 1  # +1 for the previous test
     assert mock_extract.call_count == len(data) * len(subtypes)  # 2 * 3
+
+def test_get_budget_year():
+    # Test with a valid ISO format date
+    budget = {'value.value-date': '2023-10-01'}
+    assert _get_budget_year(budget) == 2023
+
+    # Test with a valid year in a non-standard format (e.g., "2023-")
+    budget = {'value.value-date': '2023-'}
+    assert _get_budget_year(budget) == 2023
+
+    # Test with a valid year in a non-standard format (e.g., "-2023")
+    budget = {'value.value-date': '-2023'}
+    assert _get_budget_year(budget) == 2023
+
+    # Test with a valid year in a slash-separated format (e.g., "2023/10/01")
+    budget = {'value.value-date': '2023/10/01'}
+    assert _get_budget_year(budget) == 2023
+
+    # Test with an invalid date format
+    budget = {'value.value-date': 'invalid-date'}
+    assert _get_budget_year(budget) is None
+
+    # Test with an empty date
+    budget = {'value.value-date': ''}
+    assert _get_budget_year(budget) is None
+
+    # Test with no date key in the budget
+    budget = {}
+    assert _get_budget_year(budget) is None
+
+    # Test with a valid year embedded in text
+    budget = {'value.value-date': 'Budget year: 2023'}
+    assert _get_budget_year(budget) == 2023
+
+    # Test with no budget provided
+    assert _get_budget_year(None) is None
