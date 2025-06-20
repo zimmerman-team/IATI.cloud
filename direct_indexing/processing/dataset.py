@@ -316,13 +316,6 @@ def index_subtypes(json_path, subtypes, draft=False):
             raise e
 
 
-async def _index_subtype_async(chunk, subtype_json_path, solr_url, i, total, subtype, executor):
-    loop = asyncio.get_running_loop()
-    start = datetime.now()
-    await loop.run_in_executor(executor, _index_subtype, chunk, subtype_json_path, solr_url)
-    logging.debug(f"index_subtypes:: Indexed {subtype} - {i}:{i+len(chunk)} of {total} in {datetime.now() - start}")
-
-
 async def index_all_chunks(subtypes, subtype, json_path, solr_url):
     index_chunk_size = 1000
     tasks = []
@@ -333,6 +326,13 @@ async def index_all_chunks(subtypes, subtype, json_path, solr_url):
         chunk = subtypes[subtype][i:i+index_chunk_size]
         tasks.append(_index_subtype_async(chunk, subtype_json_path, solr_url, i, total, subtype, executor))
     await asyncio.gather(*tasks)
+
+
+async def _index_subtype_async(chunk, subtype_json_path, solr_url, i, total, subtype, executor):
+    loop = asyncio.get_running_loop()
+    start = datetime.now()
+    await loop.run_in_executor(executor, _index_subtype, chunk, subtype_json_path, solr_url)
+    logging.debug(f"index_subtypes:: Indexed {subtype} - {i}:{i+len(chunk)} of {total} in {datetime.now() - start}")
 
 
 def _index_subtype(subtype_data, subtype_json_path, solr_url):
