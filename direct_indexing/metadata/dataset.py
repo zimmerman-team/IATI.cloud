@@ -8,7 +8,6 @@ from celery import shared_task
 from django.conf import settings
 
 from direct_indexing.custom_fields.models import codelists
-from direct_indexing.direct_indexing import drop_removed_data
 from direct_indexing.metadata.util import download_dataset, retrieve
 from direct_indexing.processing import dataset as dataset_processing
 
@@ -155,6 +154,8 @@ def index_datasets_and_dataset_metadata(update, force_update, fresh=settings.FRE
     dataset_metadata = retrieve(settings.METADATA_DATASET_URL, 'dataset_metadata', force_update, fresh)
 
     if drop:
+        # Local import here, to prevent recursive import loops from direct_indexing.direct_indexing
+        from direct_indexing.direct_indexing import drop_removed_data
         drop_removed_data()
 
     # If we are updating instead of refreshing, retrieve dataset ids
