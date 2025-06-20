@@ -265,7 +265,7 @@ def _trim_transaction_obj(transaction):
                 "description": ['narrative'],
                 "provider-org": ['narrative', 'ref'],
                 "receiver-org": ['narrative', 'ref'],
-                "sector": ['code', 'vocabulary', 'percentage', 'narrative'],
+                "sector": ['code', 'vocabulary', 'percentage'],
                 "recipient-country": ['code', 'percentage'],
                 "recipient-region": ['code', 'percentage']
             }
