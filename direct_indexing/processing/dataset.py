@@ -305,6 +305,9 @@ def index_subtypes(json_path, subtypes, draft=False):
     :return: None
     """
     for subtype in subtypes:
+        if subtype == "transaction":
+            # if subtype is transaction, we do not submit it for indexing, due to exclusive usage of transaction_trimmed
+            continue
         if draft:
             solr_url = activity_subtypes.AVAILABLE_DRAFT_SUBTYPES[subtype]
         else:
