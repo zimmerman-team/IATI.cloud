@@ -10,6 +10,8 @@ from direct_indexing.direct_indexing import aida_drop as aida_direct_drop
 from direct_indexing.direct_indexing import aida_index as aida_direct_index
 from direct_indexing.tasks import aida_async_drop, aida_async_index
 
+ISO_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
+
 
 @csrf_exempt
 def aida_index(request):
@@ -122,7 +124,7 @@ def _make_dataset_organization(publisher):
         "type": "organization",
         "description": "",
         "image_url": None,
-        "created": datetime.datetime.now(),
+        "created": datetime.datetime.now().strftime(ISO_DATE_FORMAT),
         "is_organization": True,
         "approval_status": "approved",
         "state": "active"
@@ -138,7 +140,7 @@ def _make_dataset_extras():
     """
     # Define default extras
     default_extras = {
-        "data_updated": datetime.datetime.now(),
+        "data_updated": datetime.datetime.now().strftime(ISO_DATE_FORMAT),
         "filetype": "activity",
         "iati_version": "2.03",
         "validation_status": "Success"
@@ -163,13 +165,13 @@ def _make_dataset_resources(ds_name, ds_url):
         {
             "cache_last_updated": None,
             "cache_url": None,
-            "created": datetime.datetime.now(),
+            "created": datetime.datetime.now().strftime(ISO_DATE_FORMAT),
             "description": "",
             "format": "IATI-XML",
             "hash": "",  # By leaving the hash empty, the main process updater can recognise this dataset as updated.
             "id": None,
             "last_modified": None,
-            "metadata_modified": datetime.datetime.now(),
+            "metadata_modified": datetime.datetime.now().strftime(ISO_DATE_FORMAT),
             "mimetype": "",
             "mimetype_inner": None,
             "name": ds_name,
@@ -217,8 +219,8 @@ def _make_dataset(ds_id, publisher, ds_name, ds_url):
             "license_url": None,
             "maintainer": None,
             "maintainer_email": None,
-            "metadata_created": datetime.datetime.now(),
-            "metadata_modified": datetime.datetime.now(),
+            "metadata_created": datetime.datetime.now().strftime(ISO_DATE_FORMAT),
+            "metadata_modified": datetime.datetime.now().strftime(ISO_DATE_FORMAT),
             "name": ds_name,
             "notes": "",
             "num_resources": 1,
