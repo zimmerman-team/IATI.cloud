@@ -96,7 +96,7 @@ def subtask_publisher_metadata():
 @shared_task
 def subtask_dataset_metadata(update=False, drop=False):
     logging.info("subtask_dataset_metadata:: Starting dataset metadata indexing.")
-    result = direct_indexing.run_dataset_metadata(update, drop)
+    result = direct_indexing.run_dataset_metadata(update, drop=drop)
     logging.info(f"subtask_dataset_metadata:: result: {result}")
     return result
 
