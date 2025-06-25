@@ -97,7 +97,7 @@ services:
       - ./:/app
     env_file:
       - .env
-    command: celery -A iaticloud worker -l INFO --concurrency=32 -n worker@%%h
+    command: celery -A iaticloud worker -l INFO --concurrency=12 -n worker@%%h
     restart: unless-stopped
     depends_on:
       - rabbitmq
