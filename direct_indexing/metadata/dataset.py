@@ -93,36 +93,38 @@ def _aida_download(publisher, dataset_name, dataset_url, dataset):
         raise DatasetException(f"Failed to save metadata for dataset {dataset_name}")
 
 
-def aida_drop_dataset(dataset_name, draft=False):
+def aida_drop_dataset(dataset_id, draft=False):
     """
     Function to remove any data from IATI.cloud related to a publisher's dataset.
 
-    :param publisher: The publisher name
-    :param dataset_name: The name of the dataset
+    :param id: The publisher id
+    :param draft: The draft boolean
     :return: A message indicating the result of the operation, a HTTP status code.
     """
     try:
         solr_ds = settings.SOLR_DRAFT_DATASET if draft else settings.SOLR_DATASET
         solr = pysolr.Solr(solr_ds, always_commit=True, timeout=300)
-        find_data = solr.search(f'name:"{dataset_name}"')
+        find_data = solr.search(f'id:"{dataset_id}"')
         logging.info(f"aida_drop_dataset:: dataset found: {len(find_data)}")
-        if len(find_data) > 0:
-            if len(find_data) > 1:
-                return "Multiple datasets found with this name, please contact support", 500
-            solr.delete(q=f'name:"{dataset_name}"')
+        if len(find_data) <= 0:
+            return "No dataset found with this id", 500
+        if len(find_data) > 1:
+            return "Multiple datasets found with this id, please contact support", 500
+        solr.delete(q=f'id:"{dataset_id}"')
     except pysolr.SolrError:
         return "Apologies, but the dataset could not be fully deleted, please contact support", 500
 
     try:
-        core_list = ['activity', 'transaction', 'result', 'budget']
+        core_list = ['activity', 'transaction', 'result', 'budget', 'budget_split_by_sector', 'organisation',
+                     'transaction_trimmed', 'transaction_sdgs']
         if draft:
             core_list = [f'draft_{core}' for core in core_list]
         for core in core_list:
             solr = pysolr.Solr(f'{settings.SOLR_URL}/{core}', always_commit=True, timeout=300)
-            find_data = solr.search(f'dataset.name:"{dataset_name}"')
+            find_data = solr.search(f'dataset.id:"{dataset_id}"')
             logging.info(f"aida_drop_dataset:: {core} found: {len(find_data)}")
             if len(find_data) > 0:
-                solr.delete(q=f'dataset.name:"{dataset_name}"')
+                solr.delete(q=f'dataset.id:"{dataset_id}"')
     except pysolr.SolrError:
         return "Apologies, but the dataset could not be fully deleted, please contact support", 500
 
@@ -228,7 +230,7 @@ def prepare_update(dataset_metadata):
     old_datasets = [
         d for d in dataset_metadata if
         d['id'] in existing_datasets
-        or f"{d.get('organization', {}).get('name', '')}-{d.get('name', '')}" in existing_datasets
+        # or f"{d.get('organization', {}).get('name', '')}-{d.get('name', '')}" in existing_datasets
     ]
     changed_datasets = [
         d for d in old_datasets if
