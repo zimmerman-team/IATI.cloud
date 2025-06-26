@@ -1,5 +1,6 @@
 import logging
 import math
+import os
 
 import bson
 from django.conf import settings
@@ -68,14 +69,22 @@ def currency_aggregation(data, insert_one=False):
         data = process_child_aggregations(data, child_aggregations, activity_indexes, aggregation_fields,
                                           child_aggregation_fields, parent_plus_child_aggregation_fields)
         # Close mongo connection
+        dba.drop()
         client.close()
 
         # Clean up data names
         data = clean_aggregation_result(data, aggregation_fields, formatted_aggregation_fields)
     except DocumentTooLarge as e:
         logging.error(f"currency_aggregation:: Document too large error: {e}")
+        dba.drop()
+        client.close()
     except PyMongoError as e:
         logging.error(f"currency_aggregation:: PyMongo Error:: {e}")
+        try:
+            dba.drop()
+            client.close()
+        except Exception as e:
+            logging.error(f"currency_aggregation:: Unable to drop db: {e}")
     data, id_found = _final_clean(data)
     return data, id_found
 
@@ -112,7 +121,8 @@ def connect_to_mongo(data, insert_one=False):
         # Connect to mongo
         client = MongoClient(settings.MONGO_CONNECTION_STRING)
         db = client.activities
-        dba = db.activity
+        pid = os.getpid()
+        dba = db[f"activity_{pid}"]
         dba.drop()  # Drop previous dataset
         if insert_one:
             _mongo_insert_one(dba, data)  # Insert the data one by one, last resort.

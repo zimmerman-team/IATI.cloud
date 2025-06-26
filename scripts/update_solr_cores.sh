@@ -39,7 +39,7 @@ read solr_container_id
 
 # Update the managed-schema and xslt files for all cores
 bitnami_solr=/bitnami/solr/server/solr
-cores=(activity budget dataset organisation publisher result transaction)
+cores=(activity budget dataset organisation publisher result transaction transaction_trimmed transaction_sdgs budget_split_by_sector)
 
 for core in "${cores[@]}"; do
   src="./direct_indexing/solr/cores/$core/managed-schema"
@@ -69,12 +69,12 @@ if ask_for_confirmation "Are the files locally mounted (f.ex. on extra mounted v
   df -h
   # Read the .env file and extract the value of SOLR_VOLUME
   if [ -f .env ]; then
-    SOLR_VOLUME=$(grep -E '^SOLR_VOLUME=' .env | cut -d '=' -f2)
-    echo "The value of SOLR_VOLUME in the .env file is: $SOLR_VOLUME"
+    mounted_dir=$(grep -E '^SOLR_VOLUME=' .env | cut -d '=' -f2 | tr -d '"' | sed 's|/solr_data$||')
+    echo "Using the value of SOLR_VOLUME in the .env file is: $SOLR_VOLUME"
   else
     echo ".env file not found, unable to show SOLR_VOLUME value in .env."
+    read -p "Enter your mounted directory: " mounted_dir
   fi
-  read -p "Enter your mounted directory: " mounted_dir
   sudo chown -R 1001:root $mounted_dir/solr_data
 else
   print_status "Skipping updating the ownership value of the mounted solr directory."

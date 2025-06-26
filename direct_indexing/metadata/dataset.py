@@ -93,43 +93,45 @@ def _aida_download(publisher, dataset_name, dataset_url, dataset):
         raise DatasetException(f"Failed to save metadata for dataset {dataset_name}")
 
 
-def aida_drop_dataset(dataset_name, draft=False):
+def aida_drop_dataset(dataset_id, draft=False):
     """
     Function to remove any data from IATI.cloud related to a publisher's dataset.
 
-    :param publisher: The publisher name
-    :param dataset_name: The name of the dataset
+    :param id: The publisher id
+    :param draft: The draft boolean
     :return: A message indicating the result of the operation, a HTTP status code.
     """
     try:
         solr_ds = settings.SOLR_DRAFT_DATASET if draft else settings.SOLR_DATASET
         solr = pysolr.Solr(solr_ds, always_commit=True, timeout=300)
-        find_data = solr.search(f'name:"{dataset_name}"')
+        find_data = solr.search(f'id:"{dataset_id}"')
         logging.info(f"aida_drop_dataset:: dataset found: {len(find_data)}")
-        if len(find_data) > 0:
-            if len(find_data) > 1:
-                return "Multiple datasets found with this name, please contact support", 500
-            solr.delete(q=f'name:"{dataset_name}"')
+        if len(find_data) <= 0:
+            return "No dataset found with this id", 500
+        if len(find_data) > 1:
+            return "Multiple datasets found with this id, please contact support", 500
+        solr.delete(q=f'id:"{dataset_id}"')
     except pysolr.SolrError:
         return "Apologies, but the dataset could not be fully deleted, please contact support", 500
 
     try:
-        core_list = ['activity', 'transaction', 'result', 'budget']
+        core_list = ['activity', 'transaction', 'result', 'budget', 'budget_split_by_sector', 'organisation',
+                     'transaction_trimmed', 'transaction_sdgs']
         if draft:
             core_list = [f'draft_{core}' for core in core_list]
         for core in core_list:
             solr = pysolr.Solr(f'{settings.SOLR_URL}/{core}', always_commit=True, timeout=300)
-            find_data = solr.search(f'dataset.name:"{dataset_name}"')
+            find_data = solr.search(f'dataset.id:"{dataset_id}"')
             logging.info(f"aida_drop_dataset:: {core} found: {len(find_data)}")
             if len(find_data) > 0:
-                solr.delete(q=f'dataset.name:"{dataset_name}"')
+                solr.delete(q=f'dataset.id:"{dataset_id}"')
     except pysolr.SolrError:
         return "Apologies, but the dataset could not be fully deleted, please contact support", 500
 
     return "Dataset deleted successfully", 200
 
 
-def index_datasets_and_dataset_metadata(update, force_update, fresh=settings.FRESH):
+def index_datasets_and_dataset_metadata(update, force_update, fresh=settings.FRESH, drop=False):
     """
     Steps:
     . Download all the datasets
@@ -153,6 +155,11 @@ def index_datasets_and_dataset_metadata(update, force_update, fresh=settings.FRE
     logging.info('index_datasets_and_dataset_metadata:: -- Retrieve metadata')
     dataset_metadata = retrieve(settings.METADATA_DATASET_URL, 'dataset_metadata', force_update, fresh)
 
+    if drop:
+        # Local import here, to prevent recursive import loops from direct_indexing.direct_indexing
+        from direct_indexing.direct_indexing import drop_removed_data
+        drop_removed_data()
+
     # If we are updating instead of refreshing, retrieve dataset ids
     if update:
         dataset_metadata, update_bools = prepare_update(dataset_metadata)
@@ -160,7 +167,7 @@ def index_datasets_and_dataset_metadata(update, force_update, fresh=settings.FRE
     logging.info('index_datasets_and_dataset_metadata:: -- Walk the metadata')
     number_of_datasets = len(dataset_metadata)
     for i, dataset in enumerate(dataset_metadata):
-        if settings.THROTTLE_DATASET and i % 100 != 0:
+        if settings.THROTTLE_DATASET and i % 500 != 0:
             continue
         logging.info(f'index_datasets_and_dataset_metadata:: --- Submitting dataset {i+1} of {number_of_datasets}')
         update_flag = update_bools[i] if update else False
@@ -220,17 +227,15 @@ def prepare_update(dataset_metadata):
     # create a list of new and updated datasets.
     existing_datasets = _get_existing_datasets()
     new_datasets = [d for d in dataset_metadata if d['id'] not in existing_datasets]
-    old_datasets = [d for d in dataset_metadata if d['id'] in existing_datasets]
+    old_datasets = [
+        d for d in dataset_metadata if
+        d['id'] in existing_datasets
+        # or f"{d.get('organization', {}).get('name', '')}-{d.get('name', '')}" in existing_datasets
+    ]
     changed_datasets = [
         d for d in old_datasets if
         ('' if 'hash' not in d['resources'][0] else d['resources'][0]['hash']) != existing_datasets[d['id']]['hash']
     ]
     updated_datasets = new_datasets + changed_datasets
-    # This filters out datasets that are indexed by AIDA already, and will not need to be re-indexed.
-    # Optionally, we could disable this feature to just re-index the dataset when it pops into the regular processing.
-    updated_datasets = [
-        d for d in updated_datasets
-        if not d.get('iati_cloud_aida_sourced', False)
-    ]
     updated_datasets_bools = [False for _ in new_datasets] + [True for _ in changed_datasets]
     return updated_datasets, updated_datasets_bools

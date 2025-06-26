@@ -1,7 +1,9 @@
+import asyncio
 import json
 import logging
 import os
 import xml.etree.ElementTree as ET
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 
 from django.conf import settings
@@ -102,13 +104,20 @@ def _index_dataset_metadata_to_dataset_core(dataset, draft, should_be_indexed, i
 def _update_drop(update, draft, dataset):
     # drop the old data from solr
     if update:
-        solr_cores = [settings.SOLR_ACTIVITY, settings.SOLR_BUDGET, settings.SOLR_RESULT, settings.SOLR_TRANSACTION]
+        solr_cores = [settings.SOLR_ACTIVITY, settings.SOLR_BUDGET, settings.SOLR_RESULT,
+                      settings.SOLR_TRANSACTION, settings.SOLR_TRANSACTION_TRIMMED, settings.SOLR_TRANSACTION_SDGS,
+                      settings.SOLR_BUDGET_SPLIT_BY_SECTOR]
         if draft:
             solr_cores += [settings.SOLR_DRAFT_ACTIVITY, settings.SOLR_DRAFT_BUDGET, settings.SOLR_DRAFT_RESULT,
                            settings.SOLR_DRAFT_TRANSACTION]
         for url in solr_cores:
             conn = Solr(url)
             conn.delete(q='%s:"%s"' % ('dataset.id', dataset['id']), commit=True)
+            # Safety drop for AIDA published files originally directly published, now picked up by main process
+            if "aida.tools" in dataset['resources'][0]['url']:
+                ds_id = f"{dataset.get('organization', '').get('name', '')}-{dataset.get('name', '')}"
+                if ds_id != "-":
+                    conn.delete(q='%s:"%s"' % ('dataset.id', ds_id), commit=True)
 
 
 def index_dataset(internal_url, dataset_filetype, codelist, currencies, dataset_metadata, draft=False):
@@ -271,13 +280,17 @@ def dataset_subtypes(filetype, data, json_path, draft=False):
     :param json_path: The filepath of the json file.
     """
     # Activity subtypes
-    subtypes = dict()
+    subtypes = {}
     if filetype == 'activity':
         for key in activity_subtypes.AVAILABLE_SUBTYPES:
             subtypes[key] = []
 
-        subtypes = activity_subtypes.extract_all_subtypes(subtypes, data)
-        index_subtypes(json_path, subtypes, draft)
+        try:
+            subtypes = activity_subtypes.extract_all_subtypes(subtypes, data)
+            index_subtypes(json_path, subtypes, draft)
+        except Exception as e:
+            logging.error(f'dataset_subtypes:: Error extracting subtypes from {json_path}:\n{e}')
+            raise e
 
 
 def index_subtypes(json_path, subtypes, draft=False):
@@ -292,18 +305,44 @@ def index_subtypes(json_path, subtypes, draft=False):
     :return: None
     """
     for subtype in subtypes:
-        subtype_json_path = f'{os.path.splitext(json_path)[0]}_{subtype}.json'
+        if subtype == "transaction":
+            # if subtype is transaction, we do not submit it for indexing, due to exclusive usage of transaction_trimmed
+            continue
+        if draft:
+            solr_url = activity_subtypes.AVAILABLE_DRAFT_SUBTYPES[subtype]
+        else:
+            solr_url = activity_subtypes.AVAILABLE_SUBTYPES[subtype]
         try:
-            try:
-                with open(subtype_json_path, 'w') as json_file:
-                    json.dump(subtypes[subtype], json_file)
-            except Exception as e:
-                logging.error(f'Error writing to {subtype_json_path}: type: {type(e)} -- stack: {e}')
-                continue
-            if draft:
-                solr_url = activity_subtypes.AVAILABLE_DRAFT_SUBTYPES[subtype]
-            else:
-                solr_url = activity_subtypes.AVAILABLE_SUBTYPES[subtype]
-            index_to_core(solr_url, subtype_json_path, remove=True)
+            asyncio.run(index_all_chunks(subtypes, subtype, json_path, solr_url))
         except Exception as e:
             logging.error(f'Error indexing subtype {subtype} of {json_path}:\n{e}')
+            raise e
+
+
+async def index_all_chunks(subtypes, subtype, json_path, solr_url):
+    index_chunk_size = 1000
+    tasks = []
+    total = len(subtypes[subtype])
+    executor = ThreadPoolExecutor()
+    for i in range(0, total, index_chunk_size):
+        subtype_json_path = f'{os.path.splitext(json_path)[0]}_chunk{i}_{subtype}.json'
+        chunk = subtypes[subtype][i:i+index_chunk_size]
+        tasks.append(_index_subtype_async(chunk, subtype_json_path, solr_url, i, total, subtype, executor))
+    await asyncio.gather(*tasks)
+
+
+async def _index_subtype_async(chunk, subtype_json_path, solr_url, i, total, subtype, executor):
+    loop = asyncio.get_running_loop()
+    start = datetime.now()
+    await loop.run_in_executor(executor, _index_subtype, chunk, subtype_json_path, solr_url)
+    logging.debug(f"index_subtypes:: Indexed {subtype} - {i}:{i+len(chunk)} of {total} in {datetime.now() - start}")
+
+
+def _index_subtype(subtype_data, subtype_json_path, solr_url):
+    try:
+        with open(subtype_json_path, 'w') as json_file:
+            json.dump(subtype_data, json_file)
+    except Exception as e:
+        logging.error(f'Error writing to {subtype_json_path}: type: {type(e)} -- stack: {e}')
+        raise e
+    index_to_core(solr_url, subtype_json_path, remove=True)

@@ -8,7 +8,8 @@ from celery import shared_task
 from django.conf import settings
 
 from direct_indexing import direct_indexing, util
-from direct_indexing.metadata.dataset import subtask_process_dataset, retry_unindexed_valid_datasets as _retry
+from direct_indexing.metadata.dataset import retry_unindexed_valid_datasets as _retry
+from direct_indexing.metadata.dataset import subtask_process_dataset
 from direct_indexing.metadata.util import retrieve
 # Currently disabled import for datadump check
 # from direct_indexing.util import datadump_success
@@ -47,12 +48,10 @@ def start(update=False, drop=False, draft=False):
         # Stop the process and send a message to Celery Flower
         logging.info("start:: Error clearing the direct indexing cores, check your Solr instance.")
         return "Error clearing the direct indexing cores, check your Solr instance."
-    if drop:
-        direct_indexing.drop_removed_data()
     # Run the publisher metadata indexing subtask
     subtask_publisher_metadata.delay()
     # Run the dataset metadata indexing subtask
-    subtask_dataset_metadata.delay(update)
+    subtask_dataset_metadata.delay(update, drop)
     # Send clear message to Celery Flower
     logging.info("start:: Both the publisher and dataset metadata indexing have begun.")
     return "Both the publisher and dataset metadata indexing have begun."
@@ -67,23 +66,21 @@ def aida_async_index(dataset, publisher, ds_name, ds_url, draft=False):
         - dataset.name: The name of the dataset
         - url: The url to the dataset
     """
-    logging.info("aida_async_index:: Starting task in aida_queue.")
-    logging.info(f"aida_async_index:: Dataset: {dataset}")
+    logging.info(f"aida_async_index:: Starting task in aida_queue. Indexing Dataset: {dataset}")
     result = direct_indexing.aida_index(dataset, publisher, ds_name, ds_url, draft)
     logging.info(f"aida_async_index:: result: {result}")
     return result
 
 
 @shared_task(queue="aida_queue")
-def aida_async_drop(ds_name, draft=False):
+def aida_async_drop(ds_id, draft=False):
     """
     This function is used to drop AIDA data.
     Expects a dict with the following field:
         - name: The name of the dataset
     """
-    logging.info("aida_async_drop:: Starting task in aida_queue.")
-    logging.info(f"aida_async_index:: Dataset: {ds_name}")
-    result = direct_indexing.aida_drop(ds_name, draft)
+    logging.info(f"aida_async_drop:: Starting task in aida_queue. Dropping Dataset: {ds_id}")
+    result = direct_indexing.aida_drop(ds_id, draft)
     logging.info(f"aida_async_drop:: result: {result}")
     return result
 
@@ -97,9 +94,9 @@ def subtask_publisher_metadata():
 
 
 @shared_task
-def subtask_dataset_metadata(update=False):
+def subtask_dataset_metadata(update=False, drop=False):
     logging.info("subtask_dataset_metadata:: Starting dataset metadata indexing.")
-    result = direct_indexing.run_dataset_metadata(update)
+    result = direct_indexing.run_dataset_metadata(update, drop=drop)
     logging.info(f"subtask_dataset_metadata:: result: {result}")
     return result
 

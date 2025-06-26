@@ -29,7 +29,8 @@ def clear_indices(draft=False):
     Clear all indices as indicated by the 'cores' variable.
     """
     try:
-        cores = ['dataset', 'publisher', 'activity', 'transaction', 'budget', 'result', 'organisation']
+        cores = ['dataset', 'publisher', 'activity', 'transaction', 'budget', 'result',
+                 'organisation', 'transaction_trimmed', 'transaction_sdgs', 'budget_split_by_sector']
         if draft:
             cores = [f'draft_{core}' for core in cores]
         for core in cores:
@@ -67,8 +68,8 @@ def run_publisher_metadata():
     return result
 
 
-def run_dataset_metadata(update, force_update=False):
-    result = index_datasets_and_dataset_metadata(update, force_update)
+def run_dataset_metadata(update, force_update=False, drop=False):
+    result = index_datasets_and_dataset_metadata(update, force_update, drop=drop)
     logging.info(f"run_dataset_metadata:: result: {result}")
     return result
 
@@ -79,8 +80,8 @@ def aida_index(dataset, publisher, ds_name, ds_url, draft=False):
     return result, code
 
 
-def aida_drop(ds_name, draft):
-    result, code = aida_drop_dataset(ds_name, draft)
+def aida_drop(ds_id, draft):
+    result, code = aida_drop_dataset(ds_id, draft)
     logging.info(f"aida_drop:: result: {result}")
     return result, code
 
@@ -91,7 +92,7 @@ def drop_removed_data():
     existing = []
 
     # Get the datasets that have been indexed
-    url = f'{settings.SOLR_DATASET}/select?fl=name%2Cid%2Ciati_cloud_indexed%2Ciati_cloud_custom&indent=true&q.op=OR&q=*%3A*&rows=10000000'  # NOQA: E501
+    url = f'{settings.SOLR_DATASET}/select?fl=name%2Cid%2Ciati_cloud_indexed%2Ciati_cloud_custom%2Ciati_cloud_aida_sourced&indent=true&q.op=OR&q=*%3A*&rows=10000000'  # NOQA: E501
     data = requests.get(url)
     data = data.json()['response']['docs']
     if len(data) == 0:
@@ -105,11 +106,12 @@ def drop_removed_data():
             existing.append(dataset['id'])
 
     for d in data:
-        if 'iati_cloud_custom' not in d and d['id'] not in existing:
+        if 'iati_cloud_custom' not in d and 'iati_cloud_aida_sourced' not in d and d['id'] not in existing:
             dropped_list.append(d['id'])
 
     # For every core with dataset data, delete the data for the dropped datasets identified with the dataset.id field
-    for core in ['activity', 'transaction', 'result', 'budget']:
+    for core in ['activity', 'transaction', 'result', 'budget',
+                 'transaction_trimmed', 'transaction_sdgs', 'budget_split_by_sector']:
         solr = pysolr.Solr(f'{settings.SOLR_URL}/{core}', always_commit=True, timeout=300)
         for d_id in dropped_list:
             if len(solr.search(f'dataset.id:"{d_id}"')) > 0:

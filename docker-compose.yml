@@ -57,7 +57,7 @@ services:
       - .env
     environment:
       # core setup
-      - SOLR_CORES=activity,budget,dataset,organisation,publisher,result,transaction,draft_activity,draft_budget,draft_dataset,draft_organisation,draft_result,draft_transaction
+      - SOLR_CORES=activity,budget,budget_split_by_sector,dataset,organisation,publisher,result,transaction,transaction_trimmed,transaction_sdgs,draft_activity,draft_budget,draft_budget_split_by_sector,draft_dataset,draft_organisation,draft_result,draft_transaction,draft_transaction_trimmed,draft_transaction_sdgs
       # There is a SOLR_CORE_CONF_DIR available but currently only allows 1 config, we need 1 per core.
       - SOLR_OPTS=-Xms${MEM_SOLR_MIN}g -Xmx${MEM_SOLR_MAX}g
       # Authentication
@@ -97,7 +97,7 @@ services:
       - ./:/app
     env_file:
       - .env
-    command: celery -A iaticloud worker -l INFO --concurrency=32 -n worker@%%h
+    command: celery -A iaticloud worker -l INFO --concurrency=12 -n worker@%%h
     restart: unless-stopped
     depends_on:
       - rabbitmq
