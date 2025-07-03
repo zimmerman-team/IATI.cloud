@@ -16,11 +16,15 @@ def activity_dates(data):
 
     :param data: reference to the activity in the data
     """
-    if 'activity-date' in data:
-        if type(data['activity-date']) is dict:
-            data['activity-date'] = [data['activity-date']]
-        for date in data['activity-date']:
-            data = extract_activity_dates(date, data)
+    if 'activity-date' not in data:
+        return data
+
+    if isinstance(data['activity-date'], dict):
+        data['activity-date'] = [data['activity-date']]
+
+    for date in data['activity-date']:
+        data = extract_activity_dates(date, data)
+
     return data
 
 

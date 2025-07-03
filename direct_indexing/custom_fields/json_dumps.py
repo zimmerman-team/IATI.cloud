@@ -33,16 +33,17 @@ JSON_FIELDS = [
 
 def add_json_dumps(data):
     for activity in data:
-        for field in JSON_FIELDS:
-            if field not in activity:
-                continue
+        fields_to_process = [f for f in JSON_FIELDS if f in activity]
+        for field in fields_to_process:
             if isinstance(activity[field], list):
                 _json_dump_list(activity, field)
             else:
                 try:
                     activity[f'json.{field}'] = json.dumps(activity[field])
                 except Exception as e:
-                    logging.error(f"Error serializing {field}: type: {type(e)} stack: {e}")
+                    logging.error(
+                        f"Error serializing {field}: type: {type(e)} stack: {e}"
+                    )
 
 
 def _json_dump_list(activity, field):

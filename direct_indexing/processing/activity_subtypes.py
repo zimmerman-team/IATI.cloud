@@ -1,17 +1,19 @@
 from django.conf import settings
 
-from direct_indexing.custom_fields.indexing_manytomany_relations import index_many_to_many_relations
+from direct_indexing.custom_fields.indexing_manytomany_relations import (
+    index_many_to_many_relations,
+)
 
 AVAILABLE_SUBTYPES = {
     'transaction': settings.SOLR_TRANSACTION_URL,
     'budget': settings.SOLR_BUDGET_URL,
-    'result': settings.SOLR_RESULT_URL
+    'result': settings.SOLR_RESULT_URL,
 }
 
 AVAILABLE_DRAFT_SUBTYPES = {
     'transaction': settings.SOLR_DRAFT_TRANSACTION_URL,
     'budget': settings.SOLR_DRAFT_BUDGET_URL,
-    'result': settings.SOLR_DRAFT_RESULT_URL
+    'result': settings.SOLR_DRAFT_RESULT_URL,
 }
 
 
@@ -27,7 +29,11 @@ def extract_subtype(activity, subtype):
     :param subtype: the subtype to extract
     :return: the extracted subtype as a list
     """
-    if subtype not in AVAILABLE_SUBTYPES or subtype not in activity:
+    if subtype not in AVAILABLE_SUBTYPES:
+        return []
+
+    subtype_data = activity.get(subtype)
+    if not subtype_data:
         return []  # Make sure we do not return any data when there is none.
 
     # Create a list of the extracted subtypes
@@ -43,14 +49,14 @@ def extract_subtype(activity, subtype):
             f'{each_subtype}.value-usd.conversion-rate',
             f'{each_subtype}.value-usd.conversion-currency',
             f'{each_subtype}.value-usd-type',
-            f'json.{each_subtype}'
+            f'json.{each_subtype}',
         ]
     # Define the list of custom fields which relate to a specific subtype
     include_fields = [
         f'{subtype}.value-usd',
         f'{subtype}.value-usd.conversion-rate',
         f'{subtype}.value-usd.conversion-currency',
-        f'json.{subtype}'
+        f'json.{subtype}',
     ]
 
     # get subtype
@@ -64,13 +70,17 @@ def extract_subtype(activity, subtype):
         # Get the value of the subtype element into a new dict with the key being the subtype.
         subtype_dict = {subtype: dict(subtype_element)}
         for key in activity:
-            subtype_dict = process_subtype_dict(subtype_dict, key, i, activity, exclude_fields, include_fields)
+            subtype_dict = process_subtype_dict(
+                subtype_dict, key, i, activity, exclude_fields, include_fields
+            )
         subtype_list.append(subtype_dict)
 
     return subtype_list
 
 
-def process_subtype_dict(subtype_dict, key, i, activity, exclude_fields, include_fields):
+def process_subtype_dict(
+    subtype_dict, key, i, activity, exclude_fields, include_fields
+):
     """
     Process the subtype dict.
 
@@ -82,18 +92,20 @@ def process_subtype_dict(subtype_dict, key, i, activity, exclude_fields, include
     :param include_fields: the fields to include
     """
     if key in AVAILABLE_SUBTYPES:
-        pass  # Drop the other subtypes, in case of transaction we drop result and budget.
+        return subtype_dict  # Drop the other subtypes, in case of transaction we drop result and budget.
     elif key in exclude_fields:
-        pass  # drop the customized other fields
+        return subtype_dict  # drop the customized other fields
     elif key in include_fields:
         # extract the single value for the current index of the subtype from the multivalued content field
         if type(activity[key]) is list:
-            if i <= len(activity[key]):  # ensure we are not out of bounds
+            if i < len(activity[key]):  # ensure we are not out of bounds
                 subtype_dict[key] = activity[key][i]
         else:
             subtype_dict[key] = activity[key]
     else:
-        subtype_dict[key] = activity[key]  # keep additional activity fields for querying and filtering
+        subtype_dict[key] = activity[
+            key
+        ]  # keep additional activity fields for querying and filtering
 
     return subtype_dict
 
@@ -106,7 +118,7 @@ def extract_all_subtypes(subtypes, data):
     :param data: the activities to extract the subtypes from.
     :return: the extracted subtypes
     """
-    if type(data) is not list:
+    if not isinstance(data, list):
         data = [data]
     for activity in data:
         index_many_to_many_relations(activity)

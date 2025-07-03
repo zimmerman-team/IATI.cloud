@@ -8,9 +8,10 @@ def title_narrative_first(data):
 
     :param data: reference to the activity in the data
     """
-    if type(data) not in [dict, OrderedDict]:
+    if not isinstance(data, (dict, OrderedDict)):
         return data
-    if 'title' not in data:
+    title = data.get('title')
+    if not isinstance(title, dict):
         return data
     if 'narrative' in data['title']:
         if type(data['title']['narrative']) is list:

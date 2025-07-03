@@ -51,7 +51,9 @@ def add_date_quarter_fields(data):
     """
     # For each base field, like budget, transaction, result etc.
     for date_field in IATI_DATE_FIELDS:
-        children = date_field.split('.')  # list of all the child elements of the activity leading to the date field.
+        children = date_field.split(
+            '.'
+        )  # list of all the child elements of the activity leading to the date field.
         quarters = []
         if children[0] in data:
             quarters = recursive_date_fields(data, children[0], children[1:])

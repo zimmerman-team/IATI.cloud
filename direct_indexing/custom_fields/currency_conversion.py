@@ -10,69 +10,126 @@ def currency_conversion(data, currencies):
     :param data: reference to the activity in the data
     :param currencies: an initialized currencies object.
     """
-    default_currency = None
-    if 'default-currency' in data:
-        default_currency = data['default-currency']
+    default_currency = data.get('default-currency')
 
-    for field in ['budget', 'planned-disbursement', 'transaction']:
-        for curr_convert in ['USD', 'GBP']:
-            if field not in data:
-                continue
+    # Fields to process for currency conversion
+    fields = ['budget', 'planned-disbursement', 'transaction']
+    target_currencies = ['USD', 'GBP']
 
-            value = []
-            rate = []
-            t_type = []
-            first_currency = ""
-            if type(data[field]) is list:
-                value, rate, first_currency, t_type = \
-                    convert_currencies_from_list(data, field, currencies, default_currency,
-                                                 value, rate, first_currency, t_type, curr_convert)
-            else:  # data is a reference thus not assigned
-                value, rate, first_currency, t_type = \
-                    convert_currencies_from_dict(data, field, currencies, default_currency,
-                                                 value, rate, t_type, curr_convert)
+    for field in fields:
+        if field not in data:
+            continue
 
-            data = save_converted_value_to_data(data, value, field, rate, first_currency, t_type, curr_convert.lower())
+        for target_currency in target_currencies:
+            process_currency_conversion(
+                data, field, currencies, default_currency, target_currency
+            )
+
     return data
 
 
-def convert_currencies_from_list(data, field, currencies, default_currency, value,
-                                 rate, first_currency, t_type, curr_convert):
-    if field not in data:
-        return value, rate, first_currency, t_type
+def process_currency_conversion(
+    data, field, currencies, default_currency, target_currency
+):
+    """
+    Process currency conversion for a specific field and target currency.
 
-    for item in data[field]:
-        c_value, c_rate, currency = convert(item, currencies,
-                                            default_currency=default_currency,
-                                            target_currency=curr_convert)
-        value.append(c_value)
-        rate.append(c_rate)
-        if field == 'transaction':
-            app = 0  # Transaction type/code are 1..1 in the standard, therefore app should always be non-zero.
-            if 'transaction-type' in item and 'code' in item['transaction-type']:
-                app = item['transaction-type']['code']
-            t_type.append(app)
-        if first_currency == "":
+    :param data: reference to the activity data dictionary
+    :param field: the field to process ('budget', 'planned-disbursement', or 'transaction')
+    :param currencies: an initialized currencies object
+    :param default_currency: the default currency to use if no currency is specified
+    :param target_currency: the target currency to convert to ('USD' or 'GBP')
+    """
+    if field not in data:
+        return
+
+    # Results to collect
+    values = []
+    rates = []
+    transaction_types = []
+    first_currency = ""
+
+    # Process field based on its type
+    if isinstance(data[field], list):
+        for item in data[field]:
+            process_item(
+                item,
+                currencies,
+                default_currency,
+                target_currency,
+                field,
+                values,
+                rates,
+                transaction_types,
+                first_currency,
+            )
+    else:
+        process_item(
+            data[field],
+            currencies,
+            default_currency,
+            target_currency,
+            field,
+            values,
+            rates,
+            transaction_types,
+            first_currency,
+        )
+
+    # Save results back to data structure
+    if values:
+        target_key = target_currency.lower()
+        summed_value = sum(v for v in values if v is not None)
+
+        data[f'{field}.value-{target_key}'] = values
+        data[f'{field}.value-{target_key}.sum'] = summed_value
+        data[f'{field}.value-{target_key}.conversion-rate'] = rates
+        data[f'{field}.value-{target_key}.conversion-currency'] = first_currency
+
+        if field == 'transaction' and transaction_types:
+            data[f'{field}.value-{target_key}-type'] = transaction_types
+
+
+def process_item(
+    item,
+    currencies,
+    default_currency,
+    target_currency,
+    field,
+    values,
+    rates,
+    transaction_types,
+    first_currency,
+):
+    """
+    Process a single item for currency conversion.
+
+    :param item: the item to process
+    :param currencies: an initialized currencies object
+    :param default_currency: the default currency to use if no currency is specified
+    :param target_currency: the target currency to convert to
+    :param field: the field being processed
+    :param values: list to collect converted values
+    :param rates: list to collect conversion rates
+    :param transaction_types: list to collect transaction types (for transaction field)
+    :param first_currency: variable to store the first currency encountered
+    """
+    value, rate, currency = convert(item, currencies, default_currency, target_currency)
+
+    if value is not None:
+        values.append(value)
+        rates.append(rate)
+
+        # Store the first currency we encounter
+        if not first_currency and currency:
             first_currency = currency
 
-    return value, rate, first_currency, t_type
-
-
-def convert_currencies_from_dict(data, field, currencies, default_currency, value, rate, t_type, curr_convert):
-    if field not in data:
-        return value, rate, "", t_type
-
-    c_value, c_rate, first_currency = convert(data[field], currencies,
-                                              default_currency=default_currency,
-                                              target_currency=curr_convert)
-    value.append(c_value)
-    rate.append(c_rate)
-    if field == 'transaction':
-        app = 0  # Transaction type/code are 1..1 in the standard, therefore app should always be non-zero.
-        if 'transaction-type' in data[field] and 'code' in data[field]['transaction-type']:
-            app = data['transaction']['transaction-type']['code']
-        t_type.append(app)
-    return value, rate, first_currency, t_type
+        # Process transaction type if this is a transaction
+        if field == 'transaction':
+            transaction_type = 0
+            if 'transaction-type' in item and 'code' in item['transaction-type']:
+                transaction_type = item['transaction-type']['code']
+            transaction_types.append(transaction_type)
 
 
 def convert(data, currencies, default_currency=None, target_currency='USD'):
@@ -89,12 +146,7 @@ def convert(data, currencies, default_currency=None, target_currency='USD'):
     if 'value' not in data:
         return None, None, None
 
-    currency = None
-    if 'value.currency' in data:
-        currency = data['value.currency']
-
-    if not currency and default_currency:
-        currency = default_currency
+    currency = data.get('value.currency', default_currency)
 
     if not currency:
         return None, None, None
@@ -104,7 +156,8 @@ def convert(data, currencies, default_currency=None, target_currency='USD'):
         return None, None, None
 
     converted_value, rate = currencies.convert_currency(
-        currency, target_currency, data['value'], month, year)
+        currency, target_currency, data['value'], month, year
+    )
     return converted_value, rate, currency
 
 
@@ -115,35 +168,26 @@ def get_ym(data):
     :param data: reference to the value in the data
     :return: year and month or None if not found
     """
-    if 'value.value-date' not in data:
+    date_str = data.get('value.value-date')
+    if not date_str:
         return None, None
-    date = data['value.value-date']
-    if date is None or date == '':
+
+    try:
+        if '-' in date_str[:4] or '-' in date_str[5:7]:  # Exclude malformed dates
+            return None, None
+        # Extract year and month from date string
+        year = int(date_str[:4])
+        month = int(date_str[5:7])
+
+        # Ensure date is not in the future
+        now = datetime.datetime.now()
+        if year > now.year:
+            year = now.year
+            month = now.month
+        elif year == now.year and month > now.month:
+            month = now.month
+
+        return year, month
+    except (ValueError, IndexError):
+        # Handle malformed dates
         return None, None
-    if '-' in date[:4] or '-' in date[5:7]:  # Exclude malformed dates
-        return None, None
-    year = int(date[:4])
-    month = int(date[5:7])
-
-    # If the month is in the future, pick current year/month
-    now = datetime.datetime.now()
-    if year > now.year:
-        year = now.year
-        month = now.month
-
-    if year == now.year and month > now.month:
-        month = now.month
-
-    return year, month
-
-
-def save_converted_value_to_data(data, value, field, rate, first_currency, t_type, curr_convert):
-    if len(value) > 0:
-        summed_value = sum([0 if v is None else v for v in value])
-        data[f'{field}.value-{curr_convert}'] = value
-        data[f'{field}.value-{curr_convert}.sum'] = summed_value
-        data[f'{field}.value-{curr_convert}.conversion-rate'] = rate
-        data[f'{field}.value-{curr_convert}.conversion-currency'] = first_currency
-        if field == 'transaction':
-            data[f'{field}.value-{curr_convert}-type'] = t_type
-    return data

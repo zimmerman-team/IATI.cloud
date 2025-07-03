@@ -16,16 +16,15 @@ def get_dataset_filepath(dataset):
     :return: the filepath of the dataset, None if not found.
     """
     try:
-        org_name = None
+        org_name = org.get('name')
         path_string = None
-        if 'organization' in dataset:
-            if dataset['organization'] is None:
-                return None
-            if 'name' in dataset['organization']:
-                org_name = dataset['organization']['name']
-        if org_name:
-            dataset_name = dataset['name']  # Name is a required field
-            path_string = settings.DATA_EXTRACTED_PATH + '/' + org_name + '/' + dataset_name + '.xml'
+        org = dataset.get('organization')
+        if not org or not org_name:
+            return None
+        dataset_name = dataset['name']  # Name is a required field
+        path_string = (
+            settings.DATA_EXTRACTED_PATH + '/' + org_name + '/' + dataset_name + '.xml'
+        )
         return path_string
     except Exception:
         return None

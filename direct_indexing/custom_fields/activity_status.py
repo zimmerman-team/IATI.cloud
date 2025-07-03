@@ -8,7 +8,7 @@ def activity_status(data):
 
     :param data: reference to the activity in the data
     """
-    if type(data) not in [dict, OrderedDict]:
+    if not isinstance(data, (OrderedDict, dict)):
         return data
     if 'activity-status' not in data:
         return data

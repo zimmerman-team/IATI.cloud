@@ -1,4 +1,5 @@
 from collections import OrderedDict
+from typing import Dict
 
 LANG_STR = 'lang'
 XML_LANG_STR = '@{http://www.w3.org/XML/1998/namespace}' + LANG_STR
@@ -12,27 +13,51 @@ def recursive_attribute_cleaning(data):
     :param data: either a dict, list of ordered dicts or an ordered dict.
     :return: the cleaned dataset.
     """
-    if type(data) in [OrderedDict, dict]:
-        # Filter out any @ symbols in the keys. (@attribute to attribute)
-        data = {key.replace('@', ''): item for key, item in data.items()}
-        # Remove the lang xml tag
-        data = {key.replace(XML_LANG_STR_STRIPPED, LANG_STR): item for key, item in data.items()}
-        data = {key: item for key, item in data.items() if '._' not in key}
-        data = {key: item for key, item in data.items() if 'http' not in key}
+    if isinstance(data, (OrderedDict, dict)):
+        # Clean and normalize keys
+        cleaned_data = clean_keys(data)
 
         # A list of fields that need to be appended to the dataset
         add_fields = {}
-        for key, value in data.items():
+        for key, value in cleaned_data.items():
             add_fields = extract_key_value_fields(data, add_fields, key, value)
+
         # Add the fields to be appended to the dataset
-        for key in add_fields:
-            data[key] = add_fields[key]
+        cleaned_data.update(add_fields)
+        return cleaned_data
     # If a dataset is a list, it will contain multiple dicts, so loop over and
     # process the individual dicts.
-    elif type(data) is list:
-        for i in range(len(data)):
-            data[i] = recursive_attribute_cleaning(data[i])
+    elif isinstance(data, list):
+        return [recursive_attribute_cleaning(item) for item in data]
+
+    # Return primitive values unchanged
     return data
+
+
+def clean_keys(data: Dict) -> Dict:
+    """
+    Clean and normalize keys in a dictionary.
+
+    :param data: Dictionary with keys to clean
+    :return: Dictionary with cleaned keys
+    """
+    # Filter out any @ symbols in the keys. (@attribute to attribute)
+    result = {key.replace('@', ''): value for key, value in data.items()}
+
+    # Remove the lang xml tag
+    result = {
+        key.replace(XML_LANG_STR_STRIPPED, LANG_STR): value
+        for key, value in result.items()
+    }
+
+    # Filter out internal and http keys
+    result = {
+        key: value
+        for key, value in result.items()
+        if '._' not in key and 'http' not in key
+    }
+
+    return result
 
 
 def extract_key_value_fields(data, add_fields, key, value):
@@ -45,7 +70,13 @@ def extract_key_value_fields(data, add_fields, key, value):
     :param value: the value of the key:value pair.
     """
     if key in [
-        'iati-identifier', 'telephone', 'email', 'website', 'pos', 'channel-code', 'organisation-identifier'
+        'iati-identifier',
+        'telephone',
+        'email',
+        'website',
+        'pos',
+        'channel-code',
+        'organisation-identifier',
     ]:
         extract_literal_values(value, key, data)
     elif key in ['value', 'forecast', 'narrative']:
@@ -134,8 +165,7 @@ def list_values(element, data, key, add_fields):
         if string in element:
             add_fields[f'{key}.{string[1:]}'].append(element[string])
     if XML_LANG_STR in element:
-        add_fields[f'{key}.{LANG_STR}'].append(
-            element[XML_LANG_STR])
+        add_fields[f'{key}.{LANG_STR}'].append(element[XML_LANG_STR])
     else:  # Avoid having an inconsistent length between narrative lang and value
         if key != 'value':
             add_fields[f'{key}.{LANG_STR}'].append(' ')
@@ -179,8 +209,7 @@ def extract_single_values(add_fields, value, key, data):
     # The language can still be a child element which has not
     # yet been converted within recursion.
     if XML_LANG_STR in value:
-        add_fields[f'{key}.{LANG_STR}'] = value[
-            XML_LANG_STR]
+        add_fields[f'{key}.{LANG_STR}'] = value[XML_LANG_STR]
     # assume the language is not provided
     else:
         if key != 'value':

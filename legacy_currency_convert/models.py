@@ -7,7 +7,7 @@ class Currency(models.Model):
     description = models.TextField(default="")
 
     def __unicode__(self,):
-        return "%s - %s" % (self.code, self.name)
+        return f"{self.code} - {self.name}"
 
     class Meta:
         verbose_name_plural = "Currencies"
@@ -30,4 +30,4 @@ class MonthlyAverage(models.Model):
         unique_together = ("currency", "month", "year")
 
     def __unicode__(self,):
-        return "%s: %s-%s" % (self.currency_id, self.year, self.month)
+        return f"{self.currency_id}: {self.year}-{self.month}"

@@ -27,6 +27,11 @@ def add_participating_org_child_indexes(field, child):
     :param child: the second level child of the aforementioned field
     """
     # Check if the child exists and make the child a list if it is a dict.
+    if child not in field:
+        return
+    if not isinstance(field[child], list):
+        field[child] = [field[child]]
+
     add_field_child_field_indexes(field, child, 'ref')
     add_field_child_field_indexes(field, child, 'type')
     add_field_child_field_indexes(field, child, 'role')
@@ -52,7 +57,9 @@ def add_result_child_indexes(field, child):
 
     add_field_child_field_indexes(field, child, 'baseline')
     add_field_child_field_indexes(field, child, 'period')
-    add_field_child_field_children_indexes(field, child, 'period', children=['actual', 'target'])
+    add_field_child_field_children_indexes(
+        field, child, 'period', children=['actual', 'target']
+    )
 
 
 def add_field_child_field_indexes(data, target_field, field):
@@ -106,7 +113,9 @@ def add_field_child_field_children_indexes(data, target_field, field, children):
                 # If the second level child is found, loop over this and check if the third level children are found.
                 if not isinstance(target[field], list):
                     target[field] = [target[field]]
-                iterate_third_level_children(child, data, field, target, target_field, total_field)
+                iterate_third_level_children(
+                    child, data, field, target, target_field, total_field
+                )
     return data
 
 

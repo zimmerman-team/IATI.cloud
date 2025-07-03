@@ -28,12 +28,16 @@ def clean_resources(dataset):
 
 
 def clean_extras(dataset):
-    items_to_pop = []
+    # Filter out empty extra fields and create direct fields in one pass
+    filtered_extras = []
+
     for item in dataset['extras']:
-        # Clean empty extra fields
-        if item['value'] == '':
-            items_to_pop.append(item)
+        if item['value'] != '':
+            filtered_extras.append(item)
         # Add single valued field names for each "extra" key.
-        extras_name = f"extras.{item['key']}"
-        dataset[extras_name] = item['value']
-    dataset['extras'] = [d for d in dataset['extras'] if d not in items_to_pop]
+        dataset[f"extras.{item['key']}"] = item['value']
+
+    # Replace the extras list with the filtered version
+    dataset['extras'] = filtered_extras
+
+    return dataset  # Return the modified dataset
