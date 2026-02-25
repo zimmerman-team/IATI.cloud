@@ -20,4 +20,7 @@ gtag("config", "G-CP65J0T1G0");
 # Insert the Google tag content inside the <head> tag of docs/index.html
 sed -i '/<head>/r /dev/stdin' ./docs/index.html <<< "$HEAD_CONTENT"
 
+# Replace "<img src="./docs/images/aida-artboard1.png" with "<img src="./images/aida-artboard1.png" in docs/index.html
+sed -i 's#<img src="./docs/images/#<img src="./images/#g' ./docs/index.html
+
 print_status "Done updating docs/index.html from README.md and docs/*.md. Make sure to push the updated index to GitHub, to the branch in use under settings/pages."
