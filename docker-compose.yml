@@ -50,7 +50,7 @@ services:
   solr:
     container_name: solr
     restart: always
-    image: bitnami/solr:9.8.1
+    image: bitnamilegacy/solr:9.8.1-debian-12-r9
     ports:
       - 8983:8983
     env_file:
