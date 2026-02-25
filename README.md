@@ -8,6 +8,7 @@
 
 - [IATI.cloud](#iaticloud)
   - [Introduction](#introduction)
+    - [IATI.cloud in AIDA.tools](#iaticloud-in-aidatools)
   - [Setting up, running and using IATI cloud](#setting-up-running-and-using-iati-cloud)
   - [Requirements](#requirements)
     - [Software](#software)
@@ -35,6 +36,12 @@ IATI is a global aid transparency standard and it makes information about aid sp
 We have recently moved towards a Solr Only version of the IATI.cloud. If you are looking for the hybrid IATI.cloud with Django API and Solr API, you can find this under the branch `archive/iati-cloud-hybrid-django-solr`
 
 You can install this codebase using Docker. Follow the [Docker installation guide](./docs/DOCKER.md) for more information.
+
+### IATI.cloud in AIDA.tools
+
+IATI.cloud is the primary data source for [AIDA.tools](https://aida.tools/).
+
+![AIDA Explorer interface, showing AIDA's explorer "Data Insights" interface. Among which are shown an overview, location data, Sustainable Development Goals (SDGs), and networks. More is available on the page.](./docs/images/aida-artboard1.png)
 
 ## Setting up, running and using IATI cloud
 
