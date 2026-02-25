@@ -255,7 +255,10 @@ title="Open Issues" alt="GitHub Open Issues Count" /></a></p>
 <ul>
 <li><a href="#iaticloud">IATI.cloud</a>
 <ul>
-<li><a href="#introduction">Introduction</a></li>
+<li><a href="#introduction">Introduction</a>
+<ul>
+<li><a href="#iaticloud-in-aidatools">IATI.cloud in AIDA.tools</a></li>
+</ul></li>
 <li><a href="#setting-up-running-and-using-iati-cloud">Setting up,
 running and using IATI cloud</a></li>
 <li><a href="#requirements">Requirements</a>
@@ -298,6 +301,17 @@ API, you can find this under the branch
 <p>You can install this codebase using Docker. Follow the <a
 href="./docs/DOCKER.md">Docker installation guide</a> for more
 information.</p>
+<h3 id="iati.cloud-in-aida.tools">IATI.cloud in AIDA.tools</h3>
+<p>IATI.cloud is the primary data source for <a
+href="https://aida.tools/">AIDA.tools</a>.</p>
+<figure>
+<img src="./docs/images/aida-artboard1.png"
+alt="AIDA Explorer interface, showing AIDA’s explorer “Data Insights” interface. Among which are shown an overview, location data, Sustainable Development Goals (SDGs), and networks. More is available on the page." />
+<figcaption aria-hidden="true">AIDA Explorer interface, showing AIDA’s
+explorer “Data Insights” interface. Among which are shown an overview,
+location data, Sustainable Development Goals (SDGs), and networks. More
+is available on the page.</figcaption>
+</figure>
 <h2 id="setting-up-running-and-using-iati-cloud">Setting up, running and
 using IATI cloud</h2>
 <p>Running and setting up is split into two parts: docker and manual.
@@ -642,7 +656,7 @@ We mount <code>/data/db</code> to our <code>mongo_data</code> docker
 <td>solr</td>
 <td>solr</td>
 <td>8983</td>
-<td>bitnami/solr:9.1.1</td>
+<td>bitnamilegacy/solr:9.8.1-debian-12-r9</td>
 <td>Using bitnami instead of default solr because of the env options.
 We’re mounting the <code>/bitnami</code> directory to either the
 solr_data docker volume, or a local directory through the environment

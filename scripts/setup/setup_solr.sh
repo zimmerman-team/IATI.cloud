@@ -16,7 +16,7 @@ Options:
     -h [--help]     Show this help message and exit"
 
 print_status "Setting up Solr..."
-sudo docker pull bitnami/solr:9.8.1
+sudo docker pull bitnamilegacy/solr:9.8.1-debian-12-r9
 sudo docker compose up solr -d
 print_status "Starting Solr for the first time, generating all relevant files..."
 sleep 60
